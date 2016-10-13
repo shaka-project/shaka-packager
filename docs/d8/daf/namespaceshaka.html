@@ -163,6 +163,8 @@ Functions</h2></td></tr>
 <tr class="separator:a54fadd9c7ef14b39cd0355a5c269c772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3cbb360c0dcaacc5667676af885008"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#ade3cbb360c0dcaacc5667676af885008">ValidateWidevineCryptoFlags</a> ()</td></tr>
 <tr class="separator:ade3cbb360c0dcaacc5667676af885008"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66e7e156c1f83435fb6c130803e48f62"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">TempFilePath</a> (const std::string &amp;temp_dir, std::string *temp_file_path)</td></tr>
+<tr class="separator:a66e7e156c1f83435fb6c130803e48f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f657931280fdf63cae2ed8a8f891288"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a5f657931280fdf63cae2ed8a8f891288">LanguageToShortestForm</a> (const std::string &amp;language)</td></tr>
 <tr class="separator:a5f657931280fdf63cae2ed8a8f891288"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05a31cd741e2ee18f1399284e921e527"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a05a31cd741e2ee18f1399284e921e527">LanguageToISO_639_2</a> (const std::string &amp;language)</td></tr>
@@ -460,6 +462,43 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 
 </div>
 </div>
+<a class="anchor" id="a66e7e156c1f83435fb6c130803e48f62"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::TempFilePath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>temp_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>temp_file_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a temp file name in directory <em>temp_dir</em>. Generate the temp file in os specific temporary directory if <em>temp_dir</em> is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">temp_dir</td><td>specifies the directory where the file should go. </td></tr>
+    <tr><td class="paramname">temp_file_path</td><td>is the result temp file path on success. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d1/d2b/file__util_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d1/d2b/file__util_8cc_source.html">file_util.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="abc3f498491fb895860ebdee359935d93"></a>
 <div class="memitem">
 <div class="memproto">
@@ -594,7 +633,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 11 2016 19:33:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 13 2016 21:53:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

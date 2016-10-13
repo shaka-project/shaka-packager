@@ -123,10 +123,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      closed_(false) {}</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;IoCache::~IoCache() {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a23dfcb4d031d76e980e41d1b1bec7112">Close</a>();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  Close();</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a3cb864f866af25f0ff92c367946b0945">   40</a></span>&#160;uint64_t <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a3cb864f866af25f0ff92c367946b0945">IoCache::Read</a>(<span class="keywordtype">void</span>* buffer, uint64_t size) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a3cb864f866af25f0ff92c367946b0945">   40</a></span>&#160;uint64_t IoCache::Read(<span class="keywordtype">void</span>* buffer, uint64_t size) {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK(buffer);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  AutoLock lock(lock_);</div>
@@ -154,7 +154,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> size;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a0349796209c24a99bfe3c1bfdafb1d28">   68</a></span>&#160;uint64_t <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a0349796209c24a99bfe3c1bfdafb1d28">IoCache::Write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* buffer, uint64_t size) {</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a0349796209c24a99bfe3c1bfdafb1d28">   68</a></span>&#160;uint64_t IoCache::Write(<span class="keyword">const</span> <span class="keywordtype">void</span>* buffer, uint64_t size) {</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  DCHECK(buffer);</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">const</span> uint8_t* r_ptr(static_cast&lt;const uint8_t*&gt;(buffer));</div>
@@ -190,21 +190,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">return</span> size;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48">  104</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48">IoCache::Clear</a>() {</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48">  104</a></span>&#160;<span class="keywordtype">void</span> IoCache::Clear() {</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  AutoLock lock(lock_);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  r_ptr_ = w_ptr_ = circular_buffer_.data();</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Let any writers know that there is room in the cache.</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  read_event_.Signal();</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a23dfcb4d031d76e980e41d1b1bec7112">  111</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a23dfcb4d031d76e980e41d1b1bec7112">IoCache::Close</a>() {</div>
+<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a23dfcb4d031d76e980e41d1b1bec7112">  111</a></span>&#160;<span class="keywordtype">void</span> IoCache::Close() {</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  AutoLock lock(lock_);</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  closed_ = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  read_event_.Signal();</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  write_event_.Signal();</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185">  118</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185">IoCache::Reopen</a>() {</div>
+<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185">  118</a></span>&#160;<span class="keywordtype">void</span> IoCache::Reopen() {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  AutoLock lock(lock_);</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  CHECK(closed_);</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  r_ptr_ = w_ptr_ = circular_buffer_.data();</div>
@@ -213,12 +213,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  write_event_.Reset();</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;}</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a385baed04dd0cc0d3dca20d78f61559f">  127</a></span>&#160;uint64_t <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a385baed04dd0cc0d3dca20d78f61559f">IoCache::BytesCached</a>() {</div>
+<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a385baed04dd0cc0d3dca20d78f61559f">  127</a></span>&#160;uint64_t IoCache::BytesCached() {</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  AutoLock lock(lock_);</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">return</span> BytesCachedInternal();</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;}</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
-<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a74e1d7369afe4f03c551b6e67ec82ee9">  132</a></span>&#160;uint64_t <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a74e1d7369afe4f03c551b6e67ec82ee9">IoCache::BytesFree</a>() {</div>
+<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a74e1d7369afe4f03c551b6e67ec82ee9">  132</a></span>&#160;uint64_t IoCache::BytesFree() {</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  AutoLock lock(lock_);</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordflow">return</span> BytesFreeInternal();</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}</div>
@@ -233,7 +233,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordflow">return</span> cache_size_ - BytesCachedInternal();</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;}</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a841a082bfd88280a4ea00ac1a9e64dac">  147</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a841a082bfd88280a4ea00ac1a9e64dac">IoCache::WaitUntilEmptyOrClosed</a>() {</div>
+<div class="line"><a name="l00147"></a><span class="lineno"><a class="line" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a841a082bfd88280a4ea00ac1a9e64dac">  147</a></span>&#160;<span class="keywordtype">void</span> IoCache::WaitUntilEmptyOrClosed() {</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  AutoLock lock(lock_);</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="keywordflow">while</span> (!closed_ &amp;&amp; BytesCachedInternal()) {</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    AutoUnlock unlock(lock_);</div>
@@ -243,18 +243,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a29080034b90671628ea681e10ea92a48"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48">shaka::media::IoCache::Clear</a></div><div class="ttdeci">void Clear()</div><div class="ttdoc">Empties the cache. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00104">io_cache.cc:104</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a23dfcb4d031d76e980e41d1b1bec7112"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a23dfcb4d031d76e980e41d1b1bec7112">shaka::media::IoCache::Close</a></div><div class="ttdeci">void Close()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00111">io_cache.cc:111</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a841a082bfd88280a4ea00ac1a9e64dac"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a841a082bfd88280a4ea00ac1a9e64dac">shaka::media::IoCache::WaitUntilEmptyOrClosed</a></div><div class="ttdeci">void WaitUntilEmptyOrClosed()</div><div class="ttdoc">Waits until the cache is empty or has been closed. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00147">io_cache.cc:147</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a74e1d7369afe4f03c551b6e67ec82ee9"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a74e1d7369afe4f03c551b6e67ec82ee9">shaka::media::IoCache::BytesFree</a></div><div class="ttdeci">uint64_t BytesFree()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00132">io_cache.cc:132</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_ae751faea047196ba2770f5bf90649185"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185">shaka::media::IoCache::Reopen</a></div><div class="ttdeci">void Reopen()</div><div class="ttdoc">Reopens the cache. Any data still in the cache will be lost. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00118">io_cache.cc:118</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a3cb864f866af25f0ff92c367946b0945"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a3cb864f866af25f0ff92c367946b0945">shaka::media::IoCache::Read</a></div><div class="ttdeci">uint64_t Read(void *buffer, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00040">io_cache.cc:40</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a385baed04dd0cc0d3dca20d78f61559f"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a385baed04dd0cc0d3dca20d78f61559f">shaka::media::IoCache::BytesCached</a></div><div class="ttdeci">uint64_t BytesCached()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00127">io_cache.cc:127</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1IoCache_html_a0349796209c24a99bfe3c1bfdafb1d28"><div class="ttname"><a href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html#a0349796209c24a99bfe3c1bfdafb1d28">shaka::media::IoCache::Write</a></div><div class="ttdeci">uint64_t Write(const void *buffer, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00068">io_cache.cc:68</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 11 2016 19:33:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 13 2016 21:53:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
