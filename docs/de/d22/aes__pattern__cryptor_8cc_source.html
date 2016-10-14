@@ -112,83 +112,70 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      skip_byte_block_(skip_byte_block),</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      encryption_mode_(encryption_mode),</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      cryptor_(std::move(cryptor)) {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="comment">// |crypt_byte_block_| should never be 0. |skip_byte_block_| can be 0 to allow</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// a special pattern of 1:0, which is the pattern for the case of pattern</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="comment">// encryption when applied to non video tracks.</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  DCHECK_NE(crypt_byte_block_, 0u);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  DCHECK(skip_byte_block_ != 0 || crypt_byte_block_ == 1);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  DCHECK(cryptor_);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  DCHECK(!cryptor_-&gt;use_constant_iv());</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="comment">// Treat pattern 0:0 as 1:0.</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordflow">if</span> (crypt_byte_block_ == 0 &amp;&amp; skip_byte_block_ == 0)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    crypt_byte_block_ = 1;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  DCHECK(cryptor_);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  DCHECK(!cryptor_-&gt;use_constant_iv());</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;AesPatternCryptor::~AesPatternCryptor() {}</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;AesPatternCryptor::~AesPatternCryptor() {}</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">   37</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">AesPatternCryptor::InitializeWithIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                         <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a4875146da4761bb757d6b00132ae6fea">SetIv</a>(iv) &amp;&amp; cryptor_-&gt;InitializeWithIv(key, iv);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keywordtype">bool</span> AesPatternCryptor::CryptInternal(<span class="keyword">const</span> uint8_t* text,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                      <span class="keywordtype">size_t</span> text_size,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                      uint8_t* crypt_text,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                      <span class="keywordtype">size_t</span>* crypt_text_size) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// |crypt_text_size| is always the same as |text_size| for pattern encryption.</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordflow">if</span> (*crypt_text_size &lt; text_size) {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting output size of at least &quot;</span> &lt;&lt; text_size</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; bytes.&quot;</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  *crypt_text_size = text_size;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// Handle the special pattern 1:0.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordflow">if</span> (skip_byte_block_ == 0) {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    DCHECK_EQ(crypt_byte_block_, 1u);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> crypt_byte_size = text_size / AES_BLOCK_SIZE * AES_BLOCK_SIZE;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">if</span> (!cryptor_-&gt;Crypt(text, crypt_byte_size, crypt_text))</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    memcpy(crypt_text + crypt_byte_size, text + crypt_byte_size,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;           text_size - crypt_byte_size);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">while</span> (text_size &gt; 0) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> crypt_byte_size = crypt_byte_block_ * AES_BLOCK_SIZE;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">if</span> (NeedEncrypt(text_size, crypt_byte_size)) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keywordflow">if</span> (!cryptor_-&gt;Crypt(text, crypt_byte_size, crypt_text))</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="comment">// If there is not enough data, just keep it in clear.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      memcpy(crypt_text, text, text_size);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    text += crypt_byte_size;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    text_size -= crypt_byte_size;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    crypt_text += crypt_byte_size;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> skip_byte_size = std::min(</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        static_cast&lt;size_t&gt;(skip_byte_block_ * AES_BLOCK_SIZE), text_size);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    memcpy(crypt_text, text, skip_byte_size);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    text += skip_byte_size;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    text_size -= skip_byte_size;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    crypt_text += skip_byte_size;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  }</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keywordtype">void</span> AesPatternCryptor::SetIvInternal() {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  CHECK(cryptor_-&gt;SetIv(<a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">iv</a>()));</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keywordtype">bool</span> AesPatternCryptor::NeedEncrypt(<span class="keywordtype">size_t</span> input_size,</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                                    <span class="keywordtype">size_t</span> target_data_size) {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">if</span> (encryption_mode_ == <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f">kSkipIfCryptByteBlockRemaining</a>)</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">return</span> input_size &gt; target_data_size;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">return</span> input_size &gt;= target_data_size;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_af878688f0f277f3f6757e85654439c34"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">shaka::media::AesPatternCryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d22/aes__pattern__cryptor_8cc_source.html#l00037">aes_pattern_cryptor.cc:37</a></div></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">   35</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">AesPatternCryptor::InitializeWithIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                                         <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a4875146da4761bb757d6b00132ae6fea">SetIv</a>(iv) &amp;&amp; cryptor_-&gt;InitializeWithIv(key, iv);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">bool</span> AesPatternCryptor::CryptInternal(<span class="keyword">const</span> uint8_t* text,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                      <span class="keywordtype">size_t</span> text_size,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                      uint8_t* crypt_text,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                      <span class="keywordtype">size_t</span>* crypt_text_size) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// |crypt_text_size| is always the same as |text_size| for pattern encryption.</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">if</span> (*crypt_text_size &lt; text_size) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting output size of at least &quot;</span> &lt;&lt; text_size</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; bytes.&quot;</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  *crypt_text_size = text_size;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">while</span> (text_size &gt; 0) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> crypt_byte_size = crypt_byte_block_ * AES_BLOCK_SIZE;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">if</span> (NeedEncrypt(text_size, crypt_byte_size)) {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keywordflow">if</span> (!cryptor_-&gt;Crypt(text, crypt_byte_size, crypt_text))</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="comment">// If there is not enough data, just keep it in clear.</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      memcpy(crypt_text, text, text_size);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    text += crypt_byte_size;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    text_size -= crypt_byte_size;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    crypt_text += crypt_byte_size;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> skip_byte_size = std::min(</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        static_cast&lt;size_t&gt;(skip_byte_block_ * AES_BLOCK_SIZE), text_size);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    memcpy(crypt_text, text, skip_byte_size);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    text += skip_byte_size;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    text_size -= skip_byte_size;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    crypt_text += skip_byte_size;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keywordtype">void</span> AesPatternCryptor::SetIvInternal() {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  CHECK(cryptor_-&gt;SetIv(<a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">iv</a>()));</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keywordtype">bool</span> AesPatternCryptor::NeedEncrypt(<span class="keywordtype">size_t</span> input_size,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                    <span class="keywordtype">size_t</span> target_data_size) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordflow">if</span> (encryption_mode_ == <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f">kSkipIfCryptByteBlockRemaining</a>)</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">return</span> input_size &gt; target_data_size;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">return</span> input_size &gt;= target_data_size;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_af878688f0f277f3f6757e85654439c34"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">shaka::media::AesPatternCryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d22/aes__pattern__cryptor_8cc_source.html#l00035">aes_pattern_cryptor.cc:35</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html">shaka::media::AesCryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00025">aes_cryptor.h:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f">shaka::media::AesPatternCryptor::kSkipIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00035">aes_pattern_cryptor.h:35</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a96dde16f12a82a563c77f6d5522571f3"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">shaka::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00081">aes_cryptor.h:81</a></div></div>
@@ -198,7 +185,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 14 2016 00:08:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 14 2016 00:13:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

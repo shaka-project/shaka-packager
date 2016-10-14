@@ -128,7 +128,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">bool</span> NeedEncrypt(<span class="keywordtype">size_t</span> input_size, <span class="keywordtype">size_t</span> target_data_size);</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">const</span> uint8_t crypt_byte_block_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  uint8_t crypt_byte_block_;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">const</span> uint8_t skip_byte_block_;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0">PatternEncryptionMode</a> encryption_mode_;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::unique_ptr&lt;AesCryptor&gt; cryptor_;</div>
@@ -138,7 +138,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_af878688f0f277f3f6757e85654439c34"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">shaka::media::AesPatternCryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d22/aes__pattern__cryptor_8cc_source.html#l00037">aes_pattern_cryptor.cc:37</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_af878688f0f277f3f6757e85654439c34"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">shaka::media::AesPatternCryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d22/aes__pattern__cryptor_8cc_source.html#l00035">aes_pattern_cryptor.cc:35</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html">shaka::media::AesCryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00025">aes_cryptor.h:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f">shaka::media::AesPatternCryptor::kSkipIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00035">aes_pattern_cryptor.h:35</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16">shaka::media::AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00026">aes_pattern_cryptor.h:26</a></div></div>
@@ -149,7 +149,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 14 2016 00:08:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 14 2016 00:13:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
