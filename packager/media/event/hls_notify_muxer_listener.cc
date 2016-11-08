@@ -30,6 +30,15 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
 
 HlsNotifyMuxerListener::~HlsNotifyMuxerListener() {}
 
+// These methods work together to notify that the media is encrypted.
+// If OnEncryptionInfoReady() is called before the media has been started, then
+// the information is stored and handled when OnEncryptionStart() is called.
+// if OnEncryptionStart() is called before the media has been started then
+// OnMediaStart() is responsible for notifying that the segments are encrypted
+// right away i.e. call OnEncryptionStart().
+// For now (because Live HLS is not implemented yet) this should be called once,
+// before media is started. So the logic after the first if statement should not
+// be taken.
 void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
     FourCC protection_scheme,
@@ -51,7 +60,7 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
 
 void HlsNotifyMuxerListener::OnEncryptionStart() {
   if (!media_started_) {
-    DLOG(WARNING) << "Media not started, cannot notify encryption start.";
+    must_notify_encryption_start_ = true;
     return;
   }
   if (next_key_id_.empty()) {
@@ -69,6 +78,7 @@ void HlsNotifyMuxerListener::OnEncryptionStart() {
   next_key_id_.clear();
   next_iv_.clear();
   next_key_system_infos_.clear();
+  must_notify_encryption_start_ = false;
 }
 
 void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
@@ -90,6 +100,9 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 
   media_started_ = true;
+  if (must_notify_encryption_start_) {
+    OnEncryptionStart();
+  }
 }
 
 void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
