@@ -96,6 +96,13 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource() {
       return std::unique_ptr<KeySource>();
     }
     encryption_key_source = std::move(widevine_key_source);
+  } else if (FLAGS_enable_playready_encryption) {
+      /*
+      encryption_key_source = PlayreadyKeySource::CreateFromHexStrings(
+          FLAGS_pr_key_id, FLAGS_pr_key, FLAGS_pr_iv,
+          FLAGS_pr_additiona_key_id_list, FLAGS_pr_la_url, FLAGS_pr_lui_url,
+          FLAGS_ondemand, FLAGS_include_empty_license_store);
+      */
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);

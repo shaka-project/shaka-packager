@@ -34,6 +34,8 @@
         'app/vlog_flags.h',
         'app/widevine_encryption_flags.cc',
         'app/widevine_encryption_flags.h',
+        'app/playready_encryption_flags.cc',
+        'app/playready_encryption_flags.h',
       ],
       'dependencies': [
         'hls/hls.gyp:hls_builder',

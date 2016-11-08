@@ -16,6 +16,7 @@
 #include "packager/app/stream_descriptor.h"
 #include "packager/app/vlog_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
+#include "packager/app/playready_encryption_flags.h"
 #include "packager/base/at_exit.h"
 #include "packager/base/command_line.h"
 #include "packager/base/files/file_path.h"
@@ -451,7 +452,9 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 
   // Create encryption key source if needed.
   std::unique_ptr<KeySource> encryption_key_source;
-  if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
+  if (FLAGS_enable_widevine_encryption ||
+      FLAGS_enable_fixed_key_encryption ||
+      FLAGS_enable_playready_encryption ) {
     encryption_key_source = CreateEncryptionKeySource();
     if (!encryption_key_source)
       return false;
