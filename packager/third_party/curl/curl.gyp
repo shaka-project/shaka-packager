@@ -16,7 +16,6 @@
         'defines': [
           'HTTP_ONLY',
           'USE_IPV6',
-          'USE_OPENSSL'
         ],
         'include_dirs': [
           'config',
@@ -37,6 +36,7 @@
             'defines': [
               'HAVE_CONFIG_H',
               'CURL_CA_BUNDLE="<!(config/linux/find_curl_ca_bundle.sh)"',
+              'USE_OPENSSL',
             ],
             'include_dirs': [
               'config/linux',
@@ -51,6 +51,7 @@
             'defines': [
               'HAVE_CONFIG_H',
               'CURL_CA_BUNDLE="<!(config/mac/find_curl_ca_bundle.sh)"',
+              'USE_OPENSSL',
             ],
             'include_dirs': [
               'config/mac',
@@ -61,10 +62,13 @@
           'direct_dependent_settings': {
             'defines': [
               'CURL_DISABLE_LDAP',
+              'USE_SCHANNEL',
+              'USE_WINDOWS_SSPI',
             ],
             'link_settings': {
               'libraries': [
                 '-lws2_32.lib',
+                '-lCrypt32.lib',
               ],
             },
           },
