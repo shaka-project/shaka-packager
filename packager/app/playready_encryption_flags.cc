@@ -1,5 +1,12 @@
+// Copyright 2016 Inside Secure Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+// Defines command line flags for PlayReady encryption.
 
-#include "packager/app/fixed_key_encryption_flags.h"
+#include "packager/app/playready_encryption_flags.h"
 
 #include "packager/app/validate_flag.h"
 #include "packager/base/strings/stringprintf.h"
@@ -15,7 +22,7 @@ DEFINE_string(pr_iv,
               "",
               "Optional iv in hex string format. If not specified, a random iv will be "
               "generated. This flag should only be used for testing.");
-DEFINE_string(pr_additiona_key_id_list,
+DEFINE_string(pr_additional_key_ids,
               "",
               "Optional comma separated list of additional hex string format key ids "
               "added to the PlayReady protection system specific data");
@@ -33,7 +40,8 @@ DEFINE_bool(pr_ondemand,
             "the media graph.");
 DEFINE_bool(pr_include_empty_license_store,
             false,
-            "Is an empty license store in included in the PlayReady pssh data.");
+            "Is an empty license store in included in the PlayReady pssh data."
+            "This option is not recommended, with parameter --mpd_output.");
 
 namespace shaka {
 
@@ -74,7 +82,7 @@ bool ValidatePlayreadyCryptoFlags() {
   }
 
   if (!ValidateFlag(
-          "pr_additiona_key_id_list", FLAGS_pr_additiona_key_id_list,
+          "pr_additional_key_ids", FLAGS_pr_additional_key_ids,
           FLAGS_enable_playready_encryption,
           true, playready_crypto_label)) {
     success = false;
