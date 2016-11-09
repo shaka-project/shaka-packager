@@ -79,7 +79,7 @@ TrackRunIterator::~TrackRunIterator() {}
 static void PopulateSampleInfo(const TrackExtends& trex,
                                const TrackFragmentHeader& tfhd,
                                const TrackFragmentRun& trun,
-                               const uint32_t i,
+                               const size_t i,
                                SampleInfo* sample_info) {
   if (i < trun.sample_sizes.size()) {
     sample_info->size = trun.sample_sizes[i];
@@ -187,7 +187,7 @@ bool TrackRunIterator::Init() {
     int64_t run_start_dts = 0;
 
     uint32_t num_samples = sample_size.sample_count;
-    uint32_t num_chunks = chunk_offset_vector.size();
+    uint32_t num_chunks = static_cast<uint32_t>(chunk_offset_vector.size());
 
     // Check that total number of samples match.
     DCHECK_EQ(num_samples, decoding_time.NumSamples());
@@ -410,7 +410,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       tri.samples.resize(trun.sample_count);
       for (size_t k = 0; k < trun.sample_count; k++) {
-        PopulateSampleInfo(*trex, traf.header, trun, k, &tri.samples[k]);
+        PopulateSampleInfo(*trex, traf.header, trun, k,
+                           &tri.samples[k]);
         run_start_dts += tri.samples[k].duration;
       }
       runs_.push_back(tri);

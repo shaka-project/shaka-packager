@@ -228,17 +228,17 @@ class WvmMediaParser : public MediaParser {
   uint8_t current_program_id_;
   uint32_t pes_stream_id_;
   uint32_t prev_pes_stream_id_;
-  uint16_t pes_packet_bytes_;
+  size_t pes_packet_bytes_;
   uint8_t pes_flags_1_;
   uint8_t pes_flags_2_;
   uint8_t prev_pes_flags_1_;
-  uint8_t pes_header_data_bytes_;
+  size_t pes_header_data_bytes_;
   uint64_t timestamp_;
   uint64_t pts_;
   uint64_t dts_;
   uint8_t index_program_id_;
   scoped_refptr<MediaSample> media_sample_;
-  uint32_t crypto_unit_start_pos_;
+  size_t crypto_unit_start_pos_;
   PrevSampleData prev_media_sample_data_;
   H264ByteToUnitStreamConverter byte_to_unit_stream_converter_;
 

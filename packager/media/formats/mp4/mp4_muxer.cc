@@ -101,7 +101,7 @@ Status MP4Muxer::Initialize() {
 
   moov->header.creation_time = IsoTimeNow();
   moov->header.modification_time = IsoTimeNow();
-  moov->header.next_track_id = streams().size() + 1;
+  moov->header.next_track_id = static_cast<uint32_t>(streams().size()) + 1;
 
   moov->tracks.resize(streams().size());
   moov->extends.tracks.resize(streams().size());

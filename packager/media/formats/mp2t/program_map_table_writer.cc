@@ -179,7 +179,7 @@ const uint8_t kPrivateDataIndicatorDescriptorEncryptedH264[] = {
 };
 
 void WritePmtToBuffer(const uint8_t* pmt,
-                      int pmt_size,
+                      size_t pmt_size,
                       ContinuityCounter* continuity_counter,
                       BufferWriter* writer) {
   const bool kPayloadUnitStartIndicator = true;

@@ -190,8 +190,9 @@ TEST(ContainerNamesTest, WebVtt) {
       kWebVtt + arraysize(kWebVtt));
 
   EXPECT_EQ(CONTAINER_WEBVTT,
-            DetermineContainer(webvtt_with_utf8_byte_order_mark.data(),
-                               webvtt_with_utf8_byte_order_mark.size()));
+            DetermineContainer(
+                webvtt_with_utf8_byte_order_mark.data(),
+                static_cast<int>(webvtt_with_utf8_byte_order_mark.size())));
 }
 
 TEST(ContainerNamesTest, FileCheckOGG) {

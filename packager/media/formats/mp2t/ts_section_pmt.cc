@@ -38,7 +38,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(bit_reader->ReadBits(1, &dummy_zero));
   RCHECK(bit_reader->ReadBits(2, &reserved));
   RCHECK(bit_reader->ReadBits(12, &section_length));
-  int section_start_marker = bit_reader->bits_available() / 8;
+  int section_start_marker = static_cast<int>(bit_reader->bits_available()) / 8;
 
   RCHECK(bit_reader->ReadBits(16, &program_number));
   RCHECK(bit_reader->ReadBits(2, &reserved));
@@ -76,7 +76,8 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // (4 bytes = size of the CRC).
   int pid_map_end_marker = section_start_marker - section_length + 4;
   std::map<int, int> pid_map;
-  while (bit_reader->bits_available() > 8 * pid_map_end_marker) {
+  while (static_cast<int>(bit_reader->bits_available()) >
+         8 * pid_map_end_marker) {
     int stream_type;
     int reserved;
     int pid_es;

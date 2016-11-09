@@ -456,7 +456,7 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
           sizeof(uint32_t);  // for sample count field in 'senc'
     }
     traf.runs[0].data_offset = data_offset + mdat.data_size;
-    mdat.data_size += fragmenters_[i]->data()->Size();
+    mdat.data_size += static_cast<uint32_t>(fragmenters_[i]->data()->Size());
   }
 
   // Generate segment reference.

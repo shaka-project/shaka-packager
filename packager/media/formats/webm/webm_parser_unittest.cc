@@ -345,7 +345,7 @@ TEST_F(WebMParserTest, ReservedIds) {
   for (size_t i = 0; i < arraysize(kBuffers); i++) {
     int id;
     int64_t element_size;
-    int buffer_size = 2 + i;
+    int buffer_size = 2 + static_cast<int>(i);
     EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size,
                                                   &id, &element_size));
     EXPECT_EQ(id, kWebMReservedId);
@@ -373,7 +373,7 @@ TEST_F(WebMParserTest, ReservedSizes) {
   for (size_t i = 0; i < arraysize(kBuffers); i++) {
     int id;
     int64_t element_size;
-    int buffer_size = 2 + i;
+    int buffer_size = 2 + static_cast<int>(i);
     EXPECT_EQ(buffer_size, WebMParseElementHeader(kBuffers[i], buffer_size,
                                                   &id, &element_size));
     EXPECT_EQ(id, 0xA3);

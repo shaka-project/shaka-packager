@@ -142,11 +142,11 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
   // Verify the resulting data.
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
-  ASSERT_EQ(1, parser.cluster_count());
+  ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
 
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(1)));
-  ASSERT_EQ(1, parser.cluster_count());
+  ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(3, parser.GetFrameCountForCluster(0));
 
   EXPECT_FALSE(File::Open(TemplateFileName(2).c_str(), "r"));
@@ -170,11 +170,11 @@ TEST_F(MultiSegmentSegmenterTest, RespectsSegmentSAPAlign) {
   // Verify the resulting data.
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
-  ASSERT_EQ(1, parser.cluster_count());
+  ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(6, parser.GetFrameCountForCluster(0));
 
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(1)));
-  ASSERT_EQ(1, parser.cluster_count());
+  ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(4, parser.GetFrameCountForCluster(0));
 
   EXPECT_FALSE(File::Open(TemplateFileName(2).c_str(), "r"));
@@ -196,7 +196,7 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
   // Verify the resulting data.
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
-  ASSERT_EQ(2, parser.cluster_count());
+  ASSERT_EQ(2u, parser.cluster_count());
   EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
   EXPECT_EQ(3, parser.GetFrameCountForCluster(1));
 
@@ -221,7 +221,7 @@ TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
   // Verify the resulting data.
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
-  ASSERT_EQ(2, parser.cluster_count());
+  ASSERT_EQ(2u, parser.cluster_count());
   EXPECT_EQ(6, parser.GetFrameCountForCluster(0));
   EXPECT_EQ(4, parser.GetFrameCountForCluster(1));
 

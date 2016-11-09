@@ -48,7 +48,7 @@ void Box::WriteHeader(BufferWriter* writer) {
 }
 
 uint32_t Box::ComputeSize() {
-  box_size_ = ComputeSizeInternal();
+  box_size_ = static_cast<uint32_t>(ComputeSizeInternal());
   return box_size_;
 }
 

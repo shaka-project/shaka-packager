@@ -23,7 +23,7 @@ namespace media {
 bool WebMCreateDecryptConfig(const uint8_t* data,
                              int data_size,
                              const uint8_t* key_id,
-                             int key_id_size,
+                             size_t key_id_size,
                              std::unique_ptr<DecryptConfig>* decrypt_config,
                              int* data_offset);
 

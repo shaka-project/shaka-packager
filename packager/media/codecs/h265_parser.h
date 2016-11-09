@@ -222,7 +222,7 @@ struct H265SliceHeader {
   // Sturcture: |NALU Header |     Slice Header    |    Slice Data    |
   // Size:      |<- 16bits ->|<- header_bit_size ->|<- Rest of nalu ->|
   // Note that this is not a field in the H.265 spec.
-  int header_bit_size = 0;
+  size_t header_bit_size = 0;
 
   bool first_slice_segment_in_pic_flag = false;
   bool no_output_of_prior_pics_flag = false;

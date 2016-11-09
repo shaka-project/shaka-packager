@@ -129,7 +129,7 @@ class TestableEsParser : public EsParserH26x {
 
 std::vector<uint8_t> CreateNalu(Nalu::CodecType codec_type,
                                 H26xNaluType type,
-                                int i) {
+                                uint8_t i) {
   std::vector<uint8_t> ret;
   if (codec_type == Nalu::kH264) {
     ret.resize(3);
@@ -215,7 +215,8 @@ void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
           seen_key_frame = true;
       }
 
-      std::vector<uint8_t> es_data = CreateNalu(codec_type, types[k], k);
+      std::vector<uint8_t> es_data =
+          CreateNalu(codec_type, types[k], static_cast<uint8_t>(k));
       cur_sample_data.push_back(0);
       cur_sample_data.push_back(0);
       cur_sample_data.push_back(0);
@@ -235,7 +236,8 @@ void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
       while (offset < es_data.size()) {
         // Insert the data in parts to test partial data searches.
         size = std::min(size + 1, es_data.size() - offset);
-        ASSERT_TRUE(es_parser.Parse(&es_data[offset], size, pts, dts));
+        ASSERT_TRUE(es_parser.Parse(&es_data[offset], static_cast<int>(size),
+                                    pts, dts));
         offset += size;
       }
     }

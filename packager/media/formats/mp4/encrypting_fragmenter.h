@@ -79,7 +79,7 @@ class EncryptingFragmenter : public Fragmenter {
   }
 
  private:
-  void EncryptBytes(uint8_t* data, uint32_t size);
+  void EncryptBytes(uint8_t* data, size_t size);
   Status EncryptSample(scoped_refptr<MediaSample> sample);
 
   // Should we enable subsample encryption?

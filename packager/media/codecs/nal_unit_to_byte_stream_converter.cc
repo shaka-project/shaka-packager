@@ -195,7 +195,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
   if (is_key_frame)
     buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);
 
-  int adjustment = buffer_writer.Size();
+  int adjustment = static_cast<int>(buffer_writer.Size());
   size_t subsample_id = 0;
 
   NaluReader nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);
@@ -245,7 +245,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
             DCHECK_LT(old_nalu_size, subsamples->at(subsample_id).clear_bytes);
             subsamples->at(subsample_id).clear_bytes -=
                 static_cast<uint16_t>(old_nalu_size);
-            adjustment += old_nalu_size;
+            adjustment += static_cast<int>(old_nalu_size);
           } else {
             // Apply the adjustment on the current subsample, reset the
             // adjustment and move to the next subsample.

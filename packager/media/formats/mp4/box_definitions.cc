@@ -154,7 +154,7 @@ bool FileType::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t FileType::ComputeSizeInternal() {
+size_t FileType::ComputeSizeInternal() {
   return HeaderSize() + kFourCCSize + sizeof(minor_version) +
          kFourCCSize * compatible_brands.size();
 }
@@ -178,7 +178,7 @@ bool ProtectionSystemSpecificHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t ProtectionSystemSpecificHeader::ComputeSizeInternal() {
+size_t ProtectionSystemSpecificHeader::ComputeSizeInternal() {
   return raw_box.size();
 }
 
@@ -191,7 +191,7 @@ bool SampleAuxiliaryInformationOffset::ReadWriteInternal(BoxBuffer* buffer) {
   if (flags & 1)
     RCHECK(buffer->IgnoreBytes(8));  // aux_info_type and parameter.
 
-  uint32_t count = offsets.size();
+  uint32_t count = static_cast<uint32_t>(offsets.size());
   RCHECK(buffer->ReadWriteUInt32(&count));
   offsets.resize(count);
 
@@ -201,7 +201,7 @@ bool SampleAuxiliaryInformationOffset::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleAuxiliaryInformationOffset::ComputeSizeInternal() {
+size_t SampleAuxiliaryInformationOffset::ComputeSizeInternal() {
   // This box is optional. Skip it if it is empty.
   if (offsets.size() == 0)
     return 0;
@@ -226,7 +226,7 @@ bool SampleAuxiliaryInformationSize::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleAuxiliaryInformationSize::ComputeSizeInternal() {
+size_t SampleAuxiliaryInformationSize::ComputeSizeInternal() {
   // This box is optional. Skip it if it is empty.
   if (sample_count == 0)
     return 0;
@@ -290,10 +290,11 @@ bool SampleEncryptionEntry::ParseFromBuffer(uint8_t iv_size,
 uint32_t SampleEncryptionEntry::ComputeSize() const {
   const uint32_t subsample_entry_size = sizeof(uint16_t) + sizeof(uint32_t);
   const uint16_t subsample_count = static_cast<uint16_t>(subsamples.size());
-  return initialization_vector.size() +
-         (subsample_count > 0 ? (sizeof(subsample_count) +
-                                 subsample_entry_size * subsample_count)
-                              : 0);
+  return static_cast<uint32_t>(
+      initialization_vector.size() +
+      (subsample_count > 0
+           ? (sizeof(subsample_count) + subsample_entry_size * subsample_count)
+           : 0));
 }
 
 uint32_t SampleEncryptionEntry::GetTotalSizeOfSubsamples() const {
@@ -325,7 +326,8 @@ bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
     return false;
   }
 
-  uint32_t sample_count = sample_encryption_entries.size();
+  uint32_t sample_count =
+      static_cast<uint32_t>(sample_encryption_entries.size());
   RCHECK(buffer->ReadWriteUInt32(&sample_count));
 
   sample_encryption_entries.resize(sample_count);
@@ -336,15 +338,16 @@ bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleEncryption::ComputeSizeInternal() {
-  const uint32_t sample_count = sample_encryption_entries.size();
+size_t SampleEncryption::ComputeSizeInternal() {
+  const uint32_t sample_count =
+      static_cast<uint32_t>(sample_encryption_entries.size());
   if (sample_count == 0) {
     // Sample encryption box is optional. Skip it if it is empty.
     return 0;
   }
 
   DCHECK(IsIvSizeValid(iv_size));
-  uint32_t box_size = HeaderSize() + sizeof(sample_count);
+  size_t box_size = HeaderSize() + sizeof(sample_count);
   if (flags & kUseSubsampleEncryption) {
     for (const SampleEncryptionEntry& sample_encryption_entry :
          sample_encryption_entries) {
@@ -382,7 +385,7 @@ bool OriginalFormat::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer) && buffer->ReadWriteFourCC(&format);
 }
 
-uint32_t OriginalFormat::ComputeSizeInternal() {
+size_t OriginalFormat::ComputeSizeInternal() {
   return HeaderSize() + kFourCCSize;
 }
 
@@ -397,7 +400,7 @@ bool SchemeType::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SchemeType::ComputeSizeInternal() {
+size_t SchemeType::ComputeSizeInternal() {
   return HeaderSize() + kFourCCSize + sizeof(version);
 }
 
@@ -460,7 +463,7 @@ bool TrackEncryption::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TrackEncryption::ComputeSizeInternal() {
+size_t TrackEncryption::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) + kCencKeyIdSize +
          (default_constant_iv.empty() ? 0 : (sizeof(uint8_t) +
                                              default_constant_iv.size()));
@@ -476,7 +479,7 @@ bool SchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SchemeInfo::ComputeSizeInternal() {
+size_t SchemeInfo::ComputeSizeInternal() {
   return HeaderSize() + track_encryption.ComputeSize();
 }
 
@@ -502,7 +505,7 @@ bool ProtectionSchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t ProtectionSchemeInfo::ComputeSizeInternal() {
+size_t ProtectionSchemeInfo::ComputeSizeInternal() {
   // Skip sinf box if it is not initialized.
   if (format.format == FOURCC_NULL)
     return 0;
@@ -541,7 +544,7 @@ bool MovieHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t MovieHeader::ComputeSizeInternal() {
+size_t MovieHeader::ComputeSizeInternal() {
   version = IsFitIn32Bits(creation_time, modification_time, duration) ? 0 : 1;
   return HeaderSize() + sizeof(uint32_t) * (1 + version) * 3 +
          sizeof(timescale) + sizeof(rate) + sizeof(volume) +
@@ -592,7 +595,7 @@ bool TrackHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TrackHeader::ComputeSizeInternal() {
+size_t TrackHeader::ComputeSizeInternal() {
   version = IsFitIn32Bits(creation_time, modification_time, duration) ? 0 : 1;
   return HeaderSize() + sizeof(track_id) +
          sizeof(uint32_t) * (1 + version) * 3 + sizeof(layer) +
@@ -608,13 +611,13 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = 0;
   switch (type) {
     case kVideo:
-      count = video_entries.size();
+      count = static_cast<uint32_t>(video_entries.size());
       break;
     case kAudio:
-      count = audio_entries.size();
+      count = static_cast<uint32_t>(audio_entries.size());
       break;
     case kText:
-      count = text_entries.size();
+      count = static_cast<uint32_t>(text_entries.size());
       break;
     default:
       NOTIMPLEMENTED() << "SampleDecryption type " << type
@@ -658,8 +661,8 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleDescription::ComputeSizeInternal() {
-  uint32_t box_size = HeaderSize() + sizeof(uint32_t);
+size_t SampleDescription::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + sizeof(uint32_t);
   if (type == kVideo) {
     for (uint32_t i = 0; i < video_entries.size(); ++i)
       box_size += video_entries[i].ComputeSize();
@@ -678,7 +681,7 @@ DecodingTimeToSample::~DecodingTimeToSample() {}
 FourCC DecodingTimeToSample::BoxType() const { return FOURCC_stts; }
 
 bool DecodingTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = decoding_time.size();
+  uint32_t count = static_cast<uint32_t>(decoding_time.size());
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&count));
 
@@ -690,7 +693,7 @@ bool DecodingTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t DecodingTimeToSample::ComputeSizeInternal() {
+size_t DecodingTimeToSample::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) +
          sizeof(DecodingTime) * decoding_time.size();
 }
@@ -700,7 +703,7 @@ CompositionTimeToSample::~CompositionTimeToSample() {}
 FourCC CompositionTimeToSample::BoxType() const { return FOURCC_ctts; }
 
 bool CompositionTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = composition_offset.size();
+  uint32_t count = static_cast<uint32_t>(composition_offset.size());
   if (!buffer->Reading()) {
     // Determine whether version 0 or version 1 should be used.
     // Use version 0 if possible, use version 1 if there is a negative
@@ -734,14 +737,14 @@ bool CompositionTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t CompositionTimeToSample::ComputeSizeInternal() {
+size_t CompositionTimeToSample::ComputeSizeInternal() {
   // This box is optional. Skip it if it is empty.
   if (composition_offset.empty())
     return 0;
   // Structure CompositionOffset contains |sample_offset| (uint32_t) and
   // |sample_offset| (int64_t). The actual size of |sample_offset| is
   // 4 bytes (uint32_t for version 0 and int32_t for version 1).
-  const uint32_t kCompositionOffsetSize = sizeof(uint32_t) * 2;
+  const size_t kCompositionOffsetSize = sizeof(uint32_t) * 2;
   return HeaderSize() + sizeof(uint32_t) +
          kCompositionOffsetSize * composition_offset.size();
 }
@@ -751,7 +754,7 @@ SampleToChunk::~SampleToChunk() {}
 FourCC SampleToChunk::BoxType() const { return FOURCC_stsc; }
 
 bool SampleToChunk::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = chunk_info.size();
+  uint32_t count = static_cast<uint32_t>(chunk_info.size());
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&count));
 
@@ -767,7 +770,7 @@ bool SampleToChunk::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleToChunk::ComputeSizeInternal() {
+size_t SampleToChunk::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) +
          sizeof(ChunkInfo) * chunk_info.size();
 }
@@ -792,7 +795,7 @@ bool SampleSize::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleSize::ComputeSizeInternal() {
+size_t SampleSize::ComputeSizeInternal() {
   return HeaderSize() + sizeof(sample_size) + sizeof(sample_count) +
          (sample_size == 0 ? sizeof(uint32_t) * sizes.size() : 0);
 }
@@ -802,7 +805,7 @@ CompactSampleSize::~CompactSampleSize() {}
 FourCC CompactSampleSize::BoxType() const { return FOURCC_stz2; }
 
 bool CompactSampleSize::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t sample_count = sizes.size();
+  uint32_t sample_count = static_cast<uint32_t>(sizes.size());
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->IgnoreBytes(3) &&
          buffer->ReadWriteUInt8(&field_size) &&
@@ -847,7 +850,7 @@ bool CompactSampleSize::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t CompactSampleSize::ComputeSizeInternal() {
+size_t CompactSampleSize::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) + sizeof(uint32_t) +
          (field_size * sizes.size() + 7) / 8;
 }
@@ -857,7 +860,7 @@ ChunkOffset::~ChunkOffset() {}
 FourCC ChunkOffset::BoxType() const { return FOURCC_stco; }
 
 bool ChunkOffset::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = offsets.size();
+  uint32_t count = static_cast<uint32_t>(offsets.size());
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&count));
 
@@ -867,7 +870,7 @@ bool ChunkOffset::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t ChunkOffset::ComputeSizeInternal() {
+size_t ChunkOffset::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) + sizeof(uint32_t) * offsets.size();
 }
 
@@ -876,7 +879,7 @@ ChunkLargeOffset::~ChunkLargeOffset() {}
 FourCC ChunkLargeOffset::BoxType() const { return FOURCC_co64; }
 
 bool ChunkLargeOffset::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = offsets.size();
+  uint32_t count = static_cast<uint32_t>(offsets.size());
 
   if (!buffer->Reading()) {
     // Switch to ChunkOffset box if it is able to fit in 32 bits offset.
@@ -899,8 +902,8 @@ bool ChunkLargeOffset::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t ChunkLargeOffset::ComputeSizeInternal() {
-  uint32_t count = offsets.size();
+size_t ChunkLargeOffset::ComputeSizeInternal() {
+  uint32_t count = static_cast<uint32_t>(offsets.size());
   int use_large_offset =
       (count > 0 && !IsFitIn32Bits(offsets[count - 1])) ? 1 : 0;
   return HeaderSize() + sizeof(count) +
@@ -912,7 +915,7 @@ SyncSample::~SyncSample() {}
 FourCC SyncSample::BoxType() const { return FOURCC_stss; }
 
 bool SyncSample::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = sample_number.size();
+  uint32_t count = static_cast<uint32_t>(sample_number.size());
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&count));
 
@@ -922,7 +925,7 @@ bool SyncSample::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SyncSample::ComputeSizeInternal() {
+size_t SyncSample::ComputeSizeInternal() {
   // Sync sample box is optional. Skip it if it is empty.
   if (sample_number.empty())
     return 0;
@@ -979,8 +982,9 @@ bool CencSampleEncryptionInfoEntry::ReadWrite(BoxBuffer* buffer) {
 }
 
 uint32_t CencSampleEncryptionInfoEntry::ComputeSize() const {
-  return sizeof(uint32_t) + kCencKeyIdSize +
-         (constant_iv.empty() ? 0 : (sizeof(uint8_t) + constant_iv.size()));
+  return static_cast<uint32_t>(
+      sizeof(uint32_t) + kCencKeyIdSize +
+      (constant_iv.empty() ? 0 : (sizeof(uint8_t) + constant_iv.size())));
 }
 
 AudioRollRecoveryEntry::AudioRollRecoveryEntry(): roll_distance(0) {}
@@ -1033,7 +1037,7 @@ bool SampleGroupDescription::ReadWriteEntries(BoxBuffer* buffer,
     return false;
   }
 
-  uint32_t count = entries->size();
+  uint32_t count = static_cast<uint32_t>(entries->size());
   RCHECK(buffer->ReadWriteUInt32(&count));
   RCHECK(count != 0);
   entries->resize(count);
@@ -1052,7 +1056,7 @@ bool SampleGroupDescription::ReadWriteEntries(BoxBuffer* buffer,
   return true;
 }
 
-uint32_t SampleGroupDescription::ComputeSizeInternal() {
+size_t SampleGroupDescription::ComputeSizeInternal() {
   // Version 0 is obsoleted, so always generate version 1 box.
   version = 1;
   size_t entries_size = 0;
@@ -1091,7 +1095,7 @@ bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
     return true;
   }
 
-  uint32_t count = entries.size();
+  uint32_t count = static_cast<uint32_t>(entries.size());
   RCHECK(buffer->ReadWriteUInt32(&count));
   entries.resize(count);
   for (uint32_t i = 0; i < count; ++i) {
@@ -1101,7 +1105,7 @@ bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleToGroup::ComputeSizeInternal() {
+size_t SampleToGroup::ComputeSizeInternal() {
   // This box is optional. Skip it if it is not used.
   if (entries.empty())
     return 0;
@@ -1133,7 +1137,8 @@ bool SampleTable::ReadWriteInternal(BoxBuffer* buffer) {
       CompactSampleSize compact_sample_size;
       RCHECK(reader->ReadChild(&compact_sample_size));
       sample_size.sample_size = 0;
-      sample_size.sample_count = compact_sample_size.sizes.size();
+      sample_size.sample_count =
+          static_cast<uint32_t>(compact_sample_size.sizes.size());
       sample_size.sizes.swap(compact_sample_size.sizes);
     }
 
@@ -1162,13 +1167,13 @@ bool SampleTable::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SampleTable::ComputeSizeInternal() {
-  uint32_t box_size =
-      HeaderSize() + description.ComputeSize() +
-      decoding_time_to_sample.ComputeSize() +
-      composition_time_to_sample.ComputeSize() + sample_to_chunk.ComputeSize() +
-      sample_size.ComputeSize() + chunk_large_offset.ComputeSize() +
-      sync_sample.ComputeSize();
+size_t SampleTable::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + description.ComputeSize() +
+                    decoding_time_to_sample.ComputeSize() +
+                    composition_time_to_sample.ComputeSize() +
+                    sample_to_chunk.ComputeSize() + sample_size.ComputeSize() +
+                    chunk_large_offset.ComputeSize() +
+                    sync_sample.ComputeSize();
   for (auto& sample_group_description : sample_group_descriptions)
     box_size += sample_group_description.ComputeSize();
   for (auto& sample_to_group : sample_to_groups)
@@ -1181,7 +1186,7 @@ EditList::~EditList() {}
 FourCC EditList::BoxType() const { return FOURCC_elst; }
 
 bool EditList::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t count = edits.size();
+  uint32_t count = static_cast<uint32_t>(edits.size());
   RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt32(&count));
   edits.resize(count);
 
@@ -1196,7 +1201,7 @@ bool EditList::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t EditList::ComputeSizeInternal() {
+size_t EditList::ComputeSizeInternal() {
   // EditList box is optional. Skip it if it is empty.
   if (edits.empty())
     return 0;
@@ -1223,7 +1228,7 @@ bool Edit::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteChild(&list);
 }
 
-uint32_t Edit::ComputeSizeInternal() {
+size_t Edit::ComputeSizeInternal() {
   // Edit box is optional. Skip it if it is empty.
   if (list.edits.empty())
     return 0;
@@ -1267,8 +1272,8 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t HandlerReference::ComputeSizeInternal() {
-  uint32_t box_size = HeaderSize() + kFourCCSize + 16;  // 16 bytes Reserved
+size_t HandlerReference::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + kFourCCSize + 16;  // 16 bytes Reserved
   switch (handler_type) {
     case FOURCC_vide:
       box_size += sizeof(kVideoHandlerName);
@@ -1332,7 +1337,7 @@ bool PrivFrame::ReadWrite(BoxBuffer* buffer) {
     return true;
   }
 
-  uint32_t frame_size = owner.size() + 1 + value.size();
+  uint32_t frame_size = static_cast<uint32_t>(owner.size() + 1 + value.size());
   // size should be encoded as synchsafe integer, which is not support here.
   // We don't expect frame_size to be larger than 0x7F. Synchsafe integers less
   // than 0x7F is encoded in the same way as normal integer.
@@ -1362,8 +1367,9 @@ uint32_t PrivFrame::ComputeSize() const {
   if (owner.empty() && value.empty())
     return 0;
   const uint32_t kFourCCSize = 4;
-  return kFourCCSize + sizeof(uint32_t) + sizeof(uint16_t) + owner.size() + 1 +
-         value.size();
+  return kFourCCSize +
+         static_cast<uint32_t>(sizeof(uint32_t) + sizeof(uint16_t) +
+                               owner.size() + 1 + value.size());
 }
 
 ID3v2::ID3v2() {}
@@ -1394,7 +1400,7 @@ bool ID3v2::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t ID3v2::ComputeSizeInternal() {
+size_t ID3v2::ComputeSizeInternal() {
   uint32_t private_frame_size = private_frame.ComputeSize();
   // Skip ID3v2 box generation if there is no private frame.
   return private_frame_size == 0 ? 0 : HeaderSize() + language.ComputeSize() +
@@ -1417,8 +1423,8 @@ bool Metadata::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t Metadata::ComputeSizeInternal() {
-  uint32_t id3v2_size = id3v2.ComputeSize();
+size_t Metadata::ComputeSizeInternal() {
+  size_t id3v2_size = id3v2.ComputeSize();
   // Skip metadata box generation if there is no metadata box.
   return id3v2_size == 0 ? 0
                          : HeaderSize() + handler.ComputeSize() + id3v2_size;
@@ -1453,7 +1459,7 @@ bool CodecConfiguration::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t CodecConfiguration::ComputeSizeInternal() {
+size_t CodecConfiguration::ComputeSizeInternal() {
   if (data.empty())
     return 0;
   DCHECK_NE(box_type, FOURCC_NULL);
@@ -1471,7 +1477,7 @@ bool PixelAspectRatio::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t PixelAspectRatio::ComputeSizeInternal() {
+size_t PixelAspectRatio::ComputeSizeInternal() {
   // This box is optional. Skip it if it is not initialized.
   if (h_spacing == 0 && v_spacing == 0)
     return 0;
@@ -1572,7 +1578,7 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t VideoSampleEntry::ComputeSizeInternal() {
+size_t VideoSampleEntry::ComputeSizeInternal() {
   const FourCC actual_format = GetActualFormat();
   if (actual_format == FOURCC_NULL)
     return 0;
@@ -1624,7 +1630,7 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t ElementaryStreamDescriptor::ComputeSizeInternal() {
+size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (es_descriptor.object_type() == kForbidden)
     return 0;
@@ -1658,7 +1664,7 @@ bool DTSSpecific::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t DTSSpecific::ComputeSizeInternal() {
+size_t DTSSpecific::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (sampling_frequency == 0)
     return 0;
@@ -1679,7 +1685,7 @@ bool AC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t AC3Specific::ComputeSizeInternal() {
+size_t AC3Specific::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (data.empty())
     return 0;
@@ -1693,12 +1699,12 @@ FourCC EC3Specific::BoxType() const { return FOURCC_dec3; }
 
 bool EC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
-  uint32_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
   RCHECK(buffer->ReadWriteVector(&data, size));
   return true;
 }
 
-uint32_t EC3Specific::ComputeSizeInternal() {
+size_t EC3Specific::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (data.empty())
     return 0;
@@ -1744,7 +1750,7 @@ bool OpusSpecific::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t OpusSpecific::ComputeSizeInternal() {
+size_t OpusSpecific::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
   if (opus_identification_header.empty())
     return 0;
@@ -1814,7 +1820,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t AudioSampleEntry::ComputeSizeInternal() {
+size_t AudioSampleEntry::ComputeSizeInternal() {
   if (GetActualFormat() == FOURCC_NULL)
     return 0;
   return HeaderSize() + sizeof(data_reference_index) + sizeof(channelcount) +
@@ -1839,7 +1845,7 @@ bool WebVTTConfigurationBox::ReadWriteInternal(BoxBuffer* buffer) {
       buffer->Reading() ? buffer->BytesLeft() : config.size());
 }
 
-uint32_t WebVTTConfigurationBox::ComputeSizeInternal() {
+size_t WebVTTConfigurationBox::ComputeSizeInternal() {
   return HeaderSize() + config.size();
 }
 
@@ -1857,7 +1863,7 @@ bool WebVTTSourceLabelBox::ReadWriteInternal(BoxBuffer* buffer) {
                                                     : source_label.size());
 }
 
-uint32_t WebVTTSourceLabelBox::ComputeSizeInternal() {
+size_t WebVTTSourceLabelBox::ComputeSizeInternal() {
   if (source_label.empty())
     return 0;
   return HeaderSize() + source_label.size();
@@ -1893,7 +1899,7 @@ bool TextSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TextSampleEntry::ComputeSizeInternal() {
+size_t TextSampleEntry::ComputeSizeInternal() {
   // 6 for the (anonymous) reserved bytes for SampleEntry class.
   return HeaderSize() + 6 + sizeof(data_reference_index) +
          config.ComputeSize() + label.ComputeSize();
@@ -1917,7 +1923,7 @@ bool MediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t MediaHeader::ComputeSizeInternal() {
+size_t MediaHeader::ComputeSizeInternal() {
   version = IsFitIn32Bits(creation_time, modification_time, duration) ? 0 : 1;
   return HeaderSize() + sizeof(timescale) +
          sizeof(uint32_t) * (1 + version) * 3 + language.ComputeSize() +
@@ -1940,7 +1946,7 @@ bool VideoMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t VideoMediaHeader::ComputeSizeInternal() {
+size_t VideoMediaHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(graphicsmode) + sizeof(opcolor_red) +
          sizeof(opcolor_green) + sizeof(opcolor_blue);
 }
@@ -1955,7 +1961,7 @@ bool SoundMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SoundMediaHeader::ComputeSizeInternal() {
+size_t SoundMediaHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(balance) + sizeof(uint16_t);
 }
 
@@ -1968,7 +1974,7 @@ bool SubtitleMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer);
 }
 
-uint32_t SubtitleMediaHeader::ComputeSizeInternal() {
+size_t SubtitleMediaHeader::ComputeSizeInternal() {
   return HeaderSize();
 }
 
@@ -1988,7 +1994,7 @@ bool DataEntryUrl::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t DataEntryUrl::ComputeSizeInternal() {
+size_t DataEntryUrl::ComputeSizeInternal() {
   return HeaderSize() + location.size();
 }
 
@@ -1999,7 +2005,7 @@ DataReference::DataReference() {
 DataReference::~DataReference() {}
 FourCC DataReference::BoxType() const { return FOURCC_dref; }
 bool DataReference::ReadWriteInternal(BoxBuffer* buffer) {
-  uint32_t entry_count = data_entry.size();
+  uint32_t entry_count = static_cast<uint32_t>(data_entry.size());
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&entry_count));
   data_entry.resize(entry_count);
@@ -2009,9 +2015,9 @@ bool DataReference::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t DataReference::ComputeSizeInternal() {
-  uint32_t count = data_entry.size();
-  uint32_t box_size = HeaderSize() + sizeof(count);
+size_t DataReference::ComputeSizeInternal() {
+  uint32_t count = static_cast<uint32_t>(data_entry.size());
+  size_t box_size = HeaderSize() + sizeof(count);
   for (uint32_t i = 0; i < count; ++i)
     box_size += data_entry[i].ComputeSize();
   return box_size;
@@ -2027,7 +2033,7 @@ bool DataInformation::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteChild(&dref);
 }
 
-uint32_t DataInformation::ComputeSizeInternal() {
+size_t DataInformation::ComputeSizeInternal() {
   return HeaderSize() + dref.ComputeSize();
 }
 
@@ -2057,8 +2063,8 @@ bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t MediaInformation::ComputeSizeInternal() {
-  uint32_t box_size =
+size_t MediaInformation::ComputeSizeInternal() {
+  size_t box_size =
       HeaderSize() + dinf.ComputeSize() + sample_table.ComputeSize();
   switch (sample_table.description.type) {
     case kVideo:
@@ -2104,7 +2110,7 @@ bool Media::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t Media::ComputeSizeInternal() {
+size_t Media::ComputeSizeInternal() {
   handler.handler_type =
       TrackTypeToFourCC(information.sample_table.description.type);
   return HeaderSize() + header.ComputeSize() + handler.ComputeSize() +
@@ -2125,7 +2131,7 @@ bool Track::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t Track::ComputeSizeInternal() {
+size_t Track::ComputeSizeInternal() {
   return HeaderSize() + header.ComputeSize() + media.ComputeSize() +
          edit.ComputeSize();
 }
@@ -2141,7 +2147,7 @@ bool MovieExtendsHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t MovieExtendsHeader::ComputeSizeInternal() {
+size_t MovieExtendsHeader::ComputeSizeInternal() {
   // This box is optional. Skip it if it is not used.
   if (fragment_duration == 0)
     return 0;
@@ -2168,7 +2174,7 @@ bool TrackExtends::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TrackExtends::ComputeSizeInternal() {
+size_t TrackExtends::ComputeSizeInternal() {
   return HeaderSize() + sizeof(track_id) +
          sizeof(default_sample_description_index) +
          sizeof(default_sample_duration) + sizeof(default_sample_size) +
@@ -2193,11 +2199,11 @@ bool MovieExtends::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t MovieExtends::ComputeSizeInternal() {
+size_t MovieExtends::ComputeSizeInternal() {
   // This box is optional. Skip it if it does not contain any track.
   if (tracks.size() == 0)
     return 0;
-  uint32_t box_size = HeaderSize() + header.ComputeSize();
+  size_t box_size = HeaderSize() + header.ComputeSize();
   for (uint32_t i = 0; i < tracks.size(); ++i)
     box_size += tracks[i].ComputeSize();
   return box_size;
@@ -2227,9 +2233,9 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t Movie::ComputeSizeInternal() {
-  uint32_t box_size = HeaderSize() + header.ComputeSize() +
-                      metadata.ComputeSize() + extends.ComputeSize();
+size_t Movie::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + header.ComputeSize() +
+                    metadata.ComputeSize() + extends.ComputeSize();
   for (uint32_t i = 0; i < tracks.size(); ++i)
     box_size += tracks[i].ComputeSize();
   for (uint32_t i = 0; i < pssh.size(); ++i)
@@ -2248,7 +2254,7 @@ bool TrackFragmentDecodeTime::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TrackFragmentDecodeTime::ComputeSizeInternal() {
+size_t TrackFragmentDecodeTime::ComputeSizeInternal() {
   version = IsFitIn32Bits(decode_time) ? 0 : 1;
   return HeaderSize() + sizeof(uint32_t) * (1 + version);
 }
@@ -2262,7 +2268,7 @@ bool MovieFragmentHeader::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteUInt32(&sequence_number);
 }
 
-uint32_t MovieFragmentHeader::ComputeSizeInternal() {
+size_t MovieFragmentHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(sequence_number);
 }
 
@@ -2314,8 +2320,8 @@ bool TrackFragmentHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TrackFragmentHeader::ComputeSizeInternal() {
-  uint32_t box_size = HeaderSize() + sizeof(track_id);
+size_t TrackFragmentHeader::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + sizeof(track_id);
   if (flags & kSampleDescriptionIndexPresentMask)
     box_size += sizeof(sample_description_index);
   if (flags & kDefaultSampleDurationPresentMask)
@@ -2434,8 +2440,8 @@ bool TrackFragmentRun::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t TrackFragmentRun::ComputeSizeInternal() {
-  uint32_t box_size = HeaderSize() + sizeof(sample_count);
+size_t TrackFragmentRun::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + sizeof(sample_count);
   if (flags & kDataOffsetPresentMask)
     box_size += sizeof(data_offset);
   if (flags & kFirstSampleFlagsPresentMask)
@@ -2479,11 +2485,11 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->TryReadWriteChild(&sample_encryption);
 }
 
-uint32_t TrackFragment::ComputeSizeInternal() {
-  uint32_t box_size =
-      HeaderSize() + header.ComputeSize() + decode_time.ComputeSize() +
-      auxiliary_size.ComputeSize() + auxiliary_offset.ComputeSize() +
-      sample_encryption.ComputeSize();
+size_t TrackFragment::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + header.ComputeSize() +
+                    decode_time.ComputeSize() + auxiliary_size.ComputeSize() +
+                    auxiliary_offset.ComputeSize() +
+                    sample_encryption.ComputeSize();
   for (uint32_t i = 0; i < runs.size(); ++i)
     box_size += runs[i].ComputeSize();
   for (uint32_t i = 0; i < sample_group_descriptions.size(); ++i)
@@ -2515,8 +2521,8 @@ bool MovieFragment::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t MovieFragment::ComputeSizeInternal() {
-  uint32_t box_size = HeaderSize() + header.ComputeSize();
+size_t MovieFragment::ComputeSizeInternal() {
+  size_t box_size = HeaderSize() + header.ComputeSize();
   for (uint32_t i = 0; i < tracks.size(); ++i)
     box_size += tracks[i].ComputeSize();
   for (uint32_t i = 0; i < pssh.size(); ++i)
@@ -2573,7 +2579,7 @@ bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t SegmentIndex::ComputeSizeInternal() {
+size_t SegmentIndex::ComputeSizeInternal() {
   version = IsFitIn32Bits(earliest_presentation_time, first_offset) ? 0 : 1;
   return HeaderSize() + sizeof(reference_id) + sizeof(timescale) +
          sizeof(uint32_t) * (1 + version) * 2 + 2 * sizeof(uint16_t) +
@@ -2589,7 +2595,7 @@ bool MediaData::ReadWriteInternal(BoxBuffer* buffer) {
   return false;
 }
 
-uint32_t MediaData::ComputeSizeInternal() {
+size_t MediaData::ComputeSizeInternal() {
   return HeaderSize() + data_size;
 }
 
@@ -2603,7 +2609,7 @@ bool CueSourceIDBox::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t CueSourceIDBox::ComputeSizeInternal() {
+size_t CueSourceIDBox::ComputeSizeInternal() {
   if (source_id == kCueSourceIdNotSet)
     return 0;
   return HeaderSize() + sizeof(source_id);
@@ -2623,7 +2629,7 @@ bool CueTimeBox::ReadWriteInternal(BoxBuffer* buffer) {
       buffer->Reading() ? buffer->BytesLeft() : cue_current_time.size());
 }
 
-uint32_t CueTimeBox::ComputeSizeInternal() {
+size_t CueTimeBox::ComputeSizeInternal() {
   if (cue_current_time.empty())
     return 0;
   return HeaderSize() + cue_current_time.size();
@@ -2642,7 +2648,7 @@ bool CueIDBox::ReadWriteInternal(BoxBuffer* buffer) {
       &cue_id, buffer->Reading() ? buffer->BytesLeft() : cue_id.size());
 }
 
-uint32_t CueIDBox::ComputeSizeInternal() {
+size_t CueIDBox::ComputeSizeInternal() {
   if (cue_id.empty())
     return 0;
   return HeaderSize() + cue_id.size();
@@ -2661,7 +2667,7 @@ bool CueSettingsBox::ReadWriteInternal(BoxBuffer* buffer) {
       &settings, buffer->Reading() ? buffer->BytesLeft() : settings.size());
 }
 
-uint32_t CueSettingsBox::ComputeSizeInternal() {
+size_t CueSettingsBox::ComputeSizeInternal() {
   if (settings.empty())
     return 0;
   return HeaderSize() + settings.size();
@@ -2680,7 +2686,7 @@ bool CuePayloadBox::ReadWriteInternal(BoxBuffer* buffer) {
       &cue_text, buffer->Reading() ? buffer->BytesLeft() : cue_text.size());
 }
 
-uint32_t CuePayloadBox::ComputeSizeInternal() {
+size_t CuePayloadBox::ComputeSizeInternal() {
   return HeaderSize() + cue_text.size();
 }
 
@@ -2695,7 +2701,7 @@ bool VTTEmptyCueBox::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer);
 }
 
-uint32_t VTTEmptyCueBox::ComputeSizeInternal() {
+size_t VTTEmptyCueBox::ComputeSizeInternal() {
   return HeaderSize();
 }
 
@@ -2713,7 +2719,7 @@ bool VTTAdditionalTextBox::ReadWriteInternal(BoxBuffer* buffer) {
       buffer->Reading() ? buffer->BytesLeft() : cue_additional_text.size());
 }
 
-uint32_t VTTAdditionalTextBox::ComputeSizeInternal() {
+size_t VTTAdditionalTextBox::ComputeSizeInternal() {
   return HeaderSize() + cue_additional_text.size();
 }
 
@@ -2735,7 +2741,7 @@ bool VTTCueBox::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t VTTCueBox::ComputeSizeInternal() {
+size_t VTTCueBox::ComputeSizeInternal() {
   return HeaderSize() + cue_source_id.ComputeSize() + cue_id.ComputeSize() +
          cue_time.ComputeSize() + cue_settings.ComputeSize() +
          cue_payload.ComputeSize();

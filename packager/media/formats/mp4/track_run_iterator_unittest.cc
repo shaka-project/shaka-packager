@@ -277,7 +277,7 @@ class TrackRunIteratorTest : public testing::Test {
   void SetAscending(std::vector<uint32_t>* vec) {
     vec->resize(10);
     for (size_t i = 0; i < vec->size(); i++)
-      (*vec)[i] = i + 1;
+      (*vec)[i] = static_cast<uint32_t>(i + 1);
   }
 };
 

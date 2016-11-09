@@ -193,8 +193,8 @@ void EsParserH264Test::ProcessPesPackets(
       pts = au_idx * kMpegTicksPerFrame;
     }
 
-    ASSERT_TRUE(
-        es_parser.Parse(&stream_[cur_pes_offset], cur_pes_size, pts, dts));
+    ASSERT_TRUE(es_parser.Parse(&stream_[cur_pes_offset],
+                                static_cast<int>(cur_pes_size), pts, dts));
   }
   es_parser.Flush();
 }

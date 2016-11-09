@@ -20,8 +20,8 @@ TEST(BitReaderTest, NormalOperationTest) {
   EXPECT_EQ(0, value8);
   EXPECT_TRUE(reader1.ReadBits(8, &value8));
   EXPECT_EQ(0xab, value8);  // 1010 1011
-  EXPECT_EQ(39, reader1.bits_available());
-  EXPECT_EQ(9, reader1.bit_position());
+  EXPECT_EQ(39u, reader1.bits_available());
+  EXPECT_EQ(9u, reader1.bit_position());
   EXPECT_TRUE(reader1.ReadBits(7, &value64));
   EXPECT_TRUE(reader1.ReadBits(32, &value64));
   EXPECT_EQ(0x55995599u, value64);
@@ -64,8 +64,8 @@ TEST(BitReaderTest, SkipBitsTest) {
   EXPECT_TRUE(reader1.SkipBytes(0));
   EXPECT_TRUE(reader1.SkipBytes(1));
   EXPECT_TRUE(reader1.SkipBits(52));
-  EXPECT_EQ(20, reader1.bits_available());
-  EXPECT_EQ(100, reader1.bit_position());
+  EXPECT_EQ(20u, reader1.bits_available());
+  EXPECT_EQ(100u, reader1.bit_position());
   EXPECT_TRUE(reader1.ReadBits(4, &value8));
   EXPECT_EQ(13, value8);
   EXPECT_FALSE(reader1.SkipBits(100));
@@ -77,13 +77,13 @@ TEST(BitReaderTest, SkipBitsConditionalTest) {
   uint8_t buffer[] = {0x8a, 0x12};
   BitReader reader(buffer, sizeof(buffer));
   EXPECT_TRUE(reader.SkipBitsConditional(false, 2));
-  EXPECT_EQ(1, reader.bit_position());  // Not skipped.
+  EXPECT_EQ(1u, reader.bit_position());  // Not skipped.
   EXPECT_TRUE(reader.SkipBitsConditional(false, 3));
-  EXPECT_EQ(5, reader.bit_position());  // Skipped.
+  EXPECT_EQ(5u, reader.bit_position());  // Skipped.
   EXPECT_TRUE(reader.SkipBitsConditional(true, 2));
-  EXPECT_EQ(6, reader.bit_position());  // Not skipped.
+  EXPECT_EQ(6u, reader.bit_position());  // Not skipped.
   EXPECT_TRUE(reader.SkipBitsConditional(true, 5));
-  EXPECT_EQ(12, reader.bit_position());  // Skipped.
+  EXPECT_EQ(12u, reader.bit_position());  // Skipped.
   EXPECT_TRUE(reader.SkipBits(4));
   EXPECT_FALSE(reader.SkipBits(1));
 }

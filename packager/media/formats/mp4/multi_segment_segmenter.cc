@@ -85,18 +85,18 @@ Status MultiSegmentSegmenter::DoFinalizeSegment() {
   // sidx() contains pre-generated segment references with one reference per
   // fragment. Calculate |num_fragments_per_subsegment| and combine
   // pre-generated references into final subsegment references.
-  uint32_t num_fragments = sidx()->references.size();
-  uint32_t num_fragments_per_subsegment =
+  size_t num_fragments = sidx()->references.size();
+  size_t num_fragments_per_subsegment =
       (num_fragments - 1) / options().num_subsegments_per_sidx + 1;
   if (num_fragments_per_subsegment <= 1)
     return WriteSegment();
 
-  uint32_t frag_index = 0;
-  uint32_t subseg_index = 0;
+  size_t frag_index = 0;
+  size_t subseg_index = 0;
   std::vector<SegmentReference>& refs = sidx()->references;
   uint64_t first_sap_time =
       refs[0].sap_delta_time + refs[0].earliest_presentation_time;
-  for (uint32_t i = 1; i < num_fragments; ++i) {
+  for (size_t i = 1; i < num_fragments; ++i) {
     refs[subseg_index].referenced_size += refs[i].referenced_size;
     refs[subseg_index].subsegment_duration += refs[i].subsegment_duration;
     refs[subseg_index].earliest_presentation_time =

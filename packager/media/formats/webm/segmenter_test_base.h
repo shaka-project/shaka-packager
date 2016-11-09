@@ -89,7 +89,7 @@ class SegmentTestBase : public ::testing::Test {
 
     int GetFrameCountForCluster(size_t i) const;
 
-    int cluster_count() const;
+    size_t cluster_count() const;
 
    private:
     // WebMParserClient overrides.

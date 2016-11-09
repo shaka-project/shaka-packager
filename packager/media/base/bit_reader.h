@@ -19,7 +19,7 @@ class BitReader {
   /// Initialize the BitReader object to read a data buffer.
   /// @param data points to the beginning of the buffer.
   /// @param size is the buffer size in bytes.
-  BitReader(const uint8_t* data, off_t size);
+  BitReader(const uint8_t* data, size_t size);
   ~BitReader();
 
   /// Read a number of bits from stream.
@@ -32,8 +32,8 @@ class BitReader {
   ///         stream will enter a state where further ReadBits/SkipBits
   ///         operations will always return false unless @a num_bits is 0.
   template <typename T>
-  bool ReadBits(int num_bits, T* out) {
-    DCHECK_LE(num_bits, static_cast<int>(sizeof(T) * 8));
+  bool ReadBits(size_t num_bits, T* out) {
+    DCHECK_LE(num_bits, sizeof(T) * 8);
     uint64_t temp;
     bool ret = ReadBitsInternal(num_bits, &temp);
     *out = static_cast<T>(temp);
@@ -41,8 +41,8 @@ class BitReader {
   }
 
   // Explicit T=bool overload to make MSVC happy.
-  bool ReadBits(int num_bits, bool* out) {
-    DCHECK_EQ(num_bits, 1);
+  bool ReadBits(size_t num_bits, bool* out) {
+    DCHECK_EQ(num_bits, 1u);
     uint64_t temp;
     bool ret = ReadBitsInternal(num_bits, &temp);
     *out = temp != 0;
@@ -55,7 +55,7 @@ class BitReader {
   ///         bits in the stream), true otherwise. When false is returned, the
   ///         stream will enter a state where further ReadXXX/SkipXXX
   ///         operations will always return false unless |num_bits/bytes| is 0.
-  bool SkipBits(int num_bits);
+  bool SkipBits(size_t num_bits);
 
   /// Read one bit then skip the number of bits specified if that bit matches @a
   /// condition.
@@ -66,7 +66,7 @@ class BitReader {
   ///         be skipped (not enough bits in the stream), true otherwise. When
   ///         false is returned, the stream will enter a state where further
   ///         ReadXXX/SkipXXX operations will always return false.
-  bool SkipBitsConditional(bool condition, int num_bits) {
+  bool SkipBitsConditional(bool condition, size_t num_bits) {
     bool condition_read = true;
     if (!ReadBits(1, &condition_read))
       return false;
@@ -79,19 +79,19 @@ class BitReader {
   /// @return false if the current position is not byte aligned or if the given
   ///         number of bytes cannot be skipped (not enough bytes in the
   ///         stream), true otherwise.
-  bool SkipBytes(int num_bytes);
+  bool SkipBytes(size_t num_bytes);
 
   /// @return The number of bits available for reading.
-  int bits_available() const {
+  size_t bits_available() const {
     return 8 * bytes_left_ + num_remaining_bits_in_curr_byte_;
   }
 
   /// @return The current bit position.
-  int bit_position() const { return 8 * initial_size_ - bits_available(); }
+  size_t bit_position() const { return 8 * initial_size_ - bits_available(); }
 
  private:
   // Help function used by ReadBits to avoid inlining the bit reading logic.
-  bool ReadBitsInternal(int num_bits, uint64_t* out);
+  bool ReadBitsInternal(size_t num_bits, uint64_t* out);
 
   // Advance to the next byte, loading it into curr_byte_.
   // If the num_remaining_bits_in_curr_byte_ is 0 after this function returns,
@@ -102,18 +102,17 @@ class BitReader {
   const uint8_t* data_;
 
   // Initial size of the input data.
-  // TODO(kqyang): Use size_t instead of off_t instead.
-  off_t initial_size_;
+  size_t initial_size_;
 
   // Bytes left in the stream (without the curr_byte_).
-  off_t bytes_left_;
+  size_t bytes_left_;
 
   // Contents of the current byte; first unread bit starting at position
   // 8 - num_remaining_bits_in_curr_byte_ from MSB.
   uint8_t curr_byte_;
 
   // Number of bits remaining in curr_byte_
-  int num_remaining_bits_in_curr_byte_;
+  size_t num_remaining_bits_in_curr_byte_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BitReader);

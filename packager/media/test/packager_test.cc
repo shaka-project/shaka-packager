@@ -440,7 +440,7 @@ TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencryptedVideo) {
     std::string segment_content;
     ASSERT_TRUE(base::ReadFileToString(segment_path, &segment_content));
     EXPECT_TRUE(base::AppendToFile(output_path, segment_content.data(),
-                                   segment_content.size()));
+                                   static_cast<int>(segment_content.size())));
 
     ++segment_index;
   }

@@ -121,7 +121,8 @@ void SegmentTestBase::ClusterParser::PopulateFromCluster(
   WebMListParser cluster_parser(kWebMIdCluster, this);
   size_t position = 0;
   while (position < size) {
-    int read = cluster_parser.Parse(data + position, size - position);
+    int read = cluster_parser.Parse(data + position,
+                                    static_cast<int>(size - position));
     ASSERT_LT(0, read);
 
     cluster_parser.Reset();
@@ -138,11 +139,12 @@ void SegmentTestBase::ClusterParser::PopulateFromSegment(
   const uint8_t* data = reinterpret_cast<const uint8_t*>(file_contents.c_str());
   const size_t size = file_contents.size();
   WebMListParser header_parser(kWebMIdEBMLHeader, this);
-  int offset = header_parser.Parse(data, size);
+  int offset = header_parser.Parse(data, static_cast<int>(size));
   ASSERT_LT(0, offset);
 
   WebMListParser segment_parser(kWebMIdSegment, this);
-  ASSERT_LT(0, segment_parser.Parse(data + offset, size - offset));
+  ASSERT_LT(
+      0, segment_parser.Parse(data + offset, static_cast<int>(size) - offset));
 }
 
 int SegmentTestBase::ClusterParser::GetFrameCountForCluster(size_t i) const {
@@ -150,7 +152,7 @@ int SegmentTestBase::ClusterParser::GetFrameCountForCluster(size_t i) const {
   return cluster_sizes_[i];
 }
 
-int SegmentTestBase::ClusterParser::cluster_count() const {
+size_t SegmentTestBase::ClusterParser::cluster_count() const {
   return cluster_sizes_.size();
 }
 
