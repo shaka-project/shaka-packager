@@ -147,6 +147,7 @@
         'test/rsa_test_data.h',   # For rsa_key_unittest
         'test/status_test_util.h',
         'widevine_key_source_unittest.cc',
+        'playready_key_source_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
