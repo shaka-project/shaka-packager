@@ -22,6 +22,10 @@ KeySource::TrackType KeySource::GetTrackTypeFromString(
     return TRACK_TYPE_SD;
   if (track_type_string == "HD")
     return TRACK_TYPE_HD;
+  if (track_type_string == "UHD1")
+    return TRACK_TYPE_UHD1;
+  if (track_type_string == "UHD2")
+    return TRACK_TYPE_UHD2;
   if (track_type_string == "AUDIO")
     return TRACK_TYPE_AUDIO;
   if (track_type_string == "UNSPECIFIED")
@@ -36,6 +40,10 @@ std::string KeySource::TrackTypeToString(TrackType track_type) {
       return "SD";
     case TRACK_TYPE_HD:
       return "HD";
+    case TRACK_TYPE_UHD1:
+      return "UHD1";
+    case TRACK_TYPE_UHD2:
+      return "UHD2";
     case TRACK_TYPE_AUDIO:
       return "AUDIO";
     default:

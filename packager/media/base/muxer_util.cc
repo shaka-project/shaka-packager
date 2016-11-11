@@ -155,7 +155,9 @@ std::string GetSegmentName(const std::string& segment_template,
 }
 
 KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
-                                               uint32_t max_sd_pixels) {
+                                               uint32_t max_sd_pixels,
+                                               uint32_t max_hd_pixels,
+                                               uint32_t max_uhd1_pixels) {
   if (stream_info.stream_type() == kStreamAudio)
     return KeySource::TRACK_TYPE_AUDIO;
 
@@ -166,8 +168,14 @@ KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
   const VideoStreamInfo& video_stream_info =
       static_cast<const VideoStreamInfo&>(stream_info);
   uint32_t pixels = video_stream_info.width() * video_stream_info.height();
-  return (pixels > max_sd_pixels) ? KeySource::TRACK_TYPE_HD
-                                  : KeySource::TRACK_TYPE_SD;
+  if (pixels > max_uhd1_pixels) {
+    return KeySource::TRACK_TYPE_UHD2;
+  } else if (pixels > max_hd_pixels) {
+    return KeySource::TRACK_TYPE_UHD1;
+  } else if (pixels > max_sd_pixels) {
+    return KeySource::TRACK_TYPE_HD;
+  }
+  return KeySource::TRACK_TYPE_SD;
 }
 
 }  // namespace media

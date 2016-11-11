@@ -55,8 +55,16 @@ class Segmenter {
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
   /// @param max_sd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as SD or HD. If the track has more
-  ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
+  ///        track should be considered as SD. If the max pixels per frame is
+  ///        no higher than max_sd_pixels, it is SD.
+  /// @param max_hd_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as HD. If the max pixels per frame is
+  ///        higher than max_sd_pixels, but no higher than max_hd_pixels,
+  ///        it is HD.
+  /// @param max_uhd1_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as UHD1. If the max pixels per frame is
+  ///        higher than max_hd_pixels, but no higher than max_uhd1_pixels,
+  ///        it is UHD1. Otherwise it is UHD2.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @param crypto_period_duration specifies crypto period duration in seconds.
   /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
@@ -67,6 +75,8 @@ class Segmenter {
                     ProgressListener* progress_listener,
                     KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
+                    uint32_t max_hd_pixels,
+                    uint32_t max_uhd1_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds,
                     FourCC protection_scheme);

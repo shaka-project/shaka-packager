@@ -24,7 +24,8 @@ Status TsMuxer::Initialize() {
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
   Status status =
       segmenter_->Initialize(*streams()[0]->info(), encryption_key_source(),
-                             max_sd_pixels(), clear_lead_in_seconds());
+                             max_sd_pixels(), max_hd_pixels(),
+                             max_uhd1_pixels(), clear_lead_in_seconds());
   FireOnMediaStartEvent();
   return status;
 }

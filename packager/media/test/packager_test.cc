@@ -15,6 +15,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
+#include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/test/status_test_util.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
@@ -56,6 +57,11 @@ const char kKeyIdHex[] = "e5007e6e9dcd5ac095202ed3758382cd";
 const char kKeyHex[] = "6fc96fe628a265b13aeddec0bc421f4d";
 const double kClearLeadInSeconds = 1.5;
 const double kCryptoDurationInSeconds = 0;  // Key rotation is disabled.
+
+// Track resolution constants.
+const uint32_t kMaxSDPixels = 640 * 480;
+const uint32_t kMaxHDPixels = 1920 * 1080;
+const uint32_t kMaxUHD1Pixels = 4096 * 2160;
 
 MediaStream* FindFirstStreamOfType(
     const std::vector<std::unique_ptr<MediaStream>>& streams,
@@ -178,7 +184,8 @@ void PackagerTestBasic::Remux(const std::string& input,
 
     if (enable_encryption) {
       muxer_video->SetKeySource(encryption_key_source.get(),
-                                KeySource::TRACK_TYPE_SD, kClearLeadInSeconds,
+                                kMaxSDPixels, kMaxHDPixels,
+                                kMaxUHD1Pixels, kClearLeadInSeconds,
                                 kCryptoDurationInSeconds, FOURCC_cenc);
     }
   }
@@ -198,7 +205,8 @@ void PackagerTestBasic::Remux(const std::string& input,
 
     if (enable_encryption) {
       muxer_audio->SetKeySource(encryption_key_source.get(),
-                                KeySource::TRACK_TYPE_SD, kClearLeadInSeconds,
+                                kMaxSDPixels, kMaxHDPixels,
+                                kMaxUHD1Pixels, kClearLeadInSeconds,
                                 kCryptoDurationInSeconds, FOURCC_cenc);
     }
   }
@@ -312,6 +320,39 @@ TEST_P(PackagerTestBasic, MP4MuxerLanguageWithSubtag) {
 
   MediaStream* stream = FindFirstAudioStream(demuxer.streams());
   ASSERT_EQ("por", stream->info()->language());
+}
+
+TEST_P(PackagerTestBasic, GetTrackTypeForEncryption) {
+  Demuxer demuxer(GetFullPath(GetParam()));
+  ASSERT_OK(demuxer.Initialize());
+
+  MediaStream* video_stream = FindFirstVideoStream(demuxer.streams());
+  MediaStream* audio_stream = FindFirstAudioStream(demuxer.streams());
+
+  // Typical resolution constraints should set the resolution in the SD range
+  KeySource::TrackType track_type = GetTrackTypeForEncryption(
+      *video_stream->info(), kMaxSDPixels, kMaxHDPixels, kMaxUHD1Pixels);
+  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("SD"), track_type);
+
+  // Setting the max SD value to 1 should set the resolution in the HD range
+  track_type = GetTrackTypeForEncryption(
+      *video_stream->info(), 1, kMaxHDPixels, kMaxUHD1Pixels);
+  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("HD"), track_type);
+
+  // Setting the max HD value to 2 should set the resolution in the UHD1 range
+  track_type = GetTrackTypeForEncryption(
+      *video_stream->info(), 1, 2, kMaxUHD1Pixels);
+  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("UHD1"), track_type);
+
+  // Setting the max UHD1 value to 3 should set the resolution in the UHD2 range
+  track_type = GetTrackTypeForEncryption(
+      *video_stream->info(), 1, 2, 3);
+  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("UHD2"), track_type);
+
+  // Audio stream should always set the track_type to AUDIO
+  track_type = GetTrackTypeForEncryption(
+      *audio_stream->info(), kMaxSDPixels, kMaxHDPixels, kMaxUHD1Pixels);
+  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("AUDIO"), track_type);
 }
 
 class PackagerTest : public PackagerTestBasic {

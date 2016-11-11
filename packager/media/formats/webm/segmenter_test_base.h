@@ -56,6 +56,7 @@ class SegmentTestBase : public ::testing::Test {
     ASSERT_OK(segmenter->Initialize(
         std::move(writer), info, NULL /* progress_listener */,
         NULL /* muxer_listener */, key_source, 0 /* max_sd_pixels */,
+        0 /* max_hd_pixels */, 0 /* max_uhd1_pixels */,
         1 /* clear_lead_in_seconds */));
     *result = std::move(segmenter);
   }

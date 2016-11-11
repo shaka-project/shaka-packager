@@ -334,6 +334,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (key_source) {
       muxer->SetKeySource(key_source,
                           FLAGS_max_sd_pixels,
+                          FLAGS_max_hd_pixels,
+                          FLAGS_max_uhd1_pixels,
                           FLAGS_clear_lead,
                           FLAGS_crypto_period_duration,
                           GetProtectionScheme(FLAGS_protection_scheme));

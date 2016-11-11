@@ -46,8 +46,16 @@ class Segmenter {
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
   /// @param max_sd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as SD or HD. If the track has more
-  ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
+  ///        track should be considered as SD. If the max pixels per frame is
+  ///        no higher than max_sd_pixels, it is SD.
+  /// @param max_hd_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as HD. If the max pixels per frame is
+  ///        higher than max_sd_pixels, but no higher than max_hd_pixels,
+  ///        it is HD.
+  /// @param max_uhd1_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as UHD1. If the max pixels per frame is
+  ///        higher than max_hd_pixels, but no higher than max_uhd1_pixels,
+  ///        it is UHD1. Otherwise it is UHD2.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(std::unique_ptr<MkvWriter> writer,
@@ -56,6 +64,8 @@ class Segmenter {
                     MuxerListener* muxer_listener,
                     KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
+                    uint32_t max_hd_pixels,
+                    uint32_t max_uhd1_pixels,
                     double clear_lead_in_seconds);
 
   /// Finalize the segmenter.
@@ -114,7 +124,8 @@ class Segmenter {
  private:
   Status CreateVideoTrack(VideoStreamInfo* info);
   Status CreateAudioTrack(AudioStreamInfo* info);
-  Status InitializeEncryptor(KeySource* key_source, uint32_t max_sd_pixels);
+  Status InitializeEncryptor(KeySource* key_source, uint32_t max_sd_pixels,
+                             uint32_t max_hd_pixels, uint32_t max_uhd1_pixels);
 
   // Writes the previous frame to the file.
   Status WriteFrame(bool write_duration);

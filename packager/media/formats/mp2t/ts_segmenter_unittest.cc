@@ -124,7 +124,7 @@ TEST_F(TsSegmenterTest, Initialize) {
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
 
-  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
+  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0, 0, 0));
 }
 
 TEST_F(TsSegmenterTest, AddSample) {
@@ -171,7 +171,7 @@ TEST_F(TsSegmenterTest, AddSample) {
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
 
-  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
+  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0, 0, 0));
   EXPECT_OK(segmenter.AddSample(sample));
 }
 
@@ -275,7 +275,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
-  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
+  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0, 0, 0));
   EXPECT_OK(segmenter.AddSample(sample1));
   EXPECT_OK(segmenter.AddSample(sample2));
 }
@@ -302,7 +302,7 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
-  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
+  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0, 0, 0));
   EXPECT_OK(segmenter.Finalize());
 }
 
@@ -333,7 +333,7 @@ TEST_F(TsSegmenterTest, Finalize) {
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
-  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
+  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0, 0, 0));
   segmenter.SetTsWriterFileOpenedForTesting(true);
   EXPECT_OK(segmenter.Finalize());
 }
@@ -439,7 +439,7 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
-  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
+  EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0, 0, 0));
   EXPECT_OK(segmenter.AddSample(key_frame_sample1));
   EXPECT_OK(segmenter.AddSample(non_key_frame_sample));
   EXPECT_OK(segmenter.AddSample(key_frame_sample2));
@@ -475,11 +475,14 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
       .WillOnce(Return(Status::OK));
 
   const uint32_t k480pPixels = 640 * 480;
+  const uint32_t k1080pPixels = 1920 * 1080;
+  const uint32_t k2160pPixels = 4096 * 2160;
   // Set this to 0 so that Finalize will call
   // PesPacketGenerator::SetEncryptionKey().
   // Even tho no samples have been added.
   const double kClearLeadSeconds = 0;
   EXPECT_OK(segmenter.Initialize(*stream_info, &mock_key_source, k480pPixels,
+                                 k1080pPixels, k2160pPixels,
                                  kClearLeadSeconds));
 }
 
@@ -513,11 +516,14 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
       .WillOnce(Return(Status::OK));
 
   const uint32_t k480pPixels = 640 * 480;
+  const uint32_t k1080pPixels = 1920 * 1080;
+  const uint32_t k2160pPixels = 4096 * 2160;
   // Set this to 0 so that Finalize will call
   // PesPacketGenerator::SetEncryptionKey().
   // Even tho no samples have been added.
   const double kClearLeadSeconds = 0;
   EXPECT_OK(segmenter.Initialize(*stream_info, &mock_key_source, k480pPixels,
+                                 k1080pPixels, k2160pPixels,
                                  kClearLeadSeconds));
 }
 
@@ -530,6 +536,8 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
   MuxerOptions options;
 
   options.segment_duration = 1.0;
+  const uint32_t k1080pPixels = 1920 * 1080;
+  const uint32_t k2160pPixels = 4096 * 2160;
   const double kClearLeadSeconds = 1.0;
   options.segment_template = "file$Number$.ts";
 
@@ -610,6 +618,7 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
 
   EXPECT_CALL(mock_listener, OnEncryptionInfoReady(_, _, _, _, _));
   EXPECT_OK(segmenter.Initialize(*stream_info, &mock_key_source, 0,
+                                 k1080pPixels, k2160pPixels,
                                  kClearLeadSeconds));
   EXPECT_OK(segmenter.AddSample(sample1));
 

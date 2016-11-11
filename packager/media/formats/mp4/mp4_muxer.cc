@@ -144,8 +144,9 @@ Status MP4Muxer::Initialize() {
 
   const Status segmenter_initialized = segmenter_->Initialize(
       streams(), muxer_listener(), progress_listener(), encryption_key_source(),
-      max_sd_pixels(), clear_lead_in_seconds(),
-      crypto_period_duration_in_seconds(), protection_scheme());
+      max_sd_pixels(), max_hd_pixels(), max_uhd1_pixels(),
+      clear_lead_in_seconds(), crypto_period_duration_in_seconds(),
+      protection_scheme());
 
   if (!segmenter_initialized.ok())
     return segmenter_initialized;
