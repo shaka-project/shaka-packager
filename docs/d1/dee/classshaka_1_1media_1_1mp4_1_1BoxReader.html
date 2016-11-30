@@ -197,7 +197,7 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class for reading MP4 boxes. </p>
 
-<p>Definition at line <a class="el" href="../../d2/d92/box__reader_8h_source.html#l00024">24</a> of file <a class="el" href="../../d2/d92/box__reader_8h_source.html">box_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d92/box__reader_8h_source.html#l00025">25</a> of file <a class="el" href="../../d2/d92/box__reader_8h_source.html">box_reader.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="aa65236a6b94ac59d5da409412992211c"></a>
 <div class="memitem">
@@ -214,7 +214,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if child with type <em>child.BoxType()</em> exists. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00101">101</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00100">100</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -288,7 +288,7 @@ template&lt;typename T &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>New box reader if successful, NULL otherwise. Note that this function may return NULL if an intact, complete box is not available in the buffer. For MDAT box only, a <a class="el" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html" title="Class for reading MP4 boxes. ">BoxReader</a> object is returned as long as the box header is available. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -330,7 +330,7 @@ template&lt;typename T &gt; </div>
 <p>Read at least one child. </p>
 <dl class="section return"><dt>Returns</dt><dd>false on error or no child of type &lt;T&gt; present. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/d92/box__reader_8h_source.html#l00127">127</a> of file <a class="el" href="../../d2/d92/box__reader_8h_source.html">box_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d92/box__reader_8h_source.html#l00128">128</a> of file <a class="el" href="../../d2/d92/box__reader_8h_source.html">box_reader.h</a>.</p>
 
 </div>
 </div>
@@ -349,7 +349,7 @@ template&lt;typename T &gt; </div>
 <p>Scan through all boxes within the current box, starting at the current buffer position. Must be called before any of the <b>*Child</b> functions work. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00068">68</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -415,7 +415,7 @@ template&lt;typename T &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if there is enough data to read the header and the header is sane, which does not imply that the entire box is in the buffer. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00054">54</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -435,7 +435,7 @@ template&lt;typename T &gt; </div>
 <p>Read one child if available. </p>
 <dl class="section return"><dt>Returns</dt><dd>false on error, true on successful read or on child absent. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00105">105</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/df1/box__reader_8cc_source.html#l00104">104</a> of file <a class="el" href="../../d3/df1/box__reader_8cc_source.html">box_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -457,7 +457,7 @@ template&lt;typename T &gt; </div>
 <p>Read any number of children. </p>
 <dl class="section return"><dt>Returns</dt><dd>false on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/d92/box__reader_8h_source.html#l00133">133</a> of file <a class="el" href="../../d2/d92/box__reader_8h_source.html">box_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d92/box__reader_8h_source.html#l00134">134</a> of file <a class="el" href="../../d2/d92/box__reader_8h_source.html">box_reader.h</a>.</p>
 
 </div>
 </div>
@@ -468,7 +468,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 9 2016 23:13:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 30 2016 03:23:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -95,107 +95,107 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_FORMATS_MP4_BOX_READER_H_</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/fourccs.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>shaka {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">struct </span>Box;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a> : <span class="keyword">public</span> <a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html">BufferReader</a> {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  ~<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>();</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">static</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>* <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#ae348922875d67128d2af6d88b692e205">ReadBox</a>(<span class="keyword">const</span> uint8_t* buf,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                            <span class="keyword">const</span> <span class="keywordtype">size_t</span> buf_size,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                            <span class="keywordtype">bool</span>* err);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">StartBox</a>(<span class="keyword">const</span> uint8_t* buf,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                       <span class="keyword">const</span> <span class="keywordtype">size_t</span> buf_size,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                       FourCC* type,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                       uint64_t* box_size,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                       <span class="keywordtype">bool</span>* err) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#acc5a55985f95b73ac64c9eab7bd09242">ScanChildren</a>() WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aa65236a6b94ac59d5da409412992211c">ChildExist</a>(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">Box</a>* child) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a68defcd9be85bbd5cbded3bee86aa03a">ReadChild</a>(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">Box</a>* child) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a1a4457e9638e8cf3fb30b0031b513cec">TryReadChild</a>(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">Box</a>* child) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">ReadChildren</a>(std::vector&lt;T&gt;* children) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">TryReadChildren</a>(std::vector&lt;T&gt;* children) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a8b5c7d5a487fb3063eae1495aa3a7566">ReadAllChildren</a>(std::vector&lt;T&gt;* children) WARN_UNUSED_RESULT;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">bool</span> ReadFourCC(FourCC* fourcc) {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    uint32_t val;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">if</span> (!Read4(&amp;val))</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    *fourcc = <span class="keyword">static_cast&lt;</span>FourCC<span class="keyword">&gt;</span>(val);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  }</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  FourCC type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// Must be called immediately after init. If the return is false, this</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// indicates that the box header and its contents were not available in the</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// stream or were nonsensical, and that the box must not be used further. In</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// this case, if |*err| is false, the problem was simply a lack of data, and</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// should only be an error condition if some higher-level component knows that</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// no more data is coming (i.e. EOS or end of containing box). If |*err| is</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// true, the error is unrecoverable and the stream should be aborted.</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordtype">bool</span> ReadHeader(<span class="keywordtype">bool</span>* err);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  FourCC type_;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keyword">typedef</span> std::multimap&lt;FourCC, BoxReader*&gt; ChildMap;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="comment">// The set of child box FourCCs and their corresponding buffer readers. Only</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// valid if scanned_ is true.</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  ChildMap children_;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordtype">bool</span> scanned_;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>);</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;};</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">// Template definitions.</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">  127</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">BoxReader::ReadChildren</a>(std::vector&lt;T&gt;* children) {</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  RCHECK(<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">TryReadChildren</a>(children) &amp;&amp; !children-&gt;empty());</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;}</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00133"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">  133</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">BoxReader::TryReadChildren</a>(std::vector&lt;T&gt;* children) {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  DCHECK(scanned_);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  DCHECK(children-&gt;empty());</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  children-&gt;resize(1);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  FourCC child_type = (*children)[0].BoxType();</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  ChildMap::iterator start_itr = children_.lower_bound(child_type);</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  ChildMap::iterator end_itr = children_.upper_bound(child_type);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  children-&gt;resize(std::distance(start_itr, end_itr));</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keyword">typename</span> std::vector&lt;T&gt;::iterator child_itr = children-&gt;begin();</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordflow">for</span> (ChildMap::iterator itr = start_itr; itr != end_itr; ++itr) {</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    RCHECK(child_itr-&gt;Parse(itr-&gt;second));</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keyword">delete</span> itr-&gt;second;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/fourccs.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">struct </span>Box;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a> : <span class="keyword">public</span> <a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html">BufferReader</a> {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  ~<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>();</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keyword">static</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>* <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#ae348922875d67128d2af6d88b692e205">ReadBox</a>(<span class="keyword">const</span> uint8_t* buf,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                            <span class="keyword">const</span> <span class="keywordtype">size_t</span> buf_size,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                            <span class="keywordtype">bool</span>* err);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">StartBox</a>(<span class="keyword">const</span> uint8_t* buf,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                       <span class="keyword">const</span> <span class="keywordtype">size_t</span> buf_size,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                       FourCC* type,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                       uint64_t* box_size,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                       <span class="keywordtype">bool</span>* err) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#acc5a55985f95b73ac64c9eab7bd09242">ScanChildren</a>() WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aa65236a6b94ac59d5da409412992211c">ChildExist</a>(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">Box</a>* child) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a68defcd9be85bbd5cbded3bee86aa03a">ReadChild</a>(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">Box</a>* child) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a1a4457e9638e8cf3fb30b0031b513cec">TryReadChild</a>(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">Box</a>* child) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">ReadChildren</a>(std::vector&lt;T&gt;* children) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">TryReadChildren</a>(std::vector&lt;T&gt;* children) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a8b5c7d5a487fb3063eae1495aa3a7566">ReadAllChildren</a>(std::vector&lt;T&gt;* children) WARN_UNUSED_RESULT;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">bool</span> ReadFourCC(FourCC* fourcc) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    uint32_t val;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordflow">if</span> (!Read4(&amp;val))</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    *fourcc = <span class="keyword">static_cast&lt;</span>FourCC<span class="keyword">&gt;</span>(val);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  FourCC type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// Must be called immediately after init. If the return is false, this</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// indicates that the box header and its contents were not available in the</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// stream or were nonsensical, and that the box must not be used further. In</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// this case, if |*err| is false, the problem was simply a lack of data, and</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// should only be an error condition if some higher-level component knows that</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// no more data is coming (i.e. EOS or end of containing box). If |*err| is</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="comment">// true, the error is unrecoverable and the stream should be aborted.</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordtype">bool</span> ReadHeader(<span class="keywordtype">bool</span>* err);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  FourCC type_;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keyword">typedef</span> std::multimap&lt;FourCC, std::unique_ptr&lt;BoxReader&gt;&gt; ChildMap;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// The set of child box FourCCs and their corresponding buffer readers. Only</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// valid if scanned_ is true.</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  ChildMap children_;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordtype">bool</span> scanned_;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;};</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">// Template definitions.</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">  128</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">BoxReader::ReadChildren</a>(std::vector&lt;T&gt;* children) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  RCHECK(<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">TryReadChildren</a>(children) &amp;&amp; !children-&gt;empty());</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">  134</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">BoxReader::TryReadChildren</a>(std::vector&lt;T&gt;* children) {</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  DCHECK(scanned_);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  DCHECK(children-&gt;empty());</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  children-&gt;resize(1);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  FourCC child_type = (*children)[0].BoxType();</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  ChildMap::iterator start_itr = children_.lower_bound(child_type);</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  ChildMap::iterator end_itr = children_.upper_bound(child_type);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  children-&gt;resize(std::distance(start_itr, end_itr));</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keyword">typename</span> std::vector&lt;T&gt;::iterator child_itr = children-&gt;begin();</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">for</span> (ChildMap::iterator itr = start_itr; itr != end_itr; ++itr) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    RCHECK(child_itr-&gt;Parse(itr-&gt;second.get()));</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    ++child_itr;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  }</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  children_.erase(start_itr, end_itr);</div>
@@ -230,23 +230,23 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_BOX_READER_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a3da91efd030e0d85a889b2c02fe96bea"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">shaka::media::mp4::BoxReader::TryReadChildren</a></div><div class="ttdeci">bool TryReadChildren(std::vector&lt; T &gt; *children) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00133">box_reader.h:133</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a3da91efd030e0d85a889b2c02fe96bea"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a3da91efd030e0d85a889b2c02fe96bea">shaka::media::mp4::BoxReader::TryReadChildren</a></div><div class="ttdeci">bool TryReadChildren(std::vector&lt; T &gt; *children) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00134">box_reader.h:134</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a8b5c7d5a487fb3063eae1495aa3a7566"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a8b5c7d5a487fb3063eae1495aa3a7566">shaka::media::mp4::BoxReader::ReadAllChildren</a></div><div class="ttdeci">bool ReadAllChildren(std::vector&lt; T &gt; *children) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00157">box_reader.h:157</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_acc5a55985f95b73ac64c9eab7bd09242"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#acc5a55985f95b73ac64c9eab7bd09242">shaka::media::mp4::BoxReader::ScanChildren</a></div><div class="ttdeci">bool ScanChildren() WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00068">box_reader.cc:68</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_aedb3a49da398833cda1caa1ad01a364a"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">shaka::media::mp4::BoxReader::ReadChildren</a></div><div class="ttdeci">bool ReadChildren(std::vector&lt; T &gt; *children) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00127">box_reader.h:127</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_acc5a55985f95b73ac64c9eab7bd09242"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#acc5a55985f95b73ac64c9eab7bd09242">shaka::media::mp4::BoxReader::ScanChildren</a></div><div class="ttdeci">bool ScanChildren() WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00067">box_reader.cc:67</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_aedb3a49da398833cda1caa1ad01a364a"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a">shaka::media::mp4::BoxReader::ReadChildren</a></div><div class="ttdeci">bool ReadChildren(std::vector&lt; T &gt; *children) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00128">box_reader.h:128</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1mp4_1_1Box_html"><div class="ttname"><a href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html">shaka::media::mp4::Box</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d19/box_8h_source.html#l00027">box.h:27</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferReader_html_a2b15dfcd6ff891a9cb7b76f48d91d15d"><div class="ttname"><a href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a2b15dfcd6ff891a9cb7b76f48d91d15d">shaka::media::BufferReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00065">buffer_reader.cc:65</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">shaka::media::mp4::BoxReader</a></div><div class="ttdoc">Class for reading MP4 boxes. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00024">box_reader.h:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">shaka::media::mp4::BoxReader</a></div><div class="ttdoc">Class for reading MP4 boxes. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00025">box_reader.h:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a68defcd9be85bbd5cbded3bee86aa03a"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a68defcd9be85bbd5cbded3bee86aa03a">shaka::media::mp4::BoxReader::ReadChild</a></div><div class="ttdeci">bool ReadChild(Box *child) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00088">box_reader.cc:88</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferReader_html"><div class="ttname"><a href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html">shaka::media::BufferReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00023">buffer_reader.h:23</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a1a4457e9638e8cf3fb30b0031b513cec"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a1a4457e9638e8cf3fb30b0031b513cec">shaka::media::mp4::BoxReader::TryReadChild</a></div><div class="ttdeci">bool TryReadChild(Box *child) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00105">box_reader.cc:105</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a6bafd9cd95a97c4c1475d1806d602ae2"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">shaka::media::mp4::BoxReader::StartBox</a></div><div class="ttdeci">static bool StartBox(const uint8_t *buf, const size_t buf_size, FourCC *type, uint64_t *box_size, bool *err) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00055">box_reader.cc:55</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_aa65236a6b94ac59d5da409412992211c"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aa65236a6b94ac59d5da409412992211c">shaka::media::mp4::BoxReader::ChildExist</a></div><div class="ttdeci">bool ChildExist(Box *child) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00101">box_reader.cc:101</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_ae348922875d67128d2af6d88b692e205"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#ae348922875d67128d2af6d88b692e205">shaka::media::mp4::BoxReader::ReadBox</a></div><div class="ttdeci">static BoxReader * ReadBox(const uint8_t *buf, const size_t buf_size, bool *err)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00037">box_reader.cc:37</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a1a4457e9638e8cf3fb30b0031b513cec"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a1a4457e9638e8cf3fb30b0031b513cec">shaka::media::mp4::BoxReader::TryReadChild</a></div><div class="ttdeci">bool TryReadChild(Box *child) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00104">box_reader.cc:104</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a6bafd9cd95a97c4c1475d1806d602ae2"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">shaka::media::mp4::BoxReader::StartBox</a></div><div class="ttdeci">static bool StartBox(const uint8_t *buf, const size_t buf_size, FourCC *type, uint64_t *box_size, bool *err) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00054">box_reader.cc:54</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_aa65236a6b94ac59d5da409412992211c"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aa65236a6b94ac59d5da409412992211c">shaka::media::mp4::BoxReader::ChildExist</a></div><div class="ttdeci">bool ChildExist(Box *child) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00100">box_reader.cc:100</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_ae348922875d67128d2af6d88b692e205"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#ae348922875d67128d2af6d88b692e205">shaka::media::mp4::BoxReader::ReadBox</a></div><div class="ttdeci">static BoxReader * ReadBox(const uint8_t *buf, const size_t buf_size, bool *err)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00036">box_reader.cc:36</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 9 2016 23:13:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 30 2016 03:23:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
