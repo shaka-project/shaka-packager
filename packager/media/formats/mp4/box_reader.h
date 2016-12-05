@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_MP4_BOX_READER_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
@@ -112,7 +113,7 @@ class BoxReader : public BufferReader {
 
   FourCC type_;
 
-  typedef std::multimap<FourCC, BoxReader*> ChildMap;
+  typedef std::multimap<FourCC, std::unique_ptr<BoxReader>> ChildMap;
 
   // The set of child box FourCCs and their corresponding buffer readers. Only
   // valid if scanned_ is true.
@@ -142,8 +143,7 @@ bool BoxReader::TryReadChildren(std::vector<T>* children) {
   children->resize(std::distance(start_itr, end_itr));
   typename std::vector<T>::iterator child_itr = children->begin();
   for (ChildMap::iterator itr = start_itr; itr != end_itr; ++itr) {
-    RCHECK(child_itr->Parse(itr->second));
-    delete itr->second;
+    RCHECK(child_itr->Parse(itr->second.get()));
     ++child_itr;
   }
   children_.erase(start_itr, end_itr);

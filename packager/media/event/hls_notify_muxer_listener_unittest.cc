@@ -119,7 +119,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
                          MuxerListener::kContainerMpeg2ts);
 }
 
-// OnEncryptionStart() should NotifyEncryptionUpdate() after
+// OnEncryptionStart() should call MuxerListener::NotifyEncryptionUpdate() after
 // OnEncryptionInfoReady() and OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
   ProtectionSystemSpecificInfo info;
@@ -156,6 +156,46 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
               NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
       .WillOnce(Return(true));
   listener_.OnEncryptionStart();
+}
+
+// If OnEncryptionStart() is called before media start,
+// HlsNotiifer::NotifyEncryptionUpdate() should be called by the end of
+// OnMediaStart().
+TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
+  ProtectionSystemSpecificInfo info;
+  std::vector<uint8_t> system_id(kAnySystemId,
+                                 kAnySystemId + arraysize(kAnySystemId));
+  info.set_system_id(system_id.data(), system_id.size());
+  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
+  info.set_pssh_data(pssh_data);
+
+  std::vector<uint8_t> key_id(16, 0x05);
+  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
+  key_system_infos.push_back(info);
+
+  std::vector<uint8_t> iv(16, 0x54);
+
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
+  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
+                                  iv, key_system_infos);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
+
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+
+  // It doesn't really matter when this is called, could be called right away in
+  // OnEncryptionStart() if that is possible. Just matters that it is called by
+  // the time OnMediaStart() returns.
+  EXPECT_CALL(mock_notifier_,
+              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
+      .WillOnce(Return(true));
+  listener_.OnEncryptionStart();
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
 }
 
 // NotifyEncryptionUpdate() should not be called if NotifyNewStream() fails in

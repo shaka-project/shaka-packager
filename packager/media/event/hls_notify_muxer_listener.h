@@ -73,6 +73,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   uint32_t stream_id_ = 0;
 
   bool media_started_ = false;
+  bool must_notify_encryption_start_ = false;
   // Cached encryption info before OnMediaStart() is called.
   std::vector<uint8_t> next_key_id_;
   std::vector<uint8_t> next_iv_;
