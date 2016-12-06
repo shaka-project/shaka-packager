@@ -390,10 +390,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
     TRUE_OR_RETURN(br->SkipBits(extension_length * 8));
   }
 
-  size_t epb = br->NumEmulationPreventionBytesRead();
-  slice_header->header_bit_size =
-      (nalu.payload_size() - epb) * 8 - br->NumBitsLeft();
-
+  slice_header->header_bit_size = nalu.payload_size() * 8 - br->NumBitsLeft();
   return kOk;
 }
 

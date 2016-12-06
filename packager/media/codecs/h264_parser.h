@@ -165,9 +165,17 @@ struct H264SliceHeader {
 
   bool idr_pic_flag;       // from NAL header
   int nal_ref_idc;         // from NAL header
-  const uint8_t* nalu_data;  // from NAL header
-  off_t nalu_size;         // from NAL header
-  off_t header_bit_size;   // calculated
+  // Points to the beginning of the nal unit.
+  const uint8_t* nalu_data;
+
+  // Size of whole nalu unit.
+  off_t nalu_size;
+
+  // This is the size of the slice header not including the nalu header byte.
+  // Sturcture: |NALU Header|     Slice Header    |    Slice Data    |
+  // Size:      |<- 8bits ->|<- header_bit_size ->|<- Rest of nalu ->|
+  // Note that this is not a field in the H.264 spec.
+  off_t header_bit_size;
 
   int first_mb_in_slice;
   int slice_type;

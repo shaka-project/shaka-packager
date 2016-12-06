@@ -985,8 +985,8 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
 
   shdr->idr_pic_flag = (nalu.type() == 5);
   shdr->nal_ref_idc = nalu.ref_idc();
-  shdr->nalu_data = nalu.data() + nalu.header_size();
-  shdr->nalu_size = nalu.payload_size();
+  shdr->nalu_data = nalu.data();
+  shdr->nalu_size = nalu.header_size() + nalu.payload_size();
 
   READ_UE_OR_RETURN(&shdr->first_mb_in_slice);
   READ_UE_OR_RETURN(&shdr->slice_type);
@@ -1116,9 +1116,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
     return kUnsupportedStream;
   }
 
-  size_t epb = br->NumEmulationPreventionBytesRead();
-  shdr->header_bit_size = (shdr->nalu_size - epb) * 8 - br->NumBitsLeft();
-
+  shdr->header_bit_size = nalu.payload_size() * 8 - br->NumBitsLeft();
   return kOk;
 }
 
