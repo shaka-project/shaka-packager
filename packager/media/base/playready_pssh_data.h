@@ -24,7 +24,7 @@ class PlayReadyPsshData {
     void set_decrypto_setup(bool on_demand);
     void set_include_empty_license_store(bool include);
     
-    void SerializeToVector(::std::vector<uint8_t>& output) const;
+    void serialize_to_vector(::std::vector<uint8_t>& output) const;
     
  private:
     ::std::vector<::std::u16string> kids_;

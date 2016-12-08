@@ -12,44 +12,44 @@
 #include "packager/base/base64.h"
 #include "packager/base/strings/string_number_conversions.h"
 
-namespace shaka {
+namespace shaka {    
 namespace media {
 
-namespace prPssh {
-static const char16_t WRMHEADER_START_TAG[] =
+namespace {
+
+const char16_t WRMHEADER_START_TAG[] =
     u"<WRMHEADER version=\"4.2.0.0\" "
      "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\">";
-static const char16_t WRMHEADER_END_TAG[] =
+const char16_t WRMHEADER_END_TAG[] =
     u"</WRMHEADER>";
 
-    static const char16_t DATA_START_TAG[] = u"<DATA>";
-    static const char16_t DATA_END_TAG[] = u"</DATA>";
+const char16_t DATA_START_TAG[] = u"<DATA>";
+const char16_t DATA_END_TAG[] = u"</DATA>";
 
-    static const char16_t PROTECT_INFO_KIDS_START_TAG[] =
-        u"<PROTECTINFO><KIDS>";
-    static const char16_t PROTECT_INFO_KIDS_END_TAG[] =
-        u"</KIDS></PROTECTINFO>";
+const char16_t PROTECT_INFO_KIDS_START_TAG[] =
+    u"<PROTECTINFO><KIDS>";
+const char16_t PROTECT_INFO_KIDS_END_TAG[] =
+    u"</KIDS></PROTECTINFO>";
 
-    //PlayReady Header Object specification specifies that
-    //KID attribute should be value. However, pr porting kit
-    //uses capital attribute name VALUE.
-    static const char16_t KID_START_TAG[] = u"<KID VALUE=\"";
-    static const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\" />";
-        
-    static const char16_t LA_URL_START_TAG[] = u"<LA_URL>";
-    static const char16_t LA_URL_END_TAG[] = u"</LA_URL>";
+//PlayReady Header Object specification specifies that
+//KID attribute should be value. However, pr porting kit
+//uses capital attribute name VALUE.
+const char16_t KID_START_TAG[] = u"<KID VALUE=\"";
+const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\" />";
 
-    static const char16_t LUI_URL_START_TAG[] = u"<LUI_URL>";
-    static const char16_t LUI_URL_END_TAG[] = u"</LUI_URL>";
+const char16_t LA_URL_START_TAG[] = u"<LA_URL>";
+const char16_t LA_URL_END_TAG[] = u"</LA_URL>";
 
-    static const char16_t DECRYPTO_SETUP_TAG[] = u"<DECRYPTOSETUP>ONDEMAND</DECRYPTOSETUP>";
-    
-    static const uint16_t PR_RIGHT_MGMT_RECORD_TYPE = 0x0001;
-    static const uint16_t PR_EMBEDDED_LICENSE_STORE_RECORD_TYPE = 0x0003;
-    static const uint16_t PR_EMBEDDED_LICENSE_STORE_SIZE = 10 * 1024;
-} //namespaece prPSSH
+const char16_t LUI_URL_START_TAG[] = u"<LUI_URL>";
+const char16_t LUI_URL_END_TAG[] = u"</LUI_URL>";
 
-using namespace prPssh;
+const char16_t DECRYPTO_SETUP_TAG[] = u"<DECRYPTOSETUP>ONDEMAND</DECRYPTOSETUP>";
+
+const uint16_t PR_RIGHT_MGMT_RECORD_TYPE = 0x0001;
+const uint16_t PR_EMBEDDED_LICENSE_STORE_RECORD_TYPE = 0x0003;
+const uint16_t PR_EMBEDDED_LICENSE_STORE_SIZE = 10 * 1024;
+
+} 
 
 PlayReadyPsshData::PlayReadyPsshData()
     :on_demand_(false),
@@ -66,14 +66,12 @@ bool PlayReadyPsshData::add_kid_hex(const std::string& key_id_hex)
     
     //Convert to binary vector.
     std::vector<uint8_t> kid;
-    if( !base::HexStringToBytes(key_id_hex, &kid) )
-    {
+    if( !base::HexStringToBytes(key_id_hex, &kid) ) {
         LOG(ERROR) << "Unable to parse key id: " << key_id_hex;
         return false;
     }
 
-    if (kid.size() != GUID_LENGTH)
-    {
+    if (kid.size() != GUID_LENGTH) {
         LOG(ERROR) << "Invalid key id " << key_id_hex << ". Length " << key_id_hex.size()
                    << ". Expecting " << GUID_LENGTH;
         return false;
@@ -130,7 +128,7 @@ void PlayReadyPsshData::set_include_empty_license_store(bool include)
     include_empty_license_store_ = include;
 }
     
-void PlayReadyPsshData::SerializeToVector(::std::vector<uint8_t>& output) const
+void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) const
 {
     /* PSSH data format is specified in Microsoft Playready Header Object document.
        This implementation implements Rigths Management Header V4.2.0.0 */
@@ -172,13 +170,15 @@ void PlayReadyPsshData::SerializeToVector(::std::vector<uint8_t>& output) const
     xmlContent.append(WRMHEADER_END_TAG);
 
     output.clear();
-    //PR Header object: Length (uint32_t), PR Record count (uint16_t),
-    //PR Record: Record type (uint16_t), Record length uitn16_t,
-    //           Record value.(the xml content)
+    
     uint16_t xmlDataSize = static_cast<uint16_t>(xmlContent.size() * 2);
+    //If we do not pack in empty license store we will have only 1 record.
     uint16_t PrRecordCount = (!include_empty_license_store_)? 1 : 2;
 
     //RightManager header length + Playready header object size.
+    //PR Header object: Length (uint32_t), PR Record count (uint16_t),
+    //PR Record: Record type (uint16_t), Record length (uint16_t),
+    //           Record value.(the xml content)
     uint32_t prHeaderObjSize = xmlDataSize + 3 * sizeof(uint16_t) + sizeof(uint32_t);
    
     if (include_empty_license_store_) {
@@ -188,8 +188,6 @@ void PlayReadyPsshData::SerializeToVector(::std::vector<uint8_t>& output) const
         prHeaderObjSize += 2 * sizeof(uint16_t) + PR_EMBEDDED_LICENSE_STORE_SIZE;
     }
     
-    
-
     output.insert(output.end(),
                   reinterpret_cast<uint8_t*>(&prHeaderObjSize),
                   reinterpret_cast<uint8_t*>(&prHeaderObjSize) +

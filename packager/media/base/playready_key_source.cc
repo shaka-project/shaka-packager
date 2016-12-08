@@ -14,22 +14,27 @@
 #include "packager/base/strings/string_util.h"
 
 namespace shaka {
+
+namespace {
+const size_t kPlayReadyKIDSize = 16;
+}
+    
 namespace media {
 
 PlayReadyKeySource::~PlayReadyKeySource() {}
 
-Status PlayReadyKeySource::FetchKeys(const std::vector<uint8_t>& pssh_box) {
+  Status PlayReadyKeySource::FetchKeys(const std::vector<uint8_t>& /*pssh_box*/) {
   // Do nothing for Playready encryption
   return Status::OK;
 }
 
 Status PlayReadyKeySource::FetchKeys(
-    const std::vector<std::vector<uint8_t>>& key_ids) {
+    const std::vector<std::vector<uint8_t>>& /*key_ids*/) {
     // Do nothing for Playready encryption
   return Status::OK;
 }
 
-Status PlayReadyKeySource::FetchKeys(uint32_t asset_id) {
+Status PlayReadyKeySource::FetchKeys(uint32_t /*asset_id*/) {
     // Do nothing for Playready encryption
   return Status::OK;
 }
@@ -42,7 +47,7 @@ Status PlayReadyKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
 }
 
 Status PlayReadyKeySource::GetKey(const std::vector<uint8_t>& key_id,
-                              EncryptionKey* key) {
+                                  EncryptionKey* key) {
   DCHECK(key);
   DCHECK(encryption_key_);
   if (key_id != encryption_key_->key_id) {
@@ -56,8 +61,8 @@ Status PlayReadyKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status PlayReadyKeySource::GetCryptoPeriodKey(uint32_t /*crypto_period_index*/,
-                                           TrackType /*track_type*/,
-                                           EncryptionKey* key) {
+                                              TrackType /*track_type*/,
+                                              EncryptionKey* key) {
   // Not supported for PlayReady. Just return the same key always
   *key = *encryption_key_;
   return Status::OK;
@@ -78,9 +83,9 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
   if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
     LOG(ERROR) << "Cannot parse key_id_hex " << key_id_hex;
     return std::unique_ptr<PlayReadyKeySource>();
-  } else if (encryption_key->key_id.size() != 16) {
+  } else if (encryption_key->key_id.size() != kPlayReadyKIDSize) {
     LOG(ERROR) << "Invalid key ID size '" << encryption_key->key_id.size()
-               << "', must be 16 bytes.";
+               << "', must be " << kPlayReadyKIDSize << " bytes.";
     return std::unique_ptr<PlayReadyKeySource>();
   }
 
@@ -125,7 +130,7 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
   psshData.set_lui_url(lui_url);
   psshData.set_decrypto_setup(ondemand);
   psshData.set_include_empty_license_store(include_empty_license_store);
-  psshData.SerializeToVector(psshDataBuffer);
+  psshData.serialize_to_vector(psshDataBuffer);
 
   info.add_key_id(encryption_key->key_id);
   info.set_system_id(kPlayreadySystemId, arraysize(kPlayreadySystemId));

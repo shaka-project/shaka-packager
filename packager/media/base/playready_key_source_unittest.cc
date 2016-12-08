@@ -89,7 +89,7 @@ const char kPsshBox2Hex[] =
     "570052004d004800450041004400450052003e00";
 }
 
-TEST(PlayReadyKeySourceTest, CreateFromHexStrings_Succes) {
+TEST(PlayReadyKeySourceTest, CreateFromHexStrings_Success) {
      
   std::unique_ptr<PlayReadyKeySource> key_source =
       PlayReadyKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, kIvHex,
