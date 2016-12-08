@@ -25,11 +25,15 @@ static const char16_t WRMHEADER_END_TAG[] =
     static const char16_t DATA_START_TAG[] = u"<DATA>";
     static const char16_t DATA_END_TAG[] = u"</DATA>";
 
-    static const char16_t PROTECTION_INFO_KIDS_START_TAG[] =
-        u"<PROTECTIONINFO><KIDS>";
-    static const char16_t PROTECTION_INFO_KIDS_END_TAG[] =
-        u"</KIDS></PROTECTIONINFO>";
-    static const char16_t KID_START_TAG[] = u"<KID value=\"";
+    static const char16_t PROTECT_INFO_KIDS_START_TAG[] =
+        u"<PROTECTINFO><KIDS>";
+    static const char16_t PROTECT_INFO_KIDS_END_TAG[] =
+        u"</KIDS></PROTECTINFO>";
+
+    //PlayReady Header Object specification specifies that
+    //KID attribute should be value. However, pr porting kit
+    //uses capital attribute name VALUE.
+    static const char16_t KID_START_TAG[] = u"<KID VALUE=\"";
     static const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\" />";
         
     static const char16_t LA_URL_START_TAG[] = u"<LA_URL>";
@@ -136,7 +140,7 @@ void PlayReadyPsshData::SerializeToVector(::std::vector<uint8_t>& output) const
     xmlContent.append(DATA_START_TAG);
 
     if (kids_.size()) {
-        xmlContent.append(PROTECTION_INFO_KIDS_START_TAG);
+        xmlContent.append(PROTECT_INFO_KIDS_START_TAG);
 
         ::std::vector<::std::u16string>::const_iterator it;
         for (it = kids_.begin(); it != kids_.end(); it++) {
@@ -145,7 +149,7 @@ void PlayReadyPsshData::SerializeToVector(::std::vector<uint8_t>& output) const
             xmlContent.append(KID_END_TAG);
         }
         
-        xmlContent.append(PROTECTION_INFO_KIDS_END_TAG);
+        xmlContent.append(PROTECT_INFO_KIDS_END_TAG);
     }
     
     if (la_url_.length() > 0) {
