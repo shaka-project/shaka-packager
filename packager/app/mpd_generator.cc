@@ -97,14 +97,13 @@ int MpdMain(int argc, char** argv) {
   log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   CHECK(logging::InitLogging(log_settings));
 
+  google::SetVersionString(GetPackagerVersion());
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   ExitStatus status = CheckRequiredFlags();
   if (status != kSuccess) {
-    const std::string version_string = base::StringPrintf(
-        "mpd_generator version %s", GetPackagerVersion().c_str());
-    google::ShowUsageWithFlags(version_string.c_str());
+    google::ShowUsageWithFlags("Usage");
     return status;
   }
 

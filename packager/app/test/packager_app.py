@@ -31,11 +31,7 @@ class PackagerApp(object):
     return subprocess.check_output(cmd)
 
   def Version(self):
-    output = subprocess.check_output([self.binary])
-    # The output should of the form:
-    #   shaka-packager version xxx: Description...
-    # We consider everything before ':' part of version.
-    return output.split(':')[0]
+    return subprocess.check_output([self.binary, '--version'])
 
   def Package(self, streams, flags=None):
     if flags is None:
