@@ -39,8 +39,8 @@ class PackagerAppTest(unittest.TestCase):
 
   def testVersion(self):
     self.assertRegexpMatches(
-        self.packager.Version(), '^packager version '
-        r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)\n.*$')
+        self.packager.Version(), '^packager(.exe)? version '
+        r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)[\r\n]+.*$')
 
   def testDumpStreamInfo(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
