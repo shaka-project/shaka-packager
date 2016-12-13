@@ -73,9 +73,10 @@ class DashIopMpdNotifier : public MpdNotifier {
   AdaptationSet* GetAdaptationSetForMediaInfo(const std::string& key,
                                               const MediaInfo& media_info);
 
-  // Sets a group id for |adaptation_set| if applicable.
-  // If a group ID is already assigned, then this returns immediately.
-  void SetGroupId(const std::string& key, AdaptationSet* adaptation_set);
+  // Sets adaptation set switching. If adaptation set switching is already
+  // set, then this returns immediately.
+  void SetAdaptationSetSwitching(const std::string& key,
+                                 AdaptationSet* adaptation_set);
 
   // Helper function to get a new AdaptationSet; registers the values
   // to the fields (maps) of the instance.
@@ -103,9 +104,6 @@ class DashIopMpdNotifier : public MpdNotifier {
   std::string output_path_;
   std::unique_ptr<MpdBuilder> mpd_builder_;
   base::Lock lock_;
-
-  // Next group ID to use for AdapationSets that can be grouped.
-  int next_group_id_;
 
   // Maps Representation ID to AdaptationSet. This is for updating the PSSH.
   std::map<uint32_t, AdaptationSet*> representation_id_to_adaptation_set_;

@@ -166,6 +166,15 @@ bool RepresentationBaseXmlNode::AddContentProtectionElements(
   return true;
 }
 
+void RepresentationBaseXmlNode::AddSupplementalProperty(
+    const std::string& scheme_id_uri,
+    const std::string& value) {
+  XmlNode supplemental_property("SupplementalProperty");
+  supplemental_property.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  supplemental_property.SetStringAttribute("value", value);
+  AddChild(supplemental_property.PassScopedPtr());
+}
+
 bool RepresentationBaseXmlNode::AddContentProtectionElement(
     const ContentProtectionElement& content_protection_element) {
   XmlNode content_protection_node("ContentProtection");

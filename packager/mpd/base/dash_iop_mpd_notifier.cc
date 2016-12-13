@@ -15,8 +15,6 @@ namespace shaka {
 
 namespace {
 
-const int kStartingGroupId = 1;
-
 // The easiest way to check whether two protobufs are equal, is to compare the
 // serialized version.
 bool ProtectedContentEq(
@@ -50,8 +48,7 @@ DashIopMpdNotifier::DashIopMpdNotifier(
       mpd_builder_(new MpdBuilder(dash_profile == kLiveProfile
                                       ? MpdBuilder::kDynamic
                                       : MpdBuilder::kStatic,
-                                  mpd_options)),
-      next_group_id_(kStartingGroupId) {
+                                  mpd_options)) {
   DCHECK(dash_profile == kLiveProfile || dash_profile == kOnDemandProfile);
   for (size_t i = 0; i < base_urls.size(); ++i)
     mpd_builder_->AddBaseUrl(base_urls[i]);
@@ -91,7 +88,7 @@ bool DashIopMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
 
   representation_id_to_adaptation_set_[representation->id()] = adaptation_set;
 
-  SetGroupId(key, adaptation_set);
+  SetAdaptationSetSwitching(key, adaptation_set);
 
   *container_id = representation->id();
   DCHECK(!ContainsKey(representation_map_, representation->id()));
@@ -197,16 +194,18 @@ AdaptationSet* DashIopMpdNotifier::GetAdaptationSetForMediaInfo(
 }
 
 // Get all the UUIDs of the AdaptationSet. If another AdaptationSet has the
-// same UUIDs then those should be groupable.
-void DashIopMpdNotifier::SetGroupId(const std::string& key,
-                                    AdaptationSet* adaptation_set) {
-  if (adaptation_set->Group() >= 0)  // @group already assigned.
+// same UUIDs then those are switchable.
+void DashIopMpdNotifier::SetAdaptationSetSwitching(
+    const std::string& key,
+    AdaptationSet* adaptation_set) {
+  // This adaptation set is already visited.
+  if (!adaptation_set->adaptation_set_switching_ids().empty())
     return;
 
   ProtectedContentMap::const_iterator protected_content_it =
       protected_content_map_.find(adaptation_set->id());
-  // Clear contents should be in one AdaptationSet, so no need to assign
-  // @group.
+  // Clear contents should be in one AdaptationSet and may not be switchable
+  // with encrypted contents.
   if (protected_content_it == protected_content_map_.end()) {
     DVLOG(1) << "No content protection set for AdaptationSet@id="
              << adaptation_set->id();
@@ -237,21 +236,15 @@ void DashIopMpdNotifier::SetGroupId(const std::string& key,
         protected_content_map_[loop_adaptation_set_id];
     if (static_cast<int>(adaptation_set_uuids.size()) !=
         loop_protected_content.content_protection_entry().size()) {
-      // Different number of UUIDs, cannot be grouped.
+      // Different number of UUIDs, may not be switchable.
       continue;
     }
 
     if (adaptation_set_uuids == GetUUIDs(loop_protected_content)) {
       AdaptationSet& uuid_match_adaptation_set = **adaptation_set_it;
-      // They match. These AdaptationSets can be in the same group. Break out.
-      if (uuid_match_adaptation_set.Group() >= 0) {
-        adaptation_set->SetGroup(uuid_match_adaptation_set.Group());
-      } else {
-        const int group_id = next_group_id_++;
-        uuid_match_adaptation_set.SetGroup(group_id);
-        adaptation_set->SetGroup(group_id);
-      }
-      break;
+      // They match. These AdaptationSets are switchable.
+      uuid_match_adaptation_set.AddAdaptationSetSwitching(adaptation_set->id());
+      adaptation_set->AddAdaptationSetSwitching(uuid_match_adaptation_set.id());
     }
   }
 }

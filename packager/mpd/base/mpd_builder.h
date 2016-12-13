@@ -232,15 +232,14 @@ class AdaptationSet {
   ///        attribute.
   virtual void ForceSetSegmentAlignment(bool segment_alignment);
 
-  /// Sets the AdaptationSet@group attribute.
-  /// Passing a negative value to this method will unset the attribute.
-  /// Note that group=0 is a special group, as mentioned in the DASH MPD
-  /// specification.
-  /// @param group_number is the value of AdaptatoinSet@group.
-  virtual void SetGroup(int group_number);
+  /// Adds the id of the adaptation set this adaptation set can switch to.
+  /// @param adaptation_set_id is the id of the switchable adaptation set.
+  void AddAdaptationSetSwitching(uint32_t adaptation_set_id);
 
-  /// @return Returns the value for group. If not set, returns a negative value.
-  virtual int Group() const;
+  /// @return the ids of the adaptation sets this adaptation set can switch to.
+  const std::vector<uint32_t>& adaptation_set_switching_ids() const {
+    return adaptation_set_switching_ids_;
+  }
 
   // Must be unique in the Period.
   uint32_t id() const { return id_; }
@@ -348,10 +347,8 @@ class AdaptationSet {
   const MpdOptions& mpd_options_;
   const MpdBuilder::MpdType mpd_type_;
 
-  // The group attribute for the AdaptationSet. If the value is negative,
-  // no group number is specified.
-  // Note that group 0 is a special group number.
-  int group_;
+  // The ids of the adaptation sets this adaptation set can switch to.
+  std::vector<uint32_t> adaptation_set_switching_ids_;
 
   // Video widths and heights of Representations. Note that this is a set; if
   // there is only 1 resolution, then @width & @height should be set, otherwise

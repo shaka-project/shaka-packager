@@ -404,23 +404,39 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
   }
 };
 
-// Verify that AdaptationSet@group can be set and unset.
-TEST_F(CommonMpdBuilderTest, SetAdaptationSetGroup) {
-  base::AtomicSequenceNumber sequence_counter;
-  auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
-  adaptation_set->SetGroup(1);
+TEST_F(CommonMpdBuilderTest, AddAdaptationSetSwitching) {
+  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
+  AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
+  adaptation_set->AddAdaptationSetSwitching(1);
+  adaptation_set->AddAdaptationSetSwitching(2);
+  adaptation_set->AddAdaptationSetSwitching(8);
 
-  xml::scoped_xml_ptr<xmlNode> xml_with_group(adaptation_set->GetXml());
-  EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeEqString("group", "1", xml_with_group.get()));
-
-  // Unset by passing a negative value.
-  adaptation_set->SetGroup(-1);
-  xml::scoped_xml_ptr<xmlNode> xml_without_group(adaptation_set->GetXml());
-  EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeNotSet("group", xml_without_group.get()));
+  xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
+  // The empty contentType is sort of a side effect of being able to generate an
+  // MPD without adding any Representations.
+  const char kExpectedOutput[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\"\n"
+      "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+      "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+      "    xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"\n"
+      "    minBufferTime=\"PT2S\" type=\"static\"\n"
+      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+      "    mediaPresentationDuration=\"PT0S\">\n"
+      "  <Period id=\"0\">\n"
+      "    <AdaptationSet id=\"0\" contentType=\"\">\n"
+      "      <SupplementalProperty "
+      "schemeIdUri=\"urn:mpeg:dash:adaptation-set-switching:2016\" "
+      "value=\"1,2,8\"/>\n"
+      "    </AdaptationSet>\n"
+      "  </Period>\n"
+      "</MPD>";
+  std::string mpd_output;
+  EXPECT_TRUE(mpd_builder.ToString(&mpd_output));
+  ASSERT_TRUE(ValidateMpdSchema(mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output))
+      << "Expected " << kExpectedOutput << std::endl
+      << "Actual: " << mpd_output;
 }
 
 // Verify that Representation::Init() works with all "required" fields of

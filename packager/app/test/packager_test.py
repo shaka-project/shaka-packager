@@ -405,6 +405,19 @@ class PackagerAppTest(unittest.TestCase):
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
 
   @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
+  def testWidevineEncryptionWithAesAndDashIfIopWithMultFiles(self):
+    flags = self._GetFlags(widevine_encryption=True, dash_if_iop=True)
+    flags += ['--aes_signing_key=' + test_env.options.aes_signing_key,
+              '--aes_signing_iv=' + test_env.options.aes_signing_iv]
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'],
+                         test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
+                                     'bear-320x180.mp4']), flags)
+    with open(self.mpd_output, 'rb') as f:
+      print f.read()
+      # TODO(kqyang): Add some validations.
+
+  @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
   def testKeyRotationWithAes(self):
     flags = self._GetFlags(widevine_encryption=True, key_rotation=True)
     flags += ['--aes_signing_key=' + test_env.options.aes_signing_key,
