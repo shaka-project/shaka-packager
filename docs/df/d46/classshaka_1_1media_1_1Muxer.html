@@ -114,8 +114,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac2f53c94d6ecb25d28bd2865dfe03649"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2f53c94d6ecb25d28bd2865dfe03649"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Muxer</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:ac2f53c94d6ecb25d28bd2865dfe03649"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a021fdae2adc98716b1c8ee7617ab917b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a021fdae2adc98716b1c8ee7617ab917b">SetKeySource</a> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
-<tr class="separator:a021fdae2adc98716b1c8ee7617ab917b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9c8f69897171ab81db6e7e9c367b4ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#ad9c8f69897171ab81db6e7e9c367b4ce">SetKeySource</a> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, uint32_t max_hd_pixels, uint32_t max_uhd1_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
+<tr class="separator:ad9c8f69897171ab81db6e7e9c367b4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9479d299d1c494604a5f5a052fe8280"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad9479d299d1c494604a5f5a052fe8280"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#ad9479d299d1c494604a5f5a052fe8280">AddStream</a> (<a class="el" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> *stream)</td></tr>
 <tr class="memdesc:ad9479d299d1c494604a5f5a052fe8280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add video/audio stream. <br/></td></tr>
@@ -147,6 +147,12 @@ const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html
 <tr class="memitem:a4b0eaf368a957e3f16ef3b0f121ff31c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b0eaf368a957e3f16ef3b0f121ff31c"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_sd_pixels</b> () const </td></tr>
 <tr class="separator:a4b0eaf368a957e3f16ef3b0f121ff31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66179cd59c84f7c7dc524729b300a27f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66179cd59c84f7c7dc524729b300a27f"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_hd_pixels</b> () const </td></tr>
+<tr class="separator:a66179cd59c84f7c7dc524729b300a27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8be12e69977c811f0f90fbc4981cb53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8be12e69977c811f0f90fbc4981cb53"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_uhd1_pixels</b> () const </td></tr>
+<tr class="separator:ad8be12e69977c811f0f90fbc4981cb53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06093b39eacada6dca64260d6df3dd13"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06093b39eacada6dca64260d6df3dd13"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>clear_lead_in_seconds</b> () const </td></tr>
 <tr class="separator:a06093b39eacada6dca64260d6df3dd13"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,7 +197,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 </div><div class="memdoc">
 <p>Cancel a muxing job in progress. Will cause <em>Run</em> to exit with an error status of type CANCELLED. </p>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00084">84</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00090">90</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -224,11 +230,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00082">82</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00095">95</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a021fdae2adc98716b1c8ee7617ab917b"></a>
+<a class="anchor" id="ad9c8f69897171ab81db6e7e9c367b4ce"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -243,6 +249,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>max_sd_pixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_hd_pixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_uhd1_pixels</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -273,7 +291,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">encryption_key_source</td><td>points to the encryption key source. The caller retains ownership, and should not be NULL. </td></tr>
-    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD or HD. If the track has more pixels per frame than max_sd_pixels, it is HD, SD otherwise. </td></tr>
+    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD. If the max pixels per frame is no higher than max_sd_pixels, it is SD. </td></tr>
+    <tr><td class="paramname">max_hd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as HD. If the max pixels per frame is higher than max_sd_pixels, but no higher than max_hd_pixels, it is HD. </td></tr>
+    <tr><td class="paramname">max_uhd1_pixels</td><td>specifies the threshold to determine whether a video track should be considered as UHD1. If the max pixels per frame is higher than max_hd_pixels, but no higher than max_uhd1_pixels, it is UHD1. Otherwise it is UHD2. </td></tr>
     <tr><td class="paramname">clear_lead_in_seconds</td><td>specifies clear lead duration in seconds. </td></tr>
     <tr><td class="paramname">crypto_period_duration_in_seconds</td><td>specifies crypto period duration in seconds. A positive value means key rotation is enabled, the key source must support key rotation in this case. </td></tr>
     <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. </td></tr>
@@ -281,7 +301,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00033">33</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -306,7 +326,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00088">88</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00094">94</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -331,7 +351,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00092">92</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00098">98</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -342,7 +362,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Dec 10 2016 04:13:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 14 2016 19:38:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -112,8 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3338fa3d4cfe0f8ed12c2fe16735af58"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3338fa3d4cfe0f8ed12c2fe16735af58"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Segmenter</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options, std::unique_ptr&lt; <a class="el" href="../../d5/d03/structshaka_1_1media_1_1mp4_1_1FileType.html">FileType</a> &gt; ftyp, std::unique_ptr&lt; <a class="el" href="../../d0/d9a/structshaka_1_1media_1_1mp4_1_1Movie.html">Movie</a> &gt; moov)</td></tr>
 <tr class="separator:a3338fa3d4cfe0f8ed12c2fe16735af58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0440c751fd818964397d17330acc7afc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a0440c751fd818964397d17330acc7afc">Initialize</a> (const std::vector&lt; <a class="el" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> * &gt; &amp;streams, <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> *progress_listener, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
-<tr class="separator:a0440c751fd818964397d17330acc7afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf326521fc1d46d31a7a3b94bcf17c24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#aaf326521fc1d46d31a7a3b94bcf17c24">Initialize</a> (const std::vector&lt; <a class="el" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> * &gt; &amp;streams, <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> *progress_listener, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, uint32_t max_hd_pixels, uint32_t max_uhd1_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
+<tr class="separator:aaf326521fc1d46d31a7a3b94bcf17c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a464a30159b8888a54254356d191947ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a> ()</td></tr>
 <tr class="separator:a464a30159b8888a54254356d191947ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a1a9e50050e75584ff1087aa318096a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a4a1a9e50050e75584ff1087aa318096a">AddSample</a> (const <a class="el" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> *stream, scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
@@ -203,7 +203,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00320">320</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00323">323</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -222,7 +222,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 <p>Finalize the segmenter. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00296">296</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00299">299</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -240,7 +240,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The total length, in seconds, of segmented media files. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00378">378</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00381">381</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -318,7 +318,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 
 </div>
 </div>
-<a class="anchor" id="a0440c751fd818964397d17330acc7afc"></a>
+<a class="anchor" id="aaf326521fc1d46d31a7a3b94bcf17c24"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -355,6 +355,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_hd_pixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_uhd1_pixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>clear_lead_in_seconds</em>, </td>
         </tr>
@@ -384,7 +396,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
     <tr><td class="paramname">muxer_listener</td><td>receives muxer events. Can be NULL. </td></tr>
     <tr><td class="paramname">progress_listener</td><td>receives progress updates. Can be NULL. </td></tr>
     <tr><td class="paramname">encryption_key_source</td><td>points to the key source which contains the encryption keys. It can be NULL to indicate that no encryption is required. </td></tr>
-    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD or HD. If the track has more pixels per frame than max_sd_pixels, it is HD, SD otherwise. </td></tr>
+    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD. If the max pixels per frame is no higher than max_sd_pixels, it is SD. </td></tr>
+    <tr><td class="paramname">max_hd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as HD. If the max pixels per frame is higher than max_sd_pixels, but no higher than max_hd_pixels, it is HD. </td></tr>
+    <tr><td class="paramname">max_uhd1_pixels</td><td>specifies the threshold to determine whether a video track should be considered as UHD1. If the max pixels per frame is higher than max_hd_pixels, but no higher than max_uhd1_pixels, it is UHD1. Otherwise it is UHD2. </td></tr>
     <tr><td class="paramname">clear_time</td><td>specifies clear lead duration in seconds. </td></tr>
     <tr><td class="paramname">crypto_period_duration</td><td>specifies crypto period duration in seconds. </td></tr>
     <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. </td></tr>
@@ -419,7 +433,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The sample duration in the timescale of the media. Returns 0 if no samples are added yet. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00101">101</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00111">111</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
 
 </div>
 </div>
@@ -430,7 +444,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Dec 10 2016 04:13:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 14 2016 19:38:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

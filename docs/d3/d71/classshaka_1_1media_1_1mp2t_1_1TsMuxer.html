@@ -114,8 +114,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac2f53c94d6ecb25d28bd2865dfe03649 inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2f53c94d6ecb25d28bd2865dfe03649"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Muxer</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:ac2f53c94d6ecb25d28bd2865dfe03649 inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a021fdae2adc98716b1c8ee7617ab917b inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a021fdae2adc98716b1c8ee7617ab917b">SetKeySource</a> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
-<tr class="separator:a021fdae2adc98716b1c8ee7617ab917b inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9c8f69897171ab81db6e7e9c367b4ce inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#ad9c8f69897171ab81db6e7e9c367b4ce">SetKeySource</a> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, uint32_t max_hd_pixels, uint32_t max_uhd1_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
+<tr class="separator:ad9c8f69897171ab81db6e7e9c367b4ce inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9479d299d1c494604a5f5a052fe8280 inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad9479d299d1c494604a5f5a052fe8280"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#ad9479d299d1c494604a5f5a052fe8280">AddStream</a> (<a class="el" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> *stream)</td></tr>
 <tr class="memdesc:ad9479d299d1c494604a5f5a052fe8280 inherit pub_methods_classshaka_1_1media_1_1Muxer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add video/audio stream. <br/></td></tr>
@@ -148,6 +148,12 @@ const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html
 <tr class="memitem:a4b0eaf368a957e3f16ef3b0f121ff31c inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b0eaf368a957e3f16ef3b0f121ff31c"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_sd_pixels</b> () const </td></tr>
 <tr class="separator:a4b0eaf368a957e3f16ef3b0f121ff31c inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66179cd59c84f7c7dc524729b300a27f inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66179cd59c84f7c7dc524729b300a27f"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_hd_pixels</b> () const </td></tr>
+<tr class="separator:a66179cd59c84f7c7dc524729b300a27f inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8be12e69977c811f0f90fbc4981cb53 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8be12e69977c811f0f90fbc4981cb53"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_uhd1_pixels</b> () const </td></tr>
+<tr class="separator:ad8be12e69977c811f0f90fbc4981cb53 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06093b39eacada6dca64260d6df3dd13 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06093b39eacada6dca64260d6df3dd13"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>clear_lead_in_seconds</b> () const </td></tr>
 <tr class="separator:a06093b39eacada6dca64260d6df3dd13 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,7 +184,7 @@ FourCC&#160;</td><td class="memItemRight" valign="bottom"><b>protection_scheme</
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Dec 10 2016 04:13:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 14 2016 19:38:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

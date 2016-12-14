@@ -111,8 +111,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a40ef2af1da328cfdeefe37ef007146bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40ef2af1da328cfdeefe37ef007146bb"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Segmenter</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:a40ef2af1da328cfdeefe37ef007146bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6b32c805c4e662d97244531723ce9eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa6b32c805c4e662d97244531723ce9eb">Initialize</a> (std::unique_ptr&lt; <a class="el" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">MkvWriter</a> &gt; writer, <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> *info, <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> *progress_listener, <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds)</td></tr>
-<tr class="separator:aa6b32c805c4e662d97244531723ce9eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfde7f995368ea9e91ded9f4980903a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#abfde7f995368ea9e91ded9f4980903a6">Initialize</a> (std::unique_ptr&lt; <a class="el" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">MkvWriter</a> &gt; writer, <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> *info, <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> *progress_listener, <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, uint32_t max_hd_pixels, uint32_t max_uhd1_pixels, double clear_lead_in_seconds)</td></tr>
+<tr class="separator:abfde7f995368ea9e91ded9f4980903a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa84782877f1afaf9519a552ac3d5d417"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa84782877f1afaf9519a552ac3d5d417">Finalize</a> ()</td></tr>
 <tr class="separator:aa84782877f1afaf9519a552ac3d5d417"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa15ccabe1a33c660201ef1d8386067e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa15ccabe1a33c660201ef1d8386067e5">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
@@ -207,7 +207,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00120">120</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00124">124</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -226,7 +226,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 <p>Finalize the segmenter. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00109">109</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00113">113</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -253,7 +253,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </div><div class="memdoc">
 <p>Converts the given time in ISO BMFF timescale to the current WebM timecode. </p>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00204">204</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00208">208</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -271,7 +271,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The total length, in seconds, of segmented media files. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00199">199</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00203">203</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -349,7 +349,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 
 </div>
 </div>
-<a class="anchor" id="aa6b32c805c4e662d97244531723ce9eb"></a>
+<a class="anchor" id="abfde7f995368ea9e91ded9f4980903a6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -392,6 +392,18 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_hd_pixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_uhd1_pixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>clear_lead_in_seconds</em>&#160;</td>
         </tr>
@@ -409,7 +421,9 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
     <tr><td class="paramname">info</td><td>The stream info for the stream being segmented. </td></tr>
     <tr><td class="paramname">muxer_listener</td><td>receives muxer events. Can be NULL. </td></tr>
     <tr><td class="paramname">encryption_key_source</td><td>points to the key source which contains the encryption keys. It can be NULL to indicate that no encryption is required. </td></tr>
-    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD or HD. If the track has more pixels per frame than max_sd_pixels, it is HD, SD otherwise. </td></tr>
+    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD. If the max pixels per frame is no higher than max_sd_pixels, it is SD. </td></tr>
+    <tr><td class="paramname">max_hd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as HD. If the max pixels per frame is higher than max_sd_pixels, but no higher than max_hd_pixels, it is HD. </td></tr>
+    <tr><td class="paramname">max_uhd1_pixels</td><td>specifies the threshold to determine whether a video track should be considered as UHD1. If the max pixels per frame is higher than max_hd_pixels, but no higher than max_uhd1_pixels, it is UHD1. Otherwise it is UHD2. </td></tr>
     <tr><td class="paramname">clear_time</td><td>specifies clear lead duration in seconds. </td></tr>
   </table>
   </dd>
@@ -427,7 +441,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Dec 10 2016 04:13:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 14 2016 19:38:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

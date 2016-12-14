@@ -111,38 +111,46 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_SD;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;HD&quot;</span>)</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_HD;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;AUDIO&quot;</span>)</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_AUDIO;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;UNSPECIFIED&quot;</span>)</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_UNSPECIFIED;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unexpected track type: &quot;</span> &lt;&lt; track_type_string;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">return</span> TRACK_TYPE_UNKNOWN;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">   33</a></span>&#160;std::string <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">KeySource::TrackTypeToString</a>(TrackType track_type) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordflow">switch</span> (track_type) {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_SD:</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;SD&quot;</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_HD:</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;HD&quot;</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_AUDIO:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;AUDIO&quot;</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown track type: &quot;</span> &lt;&lt; track_type;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN&quot;</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;KeySource::KeySource() {}</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a4f9cede7a8c1678e1fac93c8fe12aa75"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">shaka::media::KeySource::TrackTypeToString</a></div><div class="ttdeci">static std::string TrackTypeToString(TrackType track_type)</div><div class="ttdoc">Convert TrackType to string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00033">key_source.cc:33</a></div></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;UHD1&quot;</span>)</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_UHD1;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;UHD2&quot;</span>)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_UHD2;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;AUDIO&quot;</span>)</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_AUDIO;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;UNSPECIFIED&quot;</span>)</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_UNSPECIFIED;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unexpected track type: &quot;</span> &lt;&lt; track_type_string;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordflow">return</span> TRACK_TYPE_UNKNOWN;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">   37</a></span>&#160;std::string <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">KeySource::TrackTypeToString</a>(TrackType track_type) {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">switch</span> (track_type) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_SD:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;SD&quot;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_HD:</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;HD&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_UHD1:</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UHD1&quot;</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_UHD2:</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UHD2&quot;</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_AUDIO:</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;AUDIO&quot;</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown track type: &quot;</span> &lt;&lt; track_type;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN&quot;</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;KeySource::KeySource() {}</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a4f9cede7a8c1678e1fac93c8fe12aa75"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">shaka::media::KeySource::TrackTypeToString</a></div><div class="ttdeci">static std::string TrackTypeToString(TrackType track_type)</div><div class="ttdoc">Convert TrackType to string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00037">key_source.cc:37</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a0963412e7ee33d0e34893ebdf38d96c1"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1">shaka::media::KeySource::GetTrackTypeFromString</a></div><div class="ttdeci">static TrackType GetTrackTypeFromString(const std::string &amp;track_type_string)</div><div class="ttdoc">Convert string representation of track type to enum representation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00019">key_source.cc:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Dec 10 2016 04:13:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 14 2016 19:38:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
