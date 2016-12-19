@@ -43,7 +43,6 @@
         'decrypt_config.h',
         'decryptor_source.cc',
         'decryptor_source.h',
-        'encryption_modes.h',
         'fixed_key_source.cc',
         'fixed_key_source.h',
         'fourccs.h',
