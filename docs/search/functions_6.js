@@ -35,6 +35,5 @@ var searchData=
   ['gettotalsizeofsubsamples',['GetTotalSizeOfSubsamples',['../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#a870ef304f376ec0822686e1d78765bf2',1,'shaka::media::mp4::SampleEncryptionEntry']]],
   ['gettracktypefromstring',['GetTrackTypeFromString',['../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1',1,'shaka::media::KeySource']]],
   ['getvideostreaminfo',['GetVideoStreamInfo',['../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea',1,'shaka::media::WebMVideoClient']]],
-  ['getxml',['GetXml',['../d8/d8e/classshaka_1_1AdaptationSet.html#af988e3a6d8b0d3ede66e3f3aea992d5e',1,'shaka::AdaptationSet::GetXml()'],['../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960',1,'shaka::Representation::GetXml()']]],
-  ['group',['Group',['../d8/d8e/classshaka_1_1AdaptationSet.html#a1f4285fb3adce2028aa61030e333bc31',1,'shaka::AdaptationSet']]]
+  ['getxml',['GetXml',['../d8/d8e/classshaka_1_1AdaptationSet.html#af988e3a6d8b0d3ede66e3f3aea992d5e',1,'shaka::AdaptationSet::GetXml()'],['../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960',1,'shaka::Representation::GetXml()']]]
 ];

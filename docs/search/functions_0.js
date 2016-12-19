@@ -1,7 +1,9 @@
 var searchData=
 [
+  ['adaptation_5fset_5fswitching_5fids',['adaptation_set_switching_ids',['../d8/d8e/classshaka_1_1AdaptationSet.html#a8674f458c599af4d5ebc104a2f7bd8ae',1,'shaka::AdaptationSet']]],
   ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html#acd24d0537c3625d709b58cf9565d8fcf',1,'shaka::AdaptationSet']]],
   ['addadaptationset',['AddAdaptationSet',['../dc/da1/classshaka_1_1MpdBuilder.html#ad32d4f20e6325b20267a2e905e1ec243',1,'shaka::MpdBuilder']]],
+  ['addadaptationsetswitching',['AddAdaptationSetSwitching',['../d8/d8e/classshaka_1_1AdaptationSet.html#af934da43aef6260e7e7a469d9f796661',1,'shaka::AdaptationSet']]],
   ['addaudioinfo',['AddAudioInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a49050cf0e7883bfa6e8e2fb0174b2a7a',1,'shaka::xml::RepresentationXmlNode']]],
   ['addbaseurl',['AddBaseUrl',['../dc/da1/classshaka_1_1MpdBuilder.html#ab6fd968035d1cba5060fe23a107f8bdb',1,'shaka::MpdBuilder']]],
   ['addchild',['AddChild',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a5f8deed2a9bb707c40db24374b3b7fbd',1,'shaka::xml::XmlNode']]],
@@ -17,6 +19,7 @@ var searchData=
   ['addroleelement',['AddRoleElement',['../d1/de7/classshaka_1_1xml_1_1AdaptationSetXmlNode.html#a2718eede55bb89447a74ff802b95fdb1',1,'shaka::xml::AdaptationSetXmlNode']]],
   ['addsample',['AddSample',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a5fc925f3324b5cfab955b1fac1f52094',1,'shaka::media::mp2t::TsSegmenter::AddSample()'],['../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html#afeb03755fa2e6a53376ae5ceb7440021',1,'shaka::media::mp4::EncryptingFragmenter::AddSample()'],['../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a684c1f318ac05e85f4dbf373ea65b7ad',1,'shaka::media::mp4::Fragmenter::AddSample()'],['../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a4a1a9e50050e75584ff1087aa318096a',1,'shaka::media::mp4::Segmenter::AddSample()'],['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa15ccabe1a33c660201ef1d8386067e5',1,'shaka::media::webm::Segmenter::AddSample()']]],
   ['addstream',['AddStream',['../df/d46/classshaka_1_1media_1_1Muxer.html#ad9479d299d1c494604a5f5a052fe8280',1,'shaka::media::Muxer']]],
+  ['addsupplementalproperty',['AddSupplementalProperty',['../dd/db9/classshaka_1_1xml_1_1RepresentationBaseXmlNode.html#a58965505799f01c99768823caeb66a6b',1,'shaka::xml::RepresentationBaseXmlNode']]],
   ['addtrackinfo',['AddTrackInfo',['../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a866bb619cd0fde0c28ee522cbd4a8c59',1,'shaka::media::webm::Encryptor']]],
   ['addvideoinfo',['AddVideoInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#aeb5b425a0d9fe472e13e508ee431307a',1,'shaka::xml::RepresentationXmlNode']]],
   ['addvodonlyinfo',['AddVODOnlyInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a68a51ea870f2a24379a9b81cb97b6ac0',1,'shaka::xml::RepresentationXmlNode']]],
