@@ -171,6 +171,12 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
 bool GetMpdOptions(MpdOptions* mpd_options) {
   DCHECK(mpd_options);
 
+  mpd_options->dash_profile =
+      FLAGS_single_segment ? DashProfile::kOnDemand : DashProfile::kLive;
+  // Single segment does not always mean static mpd.
+  // TODO(kqyang): Add a new flag for mpd type and update the code.
+  mpd_options->mpd_type =
+      FLAGS_single_segment ? MpdType::kStatic : MpdType::kDynamic;
   mpd_options->availability_time_offset = FLAGS_availability_time_offset;
   mpd_options->minimum_update_period = FLAGS_minimum_update_period;
   mpd_options->min_buffer_time = FLAGS_min_buffer_time;

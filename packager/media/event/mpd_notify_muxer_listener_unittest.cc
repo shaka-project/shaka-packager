@@ -64,17 +64,25 @@ const uint8_t kBogusIv[] = {
 
 namespace media {
 
-class MpdNotifyMuxerListenerTest : public ::testing::Test {
+class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
  public:
 
   void SetupForVod() {
-    notifier_.reset(new MockMpdNotifier(kOnDemandProfile));
+    MpdOptions mpd_options;
+    mpd_options.dash_profile = DashProfile::kOnDemand;
+    // On-demand profile should be static.
+    mpd_options.mpd_type = MpdType::kStatic;
+    notifier_.reset(new MockMpdNotifier(mpd_options));
     listener_.reset(
         new MpdNotifyMuxerListener(notifier_.get()));
   }
 
   void SetupForLive() {
-    notifier_.reset(new MockMpdNotifier(kLiveProfile));
+    MpdOptions mpd_options;
+    mpd_options.dash_profile = DashProfile::kLive;
+    // Live profile can be static or dynamic.
+    mpd_options.mpd_type = GetParam();
+    notifier_.reset(new MockMpdNotifier(mpd_options));
     listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
   }
 
@@ -271,7 +279,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
 
 // Live without key rotation. Note that OnEncryptionInfoReady() is called before
 // OnMediaStart() but no more calls.
-TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
+TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   SetupForLive();
   MuxerOptions muxer_options;
   SetDefaultLiveMuxerOptionsValues(&muxer_options);
@@ -317,10 +325,13 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       .Times(1);
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
-  EXPECT_CALL(*notifier_, Flush());
+  // Flush should only be called once in OnMediaEnd.
+  if (GetParam() == MpdType::kDynamic)
+    EXPECT_CALL(*notifier_, Flush());
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
-  EXPECT_CALL(*notifier_, Flush());
+  if (GetParam() == MpdType::kDynamic)
+    EXPECT_CALL(*notifier_, Flush());
 
   std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
   listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs,
@@ -333,13 +344,14 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
-  EXPECT_CALL(*notifier_, Flush()).Times(0);
+  EXPECT_CALL(*notifier_, Flush())
+      .Times(GetParam() == MpdType::kDynamic ? 0 : 1);
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
 // Live with key rotation. Note that OnEncryptionInfoReady() is called before
 // and after OnMediaStart().
-TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
+TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   SetupForLive();
   MuxerOptions muxer_options;
   SetDefaultLiveMuxerOptionsValues(&muxer_options);
@@ -382,10 +394,13 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   EXPECT_CALL(*notifier_, NotifyEncryptionUpdate(_, _, _, _)).Times(1);
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
-  EXPECT_CALL(*notifier_, Flush());
+  // Flush should only be called once in OnMediaEnd.
+  if (GetParam() == MpdType::kDynamic)
+    EXPECT_CALL(*notifier_, Flush());
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
-  EXPECT_CALL(*notifier_, Flush());
+  if (GetParam() == MpdType::kDynamic)
+    EXPECT_CALL(*notifier_, Flush());
 
   std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
   listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbc1,
@@ -401,9 +416,14 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
-  EXPECT_CALL(*notifier_, Flush()).Times(0);
+  EXPECT_CALL(*notifier_, Flush())
+      .Times(GetParam() == MpdType::kDynamic ? 0 : 1);
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
+
+INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
+                        MpdNotifyMuxerListenerTest,
+                        ::testing::Values(MpdType::kStatic, MpdType::kDynamic));
 
 }  // namespace media
 }  // namespace shaka

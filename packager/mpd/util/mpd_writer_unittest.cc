@@ -33,14 +33,13 @@ class TestMpdNotifierFactory : public MpdNotifierFactory {
   // std::unique_ptr.
   // For now we only need to return MockMpdNotifier() with these set of
   // expectations for all the tests.
-  std::unique_ptr<MpdNotifier> Create(DashProfile dash_profile,
-                                      const MpdOptions& mpd_options,
+  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options,
                                       const std::vector<std::string>& base_urls,
                                       const std::string& output_path) override {
     EXPECT_EQ(expected_base_urls_, base_urls);
 
     std::unique_ptr<MockMpdNotifier> mock_notifier(
-        new MockMpdNotifier(kOnDemandProfile));
+        new MockMpdNotifier(mpd_options));
 
     EXPECT_CALL(*mock_notifier, Init()).WillOnce(Return(true));
     EXPECT_CALL(*mock_notifier, NotifyNewContainer(_, _))

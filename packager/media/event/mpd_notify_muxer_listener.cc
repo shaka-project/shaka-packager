@@ -22,8 +22,8 @@ namespace media {
 MpdNotifyMuxerListener::MpdNotifyMuxerListener(MpdNotifier* mpd_notifier)
     : mpd_notifier_(mpd_notifier), notification_id_(0), is_encrypted_(false) {
   DCHECK(mpd_notifier);
-  DCHECK(mpd_notifier->dash_profile() == kOnDemandProfile ||
-         mpd_notifier->dash_profile() == kLiveProfile);
+  DCHECK(mpd_notifier->dash_profile() == DashProfile::kOnDemand ||
+         mpd_notifier->dash_profile() == DashProfile::kLive);
 }
 
 MpdNotifyMuxerListener::~MpdNotifyMuxerListener() {}
@@ -76,7 +76,7 @@ void MpdNotifyMuxerListener::OnMediaStart(
                                          key_system_info_, media_info.get());
   }
 
-  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+  if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     // TODO(kqyang): Check return result.
     mpd_notifier_->NotifyNewContainer(*media_info, &notification_id_);
   } else {
@@ -88,7 +88,7 @@ void MpdNotifyMuxerListener::OnMediaStart(
 // the information is in the media info.
 void MpdNotifyMuxerListener::OnSampleDurationReady(
     uint32_t sample_duration) {
-  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+  if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifySampleDuration(notification_id_, sample_duration);
     return;
   }
@@ -117,8 +117,10 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t index_range_end,
                                         float duration_seconds,
                                         uint64_t file_size) {
-  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+  if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     DCHECK(subsegments_.empty());
+    if (mpd_notifier_->mpd_type() == MpdType::kStatic)
+      mpd_notifier_->Flush();
     return;
   }
 
@@ -152,11 +154,12 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           uint64_t start_time,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
-  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+  if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     // TODO(kqyang): Check return result.
     mpd_notifier_->NotifyNewSegment(
         notification_id_, start_time, duration, segment_file_size);
-    mpd_notifier_->Flush();
+    if (mpd_notifier_->mpd_type() == MpdType::kDynamic)
+      mpd_notifier_->Flush();
   } else {
     SubsegmentInfo subsegment = {start_time, duration, segment_file_size};
     subsegments_.push_back(subsegment);

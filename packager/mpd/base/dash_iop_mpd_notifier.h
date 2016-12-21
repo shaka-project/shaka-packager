@@ -29,8 +29,7 @@ namespace shaka {
 /// All video Adaptation Sets have Role set to "main".
 class DashIopMpdNotifier : public MpdNotifier {
  public:
-  DashIopMpdNotifier(DashProfile dash_profile,
-                     const MpdOptions& mpd_options,
+  DashIopMpdNotifier(const MpdOptions& mpd_options,
                      const std::vector<std::string>& base_urls,
                      const std::string& output_path);
   ~DashIopMpdNotifier() override;

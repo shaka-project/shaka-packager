@@ -18,7 +18,7 @@ namespace shaka {
 
 class MockMpdNotifier : public MpdNotifier {
  public:
-  MockMpdNotifier(DashProfile profile);
+  explicit MockMpdNotifier(const MpdOptions& mpd_options);
   virtual ~MockMpdNotifier();
 
   MOCK_METHOD0(Init, bool());

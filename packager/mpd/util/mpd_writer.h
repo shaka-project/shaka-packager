@@ -35,7 +35,6 @@ class MpdNotifierFactory {
   virtual ~MpdNotifierFactory() {}
 
   virtual std::unique_ptr<MpdNotifier> Create(
-      DashProfile dash_profile,
       const MpdOptions& mpd_options,
       const std::vector<std::string>& base_urls,
       const std::string& output_path) = 0;

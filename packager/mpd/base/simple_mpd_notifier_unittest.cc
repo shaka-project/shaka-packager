@@ -35,8 +35,7 @@ const char kValidMediaInfo[] =
 const uint32_t kDefaultAdaptationSetId = 0u;
 }  // namespace
 
-class SimpleMpdNotifierTest
-    : public ::testing::TestWithParam<MpdBuilder::MpdType> {
+class SimpleMpdNotifierTest : public ::testing::Test {
  protected:
   SimpleMpdNotifierTest()
       : default_mock_adaptation_set_(
@@ -49,20 +48,6 @@ class SimpleMpdNotifierTest
 
   void TearDown() override {
     base::DeleteFile(temp_file_path_, false /* non recursive, just 1 file */);
-  }
-
-  std::unique_ptr<MockMpdBuilder> StaticMpdBuilderMock() {
-    return std::unique_ptr<MockMpdBuilder>(
-        new MockMpdBuilder(MpdBuilder::kStatic));
-  }
-
-  std::unique_ptr<MockMpdBuilder> DynamicMpdBuilderMock() {
-    return std::unique_ptr<MockMpdBuilder>(
-        new MockMpdBuilder(MpdBuilder::kDynamic));
-  }
-
-  MpdBuilder::MpdType GetMpdBuilderType(const SimpleMpdNotifier& notifier) {
-    return notifier.MpdBuilderForTesting()->type();
   }
 
   void SetMpdBuilder(SimpleMpdNotifier* notifier,
@@ -83,29 +68,12 @@ class SimpleMpdNotifierTest
   base::FilePath temp_file_path_;
 };
 
-// Verify that it creates the correct MpdBuilder type using DashProfile passed
-// to the constructor.
-TEST_F(SimpleMpdNotifierTest, CreateCorrectMpdBuilderType) {
-  SimpleMpdNotifier on_demand_notifier(kOnDemandProfile, empty_mpd_option_,
-                                       empty_base_urls_, output_path_);
-  EXPECT_TRUE(on_demand_notifier.Init());
-  EXPECT_EQ(MpdBuilder::kStatic,
-            GetMpdBuilderType(on_demand_notifier));
-  SimpleMpdNotifier live_notifier(kLiveProfile, empty_mpd_option_,
-                                  empty_base_urls_, output_path_);
-  EXPECT_TRUE(live_notifier.Init());
-  EXPECT_EQ(MpdBuilder::kDynamic, GetMpdBuilderType(live_notifier));
-}
-
 // Verify NotifyNewContainer() works as expected for VOD.
-TEST_P(SimpleMpdNotifierTest, NotifyNewContainer) {
-  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
-                             empty_base_urls_, output_path_);
+TEST_F(SimpleMpdNotifierTest, NotifyNewContainer) {
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
 
   const uint32_t kRepresentationId = 1u;
-  const MpdBuilder::MpdType mpd_type = GetParam();
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
@@ -125,44 +93,11 @@ TEST_P(SimpleMpdNotifierTest, NotifyNewContainer) {
   EXPECT_TRUE(notifier.Flush());
 }
 
-// Verify NotifySampleDuration() works as expected for Live.
-TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
-  SimpleMpdNotifier notifier(kLiveProfile, empty_mpd_option_, empty_base_urls_,
-                             output_path_);
+TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
 
   const uint32_t kRepresentationId = 8u;
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
-  std::unique_ptr<MockRepresentation> mock_representation(
-      new MockRepresentation(kRepresentationId));
-
-  EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
-      .WillOnce(Return(default_mock_adaptation_set_.get()));
-  EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
-      .WillOnce(Return(mock_representation.get()));
-
-  uint32_t container_id;
-  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
-  EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
-                                          &container_id));
-  EXPECT_EQ(kRepresentationId, container_id);
-
-  const uint32_t kSampleDuration = 100;
-  EXPECT_CALL(*mock_representation, SetSampleDuration(kSampleDuration));
-  EXPECT_TRUE(
-      notifier.NotifySampleDuration(kRepresentationId, kSampleDuration));
-}
-
-// Verify that NotifySampleDuration works for OnDemand profile.
-// TODO(rkuroiwa): SimpleMpdNotifier returns a container ID but does not
-// register it to its map for VOD. Must fix and enable this test.
-// This test can be also parmeterized just like NotifyNewContainer() test, once
-// it is fixed.
-TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
-  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
-                             empty_base_urls_, output_path_);
-
-  const uint32_t kRepresentationId = 14u;
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
@@ -189,8 +124,7 @@ TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
 // This issue identified a bug where using SimpleMpdNotifier with multiple
 // threads causes a deadlock.
 TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
-  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
-                             empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
   uint32_t container_id;
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
@@ -199,13 +133,11 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
   EXPECT_TRUE(notifier.Flush());
 }
 
-// Verify that NotifyNewSegment() for live works.
-TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
-  SimpleMpdNotifier notifier(kLiveProfile, empty_mpd_option_, empty_base_urls_,
-                             output_path_);
+TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
 
   const uint32_t kRepresentationId = 447834u;
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
@@ -230,13 +162,11 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
                                         kSegmentDuration, kSegmentSize));
 }
 
-// Verify AddContentProtectionElement() works. Profile doesn't matter.
 TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
-  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
-                             empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
 
   const uint32_t kRepresentationId = 0u;
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
@@ -256,7 +186,7 @@ TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
   EXPECT_TRUE(notifier.AddContentProtectionElement(kRepresentationId, element));
 }
 
-TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
+TEST_F(SimpleMpdNotifierTest, UpdateEncryption) {
   const char kProtectedContent[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -276,10 +206,9 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
       "  default_key_id: '_default_key_id_'\n"
       "}\n"
       "container_type: 1\n";
-  SimpleMpdNotifier notifier(kLiveProfile, empty_mpd_option_, empty_base_urls_,
-                             output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
   const uint32_t kRepresentationId = 447834u;
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
@@ -312,7 +241,7 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
 }
 
 // Don't put different audio languages or codecs in the same AdaptationSet.
-TEST_P(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
+TEST_F(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
   // MP4, English
   const char kAudioContent1[] =
       "audio_info {\n"
@@ -365,9 +294,8 @@ TEST_P(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
       "container_type: CONTAINER_WEBM\n"
       "media_duration_seconds: 10.5\n";
 
-  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
-                             empty_base_urls_, output_path_);
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
   std::unique_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
@@ -409,10 +337,5 @@ TEST_P(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kAudioContent4), &unused_container_id));
 }
-
-INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
-                        SimpleMpdNotifierTest,
-                        ::testing::Values(MpdBuilder::kStatic,
-                                          MpdBuilder::kDynamic));
 
 }  // namespace shaka

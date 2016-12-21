@@ -56,15 +56,9 @@ class RepresentationXmlNode;
 /// This class generates DASH MPDs (Media Presentation Descriptions).
 class MpdBuilder {
  public:
-  enum MpdType {
-    kStatic = 0,
-    kDynamic
-  };
-
   /// Constructs MpdBuilder.
-  /// @param type indicates whether the MPD should be for VOD or live content
-  ///        (kStatic for VOD profile, or kDynamic for live profile).
-  MpdBuilder(MpdType type, const MpdOptions& mpd_options);
+  /// @param mpd_options contains options on how this MPD should be built.
+  explicit MpdBuilder(const MpdOptions& mpd_options);
   virtual ~MpdBuilder();
 
   /// Add <BaseURL> entry to the MPD.
@@ -88,9 +82,6 @@ class MpdBuilder {
   /// @return true on success, false otherwise.
   virtual bool ToString(std::string* output);
 
-  /// @return The mpd type.
-  MpdType type() const { return type_; }
-
   /// Adjusts the fields of MediaInfo so that paths are relative to the
   /// specified MPD path.
   /// @param mpd_path is the file path of the MPD file.
@@ -106,9 +97,11 @@ class MpdBuilder {
   }
 
  private:
-  // DynamicMpdBuilderTest needs to set availabilityStartTime so that the test
+  // LiveMpdBuilderTest needs to set availabilityStartTime so that the test
   // doesn't need to depend on current time.
-  friend class DynamicMpdBuilderTest;
+  friend class LiveMpdBuilderTest;
+  template <DashProfile profile>
+  friend class MpdBuilderTest;
 
   bool ToStringImpl(std::string* output);
 
@@ -143,7 +136,6 @@ class MpdBuilder {
   // successful, false otherwise.
   bool GetEarliestTimestamp(double* timestamp_seconds);
 
-  MpdType type_;
   MpdOptions mpd_options_;
   std::list<std::unique_ptr<AdaptationSet>> adaptation_sets_;
 
@@ -286,12 +278,11 @@ class AdaptationSet {
   AdaptationSet(uint32_t adaptation_set_id,
                 const std::string& lang,
                 const MpdOptions& mpd_options,
-                MpdBuilder::MpdType mpd_type,
                 base::AtomicSequenceNumber* representation_counter);
 
  private:
   friend class MpdBuilder;
-  template <MpdBuilder::MpdType type>
+  template <DashProfile profile>
   friend class MpdBuilderTest;
 
   // kSegmentAlignmentUnknown means that it is uncertain if the
@@ -345,7 +336,6 @@ class AdaptationSet {
   const uint32_t id_;
   const std::string lang_;
   const MpdOptions& mpd_options_;
-  const MpdBuilder::MpdType mpd_type_;
 
   // The ids of the adaptation sets this adaptation set can switch to.
   std::vector<uint32_t> adaptation_set_switching_ids_;
@@ -513,7 +503,7 @@ class Representation {
 
  private:
   friend class AdaptationSet;
-  template <MpdBuilder::MpdType type>
+  template <DashProfile profile>
   friend class MpdBuilderTest;
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);

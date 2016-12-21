@@ -104,11 +104,15 @@ class MockRepresentationStateChangeListener
 };
 }  // namespace
 
-template <MpdBuilder::MpdType type>
+template <DashProfile profile>
 class MpdBuilderTest : public ::testing::Test {
  public:
-  MpdBuilderTest() : mpd_(type, MpdOptions()), representation_() {}
+  MpdBuilderTest() : mpd_(MpdOptions()), representation_() {
+    mpd_.mpd_options_.dash_profile = profile;
+  }
   ~MpdBuilderTest() override {}
+
+  MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
 
   void CheckMpd(const std::string& expected_output_file) {
     std::string mpd_doc;
@@ -138,24 +142,20 @@ class MpdBuilderTest : public ::testing::Test {
   // constructor signatures.
   std::unique_ptr<Representation> CreateRepresentation(
       const MediaInfo& media_info,
-      const MpdOptions& mpd_options,
       uint32_t representation_id,
       std::unique_ptr<RepresentationStateChangeListener>
           state_change_listener) {
     return std::unique_ptr<Representation>(
-        new Representation(media_info, mpd_options, representation_id,
+        new Representation(media_info, mpd_options_, representation_id,
                            std::move(state_change_listener)));
   }
 
   std::unique_ptr<AdaptationSet> CreateAdaptationSet(
       uint32_t adaptation_set_id,
       const std::string& lang,
-      const MpdOptions& mpd_options,
-      MpdBuilder::MpdType mpd_type,
       base::AtomicSequenceNumber* representation_counter) {
-    return std::unique_ptr<AdaptationSet>(
-        new AdaptationSet(adaptation_set_id, lang, mpd_options, mpd_type,
-                          representation_counter));
+    return std::unique_ptr<AdaptationSet>(new AdaptationSet(
+        adaptation_set_id, lang, mpd_options_, representation_counter));
   }
 
   // Helper function to return an empty listener for tests that don't need
@@ -170,28 +170,29 @@ class MpdBuilderTest : public ::testing::Test {
   Representation* representation_;  // Owned by |mpd_|.
 
  private:
+  MpdOptions mpd_options_;
+
   DISALLOW_COPY_AND_ASSIGN(MpdBuilderTest);
 };
 
-class StaticMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kStatic> {};
+class OnDemandMpdBuilderTest : public MpdBuilderTest<DashProfile::kOnDemand> {};
 
 // Use this test name for things that are common to both static an dynamic
 // mpd builder tests.
-typedef StaticMpdBuilderTest CommonMpdBuilderTest;
+typedef OnDemandMpdBuilderTest CommonMpdBuilderTest;
 
-class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
+class LiveMpdBuilderTest : public MpdBuilderTest<DashProfile::kLive> {
  public:
-  ~DynamicMpdBuilderTest() override {}
+  ~LiveMpdBuilderTest() override {}
 
   // Anchors availabilityStartTime so that the test result doesn't depend on the
   // current time.
   void SetUp() override {
     SetPackagerVersionForTesting("<tag>-<hash>-<test>");
+    mpd_.mpd_options_.mpd_type = MpdType::kDynamic;
     mpd_.availability_start_time_ = "2011-12-25T12:30:00";
     InjectTestClock();
   }
-
-  MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
@@ -231,14 +232,14 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   uint32_t DefaultTimeScale() const { return 1000; };
 };
 
-class SegmentTemplateTest : public DynamicMpdBuilderTest {
+class SegmentTemplateTest : public LiveMpdBuilderTest {
  public:
   SegmentTemplateTest()
       : bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
   ~SegmentTemplateTest() override {}
 
   void SetUp() override {
-    DynamicMpdBuilderTest::SetUp();
+    LiveMpdBuilderTest::SetUp();
     ASSERT_NO_FATAL_FAILURE(AddRepresentationWithDefaultMediaInfo());
   }
 
@@ -282,8 +283,9 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
         " xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
         " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
-        " availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
-        " type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        " availabilityStartTime=\"2011-12-25T12:30:00\" "
+        " profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        " minBufferTime=\"PT2S\" type=\"dynamic\" "
         " publishTime=\"2016-01-11T15:10:24Z\">\n"
         "  <Period id=\"0\" start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
@@ -331,7 +333,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
   // that it does not automatically add a representation, that has $Time$
   // template.
   void SetUp() override {
-    DynamicMpdBuilderTest::SetUp();
+    LiveMpdBuilderTest::SetUp();
 
     // The only diff with current GetDefaultMediaInfo() is that this uses
     // $Number$ for segment template.
@@ -367,8 +369,9 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
         "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
         "xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
-        "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
-        "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        "availabilityStartTime=\"2011-12-25T12:30:00\" "
+        "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        "minBufferTime=\"PT2S\" type=\"dynamic\" "
         "publishTime=\"2016-01-11T15:10:24Z\" "
         "timeShiftBufferDepth=\"PT%dS\">\n"
         "  <Period id=\"0\" start=\"PT0S\">\n"
@@ -405,7 +408,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
 };
 
 TEST_F(CommonMpdBuilderTest, AddAdaptationSetSwitching) {
-  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
+  MpdBuilder mpd_builder(MpdOptions{});
   AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
   adaptation_set->AddAdaptationSetSwitching(1);
   adaptation_set->AddAdaptationSetSwitching(2);
@@ -420,8 +423,8 @@ TEST_F(CommonMpdBuilderTest, AddAdaptationSetSwitching) {
       "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
       "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
       "    xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"\n"
-      "    minBufferTime=\"PT2S\" type=\"static\"\n"
       "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+      "    minBufferTime=\"PT2S\" type=\"static\"\n"
       "    mediaPresentationDuration=\"PT0S\">\n"
       "  <Period id=\"0\">\n"
       "    <AdaptationSet id=\"0\" contentType=\"\">\n"
@@ -454,9 +457,8 @@ TEST_F(CommonMpdBuilderTest, ValidMediaInfo) {
       "}\n"
       "container_type: 1\n";
 
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
 }
 
@@ -464,9 +466,8 @@ TEST_F(CommonMpdBuilderTest, ValidMediaInfo) {
 TEST_F(CommonMpdBuilderTest, VideoAudioTextInfoNotSet) {
   const char kTestMediaInfo[] = "container_type: 1";
 
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
   EXPECT_FALSE(representation->Init());
 }
 
@@ -490,9 +491,8 @@ TEST_F(CommonMpdBuilderTest, VideoAndAudioInfoSet) {
       "}\n"
       "container_type: CONTAINER_MP4\n";
 
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
   EXPECT_FALSE(representation->Init());
 }
 
@@ -509,9 +509,8 @@ TEST_F(CommonMpdBuilderTest, InvalidMediaInfo) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
   EXPECT_FALSE(representation->Init());
 }
 
@@ -528,9 +527,8 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
   EXPECT_NO_FATAL_FAILURE(
@@ -559,7 +557,7 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoVp8CodecInMp4) {
       "container_type: 1\n";
   auto representation =
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp8),
-                           MpdOptions(), kAnyRepresentationId, NoListener());
+                           kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
   EXPECT_NO_FATAL_FAILURE(
@@ -582,7 +580,7 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoVp8CodecInWebm) {
       "container_type: 3\n";
   auto representation =
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp8),
-                           MpdOptions(), kAnyRepresentationId, NoListener());
+                           kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
   EXPECT_NO_FATAL_FAILURE(
@@ -605,7 +603,7 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoVp9CodecInWebm) {
       "container_type: 3\n";
   auto representation =
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp9),
-                           MpdOptions(), kAnyRepresentationId, NoListener());
+                           kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
   EXPECT_NO_FATAL_FAILURE(
@@ -635,7 +633,7 @@ TEST_F(CommonMpdBuilderTest,
   EXPECT_CALL(*listener,
               OnNewSegmentForRepresentation(kStartTime, kDuration));
   auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo),
                            kAnyRepresentationId, std::move(listener));
   EXPECT_TRUE(representation->Init());
 
@@ -666,7 +664,7 @@ TEST_F(CommonMpdBuilderTest,
   EXPECT_CALL(*listener,
               OnSetFrameRateForRepresentation(kFrameDuration, kTimeScale));
   auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo),
                            kAnyRepresentationId, std::move(listener));
   EXPECT_TRUE(representation->Init());
 
@@ -690,8 +688,7 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetVideoContentType) {
       "container_type: CONTAINER_MP4\n";
 
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "", &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
 
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
@@ -712,8 +709,7 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetAudioContentType) {
       "container_type: CONTAINER_MP4\n";
 
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "", &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
 
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
@@ -732,8 +728,7 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetTextContentType) {
       "container_type: CONTAINER_TEXT\n";
 
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "", &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
 
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
@@ -748,7 +743,7 @@ TEST_F(CommonMpdBuilderTest, TtmlXmlMimeType) {
       "container_type: CONTAINER_TEXT\n";
 
   auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTtmlXmlMediaInfo), MpdOptions(),
+      CreateRepresentation(ConvertToMediaInfo(kTtmlXmlMediaInfo),
                            kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
@@ -763,7 +758,7 @@ TEST_F(CommonMpdBuilderTest, TtmlMp4MimeType) {
       "container_type: CONTAINER_MP4\n";
 
   auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTtmlMp4MediaInfo), MpdOptions(),
+      CreateRepresentation(ConvertToMediaInfo(kTtmlMp4MediaInfo),
                            kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
@@ -777,9 +772,8 @@ TEST_F(CommonMpdBuilderTest, WebVttMimeType) {
       "}\n"
       "container_type: CONTAINER_TEXT\n";
 
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kWebVttMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kWebVttMediaInfo), kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
       "mimeType", "text/vtt", representation->GetXml().get()));
@@ -796,8 +790,7 @@ TEST_F(CommonMpdBuilderTest, CheckLanguageAttributeSet) {
       "container_type: CONTAINER_TEXT\n";
 
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "en", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "en", &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
 
   xml::scoped_xml_ptr<xmlNode> node_xml(adaptation_set->GetXml());
@@ -818,8 +811,7 @@ TEST_F(CommonMpdBuilderTest, CheckConvertLanguageWithSubtag) {
   // "por-BR" is the long tag for Brazillian Portuguese.  The short tag
   // is "pt-BR", which is what should appear in the manifest.
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "por-BR", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "por-BR", &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
 
   xml::scoped_xml_ptr<xmlNode> node_xml(adaptation_set->GetXml());
@@ -831,14 +823,13 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
   base::AtomicSequenceNumber sequence_counter;
   const uint32_t kAdaptationSetId = 42;
   auto adaptation_set =
-      CreateAdaptationSet(kAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAdaptationSetId, "", &sequence_counter);
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, adaptation_set.get()));
 }
 
 // Verify AdaptationSet::AddRole() works for "main" role.
 TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
-  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
+  MpdBuilder mpd_builder(MpdOptions{});
   AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
 
   adaptation_set->AddRole(AdaptationSet::kRoleMain);
@@ -851,8 +842,8 @@ TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
      "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
      "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
      "    xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"\n"
-     "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+     "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
      "  <Period id=\"0\">\n"
      "    <AdaptationSet id=\"0\" contentType=\"\">\n"
@@ -871,7 +862,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
 // Add Role, ContentProtection, and Representation elements. Verify that
 // ContentProtection -> Role -> Representation are in order.
 TEST_F(CommonMpdBuilderTest, CheckContentProtectionRoleRepresentationOrder) {
-  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
+  MpdBuilder mpd_builder(MpdOptions{});
   AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
   adaptation_set->AddRole(AdaptationSet::kRoleMain);
   ContentProtectionElement any_content_protection;
@@ -894,8 +885,8 @@ TEST_F(CommonMpdBuilderTest, CheckContentProtectionRoleRepresentationOrder) {
      "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
      "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
      "    xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"\n"
-     "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+     "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
      "  <Period id=\"0\">\n"
      "    <AdaptationSet id=\"0\" contentType=\"audio\">\n"
@@ -1024,8 +1015,7 @@ TEST_F(CommonMpdBuilderTest,
       "container_type: 1\n";
 
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "", &sequence_counter);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
@@ -1250,9 +1240,8 @@ TEST_F(CommonMpdBuilderTest, SuppressRepresentationAttributes) {
       "}\n"
       "container_type: 1\n";
 
-  auto representation =
-      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener());
+  auto representation = CreateRepresentation(
+      ConvertToMediaInfo(kTestMediaInfo), kAnyRepresentationId, NoListener());
 
   representation->SuppressOnce(Representation::kSuppressWidth);
   xml::scoped_xml_ptr<xmlNode> no_width(representation->GetXml());
@@ -1382,7 +1371,7 @@ TEST_F(CommonMpdBuilderTest, BubbleUpAttributesToAdaptationSet) {
 // Also checking that not all Representations have to be added before calling
 // AddNewSegment() on a Representation.
 // The output MPD's schema is checked at the very end.
-TEST_F(StaticMpdBuilderTest, SubsegmentAlignment) {
+TEST_F(OnDemandMpdBuilderTest, SubsegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
       "video_info {\n"
@@ -1448,7 +1437,7 @@ TEST_F(StaticMpdBuilderTest, SubsegmentAlignment) {
 }
 
 // Verify that subsegmentAlignment can be force set to true.
-TEST_F(StaticMpdBuilderTest, ForceSetsubsegmentAlignment) {
+TEST_F(OnDemandMpdBuilderTest, ForceSetsubsegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
       "video_info {\n"
@@ -1472,9 +1461,9 @@ TEST_F(StaticMpdBuilderTest, ForceSetsubsegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
+  MpdOptions mpd_options;
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "", &sequence_counter);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
@@ -1502,7 +1491,7 @@ TEST_F(StaticMpdBuilderTest, ForceSetsubsegmentAlignment) {
 // Verify that segmentAlignment is set to true if all the Representations
 // segments' are aligned and the MPD type is dynamic.
 // The output MPD's schema is checked at the very end.
-TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
+TEST_F(LiveMpdBuilderTest, SegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
       "video_info {\n"
@@ -1559,7 +1548,7 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
 
 // Verify that the width and height attribute are set if all the video
 // representations have the same width and height.
-TEST_F(StaticMpdBuilderTest, AdapatationSetWidthAndHeight) {
+TEST_F(OnDemandMpdBuilderTest, AdapatationSetWidthAndHeight) {
   // Both 720p.
   const char kVideoMediaInfo1[] =
       "video_info {\n"
@@ -1600,7 +1589,7 @@ TEST_F(StaticMpdBuilderTest, AdapatationSetWidthAndHeight) {
 
 // Verify that the maxWidth and maxHeight attribute are set if there are
 // multiple video resolutions.
-TEST_F(StaticMpdBuilderTest, AdapatationSetMaxWidthAndMaxHeight) {
+TEST_F(OnDemandMpdBuilderTest, AdapatationSetMaxWidthAndMaxHeight) {
   const char kVideoMediaInfo1080p[] =
       "video_info {\n"
       "  codec: \"avc1\"\n"
@@ -1642,8 +1631,8 @@ TEST_F(CommonMpdBuilderTest, CheckRepresentationId) {
   const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   const uint32_t kRepresentationId = 1;
 
-  auto representation = CreateRepresentation(video_media_info, MpdOptions(),
-                                             kRepresentationId, NoListener());
+  auto representation =
+      CreateRepresentation(video_media_info, kRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   ASSERT_NO_FATAL_FAILURE(
       CheckIdEqual(kRepresentationId, representation.get()));
@@ -1664,8 +1653,7 @@ TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
 
   base::AtomicSequenceNumber sequence_counter;
   auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+      CreateAdaptationSet(kAnyAdaptationSetId, "", &sequence_counter);
 
   const MediaInfo video_media_info = ConvertToMediaInfo(kVideoMediaInfo);
   Representation* representation =
@@ -1716,8 +1704,8 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\" type=\"static\""
       " mediaPresentationDuration=\"PT0S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
@@ -1745,8 +1733,8 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\" type=\"static\""
       " mediaPresentationDuration=\"PT0S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
@@ -1800,8 +1788,8 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\" type=\"static\""
       " mediaPresentationDuration=\"PT0S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
@@ -1829,8 +1817,8 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\" type=\"static\""
       " mediaPresentationDuration=\"PT0S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
@@ -1853,13 +1841,13 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
 }
 
 // Add one video check the output.
-TEST_F(StaticMpdBuilderTest, Video) {
+TEST_F(OnDemandMpdBuilderTest, Video) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   ASSERT_NO_FATAL_FAILURE(AddRepresentation(video_media_info));
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputVideo1));
 }
 
-TEST_F(StaticMpdBuilderTest, TwoVideosWithDifferentResolutions) {
+TEST_F(OnDemandMpdBuilderTest, TwoVideosWithDifferentResolutions) {
   AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
 
   MediaInfo media_info1 = GetTestMediaInfo(kFileNameVideoMediaInfo1);
@@ -1872,7 +1860,7 @@ TEST_F(StaticMpdBuilderTest, TwoVideosWithDifferentResolutions) {
 }
 
 // Add both video and audio and check the output.
-TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
+TEST_F(OnDemandMpdBuilderTest, VideoAndAudio) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   MediaInfo audio_media_info = GetTestMediaInfo(kFileNameAudioMediaInfo1);
 
@@ -1897,7 +1885,7 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
 // MPD schema has strict ordering. AudioChannelConfiguration must appear before
 // ContentProtection.
 // Also test that Representation::AddContentProtection() works.
-TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
+TEST_F(OnDemandMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
   const char kTestMediaInfo[] =
       "bandwidth: 195857\n"
       "audio_info {\n"
@@ -1926,8 +1914,8 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\" type=\"static\""
       " mediaPresentationDuration=\"PT24.0094S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"audio\">"
@@ -1972,7 +1960,7 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
 
 // Static profile requires bandwidth to be set because it has no other way to
 // get the bandwidth for the Representation.
-TEST_F(StaticMpdBuilderTest, MediaInfoMissingBandwidth) {
+TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   video_media_info.clear_bandwidth();
   AddRepresentation(video_media_info);
@@ -1981,7 +1969,7 @@ TEST_F(StaticMpdBuilderTest, MediaInfoMissingBandwidth) {
   ASSERT_FALSE(mpd_.ToString(&mpd_doc));
 }
 
-TEST_F(StaticMpdBuilderTest, WriteToFile) {
+TEST_F(OnDemandMpdBuilderTest, WriteToFile) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(video_adaptation_set);
@@ -2007,7 +1995,7 @@ TEST_F(StaticMpdBuilderTest, WriteToFile) {
 }
 
 // Verify that a text path works.
-TEST_F(StaticMpdBuilderTest, Text) {
+TEST_F(OnDemandMpdBuilderTest, Text) {
   const char kTextMediaInfo[] =
       "text_info {\n"
       "  format: 'ttml'\n"
@@ -2026,8 +2014,8 @@ TEST_F(StaticMpdBuilderTest, Text) {
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
-      " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " minBufferTime=\"PT2S\" type=\"static\""
       " mediaPresentationDuration=\"PT35S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"text\" lang=\"en\">"
@@ -2057,7 +2045,7 @@ TEST_F(StaticMpdBuilderTest, Text) {
 // Check whether the attributes are set correctly for dynamic <MPD> element.
 // This test must use ASSERT_EQ for comparison because XmlEqual() cannot
 // handle namespaces correctly yet.
-TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
+TEST_F(LiveMpdBuilderTest, DynamicCheckMpdAttributes) {
   static const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<!--Generated with https://github.com/google/shaka-packager "
@@ -2068,15 +2056,40 @@ TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
       "xsi:schemaLocation="
       "\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
       "xmlns:cenc=\"urn:mpeg:cenc:2013\" "
+      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
       "minBufferTime=\"PT2S\" "
       "type=\"dynamic\" "
-      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
       "publishTime=\"2016-01-11T15:10:24Z\" "
       "availabilityStartTime=\"2011-12-25T12:30:00\">\n"
       "  <Period id=\"0\" start=\"PT0S\"/>\n"
       "</MPD>\n";
 
   std::string mpd_doc;
+  mutable_mpd_options()->mpd_type = MpdType::kDynamic;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  ASSERT_EQ(kExpectedOutput, mpd_doc);
+}
+
+TEST_F(LiveMpdBuilderTest, StaticCheckMpdAttributes) {
+  static const char kExpectedOutput[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<!--Generated with https://github.com/google/shaka-packager "
+      "version <tag>-<hash>-<test>-->\n"
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
+      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+      "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+      "xsi:schemaLocation="
+      "\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
+      "xmlns:cenc=\"urn:mpeg:cenc:2013\" "
+      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+      "minBufferTime=\"PT2S\" "
+      "type=\"static\" "
+      "mediaPresentationDuration=\"PT0S\">\n"
+      "  <Period id=\"0\"/>\n"
+      "</MPD>\n";
+
+  std::string mpd_doc;
+  mutable_mpd_options()->mpd_type = MpdType::kStatic;
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));
   ASSERT_EQ(kExpectedOutput, mpd_doc);
 }

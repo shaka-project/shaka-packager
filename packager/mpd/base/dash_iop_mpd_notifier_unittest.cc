@@ -91,8 +91,7 @@ MATCHER_P(ContentProtectionElementEq, expected, "") {
 // (https://code.google.com/p/googletest/wiki/AdvancedGuide#Typed_Tests);
 // also because SimpleMpdNotifier and DashIopMpdNotifier have common behavior
 // for most of the public functions.
-class DashIopMpdNotifierTest
-    : public ::testing::TestWithParam<MpdBuilder::MpdType> {
+class DashIopMpdNotifierTest : public ::testing::Test {
  protected:
   DashIopMpdNotifierTest()
       : default_mock_adaptation_set_(
@@ -109,21 +108,9 @@ class DashIopMpdNotifierTest
     base::DeleteFile(temp_file_path_, false /* non recursive, just 1 file */);
   }
 
-  MpdBuilder::MpdType GetMpdBuilderType(const DashIopMpdNotifier& notifier) {
-    return notifier.MpdBuilderForTesting()->type();
-  }
-
   void SetMpdBuilder(DashIopMpdNotifier* notifier,
                      std::unique_ptr<MpdBuilder> mpd_builder) {
     notifier->SetMpdBuilderForTesting(std::move(mpd_builder));
-  }
-
-  MpdBuilder::MpdType mpd_type() {
-    return GetParam();
-  }
-
-  DashProfile dash_profile() {
-    return mpd_type() == MpdBuilder::kStatic ? kOnDemandProfile : kLiveProfile;
   }
 
   // Use output_path_ for specifying the MPD output path so that
@@ -142,27 +129,13 @@ class DashIopMpdNotifierTest
   base::FilePath temp_file_path_;
 };
 
-// Verify that it creates the correct MpdBuilder type using DashProfile passed
-// to the constructor.
-TEST_F(DashIopMpdNotifierTest, CreateCorrectMpdBuilderType) {
-  DashIopMpdNotifier on_demand_notifier(kOnDemandProfile, empty_mpd_option_,
-                                        empty_base_urls_, output_path_);
-  EXPECT_TRUE(on_demand_notifier.Init());
-  EXPECT_EQ(MpdBuilder::kStatic, GetMpdBuilderType(on_demand_notifier));
-  DashIopMpdNotifier live_notifier(kLiveProfile, empty_mpd_option_,
-                                   empty_base_urls_, output_path_);
-  EXPECT_TRUE(live_notifier.Init());
-  EXPECT_EQ(MpdBuilder::kDynamic, GetMpdBuilderType(live_notifier));
-}
-
 // Verify that basic VOD NotifyNewContainer() operation works.
 // No encrypted contents.
-TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
+TEST_F(DashIopMpdNotifierTest, NotifyNewContainer) {
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
 
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -183,18 +156,17 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
 
 // Verify that if the MediaInfo contains text information, then
 // MpdBuilder::ForceSetSegmentAlignment() is called.
-TEST_P(DashIopMpdNotifierTest, NotifyNewTextContainer) {
+TEST_F(DashIopMpdNotifierTest, NotifyNewTextContainer) {
   const char kTextMediaInfo[] =
       "text_info {\n"
       "  format: 'ttml'\n"
       "  language: 'en'\n"
       "}\n"
       "container_type: CONTAINER_TEXT\n";
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
 
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(StrEq("en")))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -218,12 +190,11 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewTextContainer) {
 // MediaInfo::ProtectedContent.
 // Two AdaptationSets should be created.
 // AdaptationSets with different DRM won't be switchable.
-TEST_P(DashIopMpdNotifierTest,
+TEST_F(DashIopMpdNotifierTest,
        NotifyNewContainersWithDifferentProtectedContent) {
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // Note they both have different (bogus) pssh, like real use case.
   // default Key ID = _default_key_id_
@@ -338,11 +309,10 @@ TEST_P(DashIopMpdNotifierTest,
 // Verify VOD NotifyNewContainer() operation works with same
 // MediaInfo::ProtectedContent. Only one AdaptationSet should be
 // created.
-TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+TEST_F(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
@@ -441,12 +411,11 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
 }
 
 // AddContentProtection() should not work and should always return false.
-TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
+TEST_F(DashIopMpdNotifierTest, AddContentProtection) {
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
 
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -473,11 +442,10 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
 //    should be switchable.
 // 3. Add a 4k protected content. This should also make a new AdaptationSet.
 //    It should be switchable with SD/HD AdaptationSet.
-TEST_P(DashIopMpdNotifierTest, SetAdaptationSetSwitching) {
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+TEST_F(DashIopMpdNotifierTest, SetAdaptationSetSwitching) {
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
@@ -610,12 +578,11 @@ TEST_P(DashIopMpdNotifierTest, SetAdaptationSetSwitching) {
 
 // Even if the UUIDs match, video and audio AdaptationSets should not be
 // switchable.
-TEST_P(DashIopMpdNotifierTest,
+TEST_F(DashIopMpdNotifierTest,
        DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // These have the same default key ID and PSSH.
   const char kVideoContent[] =
@@ -699,7 +666,7 @@ TEST_P(DashIopMpdNotifierTest,
               ElementsAre());
 }
 
-TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
+TEST_F(DashIopMpdNotifierTest, UpdateEncryption) {
   const char kProtectedContent[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -720,11 +687,10 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
       "}\n"
       "container_type: 1\n";
 
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
 
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -761,8 +727,8 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
 // This issue identified a bug where using SimpleMpdNotifier with multiple
 // threads causes a deadlock. This tests with DashIopMpdNotifier.
 TEST_F(DashIopMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
-  DashIopMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
-                             empty_base_urls_, output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
   uint32_t container_id;
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
@@ -772,7 +738,7 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
 }
 
 // Don't put different audio languages or codecs in the same AdaptationSet.
-TEST_P(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
+TEST_F(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
   // MP4, English
   const char kAudioContent1[] =
       "audio_info {\n"
@@ -825,10 +791,9 @@ TEST_P(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
       "container_type: CONTAINER_WEBM\n"
       "media_duration_seconds: 10.5\n";
 
-  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
-                              empty_base_urls_, output_path_);
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
-      new MockMpdBuilder(mpd_type()));
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
   std::unique_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
@@ -870,11 +835,5 @@ TEST_P(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kAudioContent4), &unused_container_id));
 }
-
-
-INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
-                        DashIopMpdNotifierTest,
-                        ::testing::Values(MpdBuilder::kStatic,
-                                          MpdBuilder::kDynamic));
 
 }  // namespace shaka

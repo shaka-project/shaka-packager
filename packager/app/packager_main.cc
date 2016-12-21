@@ -460,16 +460,14 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 
   std::unique_ptr<MpdNotifier> mpd_notifier;
   if (!FLAGS_mpd_output.empty()) {
-    DashProfile profile =
-        FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;
     std::vector<std::string> base_urls = base::SplitString(
         FLAGS_base_urls, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (FLAGS_generate_dash_if_iop_compliant_mpd) {
-      mpd_notifier.reset(new DashIopMpdNotifier(profile, mpd_options, base_urls,
-                                                FLAGS_mpd_output));
+      mpd_notifier.reset(
+          new DashIopMpdNotifier(mpd_options, base_urls, FLAGS_mpd_output));
     } else {
-      mpd_notifier.reset(new SimpleMpdNotifier(profile, mpd_options, base_urls,
-                                               FLAGS_mpd_output));
+      mpd_notifier.reset(
+          new SimpleMpdNotifier(mpd_options, base_urls, FLAGS_mpd_output));
     }
     if (!mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";

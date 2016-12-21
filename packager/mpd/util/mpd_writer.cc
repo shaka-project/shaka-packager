@@ -35,12 +35,11 @@ class DashIopMpdNotifierFactory : public MpdNotifierFactory {
   DashIopMpdNotifierFactory() {}
   ~DashIopMpdNotifierFactory() override {}
 
-  std::unique_ptr<MpdNotifier> Create(DashProfile dash_profile,
-                                      const MpdOptions& mpd_options,
+  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options,
                                       const std::vector<std::string>& base_urls,
                                       const std::string& output_path) override {
-    return std::unique_ptr<MpdNotifier>(new DashIopMpdNotifier(
-        dash_profile, mpd_options, base_urls, output_path));
+    return std::unique_ptr<MpdNotifier>(
+        new DashIopMpdNotifier(mpd_options, base_urls, output_path));
   }
 };
 
@@ -50,12 +49,11 @@ class SimpleMpdNotifierFactory : public MpdNotifierFactory {
   SimpleMpdNotifierFactory() {}
   ~SimpleMpdNotifierFactory() override {}
 
-  std::unique_ptr<MpdNotifier> Create(DashProfile dash_profile,
-                                      const MpdOptions& mpd_options,
+  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options,
                                       const std::vector<std::string>& base_urls,
                                       const std::string& output_path) override {
-    return std::unique_ptr<MpdNotifier>(new SimpleMpdNotifier(
-        dash_profile, mpd_options, base_urls, output_path));
+    return std::unique_ptr<MpdNotifier>(
+        new SimpleMpdNotifier(mpd_options, base_urls, output_path));
   }
 };
 
@@ -96,8 +94,8 @@ void MpdWriter::AddBaseUrl(const std::string& base_url) {
 
 bool MpdWriter::WriteMpdToFile(const char* file_name) {
   CHECK(file_name);
-  std::unique_ptr<MpdNotifier> notifier = notifier_factory_->Create(
-      kOnDemandProfile, MpdOptions(), base_urls_, file_name);
+  std::unique_ptr<MpdNotifier> notifier =
+      notifier_factory_->Create(MpdOptions(), base_urls_, file_name);
   if (!notifier->Init()) {
     LOG(ERROR) << "failed to initialize MpdNotifier.";
     return false;

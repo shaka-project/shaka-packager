@@ -2,7 +2,8 @@
 
 namespace shaka {
 
-MockMpdNotifier::MockMpdNotifier(DashProfile profile) : MpdNotifier(profile) {}
+MockMpdNotifier::MockMpdNotifier(const MpdOptions& mpd_options)
+    : MpdNotifier(mpd_options) {}
 MockMpdNotifier::~MockMpdNotifier() {}
 
 }  // namespace shaka

@@ -18,9 +18,7 @@ namespace shaka {
 
 class MockMpdBuilder : public MpdBuilder {
  public:
-  // |type| indicates whether the MPD should be for VOD or live content (kStatic
-  // for VOD profile, or kDynamic for live profile).
-  explicit MockMpdBuilder(MpdType type);
+  MockMpdBuilder();
   ~MockMpdBuilder() override;
 
   MOCK_METHOD1(AddAdaptationSet, AdaptationSet*(const std::string& lang));

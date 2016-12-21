@@ -15,24 +15,20 @@
 #include <vector>
 
 #include "packager/base/macros.h"
+#include "packager/mpd/base/mpd_options.h"
 
 namespace shaka {
 
 class MediaInfo;
 struct ContentProtectionElement;
 
-enum DashProfile {
-  kUnknownProfile,
-  kOnDemandProfile,
-  kLiveProfile,
-};
-
 /// Interface for publish/subscribe publisher class which notifies MpdBuilder
 /// of media-related events.
 class MpdNotifier {
  public:
-  MpdNotifier(DashProfile dash_profile) : dash_profile_(dash_profile) {};
-  virtual ~MpdNotifier() {};
+  explicit MpdNotifier(const MpdOptions& mpd_options)
+      : mpd_options_(mpd_options) {}
+  virtual ~MpdNotifier() {}
 
   /// Initializes the notifier. For example, if this notifier uses a network for
   /// notification, then this would set up the connection with the remote host.
@@ -105,10 +101,13 @@ class MpdNotifier {
   virtual bool Flush() = 0;
 
   /// @return The dash profile for this object.
-  DashProfile dash_profile() const { return dash_profile_; }
+  DashProfile dash_profile() const { return mpd_options_.dash_profile; }
+
+  /// @return The mpd type for this object.
+  MpdType mpd_type() const { return mpd_options_.mpd_type; }
 
  private:
-  const DashProfile dash_profile_;
+  const MpdOptions mpd_options_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdNotifier);
 };

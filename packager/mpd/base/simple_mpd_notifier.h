@@ -30,8 +30,7 @@ struct MpdOptions;
 /// generates an Mpd file.
 class SimpleMpdNotifier : public MpdNotifier {
  public:
-  SimpleMpdNotifier(DashProfile dash_profile,
-                    const MpdOptions& mpd_options,
+  SimpleMpdNotifier(const MpdOptions& mpd_options,
                     const std::vector<std::string>& base_urls,
                     const std::string& output_path);
   ~SimpleMpdNotifier() override;

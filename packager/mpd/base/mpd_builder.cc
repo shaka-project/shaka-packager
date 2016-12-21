@@ -396,10 +396,8 @@ class RepresentationStateChangeListenerImpl
 
 }  // namespace
 
-MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
-    : type_(type),
-      mpd_options_(mpd_options),
-      clock_(new base::DefaultClock()) {}
+MpdBuilder::MpdBuilder(const MpdOptions& mpd_options)
+    : mpd_options_(mpd_options), clock_(new base::DefaultClock()) {}
 
 MpdBuilder::~MpdBuilder() {}
 
@@ -410,7 +408,7 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
 AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
   std::unique_ptr<AdaptationSet> adaptation_set(
       new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
-                        type_, &representation_counter_));
+                        &representation_counter_));
   DCHECK(adaptation_set);
 
   if (!lang.empty() && lang == mpd_options_.default_language) {
@@ -482,7 +480,8 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       return NULL;
   }
 
-  if (type_ == kDynamic) {
+  // TODO(kqyang): Should we set @start unconditionally to 0?
+  if (mpd_options_.mpd_type == MpdType::kDynamic) {
     // This is the only Period and it is a regular period.
     period.SetStringAttribute("start", "PT0S");
   }
@@ -491,16 +490,35 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
     return NULL;
 
   AddMpdNameSpaceInfo(&mpd);
+
+  static const char kOnDemandProfile[] =
+      "urn:mpeg:dash:profile:isoff-on-demand:2011";
+  static const char kLiveProfile[] =
+      "urn:mpeg:dash:profile:isoff-live:2011";
+  switch (mpd_options_.dash_profile) {
+    case DashProfile::kOnDemand:
+      mpd.SetStringAttribute("profiles", kOnDemandProfile);
+      break;
+    case DashProfile::kLive:
+      mpd.SetStringAttribute("profiles", kLiveProfile);
+      break;
+    default:
+      NOTREACHED() << "Unknown DASH profile: "
+                   << static_cast<int>(mpd_options_.dash_profile);
+      break;
+  }
+
   AddCommonMpdInfo(&mpd);
-  switch (type_) {
-    case kStatic:
+  switch (mpd_options_.mpd_type) {
+    case MpdType::kStatic:
       AddStaticMpdInfo(&mpd);
       break;
-    case kDynamic:
+    case MpdType::kDynamic:
       AddDynamicMpdInfo(&mpd);
       break;
     default:
-      NOTREACHED() << "Unknown MPD type: " << type_;
+      NOTREACHED() << "Unknown MPD type: "
+                   << static_cast<int>(mpd_options_.mpd_type);
       break;
   }
 
@@ -532,13 +550,10 @@ void MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
 
 void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
   DCHECK(mpd_node);
-  DCHECK_EQ(MpdBuilder::kStatic, type_);
+  DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
   static const char kStaticMpdType[] = "static";
-  static const char kStaticMpdProfile[] =
-      "urn:mpeg:dash:profile:isoff-on-demand:2011";
   mpd_node->SetStringAttribute("type", kStaticMpdType);
-  mpd_node->SetStringAttribute("profiles", kStaticMpdProfile);
   mpd_node->SetStringAttribute(
       "mediaPresentationDuration",
       SecondsToXmlDuration(GetStaticMpdDuration(mpd_node)));
@@ -546,13 +561,10 @@ void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
 
 void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   DCHECK(mpd_node);
-  DCHECK_EQ(MpdBuilder::kDynamic, type_);
+  DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
 
   static const char kDynamicMpdType[] = "dynamic";
-  static const char kDynamicMpdProfile[] =
-      "urn:mpeg:dash:profile:isoff-live:2011";
   mpd_node->SetStringAttribute("type", kDynamicMpdType);
-  mpd_node->SetStringAttribute("profiles", kDynamicMpdProfile);
 
   // No offset from NOW.
   mpd_node->SetStringAttribute("publishTime",
@@ -594,12 +606,13 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
 
 float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   DCHECK(mpd_node);
-  DCHECK_EQ(MpdBuilder::kStatic, type_);
+  DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
   xmlNodePtr period_node = FindPeriodNode(mpd_node);
   DCHECK(period_node) << "Period element must be a child of mpd_node.";
   DCHECK(IsPeriodNode(period_node));
 
+  // TODO(kqyang): Verify if this works for static + live profile.
   // Attribute mediaPresentationDuration must be present for 'static' MPD. So
   // setting "PT0S" is required even if none of the representaions have duration
   // attribute.
@@ -673,13 +686,11 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
 AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
                              const std::string& lang,
                              const MpdOptions& mpd_options,
-                             MpdBuilder::MpdType mpd_type,
                              base::AtomicSequenceNumber* counter)
     : representation_counter_(counter),
       id_(adaptation_set_id),
       lang_(lang),
       mpd_options_(mpd_options),
-      mpd_type_(mpd_type),
       segments_aligned_(kSegmentAlignmentUnknown),
       force_set_segment_alignment_(false) {
   DCHECK(counter);
@@ -791,15 +802,16 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   // Note: must be checked before checking segments_aligned_ (below). So that
   // segments_aligned_ is set before checking below.
-  if (mpd_type_ == MpdBuilder::kStatic) {
+  if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
     CheckVodSegmentAlignment();
   }
 
   if (segments_aligned_ == kSegmentAlignmentTrue) {
-    adaptation_set.SetStringAttribute(mpd_type_ == MpdBuilder::kStatic
-                                          ? "subsegmentAlignment"
-                                          : "segmentAlignment",
-                                      "true");
+    adaptation_set.SetStringAttribute(
+        mpd_options_.dash_profile == DashProfile::kOnDemand
+            ? "subsegmentAlignment"
+            : "segmentAlignment",
+        "true");
   }
 
   if (picture_aspect_ratio_.size() == 1)
@@ -860,7 +872,7 @@ void AdaptationSet::AddAdaptationSetSwitching(uint32_t adaptation_set_id) {
 void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
                                                   uint64_t start_time,
                                                   uint64_t duration) {
-  if (mpd_type_ == MpdBuilder::kDynamic) {
+  if (mpd_options_.dash_profile == DashProfile::kLive) {
     CheckLiveSegmentAlignment(representation_id, start_time, duration);
   } else {
     representation_segment_start_times_[representation_id].push_back(
