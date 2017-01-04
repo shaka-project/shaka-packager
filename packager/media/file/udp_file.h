@@ -14,6 +14,12 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/media/file/file.h"
 
+#if defined(OS_WIN)
+#include <winsock2.h>
+#elif ! defined(SOCKET)
+typedef int SOCKET;
+#endif  // defined(OS_WIN)
+
 namespace shaka {
 namespace media {
 
@@ -41,7 +47,7 @@ class UdpFile : public File {
   bool Open() override;
 
  private:
-  int socket_;
+  SOCKET socket_;
 
   DISALLOW_COPY_AND_ASSIGN(UdpFile);
 };

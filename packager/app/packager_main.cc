@@ -50,6 +50,7 @@
 #include <codecvt>
 #include <functional>
 #include <locale>
+#include <winsock2.h>
 #endif  // defined(OS_WIN)
 
 DEFINE_bool(use_fake_clock_for_muxer,
@@ -415,6 +416,14 @@ Status RunRemuxJobs(const std::vector<std::unique_ptr<RemuxJob>>& remux_jobs) {
 }
 
 bool RunPackager(const StreamDescriptorList& stream_descriptors) {
+#if defined(OS_WIN)
+  WSADATA wsa_data;
+  if (WSAStartup(MAKEWORD(2,2), &wsa_data)) {
+    LOG(ERROR) << "Winsock start up failed.";
+    return false;
+  }
+#endif  // defined(OS_WIN)
+
   const FourCC protection_scheme = GetProtectionScheme(FLAGS_protection_scheme);
   if (protection_scheme == FOURCC_NULL)
     return false;
@@ -511,6 +520,10 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     if (!mpd_notifier->Flush())
       return false;
   }
+
+#if defined(OS_WIN)
+  WSACleanup();
+#endif  // defined(OS_WIN)
 
   printf("Packaging completed successfully.\n");
   return true;
