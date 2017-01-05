@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "packager/app/fixed_key_encryption_flags.h"
+#include "packager/app/playready_key_encryption_flags.h"
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
@@ -19,6 +20,7 @@
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
 #include "packager/media/base/muxer_options.h"
+#include "packager/media/base/playready_key_source.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/widevine_key_source.h"
@@ -99,6 +101,34 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource() {
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);
+  } else if (FLAGS_enable_playready_encryption) {
+    if (!FLAGS_playready_key_id.empty() && !FLAGS_playready_key.empty()) {
+      encryption_key_source = PlayReadyKeySource::CreateFromKeyAndKeyId(
+          FLAGS_playready_key_id, FLAGS_playready_key);
+    } else if (!FLAGS_playready_server_url.empty() &&
+               !FLAGS_program_identifier.empty()) {
+      std::unique_ptr<PlayReadyKeySource> playready_key_source;
+      if (!FLAGS_client_cert_file.empty() &&
+          !FLAGS_client_cert_private_key_file.empty() &&
+          !FLAGS_client_cert_private_key_password.empty()) {
+        playready_key_source.reset(new PlayReadyKeySource(
+            FLAGS_playready_server_url,
+            FLAGS_client_cert_file,
+            FLAGS_client_cert_private_key_file,
+            FLAGS_client_cert_private_key_password));
+      } else {
+        playready_key_source.reset(new PlayReadyKeySource(
+            FLAGS_playready_server_url));
+      }
+      if (!FLAGS_ca_file.empty()) {
+        playready_key_source->SetCaFile(FLAGS_ca_file);
+      }
+      playready_key_source->FetchKeysWithProgramIdentifier(FLAGS_program_identifier);
+      encryption_key_source = std::move(playready_key_source);
+    } else {
+      LOG(ERROR) << "Error creating PlayReady key source.";
+      return std::unique_ptr<KeySource>();
+    }
   }
   return encryption_key_source;
 }

@@ -16,6 +16,10 @@ namespace shaka {
 
 namespace {
 const char kUserAgentString[] = "shaka-packager-http_fetcher/1.0";
+const char kSoapActionHeader[] =
+    "SOAPAction: \"http://schemas.microsoft.com/DRM/2007/03/protocols/"
+    "AcquirePackagingData\"";
+const char kXmlContentTypeHeader[] = "Content-Type: text/xml; charset=UTF-8";
 
 // Scoped CURL implementation which cleans up itself when goes out of scope.
 class ScopedCurl {
@@ -98,7 +102,6 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
                                      const std::string& data,
                                      std::string* response) {
   DCHECK(method == GET || method == POST);
-
   static LibCurlInitializer lib_curl_initializer;
 
   ScopedCurl scoped_curl;
@@ -116,11 +119,36 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, AppendToString);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+
+  if (!client_cert_private_key_file_.empty() &&
+      !client_cert_private_key_password_.empty() &&
+      !client_cert_file_.empty()) {
+    // Some PlayReady packaging servers only allow connects via HTTPS with
+    // client certificates.
+    curl_easy_setopt(curl, CURLOPT_SSLKEY,
+                     client_cert_private_key_file_.data());
+    curl_easy_setopt(curl, CURLOPT_KEYPASSWD,
+                     client_cert_private_key_password_.data());
+    curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
+    curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
+    curl_easy_setopt(curl, CURLOPT_SSLCERT, client_cert_file_.data());
+  }
+  if (!ca_file_.empty()) {
+    // Host validation needs to be off when using self-signed certificates.
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(curl, CURLOPT_CAINFO, ca_file_.data());
+  }
   if (method == POST) {
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
+    if (data.find("soap:Envelope") > 0) {
+      // Adds Http headers for SOAP requests.
+      struct curl_slist *chunk = NULL;
+      chunk = curl_slist_append(chunk, kXmlContentTypeHeader);
+      chunk = curl_slist_append(chunk, kSoapActionHeader);
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+    }
   }
-
   CURLcode res = curl_easy_perform(curl);
   if (res != CURLE_OK) {
     std::string error_message = base::StringPrintf(

@@ -69,6 +69,8 @@
         'network_util.h',
         'offset_byte_queue.cc',
         'offset_byte_queue.h',
+        'playready_key_source.cc',
+        'playready_key_source.h',
         'producer_consumer_queue.h',
         'protection_system_specific_info.cc',
         'protection_system_specific_info.h',

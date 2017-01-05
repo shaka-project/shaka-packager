@@ -26,6 +26,8 @@
         'app/packager_main.cc',
         'app/packager_util.cc',
         'app/packager_util.h',
+        'app/playready_key_encryption_flags.cc',
+        'app/playready_key_encryption_flags.h',
         'app/retired_flags.cc',
         'app/retired_flags.h',
         'app/stream_descriptor.cc',

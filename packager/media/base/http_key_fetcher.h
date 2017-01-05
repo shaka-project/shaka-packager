@@ -53,6 +53,24 @@ class HttpKeyFetcher : public KeyFetcher {
                       const std::string& data,
                       std::string* response);
 
+  /// Sets client certificate information for http requests.
+  /// @param cert_file absolute path to the client certificate.
+  /// @param private_key_file absolute path to the client certificate
+  ///        private key file.
+  /// @param private_key_password private key password.
+  void SetClientCertInfo(const std::string& cert_file,
+                         const std::string& private_key_file,
+                         const std::string& private_key_password) {
+    client_cert_file_ = cert_file;
+    client_cert_private_key_file_ = private_key_file;
+    client_cert_private_key_password_ = private_key_password;
+  }
+  /// Sets the Certifiate Authority file information for http requests.
+  /// @param ca_file absolute path to the client certificate
+  void SetCaFile(const std::string& ca_file) {
+    ca_file_ = ca_file;
+  }
+
  private:
   enum HttpMethod {
     GET,
@@ -65,6 +83,10 @@ class HttpKeyFetcher : public KeyFetcher {
                        const std::string& data, std::string* response);
 
   const uint32_t timeout_in_seconds_;
+  std::string ca_file_;
+  std::string client_cert_file_;
+  std::string client_cert_private_key_file_;
+  std::string client_cert_private_key_password_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpKeyFetcher);
 };
