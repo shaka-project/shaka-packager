@@ -16,7 +16,7 @@
 
 #if defined(OS_WIN)
 #include <winsock2.h>
-#elif ! defined(SOCKET)
+#else
 typedef int SOCKET;
 #endif  // defined(OS_WIN)
 

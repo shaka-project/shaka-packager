@@ -29,17 +29,7 @@
         'udp_file.h',
         'udp_options.cc',
         'udp_options.h',
-      ],
-      'conditions': [
-        ['OS == "win"', {
-          'sources': [
-            'udp_file_win.cc',
-          ],
-        }, {
-          'sources': [
-            'udp_file_posix.cc',
-          ],
-        }],
+        'udp_file.cc',
       ],
       'dependencies': [
         '../../base/base.gyp:base',

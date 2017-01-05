@@ -6,25 +6,31 @@
 
 #include "packager/media/file/udp_file.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#include <ws2tcpip.h>
+#include <memory>
+#define close closesocket
+#else
 #include <arpa/inet.h>
 #include <errno.h>
 #include <strings.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#define INVALID_SOCKET -1
+#endif  // defined(OS_WIN)
 
 #include <limits>
 
 #include "packager/base/logging.h"
 #include "packager/media/file/udp_options.h"
 
-// TODO(tinskip): Adapt to work with winsock.
-
 namespace shaka {
 namespace media {
 
 namespace {
 
-const int kInvalidSocket(-1);
+const SOCKET kInvalidSocket(INVALID_SOCKET);
 
 bool IsIpv4MulticastAddress(const struct in_addr& addr) {
   return (ntohl(addr.s_addr) & 0xf0000000) == 0xe0000000;
@@ -57,7 +63,8 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 
   int64_t result;
   do {
-    result = recvfrom(socket_, buffer, length, 0, NULL, 0);
+    result = recvfrom(socket_, reinterpret_cast<char *>(buffer),
+                      length, 0, NULL, 0);
   } while ((result == -1) && (errno == EINTR));
 
   return result;
@@ -92,7 +99,7 @@ bool UdpFile::Tell(uint64_t* position) {
 
 class ScopedSocket {
  public:
-  explicit ScopedSocket(int sock_fd)
+  explicit ScopedSocket(SOCKET sock_fd)
       : sock_fd_(sock_fd) {}
 
   ~ScopedSocket() {
@@ -100,16 +107,16 @@ class ScopedSocket {
       close(sock_fd_);
   }
 
-  int get() { return sock_fd_; }
+  SOCKET get() { return sock_fd_; }
 
-  int release() {
-    int socket = sock_fd_;
+  SOCKET release() {
+    SOCKET socket = sock_fd_;
     sock_fd_ = kInvalidSocket;
     return socket;
   }
 
  private:
-  int sock_fd_;
+  SOCKET sock_fd_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSocket);
 };
@@ -128,20 +135,27 @@ bool UdpFile::Open() {
     return false;
   }
 
-  struct sockaddr_in local_sock_addr;
-  bzero(&local_sock_addr, sizeof(local_sock_addr));
-  // TODO(kqyang): Support IPv6.
-  local_sock_addr.sin_family = AF_INET;
-  local_sock_addr.sin_port = htons(options->port());
+  struct in_addr local_in_addr = {0};
   if (inet_pton(AF_INET, options->address().c_str(),
-                &local_sock_addr.sin_addr) != 1) {
+                &local_in_addr) != 1) {
     LOG(ERROR) << "Malformed IPv4 address " << options->address();
     return false;
   }
 
+  struct sockaddr_in local_sock_addr = {0};
+  // TODO(kqyang): Support IPv6.
+  local_sock_addr.sin_family = AF_INET;
+  local_sock_addr.sin_port = htons(options->port());
+  if (IsIpv4MulticastAddress(local_in_addr)) {
+    local_sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  } else {
+    local_sock_addr.sin_addr = local_in_addr;
+  }
+
   if (options->reuse()) {
     const int optval = 1;
-    if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR, &optval,
+    if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR,
+                   reinterpret_cast<const char *>(&optval),
                    sizeof(optval)) < 0) {
       LOG(ERROR)
           << "Could not apply the SO_REUSEADDR property to the UDP socket";
@@ -156,9 +170,9 @@ bool UdpFile::Open() {
     return false;
   }
 
-  if (IsIpv4MulticastAddress(local_sock_addr.sin_addr)) {
+  if (IsIpv4MulticastAddress(local_in_addr)) {
     struct ip_mreq multicast_group;
-    multicast_group.imr_multiaddr = local_sock_addr.sin_addr;
+    multicast_group.imr_multiaddr = local_in_addr;
 
     if (options->interface_address().empty()) {
       LOG(ERROR) << "Interface address is required for multicast, which can be "
@@ -174,7 +188,8 @@ bool UdpFile::Open() {
     }
 
     if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                   &multicast_group, sizeof(multicast_group)) < 0) {
+                   reinterpret_cast<const char *>(&multicast_group),
+                   sizeof(multicast_group)) < 0) {
       LOG(ERROR) << "Failed to join multicast group.";
       return false;
     }
