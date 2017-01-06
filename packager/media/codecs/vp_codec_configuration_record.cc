@@ -104,7 +104,7 @@ bool VPCodecConfigurationRecord::ParseMP4(const std::vector<uint8_t>& data) {
   RCHECK(reader.ReadBits(1, &video_full_range_flag_));
   uint16_t codec_initialization_data_size = 0;
   RCHECK(reader.ReadBits(16, &codec_initialization_data_size));
-  RCHECK(reader.bits_available() >= codec_initialization_data_size * 8);
+  RCHECK(reader.bits_available() >= codec_initialization_data_size * 8u);
   const size_t header_size = data.size() - reader.bits_available() / 8;
   codec_initialization_data_.assign(
       data.begin() + header_size,

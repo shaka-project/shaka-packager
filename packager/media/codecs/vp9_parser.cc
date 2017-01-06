@@ -525,7 +525,7 @@ bool VP9Parser::Parse(const uint8_t* data,
             << "\n header_size: " << header_size;
 
     RCHECK(header_size > 0);
-    RCHECK(header_size * 8 <= reader.bits_available());
+    RCHECK(header_size * 8u <= reader.bits_available());
 
     data += vpx_frame.frame_size;
   }

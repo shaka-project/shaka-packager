@@ -208,7 +208,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         parse_state_ = SystemHeaderSkip;
         break;
       case PackHeaderStuffingSkip:
-        if ((end - read_ptr) >= skip_bytes_) {
+        if (end >= skip_bytes_ + read_ptr) {
           read_ptr += skip_bytes_;
           skip_bytes_ = 0;
           parse_state_ = StartCode1;
@@ -218,7 +218,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         }
         continue;
       case SystemHeaderSkip:
-        if ((end - read_ptr) >= skip_bytes_) {
+        if (end >= skip_bytes_ + read_ptr) {
           read_ptr += skip_bytes_;
           skip_bytes_ = 0;
           parse_state_ = StartCode1;
