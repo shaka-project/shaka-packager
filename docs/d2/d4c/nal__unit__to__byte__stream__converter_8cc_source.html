@@ -284,7 +284,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">if</span> (is_key_frame)</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordtype">int</span> adjustment = buffer_writer.Size();</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordtype">int</span> adjustment = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(buffer_writer.Size());</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordtype">size_t</span> subsample_id = 0;</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a> nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);</div>
@@ -334,7 +334,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            DCHECK_LT(old_nalu_size, subsamples-&gt;at(subsample_id).clear_bytes);</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes -=</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(old_nalu_size);</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            adjustment += old_nalu_size;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            adjustment += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(old_nalu_size);</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;          } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            <span class="comment">// Apply the adjustment on the current subsample, reset the</span></div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            <span class="comment">// adjustment and move to the next subsample.</span></div>
@@ -379,7 +379,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

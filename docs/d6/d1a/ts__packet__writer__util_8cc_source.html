@@ -163,19 +163,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// The size of all leading flags (not including the adaptation_field_length).</span></div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> kAdaptationFieldHeaderSize = 1;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">int</span> adaptation_field_length =</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">size_t</span> adaptation_field_length =</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      kAdaptationFieldHeaderSize + (has_pcr ? kPcrFieldsSize : 0);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">if</span> (remaining_data_size &lt; kTsPacketMaximumPayloadSize) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> current_ts_size = kTsPacketHeaderSize + remaining_data_size +</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                adaptation_field_length +</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                kAdaptationFieldLengthSize;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> current_ts_size = kTsPacketHeaderSize + remaining_data_size +</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                   adaptation_field_length +</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                   kAdaptationFieldLengthSize;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">if</span> (current_ts_size &lt; kTsPacketSize) {</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      adaptation_field_length += kTsPacketSize - current_ts_size;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    }</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  writer-&gt;AppendInt(static_cast&lt;uint8_t&gt;(adaptation_field_length));</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">int</span> remaining_bytes = adaptation_field_length;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">int</span> remaining_bytes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(adaptation_field_length);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  writer-&gt;AppendInt(static_cast&lt;uint8_t&gt;(</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="comment">// All flags except PCR_flag are 0.</span></div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      static_cast&lt;uint8_t&gt;(has_pcr) &lt;&lt; 4));</div>
@@ -233,7 +233,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;      WriteAdaptationField(has_pcr, pcr_base, bytes_left, writer);</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">size_t</span> bytes_for_adaptation_field = writer-&gt;Size() - before;</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">int</span> write_bytes =</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">size_t</span> write_bytes =</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;          kTsPacketMaximumPayloadSize - bytes_for_adaptation_field;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      writer-&gt;AppendArray(payload + payload_bytes_written, write_bytes);</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      payload_bytes_written += write_bytes;</div>
@@ -255,7 +255,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

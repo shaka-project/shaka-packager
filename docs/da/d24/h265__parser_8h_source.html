@@ -311,7 +311,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  <span class="comment">// Sturcture: |NALU Header |     Slice Header    |    Slice Data    |</span></div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  <span class="comment">// Size:      |&lt;- 16bits -&gt;|&lt;- header_bit_size -&gt;|&lt;- Rest of nalu -&gt;|</span></div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="comment">// Note that this is not a field in the H.265 spec.</span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordtype">int</span> header_bit_size = 0;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordtype">size_t</span> header_bit_size = 0;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordtype">bool</span> first_slice_segment_in_pic_flag = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordtype">bool</span> no_output_of_prior_pics_flag = <span class="keyword">false</span>;</div>
@@ -454,7 +454,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

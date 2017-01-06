@@ -2,10 +2,10 @@ var searchData=
 [
   ['bandwidth',['bandwidth',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a930587b1f3a3e38cf1e7974f01d8ce1e',1,'shaka::media::MuxerOptions']]],
   ['bandwidthestimator',['BandwidthEstimator',['../d2/d6f/classBandwidthEstimator.html',1,'BandwidthEstimator'],['../d2/d6f/classBandwidthEstimator.html#aaae9573785ee9d62e0927f806537ea97',1,'BandwidthEstimator::BandwidthEstimator()']]],
-  ['bit_5fposition',['bit_position',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a580e91c610d3d58bee0f4f4ed8ef12ef',1,'shaka::media::BitReader']]],
+  ['bit_5fposition',['bit_position',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a6b7456b84d6b463767127b57cd0dc898',1,'shaka::media::BitReader']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html',1,'shaka::media']]],
-  ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a909f0d78f3cd87fcedd1d965eb2aea35',1,'shaka::media::BitReader']]],
-  ['bits_5favailable',['bits_available',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a159b687704c85f0938918197b7d3b23d',1,'shaka::media::BitReader']]],
+  ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a264dbe3e94ba76214c1af75ab3877945',1,'shaka::media::BitReader']]],
+  ['bits_5favailable',['bits_available',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a1c1e1225c2780383e72996137bb7f86a',1,'shaka::media::BitReader']]],
   ['box',['Box',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html',1,'shaka::media::mp4']]],
   ['box_5fsize',['box_size',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#ad0186e0f9301bd07c52a55a8b1db0419',1,'shaka::media::mp4::Box']]],
   ['boxbuffer',['BoxBuffer',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html',1,'shaka::media::mp4']]],

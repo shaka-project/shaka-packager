@@ -284,7 +284,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  RCHECK(packet_start_code_prefix == kPesStartCode);</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  DVLOG(LOG_LEVEL_PES) &lt;&lt; <span class="stringliteral">&quot;stream_id=&quot;</span> &lt;&lt; std::hex &lt;&lt; stream_id &lt;&lt; std::dec;</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="keywordflow">if</span> (pes_packet_length == 0)</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    pes_packet_length = bit_reader.bits_available() / 8;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    pes_packet_length = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bit_reader.bits_available()) / 8;</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <span class="comment">// Ignore the PES for unknown stream IDs.</span></div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="comment">// See ITU H.222 Table 2-22 &quot;Stream_id assignments&quot;</span></div>
@@ -323,7 +323,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  RCHECK(bit_reader.ReadBits(1, &amp;pes_crc_flag));</div>
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  RCHECK(bit_reader.ReadBits(1, &amp;pes_extension_flag));</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  RCHECK(bit_reader.ReadBits(8, &amp;pes_header_data_length));</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordtype">int</span> pes_header_start_size = bit_reader.bits_available() / 8;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordtype">int</span> pes_header_start_size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bit_reader.bits_available()) / 8;</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  <span class="comment">// Compute the size and the offset of the ES payload.</span></div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  <span class="comment">// &quot;6&quot; for the 6 bytes read before and including |pes_packet_length|.</span></div>
@@ -376,36 +376,38 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  }</div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// Discard the rest of the PES packet header.</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  DCHECK_EQ(bit_reader.bits_available() % 8, 0);</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordtype">int</span> pes_header_remaining_size = pes_header_data_length -</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      (pes_header_start_size - bit_reader.bits_available() / 8);</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  RCHECK(pes_header_remaining_size &gt;= 0);</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="comment">// Read the PES packet.</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  DVLOG(LOG_LEVEL_PES)</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;Emit a reassembled PES:&quot;</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span> &lt;&lt; es_size</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span> &lt;&lt; media_pts</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span> &lt;&lt; media_dts</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; data_alignment_indicator=&quot;</span> &lt;&lt; data_alignment_indicator;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="keywordflow">return</span> es_parser_-&gt;Parse(&amp;raw_pes[es_offset], es_size, media_pts, media_dts);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;}</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="keywordtype">void</span> TsSectionPes::ResetPesState() {</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  pes_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">Reset</a>();</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  wait_for_pusi_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;}</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  DCHECK_EQ(bit_reader.bits_available() % 8, 0u);</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordtype">int</span> pes_header_remaining_size =</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      pes_header_data_length -</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      (pes_header_start_size -</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;       <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bit_reader.bits_available()) / 8);</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  RCHECK(pes_header_remaining_size &gt;= 0);</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="comment">// Read the PES packet.</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  DVLOG(LOG_LEVEL_PES)</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;Emit a reassembled PES:&quot;</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span> &lt;&lt; es_size</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span> &lt;&lt; media_pts</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span> &lt;&lt; media_dts</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; data_alignment_indicator=&quot;</span> &lt;&lt; data_alignment_indicator;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">return</span> es_parser_-&gt;Parse(&amp;raw_pes[es_offset], es_size, media_pts, media_dts);</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;}</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="keywordtype">void</span> TsSectionPes::ResetPesState() {</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  pes_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">Reset</a>();</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  wait_for_pusi_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;}</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_acea792e406efe5119cec2e3e522e02c2"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">shaka::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_ab1659ef71098c37e9fb4e55ab1664e84"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">shaka::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_a838fe5642e533477a5e229981e5f06e7"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a838fe5642e533477a5e229981e5f06e7">shaka::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

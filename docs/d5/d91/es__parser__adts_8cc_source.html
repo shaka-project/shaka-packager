@@ -152,8 +152,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="comment">// The layer field (2 bits) must be set to 0.</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">int</span> frame_size =</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">mp2t::AdtsHeader::GetAdtsFrameSize</a>(cur_buf, kAdtsHeaderMinSize);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">int</span> frame_size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">mp2t::AdtsHeader::GetAdtsFrameSize</a>(cur_buf, kAdtsHeaderMinSize));</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">if</span> (frame_size &lt; kAdtsHeaderMinSize) {</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="comment">// Too short to be an ADTS frame.</span></div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keywordflow">continue</span>;</div>
@@ -206,7 +206,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  }</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// Copy the input data to the ES buffer.</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  es_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">Push</a>(buf, size);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  es_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">Push</a>(buf, static_cast&lt;int&gt;(size));</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  es_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a838fe5642e533477a5e229981e5f06e7">Peek</a>(&amp;raw_es, &amp;raw_es_size);</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="comment">// Look for every ADTS frame in the ES buffer starting at offset = 0</span></div>
@@ -367,7 +367,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -163,7 +163,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">// Helper function to read up to 64 bits from a bit stream.</span></div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">static</span> uint64_t ReadBits(BitReader* reader, <span class="keywordtype">int</span> num_bits) {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  DCHECK_GE(reader-&gt;bits_available(), num_bits);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  DCHECK_GE(static_cast&lt;int&gt;(reader-&gt;bits_available()), num_bits);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  DCHECK((num_bits &gt; 0) &amp;&amp; (num_bits &lt;= 64));</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  uint64_t value;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  reader-&gt;ReadBits(num_bits, &amp;value);</div>
@@ -1312,7 +1312,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01223"></a><span class="lineno"> 1223</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 4; ++i) {</div>
 <div class="line"><a name="l01224"></a><span class="lineno"> 1224</span>&#160;      num_bits_to_read += 7;</div>
 <div class="line"><a name="l01225"></a><span class="lineno"> 1225</span>&#160;      <span class="keywordflow">if</span> (ReadBits(reader, 1) == 1) {</div>
-<div class="line"><a name="l01226"></a><span class="lineno"> 1226</span>&#160;        <span class="keywordflow">if</span> (reader-&gt;bits_available() &lt; num_bits_to_read)</div>
+<div class="line"><a name="l01226"></a><span class="lineno"> 1226</span>&#160;        <span class="keywordflow">if</span> (static_cast&lt;int&gt;(reader-&gt;bits_available()) &lt; num_bits_to_read)</div>
 <div class="line"><a name="l01227"></a><span class="lineno"> 1227</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l01228"></a><span class="lineno"> 1228</span>&#160;        <span class="comment">// prefix[] adds back the bits read individually.</span></div>
 <div class="line"><a name="l01229"></a><span class="lineno"> 1229</span>&#160;        <span class="keywordflow">return</span> ReadBits(reader, num_bits_to_read) | prefix[i];</div>
@@ -1333,7 +1333,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01244"></a><span class="lineno"> 1244</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 8; ++i) {</div>
 <div class="line"><a name="l01245"></a><span class="lineno"> 1245</span>&#160;      num_bits_to_read += 7;</div>
 <div class="line"><a name="l01246"></a><span class="lineno"> 1246</span>&#160;      <span class="keywordflow">if</span> (ReadBits(reader, 1) == 1) {</div>
-<div class="line"><a name="l01247"></a><span class="lineno"> 1247</span>&#160;        <span class="keywordflow">if</span> (reader-&gt;bits_available() &lt; num_bits_to_read)</div>
+<div class="line"><a name="l01247"></a><span class="lineno"> 1247</span>&#160;        <span class="keywordflow">if</span> (static_cast&lt;int&gt;(reader-&gt;bits_available()) &lt; num_bits_to_read)</div>
 <div class="line"><a name="l01248"></a><span class="lineno"> 1248</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l01249"></a><span class="lineno"> 1249</span>&#160;        <span class="keywordflow">return</span> ReadBits(reader, num_bits_to_read);</div>
 <div class="line"><a name="l01250"></a><span class="lineno"> 1250</span>&#160;      }</div>
@@ -1357,7 +1357,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01268"></a><span class="lineno"> 1268</span>&#160;</div>
 <div class="line"><a name="l01269"></a><span class="lineno"> 1269</span>&#160;  <span class="comment">// Get the header size, and ensure there are enough bits to check.</span></div>
 <div class="line"><a name="l01270"></a><span class="lineno"> 1270</span>&#160;  <span class="keywordtype">int</span> header_size = GetVint(&amp;reader);</div>
-<div class="line"><a name="l01271"></a><span class="lineno"> 1271</span>&#160;  RCHECK(reader.bits_available() / 8 &gt;= header_size);</div>
+<div class="line"><a name="l01271"></a><span class="lineno"> 1271</span>&#160;  RCHECK(static_cast&lt;int&gt;(reader.bits_available()) / 8 &gt;= header_size);</div>
 <div class="line"><a name="l01272"></a><span class="lineno"> 1272</span>&#160;</div>
 <div class="line"><a name="l01273"></a><span class="lineno"> 1273</span>&#160;  <span class="comment">// Loop through the header.</span></div>
 <div class="line"><a name="l01274"></a><span class="lineno"> 1274</span>&#160;  <span class="keywordflow">while</span> (reader.bits_available() &gt; 0) {</div>
@@ -1866,7 +1866,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

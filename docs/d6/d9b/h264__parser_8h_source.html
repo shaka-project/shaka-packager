@@ -258,13 +258,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keyword">const</span> uint8_t* nalu_data;</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="comment">// Size of whole nalu unit.</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  off_t nalu_size;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keywordtype">size_t</span> nalu_size;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="comment">// This is the size of the slice header not including the nalu header byte.</span></div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="comment">// Sturcture: |NALU Header|     Slice Header    |    Slice Data    |</span></div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="comment">// Size:      |&lt;- 8bits -&gt;|&lt;- header_bit_size -&gt;|&lt;- Rest of nalu -&gt;|</span></div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <span class="comment">// Note that this is not a field in the H.264 spec.</span></div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  off_t header_bit_size;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  <span class="keywordtype">size_t</span> header_bit_size;</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordtype">int</span> first_mb_in_slice;</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordtype">int</span> slice_type;</div>
@@ -448,7 +448,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

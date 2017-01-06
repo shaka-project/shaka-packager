@@ -133,34 +133,34 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">BitReader</a> frame(adts_frame, adts_frame_size);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// Verify frame starts with sync bits (0xfff).</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint32_t sync;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(12, &amp;sync));</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(12, &amp;sync));</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  RCHECK(sync == 0xfff);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// Skip MPEG version and layer.</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">SkipBits</a>(3));</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a4ab20ef220c76072eaecb982aba0541d">SkipBits</a>(3));</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// Get &quot;protection absent&quot; flag.</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  uint8_t protection_absent;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(1, &amp;protection_absent));</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(1, &amp;protection_absent));</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// Get profile.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(2, &amp;profile_));</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(2, &amp;profile_));</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// Get sampling frequency.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(4, &amp;sampling_frequency_index_));</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(4, &amp;sampling_frequency_index_));</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  RCHECK(sampling_frequency_index_ &lt; kAdtsFrequencyTableSize);</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// Skip private stream bit.</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">SkipBits</a>(1));</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a4ab20ef220c76072eaecb982aba0541d">SkipBits</a>(1));</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// Get number of audio channels.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(3, &amp;channel_configuration_));</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(3, &amp;channel_configuration_));</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  RCHECK((channel_configuration_ &gt; 0) &amp;&amp;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;         (channel_configuration_ &lt; kAdtsNumChannelsTableSize));</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// Skip originality, home and copyright info.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">SkipBits</a>(4));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a4ab20ef220c76072eaecb982aba0541d">SkipBits</a>(4));</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// Verify that the frame size matches input parameters.</span></div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  uint16_t frame_size;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(13, &amp;frame_size));</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(13, &amp;frame_size));</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  RCHECK(frame_size == adts_frame_size);</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// Skip buffer fullness indicator.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">SkipBits</a>(11));</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a4ab20ef220c76072eaecb982aba0541d">SkipBits</a>(11));</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  uint8_t num_blocks_minus_1;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a>(2, &amp;num_blocks_minus_1));</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  RCHECK(frame.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">ReadBits</a>(2, &amp;num_blocks_minus_1));</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span> (num_blocks_minus_1) {</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;ADTS frames with more than one data block &quot;</span></div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                        <span class="stringliteral">&quot;not supported.&quot;</span>;</div>
@@ -201,13 +201,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_ae40382c4ca4a57b3bb3531a337aebbe4"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">shaka::media::BitReader::ReadBits</a></div><div class="ttdeci">bool ReadBits(size_t num_bits, T *out)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00035">bit_reader.h:35</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">shaka::media::BitReader</a></div><div class="ttdoc">A class to read bit streams. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00017">bit_reader.h:17</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_ad72778b38786be93fa55aa983501010d"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">shaka::media::BitReader::ReadBits</a></div><div class="ttdeci">bool ReadBits(int num_bits, T *out)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00035">bit_reader.h:35</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a5c7e9d8cedb921042076770c8f6033d7"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">shaka::media::BitReader::SkipBits</a></div><div class="ttdeci">bool SkipBits(int num_bits)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00024">bit_reader.cc:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a4ab20ef220c76072eaecb982aba0541d"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a4ab20ef220c76072eaecb982aba0541d">shaka::media::BitReader::SkipBits</a></div><div class="ttdeci">bool SkipBits(size_t num_bits)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00024">bit_reader.cc:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -137,7 +137,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">const</span> uint32_t kPesStreamIdAudioMask = 0xE0;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">const</span> uint32_t kPesStreamIdAudio = 0xC0;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">const</span> uint32_t kVersion4 = 4;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> kAdtsHeaderMinSize = 7;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">const</span> <span class="keywordtype">size_t</span> kAdtsHeaderMinSize = 7;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">const</span> uint8_t kAacSampleSizeBits = 16;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">// Applies to all video streams.</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">const</span> uint8_t kNaluLengthSize = 4;  <span class="comment">// unit is bytes.</span></div>
@@ -214,8 +214,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;}</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
 <div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a246702aa75891cbe396ca7cc11e13eeb">  127</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  uint32_t num_bytes, prev_size;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  num_bytes = prev_size = 0;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">size_t</span> num_bytes = 0;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">size_t</span> prev_size = 0;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keyword">const</span> uint8_t* read_ptr = buf;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keyword">const</span> uint8_t* end = read_ptr + size;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
@@ -297,7 +297,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        parse_state_ = SystemHeaderSkip;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;      <span class="keywordflow">case</span> PackHeaderStuffingSkip:</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordflow">if</span> ((end - read_ptr) &gt;= (int32_t)skip_bytes_) {</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordflow">if</span> ((end - read_ptr) &gt;= skip_bytes_) {</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;          read_ptr += skip_bytes_;</div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;          skip_bytes_ = 0;</div>
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;          parse_state_ = StartCode1;</div>
@@ -307,7 +307,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        }</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;      <span class="keywordflow">case</span> SystemHeaderSkip:</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span> ((end - read_ptr) &gt;= (int32_t)skip_bytes_) {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span> ((end - read_ptr) &gt;= skip_bytes_) {</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          read_ptr += skip_bytes_;</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;          skip_bytes_ = 0;</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          parse_state_ = StartCode1;</div>
@@ -984,8 +984,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((prev_pes_stream_id_ &amp; kPesStreamIdAudioMask) ==</div>
 <div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;        kPesStreamIdAudio) {</div>
 <div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;      <span class="comment">// Set data on the audio stream.</span></div>
-<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;      <span class="keywordtype">int</span> frame_size = <a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">mp2t::AdtsHeader::GetAdtsFrameSize</a>(sample_data_.data(),</div>
-<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;                                                          kAdtsHeaderMinSize);</div>
+<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;      <span class="keywordtype">int</span> frame_size = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">mp2t::AdtsHeader::GetAdtsFrameSize</a>(</div>
+<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;          sample_data_.data(), kAdtsHeaderMinSize));</div>
 <div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;      mp2t::AdtsHeader adts_header;</div>
 <div class="line"><a name="l00901"></a><span class="lineno">  901</span>&#160;      <span class="keyword">const</span> uint8_t* frame_ptr = sample_data_.data();</div>
 <div class="line"><a name="l00902"></a><span class="lineno">  902</span>&#160;      <span class="keywordflow">if</span> (!adts_header.Parse(frame_ptr, frame_size)) {</div>
@@ -1265,7 +1265,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:43 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

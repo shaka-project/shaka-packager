@@ -314,17 +314,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  uint8_t current_program_id_;</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  uint32_t pes_stream_id_;</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  uint32_t prev_pes_stream_id_;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  uint16_t pes_packet_bytes_;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="keywordtype">size_t</span> pes_packet_bytes_;</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  uint8_t pes_flags_1_;</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  uint8_t pes_flags_2_;</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  uint8_t prev_pes_flags_1_;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  uint8_t pes_header_data_bytes_;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  <span class="keywordtype">size_t</span> pes_header_data_bytes_;</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  uint64_t timestamp_;</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  uint64_t pts_;</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  uint64_t dts_;</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  uint8_t index_program_id_;</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample_;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  uint32_t crypto_unit_start_pos_;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  <span class="keywordtype">size_t</span> crypto_unit_start_pos_;</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <a class="code" href="../../d2/d0f/structshaka_1_1media_1_1wvm_1_1PrevSampleData.html">PrevSampleData</a> prev_media_sample_data_;</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <a class="code" href="../../d8/d08/classshaka_1_1media_1_1H264ByteToUnitStreamConverter.html">H264ByteToUnitStreamConverter</a> byte_to_unit_stream_converter_;</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
@@ -362,7 +362,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 19 2016 21:28:43 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 6 2017 19:31:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
