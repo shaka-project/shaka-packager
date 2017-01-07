@@ -193,7 +193,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  RCHECK(reader.ReadBits(1, &amp;video_full_range_flag_));</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  uint16_t codec_initialization_data_size = 0;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  RCHECK(reader.ReadBits(16, &amp;codec_initialization_data_size));</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  RCHECK(reader.bits_available() &gt;= codec_initialization_data_size * 8);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  RCHECK(reader.bits_available() &gt;= codec_initialization_data_size * 8u);</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> header_size = data.size() - reader.bits_available() / 8;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  codec_initialization_data_.assign(</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      data.begin() + header_size,</div>
@@ -360,7 +360,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 6 2017 19:57:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 7 2017 01:38:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

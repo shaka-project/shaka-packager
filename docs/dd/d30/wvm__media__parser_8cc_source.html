@@ -297,7 +297,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        parse_state_ = SystemHeaderSkip;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;      <span class="keywordflow">case</span> PackHeaderStuffingSkip:</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordflow">if</span> ((end - read_ptr) &gt;= skip_bytes_) {</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordflow">if</span> (end &gt;= skip_bytes_ + read_ptr) {</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;          read_ptr += skip_bytes_;</div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;          skip_bytes_ = 0;</div>
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;          parse_state_ = StartCode1;</div>
@@ -307,7 +307,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        }</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;      <span class="keywordflow">case</span> SystemHeaderSkip:</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span> ((end - read_ptr) &gt;= skip_bytes_) {</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span> (end &gt;= skip_bytes_ + read_ptr) {</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          read_ptr += skip_bytes_;</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;          skip_bytes_ = 0;</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          parse_state_ = StartCode1;</div>
@@ -1265,7 +1265,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 6 2017 19:57:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 7 2017 01:38:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
