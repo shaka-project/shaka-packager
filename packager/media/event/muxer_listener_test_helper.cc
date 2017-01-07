@@ -73,7 +73,6 @@ OnMediaEndParameters GetDefaultOnMediaEndParams() {
 }
 
 void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
-  muxer_options->single_segment = true;
   muxer_options->segment_duration = 10.0;
   muxer_options->fragment_duration = 10.0;
   muxer_options->segment_sap_aligned = true;

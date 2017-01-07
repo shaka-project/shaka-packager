@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <memory>
+#include "packager/media/base/muxer_util.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
 namespace shaka {
@@ -27,12 +28,10 @@ const uint8_t kBasicSupportDataInit[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00,
-    // ID: Info, Payload Size: 88
-    0x15, 0x49, 0xa9, 0x66, 0xd8,
+    // ID: Info, Payload Size: 81
+    0x15, 0x49, 0xa9, 0x66, 0xd1,
       // TimecodeScale: 1000000
       0x2a, 0xd7, 0xb1, 0x83, 0x0f, 0x42, 0x40,
-      // Duration: float(0)
-      0x44, 0x89, 0x84, 0x3f, 0x80, 0x00, 0x00,
       // MuxingApp: 'libwebm-0.2.1.0'
       0x4d, 0x80, 0x8f, 0x6c, 0x69, 0x62, 0x77, 0x65, 0x62, 0x6d, 0x2d, 0x30,
       0x2e, 0x32, 0x2e, 0x31, 0x2e, 0x30,
@@ -93,7 +92,10 @@ const uint8_t kBasicSupportDataSegment[] = {
 
 class MultiSegmentSegmenterTest : public SegmentTestBase {
  public:
-  MultiSegmentSegmenterTest() : info_(CreateVideoStreamInfo()) {}
+  MultiSegmentSegmenterTest()
+      : info_(CreateVideoStreamInfo()),
+        segment_template_(std::string(kMemoryFilePrefix) +
+                          "output-template-$Number$.webm") {}
 
  protected:
   void InitializeSegmenter(const MuxerOptions& options) {
@@ -102,12 +104,18 @@ class MultiSegmentSegmenterTest : public SegmentTestBase {
             options, info_.get(), NULL, &segmenter_));
   }
 
+  std::string TemplateFileName(int number) const {
+    return GetSegmentName(segment_template_, 0, number, 0);
+  }
+
   scoped_refptr<StreamInfo> info_;
+  std::string segment_template_;
   std::unique_ptr<webm::Segmenter> segmenter_;
 };
 
 TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
   MuxerOptions options = CreateMuxerOptions();
+  options.segment_template = segment_template_;
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
   // Write the samples to the Segmenter.
@@ -128,6 +136,7 @@ TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
 
 TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
   MuxerOptions options = CreateMuxerOptions();
+  options.segment_template = segment_template_;
   options.segment_duration = 5;  // seconds
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
@@ -154,6 +163,7 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
 
 TEST_F(MultiSegmentSegmenterTest, RespectsSegmentSAPAlign) {
   MuxerOptions options = CreateMuxerOptions();
+  options.segment_template = segment_template_;
   options.segment_duration = 3;  // seconds
   options.segment_sap_aligned = true;
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
@@ -182,6 +192,7 @@ TEST_F(MultiSegmentSegmenterTest, RespectsSegmentSAPAlign) {
 
 TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
   MuxerOptions options = CreateMuxerOptions();
+  options.segment_template = segment_template_;
   options.fragment_duration = 5;  // seconds
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
@@ -205,6 +216,7 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
 
 TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
   MuxerOptions options = CreateMuxerOptions();
+  options.segment_template = segment_template_;
   options.fragment_duration = 3;  // seconds
   options.fragment_sap_aligned = true;
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
@@ -230,4 +242,3 @@ TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
 
 }  // namespace media
 }  // namespace shaka
-

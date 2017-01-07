@@ -8,6 +8,14 @@
 
 #include "packager/app/mpd_flags.h"
 
+DEFINE_bool(generate_static_mpd,
+            false,
+            "Set to true to generate static mpd. If segment_template is "
+            "specified in stream descriptors, shaka-packager generates dynamic "
+            "mpd by default; if this flag is enabled, shaka-packager generates "
+            "static mpd instead. Note that if segment_template is not "
+            "specified, shaka-packager always generates static mpd regardless "
+            "of the value of this flag.");
 // TODO(rkuroiwa, kqyang): Remove the 'Exclusive' statements once
 // --output_media_info can work together with --mpd_output.
 DEFINE_bool(output_media_info,

@@ -9,17 +9,8 @@
 namespace shaka {
 namespace media {
 
-MuxerOptions::MuxerOptions()
-    : single_segment(false),
-      segment_duration(0),
-      fragment_duration(0),
-      segment_sap_aligned(false),
-      fragment_sap_aligned(false),
-      num_subsegments_per_sidx(0),
-      mp4_use_decoding_timestamp_in_timeline(false),
-      bandwidth(0),
-      webm_subsample_encryption(true) {}
-MuxerOptions::~MuxerOptions() {}
+MuxerOptions::MuxerOptions() = default;
+MuxerOptions::~MuxerOptions() = default;
 
 }  // namespace media
 }  // namespace shaka

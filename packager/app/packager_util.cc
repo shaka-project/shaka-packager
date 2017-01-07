@@ -125,30 +125,9 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource() {
   return decryption_key_source;
 }
 
-bool AssignFlagsFromProfile() {
-  bool single_segment = FLAGS_single_segment;
-  if (FLAGS_profile == "on-demand") {
-    single_segment = true;
-  } else if (FLAGS_profile == "live") {
-    single_segment = false;
-  } else if (FLAGS_profile != "") {
-    fprintf(stderr, "ERROR: --profile '%s' is not supported.\n",
-            FLAGS_profile.c_str());
-    return false;
-  }
-
-  if (FLAGS_single_segment != single_segment) {
-    FLAGS_single_segment = single_segment;
-    fprintf(stdout, "Profile %s: set --single_segment to %s.\n",
-            FLAGS_profile.c_str(), single_segment ? "true" : "false");
-  }
-  return true;
-}
-
 bool GetMuxerOptions(MuxerOptions* muxer_options) {
   DCHECK(muxer_options);
 
-  muxer_options->single_segment = FLAGS_single_segment;
   muxer_options->segment_duration = FLAGS_segment_duration;
   muxer_options->fragment_duration = FLAGS_fragment_duration;
   muxer_options->segment_sap_aligned = FLAGS_segment_sap_aligned;
@@ -168,15 +147,15 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   return true;
 }
 
-bool GetMpdOptions(MpdOptions* mpd_options) {
+bool GetMpdOptions(bool on_demand_profile, MpdOptions* mpd_options) {
   DCHECK(mpd_options);
 
   mpd_options->dash_profile =
-      FLAGS_single_segment ? DashProfile::kOnDemand : DashProfile::kLive;
-  // Single segment does not always mean static mpd.
-  // TODO(kqyang): Add a new flag for mpd type and update the code.
+      on_demand_profile ? DashProfile::kOnDemand : DashProfile::kLive;
   mpd_options->mpd_type =
-      FLAGS_single_segment ? MpdType::kStatic : MpdType::kDynamic;
+      (on_demand_profile || FLAGS_generate_static_mpd)
+          ? MpdType::kStatic
+          : MpdType::kDynamic;
   mpd_options->availability_time_offset = FLAGS_availability_time_offset;
   mpd_options->minimum_update_period = FLAGS_minimum_update_period;
   mpd_options->min_buffer_time = FLAGS_min_buffer_time;

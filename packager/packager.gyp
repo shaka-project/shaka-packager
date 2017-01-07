@@ -26,6 +26,8 @@
         'app/packager_main.cc',
         'app/packager_util.cc',
         'app/packager_util.h',
+        'app/retired_flags.cc',
+        'app/retired_flags.h',
         'app/stream_descriptor.cc',
         'app/stream_descriptor.h',
         'app/validate_flag.cc',

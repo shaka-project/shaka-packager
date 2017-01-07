@@ -42,14 +42,11 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource();
 ///         decryption is not required.
 std::unique_ptr<KeySource> CreateDecryptionKeySource();
 
-/// Set flags according to profile.
-bool AssignFlagsFromProfile();
-
 /// Fill MuxerOptions members using provided command line options.
 bool GetMuxerOptions(MuxerOptions* muxer_options);
 
 /// Fill MpdOptions members using provided command line options.
-bool GetMpdOptions(MpdOptions* mpd_options);
+bool GetMpdOptions(bool on_demand_profile, MpdOptions* mpd_options);
 
 /// Select and add a stream from a provided set to a muxer.
 /// @param streams contains the set of MediaStreams from which to select.

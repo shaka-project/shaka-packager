@@ -19,42 +19,38 @@ struct MuxerOptions {
   MuxerOptions();
   ~MuxerOptions();
 
-  /// Generate a single segment for each media presentation. This option
-  /// should be set for on demand profile.
-  bool single_segment;
-
   /// Segment duration in seconds. If single_segment is specified, this
   /// parameter sets the duration of a subsegment; otherwise, this parameter
   /// sets the duration of a segment. A segment can contain one or many
   /// fragments.
-  double segment_duration;
+  double segment_duration = 0;
 
   /// Fragment duration in seconds. Should not be larger than the segment
   /// duration.
-  double fragment_duration;
+  double fragment_duration = 0;
 
   /// Force segments to begin with stream access points. Segment duration may
   /// not be exactly what specified by segment_duration.
-  bool segment_sap_aligned;
+  bool segment_sap_aligned = false;
 
   /// Force fragments to begin with stream access points. Fragment duration
   /// may not be exactly what specified by segment_duration. Setting to true
   /// implies that segment_sap_aligned is true as well.
-  bool fragment_sap_aligned;
+  bool fragment_sap_aligned = false;
 
   /// For ISO BMFF only.
   /// Set the number of subsegments in each SIDX box. If 0, a single SIDX box
   /// is used per segment. If -1, no SIDX box is used. Otherwise, the Muxer
   /// will pack N subsegments in the root SIDX of the segment, with
   /// segment_duration/N/fragment_duration fragments per subsegment.
-  int num_subsegments_per_sidx;
+  int num_subsegments_per_sidx = 0;
 
   /// For ISO BMFF only.
   /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
   /// decoding timestamp instead of presentation timestamp in media timeline,
   /// which is needed to workaround a Chromium bug that decoding timestamp is
   /// used in buffered range, https://crbug.com/398130.
-  bool mp4_use_decoding_timestamp_in_timeline;
+  bool mp4_use_decoding_timestamp_in_timeline = false;
 
   /// Output file name. If segment_template is not specified, the Muxer
   /// generates this single output file with all segments concatenated;
@@ -72,10 +68,10 @@ struct MuxerOptions {
 
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
-  uint32_t bandwidth;
+  uint32_t bandwidth = 0;
 
   // Enable/disable subsample encryption for WebM containers.
-  bool webm_subsample_encryption;
+  bool webm_subsample_encryption = true;
 };
 
 }  // namespace media

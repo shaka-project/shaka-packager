@@ -145,7 +145,7 @@ host operating systems.
   # VOD: mp4 --> dash
   packager input=/media/example.mp4,stream=audio,output=audio.mp4 \
            input=/media/example.mp4,stream=video,output=video.mp4 \
-           --profile on-demand --mpd_output example.mpd
+           --mpd_output example.mpd
 
   # Leave the container.
   exit
@@ -231,13 +231,11 @@ Demux audio from the input and generate a fragmented mp4:
 packager input=sintel.mp4,stream=audio,output=fragmented_sintel.mp4
 ```
 
-Demux streams from the input and generates a mpd with on-demand profile along
-with fragmented mp4:
+Demux streams from the input and generates a mpd with fragmented mp4:
 ```Shell
 packager \
   input=sintel.mp4,stream=audio,output=sintel_audio.mp4 \
   input=sintel.mp4,stream=video,output=sintel_video.mp4 \
---profile on-demand \
 --mpd_output sintel_vod.mpd
 ```
 
@@ -247,19 +245,17 @@ packager \
   input=sintel.mp4,stream=audio,output=sintel_audio.mp4 \
   input=sintel.mp4,stream=video,output=sintel_video.mp4 \
   input=sintel_english_input.vtt,stream=text,output=sintel_english.vtt \
---profile on-demand \
 --mpd_output sintel_vod.mpd
 ```
 
 
-You may also generate mpd with live profile. Here is an example with IPTV input
-streams:
+You may also generate mpd with live profile by specifying segment_template in
+stream descriptors. Here is an example with IPTV input streams:
 ```Shell
 packager \
   'input=udp://224.1.1.5:5003,stream=audio,init_segment=live-audio.mp4,segment_template=live-audio-$Number$.mp4,bandwidth=130000'  \
   'input=udp://224.1.1.5:5003,stream=video,init_segment=live-video-sd.mp4,segment_template=live-video-sd-$Number$.mp4,bandwidth=2000000' \
   'input=udp://224.1.1.5:5002,stream=video,init_segment=live-video-hd.mp4,segment_template=live-video-hd-$Number$.mp4,bandwidth=5000000' \
---profile live \
 --mpd_output live.mpd
 ```
 
@@ -273,6 +269,16 @@ Three options are supported right now:
   Address of the interface over which to receive UDP multicast streams.
 - timeout=microseconds
   Timeout in microseconds. Default to unlimited.
+
+To generate static mpd with live profile. An additional flag needs to be
+specified:
+```Shell
+packager \
+  'input=sintel.mp4,stream=audio,init_segment=audio.mp4,segment_template=audio-$Number$.mp4'  \
+  'input=sintel.mp4,stream=video,init_segment=video.mp4,segment_template=video-$Number$.mp4' \
+--mpd_output live_static.mpd \
+--generate_static_mpd
+```
 
 Demux video from the input and generate an encrypted fragmented mp4 using
 Widevine encryption with RSA signing key file *widevine_test_private.der*:
@@ -292,7 +298,6 @@ packager \
   'input=udp://224.1.1.5:5003,stream=audio,init_segment=live-audio.mp4,segment_template=live-audio-$Number$.mp4,bandwidth=130000'  \
   'input=udp://224.1.1.5:5003,stream=video,init_segment=live-video-sd.mp4,segment_template=live-video-sd-$Number$.mp4,bandwidth=2000000' \
   'input=udp://224.1.1.5:5002,stream=video,init_segment=live-video-hd.mp4,segment_template=live-video-hd-$Number$.mp4,bandwidth=5000000' \
---profile live \
 --mpd_output live.mpd \
 --enable_widevine_encryption \
 --key_server_url "https://license.uat.widevine.com/cenc/getcontentkey/widevine_test" \
@@ -343,7 +348,6 @@ generated TS segments.
 ```Shell
 packager \
   'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts,playlist_name=playlist.m3u8' \
-  --single_segment=false \
   --hls_master_playlist_output="master.m3u8" \
   --hls_base_url="http://localhost:10000/"
 ```
@@ -354,7 +358,6 @@ specified.
 packager \
   'input=input.mp4,stream=video,segment_template=output$Number$.ts,playlist_name=video_playlist.m3u8' \
   'input=input.mp4,stream=audio,segment_template=output_audio$Number$.ts,playlist_name=audio_playlist.m3u8,hls_group_id=audio,hls_name=ENGLISH' \
-  --single_segment=false \
   --hls_master_playlist_output="master_playlist.m3u8" \
   --hls_base_url="http://localhost:10000/"
 ```

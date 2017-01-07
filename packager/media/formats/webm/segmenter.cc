@@ -74,7 +74,7 @@ Status Segmenter::Initialize(std::unique_ptr<MkvWriter> writer,
         (GetPackagerProjectUrl() + " version " + version).c_str());
   }
 
-  if (options().single_segment) {
+  if (options().segment_template.empty()) {
     // Set an initial duration so the duration element is written; will be
     // overwritten at the end.  This works because this is a float and floats
     // are always the same size.

@@ -6,7 +6,6 @@
 
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
-#include "packager/media/base/muxer_util.h"
 #include "packager/media/file/memory_file.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/version/version.h"
@@ -43,10 +42,7 @@ void SegmentTestBase::SetUp() {
   SetPackagerVersionForTesting("test");
 
   output_file_name_ = std::string(kMemoryFilePrefix) + "output-file.webm";
-  segment_template_ =
-      std::string(kMemoryFilePrefix) + "output-template-$Number$.webm";
   cur_time_timescale_ = 0;
-  single_segment_ = true;
 }
 
 void SegmentTestBase::TearDown() {
@@ -78,9 +74,7 @@ scoped_refptr<MediaSample> SegmentTestBase::CreateSample(
 
 MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
   MuxerOptions ret;
-  ret.single_segment = single_segment_;
   ret.output_file_name = output_file_name_;
-  ret.segment_template = segment_template_;
   ret.segment_duration = 30;  // seconds
   ret.fragment_duration = 30;  // seconds
   ret.segment_sap_aligned = false;
@@ -100,10 +94,6 @@ VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo() const {
 
 std::string SegmentTestBase::OutputFileName() const {
   return output_file_name_;
-}
-
-std::string SegmentTestBase::TemplateFileName(int number) const {
-  return GetSegmentName(segment_template_, 0, number, 0);
 }
 
 SegmentTestBase::ClusterParser::ClusterParser() : in_cluster_(false) {}

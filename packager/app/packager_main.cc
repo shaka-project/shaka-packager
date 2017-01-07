@@ -265,11 +265,6 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         return false;
       }
       stream_muxer_options.segment_template = stream_iter->segment_template;
-      if (stream_muxer_options.single_segment) {
-        LOG(WARNING) << "Segment template and single segment are incompatible, "
-                        "setting single segment to false.";
-        stream_muxer_options.single_segment = false;
-      }
     }
     stream_muxer_options.bandwidth = stream_iter->bandwidth;
 
@@ -419,18 +414,9 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   if (protection_scheme == FOURCC_NULL)
     return false;
 
-  if (!AssignFlagsFromProfile())
-    return false;
-
   if (FLAGS_output_media_info && !FLAGS_mpd_output.empty()) {
     NOTIMPLEMENTED() << "ERROR: --output_media_info and --mpd_output do not "
                         "work together.";
-    return false;
-  }
-  if (FLAGS_output_media_info && !FLAGS_single_segment) {
-    // TODO(rkuroiwa, kqyang): Support partial media info dump for live.
-    NOTIMPLEMENTED() << "ERROR: --output_media_info is only supported if "
-                        "--single_segment is true.";
     return false;
   }
 
@@ -446,8 +432,28 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   if (!GetMuxerOptions(&muxer_options))
     return false;
 
+  DCHECK(!stream_descriptors.empty());
+  // On demand profile generates single file segment while live profile
+  // generates multiple segments specified using segment template.
+  const bool on_demand_dash_profile =
+      stream_descriptors.begin()->segment_template.empty();
+  for (const auto& stream_descriptor : stream_descriptors) {
+    if (on_demand_dash_profile != stream_descriptor.segment_template.empty()) {
+      LOG(ERROR) << "Inconsistent stream descriptor specification: "
+                    "segment_template should be specified for none or all "
+                    "stream descriptors.";
+      return false;
+    }
+  }
+  if (FLAGS_output_media_info && !on_demand_dash_profile) {
+    // TODO(rkuroiwa, kqyang): Support partial media info dump for live.
+    NOTIMPLEMENTED() << "ERROR: --output_media_info is only supported for "
+                        "on-demand profile (not using segment_template).";
+    return false;
+  }
+
   MpdOptions mpd_options;
-  if (!GetMpdOptions(&mpd_options))
+  if (!GetMpdOptions(on_demand_dash_profile, &mpd_options))
     return false;
 
   // Create encryption key source if needed.

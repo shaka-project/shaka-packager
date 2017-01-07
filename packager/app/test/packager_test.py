@@ -110,7 +110,7 @@ class PackagerAppTest(unittest.TestCase):
                          output_format='ts',
                          live=True,
                          test_files=['bear-640x360.ts']),
-        self._GetFlags(live=True, output_hls=True))
+        self._GetFlags(output_hls=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-golden',
                        output_format='ts')
@@ -220,8 +220,7 @@ class PackagerAppTest(unittest.TestCase):
                          output_format='ts',
                          live=True,
                          test_files=['bear-640x360.ts']),
-        self._GetFlags(encryption=True,
-                       live=True, output_hls=True))
+        self._GetFlags(encryption=True, output_hls=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-enc-golden',
                        output_format='ts')
@@ -329,8 +328,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfile(self):
     self.packager.Package(
-        self._GetStreams(['audio', 'video'], live=True),
-        self._GetFlags(live=True))
+        self._GetStreams(['audio', 'video'], live=True), self._GetFlags())
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
     self._DiffLiveMpdGold(self.mpd_output, 'bear-640x360-av-live-golden.mpd')
@@ -338,7 +336,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndEncryption(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
-        self._GetFlags(encryption=True, live=True))
+        self._GetFlags(encryption=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
     self._DiffLiveMpdGold(self.mpd_output,
@@ -347,8 +345,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndEncryptionAndDashIfIop(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
-        self._GetFlags(encryption=True,
-                       live=True, dash_if_iop=True))
+        self._GetFlags(encryption=True, dash_if_iop=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
     self._DiffLiveMpdGold(self.mpd_output,
@@ -360,8 +357,7 @@ class PackagerAppTest(unittest.TestCase):
                          live=True,
                          test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                                      'bear-320x180.mp4']),
-        self._GetFlags(encryption=True,
-                       live=True, dash_if_iop=True))
+        self._GetFlags(encryption=True, dash_if_iop=True))
     self._DiffLiveGold(self.output[2], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[3], 'bear-640x360-v-live-cenc-golden')
     # Mpd cannot be validated right now since we don't generate determinstic
@@ -371,9 +367,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndKeyRotation(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
-        self._GetFlags(encryption=True,
-                       key_rotation=True,
-                       live=True))
+        self._GetFlags(encryption=True, key_rotation=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-live-cenc-rotation-golden')
     self._DiffLiveGold(self.output[1],
@@ -386,7 +380,6 @@ class PackagerAppTest(unittest.TestCase):
         self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
-                       live=True,
                        dash_if_iop=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-live-cenc-rotation-golden')
@@ -496,7 +489,6 @@ class PackagerAppTest(unittest.TestCase):
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
-                live=False,
                 dash_if_iop=False,
                 output_media_info=False,
                 output_hls=False,
@@ -526,8 +518,6 @@ class PackagerAppTest(unittest.TestCase):
     if key_rotation:
       flags.append('--crypto_period_duration=1')
 
-    if live:
-      flags.append('--profile=live')
     if dash_if_iop:
       flags.append('--generate_dash_if_iop_compliant_mpd')
     if output_media_info:

@@ -44,7 +44,6 @@ MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
 }
 
 void SetDefaultLiveMuxerOptionsValues(media::MuxerOptions* muxer_options) {
-  muxer_options->single_segment = false;
   muxer_options->segment_duration = 10.0;
   muxer_options->fragment_duration = 10.0;
   muxer_options->segment_sap_aligned = true;

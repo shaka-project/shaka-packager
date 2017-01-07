@@ -140,8 +140,6 @@ bool PackagerTestBasic::ContentsEqual(const std::string& file1,
 MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
                                              bool single_segment) {
   MuxerOptions options;
-  options.single_segment = single_segment;
-
   options.segment_duration = kSegmentDurationInSeconds;
   options.fragment_duration = kFragmentDurationInSecodns;
   options.segment_sap_aligned = kSegmentSapAligned;
@@ -149,7 +147,8 @@ MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
   options.num_subsegments_per_sidx = kNumSubsegmentsPerSidx;
 
   options.output_file_name = GetFullPath(output);
-  options.segment_template = GetFullPath(kSegmentTemplate);
+  if (!single_segment)
+    options.segment_template = GetFullPath(kSegmentTemplate);
   options.temp_dir = test_directory_.AsUTF8Unsafe();
   return options;
 }

@@ -8,18 +8,9 @@
 
 #include "packager/app/muxer_flags.h"
 
-DEFINE_string(profile,
-              "",
-              "Specify the target DASH profile: on-demand or live. This will "
-              "set proper option values to ensure conformance to the desired "
-              "profile.");
 DEFINE_double(clear_lead,
               10.0f,
               "Clear lead in seconds if encryption is enabled.");
-DEFINE_bool(single_segment,
-            true,
-            "Generate a single segment for the media presentation. This option "
-            "should be set for on demand profile.");
 DEFINE_double(segment_duration,
               10.0f,
               "Segment duration in seconds. If single_segment is specified, "

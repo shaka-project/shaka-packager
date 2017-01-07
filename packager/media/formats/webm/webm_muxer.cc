@@ -43,7 +43,7 @@ Status WebMMuxer::Initialize() {
   if (!status.ok())
     return status;
 
-  if (!options().single_segment) {
+  if (!options().segment_template.empty()) {
     segmenter_.reset(new MultiSegmentSegmenter(options()));
   } else {
     segmenter_.reset(new TwoPassSingleSegmentSegmenter(options()));

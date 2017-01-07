@@ -11,9 +11,7 @@
 
 #include <gflags/gflags.h>
 
-DECLARE_string(profile);
 DECLARE_double(clear_lead);
-DECLARE_bool(single_segment);
 DECLARE_double(segment_duration);
 DECLARE_bool(segment_sap_aligned);
 DECLARE_double(fragment_duration);

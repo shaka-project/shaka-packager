@@ -149,9 +149,8 @@ void SetMediaInfoStreamInfo(const StreamInfo& stream_info,
 void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
                               MediaInfo* media_info) {
   DCHECK(media_info);
-  if (muxer_options.single_segment) {
+  if (muxer_options.segment_template.empty()) {
     media_info->set_media_file_name(muxer_options.output_file_name);
-    DCHECK(muxer_options.segment_template.empty());
   } else {
     media_info->set_init_segment_name(muxer_options.output_file_name);
     media_info->set_segment_template(muxer_options.segment_template);

@@ -45,7 +45,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const StreamInfo& stream_info,
     uint32_t time_scale,
     ContainerType container_type) {
-  DCHECK(muxer_options.single_segment);
+  DCHECK(muxer_options.segment_template.empty());
   media_info_.reset(new MediaInfo());
   if (!internal::GenerateMediaInfo(muxer_options,
                                    stream_info,

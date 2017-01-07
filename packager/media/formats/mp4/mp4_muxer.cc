@@ -134,7 +134,7 @@ Status MP4Muxer::Initialize() {
     }
   }
 
-  if (options().single_segment) {
+  if (options().segment_template.empty()) {
     segmenter_.reset(new SingleSegmentSegmenter(options(), std::move(ftyp),
                                                 std::move(moov)));
   } else {
