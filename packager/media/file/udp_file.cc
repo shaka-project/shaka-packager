@@ -9,7 +9,6 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include <ws2tcpip.h>
-#include <memory>
 #define close closesocket
 #else
 #include <arpa/inet.h>
