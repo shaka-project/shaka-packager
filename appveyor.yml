@@ -18,16 +18,22 @@ install:
 before_build:
   - cd ..
   - depot_tools\gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+  - set GYP_DEFINES='target_arch="%PLATFORM%"'
   - depot_tools\gclient sync
+  - if [%PLATFORM%] == [x64] (
+      set "output_directory=%CONFIGURATION%_x64"
+    ) else (
+      set "output_directory=%CONFIGURATION%"
+    )
 
 build_script:
   - cd src
-  - ..\depot_tools\ninja -C "out\%CONFIGURATION%" -k 100
-  - copy "out\%CONFIGURATION%\packager.exe" packager-win.exe
+  - ..\depot_tools\ninja -C "out\%OUTPUT_DIRECTORY%" -k 100
+  - copy "out\%OUTPUT_DIRECTORY%\packager.exe" packager-win.exe
 
 test_script:
-  - for %%f in ("out\%CONFIGURATION%\*_*test.exe") do (%%f || exit /b 666)
-  - python "out\%CONFIGURATION%\packager_test.py" -v
+  - for %%f in ("out\%OUTPUT_DIRECTORY%\*_*test.exe") do (%%f || exit /b 666)
+  - python "out\%OUTPUT_DIRECTORY%\packager_test.py" -v
 
 artifacts:
   - path: packager-win.exe
