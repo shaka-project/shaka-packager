@@ -30,8 +30,6 @@ namespace media {
 
 namespace {
 
-const SOCKET kInvalidSocket(INVALID_SOCKET);
-
 bool IsIpv4MulticastAddress(const struct in_addr& addr) {
   return (ntohl(addr.s_addr) & 0xf0000000) == 0xe0000000;
 }
@@ -40,14 +38,14 @@ bool IsIpv4MulticastAddress(const struct in_addr& addr) {
 
 UdpFile::UdpFile(const char* file_name) :
     File(file_name),
-    socket_(kInvalidSocket) {}
+    socket_(INVALID_SOCKET) {}
 
 UdpFile::~UdpFile() {}
 
 bool UdpFile::Close() {
-  if (socket_ != kInvalidSocket) {
+  if (socket_ != INVALID_SOCKET) {
     close(socket_);
-    socket_ = kInvalidSocket;
+    socket_ = INVALID_SOCKET;
   }
   delete this;
   return true;
@@ -58,7 +56,7 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
   DCHECK_GE(length, 65535u)
       << "Buffer may be too small to read entire datagram.";
 
-  if (socket_ == kInvalidSocket)
+  if (socket_ == INVALID_SOCKET)
     return -1;
 
   int64_t result;
@@ -76,7 +74,7 @@ int64_t UdpFile::Write(const void* buffer, uint64_t length) {
 }
 
 int64_t UdpFile::Size() {
-  if (socket_ == kInvalidSocket)
+  if (socket_ == INVALID_SOCKET)
     return -1;
 
   return std::numeric_limits<int64_t>::max();
@@ -122,7 +120,7 @@ class ScopedSocket {
       : sock_fd_(sock_fd) {}
 
   ~ScopedSocket() {
-    if (sock_fd_ != kInvalidSocket)
+    if (sock_fd_ != INVALID_SOCKET)
       close(sock_fd_);
   }
 
@@ -130,7 +128,7 @@ class ScopedSocket {
 
   SOCKET release() {
     SOCKET socket = sock_fd_;
-    sock_fd_ = kInvalidSocket;
+    sock_fd_ = INVALID_SOCKET;
     return socket;
   }
 
@@ -150,7 +148,7 @@ bool UdpFile::Open() {
   }
 #endif  // defined(OS_WIN)
 
-  DCHECK_EQ(kInvalidSocket, socket_);
+  DCHECK_EQ(INVALID_SOCKET, socket_);
 
   std::unique_ptr<UdpOptions> options =
       UdpOptions::ParseFromString(file_name());
@@ -158,7 +156,7 @@ bool UdpFile::Open() {
     return false;
 
   ScopedSocket new_socket(socket(AF_INET, SOCK_DGRAM, 0));
-  if (new_socket.get() == kInvalidSocket) {
+  if (new_socket.get() == INVALID_SOCKET) {
     LOG(ERROR) << "Could not allocate socket.";
     return false;
   }
