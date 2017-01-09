@@ -26,10 +26,10 @@
         'memory_file.h',
         'threaded_io_file.cc',
         'threaded_io_file.h',
+        'udp_file.cc',
         'udp_file.h',
         'udp_options.cc',
         'udp_options.h',
-        'udp_file.cc',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
