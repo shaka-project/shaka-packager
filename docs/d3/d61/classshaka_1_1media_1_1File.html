@@ -225,7 +225,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 <p><a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#aba73e887fbfe2de3a679c679ddf03f4b">Flush()</a> and de-allocate resources associated with this file, and delete this <a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> object. THIS IS THE ONE TRUE WAY TO DEALLOCATE THIS OBJECT. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success. For writable files, returning false MAY INDICATE DATA LOSS. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a4a85d185a7eaa1abc857540ef703ab9a">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#aeff24fee715763b5a62edd0d3b3c114e">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#ae6008d3d8401bd9eb561165e142afc6b">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a4a85d185a7eaa1abc857540ef703ab9a">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#aeff24fee715763b5a62edd0d3b3c114e">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#ae6008d3d8401bd9eb561165e142afc6b">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -454,7 +454,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 <p>Flush the file so that recently written data will survive an application crash (but not necessarily an OS crash). For instance, in <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html" title="Implement LocalFile which deals with local storage. ">LocalFile</a> the data is flushed into the OS but not necessarily to disk. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a4c8d46b1a16fba8bf4267c0a11fa856e">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a66276fd0b6a7effe314ccd63e223d149">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#abc1d0dc10b8ad719b92959c72c394b64">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a4c8d46b1a16fba8bf4267c0a11fa856e">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a66276fd0b6a7effe314ccd63e223d149">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#abc1d0dc10b8ad719b92959c72c394b64">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -616,7 +616,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes read, or a value &lt; 0 on error. Zero on end-of-file, or if 'length' is zero. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a5bd05e37779441004cd7ba0c33de1ad6">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a9e6387d6c23e6cfd7a91ed432fe3e81c">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#aac5f63ba0bb136eac2260a034edc10cf">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a5bd05e37779441004cd7ba0c33de1ad6">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a9e6387d6c23e6cfd7a91ed432fe3e81c">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#aac5f63ba0bb136eac2260a034edc10cf">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -695,7 +695,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a4a30faf9c8e8b367bcfebb7b642d73e7">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a78fa34d29e01054536a19eaac7ed51c4">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#af99f8c96589175e9a2f386e6a2ed4f35">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a4a30faf9c8e8b367bcfebb7b642d73e7">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a78fa34d29e01054536a19eaac7ed51c4">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#af99f8c96589175e9a2f386e6a2ed4f35">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -721,7 +721,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Size of the file in bytes. A return value less than zero indicates a problem getting the size. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#ac8c1f49d9e7ff55b1484129240c065f3">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a852424c6982850686f0419e84e222708">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#ad52955a976c16b910dde372fe33b7b0d">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#ac8c1f49d9e7ff55b1484129240c065f3">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a852424c6982850686f0419e84e222708">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#ad52955a976c16b910dde372fe33b7b0d">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -755,7 +755,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on succcess, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a23949d75527c8de9f02e749c7744f11e">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#affb3b5c69847e5f40671e65a7110358c">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a0346e0c4f961c06041efeaf43aee8f03">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a23949d75527c8de9f02e749c7744f11e">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#affb3b5c69847e5f40671e65a7110358c">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a0346e0c4f961c06041efeaf43aee8f03">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -800,7 +800,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#aa14502dd48c1c64329283f5f1340f60f">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">shaka::media::LocalFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a7039c2dbc214f755a9eaaab4d3e10cb9">shaka::media::UdpFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a429e316e7bf529acb3586df1cd02be64">shaka::media::MemoryFile</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#aa14502dd48c1c64329283f5f1340f60f">shaka::media::ThreadedIoFile</a>, <a class="el" href="../../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a7039c2dbc214f755a9eaaab4d3e10cb9">shaka::media::UdpFile</a>, <a class="el" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">shaka::media::LocalFile</a>, and <a class="el" href="../../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a429e316e7bf529acb3586df1cd02be64">shaka::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -811,7 +811,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 10 2017 01:58:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 10 2017 18:13:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
