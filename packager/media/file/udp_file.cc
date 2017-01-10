@@ -171,7 +171,8 @@ bool UdpFile::Open() {
   // TODO(kqyang): Support IPv6.
   local_sock_addr.sin_family = AF_INET;
   local_sock_addr.sin_port = htons(options->port());
-  if (IsIpv4MulticastAddress(local_in_addr)) {
+  const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
+  if (is_multicast) {
     local_sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   } else {
     local_sock_addr.sin_addr = local_in_addr;
@@ -195,7 +196,7 @@ bool UdpFile::Open() {
     return false;
   }
 
-  if (IsIpv4MulticastAddress(local_in_addr)) {
+  if (is_multicast) {
     struct ip_mreq multicast_group;
     multicast_group.imr_multiaddr = local_in_addr;
 
