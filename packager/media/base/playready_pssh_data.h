@@ -21,7 +21,7 @@ class PlayReadyPsshData {
     bool add_kid_hex(const std::string& key_id_hex);
     void set_la_url(const ::std::string& value);
     void set_lui_url(const ::std::string& value);
-    void set_decrypto_setup(bool on_demand);
+    void set_decryptor_setup(bool on_demand);
     void set_include_empty_license_store(bool include);
     
     void serialize_to_vector(::std::vector<uint8_t>& output) const;

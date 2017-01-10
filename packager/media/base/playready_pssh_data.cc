@@ -35,7 +35,7 @@ const char16_t PROTECT_INFO_KIDS_END_TAG[] =
 //KID attribute should be value. However, pr porting kit
 //uses capital attribute name VALUE.
 const char16_t KID_START_TAG[] = u"<KID VALUE=\"";
-const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\" />";
+const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\"></KID>";
 
 const char16_t LA_URL_START_TAG[] = u"<LA_URL>";
 const char16_t LA_URL_END_TAG[] = u"</LA_URL>";
@@ -43,7 +43,7 @@ const char16_t LA_URL_END_TAG[] = u"</LA_URL>";
 const char16_t LUI_URL_START_TAG[] = u"<LUI_URL>";
 const char16_t LUI_URL_END_TAG[] = u"</LUI_URL>";
 
-const char16_t DECRYPTO_SETUP_TAG[] = u"<DECRYPTOSETUP>ONDEMAND</DECRYPTOSETUP>";
+const char16_t DECRYPTOR_SETUP_TAG[] = u"<DECRYPTORSETUP>ONDEMAND</DECRYPTORSETUP>";
 
 const uint16_t PR_RIGHT_MGMT_RECORD_TYPE = 0x0001;
 const uint16_t PR_EMBEDDED_LICENSE_STORE_RECORD_TYPE = 0x0003;
@@ -118,7 +118,7 @@ void PlayReadyPsshData::set_lui_url(const ::std::string& value)
     lui_url_ = conversion.from_bytes(value);    
 }
 
-void PlayReadyPsshData::set_decrypto_setup(bool on_demand)
+void PlayReadyPsshData::set_decryptor_setup(bool on_demand)
 {
     on_demand_ = on_demand;
 }
@@ -163,7 +163,7 @@ void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) cons
     }
 
     if (on_demand_) {
-        xmlContent.append(DECRYPTO_SETUP_TAG);
+        xmlContent.append(DECRYPTOR_SETUP_TAG);
     }
     
     xmlContent.append(DATA_END_TAG);

@@ -128,7 +128,7 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
       
   psshData.set_la_url(la_url);
   psshData.set_lui_url(lui_url);
-  psshData.set_decrypto_setup(ondemand);
+  psshData.set_decryptor_setup(ondemand);
   psshData.set_include_empty_license_store(include_empty_license_store);
   psshData.serialize_to_vector(psshDataBuffer);
 
