@@ -106,7 +106,7 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
   PlayReadyPsshData psshData;
   std::vector<uint8_t> psshDataBuffer;
   
-  if (!psshData.add_kid_hex(key_id_hex)) {
+  if (!psshData.add_key_info(*encryption_key.get())) {
       //We have already parsed the keyid once. It should be ok and
       //we should never end up in here.
       LOG(ERROR) << "Invalid key ID '" << key_id_hex;
@@ -114,6 +114,7 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
   }
 
   //add additional keyids to the pssh data
+  /*
   if (additional_key_ids.length() > 0) {
       base::StringTokenizer t(additional_key_ids, ",");
       while (t.GetNext()) {
@@ -125,6 +126,7 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
           }
       }
   }
+  */
       
   psshData.set_la_url(la_url);
   psshData.set_lui_url(lui_url);

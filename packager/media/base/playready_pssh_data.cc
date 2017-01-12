@@ -5,6 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <codecvt>
+#include <openssl/aes.h>
 
 #include "packager/media/base/playready_pssh_data.h"
 
@@ -17,14 +18,40 @@ namespace media {
 
 namespace {
 
-const char16_t WRMHEADER_START_TAG[] =
-    u"<WRMHEADER version=\"4.2.0.0\" "
-     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\">";
-const char16_t WRMHEADER_END_TAG[] =
-    u"</WRMHEADER>";
+#define USE_WRMHEADER_4_0
 
-const char16_t DATA_START_TAG[] = u"<DATA>";
-const char16_t DATA_END_TAG[] = u"</DATA>";
+#if defined(USE_WRMHEADER_4_0)
+    
+const char16_t WRMHEADER_START_TAG[] =
+    u"<WRMHEADER " 
+     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
+     "version=\"4.0.0.0\">";
+    const char16_t PROTECT_INFO_TAG[] =
+        u"<PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO>";
+
+    const char16_t KID_START_TAG[] =
+        u"<KID>";
+
+    const char16_t KID_END_TAG[] =
+        u"</KID>";
+
+    const char16_t CHECKSUM_START_TAG[] =
+        u"<CHECKSUM>";
+    
+    const char16_t CHECKSUM_END_TAG[] =
+        u"</CHECKSUM>";
+
+    
+#else
+
+const char16_t WRMHEADER_START_TAG[] =
+    u"<WRMHEADER " 
+     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
+     "version=\"4.0.0.0\">";
+
+//const char16_t WRMHEADER_START_TAG[] =
+//    u"<WRMHEADER version=\"4.2.0.0\" "
+//     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\">";
 
 const char16_t PROTECT_INFO_KIDS_START_TAG[] =
     u"<PROTECTINFO><KIDS>";
@@ -37,17 +64,27 @@ const char16_t PROTECT_INFO_KIDS_END_TAG[] =
 const char16_t KID_START_TAG[] = u"<KID VALUE=\"";
 const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\"></KID>";
 
+const char16_t DECRYPTOR_SETUP_TAG[] = u"<DECRYPTORSETUP>ONDEMAND</DECRYPTORSETUP>";
+#endif //if defined(USE_WRMHEADER_4_0)
+
+const char16_t WRMHEADER_END_TAG[] =
+    u"</WRMHEADER>";
+
+const char16_t DATA_START_TAG[] = u"<DATA>";
+const char16_t DATA_END_TAG[] = u"</DATA>";
+
 const char16_t LA_URL_START_TAG[] = u"<LA_URL>";
 const char16_t LA_URL_END_TAG[] = u"</LA_URL>";
 
 const char16_t LUI_URL_START_TAG[] = u"<LUI_URL>";
 const char16_t LUI_URL_END_TAG[] = u"</LUI_URL>";
-
-const char16_t DECRYPTOR_SETUP_TAG[] = u"<DECRYPTORSETUP>ONDEMAND</DECRYPTORSETUP>";
-
+    
+    
 const uint16_t PR_RIGHT_MGMT_RECORD_TYPE = 0x0001;
 const uint16_t PR_EMBEDDED_LICENSE_STORE_RECORD_TYPE = 0x0003;
 const uint16_t PR_EMBEDDED_LICENSE_STORE_SIZE = 10 * 1024;
+
+const size_t PR_KID_CHECKSUM_LENGTH = 8;
 
 } 
 
@@ -57,51 +94,45 @@ PlayReadyPsshData::PlayReadyPsshData()
 {
 }
 
-bool PlayReadyPsshData::add_kid_hex(const std::string& key_id_hex)
+bool PlayReadyPsshData::add_key_info(const EncryptionKey& encryption_key)
 {
     //In playready KID has to be in GUID format:
     //(DWORD, WORD, WORD, 8-BYTE array) in little endian.
     const size_t GUID_LENGTH = sizeof(uint32_t) + sizeof(uint16_t) +
         sizeof(uint16_t) + 8;
     
-    //Convert to binary vector.
-    std::vector<uint8_t> kid;
-    if( !base::HexStringToBytes(key_id_hex, &kid) ) {
-        LOG(ERROR) << "Unable to parse key id: " << key_id_hex;
-        return false;
-    }
-
-    if (kid.size() != GUID_LENGTH) {
-        LOG(ERROR) << "Invalid key id " << key_id_hex << ". Length " << key_id_hex.size()
+    if (encryption_key.key_id.size() != GUID_LENGTH) {
+        LOG(ERROR) << "Invalid key id length " << encryption_key.key_id.size()
                    << ". Expecting " << GUID_LENGTH;
         return false;
     }
-   
-    //Convert to MS GUID format
-    std::string guid;
-    //dword
-    guid.push_back(kid[3]);
-    guid.push_back(kid[2]);
-    guid.push_back(kid[1]);
-    guid.push_back(kid[0]);
 
-    //first word
-    guid.push_back(kid[5]);
-    guid.push_back(kid[4]);
-
-    //second word
-    guid.push_back(kid[7]);
-    guid.push_back(kid[6]);
-
-    //rest is just byte data
-    guid.insert(guid.end(), kid.begin() + 8, kid.end());
+    const std::string kid(
+        reinterpret_cast<const char*>(encryption_key.key_id.data()),
+        encryption_key.key_id.size());
+    std::string kidChecksum;
+    std::string base64Kid;
+    std::string base64KidChecksum;
     
-    //base64 encode
-    base::Base64Encode(guid, &guid);
+    //base64 encode kid
+    base::Base64Encode(kid, &base64Kid);
+    
+    //Calculate KID checksum
+    if (!PlayReadyPsshData::kid_check_sum(encryption_key.key_id,
+                                          encryption_key.key,
+                                          kidChecksum)) {
+        LOG(ERROR) << "Key id checksum calculation failed.";
+        return false;
 
+    }
+    //base64 encode kid checksum
+    base::Base64Encode(kidChecksum, &base64KidChecksum);
+    
     //Convert to UTF16
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> conversion;
-    kids_.push_back(conversion.from_bytes(guid));
+    kids_.push_back(
+        ::std::pair<::std::u16string, ::std::u16string>(
+            conversion.from_bytes(base64Kid), conversion.from_bytes(base64KidChecksum)));
     
     return true;
 }
@@ -137,13 +168,45 @@ void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) cons
     ::std::u16string xmlContent = WRMHEADER_START_TAG;
     xmlContent.append(DATA_START_TAG);
 
+#if defined(USE_WRMHEADER_4_0)
+     xmlContent.append(PROTECT_INFO_TAG);
+
+     if (kids_.size()) {
+         //In WRMHEADER 4.0 there can be only one KID.
+         xmlContent.append(KID_START_TAG);
+         xmlContent.append(kids_[0].first);
+         xmlContent.append(KID_END_TAG);
+     }
+
+     if (la_url_.length() > 0) {
+         xmlContent.append(LA_URL_START_TAG);
+         xmlContent.append(la_url_);
+         xmlContent.append(LA_URL_END_TAG);
+     }
+
+     if (lui_url_.length() > 0) {
+         xmlContent.append(LUI_URL_START_TAG);
+         xmlContent.append(lui_url_);
+         xmlContent.append(LUI_URL_END_TAG);
+    }
+
+     if (kids_.size()) {
+         //In WRMHEADER 4.0 there can be only one KID.
+         xmlContent.append(CHECKSUM_START_TAG);
+         xmlContent.append(kids_[0].second);
+         xmlContent.append(CHECKSUM_END_TAG);
+     }
+
+#else
+    
     if (kids_.size()) {
         xmlContent.append(PROTECT_INFO_KIDS_START_TAG);
 
-        ::std::vector<::std::u16string>::const_iterator it;
-        for (it = kids_.begin(); it != kids_.end(); it++) {
+        ::std::vector<::std::pair<::std::u16string, ::std::u16string>>::
+        const_iterator it;
+        for (it = kids_.cbegin(); it != kids_.cend(); it++) {
             xmlContent.append(KID_START_TAG);
-            xmlContent.append(*it);
+            xmlContent.append((*it).first);
             xmlContent.append(KID_END_TAG);
         }
         
@@ -166,9 +229,10 @@ void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) cons
         xmlContent.append(DECRYPTOR_SETUP_TAG);
     }
     
-    xmlContent.append(DATA_END_TAG);
+#endif //if defined(USE_WRMHEADER_4_0)
+    
+    xmlContent.append(DATA_END_TAG); 
     xmlContent.append(WRMHEADER_END_TAG);
-
     output.clear();
     
     uint16_t xmlDataSize = static_cast<uint16_t>(xmlContent.size() * 2);
@@ -223,5 +287,32 @@ void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) cons
 }
 
 
+bool PlayReadyPsshData::kid_check_sum(const ::std::vector<uint8_t>& KID,
+                                      const ::std::vector<uint8_t>& content_key,
+                                      ::std::string& check_sum) const
+{
+    AES_KEY aeskey;
+    uint8_t cipher_text[AES_BLOCK_SIZE];
+    
+    if (KID.size() != AES_BLOCK_SIZE || content_key.size() != 16) {
+        return false;
+    }
+
+    if (AES_set_encrypt_key(content_key.data(),
+                            128, &aeskey) < 0) {
+        return false;
+    }
+    
+    AES_encrypt(KID.data(), cipher_text, &aeskey);
+
+    memset(&aeskey, 0, sizeof(aeskey));
+
+    check_sum.clear();
+    check_sum.assign(reinterpret_cast<char*>(cipher_text),
+                     PR_KID_CHECKSUM_LENGTH);
+    
+    return true;
+}
+    
 }  // namespace media
 }  // namespace shaka

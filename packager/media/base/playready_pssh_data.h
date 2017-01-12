@@ -9,16 +9,19 @@
 
 #include <string>
 #include <vector>
+#include <utility>
+
+#include "key_source.h"
 
 namespace shaka {
 namespace media {
 
-
 class PlayReadyPsshData {
  public:
     PlayReadyPsshData();
-
-    bool add_kid_hex(const std::string& key_id_hex);
+    
+    //add_kid_hex requires the key_hex to calculate KID checksum
+    bool add_key_info(const EncryptionKey& encryption_key);
     void set_la_url(const ::std::string& value);
     void set_lui_url(const ::std::string& value);
     void set_decryptor_setup(bool on_demand);
@@ -27,7 +30,15 @@ class PlayReadyPsshData {
     void serialize_to_vector(::std::vector<uint8_t>& output) const;
     
  private:
-    ::std::vector<::std::u16string> kids_;
+    
+    bool kid_check_sum(const ::std::vector<uint8_t>& KID,
+                       const ::std::vector<uint8_t>& content_key,
+                       ::std::string& check_sum) const;
+    
+    //::std::vector<::std::u16string> kids_;
+    //First is the actual KID. Second is the checksum
+    ::std::vector<::std::pair<::std::u16string, ::std::u16string>> kids_;
+    
     ::std::u16string la_url_;
     ::std::u16string lui_url_;
     bool on_demand_;
