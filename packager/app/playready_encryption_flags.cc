@@ -22,22 +22,12 @@ DEFINE_string(pr_iv,
               "",
               "Optional iv in hex string format. If not specified, a random iv will be "
               "generated. This flag should only be used for testing.");
-DEFINE_string(pr_additional_key_ids,
-              "",
-              "Optional comma separated list of additional hex string format key ids "
-              "added to the PlayReady protection system specific data");
 DEFINE_string(pr_la_url,
               "",
               "Optional license acquisition web service URL.");
 DEFINE_string(pr_lui_url,
               "",
               "Optional non-silent license acquisition web page URL.");
-DEFINE_bool(pr_ondemand,
-            false,
-            "If true indicates to an application that is should not expect "
-            "the full license chain for the content to be available for "
-            "acquisition, or already present on the media, prior to setting up "
-            "the media graph.");
 DEFINE_bool(pr_include_empty_license_store,
             false,
             "Is an empty license store in included in the PlayReady pssh data."
@@ -82,13 +72,6 @@ bool ValidatePlayreadyCryptoFlags() {
   }
 
   if (!ValidateFlag(
-          "pr_additional_key_ids", FLAGS_pr_additional_key_ids,
-          FLAGS_enable_playready_encryption,
-          true, playready_crypto_label)) {
-    success = false;
-  }  
-
-  if (!ValidateFlag(
           "pr_la_url", FLAGS_pr_la_url,
           FLAGS_enable_playready_encryption,
           true, playready_crypto_label)) {
@@ -101,13 +84,6 @@ bool ValidatePlayreadyCryptoFlags() {
           true, playready_crypto_label)) {
     success = false;
   }    
-
-  if (!FLAGS_enable_playready_encryption && FLAGS_pr_ondemand) {
-      PrintError(base::StringPrintf(
-                     "--pr_ondemand should be specified only if %s",
-                     playready_crypto_label));
-      success = false;
-  }
 
   if (!FLAGS_enable_playready_encryption &&
       FLAGS_pr_include_empty_license_store) {

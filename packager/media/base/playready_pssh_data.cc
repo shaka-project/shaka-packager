@@ -17,61 +17,32 @@ namespace shaka {
 namespace media {
 
 namespace {
-
-#define USE_WRMHEADER_4_0
-
-#if defined(USE_WRMHEADER_4_0)
     
 const char16_t WRMHEADER_START_TAG[] =
     u"<WRMHEADER " 
      "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
      "version=\"4.0.0.0\">";
-    const char16_t PROTECT_INFO_TAG[] =
-        u"<PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO>";
-
-    const char16_t KID_START_TAG[] =
-        u"<KID>";
-
-    const char16_t KID_END_TAG[] =
-        u"</KID>";
-
-    const char16_t CHECKSUM_START_TAG[] =
-        u"<CHECKSUM>";
-    
-    const char16_t CHECKSUM_END_TAG[] =
-        u"</CHECKSUM>";
-
-    
-#else
-
-const char16_t WRMHEADER_START_TAG[] =
-    u"<WRMHEADER " 
-     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
-     "version=\"4.0.0.0\">";
-
-//const char16_t WRMHEADER_START_TAG[] =
-//    u"<WRMHEADER version=\"4.2.0.0\" "
-//     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\">";
-
-const char16_t PROTECT_INFO_KIDS_START_TAG[] =
-    u"<PROTECTINFO><KIDS>";
-const char16_t PROTECT_INFO_KIDS_END_TAG[] =
-    u"</KIDS></PROTECTINFO>";
-
-//PlayReady Header Object specification specifies that
-//KID attribute should be value. However, pr porting kit
-//uses capital attribute name VALUE.
-const char16_t KID_START_TAG[] = u"<KID VALUE=\"";
-const char16_t KID_END_TAG[] = u"\" ALGID=\"AESCTR\"></KID>";
-
-const char16_t DECRYPTOR_SETUP_TAG[] = u"<DECRYPTORSETUP>ONDEMAND</DECRYPTORSETUP>";
-#endif //if defined(USE_WRMHEADER_4_0)
 
 const char16_t WRMHEADER_END_TAG[] =
     u"</WRMHEADER>";
 
 const char16_t DATA_START_TAG[] = u"<DATA>";
 const char16_t DATA_END_TAG[] = u"</DATA>";
+    
+const char16_t PROTECT_INFO_TAG[] =
+    u"<PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO>";
+
+const char16_t KID_START_TAG[] =
+    u"<KID>";
+
+const char16_t KID_END_TAG[] =
+    u"</KID>";
+
+const char16_t CHECKSUM_START_TAG[] =
+    u"<CHECKSUM>";
+
+const char16_t CHECKSUM_END_TAG[] =
+    u"</CHECKSUM>";
 
 const char16_t LA_URL_START_TAG[] = u"<LA_URL>";
 const char16_t LA_URL_END_TAG[] = u"</LA_URL>";
@@ -89,8 +60,7 @@ const size_t PR_KID_CHECKSUM_LENGTH = 8;
 } 
 
 PlayReadyPsshData::PlayReadyPsshData()
-    :on_demand_(false),
-     include_empty_license_store_(false)
+    :include_empty_license_store_(false)
 {
 }
 
@@ -130,9 +100,9 @@ bool PlayReadyPsshData::add_key_info(const EncryptionKey& encryption_key)
     
     //Convert to UTF16
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> conversion;
-    kids_.push_back(
-        ::std::pair<::std::u16string, ::std::u16string>(
-            conversion.from_bytes(base64Kid), conversion.from_bytes(base64KidChecksum)));
+
+    kid_ = ::std::pair<::std::u16string, ::std::u16string>(
+        conversion.from_bytes(base64Kid), conversion.from_bytes(base64KidChecksum));
     
     return true;
 }
@@ -149,11 +119,6 @@ void PlayReadyPsshData::set_lui_url(const ::std::string& value)
     lui_url_ = conversion.from_bytes(value);    
 }
 
-void PlayReadyPsshData::set_decryptor_setup(bool on_demand)
-{
-    on_demand_ = on_demand;
-}
-
 void PlayReadyPsshData::set_include_empty_license_store(bool include)
 {
     include_empty_license_store_ = include;
@@ -168,49 +133,12 @@ void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) cons
     ::std::u16string xmlContent = WRMHEADER_START_TAG;
     xmlContent.append(DATA_START_TAG);
 
-#if defined(USE_WRMHEADER_4_0)
-     xmlContent.append(PROTECT_INFO_TAG);
-
-     if (kids_.size()) {
-         //In WRMHEADER 4.0 there can be only one KID.
-         xmlContent.append(KID_START_TAG);
-         xmlContent.append(kids_[0].first);
-         xmlContent.append(KID_END_TAG);
-     }
-
-     if (la_url_.length() > 0) {
-         xmlContent.append(LA_URL_START_TAG);
-         xmlContent.append(la_url_);
-         xmlContent.append(LA_URL_END_TAG);
-     }
-
-     if (lui_url_.length() > 0) {
-         xmlContent.append(LUI_URL_START_TAG);
-         xmlContent.append(lui_url_);
-         xmlContent.append(LUI_URL_END_TAG);
-    }
-
-     if (kids_.size()) {
-         //In WRMHEADER 4.0 there can be only one KID.
-         xmlContent.append(CHECKSUM_START_TAG);
-         xmlContent.append(kids_[0].second);
-         xmlContent.append(CHECKSUM_END_TAG);
-     }
-
-#else
+    xmlContent.append(PROTECT_INFO_TAG);
     
-    if (kids_.size()) {
-        xmlContent.append(PROTECT_INFO_KIDS_START_TAG);
-
-        ::std::vector<::std::pair<::std::u16string, ::std::u16string>>::
-        const_iterator it;
-        for (it = kids_.cbegin(); it != kids_.cend(); it++) {
-            xmlContent.append(KID_START_TAG);
-            xmlContent.append((*it).first);
-            xmlContent.append(KID_END_TAG);
-        }
-        
-        xmlContent.append(PROTECT_INFO_KIDS_END_TAG);
+    if (kid_.first.size() > 0) {
+        xmlContent.append(KID_START_TAG);
+        xmlContent.append(kid_.first);
+        xmlContent.append(KID_END_TAG);
     }
     
     if (la_url_.length() > 0) {
@@ -218,18 +146,18 @@ void PlayReadyPsshData::serialize_to_vector(::std::vector<uint8_t>& output) cons
         xmlContent.append(la_url_);
         xmlContent.append(LA_URL_END_TAG);
     }
-
+    
     if (lui_url_.length() > 0) {
         xmlContent.append(LUI_URL_START_TAG);
         xmlContent.append(lui_url_);
         xmlContent.append(LUI_URL_END_TAG);
     }
-
-    if (on_demand_) {
-        xmlContent.append(DECRYPTOR_SETUP_TAG);
-    }
     
-#endif //if defined(USE_WRMHEADER_4_0)
+    if (kid_.first.size() > 0 && kid_.second.size() > 0) {
+        xmlContent.append(CHECKSUM_START_TAG);
+        xmlContent.append(kid_.second);
+        xmlContent.append(CHECKSUM_END_TAG);
+    }
     
     xmlContent.append(DATA_END_TAG); 
     xmlContent.append(WRMHEADER_END_TAG);

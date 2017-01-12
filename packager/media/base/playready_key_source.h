@@ -54,10 +54,8 @@ class PlayReadyKeySource : public KeySource {
       const std::string& key_id_hex,
       const std::string& key_hex,
       const std::string& iv_hex,
-      const std::string& additional_key_ids,
       const std::string& la_url,
       const std::string& lui_url,
-      bool ondemand,
       bool include_empty_license_store);
 
  protected:

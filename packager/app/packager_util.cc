@@ -101,8 +101,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource() {
   } else if (FLAGS_enable_playready_encryption) {
       encryption_key_source = PlayReadyKeySource::CreateFromHexStrings(
           FLAGS_pr_key_id, FLAGS_pr_key, FLAGS_pr_iv,
-          FLAGS_pr_additional_key_ids, FLAGS_pr_la_url, FLAGS_pr_lui_url,
-          FLAGS_pr_ondemand, FLAGS_pr_include_empty_license_store);
+          FLAGS_pr_la_url, FLAGS_pr_lui_url,
+          FLAGS_pr_include_empty_license_store);
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);

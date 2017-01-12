@@ -72,10 +72,8 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
     const std::string& key_id_hex,
       const std::string& key_hex,
       const std::string& iv_hex,
-      const std::string& additional_key_ids,
       const std::string& la_url,
       const std::string& lui_url,
-      bool ondemand,
       bool include_empty_license_store) {
     
   std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
@@ -112,25 +110,9 @@ std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromHexStrings(
       LOG(ERROR) << "Invalid key ID '" << key_id_hex;
       return std::unique_ptr<PlayReadyKeySource>();  
   }
-
-  //add additional keyids to the pssh data
-  /*
-  if (additional_key_ids.length() > 0) {
-      base::StringTokenizer t(additional_key_ids, ",");
-      while (t.GetNext()) {
-          base::StringPiece sp = base::TrimWhitespaceASCII(t.token(), base::TRIM_ALL);
-          const std::string hexKeyIdToken = sp.as_string();
-          if (!psshData.add_kid_hex(hexKeyIdToken)) {
-              LOG(ERROR) << "Invalid key ID '" << hexKeyIdToken;
-              return std::unique_ptr<PlayReadyKeySource>();  
-          }
-      }
-  }
-  */
       
   psshData.set_la_url(la_url);
   psshData.set_lui_url(lui_url);
-  psshData.set_decryptor_setup(ondemand);
   psshData.set_include_empty_license_store(include_empty_license_store);
   psshData.serialize_to_vector(psshDataBuffer);
 

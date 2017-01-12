@@ -15,10 +15,8 @@ DECLARE_bool(enable_playready_encryption);
 DECLARE_string(pr_key_id);
 DECLARE_string(pr_key);
 DECLARE_string(pr_iv);
-DECLARE_string(pr_additional_key_ids);
 DECLARE_string(pr_la_url);
 DECLARE_string(pr_lui_url);
-DECLARE_bool(pr_ondemand);
 DECLARE_bool(pr_include_empty_license_store);
 
 namespace shaka {
