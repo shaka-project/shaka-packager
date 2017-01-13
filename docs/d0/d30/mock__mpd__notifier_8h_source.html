@@ -107,7 +107,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../dc/d5c/classshaka_1_1MockMpdNotifier.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../dc/d5c/classshaka_1_1MockMpdNotifier.html">MockMpdNotifier</a> : <span class="keyword">public</span> <a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html">MpdNotifier</a> {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <a class="code" href="../../dc/d5c/classshaka_1_1MockMpdNotifier.html">MockMpdNotifier</a>(DashProfile profile);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../dc/d5c/classshaka_1_1MockMpdNotifier.html">MockMpdNotifier</a>(<span class="keyword">const</span> <a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../dc/d5c/classshaka_1_1MockMpdNotifier.html">MockMpdNotifier</a>();</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  MOCK_METHOD0(<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ad6171481d6fb437767b1f5b9e0dac1a3">Init</a>, <span class="keywordtype">bool</span>());</div>
@@ -144,11 +144,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="structshaka_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../da/d43/structshaka_1_1ContentProtectionElement.html">shaka::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
 <div class="ttc" id="classshaka_1_1MpdNotifier_html_ae10c06fe6022a1020fc889de389be430"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae10c06fe6022a1020fc889de389be430">shaka::MpdNotifier::NotifyNewContainer</a></div><div class="ttdeci">virtual bool NotifyNewContainer(const MediaInfo &amp;media_info, uint32_t *container_id)=0</div></div>
 <div class="ttc" id="classshaka_1_1MpdNotifier_html_acf6a0bde4fc907053cc9f1ff9a38b59a"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html#acf6a0bde4fc907053cc9f1ff9a38b59a">shaka::MpdNotifier::NotifyEncryptionUpdate</a></div><div class="ttdeci">virtual bool NotifyEncryptionUpdate(uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh)=0</div></div>
-<div class="ttc" id="classshaka_1_1MpdNotifier_html"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html">shaka::MpdNotifier</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00032">mpd_notifier.h:32</a></div></div>
+<div class="ttc" id="classshaka_1_1MpdNotifier_html"><div class="ttname"><a href="../../d3/dd0/classshaka_1_1MpdNotifier.html">shaka::MpdNotifier</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00027">mpd_notifier.h:27</a></div></div>
+<div class="ttc" id="structshaka_1_1MpdOptions_html"><div class="ttname"><a href="../../d1/df3/structshaka_1_1MpdOptions.html">shaka::MpdOptions</a></div><div class="ttdoc">Defines Mpd Options. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d60/mpd__options_8h_source.html#l00023">mpd_options.h:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 10 2017 18:13:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 13 2017 20:03:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -103,144 +103,139 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                                     <span class="keyword">const</span> MpdOptions&amp; mpd_options,</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                                     <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; base_urls,</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                                     <span class="keyword">const</span> std::string&amp; output_path)</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    : MpdNotifier(dash_profile),</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      output_path_(output_path),</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      mpd_builder_(new MpdBuilder(dash_profile == kLiveProfile</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                      ? MpdBuilder::kDynamic</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                      : MpdBuilder::kStatic,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                  mpd_options)) {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  DCHECK(dash_profile == kLiveProfile || dash_profile == kOnDemandProfile);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; base_urls.size(); ++i)</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    mpd_builder_-&gt;AddBaseUrl(base_urls[i]);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;SimpleMpdNotifier::~SimpleMpdNotifier() {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a59bcb401b5ca8d5b893ec7da9461569f">   35</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a59bcb401b5ca8d5b893ec7da9461569f">SimpleMpdNotifier::Init</a>() {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">   39</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">SimpleMpdNotifier::NotifyNewContainer</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                           uint32_t* container_id) {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK(container_id);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  ContentType content_type = <a class="code" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">GetContentType</a>(media_info);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">if</span> (content_type == kContentTypeUnknown)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  base::AutoLock auto_lock(lock_);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// TODO(kqyang): Consider adding a new method MpdBuilder::AddRepresentation.</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// Most of the codes here can be moved inside.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  std::string key = GetAdaptationSetKey(media_info);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  std::string lang = GetLanguage(media_info);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <a class="code" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>** adaptation_set = &amp;adaptation_set_map_[key];</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordflow">if</span> (*adaptation_set == NULL)</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    *adaptation_set = mpd_builder_-&gt;AddAdaptationSet(lang);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK(*adaptation_set);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  MediaInfo adjusted_media_info(media_info);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">MpdBuilder::MakePathsRelativeToMpd</a>(output_path_, &amp;adjusted_media_info);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>* representation =</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      (*adaptation_set)-&gt;AddRepresentation(adjusted_media_info);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span> (representation == NULL)</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// For SimpleMpdNotifier, just put it in Representation. It should still</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// generate a valid MPD.</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(media_info, representation);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  *container_id = representation-&gt;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">id</a>();</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  DCHECK(!ContainsKey(representation_map_, representation-&gt;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">id</a>()));</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  representation_map_[representation-&gt;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">id</a>()] = representation;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ad876de8c9909394b6fb47f387066fc83">   74</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ad876de8c9909394b6fb47f387066fc83">SimpleMpdNotifier::NotifySampleDuration</a>(uint32_t container_id,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                             uint32_t sample_duration) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  base::AutoLock auto_lock(lock_);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  it-&gt;second-&gt;SetSampleDuration(sample_duration);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a640f5455a6d64063c364b81a8a6e878a">   86</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a640f5455a6d64063c364b81a8a6e878a">SimpleMpdNotifier::NotifyNewSegment</a>(uint32_t container_id,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                                         uint64_t start_time,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                         uint64_t duration,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                         uint64_t size) {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  base::AutoLock auto_lock(lock_);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  it-&gt;second-&gt;AddNewSegment(start_time, duration, size);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">  100</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">SimpleMpdNotifier::NotifyEncryptionUpdate</a>(</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    uint32_t container_id,</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; new_key_id,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; new_pssh) {</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  base::AutoLock auto_lock(lock_);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  }</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  it-&gt;second-&gt;UpdateContentProtectionPssh(drm_uuid,</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                                          <a class="code" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">Uint8VectorToBase64</a>(new_pssh));</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6aa87b45fb2117fba72c86c37ad2b1b2">  116</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6aa87b45fb2117fba72c86c37ad2b1b2">SimpleMpdNotifier::AddContentProtectionElement</a>(</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    uint32_t container_id,</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../da/d43/structshaka_1_1ContentProtectionElement.html">ContentProtectionElement</a>&amp; content_protection_element) {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  base::AutoLock auto_lock(lock_);</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  it-&gt;second-&gt;AddContentProtectionElement(content_protection_element);</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;SimpleMpdNotifier::SimpleMpdNotifier(<span class="keyword">const</span> MpdOptions&amp; mpd_options,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                                     <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; base_urls,</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                                     <span class="keyword">const</span> std::string&amp; output_path)</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    : MpdNotifier(mpd_options),</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      output_path_(output_path),</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      mpd_builder_(new MpdBuilder(mpd_options)) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; base_urls.size(); ++i)</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    mpd_builder_-&gt;AddBaseUrl(base_urls[i]);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;SimpleMpdNotifier::~SimpleMpdNotifier() {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a59bcb401b5ca8d5b893ec7da9461569f">   30</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a59bcb401b5ca8d5b893ec7da9461569f">SimpleMpdNotifier::Init</a>() {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">   34</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">SimpleMpdNotifier::NotifyNewContainer</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                                           uint32_t* container_id) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  DCHECK(container_id);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  ContentType content_type = <a class="code" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">GetContentType</a>(media_info);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordflow">if</span> (content_type == kContentTypeUnknown)</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  base::AutoLock auto_lock(lock_);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// TODO(kqyang): Consider adding a new method MpdBuilder::AddRepresentation.</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// Most of the codes here can be moved inside.</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  std::string key = GetAdaptationSetKey(media_info);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  std::string lang = GetLanguage(media_info);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>** adaptation_set = &amp;adaptation_set_map_[key];</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">if</span> (*adaptation_set == NULL)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    *adaptation_set = mpd_builder_-&gt;AddAdaptationSet(lang);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  DCHECK(*adaptation_set);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  MediaInfo adjusted_media_info(media_info);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">MpdBuilder::MakePathsRelativeToMpd</a>(output_path_, &amp;adjusted_media_info);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>* representation =</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      (*adaptation_set)-&gt;AddRepresentation(adjusted_media_info);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (representation == NULL)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// For SimpleMpdNotifier, just put it in Representation. It should still</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// generate a valid MPD.</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(media_info, representation);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  *container_id = representation-&gt;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">id</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  DCHECK(!ContainsKey(representation_map_, representation-&gt;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">id</a>()));</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  representation_map_[representation-&gt;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">id</a>()] = representation;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ad876de8c9909394b6fb47f387066fc83">   69</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ad876de8c9909394b6fb47f387066fc83">SimpleMpdNotifier::NotifySampleDuration</a>(uint32_t container_id,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                             uint32_t sample_duration) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  base::AutoLock auto_lock(lock_);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  it-&gt;second-&gt;SetSampleDuration(sample_duration);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a640f5455a6d64063c364b81a8a6e878a">   81</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a640f5455a6d64063c364b81a8a6e878a">SimpleMpdNotifier::NotifyNewSegment</a>(uint32_t container_id,</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                         uint64_t start_time,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                         uint64_t duration,</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                         uint64_t size) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  base::AutoLock auto_lock(lock_);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  it-&gt;second-&gt;AddNewSegment(start_time, duration, size);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">   95</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">SimpleMpdNotifier::NotifyEncryptionUpdate</a>(</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    uint32_t container_id,</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; new_key_id,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; new_pssh) {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  base::AutoLock auto_lock(lock_);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  }</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  it-&gt;second-&gt;UpdateContentProtectionPssh(drm_uuid,</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                                          <a class="code" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">Uint8VectorToBase64</a>(new_pssh));</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6aa87b45fb2117fba72c86c37ad2b1b2">  111</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6aa87b45fb2117fba72c86c37ad2b1b2">SimpleMpdNotifier::AddContentProtectionElement</a>(</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    uint32_t container_id,</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../da/d43/structshaka_1_1ContentProtectionElement.html">ContentProtectionElement</a>&amp; content_protection_element) {</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  base::AutoLock auto_lock(lock_);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  RepresentationMap::iterator it = representation_map_.find(container_id);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordflow">if</span> (it == representation_map_.end()) {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected container_id: &quot;</span> &lt;&lt; container_id;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  }</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  it-&gt;second-&gt;AddContentProtectionElement(content_protection_element);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
+<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">  124</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">SimpleMpdNotifier::Flush</a>() {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  base::AutoLock auto_lock(lock_);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">WriteMpdToFile</a>(output_path_, mpd_builder_.get());</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">  129</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">SimpleMpdNotifier::Flush</a>() {</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  base::AutoLock auto_lock(lock_);</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">WriteMpdToFile</a>(output_path_, mpd_builder_.get());</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a59bcb401b5ca8d5b893ec7da9461569f"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a59bcb401b5ca8d5b893ec7da9461569f">shaka::SimpleMpdNotifier::Init</a></div><div class="ttdeci">bool Init() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00035">simple_mpd_notifier.cc:35</a></div></div>
-<div class="ttc" id="classshaka_1_1AdaptationSet_html"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html">shaka::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00165">mpd_builder.h:165</a></div></div>
-<div class="ttc" id="classshaka_1_1Representation_html_a6a3ba385179698e57a1451d1a26ad827"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">shaka::Representation::id</a></div><div class="ttdeci">uint32_t id() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00497">mpd_builder.h:497</a></div></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a59bcb401b5ca8d5b893ec7da9461569f"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a59bcb401b5ca8d5b893ec7da9461569f">shaka::SimpleMpdNotifier::Init</a></div><div class="ttdeci">bool Init() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00030">simple_mpd_notifier.cc:30</a></div></div>
+<div class="ttc" id="classshaka_1_1AdaptationSet_html"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html">shaka::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00157">mpd_builder.h:157</a></div></div>
+<div class="ttc" id="classshaka_1_1Representation_html_a6a3ba385179698e57a1451d1a26ad827"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a6a3ba385179698e57a1451d1a26ad827">shaka::Representation::id</a></div><div class="ttdeci">uint32_t id() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00487">mpd_builder.h:487</a></div></div>
 <div class="ttc" id="structshaka_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../da/d43/structshaka_1_1ContentProtectionElement.html">shaka::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a6aa87b45fb2117fba72c86c37ad2b1b2"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6aa87b45fb2117fba72c86c37ad2b1b2">shaka::SimpleMpdNotifier::AddContentProtectionElement</a></div><div class="ttdeci">bool AddContentProtectionElement(uint32_t id, const ContentProtectionElement &amp;content_protection_element) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00116">simple_mpd_notifier.cc:116</a></div></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a6aa87b45fb2117fba72c86c37ad2b1b2"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6aa87b45fb2117fba72c86c37ad2b1b2">shaka::SimpleMpdNotifier::AddContentProtectionElement</a></div><div class="ttdeci">bool AddContentProtectionElement(uint32_t id, const ContentProtectionElement &amp;content_protection_element) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00111">simple_mpd_notifier.cc:111</a></div></div>
 <div class="ttc" id="namespaceshaka_html_abfd977a0dfb051a942d1694442692814"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">shaka::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00347">mpd_utils.cc:347</a></div></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a640f5455a6d64063c364b81a8a6e878a"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a640f5455a6d64063c364b81a8a6e878a">shaka::SimpleMpdNotifier::NotifyNewSegment</a></div><div class="ttdeci">bool NotifyNewSegment(uint32_t id, uint64_t start_time, uint64_t duration, uint64_t size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00086">simple_mpd_notifier.cc:86</a></div></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a8ea622a21a5807775bb2d998fa04658f"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">shaka::SimpleMpdNotifier::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00129">simple_mpd_notifier.cc:129</a></div></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a640f5455a6d64063c364b81a8a6e878a"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a640f5455a6d64063c364b81a8a6e878a">shaka::SimpleMpdNotifier::NotifyNewSegment</a></div><div class="ttdeci">bool NotifyNewSegment(uint32_t id, uint64_t start_time, uint64_t duration, uint64_t size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00081">simple_mpd_notifier.cc:81</a></div></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a8ea622a21a5807775bb2d998fa04658f"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">shaka::SimpleMpdNotifier::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00124">simple_mpd_notifier.cc:124</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a4c7f8f964fec2bb9543e7ee8da9cd994"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">shaka::Uint8VectorToBase64</a></div><div class="ttdeci">std::string Uint8VectorToBase64(const std::vector&lt; uint8_t &gt; &amp;input)</div><div class="ttdoc">Converts uint8 vector into base64 encoded string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00068">mpd_notifier_util.cc:68</a></div></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_ad876de8c9909394b6fb47f387066fc83"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ad876de8c9909394b6fb47f387066fc83">shaka::SimpleMpdNotifier::NotifySampleDuration</a></div><div class="ttdeci">bool NotifySampleDuration(uint32_t container_id, uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00074">simple_mpd_notifier.cc:74</a></div></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_ae1a1231fb13e0bc97cdea5fc239184bf"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">shaka::SimpleMpdNotifier::NotifyEncryptionUpdate</a></div><div class="ttdeci">bool NotifyEncryptionUpdate(uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00100">simple_mpd_notifier.cc:100</a></div></div>
-<div class="ttc" id="classshaka_1_1MpdBuilder_html_a247a9c807274d4e707530f24e2d207f9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">shaka::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00645">mpd_builder.cc:645</a></div></div>
-<div class="ttc" id="classshaka_1_1Representation_html"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html">shaka::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00422">mpd_builder.h:422</a></div></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_ad876de8c9909394b6fb47f387066fc83"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ad876de8c9909394b6fb47f387066fc83">shaka::SimpleMpdNotifier::NotifySampleDuration</a></div><div class="ttdeci">bool NotifySampleDuration(uint32_t container_id, uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00069">simple_mpd_notifier.cc:69</a></div></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_ae1a1231fb13e0bc97cdea5fc239184bf"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">shaka::SimpleMpdNotifier::NotifyEncryptionUpdate</a></div><div class="ttdeci">bool NotifyEncryptionUpdate(uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00095">simple_mpd_notifier.cc:95</a></div></div>
+<div class="ttc" id="classshaka_1_1MpdBuilder_html_a247a9c807274d4e707530f24e2d207f9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">shaka::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00658">mpd_builder.cc:658</a></div></div>
+<div class="ttc" id="classshaka_1_1Representation_html"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html">shaka::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00412">mpd_builder.h:412</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a5ea880937da26d677ff6a48c0219d090"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">shaka::GetContentType</a></div><div class="ttdeci">ContentType GetContentType(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00051">mpd_notifier_util.cc:51</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a7e940cda37fa0dbefef3b3cc9c802ab8"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">shaka::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(const std::string &amp;output_path, MpdBuilder *mpd_builder)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00020">mpd_notifier_util.cc:20</a></div></div>
-<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a3f4aabd86ec08e5ff427120ed39fda29"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">shaka::SimpleMpdNotifier::NotifyNewContainer</a></div><div class="ttdeci">bool NotifyNewContainer(const MediaInfo &amp;media_info, uint32_t *id) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00039">simple_mpd_notifier.cc:39</a></div></div>
+<div class="ttc" id="classshaka_1_1SimpleMpdNotifier_html_a3f4aabd86ec08e5ff427120ed39fda29"><div class="ttname"><a href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">shaka::SimpleMpdNotifier::NotifyNewContainer</a></div><div class="ttdeci">bool NotifyNewContainer(const MediaInfo &amp;media_info, uint32_t *id) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00034">simple_mpd_notifier.cc:34</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 10 2017 18:13:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 13 2017 20:03:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

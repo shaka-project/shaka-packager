@@ -100,34 +100,34 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="../../d1/df3/structshaka_1_1MpdOptions.html">   15</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a> {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a>()</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;      : availability_time_offset(0),</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        minimum_update_period(0),</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <span class="comment">// TODO(tinskip): Set min_buffer_time in unit tests rather than here.</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        min_buffer_time(2.0),</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        time_shift_buffer_depth(0),</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        suggested_presentation_delay(0) {}</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  ~<a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a>() {};</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">double</span> availability_time_offset;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">double</span> minimum_update_period;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordtype">double</span> min_buffer_time;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">double</span> time_shift_buffer_depth;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">double</span> suggested_presentation_delay;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  std::string default_language;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;};</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_OPTIONS_H_</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor"></span></div>
-<div class="ttc" id="structshaka_1_1MpdOptions_html"><div class="ttname"><a href="../../d1/df3/structshaka_1_1MpdOptions.html">shaka::MpdOptions</a></div><div class="ttdoc">Defines Mpd Options. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d60/mpd__options_8h_source.html#l00015">mpd_options.h:15</a></div></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">enum class</span> DashProfile {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  kUnknown,</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  kOnDemand,</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  kLive,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">enum class</span> MpdType { kStatic, kDynamic };</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="../../d1/df3/structshaka_1_1MpdOptions.html">   23</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  DashProfile dash_profile = DashProfile::kOnDemand;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  MpdType mpd_type = MpdType::kStatic;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">double</span> availability_time_offset = 0;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">double</span> minimum_update_period = 0;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="comment">// TODO(tinskip): Set min_buffer_time in unit tests rather than here.</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">double</span> min_buffer_time = 2.0;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">double</span> time_shift_buffer_depth = 0;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">double</span> suggested_presentation_delay = 0;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  std::string default_language;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_OPTIONS_H_</span></div>
+<div class="ttc" id="structshaka_1_1MpdOptions_html"><div class="ttname"><a href="../../d1/df3/structshaka_1_1MpdOptions.html">shaka::MpdOptions</a></div><div class="ttdoc">Defines Mpd Options. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d60/mpd__options_8h_source.html#l00023">mpd_options.h:23</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 10 2017 18:13:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 13 2017 20:03:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

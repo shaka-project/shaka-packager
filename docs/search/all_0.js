@@ -5,7 +5,7 @@ var searchData=
   ['ac3specific',['AC3Specific',['../d4/dfa/structshaka_1_1media_1_1mp4_1_1AC3Specific.html',1,'shaka::media::mp4']]],
   ['adaptation_5fset_5fswitching_5fids',['adaptation_set_switching_ids',['../d8/d8e/classshaka_1_1AdaptationSet.html#a8674f458c599af4d5ebc104a2f7bd8ae',1,'shaka::AdaptationSet']]],
   ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html',1,'shaka']]],
-  ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html#acd24d0537c3625d709b58cf9565d8fcf',1,'shaka::AdaptationSet']]],
+  ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html#a78925e61038e8bbd776652a539edb129',1,'shaka::AdaptationSet']]],
   ['adaptationsetxmlnode',['AdaptationSetXmlNode',['../d1/de7/classshaka_1_1xml_1_1AdaptationSetXmlNode.html',1,'shaka::xml']]],
   ['addadaptationset',['AddAdaptationSet',['../dc/da1/classshaka_1_1MpdBuilder.html#ad32d4f20e6325b20267a2e905e1ec243',1,'shaka::MpdBuilder']]],
   ['addadaptationsetswitching',['AddAdaptationSetSwitching',['../d8/d8e/classshaka_1_1AdaptationSet.html#af934da43aef6260e7e7a469d9f796661',1,'shaka::AdaptationSet']]],

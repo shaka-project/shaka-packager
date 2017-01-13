@@ -40,5 +40,5 @@ var searchData=
   ['tssegmenter',['TsSegmenter',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html',1,'shaka::media::mp2t']]],
   ['tswriter',['TsWriter',['../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html',1,'shaka::media::mp2t']]],
   ['twopasssinglesegmentsegmenter',['TwoPassSingleSegmentSegmenter',['../dd/da5/classshaka_1_1media_1_1webm_1_1TwoPassSingleSegmentSegmenter.html',1,'shaka::media::webm']]],
-  ['type',['type',['../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c',1,'shaka::media::Nalu::type()'],['../dc/da1/classshaka_1_1MpdBuilder.html#adf8a48afbb29f1f1c54e4daaebb81337',1,'shaka::MpdBuilder::type()']]]
+  ['type',['type',['../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c',1,'shaka::media::Nalu']]]
 ];
