@@ -122,25 +122,23 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;std::unique_ptr&lt;KeySource&gt; CreateDecryptionKeySource();</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">bool</span> AssignFlagsFromProfile();</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">bool</span> GetMuxerOptions(MuxerOptions* muxer_options);</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">bool</span> GetMuxerOptions(MuxerOptions* muxer_options);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">bool</span> GetMpdOptions(<span class="keywordtype">bool</span> on_demand_profile, MpdOptions* mpd_options);</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keywordtype">bool</span> GetMpdOptions(MpdOptions* mpd_options);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">bool</span> AddStreamToMuxer(<span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;MediaStream&gt;&gt;&amp; streams,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                      <span class="keyword">const</span> std::string&amp; stream_selector,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                      <span class="keyword">const</span> std::string&amp; language_override,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                      Muxer* muxer);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">bool</span> AddStreamToMuxer(<span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;MediaStream&gt;&gt;&amp; streams,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                      <span class="keyword">const</span> std::string&amp; stream_selector,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                      <span class="keyword">const</span> std::string&amp; language_override,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                      Muxer* muxer);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif  // APP_PACKAGER_UTIL_H_</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#endif  // APP_PACKAGER_UTIL_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 13 2017 20:03:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 13 2017 21:33:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
