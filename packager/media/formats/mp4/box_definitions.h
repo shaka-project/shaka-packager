@@ -38,7 +38,7 @@ class BoxBuffer;
                                                       \
  private:                                             \
   bool ReadWriteInternal(BoxBuffer* buffer) override; \
-  uint32_t ComputeSizeInternal() override;            \
+  size_t ComputeSizeInternal() override;              \
                                                       \
  public:
 

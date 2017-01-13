@@ -44,7 +44,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     // Create a fake skip box contains the buffer and Write it.
     BufferWriter buffer;
     buffer.Swap(buffer_.get());
-    uint32_t skip_box_size = buffer.Size() + kBoxSize;
+    uint32_t skip_box_size = static_cast<uint32_t>(buffer.Size() + kBoxSize);
     buffer_->AppendInt(skip_box_size);
     buffer_->AppendInt(static_cast<uint32_t>(FOURCC_skip));
     buffer_->AppendBuffer(buffer);

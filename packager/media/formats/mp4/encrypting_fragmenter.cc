@@ -179,7 +179,8 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
 
   // Optimize saiz box.
   SampleAuxiliaryInformationSize& saiz = traf()->auxiliary_size;
-  saiz.sample_count = traf()->runs[0].sample_sizes.size();
+  saiz.sample_count =
+      static_cast<uint32_t>(traf()->runs[0].sample_sizes.size());
   if (!saiz.sample_info_sizes.empty()) {
     if (!OptimizeSampleEntries(&saiz.sample_info_sizes,
                                &saiz.default_sample_info_size)) {
@@ -242,7 +243,7 @@ Status EncryptingFragmenter::CreateEncryptor() {
   return Status::OK;
 }
 
-void EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {
+void EncryptingFragmenter::EncryptBytes(uint8_t* data, size_t size) {
   DCHECK(encryptor_);
   CHECK(encryptor_->Crypt(data, size, data));
 }
@@ -268,8 +269,8 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         SubsampleEntry subsample;
         subsample.clear_bytes =
             static_cast<uint16_t>(frame.uncompressed_header_size);
-        subsample.cipher_bytes =
-            frame.frame_size - frame.uncompressed_header_size;
+        subsample.cipher_bytes = static_cast<uint32_t>(
+            frame.frame_size - frame.uncompressed_header_size);
 
         // "VP Codec ISO Media File Format Binding" document requires that the
         // encrypted bytes of each frame within the superframe must be block

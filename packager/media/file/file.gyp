@@ -26,20 +26,10 @@
         'memory_file.h',
         'threaded_io_file.cc',
         'threaded_io_file.h',
+        'udp_file.cc',
         'udp_file.h',
         'udp_options.cc',
         'udp_options.h',
-      ],
-      'conditions': [
-        ['OS == "win"', {
-          'sources': [
-            'udp_file_win.cc',
-          ],
-        }, {
-          'sources': [
-            'udp_file_posix.cc',
-          ],
-        }],
       ],
       'dependencies': [
         '../../base/base.gyp:base',

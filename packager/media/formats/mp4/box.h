@@ -67,7 +67,7 @@ struct Box {
   virtual bool ReadWriteInternal(BoxBuffer* buffer) = 0;
   // Compute the size of this box. A value of 0 should be returned if the box
   // should not be written. Note that this function won't update box size.
-  virtual uint32_t ComputeSizeInternal() = 0;
+  virtual size_t ComputeSizeInternal() = 0;
 
   // We don't support 64-bit box sizes. 32-bit should be large enough for our
   // current needs.

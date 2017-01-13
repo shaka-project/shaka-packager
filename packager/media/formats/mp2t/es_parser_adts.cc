@@ -63,8 +63,8 @@ static bool LookForSyncWord(const uint8_t* raw_es,
       // The layer field (2 bits) must be set to 0.
       continue;
 
-    int frame_size =
-        mp2t::AdtsHeader::GetAdtsFrameSize(cur_buf, kAdtsHeaderMinSize);
+    int frame_size = static_cast<int>(
+        mp2t::AdtsHeader::GetAdtsFrameSize(cur_buf, kAdtsHeaderMinSize));
     if (frame_size < kAdtsHeaderMinSize) {
       // Too short to be an ADTS frame.
       continue;
@@ -117,7 +117,7 @@ bool EsParserAdts::Parse(const uint8_t* buf,
   }
 
   // Copy the input data to the ES buffer.
-  es_byte_queue_.Push(buf, size);
+  es_byte_queue_.Push(buf, static_cast<int>(size));
   es_byte_queue_.Peek(&raw_es, &raw_es_size);
 
   // Look for every ADTS frame in the ES buffer starting at offset = 0

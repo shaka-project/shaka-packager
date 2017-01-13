@@ -401,6 +401,12 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
   base::DictionaryValue* track_hd = new base::DictionaryValue();
   track_hd->SetString("type", "HD");
   tracks->Append(track_hd);
+  base::DictionaryValue* track_uhd1 = new base::DictionaryValue();
+  track_uhd1->SetString("type", "UHD1");
+  tracks->Append(track_uhd1);
+  base::DictionaryValue* track_uhd2 = new base::DictionaryValue();
+  track_uhd2->SetString("type", "UHD2");
+  tracks->Append(track_uhd2);
   base::DictionaryValue* track_audio = new base::DictionaryValue();
   track_audio->SetString("type", "AUDIO");
   tracks->Append(track_audio);

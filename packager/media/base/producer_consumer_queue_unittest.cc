@@ -89,7 +89,7 @@ TEST(ProducerConsumerQueueTest, PeekOnPoppedElement) {
 
 TEST(ProducerConsumerQueueTest, PushWithTimeout) {
   std::unique_ptr<base::ElapsedTimer> timer;
-  ProducerConsumerQueue<int> queue(kCapacity);
+  ProducerConsumerQueue<size_t> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i) {
     timer.reset(new base::ElapsedTimer());

@@ -54,6 +54,8 @@ Status Segmenter::Initialize(std::unique_ptr<MkvWriter> writer,
                              MuxerListener* muxer_listener,
                              KeySource* encryption_key_source,
                              uint32_t max_sd_pixels,
+                             uint32_t max_hd_pixels,
+                             uint32_t max_uhd1_pixels,
                              double clear_lead_in_seconds) {
   muxer_listener_ = muxer_listener;
   info_ = info;
@@ -82,7 +84,9 @@ Status Segmenter::Initialize(std::unique_ptr<MkvWriter> writer,
   Status status;
   if (encryption_key_source) {
     status = InitializeEncryptor(encryption_key_source,
-                                 max_sd_pixels);
+                                 max_sd_pixels,
+                                 max_hd_pixels,
+                                 max_uhd1_pixels);
     if (!status.ok())
       return status;
   }
@@ -366,10 +370,13 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
 }
 
 Status Segmenter::InitializeEncryptor(KeySource* key_source,
-                                      uint32_t max_sd_pixels) {
+                                      uint32_t max_sd_pixels,
+                                      uint32_t max_hd_pixels,
+                                      uint32_t max_uhd1_pixels) {
   encryptor_.reset(new Encryptor());
   const KeySource::TrackType track_type =
-      GetTrackTypeForEncryption(*info_, max_sd_pixels);
+      GetTrackTypeForEncryption(*info_, max_sd_pixels, max_hd_pixels,
+                                max_uhd1_pixels);
   if (track_type == KeySource::TrackType::TRACK_TYPE_UNKNOWN)
     return Status::OK;
   return encryptor_->Initialize(muxer_listener_, track_type, info_->codec(),

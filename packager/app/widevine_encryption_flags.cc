@@ -37,8 +37,18 @@ DEFINE_string(policy,
               "rights.");
 DEFINE_int32(max_sd_pixels,
              768 * 576,
-             "If the video track has more pixels per frame than max_sd_pixels, "
-             "it is considered as HD, SD otherwise. Default: 768 * 576.");
+             "The video track is considered SD if its max pixels per frame is "
+             "no higher than max_sd_pixels. Default: 442368 (768 x 576).");
+DEFINE_int32(max_hd_pixels,
+             1920 * 1080,
+             "The video track is considered HD if its max pixels per frame is "
+             "higher than max_sd_pixels, but no higher than max_hd_pixels. "
+             "Default: 2073600 (1920 x 1080).");
+DEFINE_int32(max_uhd1_pixels,
+             4096 * 2160,
+             "The video track is considered UHD1 if its max pixels per frame "
+             "is higher than max_hd_pixels, but no higher than max_uhd1_pixels."
+             " Otherwise it is UHD2. Default: 8847360 (4096 x 2160).");
 DEFINE_string(signer, "", "The name of the signer.");
 DEFINE_string(aes_signing_key,
               "",
@@ -117,6 +127,22 @@ bool ValidateWidevineCryptoFlags() {
 
   if (FLAGS_max_sd_pixels <= 0) {
     PrintError("--max_sd_pixels must be positive.");
+    success = false;
+  }
+  if (FLAGS_max_hd_pixels <= 0) {
+    PrintError("--max_hd_pixels must be positive.");
+    success = false;
+  }
+  if (FLAGS_max_uhd1_pixels <= 0) {
+    PrintError("--max_uhd1_pixels must be positive.");
+    success = false;
+  }
+  if (FLAGS_max_hd_pixels <= FLAGS_max_sd_pixels) {
+    PrintError("--max_hd_pixels must be greater than --max_sd_pixels.");
+    success = false;
+  }
+  if (FLAGS_max_uhd1_pixels <= FLAGS_max_hd_pixels) {
+    PrintError("--max_uhd1_pixels must be greater than --max_hd_pixels.");
     success = false;
   }
 

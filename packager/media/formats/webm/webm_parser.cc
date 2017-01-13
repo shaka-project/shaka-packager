@@ -892,7 +892,8 @@ bool WebMListParser::OnListStart(int id, int64_t size) {
   if (!element_info)
     return false;
 
-  int current_level = root_level_ + list_state_stack_.size() - 1;
+  int current_level =
+      root_level_ + static_cast<int>(list_state_stack_.size()) - 1;
   if (current_level + 1 != element_info->level_)
     return false;
 

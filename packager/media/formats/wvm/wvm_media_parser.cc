@@ -48,7 +48,7 @@ const uint32_t kPesStreamIdVideo = 0xE0;
 const uint32_t kPesStreamIdAudioMask = 0xE0;
 const uint32_t kPesStreamIdAudio = 0xC0;
 const uint32_t kVersion4 = 4;
-const int kAdtsHeaderMinSize = 7;
+const size_t kAdtsHeaderMinSize = 7;
 const uint8_t kAacSampleSizeBits = 16;
 // Applies to all video streams.
 const uint8_t kNaluLengthSize = 4;  // unit is bytes.
@@ -125,8 +125,8 @@ void WvmMediaParser::Init(const InitCB& init_cb,
 }
 
 bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
-  uint32_t num_bytes, prev_size;
-  num_bytes = prev_size = 0;
+  size_t num_bytes = 0;
+  size_t prev_size = 0;
   const uint8_t* read_ptr = buf;
   const uint8_t* end = read_ptr + size;
 
@@ -208,7 +208,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         parse_state_ = SystemHeaderSkip;
         break;
       case PackHeaderStuffingSkip:
-        if ((end - read_ptr) >= (int32_t)skip_bytes_) {
+        if (end >= skip_bytes_ + read_ptr) {
           read_ptr += skip_bytes_;
           skip_bytes_ = 0;
           parse_state_ = StartCode1;
@@ -218,7 +218,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         }
         continue;
       case SystemHeaderSkip:
-        if ((end - read_ptr) >= (int32_t)skip_bytes_) {
+        if (end >= skip_bytes_ + read_ptr) {
           read_ptr += skip_bytes_;
           skip_bytes_ = 0;
           parse_state_ = StartCode1;
@@ -895,8 +895,8 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
     } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
         kPesStreamIdAudio) {
       // Set data on the audio stream.
-      int frame_size = mp2t::AdtsHeader::GetAdtsFrameSize(sample_data_.data(),
-                                                          kAdtsHeaderMinSize);
+      int frame_size = static_cast<int>(mp2t::AdtsHeader::GetAdtsFrameSize(
+          sample_data_.data(), kAdtsHeaderMinSize));
       mp2t::AdtsHeader adts_header;
       const uint8_t* frame_ptr = sample_data_.data();
       if (!adts_header.Parse(frame_ptr, frame_size)) {

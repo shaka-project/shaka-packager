@@ -73,11 +73,10 @@ namespace media {
 namespace {
 
 const char kUsage[] =
-    "Packager driver program. Usage:\n\n"
-    "%s [flags] <stream_descriptor> ...\n"
-    "stream_descriptor consists of comma separated field_name/value pairs:\n"
-    "field_name=value,[field_name=value,]...\n"
-    "Supported field names are as follows:\n"
+    "%s [flags] <stream_descriptor> ...\n\n"
+    "  stream_descriptor consists of comma separated field_name/value pairs:\n"
+    "  field_name=value,[field_name=value,]...\n"
+    "  Supported field names are as follows:\n"
     "  - input (in): Required input/source media file path or network stream\n"
     "    URL.\n"
     "  - stream_selector (stream): Required field with value 'audio',\n"
@@ -336,6 +335,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (key_source) {
       muxer->SetKeySource(key_source,
                           FLAGS_max_sd_pixels,
+                          FLAGS_max_hd_pixels,
+                          FLAGS_max_uhd1_pixels,
                           FLAGS_clear_lead,
                           FLAGS_crypto_period_duration,
                           GetProtectionScheme(FLAGS_protection_scheme));
@@ -528,12 +529,11 @@ int PackagerMain(int argc, char** argv) {
   log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   CHECK(logging::InitLogging(log_settings));
 
+  google::SetVersionString(GetPackagerVersion());
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
-    const std::string version_string = base::StringPrintf(
-        "shaka-packager version %s", GetPackagerVersion().c_str());
-    google::ShowUsageWithFlags(version_string.c_str());
+    google::ShowUsageWithFlags("Usage");
     return kSuccess;
   }
 

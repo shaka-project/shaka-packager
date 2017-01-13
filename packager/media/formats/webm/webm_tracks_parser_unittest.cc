@@ -29,15 +29,15 @@ class WebMTracksParserTest : public testing::Test {
 
  protected:
   void VerifyTextTrackInfo(const uint8_t* buffer,
-                           int buffer_size,
+                           size_t buffer_size,
                            TextKind text_kind,
                            const std::string& name,
                            const std::string& language) {
     std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(false));
 
-    int result = parser->Parse(buffer, buffer_size);
+    int result = parser->Parse(buffer, static_cast<int>(buffer_size));
     EXPECT_GT(result, 0);
-    EXPECT_EQ(result, buffer_size);
+    EXPECT_EQ(result, static_cast<int>(buffer_size));
 
     const WebMTracksParser::TextTracks& text_tracks = parser->text_tracks();
     EXPECT_EQ(text_tracks.size(), WebMTracksParser::TextTracks::size_type(1));
@@ -103,7 +103,7 @@ TEST_F(WebMTracksParserTest, IgnoringTextTracks) {
   const std::vector<uint8_t> buf = tb.Finish();
   std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
 
-  int result = parser->Parse(&buf[0], buf.size());
+  int result = parser->Parse(&buf[0], static_cast<int>(buf.size()));
   EXPECT_GT(result, 0);
   EXPECT_EQ(result, static_cast<int>(buf.size()));
 
@@ -116,7 +116,7 @@ TEST_F(WebMTracksParserTest, IgnoringTextTracks) {
   // Test again w/o ignoring the test tracks.
   parser.reset(new WebMTracksParser(false));
 
-  result = parser->Parse(&buf[0], buf.size());
+  result = parser->Parse(&buf[0], static_cast<int>(buf.size()));
   EXPECT_GT(result, 0);
 
   EXPECT_EQ(parser->ignored_tracks().size(), 0u);
@@ -135,7 +135,7 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationUnset) {
   const std::vector<uint8_t> buf = tb.Finish();
 
   std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
-  int result = parser->Parse(&buf[0], buf.size());
+  int result = parser->Parse(&buf[0], static_cast<int>(buf.size()));
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
@@ -166,7 +166,7 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
   const std::vector<uint8_t> buf = tb.Finish();
 
   std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
-  int result = parser->Parse(&buf[0], buf.size());
+  int result = parser->Parse(&buf[0], static_cast<int>(buf.size()));
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
@@ -187,7 +187,7 @@ TEST_F(WebMTracksParserTest, InvalidZeroDefaultDurationSet) {
 
   std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
 
-  EXPECT_EQ(-1, parser->Parse(&buf[0], buf.size()));
+  EXPECT_EQ(-1, parser->Parse(&buf[0], static_cast<int>(buf.size())));
 }
 
 TEST_F(WebMTracksParserTest, HighTrackUID) {
@@ -198,7 +198,7 @@ TEST_F(WebMTracksParserTest, HighTrackUID) {
   const std::vector<uint8_t> buf = tb.Finish();
 
   std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
-  EXPECT_GT(parser->Parse(&buf[0], buf.size()),0);
+  EXPECT_GT(parser->Parse(&buf[0], static_cast<int>(buf.size())), 0);
 }
 
 }  // namespace media

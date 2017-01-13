@@ -61,9 +61,8 @@ static int DoubleElementSize(int element_id) {
 }
 
 static int StringElementSize(int element_id, const std::string& value) {
- return GetUIntSize(element_id) +
-        GetUIntMkvSize(value.length()) +
-        value.length();
+  return GetUIntSize(element_id) + GetUIntMkvSize(value.length()) +
+         static_cast<int>(value.length());
 }
 
 static void SerializeInt(uint8_t** buf_ptr,
@@ -196,7 +195,7 @@ std::vector<uint8_t> TracksBuilder::Finish() {
   buffer.resize(GetTracksSize());
 
   // Populate the storage with a tracks header
-  WriteTracks(&buffer[0], buffer.size());
+  WriteTracks(&buffer[0], static_cast<int>(buffer.size()));
 
   return buffer;
 }

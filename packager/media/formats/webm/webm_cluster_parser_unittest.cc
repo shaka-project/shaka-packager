@@ -230,7 +230,7 @@ std::unique_ptr<Cluster> CreateCluster(int timecode,
 std::unique_ptr<Cluster> CreateCluster(const uint8_t* data, size_t data_size) {
   ClusterBuilder cb;
   cb.SetClusterTimecode(0);
-  cb.AddSimpleBlock(kVideoTrackNum, 0, 0, data, data_size);
+  cb.AddSimpleBlock(kVideoTrackNum, 0, 0, data, static_cast<int>(data_size));
   return cb.Finish();
 }
 
@@ -239,8 +239,8 @@ bool VerifyBuffersHelper(const BufferQueue& audio_buffers,
                          const BufferQueue& text_buffers,
                          const BlockInfo* block_info,
                          int block_count) {
-  int buffer_count = audio_buffers.size() + video_buffers.size() +
-      text_buffers.size();
+  int buffer_count = static_cast<int>(
+      audio_buffers.size() + video_buffers.size() + text_buffers.size());
   if (block_count != buffer_count) {
     LOG(ERROR) << __FUNCTION__ << " : block_count (" << block_count
                << ") mismatches buffer_count (" << buffer_count << ")";

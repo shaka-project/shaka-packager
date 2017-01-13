@@ -44,7 +44,7 @@ class Mp2tMediaParserTest : public testing::Test {
   int64_t video_max_dts_;
 
   bool AppendData(const uint8_t* data, size_t length) {
-    return parser_->Parse(data, length);
+    return parser_->Parse(data, static_cast<int>(length));
   }
 
   bool AppendDataInPieces(const uint8_t* data,

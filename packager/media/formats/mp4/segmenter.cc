@@ -167,6 +167,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              ProgressListener* progress_listener,
                              KeySource* encryption_key_source,
                              uint32_t max_sd_pixels,
+                             uint32_t max_hd_pixels,
+                             uint32_t max_uhd1_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds,
                              FourCC protection_scheme) {
@@ -196,7 +198,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     }
 
     KeySource::TrackType track_type =
-        GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels);
+        GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels,
+                                  max_hd_pixels, max_uhd1_pixels);
     SampleDescription& description =
         moov_->tracks[i].media.information.sample_table.description;
     ProtectionPattern pattern =
@@ -453,7 +456,7 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
           sizeof(uint32_t);  // for sample count field in 'senc'
     }
     traf.runs[0].data_offset = data_offset + mdat.data_size;
-    mdat.data_size += fragmenters_[i]->data()->Size();
+    mdat.data_size += static_cast<uint32_t>(fragmenters_[i]->data()->Size());
   }
 
   // Generate segment reference.

@@ -34,6 +34,8 @@ TsSegmenter::~TsSegmenter() {}
 Status TsSegmenter::Initialize(const StreamInfo& stream_info,
                                KeySource* encryption_key_source,
                                uint32_t max_sd_pixels,
+                               uint32_t max_hd_pixels,
+                               uint32_t max_uhd1_pixels,
                                double clear_lead_in_seconds) {
   if (muxer_options_.segment_template.empty())
     return Status(error::MUXER_FAILURE, "Segment template not specified.");
@@ -47,7 +49,8 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
   if (encryption_key_source) {
     std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     const KeySource::TrackType type =
-        GetTrackTypeForEncryption(stream_info, max_sd_pixels);
+        GetTrackTypeForEncryption(stream_info, max_sd_pixels,
+                                  max_hd_pixels, max_uhd1_pixels);
     Status status = encryption_key_source->GetKey(type, encryption_key.get());
 
     if (encryption_key->iv.empty()) {

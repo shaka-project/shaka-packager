@@ -180,7 +180,7 @@ TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegmentDuration) {
   // Verify the resulting data.
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
-  ASSERT_EQ(2, parser.cluster_count());
+  ASSERT_EQ(2u, parser.cluster_count());
   EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
   EXPECT_EQ(3, parser.GetFrameCountForCluster(1));
 }
@@ -201,7 +201,7 @@ TEST_F(SingleSegmentSegmenterTest, IgnoresFragmentDuration) {
   // Verify the resulting data.
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
-  ASSERT_EQ(1, parser.cluster_count());
+  ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(8, parser.GetFrameCountForCluster(0));
 }
 
@@ -226,7 +226,7 @@ TEST_F(SingleSegmentSegmenterTest, RespectsSAPAlign) {
   // Segments are 1 second, so there would normally be 3 frames per cluster,
   // but since it's SAP aligned and only frame 7 is a key-frame, there are
   // two clusters with 6 and 4 frames respectively.
-  ASSERT_EQ(2, parser.cluster_count());
+  ASSERT_EQ(2u, parser.cluster_count());
   EXPECT_EQ(6, parser.GetFrameCountForCluster(0));
   EXPECT_EQ(4, parser.GetFrameCountForCluster(1));
 }

@@ -18,9 +18,11 @@ namespace shaka {
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::ElementsAre;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::StrEq;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -37,7 +39,6 @@ const char kValidMediaInfo[] =
     "container_type: 1\n";
 const uint32_t kDefaultAdaptationSetId = 0u;
 const uint32_t kDefaultRepresentationId = 1u;
-const int kDefaultGroupId = -1;
 
 bool ElementEqual(const Element& lhs, const Element& rhs) {
   const bool all_equal_except_sublement_check =
@@ -102,8 +103,6 @@ class DashIopMpdNotifierTest
   void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     output_path_ = temp_file_path_.AsUTF8Unsafe();
-    ON_CALL(*default_mock_adaptation_set_, Group())
-        .WillByDefault(Return(kDefaultGroupId));
   }
 
   void TearDown() override {
@@ -218,7 +217,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewTextContainer) {
 // Verify VOD NotifyNewContainer() operation works with different
 // MediaInfo::ProtectedContent.
 // Two AdaptationSets should be created.
-// Different DRM so they won't be grouped.
+// AdaptationSets with different DRM won't be switchable.
 TEST_P(DashIopMpdNotifierTest,
        NotifyNewContainersWithDifferentProtectedContent) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
@@ -295,11 +294,6 @@ TEST_P(DashIopMpdNotifierTest,
   std::unique_ptr<MockAdaptationSet> hd_adaptation_set(
       new MockAdaptationSet(kHdAdaptationSetId));
 
-  ON_CALL(*sd_adaptation_set, Group()).WillByDefault(Return(kDefaultGroupId));
-  ON_CALL(*hd_adaptation_set, Group()).WillByDefault(Return(kDefaultGroupId));
-  EXPECT_CALL(*sd_adaptation_set, SetGroup(_)).Times(0);
-  EXPECT_CALL(*hd_adaptation_set, SetGroup(_)).Times(0);
-
   const uint32_t kSdRepresentation = 4u;
   const uint32_t kHdRepresentation = 5u;
   std::unique_ptr<MockRepresentation> sd_representation(
@@ -336,6 +330,9 @@ TEST_P(DashIopMpdNotifierTest,
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kHdProtectedContent), &unused_container_id));
+
+  EXPECT_THAT(sd_adaptation_set->adaptation_set_switching_ids(), ElementsAre());
+  EXPECT_THAT(hd_adaptation_set->adaptation_set_switching_ids(), ElementsAre());
 }
 
 // Verify VOD NotifyNewContainer() operation works with same
@@ -410,9 +407,6 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
   std::unique_ptr<MockRepresentation> hd_representation(
       new MockRepresentation(kHdRepresentation));
 
-  // No reason to set @group if there is only one AdaptationSet.
-  EXPECT_CALL(*default_mock_adaptation_set_, SetGroup(_)).Times(0);
-
   InSequence in_sequence;
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -440,6 +434,10 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kHdProtectedContent), &unused_container_id));
+
+  // No adaptation set switching if there is only one AdaptationSet.
+  EXPECT_THAT(default_mock_adaptation_set_->adaptation_set_switching_ids(),
+              ElementsAre());
 }
 
 // AddContentProtection() should not work and should always return false.
@@ -466,17 +464,16 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
 }
 
 // Default Key IDs are different but if the content protection UUIDs match, then
-// they can be in the same group.
+// the AdaptationSet they belong to should be switchable.
 // This is a long test.
 // Basically this
 // 1. Add an SD protected content. This should make an AdaptationSet.
 // 2. Add an HD protected content. This should make another AdaptationSet that
-//    is different from the SD version. Both SD and HD should have the same
-//    group ID assigned.
+//    is different from the SD version. SD AdaptationSet and HD AdaptationSet
+//    should be switchable.
 // 3. Add a 4k protected content. This should also make a new AdaptationSet.
-//    The group ID should also match the SD and HD (but this takes a slightly
-//    different path).
-TEST_P(DashIopMpdNotifierTest, SetGroup) {
+//    It should be switchable with SD/HD AdaptationSet.
+TEST_P(DashIopMpdNotifierTest, SetAdaptationSetSwitching) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
@@ -530,9 +527,6 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   std::unique_ptr<MockAdaptationSet> hd_adaptation_set(
       new MockAdaptationSet(kHdAdaptationSetId));
 
-  ON_CALL(*sd_adaptation_set, Group()).WillByDefault(Return(kDefaultGroupId));
-  ON_CALL(*hd_adaptation_set, Group()).WillByDefault(Return(kDefaultGroupId));
-
   const uint32_t kSdRepresentation = 4u;
   const uint32_t kHdRepresentation = 5u;
   std::unique_ptr<MockRepresentation> sd_representation(
@@ -553,11 +547,6 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   EXPECT_CALL(*hd_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(hd_representation.get()));
 
-  // Both AdaptationSets' groups should be set to the same value.
-  const int kExpectedGroupId = 1;
-  EXPECT_CALL(*sd_adaptation_set, SetGroup(kExpectedGroupId));
-  EXPECT_CALL(*hd_adaptation_set, SetGroup(kExpectedGroupId));
-
   // This is not very nice but we need it for settings expectations later.
   MockMpdBuilder* mock_mpd_builder_raw = mock_mpd_builder.get();
   uint32_t unused_container_id;
@@ -567,12 +556,13 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kHdProtectedContent), &unused_container_id));
 
-  // Now that the group IDs are set Group() returns kExpectedGroupId.
-  ON_CALL(*sd_adaptation_set, Group()).WillByDefault(Return(kExpectedGroupId));
-  ON_CALL(*hd_adaptation_set, Group()).WillByDefault(Return(kExpectedGroupId));
+  EXPECT_THAT(sd_adaptation_set->adaptation_set_switching_ids(),
+              ElementsAre(kHdAdaptationSetId));
+  EXPECT_THAT(hd_adaptation_set->adaptation_set_switching_ids(),
+              ElementsAre(kSdAdaptationSetId));
 
   // Add another content that has the same protected content and make sure that
-  // it gets added to the existing group.
+  // adaptation set switching is set correctly.
   const char k4kProtectedContent[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -596,8 +586,6 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   const uint32_t k4kAdaptationSetId = 4000u;
   std::unique_ptr<MockAdaptationSet> fourk_adaptation_set(
       new MockAdaptationSet(k4kAdaptationSetId));
-  ON_CALL(*fourk_adaptation_set, Group())
-      .WillByDefault(Return(kDefaultGroupId));
 
   const uint32_t k4kRepresentationId = 4001u;
   std::unique_ptr<MockRepresentation> fourk_representation(
@@ -609,16 +597,21 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   EXPECT_CALL(*fourk_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(fourk_representation.get()));
 
-  // Same group ID should be set.
-  EXPECT_CALL(*fourk_adaptation_set, SetGroup(kExpectedGroupId));
-
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(k4kProtectedContent), &unused_container_id));
+
+  EXPECT_THAT(sd_adaptation_set->adaptation_set_switching_ids(),
+              UnorderedElementsAre(kHdAdaptationSetId, k4kAdaptationSetId));
+  EXPECT_THAT(hd_adaptation_set->adaptation_set_switching_ids(),
+              UnorderedElementsAre(kSdAdaptationSetId, k4kAdaptationSetId));
+  EXPECT_THAT(fourk_adaptation_set->adaptation_set_switching_ids(),
+              ElementsAre(kSdAdaptationSetId, kHdAdaptationSetId));
 }
 
-// Even if the UUIDs match, video and audio AdaptationSets should not be grouped
-// together.
-TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
+// Even if the UUIDs match, video and audio AdaptationSets should not be
+// switchable.
+TEST_P(DashIopMpdNotifierTest,
+       DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
@@ -671,15 +664,6 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
   std::unique_ptr<MockAdaptationSet> audio_adaptation_set(
       new MockAdaptationSet(kAudioAdaptationSetId));
 
-  ON_CALL(*video_adaptation_set, Group())
-      .WillByDefault(Return(kDefaultGroupId));
-  ON_CALL(*audio_adaptation_set, Group())
-      .WillByDefault(Return(kDefaultGroupId));
-
-  // Both AdaptationSets' groups should NOT be set.
-  EXPECT_CALL(*video_adaptation_set, SetGroup(_)).Times(0);
-  EXPECT_CALL(*audio_adaptation_set, SetGroup(_)).Times(0);
-
   const uint32_t kVideoRepresentation = 8u;
   const uint32_t kAudioRepresentation = 9u;
   std::unique_ptr<MockRepresentation> video_representation(
@@ -708,6 +692,11 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
       ConvertToMediaInfo(kVideoContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kAudioContent), &unused_container_id));
+
+  EXPECT_THAT(video_adaptation_set->adaptation_set_switching_ids(),
+              ElementsAre());
+  EXPECT_THAT(audio_adaptation_set->adaptation_set_switching_ids(),
+              ElementsAre());
 }
 
 TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {

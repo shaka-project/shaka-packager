@@ -74,7 +74,7 @@ static bool StartsWith(const uint8_t* buffer,
 
 // Helper function to read up to 64 bits from a bit stream.
 static uint64_t ReadBits(BitReader* reader, int num_bits) {
-  DCHECK_GE(reader->bits_available(), num_bits);
+  DCHECK_GE(static_cast<int>(reader->bits_available()), num_bits);
   DCHECK((num_bits > 0) && (num_bits <= 64));
   uint64_t value;
   reader->ReadBits(num_bits, &value);
@@ -1223,7 +1223,7 @@ static int GetElementId(BitReader* reader) {
     for (int i = 0; i < 4; ++i) {
       num_bits_to_read += 7;
       if (ReadBits(reader, 1) == 1) {
-        if (reader->bits_available() < num_bits_to_read)
+        if (static_cast<int>(reader->bits_available()) < num_bits_to_read)
           break;
         // prefix[] adds back the bits read individually.
         return ReadBits(reader, num_bits_to_read) | prefix[i];
@@ -1244,7 +1244,7 @@ static uint64_t GetVint(BitReader* reader) {
     for (int i = 0; i < 8; ++i) {
       num_bits_to_read += 7;
       if (ReadBits(reader, 1) == 1) {
-        if (reader->bits_available() < num_bits_to_read)
+        if (static_cast<int>(reader->bits_available()) < num_bits_to_read)
           break;
         return ReadBits(reader, num_bits_to_read);
       }
@@ -1268,7 +1268,7 @@ static bool CheckWebm(const uint8_t* buffer, int buffer_size) {
 
   // Get the header size, and ensure there are enough bits to check.
   int header_size = GetVint(&reader);
-  RCHECK(reader.bits_available() / 8 >= header_size);
+  RCHECK(static_cast<int>(reader.bits_available()) / 8 >= header_size);
 
   // Loop through the header.
   while (reader.bits_available() > 0) {

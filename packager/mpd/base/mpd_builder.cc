@@ -40,8 +40,6 @@ using xml::AdaptationSetXmlNode;
 
 namespace {
 
-const int kAdaptationSetGroupNotSet = -1;
-
 AdaptationSet::Role MediaInfoTextTypeToRole(
     MediaInfo::TextInfo::TextType type) {
   switch (type) {
@@ -682,7 +680,6 @@ AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
       lang_(lang),
       mpd_options_(mpd_options),
       mpd_type_(mpd_type),
-      group_(kAdaptationSetGroupNotSet),
       segments_aligned_(kSegmentAlignmentUnknown),
       force_set_segment_alignment_(false) {
   DCHECK(counter);
@@ -808,13 +805,22 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   if (picture_aspect_ratio_.size() == 1)
     adaptation_set.SetStringAttribute("par", *picture_aspect_ratio_.begin());
 
-  if (group_ >= 0)
-    adaptation_set.SetIntegerAttribute("group", group_);
-
   if (!adaptation_set.AddContentProtectionElements(
           content_protection_elements_)) {
     return xml::scoped_xml_ptr<xmlNode>();
   }
+
+  std::string switching_ids;
+  for (uint32_t id : adaptation_set_switching_ids_) {
+    if (!switching_ids.empty())
+      switching_ids += ',';
+    switching_ids += base::UintToString(id);
+  }
+  if (!switching_ids.empty()) {
+    adaptation_set.AddSupplementalProperty(
+        "urn:mpeg:dash:adaptation-set-switching:2016", switching_ids);
+  }
+
   for (AdaptationSet::Role role : roles_)
     adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011", RoleToText(role));
 
@@ -840,12 +846,8 @@ void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
   force_set_segment_alignment_ = true;
 }
 
-void AdaptationSet::SetGroup(int group_number) {
-  group_ = group_number;
-}
-
-int AdaptationSet::Group() const {
-  return group_;
+void AdaptationSet::AddAdaptationSetSwitching(uint32_t adaptation_set_id) {
+  adaptation_set_switching_ids_.push_back(adaptation_set_id);
 }
 
 // Check segmentAlignment for Live here. Storing all start_time and duration

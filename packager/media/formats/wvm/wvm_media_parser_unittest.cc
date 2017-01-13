@@ -151,7 +151,7 @@ class WvmMediaParserTest : public testing::Test {
     InitializeParser();
 
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
-    EXPECT_TRUE(parser_->Parse(buffer.data(), buffer.size()));
+    EXPECT_TRUE(parser_->Parse(buffer.data(), static_cast<int>(buffer.size())));
   }
 };
 
@@ -159,7 +159,7 @@ TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
   key_source_.reset();
   InitializeParser();
   std::vector<uint8_t> buffer = ReadTestDataFile(kWvmFile);
-  EXPECT_TRUE(parser_->Parse(buffer.data(), buffer.size()));
+  EXPECT_TRUE(parser_->Parse(buffer.data(), static_cast<int>(buffer.size())));
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
   EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);

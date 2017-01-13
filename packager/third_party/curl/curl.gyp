@@ -94,6 +94,7 @@
           'defines': [
             'BUILDING_LIBCURL',
           ],
+          'msvs_disabled_warnings': [ 4267, ],
         }],
       ],
       'variables': {

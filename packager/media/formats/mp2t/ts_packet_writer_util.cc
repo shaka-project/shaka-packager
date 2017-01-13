@@ -74,19 +74,19 @@ void WriteAdaptationField(bool has_pcr,
 
   // The size of all leading flags (not including the adaptation_field_length).
   const int kAdaptationFieldHeaderSize = 1;
-  int adaptation_field_length =
+  size_t adaptation_field_length =
       kAdaptationFieldHeaderSize + (has_pcr ? kPcrFieldsSize : 0);
   if (remaining_data_size < kTsPacketMaximumPayloadSize) {
-    const int current_ts_size = kTsPacketHeaderSize + remaining_data_size +
-                                adaptation_field_length +
-                                kAdaptationFieldLengthSize;
+    const size_t current_ts_size = kTsPacketHeaderSize + remaining_data_size +
+                                   adaptation_field_length +
+                                   kAdaptationFieldLengthSize;
     if (current_ts_size < kTsPacketSize) {
       adaptation_field_length += kTsPacketSize - current_ts_size;
     }
   }
 
   writer->AppendInt(static_cast<uint8_t>(adaptation_field_length));
-  int remaining_bytes = adaptation_field_length;
+  int remaining_bytes = static_cast<int>(adaptation_field_length);
   writer->AppendInt(static_cast<uint8_t>(
       // All flags except PCR_flag are 0.
       static_cast<uint8_t>(has_pcr) << 4));
@@ -144,7 +144,7 @@ void WritePayloadToBufferWriter(const uint8_t* payload,
       WriteAdaptationField(has_pcr, pcr_base, bytes_left, writer);
       const size_t bytes_for_adaptation_field = writer->Size() - before;
 
-      const int write_bytes =
+      const size_t write_bytes =
           kTsPacketMaximumPayloadSize - bytes_for_adaptation_field;
       writer->AppendArray(payload + payload_bytes_written, write_bytes);
       payload_bytes_written += write_bytes;

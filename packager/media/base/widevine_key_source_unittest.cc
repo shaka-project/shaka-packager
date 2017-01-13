@@ -45,13 +45,16 @@ const char kLicenseStatusUnknownError[] = "UNKNOWN_ERROR";
 
 const char kExpectedRequestMessageFormat[] =
     "{\"content_id\":\"%s\",\"drm_types\":[\"WIDEVINE\"],\"policy\":\"%s\","
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
+    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
+    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
 const char kExpectedRequestMessageWithAssetIdFormat[] =
     "{\"asset_id\":%u,\"drm_types\":[\"WIDEVINE\"],"
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
+    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
+    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
 const char kExpectedRequestMessageWithPsshFormat[] =
     "{\"drm_types\":[\"WIDEVINE\"],\"pssh_data\":\"%s\","
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
+    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
+    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
 const char kExpectedSignedMessageFormat[] =
     "{\"request\":\"%s\",\"signature\":\"%s\",\"signer\":\"%s\"}";
 const char kTrackFormat[] =
@@ -99,9 +102,9 @@ std::string GetMockPsshData(const std::string& track_type) {
 }
 
 std::string GenerateMockLicenseResponse() {
-  const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
+  const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
   std::string tracks;
-  for (size_t i = 0; i < 3; ++i) {
+  for (size_t i = 0; i < 5; ++i) {
     if (!tracks.empty())
       tracks += ",";
     tracks += base::StringPrintf(
@@ -115,9 +118,9 @@ std::string GenerateMockLicenseResponse() {
 }
 
 std::string GenerateMockClassicLicenseResponse() {
-  const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
+  const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
   std::string tracks;
-  for (size_t i = 0; i < 3; ++i) {
+  for (size_t i = 0; i < 5; ++i) {
     if (!tracks.empty())
       tracks += ",";
     tracks += base::StringPrintf(
@@ -180,7 +183,7 @@ class WidevineKeySourceTest : public ::testing::Test,
 
   void VerifyKeys(bool classic) {
     EncryptionKey encryption_key;
-    const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
+    const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
     for (size_t i = 0; i < arraysize(kTrackTypes); ++i) {
       ASSERT_OK(widevine_key_source_->GetKey(
           KeySource::GetTrackTypeFromString(kTrackTypes[i]),
@@ -228,6 +231,10 @@ TEST_P(WidevineKeySourceTest, GetTrackTypeFromString) {
             KeySource::GetTrackTypeFromString("SD"));
   EXPECT_EQ(KeySource::TRACK_TYPE_HD,
             KeySource::GetTrackTypeFromString("HD"));
+  EXPECT_EQ(KeySource::TRACK_TYPE_UHD1,
+            KeySource::GetTrackTypeFromString("UHD1"));
+  EXPECT_EQ(KeySource::TRACK_TYPE_UHD2,
+            KeySource::GetTrackTypeFromString("UHD2"));
   EXPECT_EQ(KeySource::TRACK_TYPE_AUDIO,
             KeySource::GetTrackTypeFromString("AUDIO"));
   EXPECT_EQ(KeySource::TRACK_TYPE_UNKNOWN,
@@ -413,7 +420,8 @@ namespace {
 const char kCryptoPeriodRequestMessageFormat[] =
     "{\"content_id\":\"%s\",\"crypto_period_count\":%u,\"drm_types\":["
     "\"WIDEVINE\"],\"first_crypto_period_index\":%u,\"policy\":\"%s\","
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
+    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
+    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
 
 const char kCryptoPeriodTrackFormat[] =
     "{\"type\":\"%s\",\"key_id\":\"%s\",\"key\":"
@@ -427,12 +435,12 @@ std::string GetMockKey(const std::string& track_type, uint32_t index) {
 std::string GenerateMockKeyRotationLicenseResponse(
     uint32_t initial_crypto_period_index,
     uint32_t crypto_period_count) {
-  const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
+  const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
   std::string tracks;
   for (uint32_t index = initial_crypto_period_index;
        index < initial_crypto_period_index + crypto_period_count;
        ++index) {
-    for (size_t i = 0; i < 3; ++i) {
+    for (size_t i = 0; i < 5; ++i) {
       if (!tracks.empty())
         tracks += ",";
       tracks += base::StringPrintf(
@@ -495,8 +503,8 @@ TEST_P(WidevineKeySourceTest, KeyRotationTest) {
 
   EncryptionKey encryption_key;
   for (size_t i = 0; i < arraysize(kCryptoPeriodIndexes); ++i) {
-    const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
-    for (size_t j = 0; j < 3; ++j) {
+    const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
+    for (size_t j = 0; j < 5; ++j) {
       ASSERT_OK(widevine_key_source_->GetCryptoPeriodKey(
           kCryptoPeriodIndexes[i],
           KeySource::GetTrackTypeFromString(kTrackTypes[j]),

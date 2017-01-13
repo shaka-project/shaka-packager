@@ -53,7 +53,7 @@ class MP4MediaParserTest : public testing::Test {
   size_t num_samples_;
 
   bool AppendData(const uint8_t* data, size_t length) {
-    return parser_->Parse(data, length);
+    return parser_->Parse(data, static_cast<int>(length));
   }
 
   bool AppendDataInPieces(const uint8_t* data,

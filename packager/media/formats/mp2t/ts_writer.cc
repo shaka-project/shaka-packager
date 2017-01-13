@@ -135,10 +135,9 @@ bool WritePesToFile(const PesPacket& pes,
       pes_packet_length > kMaxPesPacketLengthValue ? 0 : pes_packet_length));
   first_ts_packet_buffer.AppendBuffer(pes_header_writer);
 
-  const int available_payload =
+  const size_t available_payload =
       kTsPacketMaxPayloadWithPcr - first_ts_packet_buffer.Size();
-  const int bytes_consumed =
-      std::min(static_cast<int>(pes.data().size()), available_payload);
+  const size_t bytes_consumed = std::min(pes.data().size(), available_payload);
   first_ts_packet_buffer.AppendArray(pes.data().data(), bytes_consumed);
 
   BufferWriter output_writer;

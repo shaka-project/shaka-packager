@@ -11,6 +11,22 @@
 namespace shaka {
 namespace media {
 
+namespace {
+// SPS, PPS (for first slice), slice header from test-25fps.h264 file.
+const uint8_t kSps[] = {
+    0x27, 0x4D, 0x40, 0x0D, 0xA9, 0x18, 0x28, 0x3E, 0x60, 0x0D,
+    0x41, 0x80, 0x41, 0xAD, 0xB0, 0xAD, 0x7B, 0xDF, 0x01,
+};
+const uint8_t kPps[] = {
+    0x28, 0xDE, 0x9, 0x88,
+};
+// This is the prefix of a video slice that only has the header.
+// The actual slice header size is 30 bits (not including the nalu header).
+const uint8_t kVideoSliceTrimmed[] = {
+    0x25, 0xB8, 0x20, 0x20, 0x63,
+};
+}  // namespace
+
 TEST(H264ParserTest, StreamFileParsing) {
   std::vector<uint8_t> buffer = ReadTestDataFile("test-25fps.h264");
 
@@ -63,6 +79,25 @@ TEST(H264ParserTest, StreamFileParsing) {
         break;
     }
   }
+}
+
+// Verify that SliceHeader::nalu_data points to the beginning of nal unit.
+// Also verify that header_bit_size is set correctly.
+TEST(H264ParserTest, SliceHeaderSize) {
+  H264Parser parser;
+  int unused_id;
+  Nalu nalu;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &unused_id));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kPps, arraysize(kPps)));
+  ASSERT_EQ(H264Parser::kOk, parser.ParsePps(nalu, &unused_id));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kVideoSliceTrimmed,
+                              arraysize(kVideoSliceTrimmed)));
+
+  H264SliceHeader slice_header;
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSliceHeader(nalu, &slice_header));
+  EXPECT_EQ(nalu.data(), slice_header.nalu_data);
+  EXPECT_EQ(30u, slice_header.header_bit_size);
 }
 
 TEST(H264ParserTest, ExtractResolutionFromSpsData) {

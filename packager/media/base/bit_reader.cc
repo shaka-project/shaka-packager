@@ -9,7 +9,7 @@
 namespace shaka {
 namespace media {
 
-BitReader::BitReader(const uint8_t* data, off_t size)
+BitReader::BitReader(const uint8_t* data, size_t size)
     : data_(data),
       initial_size_(size),
       bytes_left_(size),
@@ -21,16 +21,14 @@ BitReader::BitReader(const uint8_t* data, off_t size)
 
 BitReader::~BitReader() {}
 
-bool BitReader::SkipBits(int num_bits) {
-  DCHECK_GE(num_bits, 0);
-
+bool BitReader::SkipBits(size_t num_bits) {
   // Skip any bits in the current byte waiting to be processed, then
   // process full bytes until less than 8 bits remaining.
   if (num_bits > num_remaining_bits_in_curr_byte_) {
     num_bits -= num_remaining_bits_in_curr_byte_;
     num_remaining_bits_in_curr_byte_ = 0;
 
-    int num_bytes = num_bits / 8;
+    size_t num_bytes = num_bits / 8;
     num_bits %= 8;
     if (bytes_left_ < num_bytes) {
       bytes_left_ = 0;
@@ -53,7 +51,7 @@ bool BitReader::SkipBits(int num_bits) {
   return ReadBitsInternal(num_bits, &not_needed);
 }
 
-bool BitReader::SkipBytes(int num_bytes) {
+bool BitReader::SkipBytes(size_t num_bytes) {
   if (num_remaining_bits_in_curr_byte_ != 8)
     return false;
   if (num_bytes == 0)
@@ -68,13 +66,13 @@ bool BitReader::SkipBytes(int num_bytes) {
   return true;
 }
 
-bool BitReader::ReadBitsInternal(int num_bits, uint64_t* out) {
-  DCHECK_LE(num_bits, 64);
+bool BitReader::ReadBitsInternal(size_t num_bits, uint64_t* out) {
+  DCHECK_LE(num_bits, 64u);
 
   *out = 0;
 
   while (num_remaining_bits_in_curr_byte_ != 0 && num_bits != 0) {
-    int bits_to_take = std::min(num_remaining_bits_in_curr_byte_, num_bits);
+    size_t bits_to_take = std::min(num_remaining_bits_in_curr_byte_, num_bits);
 
     *out <<= bits_to_take;
     *out += curr_byte_ >> (num_remaining_bits_in_curr_byte_ - bits_to_take);
@@ -90,7 +88,7 @@ bool BitReader::ReadBitsInternal(int num_bits, uint64_t* out) {
 }
 
 void BitReader::UpdateCurrByte() {
-  DCHECK_EQ(num_remaining_bits_in_curr_byte_, 0);
+  DCHECK_EQ(num_remaining_bits_in_curr_byte_, 0u);
 
   if (bytes_left_ == 0)
     return;

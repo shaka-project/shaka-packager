@@ -43,6 +43,8 @@ class TsSegmenter {
   Status Initialize(const StreamInfo& stream_info,
                     KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
+                    uint32_t max_hd_pixels,
+                    uint32_t max_uhd1_pixels,
                     double clear_lead_in_seconds);
 
   /// Finalize the segmenter.

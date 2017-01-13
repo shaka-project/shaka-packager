@@ -35,12 +35,23 @@ class Muxer {
   explicit Muxer(const MuxerOptions& options);
   virtual ~Muxer();
 
+  // TODO(kqyang): refactor max_sd_pixels through crypto_period_duration into
+  // an encapsulated EncryptionParams structure.
+
   /// Set encryption key source.
   /// @param encryption_key_source points to the encryption key source. The
   ///        caller retains ownership, and should not be NULL.
   /// @param max_sd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as SD or HD. If the track has more
-  ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
+  ///        track should be considered as SD. If the max pixels per frame is
+  ///        no higher than max_sd_pixels, it is SD.
+  /// @param max_hd_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as HD. If the max pixels per frame is
+  ///        higher than max_sd_pixels, but no higher than max_hd_pixels,
+  ///        it is HD.
+  /// @param max_uhd1_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as UHD1. If the max pixels per frame is
+  ///        higher than max_hd_pixels, but no higher than max_uhd1_pixels,
+  ///        it is UHD1. Otherwise it is UHD2.
   /// @param clear_lead_in_seconds specifies clear lead duration in seconds.
   /// @param crypto_period_duration_in_seconds specifies crypto period duration
   ///        in seconds. A positive value means key rotation is enabled, the
@@ -49,6 +60,8 @@ class Muxer {
   ///        'cbc1', 'cbcs'.
   void SetKeySource(KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
+                    uint32_t max_hd_pixels,
+                    uint32_t max_uhd1_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds,
                     FourCC protection_scheme);
@@ -89,6 +102,8 @@ class Muxer {
     return encryption_key_source_;
   }
   uint32_t max_sd_pixels() const { return max_sd_pixels_; }
+  uint32_t max_hd_pixels() const { return max_hd_pixels_; }
+  uint32_t max_uhd1_pixels() const { return max_uhd1_pixels_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
   double crypto_period_duration_in_seconds() const {
     return crypto_period_duration_in_seconds_;
@@ -120,6 +135,8 @@ class Muxer {
   std::vector<MediaStream*> streams_;
   KeySource* encryption_key_source_;
   uint32_t max_sd_pixels_;
+  uint32_t max_hd_pixels_;
+  uint32_t max_uhd1_pixels_;
   double clear_lead_in_seconds_;
   double crypto_period_duration_in_seconds_;
   FourCC protection_scheme_;

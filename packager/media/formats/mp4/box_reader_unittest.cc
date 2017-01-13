@@ -35,7 +35,7 @@ struct FreeBox : Box {
   bool ReadWriteInternal(BoxBuffer* buffer) override {
     return true;
   }
-  uint32_t ComputeSizeInternal() override {
+  size_t ComputeSizeInternal() override {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -46,7 +46,7 @@ struct PsshBox : Box {
   bool ReadWriteInternal(BoxBuffer* buffer) override {
     return buffer->ReadWriteUInt32(&val);
   }
-  uint32_t ComputeSizeInternal() override {
+  size_t ComputeSizeInternal() override {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -70,7 +70,7 @@ struct SkipBox : FullBox {
     }
     return buffer->TryReadWriteChild(&empty);
   }
-  uint32_t ComputeSizeInternal() override {
+  size_t ComputeSizeInternal() override {
     NOTIMPLEMENTED();
     return 0;
   }

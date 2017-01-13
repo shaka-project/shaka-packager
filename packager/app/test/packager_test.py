@@ -39,8 +39,8 @@ class PackagerAppTest(unittest.TestCase):
 
   def testVersion(self):
     self.assertRegexpMatches(
-        self.packager.Version(), '^shaka-packager version '
-        r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)$')
+        self.packager.Version(), '^packager(.exe)? version '
+        r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)[\r\n]+.*$')
 
   def testDumpStreamInfo(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
@@ -403,6 +403,19 @@ class PackagerAppTest(unittest.TestCase):
     self.packager.Package(self._GetStreams(['audio', 'video']), flags)
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
+
+  @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
+  def testWidevineEncryptionWithAesAndDashIfIopWithMultFiles(self):
+    flags = self._GetFlags(widevine_encryption=True, dash_if_iop=True)
+    flags += ['--aes_signing_key=' + test_env.options.aes_signing_key,
+              '--aes_signing_iv=' + test_env.options.aes_signing_iv]
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'],
+                         test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
+                                     'bear-320x180.mp4']), flags)
+    with open(self.mpd_output, 'rb') as f:
+      print f.read()
+      # TODO(kqyang): Add some validations.
 
   @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
   def testKeyRotationWithAes(self):

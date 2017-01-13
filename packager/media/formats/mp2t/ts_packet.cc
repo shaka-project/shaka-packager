@@ -138,7 +138,8 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
 bool TsPacket::ParseAdaptationField(BitReader* bit_reader,
                                     int adaptation_field_length) {
   DCHECK_GT(adaptation_field_length, 0);
-  int adaptation_field_start_marker = bit_reader->bits_available() / 8;
+  int adaptation_field_start_marker =
+      static_cast<int>(bit_reader->bits_available()) / 8;
 
   int discontinuity_indicator;
   int random_access_indicator;
@@ -196,8 +197,10 @@ bool TsPacket::ParseAdaptationField(BitReader* bit_reader,
   }
 
   // The rest of the adaptation field should be stuffing bytes.
-  int adaptation_field_remaining_size = adaptation_field_length -
-      (adaptation_field_start_marker - bit_reader->bits_available() / 8);
+  int adaptation_field_remaining_size =
+      adaptation_field_length -
+      (adaptation_field_start_marker -
+       static_cast<int>(bit_reader->bits_available()) / 8);
   RCHECK(adaptation_field_remaining_size >= 0);
   for (int k = 0; k < adaptation_field_remaining_size; k++) {
     int stuffing_byte;

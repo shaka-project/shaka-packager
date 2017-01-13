@@ -52,7 +52,7 @@ Status WebMMuxer::Initialize() {
   Status initialized = segmenter_->Initialize(
       std::move(writer), streams()[0]->info().get(), progress_listener(),
       muxer_listener(), encryption_key_source(), max_sd_pixels(),
-      clear_lead_in_seconds());
+      max_hd_pixels(), max_uhd1_pixels(), clear_lead_in_seconds());
 
   if (!initialized.ok())
     return initialized;

@@ -15,10 +15,9 @@ namespace media {
 
 namespace {
 
-int NumBitsToNumBytes(int size_in_bits) {
+size_t NumBitsToNumBytes(size_t size_in_bits) {
   // Round-up division.
-  DCHECK_GE(size_in_bits, 0);
-  return (size_in_bits - 1) / 8 + 1;
+  return (size_in_bits + 7) >> 3;
 }
 
 }  // namespace

@@ -269,7 +269,7 @@ bool MP4MediaParser::ParseBox(bool* err) {
     VLOG(2) << "Skipping top-level box: " << FourCCToString(reader->type());
   }
 
-  queue_.Pop(reader->size());
+  queue_.Pop(static_cast<int>(reader->size()));
   return !(*err);
 }
 
