@@ -96,7 +96,6 @@
         'widevine_key_source.h',
         'playready_key_source.cc',
         'playready_key_source.h',
-
       ],
       'dependencies': [
         'widevine_pssh_data_proto',
