@@ -121,6 +121,7 @@ class Segmenter {
   Movie* moov() { return moov_.get(); }
   BufferWriter* fragment_buffer() { return fragment_buffer_.get(); }
   SegmentIndex* sidx() { return sidx_.get(); }
+  MovieFragment* moof() { return moof_.get() ; } // NOTE delete me!
   MuxerListener* muxer_listener() { return muxer_listener_; }
   uint64_t progress_target() { return progress_target_; }
 

@@ -46,6 +46,10 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
   // ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.
   // Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.
   // "$" always appears in pairs, so there should be odd number of splits.
+  // We also allow $DecodeTime$ in order to help work around this longstanding
+  // bug in Chrome:
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=398130#c13
+  // cf. https://github.com/google/shaka-packager/issues/113
   if (splits.size() % 2 == 0) {
     LOG(ERROR) << "SegmentTemplate: '$' should appear in pairs.";
     return false;
@@ -72,7 +76,7 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
       return false;
     } else if (identifier == "Number") {
       has_number = true;
-    } else if (identifier == "Time") {
+    } else if (identifier == "Time" || identifier == "DecodeTime") {
       has_time = true;
     } else if (identifier == "") {
       if (format_pos != std::string::npos) {
@@ -86,11 +90,11 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
     }
   }
   if (has_number && has_time) {
-    LOG(ERROR) << "SegmentTemplate: $Number$ and $Time$ should not co-exist.";
+    LOG(ERROR) << "SegmentTemplate: $Number$ and $Time$/$DecodeTime$ should not co-exist.";
     return false;
   }
   if (!has_number && !has_time) {
-    LOG(ERROR) << "SegmentTemplate: $Number$ or $Time$ should exist.";
+    LOG(ERROR) << "SegmentTemplate: $Number$ or $Time$/$DecodeTime$ should exist.";
     return false;
   }
   // Note: The below check is skipped.
@@ -101,6 +105,7 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
 
 std::string GetSegmentName(const std::string& segment_template,
                            uint64_t segment_start_time,
+                           uint64_t segment_start_decode_time,
                            uint32_t segment_index,
                            uint32_t bandwidth) {
   DCHECK(ValidateSegmentTemplate(segment_template));
@@ -126,7 +131,7 @@ std::string GetSegmentName(const std::string& segment_template,
     size_t format_pos = splits[i].find('%');
     std::string identifier = splits[i].substr(0, format_pos);
     DCHECK(identifier == "Number" || identifier == "Time" ||
-           identifier == "Bandwidth");
+           identifier == "DecodeTime" || identifier == "Bandwidth");
 
     std::string format_tag;
     if (format_pos != std::string::npos) {
@@ -146,6 +151,9 @@ std::string GetSegmentName(const std::string& segment_template,
     } else if (identifier == "Time") {
       segment_name +=
           base::StringPrintf(format_tag.c_str(), segment_start_time);
+    } else if (identifier == "DecodeTime") {
+      segment_name +=
+          base::StringPrintf(format_tag.c_str(), segment_start_decode_time);
     } else if (identifier == "Bandwidth") {
       segment_name += base::StringPrintf(format_tag.c_str(),
                                          static_cast<uint64_t>(bandwidth));

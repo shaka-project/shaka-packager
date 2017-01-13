@@ -103,7 +103,7 @@ std::string SegmentTestBase::OutputFileName() const {
 }
 
 std::string SegmentTestBase::TemplateFileName(int number) const {
-  return GetSegmentName(segment_template_, 0, number, 0);
+  return GetSegmentName(segment_template_, 0, 0, number, 0);
 }
 
 SegmentTestBase::ClusterParser::ClusterParser() : in_cluster_(false) {}

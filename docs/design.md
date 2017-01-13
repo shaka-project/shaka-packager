@@ -169,7 +169,7 @@ muxer_options.output_file_name = …;
 
 // Specify output segment name pattern for generated segments. It can
 // furthermore be configured by using a subset of the SegmentTemplate
-// identifiers: $RepresentationID$, $Number$, $Bandwidth$ and $Time$.
+// identifiers: $RepresentationID$, $Number$, $Bandwidth$, $Time$ and $DecodeTime$.
 // Optional.
 muxer_options.segment_template = …;
 

@@ -76,8 +76,8 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale) {
 
   // Create a new file for the new segment.
   std::string segment_name =
-      GetSegmentName(options().segment_template, start_timescale, num_segment_,
-                     options().bandwidth);
+      GetSegmentName(options().segment_template, start_timescale,
+                     start_timescale, num_segment_, options().bandwidth);
   writer_.reset(new MkvWriter);
   Status status = writer_->Open(segment_name);
   if (!status.ok())

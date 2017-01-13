@@ -152,6 +152,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
   } else {
     file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
+                               moof()->tracks[0].decode_time.decode_time,
                                num_segments_++, options().bandwidth);
     file = File::Open(file_name.c_str(), "w");
     if (file == NULL) {
