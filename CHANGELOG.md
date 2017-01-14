@@ -1,3 +1,38 @@
+## [1.6.0] - 2017-01-13
+### Added
+- Added support for Windows (both 32-bit and 64-bit are supported).
+- Added support for live profile with static mpd by setting flag
+  --generate_static_mpd (#142). This allows on demand content to use segment
+  template.
+- Added support for tagging a specific audio AdaptationSet as the default /
+  main AdaptationSet with --default_language flag (#155).
+- Added UDP options support: udp://ip:port[?options]. Currently three options
+  are supported: reuse=1|0 whether reusing UDP sockets are allowed (#133),
+  interface=a.b.c.d interface address, timeout=microseconds for socket timeout.
+- Added 4K and 8K encryption support (#163).
+
+### Changed
+- [WebM][VP9] Use subsample encryption by default for VP9 per latest WebM spec.
+  The feature can be disabled by setting --webm_subsample_encryption=false.
+- [WebM] Mimic mp4 behavior: either all the samples in a segment are encrypted
+  or all the samples are clear.
+- [WebM] Move index segment forward to right after init segment (#159).
+
+### Fixed
+- Fixed AdaptationSet switching signalling when
+  --generate_dash_if_iop_compliant_mpd is enabled (#156).
+- [H.264] Fixed access unit detection problem if there are multiple video slice
+  NAL units in the same frame (#134).
+- [WebVTT] Detect .webvtt as WebVTT files.
+- [WebM] Fixed keyframe detection in BlockGroup for encrypted frames.
+- [HLS] Fixed HLS playlist problem when clear lead is set to zero (#169).
+- Fixed --version command.
+
+### Deprecated
+- Deprecated flag --udp_interface_address. Use udp options instead.
+- Deprecated flags --single_segment and --profile. They are now derived from
+  the presence of 'segment_template' in stream descriptors.
+
 ## [1.5.1] - 2016-07-25
 ### Added
 - Added a runtime flag to use dts in timeline for mp4:
@@ -187,6 +222,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.6.0]: https://github.com/google/shaka-packager/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/google/shaka-packager/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.5.0
 [1.4.1]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.4.1
