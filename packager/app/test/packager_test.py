@@ -427,6 +427,12 @@ class PackagerAppTest(unittest.TestCase):
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
 
+  def testPlayReadyEncryption(self):
+    flags = self._GetFlags(playready_encryption=True)
+    self.packager.Package(self._GetStreams(['audio', 'video']), flags)
+    self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
+    self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
+    
   def _GetStreams(self,
                   stream_descriptors,
                   output_format=None,
@@ -488,6 +494,7 @@ class PackagerAppTest(unittest.TestCase):
                 decryption=False,
                 random_iv=False,
                 widevine_encryption=False,
+                playready_encryption=False,
                 key_rotation=False,
                 dash_if_iop=False,
                 output_media_info=False,
@@ -500,6 +507,13 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--enable_widevine_encryption',
                 '--key_server_url=' + widevine_server_url,
                 '--content_id=3031323334353637', '--signer=widevine_test']
+    elif playready_encryption:
+        pr_key ="000102030405060708090a0b0c0d0e0f"
+        pr_kid ="000102030405060708090a0b0c0d0e0f"
+        flags += ['--enable_playready_encryption',
+                    '--pr_key=' + pr_key,
+                    '--pr_key_id=' + pr_kid,
+                    '--pr_la_url=https://goo.gl/laurl']
     elif encryption:
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',

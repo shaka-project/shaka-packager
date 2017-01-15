@@ -72,6 +72,8 @@
         'producer_consumer_queue.h',
         'protection_system_specific_info.cc',
         'protection_system_specific_info.h',
+        'playready_pssh_data.cc',
+        'playready_pssh_data.h',
         'rcheck.h',
         'request_signer.cc',
         'request_signer.h',
@@ -91,6 +93,8 @@
         'video_stream_info.h',
         'widevine_key_source.cc',
         'widevine_key_source.h',
+        'playready_key_source.cc',
+        'playready_key_source.h',
       ],
       'dependencies': [
         'widevine_pssh_data_proto',
@@ -141,6 +145,7 @@
         'test/rsa_test_data.h',   # For rsa_key_unittest
         'test/status_test_util.h',
         'widevine_key_source_unittest.cc',
+        'playready_key_source_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',

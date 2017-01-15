@@ -13,6 +13,7 @@
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
+#include "packager/app/playready_encryption_flags.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/fixed_key_source.h"
@@ -22,6 +23,7 @@
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/widevine_key_source.h"
+#include "packager/media/base/playready_key_source.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_builder.h"
 
@@ -96,6 +98,11 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource() {
       return std::unique_ptr<KeySource>();
     }
     encryption_key_source = std::move(widevine_key_source);
+  } else if (FLAGS_enable_playready_encryption) {
+      encryption_key_source = PlayReadyKeySource::CreateFromHexStrings(
+          FLAGS_pr_key_id, FLAGS_pr_key, FLAGS_pr_iv,
+          FLAGS_pr_la_url, FLAGS_pr_lui_url,
+          FLAGS_pr_include_empty_license_store);
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);
