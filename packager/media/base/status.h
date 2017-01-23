@@ -68,6 +68,10 @@ enum Code {
 
   // Value was not found.
   NOT_FOUND,
+
+  // The entity that a client attempted to create (e.g., file or directory)
+  // already exists.
+  ALREADY_EXISTS,
 };
 
 }  // namespace error

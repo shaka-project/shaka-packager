@@ -54,6 +54,8 @@
         'key_source.h',
         'limits.h',
         'macros.h',
+        'media_handler.cc',
+        'media_handler.h',
         'media_parser.h',
         'media_sample.cc',
         'media_sample.h',
