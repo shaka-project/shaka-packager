@@ -46,7 +46,7 @@ class EsParserH265 : public EsParserH26x {
   NewStreamInfoCB new_stream_info_cb_;
 
   // Last video decoder config.
-  scoped_refptr<StreamInfo> last_video_decoder_config_;
+  std::shared_ptr<StreamInfo> last_video_decoder_config_;
   bool decoder_config_check_pending_;
 
   std::unique_ptr<H265Parser> h265_parser_;

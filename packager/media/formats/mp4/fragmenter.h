@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "packager/base/logging.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/status.h"
 
 namespace shaka {
@@ -32,14 +31,14 @@ class Fragmenter {
  public:
   /// @param info contains stream information.
   /// @param traf points to a TrackFragment box.
-  Fragmenter(scoped_refptr<StreamInfo> info, TrackFragment* traf);
+  Fragmenter(std::shared_ptr<StreamInfo> info, TrackFragment* traf);
 
   virtual ~Fragmenter();
 
   /// Add a sample to the fragmenter.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  virtual Status AddSample(scoped_refptr<MediaSample> sample);
+  virtual Status AddSample(std::shared_ptr<MediaSample> sample);
 
   /// Initialize the fragment with default data.
   /// @param first_sample_dts specifies the decoding timestamp for the first

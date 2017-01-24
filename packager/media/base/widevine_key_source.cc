@@ -12,7 +12,6 @@
 #include "packager/base/bind.h"
 #include "packager/base/json/json_reader.h"
 #include "packager/base/json/json_writer.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/producer_consumer_queue.h"
@@ -109,27 +108,6 @@ bool GetPsshDataFromTrack(const base::DictionaryValue& track_dict,
 }  // namespace
 
 namespace media {
-
-// A ref counted wrapper for EncryptionKeyMap.
-class WidevineKeySource::RefCountedEncryptionKeyMap
-    : public base::RefCountedThreadSafe<RefCountedEncryptionKeyMap> {
- public:
-  explicit RefCountedEncryptionKeyMap(EncryptionKeyMap* encryption_key_map) {
-    DCHECK(encryption_key_map);
-    encryption_key_map_.swap(*encryption_key_map);
-  }
-
-  const EncryptionKeyMap& map() { return encryption_key_map_; }
-
- private:
-  friend class base::RefCountedThreadSafe<RefCountedEncryptionKeyMap>;
-
-  ~RefCountedEncryptionKeyMap() {}
-
-  EncryptionKeyMap encryption_key_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedEncryptionKeyMap);
-};
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
                                      bool add_common_pssh)
@@ -288,10 +266,9 @@ Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
   DCHECK_LE(track_type, NUM_VALID_TRACK_TYPES);
   DCHECK_NE(track_type, TRACK_TYPE_UNKNOWN);
 
-  scoped_refptr<RefCountedEncryptionKeyMap> ref_counted_encryption_key_map;
-  Status status =
-      key_pool_->Peek(crypto_period_index, &ref_counted_encryption_key_map,
-                      kGetKeyTimeoutInSeconds * 1000);
+  std::shared_ptr<EncryptionKeyMap> encryption_key_map;
+  Status status = key_pool_->Peek(crypto_period_index, &encryption_key_map,
+                                  kGetKeyTimeoutInSeconds * 1000);
   if (!status.ok()) {
     if (status.error_code() == error::STOPPED) {
       CHECK(!common_encryption_request_status_.ok());
@@ -300,13 +277,11 @@ Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
     return status;
   }
 
-  const EncryptionKeyMap& encryption_key_map =
-      ref_counted_encryption_key_map->map();
-  if (encryption_key_map.find(track_type) == encryption_key_map.end()) {
+  if (encryption_key_map->find(track_type) == encryption_key_map->end()) {
     return Status(error::INTERNAL_ERROR,
                   "Cannot find key of type " + TrackTypeToString(track_type));
   }
-  *key = *encryption_key_map.at(track_type);
+  *key = *encryption_key_map->at(track_type);
   return Status::OK;
 }
 
@@ -601,11 +576,9 @@ bool WidevineKeySource::PushToKeyPool(
     EncryptionKeyMap* encryption_key_map) {
   DCHECK(key_pool_);
   DCHECK(encryption_key_map);
-  Status status =
-      key_pool_->Push(scoped_refptr<RefCountedEncryptionKeyMap>(
-                          new RefCountedEncryptionKeyMap(encryption_key_map)),
-                      kInfiniteTimeout);
-  encryption_key_map->clear();
+  auto encryption_key_map_shared = std::make_shared<EncryptionKeyMap>();
+  encryption_key_map_shared->swap(*encryption_key_map);
+  Status status = key_pool_->Push(encryption_key_map_shared, kInfiniteTimeout);
   if (!status.ok()) {
     DCHECK_EQ(error::STOPPED, status.error_code());
     return false;

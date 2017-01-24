@@ -18,7 +18,7 @@ const bool kInitialEncryptionInfo = true;
 }  // namespace
 
 KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
-                                             scoped_refptr<StreamInfo> info,
+                                             std::shared_ptr<StreamInfo> info,
                                              TrackFragment* traf,
                                              KeySource* encryption_key_source,
                                              KeySource::TrackType track_type,

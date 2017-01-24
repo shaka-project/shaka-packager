@@ -29,7 +29,7 @@ uint64_t GetSeekPreroll(const StreamInfo& stream_info) {
 }
 }  // namespace
 
-Fragmenter::Fragmenter(scoped_refptr<StreamInfo> info, TrackFragment* traf)
+Fragmenter::Fragmenter(std::shared_ptr<StreamInfo> info, TrackFragment* traf)
     : use_decoding_timestamp_in_timeline_(false),
       traf_(traf),
       seek_preroll_(GetSeekPreroll(*info)),
@@ -43,7 +43,7 @@ Fragmenter::Fragmenter(scoped_refptr<StreamInfo> info, TrackFragment* traf)
 
 Fragmenter::~Fragmenter() {}
 
-Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
+Status Fragmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   DCHECK(sample);
   if (sample->duration() == 0) {
     LOG(WARNING) << "Unexpected sample with zero duration @ dts "

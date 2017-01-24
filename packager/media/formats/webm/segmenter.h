@@ -8,7 +8,6 @@
 #define MEDIA_FORMATS_WEBM_SEGMENTER_H_
 
 #include <memory>
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/encryptor.h"
 #include "packager/media/formats/webm/mkv_writer.h"
@@ -75,7 +74,7 @@ class Segmenter {
   /// Add sample to the indicated stream.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(scoped_refptr<MediaSample> sample);
+  Status AddSample(std::shared_ptr<MediaSample> sample);
 
   /// @return true if there is an initialization range, while setting @a start
   ///         and @a end; or false if initialization range does not apply.
@@ -140,7 +139,7 @@ class Segmenter {
   virtual Status NewSegment(uint64_t start_timescale) = 0;
 
   // Store the previous sample so we know which one is the last frame.
-  scoped_refptr<MediaSample> prev_sample_;
+  std::shared_ptr<MediaSample> prev_sample_;
   // The reference frame timestamp; used to populate the ReferenceBlock element
   // when writing non-keyframe BlockGroups.
   uint64_t reference_frame_timestamp_;

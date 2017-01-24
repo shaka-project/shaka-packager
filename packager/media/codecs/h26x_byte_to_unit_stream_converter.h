@@ -21,9 +21,9 @@ class BufferWriter;
 /// A base class that is used to convert H.26x byte streams to NAL unit streams.
 class H26xByteToUnitStreamConverter {
  public:
-  static const size_t kUnitStreamNaluLengthSize = 4;
+  static constexpr size_t kUnitStreamNaluLengthSize = 4;
 
-  H26xByteToUnitStreamConverter(Nalu::CodecType type);
+  explicit H26xByteToUnitStreamConverter(Nalu::CodecType type);
   virtual ~H26xByteToUnitStreamConverter();
 
   /// Converts a whole byte stream encoded video frame to NAL unit stream
@@ -61,4 +61,3 @@ class H26xByteToUnitStreamConverter {
 }  // namespace shaka
 
 #endif  // MEDIA_CODECS_H26x_BYTE_TO_UNIT_STREAM_CONVERTER_H_
-

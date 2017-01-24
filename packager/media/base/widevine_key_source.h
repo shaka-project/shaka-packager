@@ -68,8 +68,7 @@ class WidevineKeySource : public KeySource {
 
  private:
   typedef std::map<TrackType, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
-  class RefCountedEncryptionKeyMap;
-  typedef ProducerConsumerQueue<scoped_refptr<RefCountedEncryptionKeyMap> >
+  typedef ProducerConsumerQueue<std::shared_ptr<EncryptionKeyMap>>
       EncryptionKeyQueue;
 
   // Internal routine for getting keys.

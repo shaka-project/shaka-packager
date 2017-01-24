@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/status.h"
 
@@ -74,23 +73,27 @@ class Demuxer {
   MediaContainerName container_name() { return container_name_; }
 
  private:
+  Demuxer(const Demuxer&) = delete;
+  Demuxer& operator=(const Demuxer&) = delete;
+
   struct QueuedSample {
-    QueuedSample(uint32_t track_id, scoped_refptr<MediaSample> sample);
+    QueuedSample(uint32_t track_id, std::shared_ptr<MediaSample> sample);
     ~QueuedSample();
 
     uint32_t track_id;
-    scoped_refptr<MediaSample> sample;
+    std::shared_ptr<MediaSample> sample;
   };
 
   // Parser init event.
-  void ParserInitEvent(const std::vector<scoped_refptr<StreamInfo> >& streams);
+  void ParserInitEvent(const std::vector<std::shared_ptr<StreamInfo>>& streams);
   // Parser new sample event handler. Queues the samples if init event has not
   // been received, otherwise calls PushSample() to push the sample to
   // corresponding stream.
   bool NewSampleEvent(uint32_t track_id,
-                      const scoped_refptr<MediaSample>& sample);
+                      const std::shared_ptr<MediaSample>& sample);
   // Helper function to push the sample to corresponding stream.
-  bool PushSample(uint32_t track_id, const scoped_refptr<MediaSample>& sample);
+  bool PushSample(uint32_t track_id,
+                  const std::shared_ptr<MediaSample>& sample);
 
   std::string file_name_;
   File* media_file_;
@@ -104,8 +107,6 @@ class Demuxer {
   std::unique_ptr<uint8_t[]> buffer_;
   std::unique_ptr<KeySource> key_source_;
   bool cancelled_;
-
-  DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };
 
 }  // namespace media

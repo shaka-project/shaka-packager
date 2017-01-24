@@ -27,6 +27,8 @@ class AudioStreamInfo : public StreamInfo {
                   uint32_t avg_bitrate, const std::string& language,
                   bool is_encrypted);
 
+  ~AudioStreamInfo() override;
+
   /// @name StreamInfo implementation overrides.
   /// @{
   bool IsValidConfig() const override;
@@ -54,8 +56,6 @@ class AudioStreamInfo : public StreamInfo {
   static std::string GetCodecString(Codec codec, uint8_t audio_object_type);
 
  private:
-  ~AudioStreamInfo() override;
-
   uint8_t sample_bits_;
   uint8_t num_channels_;
   uint32_t sampling_frequency_;

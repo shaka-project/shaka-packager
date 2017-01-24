@@ -124,7 +124,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
 };
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
-  scoped_refptr<StreamInfo> stream_info =
+  std::shared_ptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
 
   FireOnMediaStartWithDefaultMuxerOptions(*stream_info, !kEnableEncryption);
@@ -157,7 +157,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
 }
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
-  scoped_refptr<StreamInfo> stream_info =
+  std::shared_ptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
   FireOnMediaStartWithDefaultMuxerOptions(*stream_info, kEnableEncryption);
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
@@ -204,7 +204,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
   params.pixel_width = 8;
   params.pixel_height = 9;
 
-  scoped_refptr<StreamInfo> stream_info = CreateVideoStreamInfo(params);
+  std::shared_ptr<StreamInfo> stream_info = CreateVideoStreamInfo(params);
   FireOnMediaStartWithDefaultMuxerOptions(*stream_info, !kEnableEncryption);
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);

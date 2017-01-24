@@ -203,7 +203,7 @@ class EncrypedSegmenterTest : public SegmentTestBase {
             options, info_.get(), key_source_.get(), &segmenter_));
   }
 
-  scoped_refptr<StreamInfo> info_;
+  std::shared_ptr<StreamInfo> info_;
   std::unique_ptr<webm::Segmenter> segmenter_;
   std::unique_ptr<KeySource> key_source_;
 };
@@ -217,7 +217,7 @@ TEST_F(EncrypedSegmenterTest, BasicSupport) {
   // There should be 2 segments with the first segment in clear and the second
   // segment encrypted.
   for (int i = 0; i < 5; i++) {
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }

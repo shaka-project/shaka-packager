@@ -126,7 +126,7 @@ class EsParserH26x : public EsParser {
   std::unique_ptr<H26xByteToUnitStreamConverter> stream_converter_;
 
   // Frame for which we do not yet have a duration.
-  scoped_refptr<MediaSample> pending_sample_;
+  std::shared_ptr<MediaSample> pending_sample_;
   uint64_t pending_sample_duration_ = 0;
 
   // Indicates whether waiting for first key frame.

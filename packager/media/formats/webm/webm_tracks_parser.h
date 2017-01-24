@@ -51,7 +51,7 @@ class WebMTracksParser : public WebMParserClient {
     return audio_encryption_key_id_;
   }
 
-  scoped_refptr<AudioStreamInfo> audio_stream_info() {
+  std::shared_ptr<AudioStreamInfo> audio_stream_info() {
     return audio_stream_info_;
   }
 
@@ -59,7 +59,7 @@ class WebMTracksParser : public WebMParserClient {
     return video_encryption_key_id_;
   }
 
-  scoped_refptr<VideoStreamInfo> video_stream_info() {
+  std::shared_ptr<VideoStreamInfo> video_stream_info() {
     return video_stream_info_;
   }
 
@@ -100,10 +100,10 @@ class WebMTracksParser : public WebMParserClient {
   std::string video_encryption_key_id_;
 
   WebMAudioClient audio_client_;
-  scoped_refptr<AudioStreamInfo> audio_stream_info_;
+  std::shared_ptr<AudioStreamInfo> audio_stream_info_;
 
   WebMVideoClient video_client_;
-  scoped_refptr<VideoStreamInfo> video_stream_info_;
+  std::shared_ptr<VideoStreamInfo> video_stream_info_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMTracksParser);
 };

@@ -168,7 +168,7 @@ Status MP4Muxer::Finalize() {
 }
 
 Status MP4Muxer::DoAddSample(const MediaStream* stream,
-                             scoped_refptr<MediaSample> sample) {
+                             std::shared_ptr<MediaSample> sample) {
   DCHECK(segmenter_);
   return segmenter_->AddSample(stream, sample);
 }

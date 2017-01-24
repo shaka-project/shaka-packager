@@ -8,27 +8,27 @@
 #define MEDIA_BASE_MEDIA_SAMPLE_H_
 
 #include <deque>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/logging.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/decrypt_config.h"
 
 namespace shaka {
 namespace media {
 
 /// Class to hold a media sample.
-class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
+class MediaSample {
  public:
   /// Create a MediaSample object from input.
   /// @param data points to the buffer containing the sample data.
   ///        Must not be NULL.
   /// @param size indicates sample size in bytes. Must not be negative.
   /// @param is_key_frame indicates whether the sample is a key frame.
-  static scoped_refptr<MediaSample> CopyFrom(const uint8_t* data,
-                                             size_t size,
-                                             bool is_key_frame);
+  static std::shared_ptr<MediaSample> CopyFrom(const uint8_t* data,
+                                               size_t size,
+                                               bool is_key_frame);
 
   /// Create a MediaSample object from input.
   /// @param data points to the buffer containing the sample data.
@@ -39,11 +39,11 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// @param size indicates sample size in bytes. Must not be negative.
   /// @param side_data_size indicates additional sample data size in bytes.
   /// @param is_key_frame indicates whether the sample is a key frame.
-  static scoped_refptr<MediaSample> CopyFrom(const uint8_t* data,
-                                             size_t size,
-                                             const uint8_t* side_data,
-                                             size_t side_data_size,
-                                             bool is_key_frame);
+  static std::shared_ptr<MediaSample> CopyFrom(const uint8_t* data,
+                                               size_t size,
+                                               const uint8_t* side_data,
+                                               size_t side_data_size,
+                                               bool is_key_frame);
 
   /// Create a MediaSample object from metadata.
   /// Unlike other factory methods, this cannot be a key frame. It must be only
@@ -51,16 +51,27 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// @param metadata points to the buffer containing metadata.
   ///        Must not be NULL.
   /// @param metadata_size is the size of metadata in bytes.
-  static scoped_refptr<MediaSample> FromMetadata(const uint8_t* metadata,
-                                                 size_t metadata_size);
+  static std::shared_ptr<MediaSample> FromMetadata(const uint8_t* metadata,
+                                                   size_t metadata_size);
 
   /// Create a MediaSample object with default members.
-  static scoped_refptr<MediaSample> CreateEmptyMediaSample();
+  static std::shared_ptr<MediaSample> CreateEmptyMediaSample();
 
   /// Create a MediaSample indicating we've reached end of stream.
   /// Calling any method other than end_of_stream() on the resulting buffer
   /// is disallowed.
-  static scoped_refptr<MediaSample> CreateEOSBuffer();
+  static std::shared_ptr<MediaSample> CreateEOSBuffer();
+
+  // Create a MediaSample. Buffer will be padded and aligned as necessary.
+  // |data|,|side_data| can be NULL, which indicates an empty sample.
+  // |size|,|side_data_size| should not be negative.
+  MediaSample(const uint8_t* data,
+              size_t size,
+              const uint8_t* side_data,
+              size_t side_data_size,
+              bool is_key_frame);
+  MediaSample();
+  virtual ~MediaSample();
 
   int64_t dts() const {
     DCHECK(!end_of_stream());
@@ -154,19 +165,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   std::string ToString() const;
 
  private:
-  friend class base::RefCountedThreadSafe<MediaSample>;
-
-  // Create a MediaSample. Buffer will be padded and aligned as necessary.
-  // |data|,|side_data| can be NULL, which indicates an empty sample.
-  // |size|,|side_data_size| should not be negative.
-  MediaSample(const uint8_t* data,
-              size_t size,
-              const uint8_t* side_data,
-              size_t side_data_size,
-              bool is_key_frame);
-  MediaSample();
-  virtual ~MediaSample();
-
   // Decoding time stamp.
   int64_t dts_;
   // Presentation time stamp.
@@ -193,7 +191,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };
 
-typedef std::deque<scoped_refptr<MediaSample> > BufferQueue;
+typedef std::deque<std::shared_ptr<MediaSample>> BufferQueue;
 
 }  // namespace media
 }  // namespace shaka

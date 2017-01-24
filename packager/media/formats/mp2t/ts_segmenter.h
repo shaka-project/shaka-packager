@@ -53,7 +53,7 @@ class TsSegmenter {
 
   /// @param sample gets added to this object.
   /// @return OK on success.
-  Status AddSample(scoped_refptr<MediaSample> sample);
+  Status AddSample(std::shared_ptr<MediaSample> sample);
 
   /// Only for testing.
   void InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer);

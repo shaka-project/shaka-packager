@@ -15,11 +15,12 @@
 namespace shaka {
 namespace media {
 
-typedef testing::MockFunction<void(const std::vector<scoped_refptr<StreamInfo>>&
-                                       stream_info)> MockInitCallback;
-typedef testing::MockFunction<bool(
-    uint32_t track_id,
-    const scoped_refptr<MediaSample>& media_sample)> MockNewSampleCallback;
+typedef testing::MockFunction<void(
+    const std::vector<std::shared_ptr<StreamInfo>>& stream_info)>
+    MockInitCallback;
+typedef testing::MockFunction<
+    bool(uint32_t track_id, const std::shared_ptr<MediaSample>& media_sample)>
+    MockNewSampleCallback;
 
 using testing::_;
 using testing::InSequence;

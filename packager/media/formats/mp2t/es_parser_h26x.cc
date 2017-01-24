@@ -94,7 +94,7 @@ void EsParserH26x::Flush() {
     DCHECK(pending_sample_duration_);
     pending_sample_->set_duration(pending_sample_duration_);
     emit_sample_cb_.Run(pid(), pending_sample_);
-    pending_sample_ = scoped_refptr<MediaSample>();
+    pending_sample_ = std::shared_ptr<MediaSample>();
   }
 }
 
@@ -107,7 +107,7 @@ void EsParserH26x::Reset() {
   next_access_unit_position_ = 0;
   current_nalu_info_.reset();
   timing_desc_list_.clear();
-  pending_sample_ = scoped_refptr<MediaSample>();
+  pending_sample_ = std::shared_ptr<MediaSample>();
   pending_sample_duration_ = 0;
   waiting_for_key_frame_ = true;
 }
@@ -299,7 +299,7 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
 
   // Create the media sample, emitting always the previous sample after
   // calculating its duration.
-  scoped_refptr<MediaSample> media_sample = MediaSample::CopyFrom(
+  std::shared_ptr<MediaSample> media_sample = MediaSample::CopyFrom(
       converted_frame.data(), converted_frame.size(), is_key_frame);
   media_sample->set_dts(current_timing_desc.dts);
   media_sample->set_pts(current_timing_desc.pts);

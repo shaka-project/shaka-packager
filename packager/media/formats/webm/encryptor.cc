@@ -73,7 +73,7 @@ Status Encryptor::AddTrackInfo(mkvmuxer::Track* track) {
   return CreateContentEncryption(track, key_.get());
 }
 
-Status Encryptor::EncryptFrame(scoped_refptr<MediaSample> sample,
+Status Encryptor::EncryptFrame(std::shared_ptr<MediaSample> sample,
                                bool encrypt_frame) {
   DCHECK(encryptor_);
 

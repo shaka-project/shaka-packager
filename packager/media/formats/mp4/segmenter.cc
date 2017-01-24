@@ -321,7 +321,7 @@ Status Segmenter::Finalize() {
 }
 
 Status Segmenter::AddSample(const MediaStream* stream,
-                            scoped_refptr<MediaSample> sample) {
+                            std::shared_ptr<MediaSample> sample) {
   // Find the fragmenter for this stream.
   DCHECK(stream);
   DCHECK(stream_map_.find(stream) != stream_map_.end());

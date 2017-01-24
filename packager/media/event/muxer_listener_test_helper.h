@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
@@ -85,7 +84,7 @@ struct OnMediaEndParameters {
 };
 
 // Creates StreamInfo instance from VideoStreamInfoParameters.
-scoped_refptr<StreamInfo> CreateVideoStreamInfo(
+std::shared_ptr<StreamInfo> CreateVideoStreamInfo(
     const VideoStreamInfoParameters& param);
 
 // Returns the "default" VideoStreamInfoParameters for testing.

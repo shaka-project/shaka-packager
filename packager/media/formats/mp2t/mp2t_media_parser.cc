@@ -61,8 +61,10 @@ class PidState {
 
   PidType pid_type() const { return pid_type_; }
 
-  scoped_refptr<StreamInfo>& config() { return config_; }
-  void set_config(const scoped_refptr<StreamInfo>& config) { config_ = config; }
+  std::shared_ptr<StreamInfo>& config() { return config_; }
+  void set_config(const std::shared_ptr<StreamInfo>& config) {
+    config_ = config;
+  }
 
   SampleQueue& sample_queue() { return sample_queue_; }
 
@@ -75,7 +77,7 @@ class PidState {
 
   bool enable_;
   int continuity_counter_;
-  scoped_refptr<StreamInfo> config_;
+  std::shared_ptr<StreamInfo> config_;
   SampleQueue sample_queue_;
 };
 
@@ -333,7 +335,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(
-    const scoped_refptr<StreamInfo>& new_stream_info) {
+    const std::shared_ptr<StreamInfo>& new_stream_info) {
   DCHECK(new_stream_info);
   DVLOG(1) << "OnVideoConfigChanged for pid=" << new_stream_info->track_id();
 
@@ -360,7 +362,7 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   if (pids_.empty())
     return true;
 
-  std::vector<scoped_refptr<StreamInfo> > all_stream_info;
+  std::vector<std::shared_ptr<StreamInfo>> all_stream_info;
   uint32_t num_es(0);
   for (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();
        ++iter) {
@@ -383,7 +385,7 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
 
 void Mp2tMediaParser::OnEmitSample(
     uint32_t pes_pid,
-    const scoped_refptr<MediaSample>& new_sample) {
+    const std::shared_ptr<MediaSample>& new_sample) {
   DCHECK(new_sample);
   DVLOG(LOG_LEVEL_ES)
       << "OnEmitSample: "

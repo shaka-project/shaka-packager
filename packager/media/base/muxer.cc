@@ -71,7 +71,7 @@ Status Muxer::Run() {
     if (cancelled_)
       return Status(error::CANCELLED, "muxer run cancelled");
 
-    scoped_refptr<MediaSample> sample;
+    std::shared_ptr<MediaSample> sample;
     status = streams_[current_stream_id]->PullSample(&sample);
     if (!status.ok())
       break;
@@ -101,7 +101,7 @@ void Muxer::SetProgressListener(
 }
 
 Status Muxer::AddSample(const MediaStream* stream,
-                        scoped_refptr<MediaSample> sample) {
+                        std::shared_ptr<MediaSample> sample) {
   DCHECK(std::find(streams_.begin(), streams_.end(), stream) != streams_.end());
 
   if (!initialized_) {

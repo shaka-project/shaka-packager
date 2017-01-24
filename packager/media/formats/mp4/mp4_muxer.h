@@ -38,7 +38,7 @@ class MP4Muxer : public Muxer {
   Status Initialize() override;
   Status Finalize() override;
   Status DoAddSample(const MediaStream* stream,
-                     scoped_refptr<MediaSample> sample) override;
+                     std::shared_ptr<MediaSample> sample) override;
 
   // Generate Audio/Video Track box.
   void InitializeTrak(const StreamInfo* info, Track* trak);

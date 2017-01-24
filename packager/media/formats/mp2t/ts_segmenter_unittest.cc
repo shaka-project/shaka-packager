@@ -53,7 +53,7 @@ const uint8_t kAnyData[] = {
 class MockPesPacketGenerator : public PesPacketGenerator {
  public:
   MOCK_METHOD1(Initialize, bool(const StreamInfo& info));
-  MOCK_METHOD1(PushSample, bool(scoped_refptr<MediaSample> sample));
+  MOCK_METHOD1(PushSample, bool(std::shared_ptr<MediaSample> sample));
   MOCK_METHOD1(SetEncryptionKeyMock, bool(EncryptionKey* encryption_key));
   bool SetEncryptionKey(
       std::unique_ptr<EncryptionKey> encryption_key) override {
@@ -108,7 +108,7 @@ class TsSegmenterTest : public ::testing::Test {
 };
 
 TEST_F(TsSegmenterTest, Initialize) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -128,7 +128,7 @@ TEST_F(TsSegmenterTest, Initialize) {
 }
 
 TEST_F(TsSegmenterTest, AddSample) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -141,7 +141,7 @@ TEST_F(TsSegmenterTest, AddSample) {
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
-  scoped_refptr<MediaSample> sample =
+  std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   Sequence writer_sequence;
@@ -183,7 +183,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   // Use something significantly smaller than 90000 to check that the scaling is
   // done correctly in the segmenter.
   const uint32_t kInputTimescale = 1001;
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kInputTimescale, kDuration, kH264Codec, kCodecString,
       kExtraData, arraysize(kExtraData), kWidth, kHeight, kPixelWidth,
       kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -200,9 +200,9 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
-  scoped_refptr<MediaSample> sample1 =
+  std::shared_ptr<MediaSample> sample1 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
-  scoped_refptr<MediaSample> sample2 =
+  std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   // 11 seconds > 10 seconds (segment duration).
@@ -282,7 +282,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
 
 // Finalize right after Initialize(). The writer will not be initialized.
 TEST_F(TsSegmenterTest, InitializeThenFinalize) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -311,7 +311,7 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
 // The test does not really add any samples but instead simulates an initialized
 // writer with a mock.
 TEST_F(TsSegmenterTest, Finalize) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -340,7 +340,7 @@ TEST_F(TsSegmenterTest, Finalize) {
 
 // Verify that it won't finish a segment if the sample is not a key frame.
 TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -356,11 +356,11 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   const uint8_t kAnyData[] = {
       0x01, 0x0F, 0x3C,
   };
-  scoped_refptr<MediaSample> key_frame_sample1 =
+  std::shared_ptr<MediaSample> key_frame_sample1 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
-  scoped_refptr<MediaSample> non_key_frame_sample =
+  std::shared_ptr<MediaSample> non_key_frame_sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), !kIsKeyFrame);
-  scoped_refptr<MediaSample> key_frame_sample2 =
+  std::shared_ptr<MediaSample> key_frame_sample2 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   // 11 seconds > 10 seconds (segment duration).
@@ -446,7 +446,7 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
 }
 
 TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -489,7 +489,7 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
 // Verify that the muxer listener pointer is not used without checking that it's
 // not null.
 TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -529,7 +529,7 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
 
 // Verify that encryption notification is sent to objects after clear lead.
 TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -555,9 +555,9 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
   const uint8_t kAnyData[] = {
       0x01, 0x0F, 0x3C,
   };
-  scoped_refptr<MediaSample> sample1 =
+  std::shared_ptr<MediaSample> sample1 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
-  scoped_refptr<MediaSample> sample2 =
+  std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   // Something longer than 1.0 (segment duration and clear lead).

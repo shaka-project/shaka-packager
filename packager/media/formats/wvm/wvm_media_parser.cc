@@ -487,8 +487,9 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
   return true;
 }
 
-bool WvmMediaParser::EmitLastSample(uint32_t stream_id,
-                                    scoped_refptr<MediaSample>& new_sample) {
+bool WvmMediaParser::EmitLastSample(
+    uint32_t stream_id,
+    const std::shared_ptr<MediaSample>& new_sample) {
   std::string key = base::UintToString(current_program_id_)
                         .append(":")
                         .append(base::UintToString(stream_id));
@@ -739,7 +740,7 @@ bool WvmMediaParser::ParseIndexEntry() {
 
     if (has_video) {
       Codec video_codec = kCodecH264;
-      stream_infos_.push_back(new VideoStreamInfo(
+      stream_infos_.emplace_back(new VideoStreamInfo(
           stream_id_count_, time_scale, track_duration, video_codec,
           std::string(), video_codec_config.data(), video_codec_config.size(),
           video_width, video_height, pixel_width, pixel_height, trick_play_rate,
@@ -754,7 +755,7 @@ bool WvmMediaParser::ParseIndexEntry() {
     if (has_audio) {
       const Codec audio_codec = kCodecAAC;
       // TODO(beil): Pass in max and average bitrate in wvm container.
-      stream_infos_.push_back(new AudioStreamInfo(
+      stream_infos_.emplace_back(new AudioStreamInfo(
           stream_id_count_, time_scale, track_duration, audio_codec,
           std::string(), audio_codec_config.data(), audio_codec_config.size(),
           kAacSampleSizeBits, num_channels, sampling_frequency,
@@ -994,7 +995,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
 
 bool WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
                                 uint32_t stream_id,
-                                scoped_refptr<MediaSample>& new_sample,
+                                const std::shared_ptr<MediaSample>& new_sample,
                                 bool isLastSample) {
   DCHECK(new_sample);
   if (isLastSample) {

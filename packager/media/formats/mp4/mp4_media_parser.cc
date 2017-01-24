@@ -10,7 +10,6 @@
 #include "packager/base/callback.h"
 #include "packager/base/callback_helpers.h"
 #include "packager/base/logging.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/buffer_reader.h"
@@ -281,7 +280,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
   RCHECK(moov_->Parse(reader));
   runs_.reset();
 
-  std::vector<scoped_refptr<StreamInfo> > streams;
+  std::vector<std::shared_ptr<StreamInfo>> streams;
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
@@ -466,7 +465,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const bool is_encrypted =
           entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
-      streams.push_back(new AudioStreamInfo(
+      streams.emplace_back(new AudioStreamInfo(
           track->header.track_id, timescale, duration, codec,
           AudioStreamInfo::GetCodecString(codec, audio_object_type),
           codec_config.data(), codec_config.size(), entry.samplesize,
@@ -562,7 +561,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const bool is_encrypted =
           entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
-      scoped_refptr<VideoStreamInfo> video_stream_info(new VideoStreamInfo(
+      std::shared_ptr<VideoStreamInfo> video_stream_info(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,
           codec_string, entry.codec_configuration.data.data(),
           entry.codec_configuration.data.size(), coded_width, coded_height,
@@ -694,8 +693,8 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
     return false;
   }
 
-  scoped_refptr<MediaSample> stream_sample(MediaSample::CopyFrom(
-      buf, runs_->sample_size(), runs_->is_keyframe()));
+  std::shared_ptr<MediaSample> stream_sample(
+      MediaSample::CopyFrom(buf, runs_->sample_size(), runs_->is_keyframe()));
   if (runs_->is_encrypted()) {
     std::unique_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
     if (!decrypt_config) {

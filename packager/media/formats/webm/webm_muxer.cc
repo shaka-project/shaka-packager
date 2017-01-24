@@ -74,7 +74,7 @@ Status WebMMuxer::Finalize() {
 }
 
 Status WebMMuxer::DoAddSample(const MediaStream* stream,
-                              scoped_refptr<MediaSample> sample) {
+                              std::shared_ptr<MediaSample> sample) {
   DCHECK(segmenter_);
   DCHECK(stream == streams()[0]);
   return segmenter_->AddSample(sample);

@@ -47,7 +47,7 @@ void WebMVideoClient::Reset() {
   alpha_mode_ = -1;
 }
 
-scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
+std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     int64_t track_num,
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
@@ -64,11 +64,11 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     video_codec = kCodecVP10;
   } else {
     LOG(ERROR) << "Unsupported video codec_id " << codec_id;
-    return scoped_refptr<VideoStreamInfo>();
+    return std::shared_ptr<VideoStreamInfo>();
   }
 
   if (pixel_width_ <= 0 || pixel_height_ <= 0)
-    return scoped_refptr<VideoStreamInfo>();
+    return std::shared_ptr<VideoStreamInfo>();
 
   // Set crop and display unit defaults if these elements are not present.
   if (crop_bottom_ == -1)
@@ -96,10 +96,10 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
       display_height_ = height_after_crop;
   } else if (display_unit_ == 3) {
     if (display_width_ <= 0 || display_height_ <= 0)
-      return scoped_refptr<VideoStreamInfo>();
+      return std::shared_ptr<VideoStreamInfo>();
   } else {
     LOG(ERROR) << "Unsupported display unit type " << display_unit_;
-    return scoped_refptr<VideoStreamInfo>();
+    return std::shared_ptr<VideoStreamInfo>();
   }
   // Calculate sample aspect ratio.
   int64_t sar_x = display_width_ * height_after_crop;
@@ -108,10 +108,10 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   sar_x /= gcd;
   sar_y /= gcd;
 
-  return scoped_refptr<VideoStreamInfo>(new VideoStreamInfo(
+  return std::make_shared<VideoStreamInfo>(
       track_num, kWebMTimeScale, 0, video_codec, std::string(),
       codec_private.data(), codec_private.size(), width_after_crop,
-      height_after_crop, sar_x, sar_y, 0, 0, std::string(), is_encrypted));
+      height_after_crop, sar_x, sar_y, 0, 0, std::string(), is_encrypted);
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {

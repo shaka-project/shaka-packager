@@ -36,7 +36,7 @@ Status TsMuxer::Finalize() {
 }
 
 Status TsMuxer::DoAddSample(const MediaStream* stream,
-                            scoped_refptr<MediaSample> sample) {
+                            std::shared_ptr<MediaSample> sample) {
   return segmenter_->AddSample(sample);
 }
 

@@ -124,7 +124,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
   return false;
 }
 
-bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
+bool PesPacketGenerator::PushSample(std::shared_ptr<MediaSample> sample) {
   if (!current_processing_pes_)
     current_processing_pes_.reset(new PesPacket());
 

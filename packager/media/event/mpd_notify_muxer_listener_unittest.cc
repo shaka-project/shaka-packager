@@ -111,7 +111,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodClearContent) {
   MuxerOptions muxer_options;
   SetDefaultMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
@@ -156,7 +156,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
   MuxerOptions muxer_options;
   SetDefaultMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   const std::vector<uint8_t> default_key_id(
@@ -199,7 +199,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
   MuxerOptions muxer_options;
   SetDefaultMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
   const uint32_t kSampleDuration = 1234u;
   const char kExpectedMediaInfo[] =
@@ -246,7 +246,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
   MuxerOptions muxer_options;
   SetDefaultMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   const uint64_t kStartTime1 = 0u;
@@ -283,7 +283,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   MuxerOptions muxer_options;
   SetDefaultLiveMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   const std::string kExpectedMediaInfo =
@@ -355,7 +355,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   MuxerOptions muxer_options;
   SetDefaultLiveMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   // Note that this media info has protected_content with default key id.

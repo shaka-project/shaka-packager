@@ -32,13 +32,12 @@ class TextStreamInfo : public StreamInfo {
                  const std::string& codec_config, uint16_t width,
                  uint16_t height, const std::string& language);
 
+  ~TextStreamInfo() override;
+
   bool IsValidConfig() const override;
 
   uint16_t width() const { return width_; }
   uint16_t height() const { return height_; }
-
- protected:
-  ~TextStreamInfo() override;
 
  private:
   uint16_t width_;

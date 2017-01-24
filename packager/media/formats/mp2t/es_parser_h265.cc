@@ -39,7 +39,7 @@ EsParserH265::~EsParserH265() {}
 void EsParserH265::Reset() {
   DVLOG(1) << "EsParserH265::Reset";
   h265_parser_.reset(new H265Parser());
-  last_video_decoder_config_ = scoped_refptr<StreamInfo>();
+  last_video_decoder_config_ = std::shared_ptr<StreamInfo>();
   decoder_config_check_pending_ = false;
   EsParserH26x::Reset();
 }
@@ -151,12 +151,13 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
     return false;
   }
 
-  last_video_decoder_config_ = scoped_refptr<StreamInfo>(new VideoStreamInfo(
+  const uint8_t nalu_length_size =
+      H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize;
+  last_video_decoder_config_ = std::make_shared<VideoStreamInfo>(
       pid(), kMpeg2Timescale, kInfiniteDuration, kCodecHVC1,
       decoder_config.GetCodecString(kCodecHVC1), decoder_config_record.data(),
       decoder_config_record.size(), coded_width, coded_height, pixel_width,
-      pixel_height, 0, H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
-      std::string(), false));
+      pixel_height, 0, nalu_length_size, std::string(), false);
 
   // Video config notification.
   new_stream_info_cb_.Run(last_video_decoder_config_);

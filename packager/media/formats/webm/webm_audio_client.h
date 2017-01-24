@@ -37,10 +37,10 @@ class WebMAudioClient : public WebMParserClient {
   ///        value of 0 is used.
   /// @param language indicates the language for the track.
   /// @param is_encrypted indicates whether the stream is encrypted.
-  /// @return An AudioStreamInfo scoped_refptr if successful.
-  /// @return An empty scoped_refptr if there was unexpected values in the
+  /// @return An AudioStreamInfo if successful.
+  /// @return An empty pointer if there was unexpected values in the
   ///         provided parameters or audio track element fields.
-  scoped_refptr<AudioStreamInfo> GetAudioStreamInfo(
+  std::shared_ptr<AudioStreamInfo> GetAudioStreamInfo(
       int64_t track_num,
       const std::string& codec_id,
       const std::vector<uint8_t>& codec_private,

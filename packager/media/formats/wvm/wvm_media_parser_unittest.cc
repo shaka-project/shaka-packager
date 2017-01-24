@@ -11,7 +11,6 @@
 #include "packager/base/bind.h"
 #include "packager/base/bind_helpers.h"
 #include "packager/base/logging.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -78,7 +77,7 @@ class WvmMediaParserTest : public testing::Test {
   }
 
  protected:
-  typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
+  typedef std::map<int, std::shared_ptr<StreamInfo>> StreamMap;
 
   std::unique_ptr<WvmMediaParser> parser_;
   std::unique_ptr<MockKeySource> key_source_;
@@ -90,17 +89,16 @@ class WvmMediaParserTest : public testing::Test {
   int32_t current_track_id_;
   EncryptionKey encryption_key_;
 
-  void OnInit(const std::vector<scoped_refptr<StreamInfo> >& stream_infos) {
+  void OnInit(const std::vector<std::shared_ptr<StreamInfo>>& stream_infos) {
     DVLOG(1) << "OnInit: " << stream_infos.size() << " streams.";
-    for (std::vector<scoped_refptr<StreamInfo> >::const_iterator iter =
-             stream_infos.begin(); iter != stream_infos.end(); ++iter) {
-      DVLOG(1) << (*iter)->ToString();
-      stream_map_[(*iter)->track_id()] = *iter;
+    for (const auto& stream_info : stream_infos) {
+      DVLOG(1) << stream_info->ToString();
+      stream_map_[stream_info->track_id()] = stream_info;
     }
   }
 
   bool OnNewSample(uint32_t track_id,
-                   const scoped_refptr<MediaSample>& sample) {
+                   const std::shared_ptr<MediaSample>& sample) {
     std::string stream_type;
     if (static_cast<int32_t>(track_id) != current_track_id_) {
       // onto next track.

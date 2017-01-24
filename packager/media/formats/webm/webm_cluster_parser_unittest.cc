@@ -275,7 +275,7 @@ bool VerifyBuffersHelper(const BufferQueue& audio_buffers,
       return false;
     }
 
-    scoped_refptr<MediaSample> buffer = (*buffers)[(*offset)++];
+    std::shared_ptr<MediaSample> buffer = (*buffers)[(*offset)++];
 
     EXPECT_EQ(block_info[i].timestamp * kMicrosecondsPerMillisecond,
               buffer->pts());
@@ -306,7 +306,7 @@ bool VerifyTextBuffers(const BlockInfo* block_info_ptr,
     EXPECT_FALSE(block_info.use_simple_block);
     EXPECT_FALSE(buffer_iter == buffer_end);
 
-    const scoped_refptr<MediaSample> buffer = *buffer_iter++;
+    const std::shared_ptr<MediaSample> buffer = *buffer_iter++;
     EXPECT_EQ(block_info.timestamp * kMicrosecondsPerMillisecond,
               buffer->pts());
     EXPECT_EQ(std::abs(block_info.duration) * kMicrosecondsPerMillisecond,
@@ -349,12 +349,12 @@ class WebMClusterParserTest : public testing::Test {
         default_audio_duration, default_video_duration));
   }
 
-  void InitEvent(const std::vector<scoped_refptr<StreamInfo>>& stream_info) {
+  void InitEvent(const std::vector<std::shared_ptr<StreamInfo>>& stream_info) {
     streams_from_init_event_ = stream_info;
   }
 
   bool NewSampleEvent(uint32_t track_id,
-                      const scoped_refptr<MediaSample>& sample) {
+                      const std::shared_ptr<MediaSample>& sample) {
     switch (track_id) {
       case kAudioTrackNum:
         audio_buffers_.push_back(sample);
@@ -448,10 +448,10 @@ class WebMClusterParserTest : public testing::Test {
     return result;
   }
 
-  scoped_refptr<AudioStreamInfo> audio_stream_info_;
-  scoped_refptr<VideoStreamInfo> video_stream_info_;
+  std::shared_ptr<AudioStreamInfo> audio_stream_info_;
+  std::shared_ptr<VideoStreamInfo> video_stream_info_;
   std::unique_ptr<WebMClusterParser> parser_;
-  std::vector<scoped_refptr<StreamInfo>> streams_from_init_event_;
+  std::vector<std::shared_ptr<StreamInfo>> streams_from_init_event_;
   BufferQueue audio_buffers_;
   BufferQueue video_buffers_;
   TextBufferQueueMap text_buffers_map_;
@@ -837,7 +837,7 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
   EXPECT_EQ(cluster->size(), result);
   EXPECT_TRUE(parser_->Flush());
   ASSERT_EQ(1UL, video_buffers_.size());
-  scoped_refptr<MediaSample> buffer = video_buffers_[0];
+  std::shared_ptr<MediaSample> buffer = video_buffers_[0];
   EXPECT_EQ(std::vector<uint8_t>(
                 kExpectedDecryptedFrame,
                 kExpectedDecryptedFrame + arraysize(kExpectedDecryptedFrame)),
@@ -879,7 +879,7 @@ TEST_F(WebMClusterParserTest, ParseClearFrameInEncryptedTrack) {
   EXPECT_EQ(cluster->size(), result);
   EXPECT_TRUE(parser_->Flush());
   ASSERT_EQ(1UL, video_buffers_.size());
-  scoped_refptr<MediaSample> buffer = video_buffers_[0];
+  std::shared_ptr<MediaSample> buffer = video_buffers_[0];
   EXPECT_EQ(std::vector<uint8_t>(
                 kExpectedClearFrame,
                 kExpectedClearFrame + arraysize(kExpectedClearFrame)),

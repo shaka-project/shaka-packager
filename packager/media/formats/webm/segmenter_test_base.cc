@@ -49,11 +49,11 @@ void SegmentTestBase::TearDown() {
   MemoryFile::DeleteAll();
 }
 
-scoped_refptr<MediaSample> SegmentTestBase::CreateSample(
+std::shared_ptr<MediaSample> SegmentTestBase::CreateSample(
     KeyFrameFlag key_frame_flag,
     uint64_t duration,
     SideDataFlag side_data_flag) {
-  scoped_refptr<MediaSample> sample;
+  std::shared_ptr<MediaSample> sample;
   const bool is_key_frame = key_frame_flag == kKeyFrame;
   if (side_data_flag == kGenerateSideData) {
     sample = MediaSample::CopyFrom(

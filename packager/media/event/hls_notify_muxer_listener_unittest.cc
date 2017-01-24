@@ -106,7 +106,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyBeforeMediaStart) {
 
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   EXPECT_CALL(mock_notifier_,
@@ -143,7 +143,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
   ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
   MuxerOptions muxer_options;
 
@@ -183,7 +183,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
   ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
   MuxerOptions muxer_options;
 
@@ -222,7 +222,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoEncryptionUpdateIfNotifyNewStreamFails) {
   EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
       .WillOnce(Return(false));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
   MuxerOptions muxer_options;
 
@@ -237,7 +237,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
   ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
+  std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
   MuxerOptions muxer_options;
   listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,

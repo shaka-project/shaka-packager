@@ -157,7 +157,7 @@ class TsWriterTest : public ::testing::Test {
 };
 
 TEST_F(TsWriterTest, InitializeVideoH264) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -165,7 +165,7 @@ TEST_F(TsWriterTest, InitializeVideoH264) {
 }
 
 TEST_F(TsWriterTest, InitializeVideoNonH264) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, Codec::kCodecVP9, kCodecString,
       kExtraData, arraysize(kExtraData), kWidth, kHeight, kPixelWidth,
       kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -173,7 +173,7 @@ TEST_F(TsWriterTest, InitializeVideoNonH264) {
 }
 
 TEST_F(TsWriterTest, InitializeAudioAac) {
-  scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacCodec, kCodecString, kExtraData,
       arraysize(kExtraData), kSampleBits, kNumChannels, kSamplingFrequency,
       kSeekPreroll, kCodecDelay, kMaxBitrate, kAverageBitrate, kLanguage,
@@ -182,7 +182,7 @@ TEST_F(TsWriterTest, InitializeAudioAac) {
 }
 
 TEST_F(TsWriterTest, InitializeAudioNonAac) {
-  scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, Codec::kCodecOpus, kCodecString,
       kExtraData, arraysize(kExtraData), kSampleBits, kNumChannels,
       kSamplingFrequency, kSeekPreroll, kCodecDelay, kMaxBitrate,
@@ -198,7 +198,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       new MockProgramMapTableWriter());
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteOnePmt());
 
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -252,7 +252,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
       new MockProgramMapTableWriter());
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteOnePmt());
 
-  scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacCodec, kCodecString,
       kAacBasicProfileExtraData, arraysize(kAacBasicProfileExtraData),
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
@@ -280,7 +280,7 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
       .WillOnce(WriteTwoPmts());
 
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -309,7 +309,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pmt_writer, EncryptedSegmentPmt(_)).WillOnce(WriteOnePmt());
 
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -340,7 +340,7 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
       .WillOnce(WriteTwoPmts());
 
-  scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacCodec, kCodecString,
       kAacBasicProfileExtraData, arraysize(kAacBasicProfileExtraData),
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
@@ -370,7 +370,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pmt_writer, EncryptedSegmentPmt(_)).WillOnce(WriteOnePmt());
 
-  scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacCodec, kCodecString,
       kAacBasicProfileExtraData, arraysize(kAacBasicProfileExtraData),
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
@@ -397,7 +397,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
 
 
 TEST_F(TsWriterTest, AddPesPacket) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -462,7 +462,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
 
 // Verify that PES packet > 64KiB can be handled.
 TEST_F(TsWriterTest, BigPesPacket) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -498,7 +498,7 @@ TEST_F(TsWriterTest, BigPesPacket) {
 // Bug found in code review. It should check whether PTS is present not whether
 // PTS (implicilty) cast to bool is true.
 TEST_F(TsWriterTest, PesPtsZeroNoDts) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -558,7 +558,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
 // Verify that TS packet with payload 183 is handled correctly, e.g.
 // adaptation_field_length should be 0.
 TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));

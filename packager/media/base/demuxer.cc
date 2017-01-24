@@ -119,19 +119,19 @@ Status Demuxer::Initialize() {
 }
 
 void Demuxer::ParserInitEvent(
-    const std::vector<scoped_refptr<StreamInfo>>& stream_infos) {
+    const std::vector<std::shared_ptr<StreamInfo>>& stream_infos) {
   init_event_received_ = true;
-  for (const scoped_refptr<StreamInfo>& stream_info : stream_infos)
+  for (const std::shared_ptr<StreamInfo>& stream_info : stream_infos)
     streams_.emplace_back(new MediaStream(stream_info, this));
 }
 
 Demuxer::QueuedSample::QueuedSample(uint32_t local_track_id,
-                                      scoped_refptr<MediaSample> local_sample)
+                                    std::shared_ptr<MediaSample> local_sample)
     : track_id(local_track_id), sample(local_sample) {}
 Demuxer::QueuedSample::~QueuedSample() {}
 
 bool Demuxer::NewSampleEvent(uint32_t track_id,
-                             const scoped_refptr<MediaSample>& sample) {
+                             const std::shared_ptr<MediaSample>& sample) {
   if (!init_event_received_) {
     if (queued_samples_.size() >= kQueuedSamplesLimit) {
       LOG(ERROR) << "Queued samples limit reached: " << kQueuedSamplesLimit;
@@ -151,7 +151,7 @@ bool Demuxer::NewSampleEvent(uint32_t track_id,
 }
 
 bool Demuxer::PushSample(uint32_t track_id,
-                         const scoped_refptr<MediaSample>& sample) {
+                         const std::shared_ptr<MediaSample>& sample) {
   for (const std::unique_ptr<MediaStream>& stream : streams_) {
     if (track_id == stream->info()->track_id()) {
       Status status = stream->PushSample(sample);
@@ -184,7 +184,7 @@ Status Demuxer::Run() {
 
   if (status.error_code() == error::END_OF_STREAM) {
     // Push EOS sample to muxer to indicate end of stream.
-    const scoped_refptr<MediaSample>& sample = MediaSample::CreateEOSBuffer();
+    const std::shared_ptr<MediaSample>& sample = MediaSample::CreateEOSBuffer();
     for (const std::unique_ptr<MediaStream>& stream : streams_) {
       status = stream->PushSample(sample);
       if (!status.ok())

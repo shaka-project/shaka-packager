@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box_definitions.h"
@@ -91,7 +90,7 @@ class Segmenter {
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
   Status AddSample(const MediaStream* stream,
-                   scoped_refptr<MediaSample> sample);
+                   std::shared_ptr<MediaSample> sample);
 
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.

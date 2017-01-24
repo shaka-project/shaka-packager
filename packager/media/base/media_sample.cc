@@ -42,43 +42,42 @@ MediaSample::MediaSample() : dts_(0),
 MediaSample::~MediaSample() {}
 
 // static
-scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
-                                                 size_t data_size,
-                                                 bool is_key_frame) {
+std::shared_ptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
+                                                   size_t data_size,
+                                                   bool is_key_frame) {
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK(data);
-  return make_scoped_refptr(
-      new MediaSample(data, data_size, NULL, 0u, is_key_frame));
+  return std::make_shared<MediaSample>(data, data_size, nullptr, 0u,
+                                       is_key_frame);
 }
 
 // static
-scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
-                                                 size_t data_size,
-                                                 const uint8_t* side_data,
-                                                 size_t side_data_size,
-                                                 bool is_key_frame) {
+std::shared_ptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
+                                                   size_t data_size,
+                                                   const uint8_t* side_data,
+                                                   size_t side_data_size,
+                                                   bool is_key_frame) {
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK(data);
-  return make_scoped_refptr(new MediaSample(
-      data, data_size, side_data, side_data_size, is_key_frame));
+  return std::make_shared<MediaSample>(data, data_size, side_data,
+                                       side_data_size, is_key_frame);
 }
 
 // static
-scoped_refptr<MediaSample> MediaSample::FromMetadata(const uint8_t* metadata,
-                                                     size_t metadata_size) {
-  return make_scoped_refptr(
-      new MediaSample(nullptr, 0, metadata, metadata_size, false));
+std::shared_ptr<MediaSample> MediaSample::FromMetadata(const uint8_t* metadata,
+                                                       size_t metadata_size) {
+  return std::make_shared<MediaSample>(nullptr, 0, metadata, metadata_size,
+                                       false);
 }
 
 // static
-scoped_refptr<MediaSample> MediaSample::CreateEmptyMediaSample() {
-  MediaSample* media_sample = new MediaSample();
-  return make_scoped_refptr(media_sample);
+std::shared_ptr<MediaSample> MediaSample::CreateEmptyMediaSample() {
+  return std::make_shared<MediaSample>();
 }
 
 // static
-scoped_refptr<MediaSample> MediaSample::CreateEOSBuffer() {
-  return make_scoped_refptr(new MediaSample(NULL, 0, NULL, 0, false));
+std::shared_ptr<MediaSample> MediaSample::CreateEOSBuffer() {
+  return std::make_shared<MediaSample>(nullptr, 0, nullptr, 0, false);
 }
 
 std::string MediaSample::ToString() const {

@@ -184,7 +184,7 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   double timecode_scale_in_us = info_parser.timecode_scale() / 1000.0;
   int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
 
-  scoped_refptr<AudioStreamInfo> audio_stream_info =
+  std::shared_ptr<AudioStreamInfo> audio_stream_info =
       tracks_parser.audio_stream_info();
   if (audio_stream_info) {
     audio_stream_info->set_duration(duration_in_us);
@@ -192,7 +192,7 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
     VLOG(1) << "No audio track info found.";
   }
 
-  scoped_refptr<VideoStreamInfo> video_stream_info =
+  std::shared_ptr<VideoStreamInfo> video_stream_info =
       tracks_parser.video_stream_info();
   if (video_stream_info) {
     video_stream_info->set_duration(duration_in_us);

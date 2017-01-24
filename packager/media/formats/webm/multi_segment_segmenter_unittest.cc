@@ -108,7 +108,7 @@ class MultiSegmentSegmenterTest : public SegmentTestBase {
     return GetSegmentName(segment_template_, 0, number, 0);
   }
 
-  scoped_refptr<StreamInfo> info_;
+  std::shared_ptr<StreamInfo> info_;
   std::string segment_template_;
   std::unique_ptr<webm::Segmenter> segmenter_;
 };
@@ -120,7 +120,7 @@ TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 5; i++) {
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
@@ -142,7 +142,7 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
@@ -171,7 +171,7 @@ TEST_F(MultiSegmentSegmenterTest, RespectsSegmentSAPAlign) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 10; i++) {
     const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         CreateSample(key_frame_flag, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
@@ -198,7 +198,7 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
@@ -224,7 +224,7 @@ TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 10; i++) {
     const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         CreateSample(key_frame_flag, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }

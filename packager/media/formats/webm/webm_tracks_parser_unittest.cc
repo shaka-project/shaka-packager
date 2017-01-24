@@ -144,13 +144,13 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationUnset) {
   EXPECT_EQ(kNoTimestamp,
             parser->GetVideoDefaultDuration(kDefaultTimecodeScaleInUs));
 
-  scoped_refptr<VideoStreamInfo> video_stream_info =
+  std::shared_ptr<VideoStreamInfo> video_stream_info =
       parser->video_stream_info();
   EXPECT_TRUE(video_stream_info);
   EXPECT_EQ(320u, video_stream_info->width());
   EXPECT_EQ(240u, video_stream_info->height());
 
-  scoped_refptr<AudioStreamInfo> audio_stream_info =
+  std::shared_ptr<AudioStreamInfo> audio_stream_info =
       parser->audio_stream_info();
   EXPECT_TRUE(audio_stream_info);
   EXPECT_EQ(2u, audio_stream_info->num_channels());

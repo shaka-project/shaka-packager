@@ -44,7 +44,7 @@ class PesPacketGenerator {
   /// NumberOfReadyPesPackets().
   /// If this returns false, the object may end up in an undefined state.
   /// @return true on success, false otherwise.
-  virtual bool PushSample(scoped_refptr<MediaSample> sample);
+  virtual bool PushSample(std::shared_ptr<MediaSample> sample);
 
   /// Sets the encryption key for encrypting samples.
   /// @param encryption_key is the key that will be used to encrypt further

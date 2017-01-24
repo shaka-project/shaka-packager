@@ -88,7 +88,7 @@ Status TsSegmenter::Finalize() {
 // First checks whether the sample is a key frame. If so and the segment has
 // passed the segment duration, then flush the generator and write all the data
 // to file.
-Status TsSegmenter::AddSample(scoped_refptr<MediaSample> sample) {
+Status TsSegmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   const bool passed_segment_duration =
       current_segment_total_sample_duration_ > muxer_options_.segment_duration;
   if (sample->is_key_frame() && passed_segment_duration) {

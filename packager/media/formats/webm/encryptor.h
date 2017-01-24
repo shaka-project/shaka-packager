@@ -9,7 +9,6 @@
 
 #include <memory>
 #include "packager/base/macros.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/stream_info.h"
@@ -48,8 +47,7 @@ class Encryptor {
   /// Encrypt the data.  This needs to be told whether the current frame will
   /// be encrypted (e.g. for a clear lead).
   /// @return OK on success, an error status otherwise.
-  Status EncryptFrame(scoped_refptr<MediaSample> sample,
-                      bool encrypt_frame);
+  Status EncryptFrame(std::shared_ptr<MediaSample> sample, bool encrypt_frame);
 
  private:
   // Create the encryptor for the internal encryption key.

@@ -28,8 +28,8 @@ const int64_t kMicrosecondsPerMillisecond = 1000;
 
 WebMClusterParser::WebMClusterParser(
     int64_t timecode_scale,
-    scoped_refptr<AudioStreamInfo> audio_stream_info,
-    scoped_refptr<VideoStreamInfo> video_stream_info,
+    std::shared_ptr<AudioStreamInfo> audio_stream_info,
+    std::shared_ptr<VideoStreamInfo> video_stream_info,
     int64_t audio_default_duration,
     int64_t video_default_duration,
     const WebMTracksParser::TextTracks& text_tracks,
@@ -352,7 +352,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
 
   int64_t timestamp = (cluster_timecode_ + timecode) * timecode_multiplier_;
 
-  scoped_refptr<MediaSample> buffer;
+  std::shared_ptr<MediaSample> buffer;
   if (stream_type != kStreamText) {
     // Every encrypted Block has a signal byte and IV prepended to it. Current
     // encrypted WebM request for comments specification is here
@@ -407,7 +407,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
                            : kNoTimestamp);
 
   if (!init_cb_.is_null() && !initialized_) {
-    std::vector<scoped_refptr<StreamInfo>> streams;
+    std::vector<std::shared_ptr<StreamInfo>> streams;
     if (audio_stream_info_)
       streams.push_back(audio_stream_info_);
     if (video_stream_info_) {
@@ -474,7 +474,7 @@ WebMClusterParser::Track::Track(int track_num,
 WebMClusterParser::Track::~Track() {}
 
 bool WebMClusterParser::Track::EmitBuffer(
-    const scoped_refptr<MediaSample>& buffer) {
+    const std::shared_ptr<MediaSample>& buffer) {
   DVLOG(2) << "EmitBuffer() : " << track_num_
            << " ts " << buffer->pts()
            << " dur " << buffer->duration()
@@ -493,7 +493,7 @@ bool WebMClusterParser::Track::EmitBuffer(
              << last_added_buffer_missing_duration_->duration()
              << " kf " << last_added_buffer_missing_duration_->is_key_frame()
              << " size " << last_added_buffer_missing_duration_->data_size();
-    scoped_refptr<MediaSample> updated_buffer =
+    std::shared_ptr<MediaSample> updated_buffer =
         last_added_buffer_missing_duration_;
     last_added_buffer_missing_duration_ = NULL;
     if (!EmitBufferHelp(updated_buffer))
@@ -540,7 +540,7 @@ void WebMClusterParser::Track::Reset() {
 }
 
 bool WebMClusterParser::Track::EmitBufferHelp(
-    const scoped_refptr<MediaSample>& buffer) {
+    const std::shared_ptr<MediaSample>& buffer) {
   DCHECK(!last_added_buffer_missing_duration_.get());
 
   int64_t duration = buffer->duration();

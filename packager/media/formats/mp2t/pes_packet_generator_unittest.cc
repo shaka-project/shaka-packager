@@ -102,16 +102,16 @@ class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
   MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));
 };
 
-scoped_refptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, codec, kCodecString, kVideoExtraData,
       arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   return stream_info;
 }
 
-scoped_refptr<AudioStreamInfo> CreateAudioStreamInfo(Codec codec) {
-  scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+std::shared_ptr<AudioStreamInfo> CreateAudioStreamInfo(Codec codec) {
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, codec, kCodecString, kAudioExtraData,
       arraysize(kAudioExtraData), kSampleBits, kNumChannels, kSamplingFrequency,
       kSeekPreroll, kCodecDelay, kMaxBitrate, kAverageBitrate, kLanguage,
@@ -138,12 +138,12 @@ class PesPacketGeneratorTest : public ::testing::Test {
                           size_t input_size,
                           const uint8_t* expected_output,
                           size_t expected_output_size) {
-    scoped_refptr<VideoStreamInfo> stream_info(
+    std::shared_ptr<VideoStreamInfo> stream_info(
         CreateVideoStreamInfo(kH264Codec));
     EXPECT_TRUE(generator_.Initialize(*stream_info));
     EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
-    scoped_refptr<MediaSample> sample =
+    std::shared_ptr<MediaSample> sample =
         MediaSample::CopyFrom(input, input_size, kIsKeyFrame);
     const uint32_t kPts = 12345;
     const uint32_t kDts = 12300;
@@ -187,15 +187,15 @@ class PesPacketGeneratorTest : public ::testing::Test {
                          size_t input_size,
                          const uint8_t* expected_output,
                          size_t expected_output_size) {
-    scoped_refptr<AudioStreamInfo> stream_info(
+    std::shared_ptr<AudioStreamInfo> stream_info(
         CreateAudioStreamInfo(kAacCodec));
     EXPECT_TRUE(generator_.Initialize(*stream_info));
     EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
     // For aac, the input from MediaSample is used. Then ADTS header is added,
     // so EXPECT_CALL does not return the |input| data.
-    scoped_refptr<MediaSample> sample = MediaSample::CopyFrom(
-        input, input_size, kIsKeyFrame);
+    std::shared_ptr<MediaSample> sample =
+        MediaSample::CopyFrom(input, input_size, kIsKeyFrame);
 
     std::unique_ptr<MockAACAudioSpecificConfig> mock(
         new MockAACAudioSpecificConfig());
@@ -223,41 +223,44 @@ class PesPacketGeneratorTest : public ::testing::Test {
 };
 
 TEST_F(PesPacketGeneratorTest, InitializeVideo) {
-  scoped_refptr<VideoStreamInfo> stream_info(CreateVideoStreamInfo(kH264Codec));
+  std::shared_ptr<VideoStreamInfo> stream_info(
+      CreateVideoStreamInfo(kH264Codec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, InitializeVideoNonH264) {
-  scoped_refptr<VideoStreamInfo> stream_info(
+  std::shared_ptr<VideoStreamInfo> stream_info(
       CreateVideoStreamInfo(Codec::kCodecVP9));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, InitializeAudio) {
-  scoped_refptr<AudioStreamInfo> stream_info(CreateAudioStreamInfo(kAacCodec));
+  std::shared_ptr<AudioStreamInfo> stream_info(
+      CreateAudioStreamInfo(kAacCodec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, InitializeAudioNonAac) {
-  scoped_refptr<AudioStreamInfo> stream_info(
+  std::shared_ptr<AudioStreamInfo> stream_info(
       CreateAudioStreamInfo(Codec::kCodecOpus));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 
 // Text is not supported yet.
 TEST_F(PesPacketGeneratorTest, InitializeTextInfo) {
-  scoped_refptr<TextStreamInfo> stream_info(
+  std::shared_ptr<TextStreamInfo> stream_info(
       new TextStreamInfo(kTrackId, kTimeScale, kDuration, kCodecString,
                          std::string(), kWidth, kHeight, kLanguage));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, AddVideoSample) {
-  scoped_refptr<VideoStreamInfo> stream_info(CreateVideoStreamInfo(kH264Codec));
+  std::shared_ptr<VideoStreamInfo> stream_info(
+      CreateVideoStreamInfo(kH264Codec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
-  scoped_refptr<MediaSample> sample =
+  std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
   const uint32_t kPts = 12345;
   const uint32_t kDts = 12300;
@@ -289,11 +292,12 @@ TEST_F(PesPacketGeneratorTest, AddVideoSample) {
 }
 
 TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
-  scoped_refptr<VideoStreamInfo> stream_info(CreateVideoStreamInfo(kH264Codec));
+  std::shared_ptr<VideoStreamInfo> stream_info(
+      CreateVideoStreamInfo(kH264Codec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
-  scoped_refptr<MediaSample> sample =
+  std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
@@ -311,11 +315,12 @@ TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
 }
 
 TEST_F(PesPacketGeneratorTest, AddAudioSample) {
-  scoped_refptr<AudioStreamInfo> stream_info(CreateAudioStreamInfo(kAacCodec));
+  std::shared_ptr<AudioStreamInfo> stream_info(
+      CreateAudioStreamInfo(kAacCodec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
-  scoped_refptr<MediaSample> sample =
+  std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
@@ -340,11 +345,12 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
 }
 
 TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
-  scoped_refptr<AudioStreamInfo> stream_info(CreateAudioStreamInfo(kAacCodec));
+  std::shared_ptr<AudioStreamInfo> stream_info(
+      CreateAudioStreamInfo(kAacCodec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
-  scoped_refptr<MediaSample> sample =
+  std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
@@ -362,7 +368,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 // are scaled.
 TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   const uint32_t kTestTimescale = 1000;
-  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTestTimescale, kDuration, kH264Codec, kCodecString,
       kVideoExtraData, arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth,
       kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
@@ -370,7 +376,7 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
 
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
-  scoped_refptr<MediaSample> sample =
+  std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
   const uint32_t kPts = 5000;
   const uint32_t kDts = 4000;

@@ -7,7 +7,6 @@
 
 #include "packager/base/callback_forward.h"
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/base/media_parser.h"
 

@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/stream_info.h"
@@ -25,7 +24,7 @@ class PidState;
 class TsPacket;
 class TsSection;
 
-typedef std::deque<scoped_refptr<MediaSample> > SampleQueue;
+typedef std::deque<std::shared_ptr<MediaSample>> SampleQueue;
 
 class Mp2tMediaParser : public MediaParser {
  public:
@@ -56,12 +55,12 @@ class Mp2tMediaParser : public MediaParser {
 
   // Callback invoked each time the audio/video decoder configuration is
   // changed.
-  void OnNewStreamInfo(const scoped_refptr<StreamInfo>& new_stream_info);
+  void OnNewStreamInfo(const std::shared_ptr<StreamInfo>& new_stream_info);
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
   void OnEmitSample(uint32_t pes_pid,
-                    const scoped_refptr<MediaSample>& new_sample);
+                    const std::shared_ptr<MediaSample>& new_sample);
 
   // Invoke the initialization callback if needed.
   bool FinishInitializationIfNeeded();

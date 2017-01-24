@@ -46,7 +46,7 @@ class MP4MediaParserTest : public testing::Test {
   }
 
  protected:
-  typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
+  typedef std::map<int, std::shared_ptr<StreamInfo>> StreamMap;
   StreamMap stream_map_;
   std::unique_ptr<MP4MediaParser> parser_;
   size_t num_streams_;
@@ -71,19 +71,17 @@ class MP4MediaParserTest : public testing::Test {
     return true;
   }
 
-  void InitF(const std::vector<scoped_refptr<StreamInfo> >& streams) {
-    for (std::vector<scoped_refptr<StreamInfo> >::const_iterator iter =
-             streams.begin();
-         iter != streams.end();
-         ++iter) {
-      DVLOG(2) << (*iter)->ToString();
-      stream_map_[(*iter)->track_id()] = *iter;
+  void InitF(const std::vector<std::shared_ptr<StreamInfo>>& streams) {
+    for (const auto& stream_info : streams) {
+      DVLOG(2) << stream_info->ToString();
+      stream_map_[stream_info->track_id()] = stream_info;
     }
     num_streams_ = streams.size();
     num_samples_ = 0;
   }
 
-  bool NewSampleF(uint32_t track_id, const scoped_refptr<MediaSample>& sample) {
+  bool NewSampleF(uint32_t track_id,
+                  const std::shared_ptr<MediaSample>& sample) {
     DVLOG(2) << "Track Id: " << track_id << " "
              << sample->ToString();
     ++num_samples_;

@@ -67,7 +67,7 @@ class EsParserAdts : public EsParser {
   // Interpolated PTS for frames that don't have one.
   std::unique_ptr<AudioTimestampHelper> audio_timestamp_helper_;
 
-  scoped_refptr<StreamInfo> last_audio_decoder_config_;
+  std::shared_ptr<StreamInfo> last_audio_decoder_config_;
 
   DISALLOW_COPY_AND_ASSIGN(EsParserAdts);
 };

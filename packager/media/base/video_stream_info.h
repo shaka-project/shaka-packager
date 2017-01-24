@@ -26,6 +26,8 @@ class VideoStreamInfo : public StreamInfo {
                   uint8_t nalu_length_size, const std::string& language,
                   bool is_encrypted);
 
+  ~VideoStreamInfo() override;
+
   /// @name StreamInfo implementation overrides.
   /// @{
   bool IsValidConfig() const override;
@@ -54,8 +56,6 @@ class VideoStreamInfo : public StreamInfo {
   }
 
  private:
-  ~VideoStreamInfo() override;
-
   uint16_t width_;
   uint16_t height_;
 

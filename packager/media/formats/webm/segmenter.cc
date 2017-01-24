@@ -121,7 +121,7 @@ Status Segmenter::Finalize() {
   return DoFinalize();
 }
 
-Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
+Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   if (sample_duration_ == 0) {
     first_timestamp_ = sample->pts();
     sample_duration_ = sample->duration();

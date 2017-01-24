@@ -16,12 +16,12 @@
 namespace shaka {
 namespace media {
 
-MediaStream::MediaStream(scoped_refptr<StreamInfo> info, Demuxer* demuxer)
+MediaStream::MediaStream(std::shared_ptr<StreamInfo> info, Demuxer* demuxer)
     : info_(info), demuxer_(demuxer), muxer_(NULL), state_(kIdle) {}
 
 MediaStream::~MediaStream() {}
 
-Status MediaStream::PullSample(scoped_refptr<MediaSample>* sample) {
+Status MediaStream::PullSample(std::shared_ptr<MediaSample>* sample) {
   DCHECK(state_ == kPulling || state_ == kIdle);
 
   // Trigger a new parse in demuxer if no more samples.
@@ -36,7 +36,7 @@ Status MediaStream::PullSample(scoped_refptr<MediaSample>* sample) {
   return Status::OK;
 }
 
-Status MediaStream::PushSample(const scoped_refptr<MediaSample>& sample) {
+Status MediaStream::PushSample(const std::shared_ptr<MediaSample>& sample) {
   switch (state_) {
     case kIdle:
     case kPulling:
@@ -98,7 +98,9 @@ Status MediaStream::Start(MediaStreamOperation operation) {
   }
 }
 
-const scoped_refptr<StreamInfo> MediaStream::info() const { return info_; }
+const std::shared_ptr<StreamInfo> MediaStream::info() const {
+  return info_;
+}
 
 std::string MediaStream::ToString() const {
   return base::StringPrintf("state: %d\n samples in the queue: %zu\n %s",

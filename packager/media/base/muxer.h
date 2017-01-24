@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "packager/base/memory/ref_counted.h"
 #include "packager/base/time/clock.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/muxer_options.h"
@@ -118,7 +117,7 @@ class Muxer {
 
   // Add new media sample.
   Status AddSample(const MediaStream* stream,
-                   scoped_refptr<MediaSample> sample);
+                   std::shared_ptr<MediaSample> sample);
 
   // Initialize the muxer.
   virtual Status Initialize() = 0;
@@ -128,7 +127,7 @@ class Muxer {
 
   // AddSample implementation.
   virtual Status DoAddSample(const MediaStream* stream,
-                             scoped_refptr<MediaSample> sample) = 0;
+                             std::shared_ptr<MediaSample> sample) = 0;
 
   MuxerOptions options_;
   bool initialized_;

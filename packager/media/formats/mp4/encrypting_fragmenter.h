@@ -8,7 +8,6 @@
 #define MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 
 #include <memory>
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
@@ -38,7 +37,7 @@ class EncryptingFragmenter : public Fragmenter {
   ///        pattern based encryption.
   /// @param skip_byte_block indicates number of unencrypted blocks (16-byte)
   ///        in pattern based encryption.
-  EncryptingFragmenter(scoped_refptr<StreamInfo> info,
+  EncryptingFragmenter(std::shared_ptr<StreamInfo> info,
                        TrackFragment* traf,
                        std::unique_ptr<EncryptionKey> encryption_key,
                        int64_t clear_time,
@@ -51,7 +50,7 @@ class EncryptingFragmenter : public Fragmenter {
 
   /// @name Fragmenter implementation overrides.
   /// @{
-  Status AddSample(scoped_refptr<MediaSample> sample) override;
+  Status AddSample(std::shared_ptr<MediaSample> sample) override;
   Status InitializeFragment(int64_t first_sample_dts) override;
   void FinalizeFragment() override;
   /// @}
@@ -80,12 +79,12 @@ class EncryptingFragmenter : public Fragmenter {
 
  private:
   void EncryptBytes(uint8_t* data, size_t size);
-  Status EncryptSample(scoped_refptr<MediaSample> sample);
+  Status EncryptSample(std::shared_ptr<MediaSample> sample);
 
   // Should we enable subsample encryption?
   bool IsSubsampleEncryptionRequired();
 
-  scoped_refptr<StreamInfo> info_;
+  std::shared_ptr<StreamInfo> info_;
   std::unique_ptr<EncryptionKey> encryption_key_;
   std::unique_ptr<AesCryptor> encryptor_;
   // If this stream contains AVC, subsample encryption specifies that the size

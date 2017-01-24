@@ -42,7 +42,7 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   /// @param muxer_listener is a pointer to MuxerListener for notifying
   ///        muxer related events. This may be null.
   KeyRotationFragmenter(MovieFragment* moof,
-                        scoped_refptr<StreamInfo> info,
+                        std::shared_ptr<StreamInfo> info,
                         TrackFragment* traf,
                         KeySource* encryption_key_source,
                         KeySource::TrackType track_type,

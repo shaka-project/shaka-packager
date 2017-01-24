@@ -32,7 +32,7 @@ struct DemuxStreamIdMediaSample {
   ~DemuxStreamIdMediaSample();
   uint32_t demux_stream_id;
   uint32_t parsed_audio_or_video_stream_id;
-  scoped_refptr<MediaSample> media_sample;
+  std::shared_ptr<MediaSample> media_sample;
 };
 
 struct PrevSampleData {
@@ -40,8 +40,8 @@ struct PrevSampleData {
   PrevSampleData();
   ~PrevSampleData();
   void Reset();
-  scoped_refptr<MediaSample> audio_sample;
-  scoped_refptr<MediaSample> video_sample;
+  std::shared_ptr<MediaSample> audio_sample;
+  std::shared_ptr<MediaSample> video_sample;
   uint32_t audio_stream_id;
   uint32_t video_stream_id;
   int64_t audio_sample_duration;
@@ -206,13 +206,13 @@ class WvmMediaParser : public MediaParser {
   // to emit a new audio/video access unit.
   bool EmitSample(uint32_t parsed_audio_or_video_stream_id,
                   uint32_t stream_id,
-                  scoped_refptr<MediaSample>& new_sample,
+                  const std::shared_ptr<MediaSample>& new_sample,
                   bool isLastSample);
 
   bool EmitPendingSamples();
 
   bool EmitLastSample(uint32_t stream_id,
-                      scoped_refptr<MediaSample>& new_sample);
+                      const std::shared_ptr<MediaSample>& new_sample);
 
   // List of callbacks.t
   InitCB init_cb_;
@@ -237,17 +237,17 @@ class WvmMediaParser : public MediaParser {
   uint64_t pts_;
   uint64_t dts_;
   uint8_t index_program_id_;
-  scoped_refptr<MediaSample> media_sample_;
+  std::shared_ptr<MediaSample> media_sample_;
   size_t crypto_unit_start_pos_;
   PrevSampleData prev_media_sample_data_;
   H264ByteToUnitStreamConverter byte_to_unit_stream_converter_;
 
-  std::vector<uint8_t, std::allocator<uint8_t> > ecm_;
+  std::vector<uint8_t, std::allocator<uint8_t>> ecm_;
   std::vector<uint8_t> psm_data_;
   std::vector<uint8_t> index_data_;
   std::map<std::string, uint32_t> program_demux_stream_map_;
   int stream_id_count_;
-  std::vector<scoped_refptr<StreamInfo> > stream_infos_;
+  std::vector<std::shared_ptr<StreamInfo>> stream_infos_;
   std::deque<DemuxStreamIdMediaSample> media_sample_queue_;
   std::vector<uint8_t> sample_data_;
   KeySource* decryption_key_source_;

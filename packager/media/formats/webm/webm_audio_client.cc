@@ -28,7 +28,7 @@ void WebMAudioClient::Reset() {
   output_samples_per_second_ = -1;
 }
 
-scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
+std::shared_ptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
     int64_t track_num,
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
@@ -43,11 +43,11 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
     audio_codec = kCodecOpus;
   } else {
     LOG(ERROR) << "Unsupported audio codec_id " << codec_id;
-    return scoped_refptr<AudioStreamInfo>();
+    return std::shared_ptr<AudioStreamInfo>();
   }
 
   if (samples_per_second_ <= 0)
-    return scoped_refptr<AudioStreamInfo>();
+    return std::shared_ptr<AudioStreamInfo>();
 
   // Set channel layout default if a Channels element was not present.
   if (channels_ == -1)
@@ -68,12 +68,12 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
   }
 
   const uint8_t kSampleSizeInBits = 16u;
-  return scoped_refptr<AudioStreamInfo>(new AudioStreamInfo(
+  return std::make_shared<AudioStreamInfo>(
       track_num, kWebMTimeScale, 0, audio_codec,
       AudioStreamInfo::GetCodecString(audio_codec, 0), codec_config,
       codec_config_size, kSampleSizeInBits, channels_, sampling_frequency,
       seek_preroll < 0 ? 0 : seek_preroll, codec_delay < 0 ? 0 : codec_delay, 0,
-      0, language, is_encrypted));
+      0, language, is_encrypted);
 }
 
 bool WebMAudioClient::OnUInt(int id, int64_t val) {

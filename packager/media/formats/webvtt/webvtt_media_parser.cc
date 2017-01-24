@@ -188,7 +188,7 @@ bool ParseTimingAndSettingsLine(const std::string& line,
 // comment --> side data (and side data only sample)
 // settings --> side data
 // start_time --> pts
-scoped_refptr<MediaSample> CueToMediaSample(const Cue& cue) {
+std::shared_ptr<MediaSample> CueToMediaSample(const Cue& cue) {
   const bool kKeyFrame = true;
   if (!cue.comment.empty()) {
     const std::string comment = base::JoinString(cue.comment, "\n");
@@ -197,12 +197,10 @@ scoped_refptr<MediaSample> CueToMediaSample(const Cue& cue) {
   }
 
   const std::string payload = base::JoinString(cue.payload, "\n");
-  scoped_refptr<MediaSample> media_sample = MediaSample::CopyFrom(
-      reinterpret_cast<const uint8_t*>(payload.data()),
-      payload.size(),
+  std::shared_ptr<MediaSample> media_sample = MediaSample::CopyFrom(
+      reinterpret_cast<const uint8_t*>(payload.data()), payload.size(),
       reinterpret_cast<const uint8_t*>(cue.settings.data()),
-      cue.settings.size(),
-      !kKeyFrame);
+      cue.settings.size(), !kKeyFrame);
 
   media_sample->set_config_id(cue.identifier);
   media_sample->set_pts(cue.start_time);
@@ -282,7 +280,7 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
         break;
       case kMetadata: {
         if (line.empty()) {
-          std::vector<scoped_refptr<StreamInfo> > streams;
+          std::vector<std::shared_ptr<StreamInfo>> streams;
           // The resolution of timings are in milliseconds.
           const int kTimescale = 1000;
 
@@ -294,12 +292,12 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
           // There is no one metadata to determine what the language is. Parts
           // of the text may be annotated as some specific language.
           const char kLanguage[] = "";
-          streams.push_back(new TextStreamInfo(kTrackId, kTimescale, kDuration,
-                                               "wvtt",
-                                               base::JoinString(header_, "\n"),
-                                               0,  // Not necessary.
-                                               0,
-                                               kLanguage));  // Not necessary.
+          streams.emplace_back(
+              new TextStreamInfo(kTrackId, kTimescale, kDuration, "wvtt",
+                                 base::JoinString(header_, "\n"),
+                                 0,  // Not necessary.
+                                 0,
+                                 kLanguage));  // Not necessary.
 
           init_cb_.Run(streams);
           state_ = kCueIdentifierOrTimingOrComment;

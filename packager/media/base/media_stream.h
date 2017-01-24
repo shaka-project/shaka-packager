@@ -10,7 +10,6 @@
 #include <deque>
 #include <memory>
 
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/status.h"
 
 namespace shaka {
@@ -31,7 +30,7 @@ class MediaStream {
   };
   /// Create MediaStream from StreamInfo and Demuxer.
   /// @param demuxer cannot be NULL.
-  MediaStream(scoped_refptr<StreamInfo> info, Demuxer* demuxer);
+  MediaStream(std::shared_ptr<StreamInfo> info, Demuxer* demuxer);
   ~MediaStream();
 
   /// Connect the stream to Muxer.
@@ -42,19 +41,22 @@ class MediaStream {
   Status Start(MediaStreamOperation operation);
 
   /// Push sample to Muxer (triggered by Demuxer).
-  Status PushSample(const scoped_refptr<MediaSample>& sample);
+  Status PushSample(const std::shared_ptr<MediaSample>& sample);
 
   /// Pull sample from Demuxer (triggered by Muxer).
-  Status PullSample(scoped_refptr<MediaSample>* sample);
+  Status PullSample(std::shared_ptr<MediaSample>* sample);
 
   Demuxer* demuxer() { return demuxer_; }
   Muxer* muxer() { return muxer_; }
-  const scoped_refptr<StreamInfo> info() const;
+  const std::shared_ptr<StreamInfo> info() const;
 
   /// @return a human-readable string describing |*this|.
   std::string ToString() const;
 
  private:
+  MediaStream(const MediaStream&) = delete;
+  MediaStream& operator=(const MediaStream&) = delete;
+
   // State transition diagram available @ http://goo.gl/ThJQbl.
   enum State {
     kIdle,
@@ -64,14 +66,12 @@ class MediaStream {
     kPulling,
   };
 
-  scoped_refptr<StreamInfo> info_;
+  std::shared_ptr<StreamInfo> info_;
   Demuxer* demuxer_;
   Muxer* muxer_;
   State state_;
   // An internal buffer to store samples temporarily.
-  std::deque<scoped_refptr<MediaSample> > samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStream);
+  std::deque<std::shared_ptr<MediaSample>> samples_;
 };
 
 }  // namespace media

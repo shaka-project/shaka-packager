@@ -59,7 +59,7 @@ uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
 }  // namespace
 
 EncryptingFragmenter::EncryptingFragmenter(
-    scoped_refptr<StreamInfo> info,
+    std::shared_ptr<StreamInfo> info,
     TrackFragment* traf,
     std::unique_ptr<EncryptionKey> encryption_key,
     int64_t clear_time,
@@ -103,7 +103,7 @@ EncryptingFragmenter::EncryptingFragmenter(
 
 EncryptingFragmenter::~EncryptingFragmenter() {}
 
-Status EncryptingFragmenter::AddSample(scoped_refptr<MediaSample> sample) {
+Status EncryptingFragmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   DCHECK(sample);
   if (!fragment_initialized()) {
     Status status = InitializeFragment(sample->dts());
@@ -248,7 +248,8 @@ void EncryptingFragmenter::EncryptBytes(uint8_t* data, size_t size) {
   CHECK(encryptor_->Crypt(data, size, data));
 }
 
-Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
+Status EncryptingFragmenter::EncryptSample(
+    std::shared_ptr<MediaSample> sample) {
   DCHECK(encryptor_);
 
   SampleEncryptionEntry sample_encryption_entry;

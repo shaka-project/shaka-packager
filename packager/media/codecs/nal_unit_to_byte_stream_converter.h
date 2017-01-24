@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "packager/base/macros.h"
-#include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/decrypt_config.h"
 
 namespace shaka {

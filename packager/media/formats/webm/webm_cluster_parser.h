@@ -50,7 +50,7 @@ class WebMClusterParser : public WebMParserClient {
     // relative to |buffer|'s timestamp, and emits it and unsets
     // |last_added_buffer_missing_duration_|. Otherwise, if |buffer| is missing
     // duration, saves |buffer| into |last_added_buffer_missing_duration_|.
-    bool EmitBuffer(const scoped_refptr<MediaSample>& buffer);
+    bool EmitBuffer(const std::shared_ptr<MediaSample>& buffer);
 
     // If |last_added_buffer_missing_duration_| is set, estimate the duration
     // for this buffer using helper function GetDurationEstimate() then emits it
@@ -67,7 +67,7 @@ class WebMClusterParser : public WebMParserClient {
     // |estimated_next_frame_duration_|, and emits |buffer|.
     // Returns false if |buffer| failed sanity check and therefore was not
     // emitted. Returns true otherwise.
-    bool EmitBufferHelp(const scoped_refptr<MediaSample>& buffer);
+    bool EmitBufferHelp(const std::shared_ptr<MediaSample>& buffer);
 
     // Helper function that calculates the buffer duration to use in
     // ApplyDurationEstimateIfNeeded().
@@ -79,7 +79,7 @@ class WebMClusterParser : public WebMParserClient {
     // Holding the sample that is missing duration. The duration will be
     // computed from the difference in timestamp when next sample arrives; or
     // estimated if it is the last sample in this track.
-    scoped_refptr<MediaSample> last_added_buffer_missing_duration_;
+    std::shared_ptr<MediaSample> last_added_buffer_missing_duration_;
 
     // If kNoTimestamp, then |estimated_next_frame_duration_| will be used.
     int64_t default_duration_;
@@ -118,8 +118,8 @@ class WebMClusterParser : public WebMParserClient {
   /// @param decryption_key_source points to a decryption key source to fetch
   ///        decryption keys. Should not be NULL if the tracks are encrypted.
   WebMClusterParser(int64_t timecode_scale,
-                    scoped_refptr<AudioStreamInfo> audio_stream_info,
-                    scoped_refptr<VideoStreamInfo> video_stream_info,
+                    std::shared_ptr<AudioStreamInfo> audio_stream_info,
+                    std::shared_ptr<VideoStreamInfo> video_stream_info,
                     int64_t audio_default_duration,
                     int64_t video_default_duration,
                     const WebMTracksParser::TextTracks& text_tracks,
@@ -186,8 +186,8 @@ class WebMClusterParser : public WebMParserClient {
   // Multiplier used to convert timecodes into microseconds.
   double timecode_multiplier_;
 
-  scoped_refptr<AudioStreamInfo> audio_stream_info_;
-  scoped_refptr<VideoStreamInfo> video_stream_info_;
+  std::shared_ptr<AudioStreamInfo> audio_stream_info_;
+  std::shared_ptr<VideoStreamInfo> video_stream_info_;
   std::set<int64_t> ignored_tracks_;
 
   std::unique_ptr<DecryptorSource> decryptor_source_;

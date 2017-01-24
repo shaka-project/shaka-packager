@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/memory/ref_counted.h"
-
 namespace shaka {
 namespace media {
 
@@ -50,12 +48,14 @@ enum Codec {
 };
 
 /// Abstract class holds stream information.
-class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
+class StreamInfo {
  public:
   StreamInfo(StreamType stream_type, int track_id, uint32_t time_scale,
              uint64_t duration, Codec codec, const std::string& codec_string,
              const uint8_t* codec_config, size_t codec_config_size,
              const std::string& language, bool is_encrypted);
+
+  virtual ~StreamInfo();
 
   /// @return true if this object has appropriate configuration values, false
   ///         otherwise.
@@ -81,10 +81,6 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
     codec_string_ = codec_string;
   }
   void set_language(const std::string& language) { language_ = language; }
-
- protected:
-  friend class base::RefCountedThreadSafe<StreamInfo>;
-  virtual ~StreamInfo();
 
  private:
   // Whether the stream is Audio or Video.

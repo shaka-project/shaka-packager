@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "packager/base/callback.h"
-#include "packager/base/memory/ref_counted.h"
 
 namespace shaka {
 namespace media {
@@ -20,9 +19,9 @@ namespace mp2t {
 
 class EsParser {
  public:
-  typedef base::Callback<void(const scoped_refptr<StreamInfo>&)>
+  typedef base::Callback<void(const std::shared_ptr<StreamInfo>&)>
       NewStreamInfoCB;
-  typedef base::Callback<void(uint32_t, const scoped_refptr<MediaSample>&)>
+  typedef base::Callback<void(uint32_t, const std::shared_ptr<MediaSample>&)>
       EmitSampleCB;
 
   EsParser(uint32_t pid) : pid_(pid) {}

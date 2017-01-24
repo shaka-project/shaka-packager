@@ -62,9 +62,9 @@ class SegmentTestBase : public ::testing::Test {
   }
 
   /// Creates a new media sample.
-  scoped_refptr<MediaSample> CreateSample(KeyFrameFlag key_frame_flag,
-                                          uint64_t duration,
-                                          SideDataFlag side_data_flag);
+  std::shared_ptr<MediaSample> CreateSample(KeyFrameFlag key_frame_flag,
+                                            uint64_t duration,
+                                            SideDataFlag side_data_flag);
   /// Creates a Muxer options object for testing.
   MuxerOptions CreateMuxerOptions() const;
   /// Creates a video stream info object for testing.
