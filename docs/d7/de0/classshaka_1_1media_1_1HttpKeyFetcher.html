@@ -122,6 +122,10 @@ KeyFetcher implementation overrides.</h2></td></tr>
 <tr class="separator:a6b5b2c193d6055ca49d2d6af2b2ac4cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31e904e2f802e5626c4420675c76d513"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">Post</a> (const std::string &amp;url, const std::string &amp;data, std::string *response)</td></tr>
 <tr class="separator:a31e904e2f802e5626c4420675c76d513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ed8d56dddc800d76b57ed3674f01270"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a2ed8d56dddc800d76b57ed3674f01270">SetClientCertInfo</a> (const std::string &amp;cert_file, const std::string &amp;private_key_file, const std::string &amp;private_key_password)</td></tr>
+<tr class="separator:a2ed8d56dddc800d76b57ed3674f01270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8420a100f8ff8e86c6bc95642ce29d0b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a8420a100f8ff8e86c6bc95642ce29d0b">SetCaFile</a> (const std::string &amp;ca_file)</td></tr>
+<tr class="separator:a8420a100f8ff8e86c6bc95642ce29d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html" title="Base class for fetching keys from the license service. ">KeyFetcher</a> implementation that retrieves keys over HTTP(s). This class is not fully thread safe. It can be used in multi-thread environment once constructed, but it may not be safe to create a <a class="el" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html">HttpKeyFetcher</a> object when any other thread is running due to use of curl_global_init. </p>
@@ -149,7 +153,7 @@ KeyFetcher implementation overrides.</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00075">75</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00079">79</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
 
 </div>
 </div>
@@ -204,7 +208,7 @@ KeyFetcher implementation overrides.</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html#aa3c6011a0dd7c8e7f53dbaf48b92718d">shaka::media::KeyFetcher</a>.</p>
 
-<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00080">80</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00084">84</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
 
 </div>
 </div>
@@ -249,7 +253,7 @@ KeyFetcher implementation overrides.</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00086">86</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00090">90</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
 
 </div>
 </div>
@@ -300,7 +304,91 @@ KeyFetcher implementation overrides.</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00090">90</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html#l00094">94</a> of file <a class="el" href="../../de/d70/http__key__fetcher_8cc_source.html">http_key_fetcher.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8420a100f8ff8e86c6bc95642ce29d0b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::HttpKeyFetcher::SetCaFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ca_file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets the Certifiate Authority file information for http requests. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ca_file</td><td>absolute path to the client certificate </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../db/d71/http__key__fetcher_8h_source.html#l00070">70</a> of file <a class="el" href="../../db/d71/http__key__fetcher_8h_source.html">http_key_fetcher.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2ed8d56dddc800d76b57ed3674f01270"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::HttpKeyFetcher::SetClientCertInfo </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>cert_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>private_key_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>private_key_password</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets client certificate information for http requests. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cert_file</td><td>absolute path to the client certificate. </td></tr>
+    <tr><td class="paramname">private_key_file</td><td>absolute path to the client certificate private key file. </td></tr>
+    <tr><td class="paramname">private_key_password</td><td>private key password. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../db/d71/http__key__fetcher_8h_source.html#l00061">61</a> of file <a class="el" href="../../db/d71/http__key__fetcher_8h_source.html">http_key_fetcher.h</a>.</p>
 
 </div>
 </div>
@@ -311,7 +399,7 @@ KeyFetcher implementation overrides.</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Jan 14 2017 01:49:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

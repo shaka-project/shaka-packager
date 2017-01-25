@@ -17,6 +17,8 @@ var searchData=
   ['set_5fsigner',['set_signer',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a48d182da15ecc85e2ae7fd164ba0a526',1,'shaka::media::WidevineKeySource']]],
   ['set_5fstream_5fid',['set_stream_id',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#ad4be259c146b57f61f41638970839fc4',1,'shaka::media::mp2t::PesPacket']]],
   ['set_5fuse_5fdecoding_5ftimestamp_5fin_5ftimeline',['set_use_decoding_timestamp_in_timeline',['../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a6f9d467d7188160ee445b74b6f0905f4',1,'shaka::media::mp4::Fragmenter']]],
+  ['setcafile',['SetCaFile',['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a8420a100f8ff8e86c6bc95642ce29d0b',1,'shaka::media::HttpKeyFetcher::SetCaFile()'],['../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#adeac90b9cff39bfa259f81ff3e93679c',1,'shaka::media::PlayReadyKeySource::SetCaFile()']]],
+  ['setclientcertinfo',['SetClientCertInfo',['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a2ed8d56dddc800d76b57ed3674f01270',1,'shaka::media::HttpKeyFetcher']]],
   ['setcluster',['SetCluster',['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a6060ddc97c58e4435d1db932de17e131',1,'shaka::media::webm::Segmenter']]],
   ['setcomplete',['SetComplete',['../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#adea4bf88a29660bd8612ae3bc5048068',1,'shaka::media::mp4::Segmenter']]],
   ['setcontent',['SetContent',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a73d758186470e7dbcb4f4339eb53458c',1,'shaka::xml::XmlNode']]],
