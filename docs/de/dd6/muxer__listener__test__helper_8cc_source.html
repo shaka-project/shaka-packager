@@ -103,14 +103,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;VideoStreamInfoParameters::VideoStreamInfoParameters() {}</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;VideoStreamInfoParameters::~VideoStreamInfoParameters() {}</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;scoped_refptr&lt;StreamInfo&gt; CreateVideoStreamInfo(</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;std::shared_ptr&lt;StreamInfo&gt; CreateVideoStreamInfo(</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">const</span> VideoStreamInfoParameters&amp; param) {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordflow">return</span> scoped_refptr&lt;StreamInfo&gt;(<span class="keyword">new</span> VideoStreamInfo(</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;VideoStreamInfo&gt;(</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;      param.track_id, param.time_scale, param.duration, param.codec,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      param.codec_string, param.codec_config.data(), param.codec_config.size(),</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      param.width, param.height, param.pixel_width, param.pixel_height,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      0,  <span class="comment">// trick_play_rate</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      param.nalu_length_size, param.language, param.is_encrypted));</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      param.nalu_length_size, param.language, param.is_encrypted);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {</div>
@@ -208,7 +208,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

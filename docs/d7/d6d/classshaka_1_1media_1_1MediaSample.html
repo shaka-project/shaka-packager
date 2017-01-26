@@ -89,7 +89,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="../../df/d1c/classshaka_1_1media_1_1MediaSample-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::MediaSample Class Reference</div>  </div>
@@ -100,17 +99,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
  <a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="../../dd/d80/media__sample_8h_source.html">media_sample.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for shaka::media::MediaSample:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="../../d7/d6d/classshaka_1_1media_1_1MediaSample.png" usemap="#shaka::media::MediaSample_map" alt=""/>
-  <map id="shaka::media::MediaSample_map" name="shaka::media::MediaSample_map">
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a5ce916afdefd3d1410f8e003d7118f8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ce916afdefd3d1410f8e003d7118f8b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MediaSample</b> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
+<tr class="separator:a5ce916afdefd3d1410f8e003d7118f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52a0b18aec839de422c4e3e2df9734c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52a0b18aec839de422c4e3e2df9734c9"></a>
 int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>dts</b> () const </td></tr>
 <tr class="separator:a52a0b18aec839de422c4e3e2df9734c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,31 +176,30 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_config_id</b> (co
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a3fac8e4cc8da3b34ef5f698411ec868b"><td class="memItemLeft" align="right" valign="top">static scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">CopyFrom</a> (const uint8_t *data, size_t size, bool is_key_frame)</td></tr>
-<tr class="separator:a3fac8e4cc8da3b34ef5f698411ec868b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99f83b1803101853aa03bda8f1251e8c"><td class="memItemLeft" align="right" valign="top">static scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a99f83b1803101853aa03bda8f1251e8c">CopyFrom</a> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
-<tr class="separator:a99f83b1803101853aa03bda8f1251e8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d23b68125525a019bde262e4c5a46f0"><td class="memItemLeft" align="right" valign="top">static scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a1d23b68125525a019bde262e4c5a46f0">FromMetadata</a> (const uint8_t *metadata, size_t metadata_size)</td></tr>
-<tr class="separator:a1d23b68125525a019bde262e4c5a46f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59e7bbd2ee8cfa1697093d14d16a6c4d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a59e7bbd2ee8cfa1697093d14d16a6c4d"></a>
-static scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a59e7bbd2ee8cfa1697093d14d16a6c4d">CreateEmptyMediaSample</a> ()</td></tr>
-<tr class="memdesc:a59e7bbd2ee8cfa1697093d14d16a6c4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> object with default members. <br/></td></tr>
-<tr class="separator:a59e7bbd2ee8cfa1697093d14d16a6c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a925efca004ebbcf3cf71f690a3e43788"><td class="memItemLeft" align="right" valign="top">static scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a925efca004ebbcf3cf71f690a3e43788">CreateEOSBuffer</a> ()</td></tr>
-<tr class="separator:a925efca004ebbcf3cf71f690a3e43788"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a5507d79601e96df911ecb56a0a1660ef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5507d79601e96df911ecb56a0a1660ef"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThreadSafe&lt; MediaSample &gt;</b></td></tr>
-<tr class="separator:a5507d79601e96df911ecb56a0a1660ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8975dbb21747ff32c8604f5489bf5c9"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">CopyFrom</a> (const uint8_t *data, size_t size, bool is_key_frame)</td></tr>
+<tr class="separator:ad8975dbb21747ff32c8604f5489bf5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a910e68f46b9464e4ea36cf9cd5116b55"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a910e68f46b9464e4ea36cf9cd5116b55">CopyFrom</a> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
+<tr class="separator:a910e68f46b9464e4ea36cf9cd5116b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c70ae863851c7a1066923cf387fb178"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">FromMetadata</a> (const uint8_t *metadata, size_t metadata_size)</td></tr>
+<tr class="separator:a8c70ae863851c7a1066923cf387fb178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a7f8d79f9ec3cd3df9a395eef71f0c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a7f8d79f9ec3cd3df9a395eef71f0c6"></a>
+static std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">CreateEmptyMediaSample</a> ()</td></tr>
+<tr class="memdesc:a4a7f8d79f9ec3cd3df9a395eef71f0c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> object with default members. <br/></td></tr>
+<tr class="separator:a4a7f8d79f9ec3cd3df9a395eef71f0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a236e80a98d7f22ec585bbbf2e91397f5"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">CreateEOSBuffer</a> ()</td></tr>
+<tr class="separator:a236e80a98d7f22ec585bbbf2e91397f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class to hold a media sample. </p>
 
 <p>Definition at line <a class="el" href="../../dd/d80/media__sample_8h_source.html#l00022">22</a> of file <a class="el" href="../../dd/d80/media__sample_8h_source.html">media_sample.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a3fac8e4cc8da3b34ef5f698411ec868b"></a>
+<a class="anchor" id="ad8975dbb21747ff32c8604f5489bf5c9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -214,7 +207,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CopyFrom </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CopyFrom </td>
           <td>(</td>
           <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -257,7 +250,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 
 </div>
 </div>
-<a class="anchor" id="a99f83b1803101853aa03bda8f1251e8c"></a>
+<a class="anchor" id="a910e68f46b9464e4ea36cf9cd5116b55"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -265,7 +258,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CopyFrom </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CopyFrom </td>
           <td>(</td>
           <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -322,7 +315,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 
 </div>
 </div>
-<a class="anchor" id="a925efca004ebbcf3cf71f690a3e43788"></a>
+<a class="anchor" id="a236e80a98d7f22ec585bbbf2e91397f5"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -330,7 +323,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CreateEOSBuffer </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CreateEOSBuffer </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -344,11 +337,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 </div><div class="memdoc">
 <p>Create a <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> indicating we've reached end of stream. Calling any method other than end_of_stream() on the resulting buffer is disallowed. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00080">80</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00079">79</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a1d23b68125525a019bde262e4c5a46f0"></a>
+<a class="anchor" id="a8c70ae863851c7a1066923cf387fb178"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -356,7 +349,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::FromMetadata </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::FromMetadata </td>
           <td>(</td>
           <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>metadata</em>, </td>
@@ -406,7 +399,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a human-readable string describing |*this|. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00084">84</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00083">83</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -417,7 +410,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

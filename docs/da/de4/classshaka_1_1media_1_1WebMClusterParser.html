@@ -114,8 +114,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8a7c7e7ac6a5da1cd45ab50f914f6826"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#a8a7c7e7ac6a5da1cd45ab50f914f6826">WebMClusterParser</a> (int64_t timecode_scale, scoped_refptr&lt; <a class="el" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a> &gt; audio_stream_info, scoped_refptr&lt; <a class="el" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a> &gt; video_stream_info, int64_t audio_default_duration, int64_t video_default_duration, const WebMTracksParser::TextTracks &amp;text_tracks, const std::set&lt; int64_t &gt; &amp;ignored_tracks, const std::string &amp;audio_encryption_key_id, const std::string &amp;video_encryption_key_id, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">MediaParser::NewSampleCB</a> &amp;new_sample_cb, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">MediaParser::InitCB</a> &amp;init_cb, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source)</td></tr>
-<tr class="separator:a8a7c7e7ac6a5da1cd45ab50f914f6826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59da447ae099935eaa26f69cfecefc02"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#a59da447ae099935eaa26f69cfecefc02">WebMClusterParser</a> (int64_t timecode_scale, std::shared_ptr&lt; <a class="el" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a> &gt; audio_stream_info, std::shared_ptr&lt; <a class="el" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a> &gt; video_stream_info, int64_t audio_default_duration, int64_t video_default_duration, const WebMTracksParser::TextTracks &amp;text_tracks, const std::set&lt; int64_t &gt; &amp;ignored_tracks, const std::string &amp;audio_encryption_key_id, const std::string &amp;video_encryption_key_id, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">MediaParser::NewSampleCB</a> &amp;new_sample_cb, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">MediaParser::InitCB</a> &amp;init_cb, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source)</td></tr>
+<tr class="separator:a59da447ae099935eaa26f69cfecefc02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb306c3299a7279125b8f321ef5bbc94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb306c3299a7279125b8f321ef5bbc94"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#abb306c3299a7279125b8f321ef5bbc94">Reset</a> ()</td></tr>
 <tr class="memdesc:abb306c3299a7279125b8f321ef5bbc94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the parser state so it can accept a new cluster. <br/></td></tr>
@@ -172,7 +172,7 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a8a7c7e7ac6a5da1cd45ab50f914f6826"></a>
+<a class="anchor" id="a59da447ae099935eaa26f69cfecefc02"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -185,13 +185,13 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">scoped_refptr&lt; <a class="el" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a> &gt;&#160;</td>
           <td class="paramname"><em>audio_stream_info</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">scoped_refptr&lt; <a class="el" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a> &gt;&#160;</td>
           <td class="paramname"><em>video_stream_info</em>, </td>
         </tr>
         <tr>
@@ -233,13 +233,13 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">MediaParser::NewSampleCB</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">MediaParser::NewSampleCB</a> &amp;&#160;</td>
           <td class="paramname"><em>new_sample_cb</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">MediaParser::InitCB</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">MediaParser::InitCB</a> &amp;&#160;</td>
           <td class="paramname"><em>init_cb</em>, </td>
         </tr>
         <tr>
@@ -365,7 +365,7 @@ The number of bytes parsed on success. </dd></dl>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

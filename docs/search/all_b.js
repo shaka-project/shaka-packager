@@ -8,7 +8,7 @@ var searchData=
   ['mediainformation',['MediaInformation',['../d5/d86/structshaka_1_1media_1_1mp4_1_1MediaInformation.html',1,'shaka::media::mp4']]],
   ['mediaparser',['MediaParser',['../d3/d0a/classshaka_1_1media_1_1MediaParser.html',1,'shaka::media']]],
   ['mediasample',['MediaSample',['../d7/d6d/classshaka_1_1media_1_1MediaSample.html',1,'shaka::media']]],
-  ['mediastream',['MediaStream',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a86598d6228ab8163d27fb855142c9f73',1,'shaka::media::MediaStream']]],
+  ['mediastream',['MediaStream',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a12b0f703395d756a584d78b686b2b99b',1,'shaka::media::MediaStream']]],
   ['mediastream',['MediaStream',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html',1,'shaka::media']]],
   ['memoryfile',['MemoryFile',['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html',1,'shaka::media']]],
   ['metadata',['Metadata',['../dd/df6/structshaka_1_1media_1_1mp4_1_1Metadata.html',1,'shaka::media::mp4']]],

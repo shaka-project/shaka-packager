@@ -131,7 +131,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span> audio_encryption_key_id_;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  scoped_refptr&lt;AudioStreamInfo&gt; audio_stream_info() {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  std::shared_ptr&lt;AudioStreamInfo&gt; audio_stream_info() {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">return</span> audio_stream_info_;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
@@ -139,7 +139,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span> video_encryption_key_id_;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  scoped_refptr&lt;VideoStreamInfo&gt; video_stream_info() {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  std::shared_ptr&lt;VideoStreamInfo&gt; video_stream_info() {</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">return</span> video_stream_info_;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
@@ -180,10 +180,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  std::string video_encryption_key_id_;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="../../d3/d7c/classshaka_1_1media_1_1WebMAudioClient.html">WebMAudioClient</a> audio_client_;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  scoped_refptr&lt;AudioStreamInfo&gt; audio_stream_info_;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::shared_ptr&lt;AudioStreamInfo&gt; audio_stream_info_;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <a class="code" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html">WebMVideoClient</a> video_client_;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  scoped_refptr&lt;VideoStreamInfo&gt; video_stream_info_;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  std::shared_ptr&lt;VideoStreamInfo&gt; video_stream_info_;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d86/classshaka_1_1media_1_1WebMTracksParser.html">WebMTracksParser</a>);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;};</div>
@@ -201,7 +201,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -115,7 +115,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;WebMMediaParser::~WebMMediaParser() {}</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../d2/ddb/classshaka_1_1media_1_1WebMMediaParser.html#a5cd5c298938e2c58c45f962b21e43b2e">   28</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d2/ddb/classshaka_1_1media_1_1WebMMediaParser.html#a5cd5c298938e2c58c45f962b21e43b2e">WebMMediaParser::Init</a>(<span class="keyword">const</span> InitCB&amp; init_cb,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                           <span class="keyword">const</span> <a class="code" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a>&amp; new_sample_cb,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                           <span class="keyword">const</span> <a class="code" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a>&amp; new_sample_cb,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                           <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source) {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  DCHECK_EQ(state_, kWaitingForInit);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  DCHECK(init_cb_.is_null());</div>
@@ -273,7 +273,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keywordtype">double</span> timecode_scale_in_us = info_parser.timecode_scale() / 1000.0;</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  scoped_refptr&lt;AudioStreamInfo&gt; audio_stream_info =</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  std::shared_ptr&lt;AudioStreamInfo&gt; audio_stream_info =</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;      tracks_parser.audio_stream_info();</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keywordflow">if</span> (audio_stream_info) {</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    audio_stream_info-&gt;set_duration(duration_in_us);</div>
@@ -281,7 +281,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    VLOG(1) &lt;&lt; <span class="stringliteral">&quot;No audio track info found.&quot;</span>;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  }</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  scoped_refptr&lt;VideoStreamInfo&gt; video_stream_info =</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  std::shared_ptr&lt;VideoStreamInfo&gt; video_stream_info =</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      tracks_parser.video_stream_info();</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="keywordflow">if</span> (video_stream_info) {</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    video_stream_info-&gt;set_duration(duration_in_us);</div>
@@ -357,14 +357,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_acea792e406efe5119cec2e3e522e02c2"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">shaka::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_a31b30d39d14fca3ce722b4233de95c79"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a31b30d39d14fca3ce722b4233de95c79">shaka::media::ByteQueue::Pop</a></div><div class="ttdeci">void Pop(int count)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00070">byte_queue.cc:70</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_aca6ecdac6ebc131d3626b765f64cb2de"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(const std::vector&lt; uint8_t &gt; &amp;pssh_box)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a3a1f87fb3ed95a9cbd2b6873326a1a4c"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">shaka::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const std::shared_ptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00043">media_parser.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_ab1659ef71098c37e9fb4e55ab1664e84"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">shaka::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_a838fe5642e533477a5e229981e5f06e7"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a838fe5642e533477a5e229981e5f06e7">shaka::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a0ac13291317f7d3d9175c4e91e57b891"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">shaka::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const scoped_refptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00043">media_parser.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

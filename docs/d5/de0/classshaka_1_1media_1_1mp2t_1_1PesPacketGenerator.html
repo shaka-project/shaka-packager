@@ -101,8 +101,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa0346189f99b2f0fc2c71da1543155fa"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#aa0346189f99b2f0fc2c71da1543155fa">Initialize</a> (const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream)</td></tr>
 <tr class="separator:aa0346189f99b2f0fc2c71da1543155fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72fdec2c03caf45fe447f61ecd4fd683"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a72fdec2c03caf45fe447f61ecd4fd683">PushSample</a> (scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
-<tr class="separator:a72fdec2c03caf45fe447f61ecd4fd683"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a0286c1be09cddc6e8189f4b6b1f544"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a1a0286c1be09cddc6e8189f4b6b1f544">PushSample</a> (std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
+<tr class="separator:a1a0286c1be09cddc6e8189f4b6b1f544"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc603c661a6e0c592091b8bde5a77e3a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#acc603c661a6e0c592091b8bde5a77e3a">SetEncryptionKey</a> (std::unique_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
 <tr class="separator:acc603c661a6e0c592091b8bde5a77e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27a700967eb692a8207fd5054263fc3a"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a27a700967eb692a8207fd5054263fc3a">NumberOfReadyPesPackets</a> ()</td></tr>
@@ -202,7 +202,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 <p>Initialize the object. This clears the internal state first so any PesPackets that have not been flushed will be lost. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">stream</td><td>is the stream info for the elementary stream that will be added via <a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a72fdec2c03caf45fe447f61ecd4fd683">PushSample()</a>. </td></tr>
+    <tr><td class="paramname">stream</td><td>is the stream info for the elementary stream that will be added via <a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a1a0286c1be09cddc6e8189f4b6b1f544">PushSample()</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -238,7 +238,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 
 </div>
 </div>
-<a class="anchor" id="a72fdec2c03caf45fe447f61ecd4fd683"></a>
+<a class="anchor" id="a1a0286c1be09cddc6e8189f4b6b1f544"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -248,7 +248,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
         <tr>
           <td class="memname">bool shaka::media::mp2t::PesPacketGenerator::PushSample </td>
           <td>(</td>
-          <td class="paramtype">scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td>
           <td class="paramname"><em>sample</em></td><td>)</td>
           <td></td>
         </tr>
@@ -307,7 +307,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:43 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

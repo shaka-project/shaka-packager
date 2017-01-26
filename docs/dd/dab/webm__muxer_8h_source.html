@@ -114,7 +114,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> Initialize() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> Finalize() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> DoAddSample(<span class="keyword">const</span> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                     scoped_refptr&lt;MediaSample&gt; sample) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                     std::shared_ptr&lt;MediaSample&gt; sample) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> FireOnMediaStartEvent();</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">void</span> FireOnMediaEndEvent();</div>
@@ -131,14 +131,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_MUXER_H_</span></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1WebMMuxer_html"><div class="ttname"><a href="../../d3/d73/classshaka_1_1media_1_1webm_1_1WebMMuxer.html">shaka::media::webm::WebMMuxer</a></div><div class="ttdoc">Implements WebM Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dab/webm__muxer_8h_source.html#l00019">webm_muxer.h:19</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00033">muxer.h:33</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00032">muxer.h:32</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1WebMMuxer_html_a17b47db217334b2ec328bdbf1a9c7e29"><div class="ttname"><a href="../../d3/d73/classshaka_1_1media_1_1webm_1_1WebMMuxer.html#a17b47db217334b2ec328bdbf1a9c7e29">shaka::media::webm::WebMMuxer::WebMMuxer</a></div><div class="ttdeci">WebMMuxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a WebMMuxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dae/webm__muxer_8cc_source.html#l00022">webm_muxer.cc:22</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">shaka::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00026">media_stream.h:26</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">shaka::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00025">media_stream.h:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

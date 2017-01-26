@@ -160,7 +160,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">if</span> (cancelled_)</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::CANCELLED, <span class="stringliteral">&quot;muxer run cancelled&quot;</span>);</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    scoped_refptr&lt;MediaSample&gt; sample;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    std::shared_ptr&lt;MediaSample&gt; sample;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    status = streams_[current_stream_id]-&gt;PullSample(&amp;sample);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      <span class="keywordflow">break</span>;</div>
@@ -190,7 +190,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> Muxer::AddSample(<span class="keyword">const</span> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                        scoped_refptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                        std::shared_ptr&lt;MediaSample&gt; sample) {</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  DCHECK(std::find(streams_.begin(), streams_.end(), stream) != streams_.end());</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">if</span> (!initialized_) {</div>
@@ -221,12 +221,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html_ad9c8f69897171ab81db6e7e9c367b4ce"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html#ad9c8f69897171ab81db6e7e9c367b4ce">shaka::media::Muxer::SetKeySource</a></div><div class="ttdeci">void SetKeySource(KeySource *encryption_key_source, uint32_t max_sd_pixels, uint32_t max_hd_pixels, uint32_t max_uhd1_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00033">muxer.cc:33</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">shaka::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00026">media_stream.h:26</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">shaka::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00025">media_stream.h:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html_a0e76dd0a5c07dd538221459365ae824a"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a0e76dd0a5c07dd538221459365ae824a">shaka::media::Muxer::SetMuxerListener</a></div><div class="ttdeci">void SetMuxerListener(std::unique_ptr&lt; MuxerListener &gt; muxer_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00094">muxer.cc:94</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

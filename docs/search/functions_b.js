@@ -2,7 +2,7 @@ var searchData=
 [
   ['makepathsrelativetompd',['MakePathsRelativeToMpd',['../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9',1,'shaka::MpdBuilder']]],
   ['matches',['Matches',['../d0/d93/classshaka_1_1media_1_1Status.html#a2a94b3ef32cf301bbb258c44ca180eba',1,'shaka::media::Status']]],
-  ['mediastream',['MediaStream',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a86598d6228ab8163d27fb855142c9f73',1,'shaka::media::MediaStream']]],
+  ['mediastream',['MediaStream',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a12b0f703395d756a584d78b686b2b99b',1,'shaka::media::MediaStream']]],
   ['mp4muxer',['MP4Muxer',['../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497',1,'shaka::media::mp4::MP4Muxer']]],
   ['mpd_5ftype',['mpd_type',['../d3/dd0/classshaka_1_1MpdNotifier.html#adfb5bc1586cdb7860dd349b3caf25faa',1,'shaka::MpdNotifier']]],
   ['mpdbuilder',['MpdBuilder',['../dc/da1/classshaka_1_1MpdBuilder.html#ab364102e01afedd8a4dcc9be4fdcc0ab',1,'shaka::MpdBuilder']]],

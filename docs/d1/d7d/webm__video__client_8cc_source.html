@@ -136,7 +136,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  alpha_mode_ = -1;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea">   50</a></span>&#160;scoped_refptr&lt;VideoStreamInfo&gt; <a class="code" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea">WebMVideoClient::GetVideoStreamInfo</a>(</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#ae71e739feadfb8e9207b8ceb9689ca66">   50</a></span>&#160;std::shared_ptr&lt;VideoStreamInfo&gt; <a class="code" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#ae71e739feadfb8e9207b8ceb9689ca66">WebMVideoClient::GetVideoStreamInfo</a>(</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    int64_t track_num,</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> std::string&amp; codec_id,</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; codec_private,</div>
@@ -153,11 +153,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    video_codec = kCodecVP10;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unsupported video codec_id &quot;</span> &lt;&lt; codec_id;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> std::shared_ptr&lt;VideoStreamInfo&gt;();</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span> (pixel_width_ &lt;= 0 || pixel_height_ &lt;= 0)</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;();</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> std::shared_ptr&lt;VideoStreamInfo&gt;();</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// Set crop and display unit defaults if these elements are not present.</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordflow">if</span> (crop_bottom_ == -1)</div>
@@ -185,10 +185,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;      display_height_ = height_after_crop;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (display_unit_ == 3) {</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordflow">if</span> (display_width_ &lt;= 0 || display_height_ &lt;= 0)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;();</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      <span class="keywordflow">return</span> std::shared_ptr&lt;VideoStreamInfo&gt;();</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unsupported display unit type &quot;</span> &lt;&lt; display_unit_;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> std::shared_ptr&lt;VideoStreamInfo&gt;();</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  }</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// Calculate sample aspect ratio.</span></div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  int64_t sar_x = display_width_ * height_after_crop;</div>
@@ -197,10 +197,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  sar_x /= gcd;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  sar_y /= gcd;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;(<span class="keyword">new</span> <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>(</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;VideoStreamInfo&gt;(</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      track_num, kWebMTimeScale, 0, video_codec, std::string(),</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      codec_private.data(), codec_private.size(), width_after_crop,</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      height_after_crop, sar_x, sar_y, 0, 0, std::string(), is_encrypted));</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      height_after_crop, sar_x, sar_y, 0, 0, std::string(), is_encrypted);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="keywordtype">bool</span> WebMVideoClient::OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) {</div>
@@ -263,13 +263,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMVideoClient_html_ae71e739feadfb8e9207b8ceb9689ca66"><div class="ttname"><a href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#ae71e739feadfb8e9207b8ceb9689ca66">shaka::media::WebMVideoClient::GetVideoStreamInfo</a></div><div class="ttdeci">std::shared_ptr&lt; VideoStreamInfo &gt; GetVideoStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00050">webm_video_client.cc:50</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMVideoClient_html_af3ad16a6046f60abf43a798747fc1edc"><div class="ttname"><a href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#af3ad16a6046f60abf43a798747fc1edc">shaka::media::WebMVideoClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new video track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00037">webm_video_client.cc:37</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1WebMVideoClient_html_a266f4308e70a1b7c1fb2a542284f9bea"><div class="ttname"><a href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea">shaka::media::WebMVideoClient::GetVideoStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; VideoStreamInfo &gt; GetVideoStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00050">webm_video_client.cc:50</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1VideoStreamInfo_html"><div class="ttname"><a href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">shaka::media::VideoStreamInfo</a></div><div class="ttdoc">Holds video stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d87/video__stream__info_8h_source.html#l00016">video_stream_info.h:16</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -99,78 +99,78 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;deque&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/ref_counted.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>Demuxer;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>Muxer;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>MediaSample;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>StreamInfo;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">enum</span> MediaStreamOperation {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    kPush,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    kPull,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  };</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a86598d6228ab8163d27fb855142c9f73">MediaStream</a>(scoped_refptr&lt;StreamInfo&gt; info, <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>* demuxer);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  ~<a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a98e53e299c7258419623b3d709553562">Connect</a>(<a class="code" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>* muxer);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#af5eca8f2e63e762d52fcc30c5f8c38b0">Start</a>(MediaStreamOperation operation);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#ae91f45b0eacab47632f069543b709b58">PushSample</a>(<span class="keyword">const</span> scoped_refptr&lt;MediaSample&gt;&amp; sample);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#ae460a9941a4b85d511126d9a2d596f95">PullSample</a>(scoped_refptr&lt;MediaSample&gt;* sample);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>* demuxer() { <span class="keywordflow">return</span> demuxer_; }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>* muxer() { <span class="keywordflow">return</span> muxer_; }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">const</span> scoped_refptr&lt;StreamInfo&gt; info() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  std::string <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a51d85facae4f9d8d89b97a42148769dd">ToString</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// State transition diagram available @ http://goo.gl/ThJQbl.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">enum</span> State {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    kIdle,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    kConnected,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    kDisconnected,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    kPushing,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    kPulling,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  };</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  scoped_refptr&lt;StreamInfo&gt; info_;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>* demuxer_;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <a class="code" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>* muxer_;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  State state_;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// An internal buffer to store samples temporarily.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::deque&lt;scoped_refptr&lt;MediaSample&gt; &gt; samples_;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>);</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>Demuxer;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>Muxer;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>MediaSample;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>StreamInfo;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">enum</span> MediaStreamOperation {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    kPush,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    kPull,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  };</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a12b0f703395d756a584d78b686b2b99b">MediaStream</a>(std::shared_ptr&lt;StreamInfo&gt; info, <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>* demuxer);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  ~<a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a98e53e299c7258419623b3d709553562">Connect</a>(<a class="code" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>* muxer);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#af5eca8f2e63e762d52fcc30c5f8c38b0">Start</a>(MediaStreamOperation operation);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#ac65da3105afb21a9013f59a217a26b29">PushSample</a>(<span class="keyword">const</span> std::shared_ptr&lt;MediaSample&gt;&amp; sample);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#aee15b821f0682812a9d631d531ed8101">PullSample</a>(std::shared_ptr&lt;MediaSample&gt;* sample);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>* demuxer() { <span class="keywordflow">return</span> demuxer_; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>* muxer() { <span class="keywordflow">return</span> muxer_; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">const</span> std::shared_ptr&lt;StreamInfo&gt; info() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  std::string <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a51d85facae4f9d8d89b97a42148769dd">ToString</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a12b0f703395d756a584d78b686b2b99b">MediaStream</a>(<span class="keyword">const</span> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// State transition diagram available @ http://goo.gl/ThJQbl.</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">enum</span> State {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    kIdle,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    kConnected,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    kDisconnected,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    kPushing,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    kPulling,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  };</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::shared_ptr&lt;StreamInfo&gt; info_;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>* demuxer_;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>* muxer_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  State state_;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// An internal buffer to store samples temporarily.</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::deque&lt;std::shared_ptr&lt;MediaSample&gt;&gt; samples_;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;};</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_MEDIA_STREAM_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_ae460a9941a4b85d511126d9a2d596f95"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#ae460a9941a4b85d511126d9a2d596f95">shaka::media::MediaStream::PullSample</a></div><div class="ttdeci">Status PullSample(scoped_refptr&lt; MediaSample &gt; *sample)</div><div class="ttdoc">Pull sample from Demuxer (triggered by Muxer). </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00024">media_stream.cc:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_a12b0f703395d756a584d78b686b2b99b"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a12b0f703395d756a584d78b686b2b99b">shaka::media::MediaStream::MediaStream</a></div><div class="ttdeci">MediaStream(std::shared_ptr&lt; StreamInfo &gt; info, Demuxer *demuxer)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00019">media_stream.cc:19</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_ac65da3105afb21a9013f59a217a26b29"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#ac65da3105afb21a9013f59a217a26b29">shaka::media::MediaStream::PushSample</a></div><div class="ttdeci">Status PushSample(const std::shared_ptr&lt; MediaSample &gt; &amp;sample)</div><div class="ttdoc">Push sample to Muxer (triggered by Demuxer). </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00039">media_stream.cc:39</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_af5eca8f2e63e762d52fcc30c5f8c38b0"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#af5eca8f2e63e762d52fcc30c5f8c38b0">shaka::media::MediaStream::Start</a></div><div class="ttdeci">Status Start(MediaStreamOperation operation)</div><div class="ttdoc">Start the stream for pushing or pulling. </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00062">media_stream.cc:62</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_ae91f45b0eacab47632f069543b709b58"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#ae91f45b0eacab47632f069543b709b58">shaka::media::MediaStream::PushSample</a></div><div class="ttdeci">Status PushSample(const scoped_refptr&lt; MediaSample &gt; &amp;sample)</div><div class="ttdoc">Push sample to Muxer (triggered by Demuxer). </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00039">media_stream.cc:39</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_a86598d6228ab8163d27fb855142c9f73"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a86598d6228ab8163d27fb855142c9f73">shaka::media::MediaStream::MediaStream</a></div><div class="ttdeci">MediaStream(scoped_refptr&lt; StreamInfo &gt; info, Demuxer *demuxer)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00019">media_stream.cc:19</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Demuxer_html"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">shaka::media::Demuxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00032">demuxer.h:32</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Demuxer_html"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">shaka::media::Demuxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00031">demuxer.h:31</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_a98e53e299c7258419623b3d709553562"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a98e53e299c7258419623b3d709553562">shaka::media::MediaStream::Connect</a></div><div class="ttdeci">void Connect(Muxer *muxer)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00055">media_stream.cc:55</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00033">muxer.h:33</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_aee15b821f0682812a9d631d531ed8101"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#aee15b821f0682812a9d631d531ed8101">shaka::media::MediaStream::PullSample</a></div><div class="ttdeci">Status PullSample(std::shared_ptr&lt; MediaSample &gt; *sample)</div><div class="ttdoc">Pull sample from Demuxer (triggered by Muxer). </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00024">media_stream.cc:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00032">muxer.h:32</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_a51d85facae4f9d8d89b97a42148769dd"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a51d85facae4f9d8d89b97a42148769dd">shaka::media::MediaStream::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00103">media_stream.cc:103</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">shaka::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00026">media_stream.h:26</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html_a51d85facae4f9d8d89b97a42148769dd"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a51d85facae4f9d8d89b97a42148769dd">shaka::media::MediaStream::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00105">media_stream.cc:105</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">shaka::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00025">media_stream.h:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -110,18 +110,19 @@ Inheritance diagram for shaka::media::MediaParser:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a95d25a50ad371304f1abce9971ce3704"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; void(const <br class="typebreak"/>
-std::vector&lt; scoped_refptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; &gt; &amp;stream_info)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">InitCB</a></td></tr>
-<tr class="separator:a95d25a50ad371304f1abce9971ce3704"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ac13291317f7d3d9175c4e91e57b891"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; bool(uint32_t <br class="typebreak"/>
-track_id, const scoped_refptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; &amp;media_sample)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a></td></tr>
-<tr class="separator:a0ac13291317f7d3d9175c4e91e57b891"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef5795d2b3df2526c6e8afe1e4d072bf"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; void(const <br class="typebreak"/>
+std::vector&lt; std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; &gt; &amp;stream_info)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">InitCB</a></td></tr>
+<tr class="separator:aef5795d2b3df2526c6e8afe1e4d072bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1f87fb3ed95a9cbd2b6873326a1a4c"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; bool(uint32_t <br class="typebreak"/>
+track_id, const <br class="typebreak"/>
+std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;<br class="typebreak"/>
+ &amp;media_sample)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a></td></tr>
+<tr class="separator:a3a1f87fb3ed95a9cbd2b6873326a1a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:adc7c91bebe75879abba91a56dae52153"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#adc7c91bebe75879abba91a56dae52153">Init</a> (const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">InitCB</a> &amp;init_cb, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source)=0</td></tr>
+<tr class="memitem:adc7c91bebe75879abba91a56dae52153"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#adc7c91bebe75879abba91a56dae52153">Init</a> (const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">InitCB</a> &amp;init_cb, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source)=0</td></tr>
 <tr class="separator:adc7c91bebe75879abba91a56dae52153"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26752164d7e8ae6a9a894512291ad9cd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a26752164d7e8ae6a9a894512291ad9cd">Flush</a> () WARN_UNUSED_RESULT=0</td></tr>
 <tr class="separator:a26752164d7e8ae6a9a894512291ad9cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,14 +131,14 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00025">25</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00024">24</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a95d25a50ad371304f1abce9971ce3704"></a>
+<a class="anchor" id="aef5795d2b3df2526c6e8afe1e4d072bf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef base::Callback&lt; void(const std::vector&lt;scoped_refptr&lt;<a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>&gt; &gt;&amp; stream_info)&gt; <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">shaka::media::MediaParser::InitCB</a></td>
+          <td class="memname">typedef base::Callback&lt;void( const std::vector&lt;std::shared_ptr&lt;<a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>&gt; &gt;&amp; stream_info)&gt; <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">shaka::media::MediaParser::InitCB</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -153,12 +154,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0ac13291317f7d3d9175c4e91e57b891"></a>
+<a class="anchor" id="a3a1f87fb3ed95a9cbd2b6873326a1a4c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef base::Callback&lt;bool(uint32_t track_id, const scoped_refptr&lt;<a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a>&gt;&amp; media_sample)&gt; <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">shaka::media::MediaParser::NewSampleCB</a></td>
+          <td class="memname">typedef base::Callback&lt;bool(uint32_t track_id, const std::shared_ptr&lt;<a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a>&gt;&amp; media_sample)&gt; <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">shaka::media::MediaParser::NewSampleCB</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -214,13 +215,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void shaka::media::MediaParser::Init </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">InitCB</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">InitCB</a> &amp;&#160;</td>
           <td class="paramname"><em>init_cb</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a> &amp;&#160;</td>
           <td class="paramname"><em>new_sample_cb</em>, </td>
         </tr>
         <tr>
@@ -298,7 +299,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

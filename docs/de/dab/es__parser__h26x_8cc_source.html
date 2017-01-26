@@ -183,7 +183,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    DCHECK(pending_sample_duration_);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    pending_sample_ = scoped_refptr&lt;MediaSample&gt;();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    pending_sample_ = std::shared_ptr&lt;MediaSample&gt;();</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
@@ -196,7 +196,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  next_access_unit_position_ = 0;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  current_nalu_info_.reset();</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  timing_desc_list_.clear();</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  pending_sample_ = scoped_refptr&lt;MediaSample&gt;();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  pending_sample_ = std::shared_ptr&lt;MediaSample&gt;();</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  pending_sample_duration_ = 0;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  waiting_for_key_frame_ = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
@@ -388,7 +388,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="comment">// Create the media sample, emitting always the previous sample after</span></div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="comment">// calculating its duration.</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">MediaSample::CopyFrom</a>(</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  std::shared_ptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">MediaSample::CopyFrom</a>(</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      converted_frame.data(), converted_frame.size(), is_key_frame);</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  media_sample-&gt;set_dts(current_timing_desc.dts);</div>
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  media_sample-&gt;set_pts(current_timing_desc.pts);</div>
@@ -406,11 +406,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a3fac8e4cc8da3b34ef5f698411ec868b"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_ad8975dbb21747ff32c8604f5489bf5c9"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

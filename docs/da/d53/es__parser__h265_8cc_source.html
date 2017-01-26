@@ -128,7 +128,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">void</span> EsParserH265::Reset() {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;EsParserH265::Reset&quot;</span>;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  h265_parser_.reset(<span class="keyword">new</span> H265Parser());</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  last_video_decoder_config_ = scoped_refptr&lt;StreamInfo&gt;();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  last_video_decoder_config_ = std::shared_ptr&lt;StreamInfo&gt;();</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  decoder_config_check_pending_ = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  EsParserH26x::Reset();</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
@@ -240,26 +240,27 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  }</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  last_video_decoder_config_ = scoped_refptr&lt;StreamInfo&gt;(<span class="keyword">new</span> VideoStreamInfo(</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecHVC1,</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      decoder_config.GetCodecString(kCodecHVC1), decoder_config_record.data(),</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      decoder_config_record.size(), coded_width, coded_height, pixel_width,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      pixel_height, 0, H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      std::string(), <span class="keyword">false</span>));</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="comment">// Video config notification.</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keyword">const</span> uint8_t nalu_length_size =</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  last_video_decoder_config_ = std::make_shared&lt;VideoStreamInfo&gt;(</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecHVC1,</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      decoder_config.GetCodecString(kCodecHVC1), decoder_config_record.data(),</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      decoder_config_record.size(), coded_width, coded_height, pixel_width,</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      pixel_height, 0, nalu_length_size, std::string(), <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="comment">// Video config notification.</span></div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;}</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -105,7 +105,7 @@ Inheritance diagram for shaka::media::mp2t::Mp2tMediaParser:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">MediaParser implementation overrides.</div></td></tr>
-<tr class="memitem:aa2aff12312827aacf2b7db6e2f792c52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dc1/classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#aa2aff12312827aacf2b7db6e2f792c52">Init</a> (const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">InitCB</a> &amp;init_cb, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) override</td></tr>
+<tr class="memitem:aa2aff12312827aacf2b7db6e2f792c52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dc1/classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#aa2aff12312827aacf2b7db6e2f792c52">Init</a> (const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">InitCB</a> &amp;init_cb, const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) override</td></tr>
 <tr class="separator:aa2aff12312827aacf2b7db6e2f792c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdb1a88116e3347e67afeb7715847135"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dc1/classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#afdb1a88116e3347e67afeb7715847135">Flush</a> () override WARN_UNUSED_RESULT</td></tr>
 <tr class="separator:afdb1a88116e3347e67afeb7715847135"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,18 +115,19 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classshaka_1_1media_1_1MediaParser"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classshaka_1_1media_1_1MediaParser')"><img src="../../closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html">shaka::media::MediaParser</a></td></tr>
-<tr class="memitem:a95d25a50ad371304f1abce9971ce3704 inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; void(const <br class="typebreak"/>
-std::vector&lt; scoped_refptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; &gt; &amp;stream_info)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">InitCB</a></td></tr>
-<tr class="separator:a95d25a50ad371304f1abce9971ce3704 inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ac13291317f7d3d9175c4e91e57b891 inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; bool(uint32_t <br class="typebreak"/>
-track_id, const scoped_refptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; &amp;media_sample)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a></td></tr>
-<tr class="separator:a0ac13291317f7d3d9175c4e91e57b891 inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef5795d2b3df2526c6e8afe1e4d072bf inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; void(const <br class="typebreak"/>
+std::vector&lt; std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; &gt; &amp;stream_info)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">InitCB</a></td></tr>
+<tr class="separator:aef5795d2b3df2526c6e8afe1e4d072bf inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1f87fb3ed95a9cbd2b6873326a1a4c inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memItemLeft" align="right" valign="top">typedef base::Callback&lt; bool(uint32_t <br class="typebreak"/>
+track_id, const <br class="typebreak"/>
+std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;<br class="typebreak"/>
+ &amp;media_sample)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a></td></tr>
+<tr class="separator:a3a1f87fb3ed95a9cbd2b6873326a1a4c inherit pub_types_classshaka_1_1media_1_1MediaParser"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../db/d51/mp2t__media__parser_8h_source.html#l00030">30</a> of file <a class="el" href="../../db/d51/mp2t__media__parser_8h_source.html">mp2t_media_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d51/mp2t__media__parser_8h_source.html#l00029">29</a> of file <a class="el" href="../../db/d51/mp2t__media__parser_8h_source.html">mp2t_media_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="afdb1a88116e3347e67afeb7715847135"></a>
 <div class="memitem">
@@ -153,7 +154,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a26752164d7e8ae6a9a894512291ad9cd">shaka::media::MediaParser</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00170">170</a> of file <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html">mp2t_media_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00172">172</a> of file <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html">mp2t_media_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -167,13 +168,13 @@ track_id, const scoped_refptr<br class="typebreak"/>
         <tr>
           <td class="memname">void shaka::media::mp2t::Mp2tMediaParser::Init </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">InitCB</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#aef5795d2b3df2526c6e8afe1e4d072bf">InitCB</a> &amp;&#160;</td>
           <td class="paramname"><em>init_cb</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">NewSampleCB</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">NewSampleCB</a> &amp;&#160;</td>
           <td class="paramname"><em>new_sample_cb</em>, </td>
         </tr>
         <tr>
@@ -205,7 +206,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#adc7c91bebe75879abba91a56dae52153">shaka::media::MediaParser</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00157">157</a> of file <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html">mp2t_media_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00159">159</a> of file <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html">mp2t_media_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -245,7 +246,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0c85f3cb0591f67c036276be82a1ba9d">shaka::media::MediaParser</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00188">188</a> of file <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html">mp2t_media_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00190">190</a> of file <a class="el" href="../../d1/d74/mp2t__media__parser_8cc_source.html">mp2t_media_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -256,7 +257,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jan 25 2017 04:08:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 26 2017 03:38:43 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
