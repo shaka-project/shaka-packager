@@ -7,6 +7,7 @@ var searchData=
   ['element',['Element',['../de/da9/structshaka_1_1Element.html',1,'shaka']]],
   ['elementarystreamdescriptor',['ElementaryStreamDescriptor',['../d5/d11/structshaka_1_1media_1_1mp4_1_1ElementaryStreamDescriptor.html',1,'shaka::media::mp4']]],
   ['encryptingfragmenter',['EncryptingFragmenter',['../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html',1,'shaka::media::mp4']]],
+  ['encryptionconfig',['EncryptionConfig',['../d8/d1c/structshaka_1_1media_1_1MediaHandler_1_1EncryptionConfig.html',1,'shaka::media::MediaHandler']]],
   ['encryptionkey',['EncryptionKey',['../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html',1,'shaka::media']]],
   ['encryptor',['Encryptor',['../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html',1,'shaka::media::webm']]],
   ['esdescriptor',['ESDescriptor',['../d5/d13/classshaka_1_1media_1_1ESDescriptor.html',1,'shaka::media']]],
