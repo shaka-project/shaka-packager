@@ -116,6 +116,7 @@
         'hls/hls.gyp:hls_unittest',
         'media/base/media_base.gyp:media_base_unittest',
         'media/codecs/codecs.gyp:codecs_unittest',
+        'media/crypto/crypto.gyp:crypto_unittest',
         'media/event/media_event.gyp:media_event_unittest',
         'media/file/file.gyp:file_unittest',
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',

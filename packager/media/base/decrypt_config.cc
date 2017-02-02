@@ -31,5 +31,12 @@ DecryptConfig::DecryptConfig(const std::vector<uint8_t>& key_id,
 
 DecryptConfig::~DecryptConfig() {}
 
+size_t DecryptConfig::GetTotalSizeOfSubsamples() const {
+  size_t size = 0;
+  for (const SubsampleEntry& subsample : subsamples_)
+    size += subsample.clear_bytes + subsample.cipher_bytes;
+  return size;
+}
+
 }  // namespace media
 }  // namespace shaka

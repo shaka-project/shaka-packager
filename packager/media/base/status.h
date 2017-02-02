@@ -48,6 +48,9 @@ enum Code {
   // Unable to parse the media file.
   PARSER_FAILURE,
 
+  // Failed to do the encryption.
+  ENCRYPTION_FAILURE,
+
   // Fail to mux the media file.
   MUXER_FAILURE,
 

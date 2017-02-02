@@ -23,6 +23,21 @@ Status MediaHandler::SetHandler(int output_stream_index,
   return Status::OK;
 }
 
+Status MediaHandler::Initialize() {
+  if (initialized_)
+    return Status::OK;
+  Status status = InitializeInternal();
+  if (!status.ok())
+    return status;
+  for (auto& pair : output_handlers_) {
+    status = pair.second.first->Initialize();
+    if (!status.ok())
+      return status;
+  }
+  initialized_ = true;
+  return Status::OK;
+}
+
 Status MediaHandler::FlushStream(int input_stream_index) {
   // The default implementation treats the output stream index to be identical
   // to the input stream index, which is true for most handlers.

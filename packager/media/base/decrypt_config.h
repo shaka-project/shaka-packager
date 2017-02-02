@@ -73,6 +73,17 @@ class DecryptConfig {
 
   ~DecryptConfig();
 
+  /// @param clear_bytes is the size of clear bytes in the subsample to be
+  ///        added.
+  /// @param cipher_bytes is the size of cipher bytes in the subsample to be
+  ///        added.
+  void AddSubsample(uint16_t clear_bytes, uint32_t cipher_bytes) {
+    subsamples_.emplace_back(clear_bytes, cipher_bytes);
+  }
+
+  /// @return The total size of subsamples.
+  size_t GetTotalSizeOfSubsamples() const;
+
   const std::vector<uint8_t>& key_id() const { return key_id_; }
   const std::vector<uint8_t>& iv() const { return iv_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
@@ -88,7 +99,7 @@ class DecryptConfig {
 
   // Subsample information. May be empty for some formats, meaning entire frame
   // (less data ignored by data_offset_) is encrypted.
-  const std::vector<SubsampleEntry> subsamples_;
+  std::vector<SubsampleEntry> subsamples_;
 
   const FourCC protection_scheme_;
   // For pattern-based protection schemes, like CENS and CBCS.

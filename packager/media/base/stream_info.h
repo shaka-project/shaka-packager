@@ -81,6 +81,7 @@ class StreamInfo {
     codec_string_ = codec_string;
   }
   void set_language(const std::string& language) { language_ = language; }
+  void set_is_encrypted(bool is_encrypted) { is_encrypted_ = is_encrypted; }
 
  private:
   // Whether the stream is Audio or Video.

@@ -11,10 +11,46 @@
 #include <memory>
 #include <utility>
 
+#include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
+#include "packager/media/base/stream_info.h"
 
 namespace shaka {
 namespace media {
+
+enum class StreamDataType {
+  kUnknown,
+  kPeriodInfo,
+  kStreamInfo,
+  kEncryptionConfig,
+  kMediaSample,
+  kMediaEvent,
+  kSegmentInfo,
+};
+
+// TODO(kqyang): Define these structures.
+struct PeriodInfo {};
+struct EncryptionConfig {};
+struct MediaEvent {};
+struct SegmentInfo {
+  bool is_subsegment = false;
+  bool is_encrypted = false;
+  uint64_t start_timestamp = 0;
+  uint64_t duration = 0;
+};
+
+// TODO(kqyang): Should we use protobuf?
+struct StreamData {
+  int stream_index;
+  StreamDataType stream_data_type;
+
+  std::unique_ptr<PeriodInfo> period_info;
+  std::unique_ptr<StreamInfo> stream_info;
+  std::unique_ptr<EncryptionConfig> encryption_config;
+  std::unique_ptr<MediaSample> media_sample;
+  std::unique_ptr<MediaEvent> media_event;
+  std::unique_ptr<SegmentInfo> segment_info;
+};
 
 /// MediaHandler is the base media processing unit. Media handlers transform
 /// the input streams and propagate the outputs to downstream media handlers.
@@ -45,37 +81,14 @@ class MediaHandler {
     return SetHandler(next_output_stream_index_, handler);
   }
 
+  /// Initialize the handler and downstream handlers. Note that it should be
+  /// called after setting up the graph before running the graph.
+  Status Initialize();
+
  protected:
-  enum class StreamDataType {
-    kUnknown,
-    kPeriodInfo,
-    kStreamInfo,
-    kEncryptionConfig,
-    kMediaSample,
-    kMediaEvent,
-    kSegmentInfo,
-  };
-
-  // TODO(kqyang): Define these structures.
-  struct PeriodInfo {};
-  struct StreamInfo {};
-  struct EncryptionConfig {};
-  struct MediaSample {};
-  struct MediaEvent {};
-  struct SegmentInfo {};
-
-  // TODO(kqyang): Should we use protobuf?
-  struct StreamData {
-    int stream_index;
-    StreamDataType stream_data_type;
-
-    std::unique_ptr<PeriodInfo> period_info;
-    std::unique_ptr<StreamInfo> stream_info;
-    std::unique_ptr<EncryptionConfig> encryption_config;
-    std::unique_ptr<MediaSample> media_sample;
-    std::unique_ptr<MediaEvent> media_event;
-    std::unique_ptr<SegmentInfo> segment_info;
-  };
+  /// Internal implementation of initialize. Note that it should only initialize
+  /// the MediaHandler itself. Downstream handlers are handled in Initialize().
+  virtual Status InitializeInternal() = 0;
 
   /// Process the incoming stream data. Note that (1) stream_data.stream_index
   /// should be the input stream index; (2) The implementation needs to call
@@ -88,6 +101,9 @@ class MediaHandler {
 
   /// Validate if the stream at the specified index actually exists.
   virtual bool ValidateOutputStreamIndex(int stream_index) const;
+
+  bool initialized() { return initialized_; }
+  int num_input_streams() { return num_input_streams_; }
 
   /// Dispatch the stream data to downstream handlers. Note that
   /// stream_data.stream_index should be the output stream index.
@@ -149,11 +165,13 @@ class MediaHandler {
   }
 
   int num_input_streams() const { return num_input_streams_; }
+  int next_output_stream_index() const { return next_output_stream_index_; }
 
  private:
   MediaHandler(const MediaHandler&) = delete;
   MediaHandler& operator=(const MediaHandler&) = delete;
 
+  bool initialized_ = false;
   // Number of input streams.
   int num_input_streams_ = 0;
   // The next available output stream index, used by AddHandler.
