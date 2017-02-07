@@ -51,6 +51,9 @@ enum Code {
   // Failed to do the encryption.
   ENCRYPTION_FAILURE,
 
+  // Error when trying to do chunking.
+  CHUNKING_ERROR,
+
   // Fail to mux the media file.
   MUXER_FAILURE,
 

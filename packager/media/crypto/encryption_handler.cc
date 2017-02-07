@@ -14,6 +14,7 @@
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
 #include "packager/media/base/key_source.h"
+#include "packager/media/base/media_sample.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vp8_parser.h"
@@ -104,11 +105,13 @@ Status EncryptionHandler::Process(std::unique_ptr<StreamData> stream_data) {
       status = ProcessStreamInfo(stream_data->stream_info.get());
       break;
     case StreamDataType::kSegmentInfo:
-      new_segment_ = true;
-      if (remaining_clear_lead_ > 0)
-        remaining_clear_lead_ -= stream_data->segment_info->duration;
-      else
-        stream_data->segment_info->is_encrypted = true;
+      if (!stream_data->segment_info->is_subsegment) {
+        new_segment_ = true;
+        if (remaining_clear_lead_ > 0)
+          remaining_clear_lead_ -= stream_data->segment_info->duration;
+        else
+          stream_data->segment_info->is_encrypted = true;
+      }
       break;
     case StreamDataType::kMediaSample:
       status = ProcessMediaSample(stream_data->media_sample.get());

@@ -22,7 +22,9 @@ enum StreamType {
 
 enum Codec {
   kUnknownCodec = 0,
-  kCodecH264,
+
+  kCodecVideo = 100,
+  kCodecH264 = kCodecVideo,
   kCodecHEV1,
   kCodecHVC1,
   kCodecVC1,
@@ -32,7 +34,10 @@ enum Codec {
   kCodecVP8,
   kCodecVP9,
   kCodecVP10,
-  kCodecAAC,
+  kCodecVideoMaxPlusOne,
+
+  kCodecAudio = 200,
+  kCodecAAC = kCodecAudio,
   kCodecAC3,
   kCodecDTSC,
   kCodecDTSE,
@@ -43,8 +48,9 @@ enum Codec {
   kCodecEAC3,
   kCodecOpus,
   kCodecVorbis,
-  kCodecText,
-  kNumCodec
+  kCodecAudioMaxPlusOne,
+
+  kCodecText = 300,
 };
 
 /// Abstract class holds stream information.

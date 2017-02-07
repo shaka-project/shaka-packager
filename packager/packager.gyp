@@ -115,6 +115,7 @@
       'dependencies': [
         'hls/hls.gyp:hls_unittest',
         'media/base/media_base.gyp:media_base_unittest',
+        'media/chunking/chunking.gyp:chunking_unittest',
         'media/codecs/codecs.gyp:codecs_unittest',
         'media/crypto/crypto.gyp:crypto_unittest',
         'media/event/media_event.gyp:media_event_unittest',

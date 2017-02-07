@@ -10,29 +10,28 @@
   ],
   'targets': [
     {
-      'target_name': 'crypto',
+      'target_name': 'chunking',
       'type': '<(component)',
       'sources': [
-        'encryption_handler.cc',
-        'encryption_handler.h',
+        'chunking_handler.cc',
+        'chunking_handler.h',
       ],
       'dependencies': [
         '../base/media_base.gyp:media_base',
-        '../codecs/codecs.gyp:codecs',
       ],
     },
     {
-      'target_name': 'crypto_unittest',
+      'target_name': 'chunking_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
-        'encryption_handler_unittest.cc',
+        'chunking_handler_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../testing/gmock.gyp:gmock',
         '../base/media_base.gyp:media_handler_test_base',
         '../test/media_test.gyp:media_test_support',
-        'crypto',
+        'chunking',
       ]
     },
   ],

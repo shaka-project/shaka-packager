@@ -34,6 +34,10 @@ std::string ErrorCodeToString(Code error_code) {
       return "HTTP_FAILURE";
     case PARSER_FAILURE:
       return "PARSER_FAILURE";
+    case ENCRYPTION_FAILURE:
+      return "ENCRYPTION_FAILURE";
+    case CHUNKING_ERROR:
+      return "CHUNKING_ERROR";
     case MUXER_FAILURE:
       return "MUXER_FAILURE";
     case FRAGMENT_FINALIZED:
@@ -46,6 +50,10 @@ std::string ErrorCodeToString(Code error_code) {
       return "STOPPED";
     case TIME_OUT:
       return "TIME_OUT";
+    case NOT_FOUND:
+      return "NOT_FOUND";
+    case ALREADY_EXISTS:
+      return "ALREADY_EXISTS";
     default:
       NOTIMPLEMENTED() << "Unknown Status Code: " << error_code;
       return "UNKNOWN_STATUS";

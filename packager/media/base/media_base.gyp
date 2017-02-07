@@ -119,6 +119,18 @@
       ],
     },
     {
+      'target_name': 'media_handler_test_base',
+      'type': '<(component)',
+      'sources': [
+        'media_handler_test_base.cc',
+        'media_handler_test_base.h',
+      ],
+      'dependencies': [
+        '../../testing/gmock.gyp:gmock',
+        '../../testing/gtest.gyp:gtest',
+      ],
+    },
+    {
       'target_name': 'media_base_unittest',
       'type': '<(gtest_target_type)',
       'sources': [

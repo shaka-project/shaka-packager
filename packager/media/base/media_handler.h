@@ -35,14 +35,14 @@ struct MediaEvent {};
 struct SegmentInfo {
   bool is_subsegment = false;
   bool is_encrypted = false;
-  uint64_t start_timestamp = 0;
-  uint64_t duration = 0;
+  int64_t start_timestamp = -1;
+  int64_t duration = 0;
 };
 
 // TODO(kqyang): Should we use protobuf?
 struct StreamData {
-  int stream_index;
-  StreamDataType stream_data_type;
+  int stream_index = -1;
+  StreamDataType stream_data_type = StreamDataType::kUnknown;
 
   std::unique_ptr<PeriodInfo> period_info;
   std::unique_ptr<StreamInfo> stream_info;
@@ -114,6 +114,7 @@ class MediaHandler {
                             std::unique_ptr<PeriodInfo> period_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kPeriodInfo;
     stream_data->period_info = std::move(period_info);
     return Dispatch(std::move(stream_data));
   }
@@ -123,6 +124,7 @@ class MediaHandler {
                             std::unique_ptr<StreamInfo> stream_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kStreamInfo;
     stream_data->stream_info = std::move(stream_info);
     return Dispatch(std::move(stream_data));
   }
@@ -133,6 +135,7 @@ class MediaHandler {
       std::unique_ptr<EncryptionConfig> encryption_config) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kEncryptionConfig;
     stream_data->encryption_config = std::move(encryption_config);
     return Dispatch(std::move(stream_data));
   }
@@ -142,6 +145,7 @@ class MediaHandler {
                              std::unique_ptr<MediaSample> media_sample) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kMediaSample;
     stream_data->media_sample = std::move(media_sample);
     return Dispatch(std::move(stream_data));
   }
@@ -151,6 +155,7 @@ class MediaHandler {
                             std::unique_ptr<MediaEvent> media_event) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kMediaEvent;
     stream_data->media_event = std::move(media_event);
     return Dispatch(std::move(stream_data));
   }
@@ -160,6 +165,7 @@ class MediaHandler {
                              std::unique_ptr<SegmentInfo> segment_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kSegmentInfo;
     stream_data->segment_info = std::move(segment_info);
     return Dispatch(std::move(stream_data));
   }

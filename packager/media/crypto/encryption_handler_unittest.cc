@@ -11,10 +11,9 @@
 
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
-#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/base/test/status_test_util.h"
-#include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
 
@@ -40,26 +39,6 @@ class MockKeySource : public FixedKeySource {
                       EncryptionKey* key));
 };
 
-class FakeMediaHandler : public MediaHandler {
- public:
-  const std::vector<std::unique_ptr<StreamData>>& stream_data_vector() const {
-    return stream_data_vector_;
-  }
-  void clear_stream_data_vector() { stream_data_vector_.clear(); }
-
- protected:
-  Status InitializeInternal() override { return Status::OK; }
-  Status Process(std::unique_ptr<StreamData> stream_data) override {
-    stream_data_vector_.push_back(std::move(stream_data));
-    return Status::OK;
-  }
-  bool ValidateOutputStreamIndex(int stream_index) const override {
-    return stream_index == 0;
-  }
-
-  std::vector<std::unique_ptr<StreamData>> stream_data_vector_;
-};
-
 class MockVpxParser : public VPxParser {
  public:
   MOCK_METHOD3(Parse,
@@ -77,20 +56,14 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
 
 }  // namespace
 
-class EncryptionHandlerTest : public ::testing::Test {
+class EncryptionHandlerTest : public MediaHandlerTestBase {
  public:
   void SetUp() override { SetUpEncryptionHandler(EncryptionOptions()); }
 
   void SetUpEncryptionHandler(const EncryptionOptions& encryption_options) {
     encryption_handler_.reset(
         new EncryptionHandler(encryption_options, &mock_key_source_));
-    next_handler_.reset(new FakeMediaHandler);
-
-    // Input handler is not really used anywhere but just to satisfy one input
-    // one output restriction for the encryption handler.
-    auto input_handler = std::make_shared<FakeMediaHandler>();
-    ASSERT_OK(input_handler->AddHandler(encryption_handler_));
-    ASSERT_OK(encryption_handler_->AddHandler(next_handler_));
+    SetUpGraph(1 /* one input */, 1 /* one output */, encryption_handler_);
   }
 
   Status Process(std::unique_ptr<StreamData> stream_data) {
@@ -109,7 +82,6 @@ class EncryptionHandlerTest : public ::testing::Test {
 
  protected:
   std::shared_ptr<EncryptionHandler> encryption_handler_;
-  std::shared_ptr<FakeMediaHandler> next_handler_;
   MockKeySource mock_key_source_;
 };
 
@@ -118,61 +90,26 @@ TEST_F(EncryptionHandlerTest, Initialize) {
 }
 
 TEST_F(EncryptionHandlerTest, OnlyOneOutput) {
-  auto another_handler = std::make_shared<FakeMediaHandler>();
   // Connecting another handler will fail.
   ASSERT_EQ(error::INVALID_ARGUMENT,
-            encryption_handler_->AddHandler(another_handler).error_code());
+            encryption_handler_->AddHandler(some_handler()).error_code());
 }
 
 TEST_F(EncryptionHandlerTest, OnlyOneInput) {
-  auto another_handler = std::make_shared<FakeMediaHandler>();
-  ASSERT_OK(another_handler->AddHandler(encryption_handler_));
+  ASSERT_OK(some_handler()->AddHandler(encryption_handler_));
   ASSERT_EQ(error::INVALID_ARGUMENT,
             encryption_handler_->Initialize().error_code());
 }
 
 namespace {
 
-const int kTrackId = 1;
-const uint32_t kTimeScale = 1000;
-const uint64_t kDuration = 10000;
-const char kCodecString[] = "codec string";
-const uint8_t kSampleBits = 1;
-const uint8_t kNumChannels = 2;
-const uint32_t kSamplingFrequency = 48000;
-const uint64_t kSeekPrerollNs = 12345;
-const uint64_t kCodecDelayNs = 56789;
-const uint32_t kMaxBitrate = 13579;
-const uint32_t kAvgBitrate = 13000;
-const char kLanguage[] = "eng";
-const uint16_t kWidth = 10u;
-const uint16_t kHeight = 20u;
-const uint32_t kPixelWidth = 2u;
-const uint32_t kPixelHeight = 3u;
-const int16_t kTrickPlayRate = 4;
-const uint8_t kNaluLengthSize = 1u;
+const int kStreamIndex = 0;
 const bool kEncrypted = true;
+const uint32_t kTimeScale = 1000;
 const uint32_t kMaxSdPixels = 100u;
 const uint32_t kMaxHdPixels = 200u;
 const uint32_t kMaxUhd1Pixels = 300u;
 
-// Use H264 code config.
-const uint8_t kCodecConfig[]{
-    // Header
-    0x01, 0x64, 0x00, 0x1e, 0xff,
-    // SPS count (ignore top three bits)
-    0xe1,
-    // SPS
-    0x00, 0x19,  // Size
-    0x67, 0x64, 0x00, 0x1e, 0xac, 0xd9, 0x40, 0xa0, 0x2f, 0xf9, 0x70, 0x11,
-    0x00, 0x00, 0x03, 0x03, 0xe9, 0x00, 0x00, 0xea, 0x60, 0x0f, 0x16, 0x2d,
-    0x96,
-    // PPS count
-    0x01,
-    // PPS
-    0x00, 0x06,  // Size
-    0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
-};
 // The data is based on H264. The same data is also used to test audio, which
 // does not care the underlying data, and VP9, for which we will mock the
 // parser.
@@ -220,22 +157,6 @@ class EncryptionHandlerEncryptionTest
     encryption_options.max_hd_pixels = kMaxHdPixels;
     encryption_options.max_uhd1_pixels = kMaxUhd1Pixels;
     SetUpEncryptionHandler(encryption_options);
-  }
-
-  std::unique_ptr<StreamInfo> GetMockStreamInfo() {
-    if (codec_ == kCodecAAC) {
-      return std::unique_ptr<StreamInfo>(new AudioStreamInfo(
-          kTrackId, kTimeScale, kDuration, codec_, kCodecString, kCodecConfig,
-          sizeof(kCodecConfig), kSampleBits, kNumChannels, kSamplingFrequency,
-          kSeekPrerollNs, kCodecDelayNs, kMaxBitrate, kAvgBitrate, kLanguage,
-          !kEncrypted));
-
-    } else {
-      return std::unique_ptr<StreamInfo>(new VideoStreamInfo(
-          kTrackId, kTimeScale, kDuration, codec_, kCodecString, kCodecConfig,
-          sizeof(kCodecConfig), kWidth, kHeight, kPixelWidth, kPixelHeight,
-          kTrickPlayRate, kNaluLengthSize, kLanguage, !kEncrypted));
-    }
   }
 
   std::vector<VPxFrameInfo> GetMockVpxFrameInfo() {
@@ -373,17 +294,9 @@ class EncryptionHandlerEncryptionTest
 };
 
 TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
-  std::unique_ptr<StreamData> stream_data(new StreamData);
-  stream_data->stream_index = 0;
-  stream_data->stream_data_type = StreamDataType::kStreamInfo;
-  stream_data->stream_info = GetMockStreamInfo();
-  ASSERT_OK(Process(std::move(stream_data)));
-  ASSERT_EQ(1u, next_handler_->stream_data_vector().size());
-  ASSERT_EQ(0, next_handler_->stream_data_vector().back()->stream_index);
-  ASSERT_EQ(StreamDataType::kStreamInfo,
-            next_handler_->stream_data_vector().back()->stream_data_type);
-  ASSERT_TRUE(
-      next_handler_->stream_data_vector().back()->stream_info->is_encrypted());
+  ASSERT_OK(Process(GetStreamInfoStreamData(kStreamIndex, codec_, kTimeScale)));
+  EXPECT_THAT(GetOutputStreamDataVector(),
+              ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale, kEncrypted)));
 
   // Inject vpx parser / video slice header parser if needed.
   switch (codec_) {
@@ -410,7 +323,7 @@ TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
       break;
   }
 
-  stream_data.reset(new StreamData);
+  std::unique_ptr<StreamData> stream_data(new StreamData);
   stream_data->stream_index = 0;
   stream_data->stream_data_type = StreamDataType::kMediaSample;
   stream_data->media_sample.reset(
@@ -420,13 +333,12 @@ TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
   ASSERT_OK(Process(std::move(stream_data)));
-  ASSERT_EQ(2u, next_handler_->stream_data_vector().size());
-  ASSERT_EQ(0, next_handler_->stream_data_vector().back()->stream_index);
+  ASSERT_EQ(2u, GetOutputStreamDataVector().size());
+  ASSERT_EQ(0, GetOutputStreamDataVector().back()->stream_index);
   ASSERT_EQ(StreamDataType::kMediaSample,
-            next_handler_->stream_data_vector().back()->stream_data_type);
+            GetOutputStreamDataVector().back()->stream_data_type);
 
-  auto* media_sample =
-      next_handler_->stream_data_vector().back()->media_sample.get();
+  auto* media_sample = GetOutputStreamDataVector().back()->media_sample.get();
   auto* decrypt_config = media_sample->decrypt_config();
   EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + sizeof(kKeyId)),
             decrypt_config->key_id());

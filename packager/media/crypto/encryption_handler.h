@@ -9,7 +9,6 @@
 
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_handler.h"
-#include "packager/media/base/stream_info.h"
 
 namespace shaka {
 namespace media {
@@ -66,7 +65,7 @@ class EncryptionHandler : public MediaHandler {
 
   // Processes |stream_info| and sets up stream specific variables.
   Status ProcessStreamInfo(StreamInfo* stream_info);
-  // Processes media sample end encrypts it if needed.
+  // Processes media sample and encrypts it if needed.
   Status ProcessMediaSample(MediaSample* sample);
 
   bool CreateEncryptor(EncryptionKey* encryption_key);
@@ -81,7 +80,7 @@ class EncryptionHandler : public MediaHandler {
   void InjectVideoSliceHeaderParserForTesting(
       std::unique_ptr<VideoSliceHeaderParser> header_parser);
 
-  EncryptionOptions encryption_options_;
+  const EncryptionOptions encryption_options_;
   KeySource* key_source_ = nullptr;
   KeySource::TrackType track_type_ = KeySource::TRACK_TYPE_UNKNOWN;
   std::unique_ptr<AesCryptor> encryptor_;
