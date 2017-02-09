@@ -1,3 +1,12 @@
+## [1.6.1] - 2017-02-10
+### Changed
+- Enable --generate_dash_if_iop_compliant_mpd by default. This moves
+  ContentProtection element from Representation to AdaptationSet. The feature
+  can still be disabled by setting the flag to false if needed.
+
+### Fixed
+- MPD duration not set for live profile with static mpd (#201).
+
 ## [1.6.0] - 2017-01-13
 ### Added
 - Added support for Windows (both 32-bit and 64-bit are supported).
@@ -222,6 +231,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.6.1]: https://github.com/google/shaka-packager/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/google/shaka-packager/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/google/shaka-packager/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.5.0
