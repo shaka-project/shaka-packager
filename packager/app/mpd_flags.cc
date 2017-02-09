@@ -57,7 +57,6 @@ DEFINE_string(default_language,
               "<Role ... value=\"main\" /> in the manifest.  This allows the "
               "player to choose the correct default language for the content.");
 DEFINE_bool(generate_dash_if_iop_compliant_mpd,
-            false,
+            true,
             "Try to generate DASH-IF IOPv3 compliant MPD. This is best effort "
-            "and does not guarantee compliance. Off by default until players "
-            "support IOP MPDs.");
+            "and does not guarantee compliance.");

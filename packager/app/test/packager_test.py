@@ -309,13 +309,13 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageWithEncryptionAndDashIfIop(self):
+  def testPackageWithEncryptionAndNonDashIfIop(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
-        self._GetFlags(encryption=True, dash_if_iop=True))
+        self._GetFlags(encryption=True, dash_if_iop=False))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-iop-golden.mpd')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-non-iop-golden.mpd')
 
   def testPackageWithEncryptionAndOutputMediaInfo(self):
     self.packager.Package(
@@ -342,22 +342,22 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffLiveMpdGold(self.mpd_output,
                           'bear-640x360-av-live-cenc-golden.mpd')
 
-  def testPackageWithLiveProfileAndEncryptionAndDashIfIop(self):
+  def testPackageWithLiveProfileAndEncryptionAndNonDashIfIop(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
-        self._GetFlags(encryption=True, dash_if_iop=True))
+        self._GetFlags(encryption=True, dash_if_iop=False))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
     self._DiffLiveMpdGold(self.mpd_output,
-                          'bear-640x360-av-live-cenc-iop-golden.mpd')
+                          'bear-640x360-av-live-cenc-non-iop-golden.mpd')
 
-  def testPackageWithLiveProfileAndEncryptionAndDashIfIopWithMultFiles(self):
+  def testPackageWithLiveProfileAndEncryptionAndMultFiles(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'],
                          live=True,
                          test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                                      'bear-320x180.mp4']),
-        self._GetFlags(encryption=True, dash_if_iop=True))
+        self._GetFlags(encryption=True))
     self._DiffLiveGold(self.output[2], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[3], 'bear-640x360-v-live-cenc-golden')
     # Mpd cannot be validated right now since we don't generate determinstic
@@ -375,18 +375,19 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffLiveMpdGold(self.mpd_output,
                           'bear-640x360-av-live-cenc-rotation-golden.mpd')
 
-  def testPackageWithLiveProfileAndKeyRotationAndDashIfIop(self):
+  def testPackageWithLiveProfileAndKeyRotationAndNonDashIfIop(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
-                       dash_if_iop=True))
+                       dash_if_iop=False))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-live-cenc-rotation-golden')
     self._DiffLiveGold(self.output[1],
                        'bear-640x360-v-live-cenc-rotation-golden')
-    self._DiffLiveMpdGold(self.mpd_output,
-                          'bear-640x360-av-live-cenc-rotation-iop-golden.mpd')
+    self._DiffLiveMpdGold(
+        self.mpd_output,
+        'bear-640x360-av-live-cenc-rotation-non-iop-golden.mpd')
 
   @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
   def testWidevineEncryptionWithAes(self):
@@ -398,8 +399,8 @@ class PackagerAppTest(unittest.TestCase):
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
 
   @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
-  def testWidevineEncryptionWithAesAndDashIfIopWithMultFiles(self):
-    flags = self._GetFlags(widevine_encryption=True, dash_if_iop=True)
+  def testWidevineEncryptionWithAesAndMultFiles(self):
+    flags = self._GetFlags(widevine_encryption=True)
     flags += ['--aes_signing_key=' + test_env.options.aes_signing_key,
               '--aes_signing_iv=' + test_env.options.aes_signing_iv]
     self.packager.Package(
@@ -489,7 +490,7 @@ class PackagerAppTest(unittest.TestCase):
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
-                dash_if_iop=False,
+                dash_if_iop=True,
                 output_media_info=False,
                 output_hls=False,
                 use_fake_clock=True):
@@ -518,8 +519,8 @@ class PackagerAppTest(unittest.TestCase):
     if key_rotation:
       flags.append('--crypto_period_duration=1')
 
-    if dash_if_iop:
-      flags.append('--generate_dash_if_iop_compliant_mpd')
+    if not dash_if_iop:
+      flags.append('--generate_dash_if_iop_compliant_mpd=false')
     if output_media_info:
       flags.append('--output_media_info')
     elif output_hls:
