@@ -33,8 +33,7 @@ std::string TextCodecString(const MediaInfo& media_info) {
 
 bool HasVODOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_range() || media_info.has_index_range() ||
-         media_info.has_media_file_name() ||
-         media_info.has_media_duration_seconds();
+         media_info.has_media_file_name();
 }
 
 bool HasLiveOnlyFields(const MediaInfo& media_info) {

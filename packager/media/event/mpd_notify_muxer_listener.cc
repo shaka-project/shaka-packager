@@ -119,6 +119,8 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t file_size) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     DCHECK(subsegments_.empty());
+    // TODO(kqyang): Set mpd duration to |duration_seconds|, which is more
+    // accurate than the duration coded in the original media header.
     if (mpd_notifier_->mpd_type() == MpdType::kStatic)
       mpd_notifier_->Flush();
     return;

@@ -144,6 +144,12 @@ void SetMediaInfoStreamInfo(const StreamInfo& stream_info,
     AddVideoInfo(static_cast<const VideoStreamInfo*>(&stream_info),
                  media_info);
   }
+  if (stream_info.duration() > 0) {
+    // |stream_info.duration()| contains the media duration from the original
+    // media header, which is usually good enough.
+    media_info->set_media_duration_seconds(
+        static_cast<double>(stream_info.duration()) / stream_info.time_scale());
+  }
 }
 
 void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
