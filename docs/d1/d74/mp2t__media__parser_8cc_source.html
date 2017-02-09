@@ -407,124 +407,126 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            sbr_in_mimetype_));</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    is_audio = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  }</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="comment">// Create the PES state here.</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Create a new PES state&quot;</span>;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  std::unique_ptr&lt;TsSection&gt; pes_section_parser(</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;      <span class="keyword">new</span> TsSectionPes(std::move(es_parser)));</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  PidState::PidType pid_type =</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;      is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  std::unique_ptr&lt;PidState&gt; pes_pid_state(</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      <span class="keyword">new</span> PidState(pes_pid, pid_type, std::move(pes_section_parser)));</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  pes_pid_state-&gt;Enable();</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  pids_.insert(std::pair&lt;<span class="keywordtype">int</span>, std::unique_ptr&lt;PidState&gt;&gt;(</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      pes_pid, std::move(pes_pid_state)));</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;}</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnNewStreamInfo(</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keyword">const</span> std::shared_ptr&lt;StreamInfo&gt;&amp; new_stream_info) {</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  DCHECK(new_stream_info);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;OnVideoConfigChanged for pid=&quot;</span> &lt;&lt; new_stream_info-&gt;track_id();</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  PidMap::iterator pid_state = pids_.find(new_stream_info-&gt;track_id());</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new stream not found (pid = &quot;</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;               &lt;&lt; new_stream_info-&gt;track_id() &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  }</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="comment">// Set the stream configuration information for the PID.</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  pid_state-&gt;second-&gt;set_config(new_stream_info);</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="comment">// Finish initialization if all streams have configs.</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  FinishInitializationIfNeeded();</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;}</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::FinishInitializationIfNeeded() {</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  <span class="comment">// Nothing to be done if already initialized.</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  <span class="keywordflow">if</span> (is_initialized_)</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="comment">// Wait for more data to come to finish initialization.</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  <span class="keywordflow">if</span> (pids_.empty())</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  std::vector&lt;std::shared_ptr&lt;StreamInfo&gt;&gt; all_stream_info;</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  uint32_t num_es(0);</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;       ++iter) {</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="keywordflow">if</span> (((iter-&gt;second-&gt;pid_type() == PidState::kPidAudioPes) ||</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;         (iter-&gt;second-&gt;pid_type() == PidState::kPidVideoPes))) {</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;      ++num_es;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;      <span class="keywordflow">if</span> (iter-&gt;second-&gt;config())</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        all_stream_info.push_back(iter-&gt;second-&gt;config());</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    }</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  }</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;  <span class="keywordflow">if</span> (num_es &amp;&amp; (all_stream_info.size() == num_es)) {</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    <span class="comment">// All stream configurations have been received. Initialization can</span></div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    <span class="comment">// be completed.</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    init_cb_.Run(all_stream_info);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mpeg2TS stream parser initialization done&quot;</span>;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    is_initialized_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  }</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;}</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnEmitSample(</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    uint32_t pes_pid,</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    <span class="keyword">const</span> std::shared_ptr&lt;MediaSample&gt;&amp; new_sample) {</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  DCHECK(new_sample);</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  DVLOG(LOG_LEVEL_ES)</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;OnEmitSample: &quot;</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pid=&quot;</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;      &lt;&lt; pes_pid</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span></div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;      &lt;&lt; new_sample-&gt;data_size()</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span></div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;      &lt;&lt; new_sample-&gt;dts()</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span></div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;      &lt;&lt; new_sample-&gt;pts();</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  <span class="comment">// Add the sample to the appropriate PID sample queue.</span></div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  PidMap::iterator pid_state = pids_.find(pes_pid);</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new sample not found (pid = &quot;</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;               &lt;&lt; pes_pid &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  }</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;  pid_state-&gt;second-&gt;sample_queue().push_back(new_sample);</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;}</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::EmitRemainingSamples() {</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::EmitRemainingBuffers&quot;</span>;</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  <span class="comment">// No buffer should be sent until fully initialized.</span></div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_)</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="comment">// Buffer emission.</span></div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;       ++pid_iter) {</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    SampleQueue&amp; sample_queue = pid_iter-&gt;second-&gt;sample_queue();</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    <span class="keywordflow">for</span> (SampleQueue::iterator sample_iter = sample_queue.begin();</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;         sample_iter != sample_queue.end();</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;         ++sample_iter) {</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;      <span class="keywordflow">if</span> (!new_sample_cb_.Run(pid_iter-&gt;first, *sample_iter)) {</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        <span class="comment">// Error processing sample. Propagate error condition.</span></div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;      }</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    }</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    sample_queue.clear();</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;  }</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;}</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Ignore unsupported stream type 0x&quot;</span> &lt;&lt; std::hex</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                 &lt;&lt; stream_type &lt;&lt; std::dec;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  }</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="comment">// Create the PES state here.</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Create a new PES state&quot;</span>;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  std::unique_ptr&lt;TsSection&gt; pes_section_parser(</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;      <span class="keyword">new</span> TsSectionPes(std::move(es_parser)));</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  PidState::PidType pid_type =</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  std::unique_ptr&lt;PidState&gt; pes_pid_state(</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      <span class="keyword">new</span> PidState(pes_pid, pid_type, std::move(pes_section_parser)));</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  pes_pid_state-&gt;Enable();</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  pids_.insert(std::pair&lt;<span class="keywordtype">int</span>, std::unique_ptr&lt;PidState&gt;&gt;(</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      pes_pid, std::move(pes_pid_state)));</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;}</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnNewStreamInfo(</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="keyword">const</span> std::shared_ptr&lt;StreamInfo&gt;&amp; new_stream_info) {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  DCHECK(new_stream_info);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;OnVideoConfigChanged for pid=&quot;</span> &lt;&lt; new_stream_info-&gt;track_id();</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  PidMap::iterator pid_state = pids_.find(new_stream_info-&gt;track_id());</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new stream not found (pid = &quot;</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;               &lt;&lt; new_stream_info-&gt;track_id() &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  }</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  <span class="comment">// Set the stream configuration information for the PID.</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  pid_state-&gt;second-&gt;set_config(new_stream_info);</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  <span class="comment">// Finish initialization if all streams have configs.</span></div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  FinishInitializationIfNeeded();</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;}</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::FinishInitializationIfNeeded() {</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <span class="comment">// Nothing to be done if already initialized.</span></div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="keywordflow">if</span> (is_initialized_)</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  <span class="comment">// Wait for more data to come to finish initialization.</span></div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  <span class="keywordflow">if</span> (pids_.empty())</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  std::vector&lt;std::shared_ptr&lt;StreamInfo&gt;&gt; all_stream_info;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  uint32_t num_es(0);</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;       ++iter) {</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keywordflow">if</span> (((iter-&gt;second-&gt;pid_type() == PidState::kPidAudioPes) ||</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;         (iter-&gt;second-&gt;pid_type() == PidState::kPidVideoPes))) {</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;      ++num_es;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;      <span class="keywordflow">if</span> (iter-&gt;second-&gt;config())</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        all_stream_info.push_back(iter-&gt;second-&gt;config());</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    }</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  }</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <span class="keywordflow">if</span> (num_es &amp;&amp; (all_stream_info.size() == num_es)) {</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="comment">// All stream configurations have been received. Initialization can</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    <span class="comment">// be completed.</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    init_cb_.Run(all_stream_info);</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mpeg2TS stream parser initialization done&quot;</span>;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    is_initialized_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  }</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;}</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnEmitSample(</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    uint32_t pes_pid,</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    <span class="keyword">const</span> std::shared_ptr&lt;MediaSample&gt;&amp; new_sample) {</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  DCHECK(new_sample);</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  DVLOG(LOG_LEVEL_ES)</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;OnEmitSample: &quot;</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pid=&quot;</span></div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;      &lt;&lt; pes_pid</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;      &lt;&lt; new_sample-&gt;data_size()</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;      &lt;&lt; new_sample-&gt;dts()</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span></div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;      &lt;&lt; new_sample-&gt;pts();</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  <span class="comment">// Add the sample to the appropriate PID sample queue.</span></div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  PidMap::iterator pid_state = pids_.find(pes_pid);</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new sample not found (pid = &quot;</span></div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;               &lt;&lt; pes_pid &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  }</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  pid_state-&gt;second-&gt;sample_queue().push_back(new_sample);</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;}</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::EmitRemainingSamples() {</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::EmitRemainingBuffers&quot;</span>;</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  <span class="comment">// No buffer should be sent until fully initialized.</span></div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_)</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  <span class="comment">// Buffer emission.</span></div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;       ++pid_iter) {</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    SampleQueue&amp; sample_queue = pid_iter-&gt;second-&gt;sample_queue();</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    <span class="keywordflow">for</span> (SampleQueue::iterator sample_iter = sample_queue.begin();</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;         sample_iter != sample_queue.end();</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;         ++sample_iter) {</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;      <span class="keywordflow">if</span> (!new_sample_cb_.Run(pid_iter-&gt;first, *sample_iter)) {</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        <span class="comment">// Error processing sample. Propagate error condition.</span></div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;      }</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    }</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    sample_queue.clear();</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  }</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;}</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_aa2aff12312827aacf2b7db6e2f792c52"><div class="ttname"><a href="../../d3/dc1/classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#aa2aff12312827aacf2b7db6e2f792c52">shaka::media::mp2t::Mp2tMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00159">mp2t_media_parser.cc:159</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_afdb1a88116e3347e67afeb7715847135"><div class="ttname"><a href="../../d3/dc1/classshaka_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#afdb1a88116e3347e67afeb7715847135">shaka::media::mp2t::Mp2tMediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00172">mp2t_media_parser.cc:172</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1TsSectionPat_html"><div class="ttname"><a href="../../d0/d26/classshaka_1_1media_1_1mp2t_1_1TsSectionPat.html">shaka::media::mp2t::TsSectionPat</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da0/ts__section__pat_8h_source.html#l00016">ts_section_pat.h:16</a></div></div>
@@ -533,7 +535,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Feb 9 2017 22:28:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Feb 9 2017 22:33:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
