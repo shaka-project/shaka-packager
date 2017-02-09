@@ -333,6 +333,14 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
     self._DiffLiveMpdGold(self.mpd_output, 'bear-640x360-av-live-golden.mpd')
 
+  def testPackageWithLiveStaticProfile(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'], live=True),
+        self._GetFlags(generate_static_mpd=True))
+    self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
+    self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-live-static-golden.mpd')
+
   def testPackageWithLiveProfileAndEncryption(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
@@ -493,6 +501,7 @@ class PackagerAppTest(unittest.TestCase):
                 dash_if_iop=True,
                 output_media_info=False,
                 output_hls=False,
+                generate_static_mpd=False,
                 use_fake_clock=True):
     flags = []
     if widevine_encryption:
@@ -527,6 +536,9 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--hls_master_playlist_output', self.hls_master_playlist_output]
     else:
       flags += ['--mpd_output', self.mpd_output]
+
+    if generate_static_mpd:
+      flags += ['--generate_static_mpd']
 
     flags.append('--segment_duration=1')
     # Use fake clock, so output can be compared.

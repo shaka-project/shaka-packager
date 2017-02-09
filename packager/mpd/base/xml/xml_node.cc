@@ -294,12 +294,6 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
       return false;
   }
 
-  if (media_info.has_media_duration_seconds()) {
-    // Adding 'duration' attribute, so that this information can be used when
-    // generating one MPD file. This should be removed from the final MPD.
-    SetFloatingPointAttribute("duration", media_info.media_duration_seconds());
-  }
-
   return true;
 }
 

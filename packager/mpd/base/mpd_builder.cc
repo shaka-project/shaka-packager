@@ -1199,6 +1199,15 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
     return xml::scoped_xml_ptr<xmlNode>();
   }
 
+  // Set media duration for static mpd.
+  if (mpd_options_.mpd_type == MpdType::kStatic &&
+      media_info_.has_media_duration_seconds()) {
+    // Adding 'duration' attribute, so that this information can be used when
+    // generating one MPD file. This should be removed from the final MPD.
+    representation.SetFloatingPointAttribute(
+        "duration", media_info_.media_duration_seconds());
+  }
+
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
     LOG(ERROR) << "Failed to add VOD segment info.";

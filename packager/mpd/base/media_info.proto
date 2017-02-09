@@ -134,8 +134,10 @@ message MediaInfo {
   optional Range init_range = 6;
   optional Range index_range = 7;
   optional string media_file_name = 8;
-  optional float media_duration_seconds = 9;
   // END VOD only.
+
+  // VOD and static LIVE.
+  optional float media_duration_seconds = 9;
 
   // LIVE only.
   optional string init_segment_name = 10;
