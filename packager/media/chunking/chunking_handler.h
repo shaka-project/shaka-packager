@@ -110,8 +110,8 @@ class ChunkingHandler : public MediaHandler {
   // Current subsegment index, useful to determine where to do chunking.
   int64_t current_subsegment_index_ = -1;
 
-  std::vector<std::unique_ptr<SegmentInfo>> segment_info_;
-  std::vector<std::unique_ptr<SegmentInfo>> subsegment_info_;
+  std::vector<std::shared_ptr<SegmentInfo>> segment_info_;
+  std::vector<std::shared_ptr<SegmentInfo>> subsegment_info_;
   std::vector<uint32_t> time_scales_;
   // The end timestamp of the last dispatched sample.
   std::vector<int64_t> last_sample_end_timestamps_;

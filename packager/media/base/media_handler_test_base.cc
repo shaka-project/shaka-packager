@@ -133,16 +133,17 @@ void MediaHandlerTestBase::ClearOutputStreamDataVector() {
   next_handler_->clear_stream_data_vector();
 }
 
-std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetMockStreamInfo(
-    Codec codec, uint32_t time_scale) {
+std::shared_ptr<StreamInfo> MediaHandlerTestBase::GetMockStreamInfo(
+    Codec codec,
+    uint32_t time_scale) {
   if (codec >= kCodecAudio && codec < kCodecAudioMaxPlusOne) {
-    return std::unique_ptr<StreamInfo>(new AudioStreamInfo(
+    return std::shared_ptr<StreamInfo>(new AudioStreamInfo(
         kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,
         sizeof(kCodecConfig), kSampleBits, kNumChannels, kSamplingFrequency,
         kSeekPrerollNs, kCodecDelayNs, kMaxBitrate, kAvgBitrate, kLanguage,
         !kEncrypted));
   } else if (codec >= kCodecVideo && codec < kCodecVideoMaxPlusOne) {
-    return std::unique_ptr<StreamInfo>(new VideoStreamInfo(
+    return std::shared_ptr<StreamInfo>(new VideoStreamInfo(
         kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,
         sizeof(kCodecConfig), kWidth, kHeight, kPixelWidth, kPixelHeight,
         kTrickPlayRate, kNaluLengthSize, kLanguage, !kEncrypted));

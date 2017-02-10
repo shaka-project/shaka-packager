@@ -44,12 +44,12 @@ struct StreamData {
   int stream_index = -1;
   StreamDataType stream_data_type = StreamDataType::kUnknown;
 
-  std::unique_ptr<PeriodInfo> period_info;
-  std::unique_ptr<StreamInfo> stream_info;
-  std::unique_ptr<EncryptionConfig> encryption_config;
-  std::unique_ptr<MediaSample> media_sample;
-  std::unique_ptr<MediaEvent> media_event;
-  std::unique_ptr<SegmentInfo> segment_info;
+  std::shared_ptr<PeriodInfo> period_info;
+  std::shared_ptr<StreamInfo> stream_info;
+  std::shared_ptr<EncryptionConfig> encryption_config;
+  std::shared_ptr<MediaSample> media_sample;
+  std::shared_ptr<MediaEvent> media_event;
+  std::shared_ptr<SegmentInfo> segment_info;
 };
 
 /// MediaHandler is the base media processing unit. Media handlers transform
@@ -111,7 +111,7 @@ class MediaHandler {
 
   /// Dispatch the period info to downstream handlers.
   Status DispatchPeriodInfo(int stream_index,
-                            std::unique_ptr<PeriodInfo> period_info) {
+                            std::shared_ptr<PeriodInfo> period_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kPeriodInfo;
@@ -121,7 +121,7 @@ class MediaHandler {
 
   /// Dispatch the stream info to downstream handlers.
   Status DispatchStreamInfo(int stream_index,
-                            std::unique_ptr<StreamInfo> stream_info) {
+                            std::shared_ptr<StreamInfo> stream_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kStreamInfo;
@@ -142,7 +142,7 @@ class MediaHandler {
 
   /// Dispatch the media sample to downstream handlers.
   Status DispatchMediaSample(int stream_index,
-                             std::unique_ptr<MediaSample> media_sample) {
+                             std::shared_ptr<MediaSample> media_sample) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kMediaSample;
@@ -152,7 +152,7 @@ class MediaHandler {
 
   /// Dispatch the media event to downstream handlers.
   Status DispatchMediaEvent(int stream_index,
-                            std::unique_ptr<MediaEvent> media_event) {
+                            std::shared_ptr<MediaEvent> media_event) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kMediaEvent;
@@ -162,7 +162,7 @@ class MediaHandler {
 
   /// Dispatch the segment info to downstream handlers.
   Status DispatchSegmentInfo(int stream_index,
-                             std::unique_ptr<SegmentInfo> segment_info) {
+                             std::shared_ptr<SegmentInfo> segment_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kSegmentInfo;

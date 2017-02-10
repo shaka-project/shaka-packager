@@ -85,7 +85,7 @@ class MediaHandlerTestBase : public ::testing::Test {
   MediaHandlerTestBase& operator=(const MediaHandlerTestBase&) = delete;
 
   // Get a mock stream info for testing.
-  std::unique_ptr<StreamInfo> GetMockStreamInfo(Codec codec,
+  std::shared_ptr<StreamInfo> GetMockStreamInfo(Codec codec,
                                                 uint32_t time_scale);
 
   // Downstream handler used in testing graph.
