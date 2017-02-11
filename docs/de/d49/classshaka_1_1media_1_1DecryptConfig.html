@@ -103,6 +103,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a24035bb6edcb3aaaa9923bf385376ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2dfe0a2ee285539843ac55b5f1ac7c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#ab2dfe0a2ee285539843ac55b5f1ac7c7">DecryptConfig</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;subsamples, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block)</td></tr>
 <tr class="separator:ab2dfe0a2ee285539843ac55b5f1ac7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36681ecf1eeb8a4effb0f00b232bda58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a36681ecf1eeb8a4effb0f00b232bda58">AddSubsample</a> (uint16_t clear_bytes, uint32_t cipher_bytes)</td></tr>
+<tr class="separator:a36681ecf1eeb8a4effb0f00b232bda58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a338024925bc46a2f65a058906cdcb4a3"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a338024925bc46a2f65a058906cdcb4a3">GetTotalSizeOfSubsamples</a> () const </td></tr>
+<tr class="separator:a338024925bc46a2f65a058906cdcb4a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b92187577ea5b9cb44d98bfe215ea76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b92187577ea5b9cb44d98bfe215ea76"></a>
 const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>key_id</b> () const </td></tr>
 <tr class="separator:a3b92187577ea5b9cb44d98bfe215ea76"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -242,6 +246,68 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 
 </div>
 </div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a36681ecf1eeb8a4effb0f00b232bda58"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::DecryptConfig::AddSubsample </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>clear_bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>cipher_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clear_bytes</td><td>is the size of clear bytes in the subsample to be added. </td></tr>
+    <tr><td class="paramname">cipher_bytes</td><td>is the size of cipher bytes in the subsample to be added. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../df/dad/decrypt__config_8h_source.html#l00080">80</a> of file <a class="el" href="../../df/dad/decrypt__config_8h_source.html">decrypt_config.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a338024925bc46a2f65a058906cdcb4a3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::DecryptConfig::GetTotalSizeOfSubsamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The total size of subsamples. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d3/d56/decrypt__config_8cc_source.html#l00034">34</a> of file <a class="el" href="../../d3/d56/decrypt__config_8cc_source.html">decrypt_config.cc</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/base/<a class="el" href="../../df/dad/decrypt__config_8h_source.html">decrypt_config.h</a></li>
 <li>media/base/<a class="el" href="../../d3/d56/decrypt__config_8cc_source.html">decrypt_config.cc</a></li>
@@ -249,7 +315,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 11 2017 00:58:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Feb 11 2017 01:23:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['fragment_5fduration',['fragment_duration',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a0dbe637b21f1f22f248437b59ad62a38',1,'shaka::media::MuxerOptions']]],
-  ['fragment_5fsap_5faligned',['fragment_sap_aligned',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#acb335182d4bd226c1f044cc83705f4fc',1,'shaka::media::MuxerOptions']]]
+  ['clear_5flead_5fin_5fseconds',['clear_lead_in_seconds',['../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a3d58dc01a4af0ebfb56f3c4979f745f7',1,'shaka::media::EncryptionOptions']]],
+  ['crypto_5fperiod_5fduration_5fin_5fseconds',['crypto_period_duration_in_seconds',['../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a20acea0141ca7c8dd57d0129c53a6d13',1,'shaka::media::EncryptionOptions']]]
 ];

@@ -132,43 +132,51 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  ~<a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a>();</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> key_id_; }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iv_; }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> subsamples_; }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  FourCC protection_scheme()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> protection_scheme_; }</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  uint8_t crypt_byte_block()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> crypt_byte_block_; }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  uint8_t skip_byte_block()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> skip_byte_block_; }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; key_id_;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// Initialization vector.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; iv_;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// Subsample information. May be empty for some formats, meaning entire frame</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// (less data ignored by data_offset_) is encrypted.</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt; subsamples_;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">const</span> FourCC protection_scheme_;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="comment">// For pattern-based protection schemes, like CENS and CBCS.</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">const</span> uint8_t crypt_byte_block_;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keyword">const</span> uint8_t skip_byte_block_;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a24035bb6edcb3aaaa9923bf385376ae5">DecryptConfig</a>);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a36681ecf1eeb8a4effb0f00b232bda58">   80</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a36681ecf1eeb8a4effb0f00b232bda58">AddSubsample</a>(uint16_t clear_bytes, uint32_t cipher_bytes) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    subsamples_.emplace_back(clear_bytes, cipher_bytes);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a338024925bc46a2f65a058906cdcb4a3">GetTotalSizeOfSubsamples</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> key_id_; }</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iv_; }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> subsamples_; }</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  FourCC protection_scheme()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> protection_scheme_; }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  uint8_t crypt_byte_block()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> crypt_byte_block_; }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  uint8_t skip_byte_block()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> skip_byte_block_; }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; key_id_;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// Initialization vector.</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; iv_;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="comment">// Subsample information. May be empty for some formats, meaning entire frame</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// (less data ignored by data_offset_) is encrypted.</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  std::vector&lt;SubsampleEntry&gt; subsamples_;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DECRYPT_CONFIG_H_</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keyword">const</span> FourCC protection_scheme_;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// For pattern-based protection schemes, like CENS and CBCS.</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keyword">const</span> uint8_t crypt_byte_block_;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keyword">const</span> uint8_t skip_byte_block_;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a24035bb6edcb3aaaa9923bf385376ae5">DecryptConfig</a>);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DECRYPT_CONFIG_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html_a24035bb6edcb3aaaa9923bf385376ae5"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a24035bb6edcb3aaaa9923bf385376ae5">shaka::media::DecryptConfig::DecryptConfig</a></div><div class="ttdeci">DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00012">decrypt_config.cc:12</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">shaka::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00040">decrypt_config.h:40</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1SubsampleEntry_html"><div class="ttname"><a href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">shaka::media::SubsampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00028">decrypt_config.h:28</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html_a338024925bc46a2f65a058906cdcb4a3"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a338024925bc46a2f65a058906cdcb4a3">shaka::media::DecryptConfig::GetTotalSizeOfSubsamples</a></div><div class="ttdeci">size_t GetTotalSizeOfSubsamples() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00034">decrypt_config.cc:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html_afa140203b87d3e46d5fd94b231734f53"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#afa140203b87d3e46d5fd94b231734f53">shaka::media::DecryptConfig::kDecryptionKeySize</a></div><div class="ttdeci">static const size_t kDecryptionKeySize</div><div class="ttdoc">Keys are always 128 bits. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00043">decrypt_config.h:43</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html_a36681ecf1eeb8a4effb0f00b232bda58"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a36681ecf1eeb8a4effb0f00b232bda58">shaka::media::DecryptConfig::AddSubsample</a></div><div class="ttdeci">void AddSubsample(uint16_t clear_bytes, uint32_t cipher_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00080">decrypt_config.h:80</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 11 2017 00:58:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Feb 11 2017 01:23:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

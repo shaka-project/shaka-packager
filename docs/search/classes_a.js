@@ -2,12 +2,11 @@ var searchData=
 [
   ['media',['Media',['../dc/ddf/structshaka_1_1media_1_1mp4_1_1Media.html',1,'shaka::media::mp4']]],
   ['mediadata',['MediaData',['../d7/dae/structshaka_1_1media_1_1mp4_1_1MediaData.html',1,'shaka::media::mp4']]],
-  ['mediaevent',['MediaEvent',['../d0/db3/structshaka_1_1media_1_1MediaHandler_1_1MediaEvent.html',1,'shaka::media::MediaHandler']]],
+  ['mediaevent',['MediaEvent',['../df/dd3/structshaka_1_1media_1_1MediaEvent.html',1,'shaka::media']]],
   ['mediahandler',['MediaHandler',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html',1,'shaka::media']]],
   ['mediaheader',['MediaHeader',['../d4/db9/structshaka_1_1media_1_1mp4_1_1MediaHeader.html',1,'shaka::media::mp4']]],
   ['mediainformation',['MediaInformation',['../d5/d86/structshaka_1_1media_1_1mp4_1_1MediaInformation.html',1,'shaka::media::mp4']]],
   ['mediaparser',['MediaParser',['../d3/d0a/classshaka_1_1media_1_1MediaParser.html',1,'shaka::media']]],
-  ['mediasample',['MediaSample',['../d4/d15/structshaka_1_1media_1_1MediaHandler_1_1MediaSample.html',1,'shaka::media::MediaHandler']]],
   ['mediasample',['MediaSample',['../d7/d6d/classshaka_1_1media_1_1MediaSample.html',1,'shaka::media']]],
   ['mediastream',['MediaStream',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html',1,'shaka::media']]],
   ['memoryfile',['MemoryFile',['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html',1,'shaka::media']]],

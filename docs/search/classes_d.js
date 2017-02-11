@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['periodinfo',['PeriodInfo',['../dd/d83/structshaka_1_1media_1_1MediaHandler_1_1PeriodInfo.html',1,'shaka::media::MediaHandler']]],
+  ['periodinfo',['PeriodInfo',['../d7/d58/structshaka_1_1media_1_1PeriodInfo.html',1,'shaka::media']]],
   ['pespacket',['PesPacket',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html',1,'shaka::media::mp2t']]],
   ['pespacketgenerator',['PesPacketGenerator',['../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html',1,'shaka::media::mp2t']]],
   ['pixelaspectratio',['PixelAspectRatio',['../dd/d71/structshaka_1_1media_1_1mp4_1_1PixelAspectRatio.html',1,'shaka::media::mp4']]],
