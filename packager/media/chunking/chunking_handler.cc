@@ -222,7 +222,8 @@ Status ChunkingHandler::DispatchNonMainSamples(int64_t timestamp_threshold) {
 
 Status ChunkingHandler::DispatchSegmentInfoForAllStreams() {
   Status status;
-  for (size_t i = 0; i < segment_info_.size() && status.ok(); ++i) {
+  for (int i = 0; i < static_cast<int>(segment_info_.size()) && status.ok();
+       ++i) {
     if (segment_info_[i] && segment_info_[i]->start_timestamp != -1) {
       segment_info_[i]->duration =
           last_sample_end_timestamps_[i] - segment_info_[i]->start_timestamp;
@@ -236,7 +237,8 @@ Status ChunkingHandler::DispatchSegmentInfoForAllStreams() {
 
 Status ChunkingHandler::DispatchSubsegmentInfoForAllStreams() {
   Status status;
-  for (size_t i = 0; i < subsegment_info_.size() && status.ok(); ++i) {
+  for (int i = 0; i < static_cast<int>(subsegment_info_.size()) && status.ok();
+       ++i) {
     if (subsegment_info_[i] && subsegment_info_[i]->start_timestamp != -1) {
       subsegment_info_[i]->duration =
           last_sample_end_timestamps_[i] - subsegment_info_[i]->start_timestamp;
