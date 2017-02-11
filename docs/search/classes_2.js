@@ -3,6 +3,8 @@ var searchData=
   ['cencsampleencryptioninfoentry',['CencSampleEncryptionInfoEntry',['../d8/dd6/structshaka_1_1media_1_1mp4_1_1CencSampleEncryptionInfoEntry.html',1,'shaka::media::mp4']]],
   ['chunkinfo',['ChunkInfo',['../df/d38/structshaka_1_1media_1_1mp4_1_1ChunkInfo.html',1,'shaka::media::mp4']]],
   ['chunkinfoiterator',['ChunkInfoIterator',['../d9/d57/classshaka_1_1media_1_1mp4_1_1ChunkInfoIterator.html',1,'shaka::media::mp4']]],
+  ['chunkinghandler',['ChunkingHandler',['../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html',1,'shaka::media']]],
+  ['chunkingoptions',['ChunkingOptions',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html',1,'shaka::media']]],
   ['chunklargeoffset',['ChunkLargeOffset',['../db/d95/structshaka_1_1media_1_1mp4_1_1ChunkLargeOffset.html',1,'shaka::media::mp4']]],
   ['chunkoffset',['ChunkOffset',['../dd/d06/structshaka_1_1media_1_1mp4_1_1ChunkOffset.html',1,'shaka::media::mp4']]],
   ['closurethread',['ClosureThread',['../dc/df0/classshaka_1_1media_1_1ClosureThread.html',1,'shaka::media']]],

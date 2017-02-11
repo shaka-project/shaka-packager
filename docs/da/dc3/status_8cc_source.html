@@ -123,52 +123,60 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;HTTP_FAILURE&quot;</span>;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">case</span> PARSER_FAILURE:</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;PARSER_FAILURE&quot;</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">case</span> MUXER_FAILURE:</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;MUXER_FAILURE&quot;</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">case</span> FRAGMENT_FINALIZED:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;FRAGMENT_FINALIZED&quot;</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">case</span> SERVER_ERROR:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;SERVER_ERROR&quot;</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">case</span> INTERNAL_ERROR:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;INTERNAL_ERROR&quot;</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">case</span> STOPPED:</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;STOPPED&quot;</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> TIME_OUT:</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;TIME_OUT&quot;</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown Status Code: &quot;</span> &lt;&lt; error_code;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN_STATUS&quot;</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace error</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">const</span> Status Status::OK = Status(error::OK, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">const</span> Status Status::UNKNOWN = Status(error::UNKNOWN, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">   60</a></span>&#160;std::string <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">Status::ToString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (error_code_ == error::OK)</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;OK&quot;</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(<span class="stringliteral">&quot;%d (%s): %s&quot;</span>,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                            error_code_,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                            error::ErrorCodeToString(error_code_).c_str(),</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                            error_message_.c_str());</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, <span class="keyword">const</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&amp; x) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  os &lt;&lt; x.<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">ToString</a>();</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html_ac5d67e71539ca2f3589d3b2d4dc9ad60"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">shaka::media::Status::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../da/dc3/status_8cc_source.html#l00060">status.cc:60</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00082">status.h:82</a></div></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">case</span> ENCRYPTION_FAILURE:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;ENCRYPTION_FAILURE&quot;</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">case</span> CHUNKING_ERROR:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;CHUNKING_ERROR&quot;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">case</span> MUXER_FAILURE:</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;MUXER_FAILURE&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">case</span> FRAGMENT_FINALIZED:</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;FRAGMENT_FINALIZED&quot;</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">case</span> SERVER_ERROR:</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;SERVER_ERROR&quot;</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> INTERNAL_ERROR:</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;INTERNAL_ERROR&quot;</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">case</span> STOPPED:</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;STOPPED&quot;</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">case</span> TIME_OUT:</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;TIME_OUT&quot;</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">case</span> NOT_FOUND:</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;NOT_FOUND&quot;</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">case</span> ALREADY_EXISTS:</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;ALREADY_EXISTS&quot;</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown Status Code: &quot;</span> &lt;&lt; error_code;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN_STATUS&quot;</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}  <span class="comment">// namespace error</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">const</span> Status Status::OK = Status(error::OK, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">const</span> Status Status::UNKNOWN = Status(error::UNKNOWN, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">   68</a></span>&#160;std::string <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">Status::ToString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">if</span> (error_code_ == error::OK)</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;OK&quot;</span>;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(<span class="stringliteral">&quot;%d (%s): %s&quot;</span>,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                            error_code_,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                            error::ErrorCodeToString(error_code_).c_str(),</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                            error_message_.c_str());</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, <span class="keyword">const</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&amp; x) {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  os &lt;&lt; x.<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">ToString</a>();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1Status_html_ac5d67e71539ca2f3589d3b2d4dc9ad60"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html#ac5d67e71539ca2f3589d3b2d4dc9ad60">shaka::media::Status::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../da/dc3/status_8cc_source.html#l00068">status.cc:68</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00085">status.h:85</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 11 2017 01:23:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Feb 11 2017 02:48:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

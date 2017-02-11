@@ -102,7 +102,8 @@ Inheritance diagram for shaka::media::MediaHandler:</div>
  <div class="center">
   <img src="../../da/dfd/classshaka_1_1media_1_1MediaHandler.png" usemap="#shaka::media::MediaHandler_map" alt=""/>
   <map id="shaka::media::MediaHandler_map" name="shaka::media::MediaHandler_map">
-<area href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html" alt="shaka::media::EncryptionHandler" shape="rect" coords="0,56,196,80"/>
+<area href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html" alt="shaka::media::ChunkingHandler" shape="rect" coords="0,56,196,80"/>
+<area href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html" alt="shaka::media::EncryptionHandler" shape="rect" coords="206,56,402,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -141,30 +142,30 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> 
 <tr class="separator:a819e0fd1a2419c65cd203e52806051f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accd62dd4def920571f95f4e1a98ab7ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca">Dispatch</a> (std::unique_ptr&lt; <a class="el" href="../../d0/d4c/structshaka_1_1media_1_1StreamData.html">StreamData</a> &gt; stream_data)</td></tr>
 <tr class="separator:accd62dd4def920571f95f4e1a98ab7ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14b16aa64a09ecda70cb8b7dc5ce1671"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14b16aa64a09ecda70cb8b7dc5ce1671"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a14b16aa64a09ecda70cb8b7dc5ce1671">DispatchPeriodInfo</a> (int stream_index, std::unique_ptr&lt; <a class="el" href="../../d7/d58/structshaka_1_1media_1_1PeriodInfo.html">PeriodInfo</a> &gt; period_info)</td></tr>
-<tr class="memdesc:a14b16aa64a09ecda70cb8b7dc5ce1671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the period info to downstream handlers. <br/></td></tr>
-<tr class="separator:a14b16aa64a09ecda70cb8b7dc5ce1671"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a933879888a3eecdae45476a44d180631"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a933879888a3eecdae45476a44d180631"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a933879888a3eecdae45476a44d180631">DispatchStreamInfo</a> (int stream_index, std::unique_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; stream_info)</td></tr>
-<tr class="memdesc:a933879888a3eecdae45476a44d180631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the stream info to downstream handlers. <br/></td></tr>
-<tr class="separator:a933879888a3eecdae45476a44d180631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e8056d1955150ac946b84b7942453ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e8056d1955150ac946b84b7942453ee"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a6e8056d1955150ac946b84b7942453ee">DispatchPeriodInfo</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../d7/d58/structshaka_1_1media_1_1PeriodInfo.html">PeriodInfo</a> &gt; period_info)</td></tr>
+<tr class="memdesc:a6e8056d1955150ac946b84b7942453ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the period info to downstream handlers. <br/></td></tr>
+<tr class="separator:a6e8056d1955150ac946b84b7942453ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68c2b3f1e00ffad13ec6a9e2fb82c8d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a68c2b3f1e00ffad13ec6a9e2fb82c8d6"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a68c2b3f1e00ffad13ec6a9e2fb82c8d6">DispatchStreamInfo</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; stream_info)</td></tr>
+<tr class="memdesc:a68c2b3f1e00ffad13ec6a9e2fb82c8d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the stream info to downstream handlers. <br/></td></tr>
+<tr class="separator:a68c2b3f1e00ffad13ec6a9e2fb82c8d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfa15d4635dda12cd3d1439d3a9368f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acfa15d4635dda12cd3d1439d3a9368f9"></a>
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#acfa15d4635dda12cd3d1439d3a9368f9">DispatchEncryptionConfig</a> (int stream_index, std::unique_ptr&lt; <a class="el" href="../../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html">EncryptionConfig</a> &gt; encryption_config)</td></tr>
 <tr class="memdesc:acfa15d4635dda12cd3d1439d3a9368f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the encryption config to downstream handlers. <br/></td></tr>
 <tr class="separator:acfa15d4635dda12cd3d1439d3a9368f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a212b552daf97dad26e6e61596094d9d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a212b552daf97dad26e6e61596094d9d6"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a212b552daf97dad26e6e61596094d9d6">DispatchMediaSample</a> (int stream_index, std::unique_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; media_sample)</td></tr>
-<tr class="memdesc:a212b552daf97dad26e6e61596094d9d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the media sample to downstream handlers. <br/></td></tr>
-<tr class="separator:a212b552daf97dad26e6e61596094d9d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12e56c127aae6a039ca49bae39bbceea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12e56c127aae6a039ca49bae39bbceea"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a12e56c127aae6a039ca49bae39bbceea">DispatchMediaEvent</a> (int stream_index, std::unique_ptr&lt; <a class="el" href="../../df/dd3/structshaka_1_1media_1_1MediaEvent.html">MediaEvent</a> &gt; media_event)</td></tr>
-<tr class="memdesc:a12e56c127aae6a039ca49bae39bbceea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the media event to downstream handlers. <br/></td></tr>
-<tr class="separator:a12e56c127aae6a039ca49bae39bbceea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2af35c5f269d98cc73aab3d10cffca3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad2af35c5f269d98cc73aab3d10cffca3"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ad2af35c5f269d98cc73aab3d10cffca3">DispatchSegmentInfo</a> (int stream_index, std::unique_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt; segment_info)</td></tr>
-<tr class="memdesc:ad2af35c5f269d98cc73aab3d10cffca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the segment info to downstream handlers. <br/></td></tr>
-<tr class="separator:ad2af35c5f269d98cc73aab3d10cffca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5613bfa98942bcb6d0871e5e3788960"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae5613bfa98942bcb6d0871e5e3788960"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ae5613bfa98942bcb6d0871e5e3788960">DispatchMediaSample</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; media_sample)</td></tr>
+<tr class="memdesc:ae5613bfa98942bcb6d0871e5e3788960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the media sample to downstream handlers. <br/></td></tr>
+<tr class="separator:ae5613bfa98942bcb6d0871e5e3788960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcd63083b77966607b9c2aed8724e8f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abcd63083b77966607b9c2aed8724e8f5"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#abcd63083b77966607b9c2aed8724e8f5">DispatchMediaEvent</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../df/dd3/structshaka_1_1media_1_1MediaEvent.html">MediaEvent</a> &gt; media_event)</td></tr>
+<tr class="memdesc:abcd63083b77966607b9c2aed8724e8f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the media event to downstream handlers. <br/></td></tr>
+<tr class="separator:abcd63083b77966607b9c2aed8724e8f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c2da8615f6880abf4e198dd4c17ad45"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c2da8615f6880abf4e198dd4c17ad45"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">DispatchSegmentInfo</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt; segment_info)</td></tr>
+<tr class="memdesc:a7c2da8615f6880abf4e198dd4c17ad45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the segment info to downstream handlers. <br/></td></tr>
+<tr class="separator:a7c2da8615f6880abf4e198dd4c17ad45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95d62b8863212d4cf3d1daacdaf4d0e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95d62b8863212d4cf3d1daacdaf4d0e6"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> () const </td></tr>
 <tr class="separator:a95d62b8863212d4cf3d1daacdaf4d0e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -244,7 +245,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_ind
 </div><div class="memdoc">
 <p>Internal implementation of initialize. Note that it should only initialize the <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> itself. Downstream handlers are handled in <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aed0da512bbd998ec9d0a5c019ad17acb">Initialize()</a>. </p>
 
-<p>Implemented in <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">shaka::media::EncryptionHandler</a>.</p>
 
 </div>
 </div>
@@ -271,7 +272,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_ind
 </div><div class="memdoc">
 <p>Process the incoming stream data. Note that (1) stream_data.stream_index should be the input stream index; (2) The implementation needs to call DispatchXxx to dispatch the processed stream data to the downstream handlers after finishing processing if needed. </p>
 
-<p>Implemented in <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
 
 </div>
 </div>
@@ -282,7 +283,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_ind
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 11 2017 01:23:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Feb 11 2017 02:48:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

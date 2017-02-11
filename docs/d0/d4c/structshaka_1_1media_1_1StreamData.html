@@ -97,29 +97,29 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a6d87175ca74eeda98cde8136f45406c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d87175ca74eeda98cde8136f45406c8"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>stream_index</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>stream_index</b> = -1</td></tr>
 <tr class="separator:a6d87175ca74eeda98cde8136f45406c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17d3ffbd27aae4137f338247f614611e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17d3ffbd27aae4137f338247f614611e"></a>
-StreamDataType&#160;</td><td class="memItemRight" valign="bottom"><b>stream_data_type</b></td></tr>
+StreamDataType&#160;</td><td class="memItemRight" valign="bottom"><b>stream_data_type</b> = StreamDataType::kUnknown</td></tr>
 <tr class="separator:a17d3ffbd27aae4137f338247f614611e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5edb6f2c80cba26ee84535b0f75175ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5edb6f2c80cba26ee84535b0f75175ec"></a>
-std::unique_ptr&lt; <a class="el" href="../../d7/d58/structshaka_1_1media_1_1PeriodInfo.html">PeriodInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>period_info</b></td></tr>
-<tr class="separator:a5edb6f2c80cba26ee84535b0f75175ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a729121e587b7ac358fda40bab67b8d8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a729121e587b7ac358fda40bab67b8d8b"></a>
-std::unique_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stream_info</b></td></tr>
-<tr class="separator:a729121e587b7ac358fda40bab67b8d8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5af958242713c7d47cdefedbf387af5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5af958242713c7d47cdefedbf387af5a"></a>
-std::unique_ptr&lt; <a class="el" href="../../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html">EncryptionConfig</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>encryption_config</b></td></tr>
-<tr class="separator:a5af958242713c7d47cdefedbf387af5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a750acd03d79236d271286abaa56fdc87"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a750acd03d79236d271286abaa56fdc87"></a>
-std::unique_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>media_sample</b></td></tr>
-<tr class="separator:a750acd03d79236d271286abaa56fdc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5a45104493d90a6911e646c9a9abecf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac5a45104493d90a6911e646c9a9abecf"></a>
-std::unique_ptr&lt; <a class="el" href="../../df/dd3/structshaka_1_1media_1_1MediaEvent.html">MediaEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>media_event</b></td></tr>
-<tr class="separator:ac5a45104493d90a6911e646c9a9abecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14a1efc50759dc3a65b662399dbd3840"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14a1efc50759dc3a65b662399dbd3840"></a>
-std::unique_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>segment_info</b></td></tr>
-<tr class="separator:a14a1efc50759dc3a65b662399dbd3840"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13098b1356073a7907c473210c64c677"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a13098b1356073a7907c473210c64c677"></a>
+std::shared_ptr&lt; <a class="el" href="../../d7/d58/structshaka_1_1media_1_1PeriodInfo.html">PeriodInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>period_info</b></td></tr>
+<tr class="separator:a13098b1356073a7907c473210c64c677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a382ae78e0d1db8f0ee12da1891f968cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a382ae78e0d1db8f0ee12da1891f968cb"></a>
+std::shared_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>stream_info</b></td></tr>
+<tr class="separator:a382ae78e0d1db8f0ee12da1891f968cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9effb89e4c5728a9c1cc63a40d85e921"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9effb89e4c5728a9c1cc63a40d85e921"></a>
+std::shared_ptr&lt; <a class="el" href="../../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html">EncryptionConfig</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>encryption_config</b></td></tr>
+<tr class="separator:a9effb89e4c5728a9c1cc63a40d85e921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a950633f630cb00856eb11b976459cacc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a950633f630cb00856eb11b976459cacc"></a>
+std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>media_sample</b></td></tr>
+<tr class="separator:a950633f630cb00856eb11b976459cacc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a089a353da61e6f6ed5b84b0d24af1f5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a089a353da61e6f6ed5b84b0d24af1f5c"></a>
+std::shared_ptr&lt; <a class="el" href="../../df/dd3/structshaka_1_1media_1_1MediaEvent.html">MediaEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>media_event</b></td></tr>
+<tr class="separator:a089a353da61e6f6ed5b84b0d24af1f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46ed4aa7420e331d631c36953b0556ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46ed4aa7420e331d631c36953b0556ba"></a>
+std::shared_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>segment_info</b></td></tr>
+<tr class="separator:a46ed4aa7420e331d631c36953b0556ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -130,7 +130,7 @@ std::unique_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1Seg
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 11 2017 01:23:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Feb 11 2017 02:48:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
