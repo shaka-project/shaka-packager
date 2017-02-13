@@ -2822,10 +2822,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l02733"></a><span class="lineno"> 2733</span>&#160;<span class="keywordtype">bool</span> VTTCueBox::ReadWriteInternal(<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) {</div>
 <div class="line"><a name="l02734"></a><span class="lineno"> 2734</span>&#160;  RCHECK(<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a160958fd4dd933f8b760bf61ec0f72c6">ReadWriteHeaderInternal</a>(buffer) &amp;&amp;</div>
 <div class="line"><a name="l02735"></a><span class="lineno"> 2735</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a29158ec9769dafbdcf1192abf9a2aa2a">PrepareChildren</a>() &amp;&amp;</div>
-<div class="line"><a name="l02736"></a><span class="lineno"> 2736</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#af1a1b7ca8e4749e862abdda9ba4501cb">ReadWriteChild</a>(&amp;cue_source_id) &amp;&amp;</div>
-<div class="line"><a name="l02737"></a><span class="lineno"> 2737</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#af1a1b7ca8e4749e862abdda9ba4501cb">ReadWriteChild</a>(&amp;cue_id) &amp;&amp;</div>
-<div class="line"><a name="l02738"></a><span class="lineno"> 2738</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#af1a1b7ca8e4749e862abdda9ba4501cb">ReadWriteChild</a>(&amp;cue_time) &amp;&amp;</div>
-<div class="line"><a name="l02739"></a><span class="lineno"> 2739</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#af1a1b7ca8e4749e862abdda9ba4501cb">ReadWriteChild</a>(&amp;cue_settings) &amp;&amp;</div>
+<div class="line"><a name="l02736"></a><span class="lineno"> 2736</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a7aacff091ff415be3da48be4fc620654">TryReadWriteChild</a>(&amp;cue_source_id) &amp;&amp;</div>
+<div class="line"><a name="l02737"></a><span class="lineno"> 2737</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a7aacff091ff415be3da48be4fc620654">TryReadWriteChild</a>(&amp;cue_id) &amp;&amp;</div>
+<div class="line"><a name="l02738"></a><span class="lineno"> 2738</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a7aacff091ff415be3da48be4fc620654">TryReadWriteChild</a>(&amp;cue_time) &amp;&amp;</div>
+<div class="line"><a name="l02739"></a><span class="lineno"> 2739</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a7aacff091ff415be3da48be4fc620654">TryReadWriteChild</a>(&amp;cue_settings) &amp;&amp;</div>
 <div class="line"><a name="l02740"></a><span class="lineno"> 2740</span>&#160;         buffer-&gt;<a class="code" href="../../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#af1a1b7ca8e4749e862abdda9ba4501cb">ReadWriteChild</a>(&amp;cue_payload));</div>
 <div class="line"><a name="l02741"></a><span class="lineno"> 2741</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l02742"></a><span class="lineno"> 2742</span>&#160;}</div>
@@ -2950,7 +2950,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 11 2017 17:13:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 13 2017 22:34:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
