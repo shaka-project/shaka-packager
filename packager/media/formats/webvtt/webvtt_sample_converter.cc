@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp4/webvtt_fragmenter.h"
+#include "packager/media/formats/webvtt/webvtt_sample_converter.h"
 
 #include <algorithm>
 #include <string>
@@ -18,14 +18,13 @@
 
 namespace shaka {
 namespace media {
-namespace mp4 {
 
 namespace {
 
 std::shared_ptr<MediaSample> CreateEmptyCueSample(uint64_t start_time,
                                                 uint64_t end_time) {
   DCHECK_GT(end_time, start_time);
-  VTTEmptyCueBox empty_cue_box;
+  mp4::VTTEmptyCueBox empty_cue_box;
 
   std::vector<uint8_t> serialized;
   AppendBoxToVector(&empty_cue_box, &serialized);
@@ -37,8 +36,8 @@ std::shared_ptr<MediaSample> CreateEmptyCueSample(uint64_t start_time,
   return empty_cue_sample;
 }
 
-VTTCueBox CueBoxFromCue(const Cue& cue) {
-  VTTCueBox cue_box;
+mp4::VTTCueBox CueBoxFromCue(const Cue& cue) {
+  mp4::VTTCueBox cue_box;
   if (!cue.identifier.empty()) {
     cue_box.cue_id.cue_id = cue.identifier;
   }
@@ -77,7 +76,7 @@ std::shared_ptr<MediaSample> CreateVTTCueBoxesSample(
 
   BufferWriter writer;
   for (const Cue* cue : cues) {
-    VTTCueBox cue_box = CueBoxFromCue(*cue);
+    mp4::VTTCueBox cue_box = CueBoxFromCue(*cue);
     // If there is internal timing, i.e. WebVTT cue timestamp, then
     // cue_current_time should be populated
     // "which gives the VTT timestamp associated with the start time of sample."
@@ -115,7 +114,7 @@ uint64_t GetMinimumPastSweepLine(uint64_t cue_start_time,
 
 } // namespace
 
-void AppendBoxToVector(Box* box, std::vector<uint8_t>* output_vector) {
+void AppendBoxToVector(mp4::Box* box, std::vector<uint8_t>* output_vector) {
   BufferWriter writer;
   box->Write(&writer);
   output_vector->insert(output_vector->end(),
@@ -123,15 +122,15 @@ void AppendBoxToVector(Box* box, std::vector<uint8_t>* output_vector) {
                         writer.Buffer() + writer.Size());
 }
 
-WebVttFragmenter::WebVttFragmenter() : next_cue_start_time_(0u) {}
-WebVttFragmenter::~WebVttFragmenter() {}
+WebVttSampleConverter::WebVttSampleConverter() : next_cue_start_time_(0u) {}
+WebVttSampleConverter::~WebVttSampleConverter() {}
 
 // Note that this |sample| is either a cue or a comment. It does not have any
 // info on whether the next cue is overlapping or not.
-void WebVttFragmenter::PushSample(std::shared_ptr<MediaSample> sample) {
+void WebVttSampleConverter::PushSample(std::shared_ptr<MediaSample> sample) {
   if (sample->data_size() == 0u) {
     // A comment. Put it in the buffer and skip.
-    VTTAdditionalTextBox comment;
+    mp4::VTTAdditionalTextBox comment;
     comment.cue_additional_text.assign(
         sample->side_data(), sample->side_data() + sample->side_data_size());
     additional_texts_.push_back(comment);
@@ -164,7 +163,7 @@ void WebVttFragmenter::PushSample(std::shared_ptr<MediaSample> sample) {
   cues_.erase(cues_.begin(), erase_last_iterator);
 }
 
-void WebVttFragmenter::Flush() {
+void WebVttSampleConverter::Flush() {
   if (cues_.empty())
     return;
   if (cues_.size() == 1) {
@@ -185,11 +184,11 @@ void WebVttFragmenter::Flush() {
   cues_.clear();
 }
 
-size_t WebVttFragmenter::ReadySamplesSize() {
+size_t WebVttSampleConverter::ReadySamplesSize() {
   return ready_samples_.size();
 }
 
-std::shared_ptr<MediaSample> WebVttFragmenter::PopSample() {
+std::shared_ptr<MediaSample> WebVttSampleConverter::PopSample() {
   CHECK(!ready_samples_.empty());
   std::shared_ptr<MediaSample> ret = ready_samples_.front();
   ready_samples_.pop_front();
@@ -208,7 +207,7 @@ std::shared_ptr<MediaSample> WebVttFragmenter::PopSample() {
 // Change algorithm to create A,B,C samples right away.
 // Note that this requires change to the caller on which cues
 // to remove.
-bool WebVttFragmenter::HandleAllCuesButLatest() {
+bool WebVttSampleConverter::HandleAllCuesButLatest() {
   DCHECK_GE(cues_.size(), 2u);
   const Cue& latest_cue = cues_.back();
 
@@ -246,7 +245,7 @@ bool WebVttFragmenter::HandleAllCuesButLatest() {
   return processed_cues;
 }
 
-bool WebVttFragmenter::HandleAllCues() {
+bool WebVttSampleConverter::HandleAllCues() {
   uint64_t latest_time = 0u;
   for (const Cue& cue : cues_) {
     if (cue.start_time + cue.duration > latest_time)
@@ -259,8 +258,8 @@ bool WebVttFragmenter::HandleAllCues() {
   return processed;
 }
 
-bool WebVttFragmenter::SweepCues(uint64_t sweep_line,
-                                 uint64_t sweep_stop_time) {
+bool WebVttSampleConverter::SweepCues(uint64_t sweep_line,
+                                      uint64_t sweep_stop_time) {
   bool processed_cues = false;
   // This is a sweep line algorithm. For every iteration, it determines active
   // cues and makes a sample.
@@ -308,6 +307,5 @@ bool WebVttFragmenter::SweepCues(uint64_t sweep_line,
   return processed_cues;
 }
 
-}  // namespace mp4
 }  // namespace media
 }  // namespace shaka

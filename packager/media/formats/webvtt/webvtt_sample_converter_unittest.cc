@@ -1,4 +1,4 @@
-#include "packager/media/formats/mp4/webvtt_fragmenter.h"
+#include "packager/media/formats/webvtt/webvtt_sample_converter.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -32,7 +32,7 @@ MATCHER_P3(MatchesStartTimeEndTimeAndData, start_time, end_time, data, "") {
 
 class WebVttFragmenterTest : public ::testing::Test {
  protected:
-  WebVttFragmenter webvtt_fragmenter_;
+  WebVttSampleConverter webvtt_sample_converter_;
 };
 
 // Verify that AppednBoxToVector works.
@@ -89,7 +89,7 @@ TEST_F(WebVttFragmenterTest, NoOverlapContiguous) {
   sample1->set_dts(0);
   sample1->set_duration(2000);
 
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
   std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
@@ -98,22 +98,22 @@ TEST_F(WebVttFragmenterTest, NoOverlapContiguous) {
   sample2->set_dts(2000);
   sample2->set_duration(1000);
 
-  webvtt_fragmenter_.PushSample(sample2);
-  webvtt_fragmenter_.Flush();
-  EXPECT_EQ(2u, webvtt_fragmenter_.ReadySamplesSize());
+  webvtt_sample_converter_.PushSample(sample2);
+  webvtt_sample_converter_.Flush();
+  EXPECT_EQ(2u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox first_cue_data;
   first_cue_data.cue_payload.cue_text = kCueMessage1;
   std::vector<uint8_t> expected;
   AppendBoxToVector(&first_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(0, 2000, expected));
 
   VTTCueBox second_cue_data;
   second_cue_data.cue_payload.cue_text = kCueMessage2;
   expected.clear();
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(2000, 3000, expected));
 }
 
@@ -126,7 +126,7 @@ TEST_F(WebVttFragmenterTest, Gap) {
   sample1->set_dts(0);
   sample1->set_duration(1000);
 
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
   std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
@@ -135,30 +135,30 @@ TEST_F(WebVttFragmenterTest, Gap) {
   sample2->set_dts(2000);
   sample2->set_duration(1000);
 
-  webvtt_fragmenter_.PushSample(sample2);
-  EXPECT_EQ(2u, webvtt_fragmenter_.ReadySamplesSize());
+  webvtt_sample_converter_.PushSample(sample2);
+  EXPECT_EQ(2u, webvtt_sample_converter_.ReadySamplesSize());
 
-  webvtt_fragmenter_.Flush();
-  EXPECT_EQ(3u, webvtt_fragmenter_.ReadySamplesSize());
+  webvtt_sample_converter_.Flush();
+  EXPECT_EQ(3u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox first_cue_data;
   first_cue_data.cue_payload.cue_text = kCueMessage1;
   std::vector<uint8_t> expected;
   AppendBoxToVector(&first_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(0, 1000, expected));
 
   VTTEmptyCueBox empty_cue;
   expected.clear();
   AppendBoxToVector(&empty_cue, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1000, 2000, expected));
 
   VTTCueBox second_cue_data;
   second_cue_data.cue_payload.cue_text = kCueMessage2;
   expected.clear();
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(2000, 3000, expected));
 }
 
@@ -172,7 +172,7 @@ TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
   sample1->set_dts(0);
   sample1->set_duration(2000);
 
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
   std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
@@ -180,7 +180,7 @@ TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
   sample2->set_pts(1000);
   sample2->set_dts(1000);
   sample2->set_duration(2000);
-  webvtt_fragmenter_.PushSample(sample2);
+  webvtt_sample_converter_.PushSample(sample2);
 
   std::shared_ptr<MediaSample> sample3 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage3),
@@ -188,18 +188,18 @@ TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
   sample3->set_pts(1500);
   sample3->set_dts(1500);
   sample3->set_duration(4000);
-  webvtt_fragmenter_.PushSample(sample3);
+  webvtt_sample_converter_.PushSample(sample3);
 
-  webvtt_fragmenter_.Flush();
+  webvtt_sample_converter_.Flush();
   // There should be 5 samples for [0,1000], [1000,1500], [1500,2000],
   // [2000,3000], and [3000, 5500].
-  EXPECT_EQ(5u, webvtt_fragmenter_.ReadySamplesSize());
+  EXPECT_EQ(5u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox first_cue_data;
   first_cue_data.cue_payload.cue_text = kCueMessage1;
   std::vector<uint8_t> expected;
   AppendBoxToVector(&first_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(0, 1000, expected));
 
   VTTCueBox second_cue_data;
@@ -207,7 +207,7 @@ TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
   expected.clear();
   AppendBoxToVector(&first_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1000, 1500, expected));
 
   VTTCueBox third_cue_data;
@@ -216,18 +216,18 @@ TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
   AppendBoxToVector(&first_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
   AppendBoxToVector(&third_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1500, 2000, expected));
 
   expected.clear();
   AppendBoxToVector(&second_cue_data, &expected);
   AppendBoxToVector(&third_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(2000, 3000, expected));
 
   expected.clear();
   AppendBoxToVector(&third_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(3000, 5500, expected));
 }
 
@@ -239,7 +239,7 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   sample1->set_dts(0);
   sample1->set_duration(10000);
 
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
   std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
@@ -247,7 +247,7 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   sample2->set_pts(1000);
   sample2->set_dts(1000);
   sample2->set_duration(5000);
-  webvtt_fragmenter_.PushSample(sample2);
+  webvtt_sample_converter_.PushSample(sample2);
 
   std::shared_ptr<MediaSample> sample3 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage3),
@@ -255,7 +255,7 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   sample3->set_pts(2000);
   sample3->set_dts(2000);
   sample3->set_duration(1000);
-  webvtt_fragmenter_.PushSample(sample3);
+  webvtt_sample_converter_.PushSample(sample3);
 
   std::shared_ptr<MediaSample> sample4 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage4),
@@ -263,18 +263,18 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   sample4->set_pts(8000);
   sample4->set_dts(8000);
   sample4->set_duration(1000);
-  webvtt_fragmenter_.PushSample(sample4);
-  webvtt_fragmenter_.Flush();
+  webvtt_sample_converter_.PushSample(sample4);
+  webvtt_sample_converter_.Flush();
 
   // There should be 7 samples for [0,1000], [1000,2000], [2000,3000],
   // [3000,6000], [6000, 8000], [8000, 9000], [9000, 10000].
-  EXPECT_EQ(7u, webvtt_fragmenter_.ReadySamplesSize());
+  EXPECT_EQ(7u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox first_long_cue_data;
   first_long_cue_data.cue_payload.cue_text = kCueMessage1;
   std::vector<uint8_t> expected;
   AppendBoxToVector(&first_long_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(0, 1000, expected));
 
   VTTCueBox second_cue_data;
@@ -282,7 +282,7 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   expected.clear();
   AppendBoxToVector(&first_long_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1000, 2000, expected));
 
   VTTCueBox third_cue_data;
@@ -291,18 +291,18 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   AppendBoxToVector(&first_long_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
   AppendBoxToVector(&third_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(2000, 3000, expected));
 
   expected.clear();
   AppendBoxToVector(&first_long_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(3000, 6000, expected));
 
   expected.clear();
   AppendBoxToVector(&first_long_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(6000, 8000, expected));
 
   VTTCueBox fourth_cue_data;
@@ -310,12 +310,12 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
   expected.clear();
   AppendBoxToVector(&first_long_cue_data, &expected);
   AppendBoxToVector(&fourth_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(8000, 9000, expected));
 
   expected.clear();
   AppendBoxToVector(&first_long_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(9000, 10000, expected));
 }
 
@@ -326,16 +326,16 @@ TEST_F(WebVttFragmenterTest, GapAtBeginning) {
   sample1->set_pts(1200);
   sample1->set_dts(1200);
   sample1->set_duration(2000);
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
-  webvtt_fragmenter_.Flush();
-  EXPECT_EQ(1u, webvtt_fragmenter_.ReadySamplesSize());
+  webvtt_sample_converter_.Flush();
+  EXPECT_EQ(1u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox cue_data;
   cue_data.cue_payload.cue_text = kCueMessage1;
   std::vector<uint8_t> expected;
   AppendBoxToVector(&cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1200, 3200, expected));
 }
 
@@ -348,7 +348,7 @@ TEST_F(WebVttFragmenterTest, SameStartTime) {
   sample1->set_dts(0);
   sample1->set_duration(2000);
 
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
   std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
@@ -357,9 +357,9 @@ TEST_F(WebVttFragmenterTest, SameStartTime) {
   sample2->set_dts(0);
   sample2->set_duration(1500);
 
-  webvtt_fragmenter_.PushSample(sample2);
-  webvtt_fragmenter_.Flush();
-  EXPECT_EQ(2u, webvtt_fragmenter_.ReadySamplesSize());
+  webvtt_sample_converter_.PushSample(sample2);
+  webvtt_sample_converter_.Flush();
+  EXPECT_EQ(2u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox first_cue_data;
   first_cue_data.cue_payload.cue_text = kCueMessage1;
@@ -369,12 +369,12 @@ TEST_F(WebVttFragmenterTest, SameStartTime) {
   std::vector<uint8_t> expected;
   AppendBoxToVector(&first_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(0, 1500, expected));
 
   expected.clear();
   AppendBoxToVector(&first_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1500, 2000, expected));
 }
 
@@ -387,7 +387,7 @@ TEST_F(WebVttFragmenterTest, MoreCases) {
   sample1->set_dts(0);
   sample1->set_duration(2000);
 
-  webvtt_fragmenter_.PushSample(sample1);
+  webvtt_sample_converter_.PushSample(sample1);
 
   std::shared_ptr<MediaSample> sample2 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
@@ -396,7 +396,7 @@ TEST_F(WebVttFragmenterTest, MoreCases) {
   sample2->set_dts(100);
   sample2->set_duration(100);
 
-  webvtt_fragmenter_.PushSample(sample2);
+  webvtt_sample_converter_.PushSample(sample2);
 
   std::shared_ptr<MediaSample> sample3 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage3),
@@ -404,7 +404,7 @@ TEST_F(WebVttFragmenterTest, MoreCases) {
   sample3->set_pts(1500);
   sample3->set_dts(1500);
   sample3->set_duration(1000);
-  webvtt_fragmenter_.PushSample(sample3);
+  webvtt_sample_converter_.PushSample(sample3);
 
   std::shared_ptr<MediaSample> sample4 =
       MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage4),
@@ -412,10 +412,10 @@ TEST_F(WebVttFragmenterTest, MoreCases) {
   sample4->set_pts(1500);
   sample4->set_dts(1500);
   sample4->set_duration(800);
-  webvtt_fragmenter_.PushSample(sample4);
+  webvtt_sample_converter_.PushSample(sample4);
 
-  webvtt_fragmenter_.Flush();
-  EXPECT_EQ(6u, webvtt_fragmenter_.ReadySamplesSize());
+  webvtt_sample_converter_.Flush();
+  EXPECT_EQ(6u, webvtt_sample_converter_.ReadySamplesSize());
 
   VTTCueBox first_cue_data;
   first_cue_data.cue_payload.cue_text = kCueMessage1;
@@ -428,36 +428,36 @@ TEST_F(WebVttFragmenterTest, MoreCases) {
 
   std::vector<uint8_t> expected;
   AppendBoxToVector(&first_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(0, 100, expected));
 
   expected.clear();
   AppendBoxToVector(&first_cue_data, &expected);
   AppendBoxToVector(&second_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(100, 200, expected));
 
   expected.clear();
   AppendBoxToVector(&first_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(200, 1500, expected));
 
   expected.clear();
   AppendBoxToVector(&first_cue_data, &expected);
   AppendBoxToVector(&third_cue_data, &expected);
   AppendBoxToVector(&fourth_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(1500, 2000, expected));
 
   expected.clear();
   AppendBoxToVector(&third_cue_data, &expected);
   AppendBoxToVector(&fourth_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(2000, 2300, expected));
 
   expected.clear();
   AppendBoxToVector(&third_cue_data, &expected);
-  EXPECT_THAT(webvtt_fragmenter_.PopSample(),
+  EXPECT_THAT(webvtt_sample_converter_.PopSample(),
               MatchesStartTimeEndTimeAndData(2300, 2500, expected));
 }
 

@@ -4,24 +4,24 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
-#define PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
+#ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_SAMPLE_CONVERTER_H_
+#define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_SAMPLE_CONVERTER_H_
 
 #include <stdint.h>
 #include <list>
 
 #include "packager/media/base/status.h"
+#include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/webvtt/webvtt_media_parser.h"
+#include "packager/media/formats/webvtt/cue.h"
 
 namespace shaka {
 namespace media {
-namespace mp4 {
 
 /// Appends box to vector.
 /// @param box is the box to be serialized.
 /// @param output_vector is where the data is appended.
-void AppendBoxToVector(Box* box, std::vector<uint8_t>* output_vector);
+void AppendBoxToVector(mp4::Box* box, std::vector<uint8_t>* output_vector);
 
 /// According to the spec, when cues overlap, samples must be created.\n
 /// The example below has 2 WebVTT cues:\n
@@ -51,15 +51,10 @@ void AppendBoxToVector(Box* box, std::vector<uint8_t>* output_vector);
 ///\n
 /// This class buffers the samples that are passed to AddSample() and creates
 /// more samples as necessary.
-// TODO(rkuroiwa): Rename this to WebVttSampleConverter, and put this in
-// webvtt parser.
-// For now, the output (from PopSample()) should still be in ISO-BMFF box form;
-// and also to signal that, should have different types for TextStreamInfo. e.g.
-// TextStreamInfo::type() returns kIsoBmffStreamText.
-class WebVttFragmenter {
+class WebVttSampleConverter {
  public:
-  WebVttFragmenter();
-  ~WebVttFragmenter();
+  WebVttSampleConverter();
+  ~WebVttSampleConverter();
 
   /// Add a sample.
   /// @param sample is the sample to be added. It should contain one VTT cue.
@@ -104,7 +99,7 @@ class WebVttFragmenter {
   std::list<Cue> cues_;
 
   // For comment samples.
-  std::list<VTTAdditionalTextBox> additional_texts_;
+  std::list<mp4::VTTAdditionalTextBox> additional_texts_;
 
   // Samples that are ready to be processed.
   std::list<std::shared_ptr<MediaSample>> ready_samples_;
@@ -114,11 +109,10 @@ class WebVttFragmenter {
   // or an empty cue (gap) has to be added.
   uint64_t next_cue_start_time_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebVttFragmenter);
+  DISALLOW_COPY_AND_ASSIGN(WebVttSampleConverter);
 };
 
-}  // namespace shaka
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
-#endif  // PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
+#endif  // PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_SAMPLE_CONVERTER_H_

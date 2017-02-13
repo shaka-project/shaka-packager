@@ -13,12 +13,17 @@
       'target_name': 'webvtt',
       'type': '<(component)',
       'sources': [
+        'cue.cc',
+        'cue.h',
         'webvtt_media_parser.cc',
         'webvtt_media_parser.h',
+        'webvtt_sample_converter.cc',
+        'webvtt_sample_converter.h',
       ],
       'dependencies': [
         '../../../base/base.gyp:base',
         '../../base/media_base.gyp:media_base',
+        '../../formats/mp4/mp4.gyp:mp4',
       ],
     },
     {
@@ -26,6 +31,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'webvtt_media_parser_unittest.cc',
+        'webvtt_sample_converter_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gmock.gyp:gmock',

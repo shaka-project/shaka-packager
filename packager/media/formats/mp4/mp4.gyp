@@ -46,15 +46,12 @@
         'sync_sample_iterator.h',
         'track_run_iterator.cc',
         'track_run_iterator.h',
-        'webvtt_fragmenter.cc',
-        'webvtt_fragmenter.h',
       ],
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../base/media_base.gyp:media_base',
         '../../codecs/codecs.gyp:codecs',
         '../../event/media_event.gyp:media_event',
-        '../../formats/webvtt/webvtt.gyp:webvtt',
       ],
     },
     {
@@ -69,7 +66,6 @@
         'mp4_media_parser_unittest.cc',
         'sync_sample_iterator_unittest.cc',
         'track_run_iterator_unittest.cc',
-        'webvtt_fragmenter_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
