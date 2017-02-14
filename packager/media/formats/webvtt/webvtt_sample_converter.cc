@@ -22,7 +22,7 @@ namespace media {
 namespace {
 
 std::shared_ptr<MediaSample> CreateEmptyCueSample(uint64_t start_time,
-                                                uint64_t end_time) {
+                                                  uint64_t end_time) {
   DCHECK_GT(end_time, start_time);
   mp4::VTTEmptyCueBox empty_cue_box;
 
@@ -36,6 +36,15 @@ std::shared_ptr<MediaSample> CreateEmptyCueSample(uint64_t start_time,
   return empty_cue_sample;
 }
 
+void StripTrailingNewlines(const std::string& input, std::string* output) {
+  const size_t found = input.find_last_not_of('\n');
+  if (found != std::string::npos) {
+    *output = input.substr(0, found + 1);
+  } else {
+    *output = input;
+  }
+}
+
 mp4::VTTCueBox CueBoxFromCue(const Cue& cue) {
   mp4::VTTCueBox cue_box;
   if (!cue.identifier.empty()) {
@@ -46,7 +55,7 @@ mp4::VTTCueBox CueBoxFromCue(const Cue& cue) {
     cue_box.cue_settings.settings = cue.settings;
   }
 
-  cue_box.cue_payload.cue_text = cue.payload.front();
+  StripTrailingNewlines(cue.payload, &cue_box.cue_payload.cue_text);
   return cue_box;
 }
 
@@ -127,19 +136,18 @@ WebVttSampleConverter::~WebVttSampleConverter() {}
 
 // Note that this |sample| is either a cue or a comment. It does not have any
 // info on whether the next cue is overlapping or not.
-void WebVttSampleConverter::PushSample(std::shared_ptr<MediaSample> sample) {
-  if (sample->data_size() == 0u) {
+void WebVttSampleConverter::PushCue(const Cue& cue) {
+  if (!cue.comment.empty()) {
     // A comment. Put it in the buffer and skip.
     mp4::VTTAdditionalTextBox comment;
-    comment.cue_additional_text.assign(
-        sample->side_data(), sample->side_data() + sample->side_data_size());
+    StripTrailingNewlines(cue.comment, &comment.cue_additional_text);
     additional_texts_.push_back(comment);
     // TODO(rkuriowa): Handle comments as samples.
 
     return;
   }
 
-  cues_.push_back(MediaSampleToCue(*sample));
+  cues_.push_back(cue);
   if (cues_.size() == 1) {
     // Cannot make a decision with just one sample. Cache it and wait for
     // another one.

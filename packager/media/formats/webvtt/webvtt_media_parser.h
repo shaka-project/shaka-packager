@@ -8,12 +8,15 @@
 #define MEDIA_FORMATS_WEBVTT_WEBVTT_MEDIA_PARSER_H_
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/formats/webvtt/cue.h"
+#include "packager/media/formats/webvtt/webvtt_sample_converter.h"
 
 namespace shaka {
 namespace media {
@@ -34,6 +37,9 @@ class WebVttMediaParser : public MediaParser {
   bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
   /// @}
 
+  void InjectWebVttSampleConvertForTesting(
+      std::unique_ptr<WebVttSampleConverter> converter);
+
  private:
   enum WebVttReadingState {
     kHeader,
@@ -44,6 +50,11 @@ class WebVttMediaParser : public MediaParser {
     kComment,
     kParseError,
   };
+
+  // Sends current cue to sample converter, and dispatches any ready samples to
+  // the callback.
+  // current_cue_ is always cleared.
+  bool ProcessCurrentCue(bool flush);
 
   InitCB init_cb_;
   NewSampleCB new_sample_cb_;
@@ -61,6 +72,8 @@ class WebVttMediaParser : public MediaParser {
   WebVttReadingState state_;
 
   Cue current_cue_;
+
+  std::unique_ptr<WebVttSampleConverter> sample_converter_;
 
   DISALLOW_COPY_AND_ASSIGN(WebVttMediaParser);
 };

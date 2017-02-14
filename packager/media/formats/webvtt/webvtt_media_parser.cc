@@ -22,6 +22,8 @@ namespace media {
 
 namespace {
 
+const bool kFlush = true;
+
 // There's only one track in a WebVTT file.
 const int kTrackId = 0;
 
@@ -186,7 +188,8 @@ bool ParseTimingAndSettingsLine(const std::string& line,
 
 }  // namespace
 
-WebVttMediaParser::WebVttMediaParser() : state_(kHeader) {}
+WebVttMediaParser::WebVttMediaParser()
+    : state_(kHeader), sample_converter_(new WebVttSampleConverter()) {}
 WebVttMediaParser::~WebVttMediaParser() {}
 
 void WebVttMediaParser::Init(const InitCB& init_cb,
@@ -205,17 +208,20 @@ bool WebVttMediaParser::Flush() {
     // If it was in the middle of the payload and the stream finished, then this
     // is an end of the payload. The rest of the data is part of the payload.
     if (state_ == kCuePayload) {
-      current_cue_.payload.push_back(data_);
+      current_cue_.payload += data_ + "\n";
     } else {
-      current_cue_.comment.push_back(data_);
+      current_cue_.comment += data_ + "\n";
     }
     data_.clear();
   }
 
-  bool result = new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_));
-  current_cue_ = Cue();
+  if (!ProcessCurrentCue(kFlush)) {
+    state_ = kParseError;
+    return false;
+  }
+
   state_ = kCueIdentifierOrTimingOrComment;
-  return result;
+  return true;
 }
 
 bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
@@ -265,8 +271,11 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
           // There is no one metadata to determine what the language is. Parts
           // of the text may be annotated as some specific language.
           const char kLanguage[] = "";
+
+          const char kWebVttCodecString[] = "wvtt";
           streams.emplace_back(
-              new TextStreamInfo(kTrackId, kTimescale, kDuration, "wvtt",
+              new TextStreamInfo(kTrackId, kTimescale, kDuration,
+                                 kCodecWebVtt, kWebVttCodecString,
                                  base::JoinString(header_, "\n"),
                                  0,  // Not necessary.
                                  0,
@@ -291,7 +300,7 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
           if (base::StartsWith(line, "NOTE",
                                base::CompareCase::INSENSITIVE_ASCII)) {
             state_ = kComment;
-            current_cue_.comment.push_back(line);
+            current_cue_.comment += line + "\n";
           } else {
             // A cue can start from a cue identifier.
             // https://w3c.github.io/webvtt/#webvtt-cue-identifier
@@ -322,29 +331,27 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
       case kCuePayload: {
         if (line.empty()) {
           state_ = kCueIdentifierOrTimingOrComment;
-          if (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {
+          if (!ProcessCurrentCue(!kFlush)) {
             state_ = kParseError;
             return false;
           }
-          current_cue_ = Cue();
           break;
         }
 
-        current_cue_.payload.push_back(line);
+        current_cue_.payload += line + "\n";
         break;
       }
       case kComment: {
         if (line.empty()) {
           state_ = kCueIdentifierOrTimingOrComment;
-          if (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {
+          if (!ProcessCurrentCue(!kFlush)) {
             state_ = kParseError;
             return false;
           }
-          current_cue_ = Cue();
           break;
         }
 
-        current_cue_.comment.push_back(line);
+        current_cue_.comment += line + "\n";
         break;
       }
       case kParseError:
@@ -353,6 +360,26 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
     }
   }
 
+  return true;
+}
+
+void WebVttMediaParser::InjectWebVttSampleConvertForTesting(
+    std::unique_ptr<WebVttSampleConverter> converter) {
+  sample_converter_ = std::move(converter);
+}
+
+bool WebVttMediaParser::ProcessCurrentCue(bool flush) {
+  sample_converter_->PushCue(current_cue_);
+  current_cue_ = Cue();
+  if (flush)
+    sample_converter_->Flush();
+
+  while (sample_converter_->ReadySamplesSize() > 0) {
+    if (!new_sample_cb_.Run(kTrackId, sample_converter_->PopSample())) {
+      LOG(ERROR) << "New sample callback failed.";
+      return false;
+    }
+  }
   return true;
 }
 

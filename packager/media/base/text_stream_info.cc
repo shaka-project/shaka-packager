@@ -11,10 +11,11 @@ namespace media {
 
 TextStreamInfo::TextStreamInfo(int track_id, uint32_t time_scale,
                                uint64_t duration,
+                               Codec codec,
                                const std::string& codec_string,
                                const std::string& codec_config, uint16_t width,
                                uint16_t height, const std::string& language)
-    : StreamInfo(kStreamText, track_id, time_scale, duration, kCodecText,
+    : StreamInfo(kStreamText, track_id, time_scale, duration, codec,
                  codec_string,
                  reinterpret_cast<const uint8_t*>(codec_config.data()),
                  codec_config.size(), language, false),

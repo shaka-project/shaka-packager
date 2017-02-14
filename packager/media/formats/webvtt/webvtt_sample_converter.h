@@ -51,28 +51,29 @@ void AppendBoxToVector(mp4::Box* box, std::vector<uint8_t>* output_vector);
 ///\n
 /// This class buffers the samples that are passed to AddSample() and creates
 /// more samples as necessary.
+/// Methods are virtual only for mocking, not intended for inheritance.
 class WebVttSampleConverter {
  public:
   WebVttSampleConverter();
-  ~WebVttSampleConverter();
+  virtual ~WebVttSampleConverter();
 
-  /// Add a sample.
-  /// @param sample is the sample to be added. It should contain one VTT cue.
-  void PushSample(std::shared_ptr<MediaSample> sample);
+  /// Add a webvtt cue.
+  /// @param cue is a webvtt cue.
+  virtual void PushCue(const Cue& cue);
 
   /// Process all the buffered samples.
   /// This finalizes the object and further calls to PushSample() may result in
   /// an undefined behavior.
-  void Flush();
+  virtual void Flush();
 
   /// @return The number of samples that are processed and ready to be popped.
-  size_t ReadySamplesSize();
+  virtual size_t ReadySamplesSize();
 
   /// Returns a MediaSample that is non-overlapping with the previous samples
   /// that it has output. The data in the sample is one or more ISO-BMFF boxes
   /// for the duration of the sample.
   /// @return The first sample that is ready to be processed.
-  std::shared_ptr<MediaSample> PopSample();
+  virtual std::shared_ptr<MediaSample> PopSample();
 
  private:
   // Handle |cues_| except the last item, and create samples from them.

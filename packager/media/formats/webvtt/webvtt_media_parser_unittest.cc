@@ -8,12 +8,29 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/bind.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/webvtt/webvtt_media_parser.h"
 
 namespace shaka {
 namespace media {
+
+using mp4::VTTCueBox;
+
+namespace {
+// Data is a vector and must not be empty.
+MATCHER_P3(MatchesStartTimeEndTimeAndData, start_time, end_time, data, "") {
+  *result_listener << "which is (" << arg->pts() << ", "
+                   << (arg->pts() + arg->duration()) << ", "
+                   << base::HexEncode(arg->data(), arg->data_size()) << ")";
+  return arg->pts() == start_time &&
+         (arg->pts() + arg->duration() == end_time) &&
+         arg->data_size() == data.size() &&
+         (memcmp(&data[0], arg->data(), arg->data_size()) == 0);
+}
+}  // namespace
 
 typedef testing::MockFunction<void(
     const std::vector<std::shared_ptr<StreamInfo>>& stream_info)>
@@ -22,15 +39,13 @@ typedef testing::MockFunction<
     bool(uint32_t track_id, const std::shared_ptr<MediaSample>& media_sample)>
     MockNewSampleCallback;
 
-using testing::_;
+using testing::AtLeast;
 using testing::InSequence;
 using testing::Return;
+using testing::_;
 
 class WebVttMediaParserTest : public ::testing::Test {
  public:
-  WebVttMediaParserTest() {}
-  ~WebVttMediaParserTest() override {}
-
   void InitializeParser() {
     parser_.Init(
         base::Bind(&MockInitCallback::Call, base::Unretained(&init_callback_)),
@@ -51,13 +66,21 @@ TEST_F(WebVttMediaParserTest, Init) {
 
 TEST_F(WebVttMediaParserTest, ParseOneCue) {
   EXPECT_CALL(init_callback_, Call(_));
-  EXPECT_CALL(new_sample_callback_, Call(_, _)).WillOnce(Return(true));
+
+  VTTCueBox cue_box;
+  cue_box.cue_payload.cue_text = "subtitle";
+  std::vector<uint8_t> expected;
+  AppendBoxToVector(&cue_box, &expected);
+
+  EXPECT_CALL(new_sample_callback_,
+              Call(_, MatchesStartTimeEndTimeAndData(60000, 3600000, expected)))
+      .WillOnce(Return(true));
 
   const char kWebVtt[] =
       "WEBVTT\n"
       "\n"
       "00:01:00.000 --> 01:00:00.000\n"
-      "subtitle";
+      "subtitle\n";
   InitializeParser();
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
@@ -82,20 +105,63 @@ TEST_F(WebVttMediaParserTest, DifferentLineBreaks) {
   EXPECT_TRUE(parser_.Flush());
 }
 
-TEST_F(WebVttMediaParserTest, ParseMultpleCues) {
+// Verify that a typical case with mulitple cues works.
+TEST_F(WebVttMediaParserTest, ParseMultipleCues) {
   EXPECT_CALL(init_callback_, Call(_));
-  EXPECT_CALL(new_sample_callback_, Call(_, _))
-      .Times(2)
-      .WillRepeatedly(Return(true));
+
+
+  VTTCueBox first_cue_box;
+  first_cue_box.cue_payload.cue_text = "subtitle";
+
+  VTTCueBox second_cue_data;
+  second_cue_data.cue_payload.cue_text = "more subtitle";
+
+  VTTCueBox third_cue_data;
+  third_cue_data.cue_payload.cue_text = "more text";
+
+  std::vector<uint8_t> expected;
+  AppendBoxToVector(&first_cue_box, &expected);
+  EXPECT_CALL(new_sample_callback_,
+              Call(_, MatchesStartTimeEndTimeAndData(1000, 2321, expected)))
+      .WillOnce(Return(true));
+
+  expected.clear();
+  AppendBoxToVector(&first_cue_box, &expected);
+  AppendBoxToVector(&second_cue_data, &expected);
+  EXPECT_CALL(new_sample_callback_,
+              Call(_, MatchesStartTimeEndTimeAndData(2321, 5200, expected)))
+      .WillOnce(Return(true));
+
+  expected.clear();
+  AppendBoxToVector(&second_cue_data, &expected);
+  EXPECT_CALL(new_sample_callback_,
+              Call(_, MatchesStartTimeEndTimeAndData(5200, 5800, expected)))
+      .WillOnce(Return(true));
+
+  expected.clear();
+  AppendBoxToVector(&second_cue_data, &expected);
+  AppendBoxToVector(&third_cue_data, &expected);
+  EXPECT_CALL(new_sample_callback_,
+              Call(_, MatchesStartTimeEndTimeAndData(5800, 7000, expected)))
+      .WillOnce(Return(true));
+
+  expected.clear();
+  AppendBoxToVector(&third_cue_data, &expected);
+  EXPECT_CALL(new_sample_callback_,
+              Call(_, MatchesStartTimeEndTimeAndData(7000, 8000, expected)))
+      .WillOnce(Return(true));
 
   const char kWebVtt[] =
       "WEBVTT\n"
       "\n"
-      "00:01:00.000 --> 01:00:00.000\n"
+      "00:00:01.000 --> 00:00:05.200\n"
       "subtitle\n"
       "\n"
-      "02:01:00.000 --> 02:02:00.000\n"
-      "more subtitle";
+      "00:00:02.321 --> 00:00:07.000\n"
+      "more subtitle\n"
+      "\n"
+      "00:00:05.800 --> 00:00:08.000\n"
+      "more text\n" ;
   InitializeParser();
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
@@ -112,9 +178,8 @@ MATCHER_P2(MatchesStartTimeAndDuration, start_time, duration, "") {
 TEST_F(WebVttMediaParserTest, VerifyTimingParsing) {
   EXPECT_CALL(init_callback_, Call(_));
   EXPECT_CALL(new_sample_callback_,
-              Call(_, MatchesStartTimeAndDuration(61004, 204088)))
+              Call(_, MatchesStartTimeAndDuration(61004u, 204088u)))
       .WillOnce(Return(true));
-
   const char kWebVtt[] =
       "WEBVTT\n"
       "\n"
@@ -159,48 +224,15 @@ TEST_F(WebVttMediaParserTest, SpacesInTimestamp) {
                     arraysize(kSpacesInTimestamp) - 1));
 }
 
-MATCHER_P(MatchesPayload, data, "") {
-  std::vector<uint8_t> arg_data(arg->data(), arg->data() + arg->data_size());
-  return arg_data == data;
-}
-
-TEST_F(WebVttMediaParserTest, VerifyCuePayload) {
-  const char kExpectedPayload1[] = "subtitle";
-  const char kExpectedPayload2[] = "hello";
-  std::vector<uint8_t> expected_payload(
-      kExpectedPayload1, kExpectedPayload1 + arraysize(kExpectedPayload1) - 1);
-
-  InSequence s;
-  EXPECT_CALL(init_callback_, Call(_));
-  EXPECT_CALL(new_sample_callback_, Call(_, MatchesPayload(expected_payload)))
-      .WillOnce(Return(true));
-
-  expected_payload.assign(kExpectedPayload2,
-                          kExpectedPayload2 + arraysize(kExpectedPayload2) - 1);
-  EXPECT_CALL(new_sample_callback_, Call(_, MatchesPayload(expected_payload)))
-      .WillOnce(Return(true));
-
-  const char kWebVtt[] =
-      "WEBVTT\n"
-      "\n"
-      "00:01:01.004 --> 00:01:22.088\n"
-      "subtitle\n"
-      "\n"
-      "02:06:00.000 --> 02:30:02.006\n"
-      "hello";
-
-  InitializeParser();
-  EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
-                            arraysize(kWebVtt) - 1));
-
-  EXPECT_TRUE(parser_.Flush());
+MATCHER_P(MatchesPayload, payload, "") {
+  return arg.payload.front() == std::string(payload);
 }
 
 // Verify that a sample can be created from multiple calls to Parse(), i.e. one
 // Parse() is not a full sample.
 TEST_F(WebVttMediaParserTest, PartialParse) {
   EXPECT_CALL(init_callback_, Call(_));
-  EXPECT_CALL(new_sample_callback_, Call(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(new_sample_callback_, Call(_, _)).Times(0);
 
   const char kWebVtt[] =
       "WEBVTT\n"
@@ -210,7 +242,8 @@ TEST_F(WebVttMediaParserTest, PartialParse) {
   InitializeParser();
   // Pass in the first 8 bytes, i.e. right before the first cue.
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt), 8));
-  // Pass in the rest of the cue.
+
+  EXPECT_CALL(new_sample_callback_, Call(_, _)).WillOnce(Return(true));
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt) + 8,
                             arraysize(kWebVtt) - 1 - 8));
 
@@ -221,6 +254,7 @@ TEST_F(WebVttMediaParserTest, PartialParse) {
 TEST_F(WebVttMediaParserTest, BadMetadataHeader) {
   EXPECT_CALL(init_callback_, Call(_)).Times(0);
   EXPECT_CALL(new_sample_callback_, Call(_, _)).Times(0);
+
   const char kBadWebVtt[] =
       "WEBVTT\n"
       "00:01:01.004 --> 00:04:25.092\n";
@@ -230,12 +264,8 @@ TEST_F(WebVttMediaParserTest, BadMetadataHeader) {
   EXPECT_TRUE(parser_.Flush());
 }
 
-MATCHER_P(MatchesComment, comment, "") {
-  std::vector<uint8_t> arg_comment(arg->side_data(),
-                                   arg->side_data() + arg->side_data_size());
-  return arg_comment == comment;
-}
-
+// TODO(rkuroiwa): WebVttSampleConverter doesn't handle comments yet. Once its
+// implemented, this should verify that comment is in the sample.
 // Verify that comment is parsed.
 TEST_F(WebVttMediaParserTest, Comment) {
   const char kExpectedComment[] = "NOTE This is a comment";
@@ -243,8 +273,6 @@ TEST_F(WebVttMediaParserTest, Comment) {
       kExpectedComment, kExpectedComment + arraysize(kExpectedComment) - 1);
 
   EXPECT_CALL(init_callback_, Call(_));
-  EXPECT_CALL(new_sample_callback_, Call(_, MatchesComment(expected_comment)))
-      .WillOnce(Return(true));
 
   const char kWebVtt[] =
       "WEBVTT\n"
@@ -260,7 +288,6 @@ TEST_F(WebVttMediaParserTest, Comment) {
 // Verify that comment with --> is rejected.
 TEST_F(WebVttMediaParserTest, BadComment) {
   EXPECT_CALL(init_callback_, Call(_));
-  EXPECT_CALL(new_sample_callback_, Call(_, _)).Times(0);
 
   const char kWebVtt[] =
       "WEBVTT\n"

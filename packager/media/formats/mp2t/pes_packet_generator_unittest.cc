@@ -247,9 +247,9 @@ TEST_F(PesPacketGeneratorTest, InitializeAudioNonAac) {
 
 // Text is not supported yet.
 TEST_F(PesPacketGeneratorTest, InitializeTextInfo) {
-  std::shared_ptr<TextStreamInfo> stream_info(
-      new TextStreamInfo(kTrackId, kTimeScale, kDuration, kCodecString,
-                         std::string(), kWidth, kHeight, kLanguage));
+  std::shared_ptr<TextStreamInfo> stream_info(new TextStreamInfo(
+      kTrackId, kTimeScale, kDuration, kCodecText, kCodecString, std::string(),
+      kWidth, kHeight, kLanguage));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 

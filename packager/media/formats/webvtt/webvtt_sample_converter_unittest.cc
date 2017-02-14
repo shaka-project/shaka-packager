@@ -82,23 +82,18 @@ TEST_F(WebVttFragmenterTest, AppendBoxToVector) {
 //   |-- cue2 --|
 
 TEST_F(WebVttFragmenterTest, NoOverlapContiguous) {
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(0);
-  sample1->set_dts(0);
-  sample1->set_duration(2000);
+  Cue cue1;
+  cue1.payload = kCueMessage1;
+  cue1.start_time = 0;
+  cue1.duration = 2000;
+  webvtt_sample_converter_.PushCue(cue1);
 
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue2;
+  cue2.payload = kCueMessage2;
+  cue2.start_time = 2000;
+  cue2.duration = 1000;
 
-  std::shared_ptr<MediaSample> sample2 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
-                            arraysize(kCueMessage2) - 1, true);
-  sample2->set_pts(2000);
-  sample2->set_dts(2000);
-  sample2->set_duration(1000);
-
-  webvtt_sample_converter_.PushSample(sample2);
+  webvtt_sample_converter_.PushCue(cue2);
   webvtt_sample_converter_.Flush();
   EXPECT_EQ(2u, webvtt_sample_converter_.ReadySamplesSize());
 
@@ -119,23 +114,18 @@ TEST_F(WebVttFragmenterTest, NoOverlapContiguous) {
 
 // Verify that if is a gap, then a sample is created for the gap.
 TEST_F(WebVttFragmenterTest, Gap) {
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(0);
-  sample1->set_dts(0);
-  sample1->set_duration(1000);
+  Cue cue1;
+  cue1.payload = kCueMessage1;
+  cue1.start_time = 0;
+  cue1.duration = 1000;
+  webvtt_sample_converter_.PushCue(cue1);
 
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue2;
+  cue2.payload = kCueMessage2;
+  cue2.start_time = 2000;
+  cue2.duration = 1000;
+  webvtt_sample_converter_.PushCue(cue2);
 
-  std::shared_ptr<MediaSample> sample2 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
-                            arraysize(kCueMessage2) - 1, true);
-  sample2->set_pts(2000);
-  sample2->set_dts(2000);
-  sample2->set_duration(1000);
-
-  webvtt_sample_converter_.PushSample(sample2);
   EXPECT_EQ(2u, webvtt_sample_converter_.ReadySamplesSize());
 
   webvtt_sample_converter_.Flush();
@@ -165,30 +155,23 @@ TEST_F(WebVttFragmenterTest, Gap) {
 // The previous cue always ends before the current cue ends.
 // Cues are overlapping, no samples should be created in PushSample().
 TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(0);
-  sample1->set_dts(0);
-  sample1->set_duration(2000);
+  Cue cue1;
+  cue1.payload = kCueMessage1;
+  cue1.start_time = 0;
+  cue1.duration = 2000;
+  webvtt_sample_converter_.PushCue(cue1);
 
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue2;
+  cue2.payload = kCueMessage2;
+  cue2.start_time = 1000;
+  cue2.duration = 2000;
+  webvtt_sample_converter_.PushCue(cue2);
 
-  std::shared_ptr<MediaSample> sample2 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
-                            arraysize(kCueMessage2) - 1, true);
-  sample2->set_pts(1000);
-  sample2->set_dts(1000);
-  sample2->set_duration(2000);
-  webvtt_sample_converter_.PushSample(sample2);
-
-  std::shared_ptr<MediaSample> sample3 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage3),
-                            arraysize(kCueMessage3) - 1, true);
-  sample3->set_pts(1500);
-  sample3->set_dts(1500);
-  sample3->set_duration(4000);
-  webvtt_sample_converter_.PushSample(sample3);
+  Cue cue3;
+  cue3.payload = kCueMessage3;
+  cue3.start_time = 1500;
+  cue3.duration = 4000;
+  webvtt_sample_converter_.PushCue(cue3);
 
   webvtt_sample_converter_.Flush();
   // There should be 5 samples for [0,1000], [1000,1500], [1500,2000],
@@ -232,38 +215,29 @@ TEST_F(WebVttFragmenterTest, OverlappingCuesSequential) {
 }
 
 TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(0);
-  sample1->set_dts(0);
-  sample1->set_duration(10000);
+  Cue cue1;
+  cue1.payload = kCueMessage1;
+  cue1.start_time = 0;
+  cue1.duration = 10000;
+  webvtt_sample_converter_.PushCue(cue1);
 
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue2;
+  cue2.payload = kCueMessage2;
+  cue2.start_time = 1000;
+  cue2.duration = 5000;
+  webvtt_sample_converter_.PushCue(cue2);
 
-  std::shared_ptr<MediaSample> sample2 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
-                            arraysize(kCueMessage2) - 1, true);
-  sample2->set_pts(1000);
-  sample2->set_dts(1000);
-  sample2->set_duration(5000);
-  webvtt_sample_converter_.PushSample(sample2);
+  Cue cue3;
+  cue3.payload = kCueMessage3;
+  cue3.start_time = 2000;
+  cue3.duration = 1000;
+  webvtt_sample_converter_.PushCue(cue3);
 
-  std::shared_ptr<MediaSample> sample3 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage3),
-                            arraysize(kCueMessage3) - 1, true);
-  sample3->set_pts(2000);
-  sample3->set_dts(2000);
-  sample3->set_duration(1000);
-  webvtt_sample_converter_.PushSample(sample3);
-
-  std::shared_ptr<MediaSample> sample4 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage4),
-                            arraysize(kCueMessage4) - 1, true);
-  sample4->set_pts(8000);
-  sample4->set_dts(8000);
-  sample4->set_duration(1000);
-  webvtt_sample_converter_.PushSample(sample4);
+  Cue cue4;
+  cue4.payload = kCueMessage4;
+  cue4.start_time = 8000;
+  cue4.duration = 1000;
+  webvtt_sample_converter_.PushCue(cue4);
   webvtt_sample_converter_.Flush();
 
   // There should be 7 samples for [0,1000], [1000,2000], [2000,3000],
@@ -320,13 +294,11 @@ TEST_F(WebVttFragmenterTest, OverlappingLongCue) {
 }
 
 TEST_F(WebVttFragmenterTest, GapAtBeginning) {
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(1200);
-  sample1->set_dts(1200);
-  sample1->set_duration(2000);
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue;
+  cue.payload = kCueMessage1;
+  cue.start_time = 1200;
+  cue.duration = 2000;
+  webvtt_sample_converter_.PushCue(cue);
 
   webvtt_sample_converter_.Flush();
   EXPECT_EQ(1u, webvtt_sample_converter_.ReadySamplesSize());
@@ -340,24 +312,18 @@ TEST_F(WebVttFragmenterTest, GapAtBeginning) {
 }
 
 TEST_F(WebVttFragmenterTest, SameStartTime) {
-  // TODO(rkuroiwa): This should be std::shared_ptr if this is applied on HEAD.
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(0);
-  sample1->set_dts(0);
-  sample1->set_duration(2000);
+  Cue cue1;
+  cue1.payload = kCueMessage1;
+  cue1.start_time = 0;
+  cue1.duration = 2000;
+  webvtt_sample_converter_.PushCue(cue1);
 
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue2;
+  cue2.payload = kCueMessage2;
+  cue2.start_time = 0;
+  cue2.duration = 1500;
+  webvtt_sample_converter_.PushCue(cue2);
 
-  std::shared_ptr<MediaSample> sample2 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
-                            arraysize(kCueMessage2) - 1, true);
-  sample2->set_pts(0);
-  sample2->set_dts(0);
-  sample2->set_duration(1500);
-
-  webvtt_sample_converter_.PushSample(sample2);
   webvtt_sample_converter_.Flush();
   EXPECT_EQ(2u, webvtt_sample_converter_.ReadySamplesSize());
 
@@ -380,39 +346,29 @@ TEST_F(WebVttFragmenterTest, SameStartTime) {
 
 // This test is a combination of the test cases above.
 TEST_F(WebVttFragmenterTest, MoreCases) {
-  std::shared_ptr<MediaSample> sample1 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage1),
-                            arraysize(kCueMessage1) - 1, true);
-  sample1->set_pts(0);
-  sample1->set_dts(0);
-  sample1->set_duration(2000);
+  Cue cue1;
+  cue1.payload = kCueMessage1;
+  cue1.start_time = 0;
+  cue1.duration = 2000;
+  webvtt_sample_converter_.PushCue(cue1);
 
-  webvtt_sample_converter_.PushSample(sample1);
+  Cue cue2;
+  cue2.payload = kCueMessage2;
+  cue2.start_time = 100;
+  cue2.duration = 100;
+  webvtt_sample_converter_.PushCue(cue2);
 
-  std::shared_ptr<MediaSample> sample2 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage2),
-                            arraysize(kCueMessage2) - 1, true);
-  sample2->set_pts(100);
-  sample2->set_dts(100);
-  sample2->set_duration(100);
+  Cue cue3;
+  cue3.payload = kCueMessage3;
+  cue3.start_time = 1500;
+  cue3.duration = 1000;
+  webvtt_sample_converter_.PushCue(cue3);
 
-  webvtt_sample_converter_.PushSample(sample2);
-
-  std::shared_ptr<MediaSample> sample3 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage3),
-                            arraysize(kCueMessage3) - 1, true);
-  sample3->set_pts(1500);
-  sample3->set_dts(1500);
-  sample3->set_duration(1000);
-  webvtt_sample_converter_.PushSample(sample3);
-
-  std::shared_ptr<MediaSample> sample4 =
-      MediaSample::CopyFrom(reinterpret_cast<const uint8_t*>(kCueMessage4),
-                            arraysize(kCueMessage4) - 1, true);
-  sample4->set_pts(1500);
-  sample4->set_dts(1500);
-  sample4->set_duration(800);
-  webvtt_sample_converter_.PushSample(sample4);
+  Cue cue4;
+  cue4.payload = kCueMessage4;
+  cue4.start_time = 1500;
+  cue4.duration = 800;
+  webvtt_sample_converter_.PushCue(cue4);
 
   webvtt_sample_converter_.Flush();
   EXPECT_EQ(6u, webvtt_sample_converter_.ReadySamplesSize());
