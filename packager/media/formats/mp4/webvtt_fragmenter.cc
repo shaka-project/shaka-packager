@@ -6,6 +6,7 @@
 
 #include "packager/media/formats/mp4/webvtt_fragmenter.h"
 
+#include <algorithm>
 #include <string>
 
 #include "packager/base/strings/string_util.h"
