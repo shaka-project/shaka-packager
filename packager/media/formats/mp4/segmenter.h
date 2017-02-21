@@ -23,9 +23,9 @@ struct MuxerOptions;
 class BufferWriter;
 class KeySource;
 class MediaSample;
-class MediaStream;
 class MuxerListener;
 class ProgressListener;
+class StreamInfo;
 
 namespace mp4 {
 
@@ -69,7 +69,7 @@ class Segmenter {
   /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
   ///        'cbc1', 'cbcs'.
   /// @return OK on success, an error status otherwise.
-  Status Initialize(const std::vector<MediaStream*>& streams,
+  Status Initialize(const std::vector<std::shared_ptr<StreamInfo>>& streams,
                     MuxerListener* muxer_listener,
                     ProgressListener* progress_listener,
                     KeySource* encryption_key_source,
@@ -85,11 +85,9 @@ class Segmenter {
   Status Finalize();
 
   /// Add sample to the indicated stream.
-  /// @param stream points to the stream to which the sample belongs. It cannot
-  ///        be NULL.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(const MediaStream* stream,
+  Status AddSample(const StreamInfo& stream_Info,
                    std::shared_ptr<MediaSample> sample);
 
   /// @return true if there is an initialization range, while setting @a offset
@@ -145,7 +143,6 @@ class Segmenter {
   std::unique_ptr<SegmentIndex> sidx_;
   std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
   std::vector<uint64_t> segment_durations_;
-  std::map<const MediaStream*, uint32_t> stream_map_;
   MuxerListener* muxer_listener_;
   ProgressListener* progress_listener_;
   uint64_t progress_target_;

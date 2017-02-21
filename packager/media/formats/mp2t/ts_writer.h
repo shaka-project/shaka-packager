@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/base/media_stream.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
@@ -21,6 +20,9 @@
 
 namespace shaka {
 namespace media {
+
+class StreamInfo;
+
 namespace mp2t {
 
 /// This class takes PesPackets, encapsulates them into TS packets, and write

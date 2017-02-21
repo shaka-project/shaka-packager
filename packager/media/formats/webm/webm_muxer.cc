@@ -8,7 +8,6 @@
 
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/multi_segment_segmenter.h"
@@ -22,7 +21,7 @@ namespace webm {
 WebMMuxer::WebMMuxer(const MuxerOptions& options) : Muxer(options) {}
 WebMMuxer::~WebMMuxer() {}
 
-Status WebMMuxer::Initialize() {
+Status WebMMuxer::InitializeMuxer() {
   CHECK_EQ(streams().size(), 1U);
 
   if (crypto_period_duration_in_seconds() > 0) {
@@ -50,7 +49,7 @@ Status WebMMuxer::Initialize() {
   }
 
   Status initialized = segmenter_->Initialize(
-      std::move(writer), streams()[0]->info().get(), progress_listener(),
+      std::move(writer), streams()[0].get(), progress_listener(),
       muxer_listener(), encryption_key_source(), max_sd_pixels(),
       max_hd_pixels(), max_uhd1_pixels(), clear_lead_in_seconds());
 
@@ -73,10 +72,8 @@ Status WebMMuxer::Finalize() {
   return Status::OK;
 }
 
-Status WebMMuxer::DoAddSample(const MediaStream* stream,
-                              std::shared_ptr<MediaSample> sample) {
+Status WebMMuxer::DoAddSample(std::shared_ptr<MediaSample> sample) {
   DCHECK(segmenter_);
-  DCHECK(stream == streams()[0]);
   return segmenter_->AddSample(sample);
 }
 
@@ -86,9 +83,9 @@ void WebMMuxer::FireOnMediaStartEvent() {
 
   DCHECK(!streams().empty()) << "Media started without a stream.";
 
-  const uint32_t timescale = streams().front()->info()->time_scale();
-  muxer_listener()->OnMediaStart(options(), *streams().front()->info(),
-                                 timescale, MuxerListener::kContainerWebM);
+  const uint32_t timescale = streams().front()->time_scale();
+  muxer_listener()->OnMediaStart(options(), *streams().front(), timescale,
+                                 MuxerListener::kContainerWebM);
 }
 
 void WebMMuxer::FireOnMediaEndEvent() {

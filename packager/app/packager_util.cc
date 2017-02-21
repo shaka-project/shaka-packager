@@ -17,15 +17,12 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/fixed_key_source.h"
-#include "packager/media/base/media_stream.h"
-#include "packager/media/base/muxer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/playready_key_source.h"
 #include "packager/media/base/request_signer.h"
-#include "packager/media/base/stream_info.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/file/file.h"
-#include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/mpd_options.h"
 
 DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
             false,
@@ -37,12 +34,6 @@ DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 
 namespace shaka {
 namespace media {
-
-void DumpStreamInfo(const std::vector<std::unique_ptr<MediaStream>>& streams) {
-  printf("Found %zu stream(s).\n", streams.size());
-  for (size_t i = 0; i < streams.size(); ++i)
-    printf("Stream [%zu] %s\n", i, streams[i]->info()->ToString().c_str());
-}
 
 std::unique_ptr<RequestSigner> CreateSigner() {
   std::unique_ptr<RequestSigner> signer;
@@ -193,64 +184,6 @@ bool GetMpdOptions(bool on_demand_profile, MpdOptions* mpd_options) {
   mpd_options->suggested_presentation_delay =
       FLAGS_suggested_presentation_delay;
   mpd_options->default_language = FLAGS_default_language;
-  return true;
-}
-
-MediaStream* FindFirstStreamOfType(
-    const std::vector<std::unique_ptr<MediaStream>>& streams,
-    StreamType stream_type) {
-  for (const std::unique_ptr<MediaStream>& stream : streams) {
-    if (stream->info()->stream_type() == stream_type)
-      return stream.get();
-  }
-  return nullptr;
-}
-MediaStream* FindFirstVideoStream(
-    const std::vector<std::unique_ptr<MediaStream>>& streams) {
-  return FindFirstStreamOfType(streams, kStreamVideo);
-}
-MediaStream* FindFirstAudioStream(
-    const std::vector<std::unique_ptr<MediaStream>>& streams) {
-  return FindFirstStreamOfType(streams, kStreamAudio);
-}
-
-bool AddStreamToMuxer(const std::vector<std::unique_ptr<MediaStream>>& streams,
-                      const std::string& stream_selector,
-                      const std::string& language_override,
-                      Muxer* muxer) {
-  DCHECK(muxer);
-
-  MediaStream* stream = nullptr;
-  if (stream_selector == "video") {
-    stream = FindFirstVideoStream(streams);
-  } else if (stream_selector == "audio") {
-    stream = FindFirstAudioStream(streams);
-  } else {
-    // Expect stream_selector to be a zero based stream id.
-    size_t stream_id;
-    if (!base::StringToSizeT(stream_selector, &stream_id) ||
-        stream_id >= streams.size()) {
-      LOG(ERROR) << "Invalid argument --stream=" << stream_selector << "; "
-                 << "should be 'audio', 'video', or a number within [0, "
-                 << streams.size() - 1 << "].";
-      return false;
-    }
-    stream = streams[stream_id].get();
-    DCHECK(stream);
-  }
-
-  // This could occur only if stream_selector=audio|video and the corresponding
-  // stream does not exist in the input.
-  if (!stream) {
-    LOG(ERROR) << "No " << stream_selector << " stream found in the input.";
-    return false;
-  }
-
-  if (!language_override.empty()) {
-    stream->info()->set_language(language_override);
-  }
-
-  muxer->AddStream(stream);
   return true;
 }
 

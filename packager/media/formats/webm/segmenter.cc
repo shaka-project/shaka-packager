@@ -9,7 +9,6 @@
 #include "packager/base/time/time.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"

@@ -13,7 +13,6 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/video_stream_info.h"
@@ -162,16 +161,17 @@ Segmenter::Segmenter(const MuxerOptions& options,
 
 Segmenter::~Segmenter() {}
 
-Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
-                             MuxerListener* muxer_listener,
-                             ProgressListener* progress_listener,
-                             KeySource* encryption_key_source,
-                             uint32_t max_sd_pixels,
-                             uint32_t max_hd_pixels,
-                             uint32_t max_uhd1_pixels,
-                             double clear_lead_in_seconds,
-                             double crypto_period_duration_in_seconds,
-                             FourCC protection_scheme) {
+Status Segmenter::Initialize(
+    const std::vector<std::shared_ptr<StreamInfo>>& streams,
+    MuxerListener* muxer_listener,
+    ProgressListener* progress_listener,
+    KeySource* encryption_key_source,
+    uint32_t max_sd_pixels,
+    uint32_t max_hd_pixels,
+    uint32_t max_uhd1_pixels,
+    double clear_lead_in_seconds,
+    double crypto_period_duration_in_seconds,
+    FourCC protection_scheme) {
   DCHECK_LT(0u, streams.size());
   muxer_listener_ = muxer_listener;
   progress_listener_ = progress_listener;
@@ -184,22 +184,19 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   const bool kInitialEncryptionInfo = true;
 
   for (uint32_t i = 0; i < streams.size(); ++i) {
-    stream_map_[streams[i]] = i;
     moof_->tracks[i].header.track_id = i + 1;
-    if (streams[i]->info()->stream_type() == kStreamVideo) {
+    if (streams[i]->stream_type() == kStreamVideo) {
       // Use the first video stream as the reference stream (which is 1-based).
       if (sidx_->reference_id == 0)
         sidx_->reference_id = i + 1;
     }
     if (!encryption_key_source) {
-      fragmenters_[i].reset(
-          new Fragmenter(streams[i]->info(), &moof_->tracks[i]));
+      fragmenters_[i].reset(new Fragmenter(streams[i], &moof_->tracks[i]));
       continue;
     }
 
-    KeySource::TrackType track_type =
-        GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels,
-                                  max_hd_pixels, max_uhd1_pixels);
+    KeySource::TrackType track_type = GetTrackTypeForEncryption(
+        *streams[i], max_sd_pixels, max_hd_pixels, max_uhd1_pixels);
     SampleDescription& description =
         moov_->tracks[i].media.information.sample_table.description;
     ProtectionPattern pattern =
@@ -224,12 +221,11 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       }
 
       fragmenters_[i].reset(new KeyRotationFragmenter(
-          moof_.get(), streams[i]->info(), &moof_->tracks[i],
-          encryption_key_source, track_type,
-          crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
-          clear_lead_in_seconds * streams[i]->info()->time_scale(),
-          protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
-          muxer_listener_));
+          moof_.get(), streams[i], &moof_->tracks[i], encryption_key_source,
+          track_type,
+          crypto_period_duration_in_seconds * streams[i]->time_scale(),
+          clear_lead_in_seconds * streams[i]->time_scale(), protection_scheme,
+          pattern.crypt_byte_block, pattern.skip_byte_block, muxer_listener_));
       continue;
     }
 
@@ -262,10 +258,9 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     }
 
     fragmenters_[i].reset(new EncryptingFragmenter(
-        streams[i]->info(), &moof_->tracks[i], std::move(encryption_key),
-        clear_lead_in_seconds * streams[i]->info()->time_scale(),
-        protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
-        muxer_listener_));
+        streams[i], &moof_->tracks[i], std::move(encryption_key),
+        clear_lead_in_seconds * streams[i]->time_scale(), protection_scheme,
+        pattern.crypt_byte_block, pattern.skip_byte_block, muxer_listener_));
   }
 
   if (options_.mp4_use_decoding_timestamp_in_timeline) {
@@ -276,10 +271,10 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   // Choose the first stream if there is no VIDEO.
   if (sidx_->reference_id == 0)
     sidx_->reference_id = 1;
-  sidx_->timescale = streams[GetReferenceStreamId()]->info()->time_scale();
+  sidx_->timescale = streams[GetReferenceStreamId()]->time_scale();
 
   // Use media duration as progress target.
-  progress_target_ = streams[GetReferenceStreamId()]->info()->duration();
+  progress_target_ = streams[GetReferenceStreamId()]->duration();
 
   // Use the reference stream's time scale as movie time scale.
   moov_->header.timescale = sidx_->timescale;
@@ -320,12 +315,10 @@ Status Segmenter::Finalize() {
   return DoFinalize();
 }
 
-Status Segmenter::AddSample(const MediaStream* stream,
+Status Segmenter::AddSample(const StreamInfo& stream_info,
                             std::shared_ptr<MediaSample> sample) {
-  // Find the fragmenter for this stream.
-  DCHECK(stream);
-  DCHECK(stream_map_.find(stream) != stream_map_.end());
-  uint32_t stream_id = stream_map_[stream];
+  // TODO(kqyang): Stream id should be passed in.
+  const uint32_t stream_id = 0;
   Fragmenter* fragmenter = fragmenters_[stream_id].get();
 
   // Set default sample duration if it has not been set yet.
@@ -341,14 +334,14 @@ Status Segmenter::AddSample(const MediaStream* stream,
 
   bool finalize_fragment = false;
   if (fragmenter->fragment_duration() >=
-      options_.fragment_duration * stream->info()->time_scale()) {
+      options_.fragment_duration * stream_info.time_scale()) {
     if (sample->is_key_frame() || !options_.fragment_sap_aligned) {
       finalize_fragment = true;
     }
   }
   bool finalize_segment = false;
   if (segment_durations_[stream_id] >=
-      options_.segment_duration * stream->info()->time_scale()) {
+      options_.segment_duration * stream_info.time_scale()) {
     if (sample->is_key_frame() || !options_.segment_sap_aligned) {
       finalize_segment = true;
       finalize_fragment = true;

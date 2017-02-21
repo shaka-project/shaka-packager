@@ -13,6 +13,7 @@
 
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/container_names.h"
+#include "packager/media/base/media_handler.h"
 #include "packager/media/base/status.h"
 
 namespace shaka {
@@ -28,7 +29,7 @@ class StreamInfo;
 
 /// Demuxer is responsible for extracting elementary stream samples from a
 /// media file, e.g. an ISO BMFF file.
-class Demuxer {
+class Demuxer : public MediaHandler {
  public:
   /// @param file_name specifies the input source. It uses prefix matching to
   ///        create a proper File object. The user can extend File to support
@@ -42,35 +43,51 @@ class Demuxer {
   ///        demuxed.
   void SetKeySource(std::unique_ptr<KeySource> key_source);
 
-  /// Initialize the Demuxer. Calling other public methods of this class
-  /// without this method returning OK, results in an undefined behavior.
-  /// This method primes the demuxer by parsing portions of the media file to
-  /// extract stream information.
-  /// @return OK on success.
-  Status Initialize();
-
   /// Drive the remuxing from demuxer side (push). Read the file and push
   /// the Data to Muxer until Eof.
   Status Run();
-
-  /// Read from the source and send it to the parser.
-  Status Parse();
 
   /// Cancel a demuxing job in progress. Will cause @a Run to exit with an error
   /// status of type CANCELLED.
   void Cancel();
 
-  /// @return Streams in the media container being demuxed. The caller cannot
-  ///         add or remove streams from the returned vector, but the caller is
-  ///         allowed to change the internal state of the streams in the vector
-  ///         through MediaStream APIs.
-  const std::vector<std::unique_ptr<MediaStream>>& streams() {
-    return streams_;
-  }
-
   /// @return Container name (type). Value is CONTAINER_UNKNOWN if the demuxer
   ///         is not initialized.
   MediaContainerName container_name() { return container_name_; }
+
+  /// Set the handler for the specified stream.
+  /// @param stream_label can be 'audio', 'video', or stream number (zero
+  ///        based).
+  /// @param handler is the handler for the specified stream.
+  Status SetHandler(const std::string& stream_label,
+                    std::shared_ptr<MediaHandler> handler);
+
+  /// Override the language in the specified stream. If the specified stream is
+  /// a video stream or invalid, this function is a no-op.
+  /// @param stream_label can be 'audio', 'video', or stream number (zero
+  ///        based).
+  /// @param language_override is the new language.
+  void SetLanguageOverride(const std::string& stream_label,
+                           const std::string& language_override);
+
+  void set_dump_stream_info(bool dump_stream_info) {
+    dump_stream_info_ = dump_stream_info;
+  }
+
+ protected:
+  /// @name MediaHandler implementation overrides.
+  /// @{
+  Status InitializeInternal() override { return Status::OK; }
+  Status Process(std::unique_ptr<StreamData> stream_data) override {
+    return Status(error::INTERNAL_ERROR,
+                  "Demuxer should not be the downstream handler.");
+  }
+  bool ValidateOutputStreamIndex(int stream_index) const override {
+    // We don't know if the stream is valid or not when setting up the graph.
+    // Will validate the stream index later when stream info is available.
+    return true;
+  }
+  /// @}
 
  private:
   Demuxer(const Demuxer&) = delete;
@@ -84,6 +101,11 @@ class Demuxer {
     std::shared_ptr<MediaSample> sample;
   };
 
+  // Initialize the parser. This method primes the demuxer by parsing portions
+  // of the media file to extract stream information.
+  // @return OK on success.
+  Status InitializeParser();
+
   // Parser init event.
   void ParserInitEvent(const std::vector<std::shared_ptr<StreamInfo>>& streams);
   // Parser new sample event handler. Queues the samples if init event has not
@@ -95,18 +117,29 @@ class Demuxer {
   bool PushSample(uint32_t track_id,
                   const std::shared_ptr<MediaSample>& sample);
 
+  // Read from the source and send it to the parser.
+  Status Parse();
+
   std::string file_name_;
-  File* media_file_;
-  bool init_event_received_;
-  Status init_parsing_status_;
+  File* media_file_ = nullptr;
+  // A stream is considered ready after receiving the stream info.
+  bool all_streams_ready_ = false;
   // Queued samples received in NewSampleEvent() before ParserInitEvent().
   std::deque<QueuedSample> queued_samples_;
   std::unique_ptr<MediaParser> parser_;
-  std::vector<std::unique_ptr<MediaStream>> streams_;
-  MediaContainerName container_name_;
+  // TrackId -> StreamIndex map.
+  std::map<uint32_t, int> track_id_to_stream_index_map_;
+  // The list of stream indexes in the above map (in the same order as the input
+  // stream info vector).
+  std::vector<int> stream_indexes_;
+  // StreamIndex -> language_override map.
+  std::map<int, std::string> language_overrides_;
+  MediaContainerName container_name_ = CONTAINER_UNKNOWN;
   std::unique_ptr<uint8_t[]> buffer_;
   std::unique_ptr<KeySource> key_source_;
-  bool cancelled_;
+  bool cancelled_ = false;
+  // Whether to dump stream info when it is received.
+  bool dump_stream_info_ = false;
 };
 
 }  // namespace media

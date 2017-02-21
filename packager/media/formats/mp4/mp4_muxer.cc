@@ -13,7 +13,6 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/event/muxer_listener.h"
@@ -82,7 +81,7 @@ FourCC CodecToFourCC(Codec codec) {
 MP4Muxer::MP4Muxer(const MuxerOptions& options) : Muxer(options) {}
 MP4Muxer::~MP4Muxer() {}
 
-Status MP4Muxer::Initialize() {
+Status MP4Muxer::InitializeMuxer() {
   DCHECK(!streams().empty());
 
   std::unique_ptr<FileType> ftyp(new FileType);
@@ -91,10 +90,9 @@ Status MP4Muxer::Initialize() {
   ftyp->major_brand = FOURCC_dash;
   ftyp->compatible_brands.push_back(FOURCC_iso6);
   ftyp->compatible_brands.push_back(FOURCC_mp41);
-  if (streams().size() == 1 &&
-      streams()[0]->info()->stream_type() == kStreamVideo) {
+  if (streams().size() == 1 && streams()[0]->stream_type() == kStreamVideo) {
     const FourCC codec_fourcc = CodecToFourCC(
-        static_cast<VideoStreamInfo*>(streams()[0]->info().get())->codec());
+        static_cast<VideoStreamInfo*>(streams()[0].get())->codec());
     if (codec_fourcc != FOURCC_NULL)
       ftyp->compatible_brands.push_back(codec_fourcc);
   }
@@ -115,22 +113,18 @@ Status MP4Muxer::Initialize() {
     trex.track_id = trak.header.track_id;
     trex.default_sample_description_index = 1;
 
-    switch (streams()[i]->info()->stream_type()) {
+    switch (streams()[i]->stream_type()) {
       case kStreamVideo:
-        GenerateVideoTrak(
-            static_cast<VideoStreamInfo*>(streams()[i]->info().get()),
-            &trak,
-            i + 1);
+        GenerateVideoTrak(static_cast<VideoStreamInfo*>(streams()[i].get()),
+                          &trak, i + 1);
         break;
       case kStreamAudio:
-        GenerateAudioTrak(
-            static_cast<AudioStreamInfo*>(streams()[i]->info().get()),
-            &trak,
-            i + 1);
+        GenerateAudioTrak(static_cast<AudioStreamInfo*>(streams()[i].get()),
+                          &trak, i + 1);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
-                         << streams()[i]->info()->stream_type();
+                         << streams()[i]->stream_type();
     }
   }
 
@@ -167,10 +161,9 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::DoAddSample(const MediaStream* stream,
-                             std::shared_ptr<MediaSample> sample) {
+Status MP4Muxer::DoAddSample(std::shared_ptr<MediaSample> sample) {
   DCHECK(segmenter_);
-  return segmenter_->AddSample(stream, sample);
+  return segmenter_->AddSample(*streams()[0], sample);
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
@@ -355,9 +348,7 @@ void MP4Muxer::FireOnMediaStartEvent() {
   DCHECK(!streams().empty()) << "Media started without a stream.";
 
   const uint32_t timescale = segmenter_->GetReferenceTimeScale();
-  muxer_listener()->OnMediaStart(options(),
-                                 *streams().front()->info(),
-                                 timescale,
+  muxer_listener()->OnMediaStart(options(), *streams().front(), timescale,
                                  MuxerListener::kContainerMp4);
 }
 

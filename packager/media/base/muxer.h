@@ -14,6 +14,7 @@
 
 #include "packager/base/time/clock.h"
 #include "packager/media/base/fourccs.h"
+#include "packager/media/base/media_handler.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/status.h"
 #include "packager/media/event/muxer_listener.h"
@@ -29,7 +30,7 @@ class MediaStream;
 /// Muxer is responsible for taking elementary stream samples and producing
 /// media containers. An optional KeySource can be provided to Muxer
 /// to generate encrypted outputs.
-class Muxer {
+class Muxer : public MediaHandler {
  public:
   explicit Muxer(const MuxerOptions& options);
   virtual ~Muxer();
@@ -65,12 +66,6 @@ class Muxer {
                     double crypto_period_duration_in_seconds,
                     FourCC protection_scheme);
 
-  /// Add video/audio stream.
-  void AddStream(MediaStream* stream);
-
-  /// Drive the remuxing from muxer side (pull).
-  Status Run();
-
   /// Cancel a muxing job in progress. Will cause @a Run to exit with an error
   /// status of type CANCELLED.
   void Cancel();
@@ -83,7 +78,9 @@ class Muxer {
   /// @param progress_listener should not be NULL.
   void SetProgressListener(std::unique_ptr<ProgressListener> progress_listener);
 
-  const std::vector<MediaStream*>& streams() const { return streams_; }
+  const std::vector<std::shared_ptr<StreamInfo>>& streams() const {
+    return streams_;
+  }
 
   /// Inject clock, mainly used for testing.
   /// The injected clock will be used to generate the creation time-stamp and
@@ -96,6 +93,13 @@ class Muxer {
   }
 
  protected:
+  /// @name MediaHandler implementation overrides.
+  /// @{
+  Status InitializeInternal() override { return Status::OK; }
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
+  Status FlushStream(int input_stream_index) override { return Finalize(); }
+  /// @}
+
   const MuxerOptions& options() const { return options_; }
   KeySource* encryption_key_source() {
     return encryption_key_source_;
@@ -113,25 +117,17 @@ class Muxer {
   FourCC protection_scheme() const { return protection_scheme_; }
 
  private:
-  friend class MediaStream;  // Needed to access AddSample.
-
-  // Add new media sample.
-  Status AddSample(const MediaStream* stream,
-                   std::shared_ptr<MediaSample> sample);
-
   // Initialize the muxer.
-  virtual Status Initialize() = 0;
+  virtual Status InitializeMuxer() = 0;
 
   // Final clean up.
   virtual Status Finalize() = 0;
 
   // AddSample implementation.
-  virtual Status DoAddSample(const MediaStream* stream,
-                             std::shared_ptr<MediaSample> sample) = 0;
+  virtual Status DoAddSample(std::shared_ptr<MediaSample> sample) = 0;
 
   MuxerOptions options_;
-  bool initialized_;
-  std::vector<MediaStream*> streams_;
+  std::vector<std::shared_ptr<StreamInfo>> streams_;
   KeySource* encryption_key_source_;
   uint32_t max_sd_pixels_;
   uint32_t max_hd_pixels_;

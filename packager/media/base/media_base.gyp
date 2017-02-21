@@ -59,8 +59,6 @@
         'media_parser.h',
         'media_sample.cc',
         'media_sample.h',
-        'media_stream.cc',
-        'media_stream.h',
         'muxer.cc',
         'muxer.h',
         'muxer_options.cc',

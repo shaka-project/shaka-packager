@@ -24,10 +24,9 @@ class TsMuxer : public Muxer {
 
  private:
   // Muxer implementation.
-  Status Initialize() override;
+  Status InitializeMuxer() override;
   Status Finalize() override;
-  Status DoAddSample(const MediaStream* stream,
-                     std::shared_ptr<MediaSample> sample) override;
+  Status DoAddSample(std::shared_ptr<MediaSample> sample) override;
 
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();

@@ -13,7 +13,6 @@
 #include "packager/media/base/demuxer.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/fourccs.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
@@ -50,7 +49,6 @@ const bool kSingleSegment = true;
 const bool kMultipleSegments = false;
 const bool kEnableEncryption = true;
 const bool kDisableEncryption = false;
-const char kNoLanguageOverride[] = "";
 
 // Encryption constants.
 const char kKeyIdHex[] = "e5007e6e9dcd5ac095202ed3758382cd";
@@ -62,24 +60,6 @@ const double kCryptoDurationInSeconds = 0;  // Key rotation is disabled.
 const uint32_t kMaxSDPixels = 640 * 480;
 const uint32_t kMaxHDPixels = 1920 * 1080;
 const uint32_t kMaxUHD1Pixels = 4096 * 2160;
-
-MediaStream* FindFirstStreamOfType(
-    const std::vector<std::unique_ptr<MediaStream>>& streams,
-    StreamType stream_type) {
-  for (const std::unique_ptr<MediaStream>& stream : streams) {
-    if (stream->info()->stream_type() == stream_type)
-      return stream.get();
-  }
-  return nullptr;
-}
-MediaStream* FindFirstVideoStream(
-    const std::vector<std::unique_ptr<MediaStream>>& streams) {
-  return FindFirstStreamOfType(streams, kStreamVideo);
-}
-MediaStream* FindFirstAudioStream(
-    const std::vector<std::unique_ptr<MediaStream>>& streams) {
-  return FindFirstStreamOfType(streams, kStreamAudio);
-}
 
 }  // namespace
 
@@ -114,8 +94,7 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
              const std::string& video_output,
              const std::string& audio_output,
              bool single_segment,
-             bool enable_encryption,
-             const std::string& override_language);
+             bool enable_encryption);
 
   void Decrypt(const std::string& input,
                const std::string& video_output,
@@ -157,29 +136,20 @@ void PackagerTestBasic::Remux(const std::string& input,
                               const std::string& video_output,
                               const std::string& audio_output,
                               bool single_segment,
-                              bool enable_encryption,
-                              const std::string& language_override) {
+                              bool enable_encryption) {
   CHECK(!video_output.empty() || !audio_output.empty());
 
   Demuxer demuxer(GetFullPath(input));
-  ASSERT_OK(demuxer.Initialize());
 
   std::unique_ptr<KeySource> encryption_key_source(
       FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   DCHECK(encryption_key_source);
 
-  std::unique_ptr<Muxer> muxer_video;
+  std::shared_ptr<Muxer> muxer_video;
   if (!video_output.empty()) {
     muxer_video.reset(
         new mp4::MP4Muxer(SetupOptions(video_output, single_segment)));
     muxer_video->set_clock(&fake_clock_);
-
-    MediaStream* stream = FindFirstVideoStream(demuxer.streams());
-    if (!language_override.empty()) {
-      stream->info()->set_language(language_override);
-      ASSERT_EQ(language_override, stream->info()->language());
-    }
-    muxer_video->AddStream(stream);
 
     if (enable_encryption) {
       muxer_video->SetKeySource(encryption_key_source.get(),
@@ -187,20 +157,14 @@ void PackagerTestBasic::Remux(const std::string& input,
                                 kMaxUHD1Pixels, kClearLeadInSeconds,
                                 kCryptoDurationInSeconds, FOURCC_cenc);
     }
+    ASSERT_OK(demuxer.SetHandler("video", muxer_video));
   }
 
-  std::unique_ptr<Muxer> muxer_audio;
+  std::shared_ptr<Muxer> muxer_audio;
   if (!audio_output.empty()) {
     muxer_audio.reset(
         new mp4::MP4Muxer(SetupOptions(audio_output, single_segment)));
     muxer_audio->set_clock(&fake_clock_);
-
-    MediaStream* stream = FindFirstAudioStream(demuxer.streams());
-    if (!language_override.empty()) {
-      stream->info()->set_language(language_override);
-      ASSERT_EQ(language_override, stream->info()->language());
-    }
-    muxer_audio->AddStream(stream);
 
     if (enable_encryption) {
       muxer_audio->SetKeySource(encryption_key_source.get(),
@@ -208,8 +172,10 @@ void PackagerTestBasic::Remux(const std::string& input,
                                 kMaxUHD1Pixels, kClearLeadInSeconds,
                                 kCryptoDurationInSeconds, FOURCC_cenc);
     }
+    ASSERT_OK(demuxer.SetHandler("audio", muxer_audio));
   }
 
+  ASSERT_OK(demuxer.Initialize());
   // Start remuxing process.
   ASSERT_OK(demuxer.Run());
 }
@@ -224,25 +190,20 @@ void PackagerTestBasic::Decrypt(const std::string& input,
       FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   ASSERT_TRUE(decryption_key_source);
   demuxer.SetKeySource(std::move(decryption_key_source));
-  ASSERT_OK(demuxer.Initialize());
 
-  std::unique_ptr<Muxer> muxer;
-  MediaStream* stream(NULL);
+  std::shared_ptr<Muxer> muxer;
   if (!video_output.empty()) {
     muxer.reset(
         new mp4::MP4Muxer(SetupOptions(video_output, true)));
-    stream = FindFirstVideoStream(demuxer.streams());
   }
   if (!audio_output.empty()) {
     muxer.reset(
         new mp4::MP4Muxer(SetupOptions(audio_output, true)));
-    stream = FindFirstAudioStream(demuxer.streams());
   }
   ASSERT_TRUE(muxer);
-  ASSERT_TRUE(stream != NULL);
-  ASSERT_TRUE(stream->info()->is_encrypted());
   muxer->set_clock(&fake_clock_);
-  muxer->AddStream(stream);
+  ASSERT_OK(demuxer.SetHandler("0", muxer));
+  ASSERT_OK(demuxer.Initialize());
 
   ASSERT_OK(demuxer.Run());
 }
@@ -252,8 +213,7 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencryptedVideo) {
                                 kOutputVideo,
                                 kOutputNone,
                                 kSingleSegment,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
 }
 
 TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencryptedAudio) {
@@ -261,8 +221,7 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencryptedAudio) {
                                 kOutputNone,
                                 kOutputAudio,
                                 kSingleSegment,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
 }
 
 TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedVideo) {
@@ -270,8 +229,7 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedVideo) {
                                 kOutputVideo,
                                 kOutputNone,
                                 kSingleSegment,
-                                kEnableEncryption,
-                                kNoLanguageOverride));
+                                kEnableEncryption));
 
   ASSERT_NO_FATAL_FAILURE(Decrypt(kOutputVideo,
                                   kOutputVideo2,
@@ -283,76 +241,13 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedAudio) {
                                 kOutputNone,
                                 kOutputAudio,
                                 kSingleSegment,
-                                kEnableEncryption,
-                                kNoLanguageOverride));
+                                kEnableEncryption));
 
   ASSERT_NO_FATAL_FAILURE(Decrypt(kOutputAudio,
                                   kOutputNone,
                                   kOutputAudio2));
 }
 
-TEST_P(PackagerTestBasic, MP4MuxerLanguageWithoutSubtag) {
-  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
-                                kOutputNone,
-                                kOutputAudio,
-                                kSingleSegment,
-                                kDisableEncryption,
-                                "por"));
-
-  Demuxer demuxer(GetFullPath(kOutputAudio));
-  ASSERT_OK(demuxer.Initialize());
-
-  MediaStream* stream = FindFirstAudioStream(demuxer.streams());
-  ASSERT_EQ("por", stream->info()->language());
-}
-
-TEST_P(PackagerTestBasic, MP4MuxerLanguageWithSubtag) {
-  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
-                                kOutputNone,
-                                kOutputAudio,
-                                kSingleSegment,
-                                kDisableEncryption,
-                                "por-BR"));
-
-  Demuxer demuxer(GetFullPath(kOutputAudio));
-  ASSERT_OK(demuxer.Initialize());
-
-  MediaStream* stream = FindFirstAudioStream(demuxer.streams());
-  ASSERT_EQ("por", stream->info()->language());
-}
-
-TEST_P(PackagerTestBasic, GetTrackTypeForEncryption) {
-  Demuxer demuxer(GetFullPath(GetParam()));
-  ASSERT_OK(demuxer.Initialize());
-
-  MediaStream* video_stream = FindFirstVideoStream(demuxer.streams());
-  MediaStream* audio_stream = FindFirstAudioStream(demuxer.streams());
-
-  // Typical resolution constraints should set the resolution in the SD range
-  KeySource::TrackType track_type = GetTrackTypeForEncryption(
-      *video_stream->info(), kMaxSDPixels, kMaxHDPixels, kMaxUHD1Pixels);
-  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("SD"), track_type);
-
-  // Setting the max SD value to 1 should set the resolution in the HD range
-  track_type = GetTrackTypeForEncryption(
-      *video_stream->info(), 1, kMaxHDPixels, kMaxUHD1Pixels);
-  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("HD"), track_type);
-
-  // Setting the max HD value to 2 should set the resolution in the UHD1 range
-  track_type = GetTrackTypeForEncryption(
-      *video_stream->info(), 1, 2, kMaxUHD1Pixels);
-  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("UHD1"), track_type);
-
-  // Setting the max UHD1 value to 3 should set the resolution in the UHD2 range
-  track_type = GetTrackTypeForEncryption(
-      *video_stream->info(), 1, 2, 3);
-  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("UHD2"), track_type);
-
-  // Audio stream should always set the track_type to AUDIO
-  track_type = GetTrackTypeForEncryption(
-      *audio_stream->info(), kMaxSDPixels, kMaxHDPixels, kMaxUHD1Pixels);
-  ASSERT_EQ(FixedKeySource::GetTrackTypeFromString("AUDIO"), track_type);
-}
 
 class PackagerTest : public PackagerTestBasic {
  public:
@@ -363,15 +258,13 @@ class PackagerTest : public PackagerTestBasic {
                                   kOutputVideo,
                                   kOutputNone,
                                   kSingleSegment,
-                                  kDisableEncryption,
-                                  kNoLanguageOverride));
+                                  kDisableEncryption));
 
     ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
                                   kOutputNone,
                                   kOutputAudio,
                                   kSingleSegment,
-                                  kDisableEncryption,
-                                  kNoLanguageOverride));
+                                  kDisableEncryption));
   }
 };
 
@@ -382,8 +275,7 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedVideoAgain) {
                                 kOutputVideo2,
                                 kOutputNone,
                                 kSingleSegment,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
   EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
 }
 
@@ -394,8 +286,7 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedAudioAgain) {
                                 kOutputNone,
                                 kOutputAudio2,
                                 kSingleSegment,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
   EXPECT_TRUE(ContentsEqual(kOutputAudio, kOutputAudio2));
 }
 
@@ -404,8 +295,7 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
                                 kOutputVideo2,
                                 kOutputAudio2,
                                 kSingleSegment,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
 
   // Compare the output with single muxer output. They should match.
   EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
@@ -417,8 +307,7 @@ TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencryptedVideo) {
                                 kOutputVideo2,
                                 kOutputNone,
                                 kMultipleSegments,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
 
   // Find and concatenates the segments.
   const std::string kOutputVideoSegmentsCombined =
@@ -452,8 +341,7 @@ TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencryptedVideo) {
                                 kOutputVideo2,
                                 kOutputNone,
                                 kSingleSegment,
-                                kDisableEncryption,
-                                kNoLanguageOverride));
+                                kDisableEncryption));
   EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
 }
 

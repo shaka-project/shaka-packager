@@ -168,10 +168,6 @@ class RemuxJob : public base::SimpleThread {
 
   ~RemuxJob() override {}
 
-  void AddMuxer(std::unique_ptr<Muxer> mux) {
-    muxers_.push_back(std::move(mux));
-  }
-
   Demuxer* demuxer() { return demuxer_.get(); }
   Status status() { return status_; }
 
@@ -182,7 +178,6 @@ class RemuxJob : public base::SimpleThread {
   }
 
   std::unique_ptr<Demuxer> demuxer_;
-  std::vector<std::unique_ptr<Muxer>> muxers_;
   Status status_;
 
   DISALLOW_COPY_AND_ASSIGN(RemuxJob);
@@ -227,15 +222,15 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
-std::unique_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
+std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
                                          MediaContainerName container) {
   if (container == CONTAINER_WEBM) {
-    return std::unique_ptr<Muxer>(new webm::WebMMuxer(options));
+    return std::shared_ptr<Muxer>(new webm::WebMMuxer(options));
   } else if (container == CONTAINER_MPEG2TS) {
-    return std::unique_ptr<Muxer>(new mp2t::TsMuxer(options));
+    return std::shared_ptr<Muxer>(new mp2t::TsMuxer(options));
   } else {
     DCHECK_EQ(container, CONTAINER_MOV);
-    return std::unique_ptr<Muxer>(new mp4::MP4Muxer(options));
+    return std::shared_ptr<Muxer>(new mp4::MP4Muxer(options));
   }
 }
 
@@ -300,6 +295,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
       std::unique_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
+      demuxer->set_dump_stream_info(FLAGS_dump_stream_info);
       if (FLAGS_enable_widevine_decryption ||
           FLAGS_enable_fixed_key_decryption) {
         std::unique_ptr<KeySource> key_source(CreateDecryptionKeySource());
@@ -307,23 +303,15 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
           return false;
         demuxer->SetKeySource(std::move(key_source));
       }
-      Status status = demuxer->Initialize();
-      if (!status.ok()) {
-        LOG(ERROR) << "Demuxer failed to initialize: " << status.ToString();
-        return false;
-      }
-      if (FLAGS_dump_stream_info) {
-        printf("\nFile \"%s\":\n", stream_iter->input.c_str());
-        DumpStreamInfo(demuxer->streams());
-        if (stream_iter->output.empty())
-          continue;  // just need stream info.
-      }
       remux_jobs->emplace_back(new RemuxJob(std::move(demuxer)));
       previous_input = stream_iter->input;
+      // Skip setting up muxers if output is not needed.
+      if (stream_iter->output.empty())
+        continue;
     }
     DCHECK(!remux_jobs->empty());
 
-    std::unique_ptr<Muxer> muxer(
+    std::shared_ptr<Muxer> muxer(
         CreateOutputMuxer(stream_muxer_options, stream_iter->output_format));
     if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
 
@@ -373,15 +361,25 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (muxer_listener)
       muxer->SetMuxerListener(std::move(muxer_listener));
 
-    if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
-                          stream_iter->stream_selector,
-                          stream_iter->language,
-                          muxer.get())) {
+    auto* demuxer = remux_jobs->back()->demuxer();
+    const std::string& stream_selector = stream_iter->stream_selector;
+    Status status = demuxer->SetHandler(stream_selector, std::move(muxer));
+    if (!status.ok()) {
+      LOG(ERROR) << "Demuxer::SetHandler failed " << status;
       return false;
     }
-    remux_jobs->back()->AddMuxer(std::move(muxer));
+    if (!stream_iter->language.empty())
+      demuxer->SetLanguageOverride(stream_selector, stream_iter->language);
   }
 
+  // Initialize processing graph.
+  for (const std::unique_ptr<RemuxJob>& job : *remux_jobs) {
+    Status status = job->demuxer()->Initialize();
+    if (!status.ok()) {
+      LOG(ERROR) << "Failed to initialize processing graph " << status;
+      return false;
+    }
+  }
   return true;
 }
 

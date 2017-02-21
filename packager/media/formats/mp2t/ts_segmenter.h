@@ -8,7 +8,6 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
 #include <memory>
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/status.h"
 #include "packager/media/file/file.h"

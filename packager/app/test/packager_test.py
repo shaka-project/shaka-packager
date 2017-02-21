@@ -92,6 +92,22 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-golden.mpd')
 
+  def testPackageAudioVideoWithLanguageOverride(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'], language_override='por-BR'),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-a-por-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-por-golden.mpd')
+
+  def testPackageAudioVideoWithLanguageOverrideWithSubtag(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'], language_override='por-BR'),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-a-por-BR-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-por-BR-golden.mpd')
+
   # Package all video, audio, and text.
   def testPackageVideoAudioText(self):
     audio_video_streams = self._GetStreams(['audio', 'video'])
@@ -438,6 +454,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def _GetStreams(self,
                   stream_descriptors,
+                  language_override=None,
                   output_format=None,
                   live=False,
                   test_files=None):
@@ -466,9 +483,6 @@ class PackagerAppTest(unittest.TestCase):
                 'input=%s,stream=%s,init_segment=%s-init.mp4,'
                 'segment_template=%s-$Number$.m4s' %
                 (test_file, stream_descriptor, output_prefix, output_prefix))
-          if output_format:
-            stream += ',format=%s' % output_format
-          streams.append(stream)
           self.output.append(output_prefix)
         else:
           output = '%s.%s' % (
@@ -476,10 +490,12 @@ class PackagerAppTest(unittest.TestCase):
               self._GetExtension(stream_descriptor, output_format))
           stream = ('input=%s,stream=%s,output=%s' %
                     (test_file, stream_descriptor, output))
-          if output_format:
-            stream += ',format=%s' % output_format
-          streams.append(stream)
           self.output.append(output)
+        if output_format:
+          stream += ',format=%s' % output_format
+        if language_override:
+          stream += ',lang=%s' % language_override
+        streams.append(stream)
     return streams
 
   def _GetExtension(self, stream_descriptor, output_format):

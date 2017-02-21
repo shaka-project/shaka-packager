@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/file/file_util.h"

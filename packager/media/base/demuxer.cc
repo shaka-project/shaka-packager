@@ -6,12 +6,14 @@
 
 #include "packager/media/base/demuxer.h"
 
+#include <algorithm>
+
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
@@ -28,19 +30,45 @@ const size_t kBufSize = 0x200000;  // 2MB
 // samples before seeing init_event, something is not right. The number
 // set here is arbitrary though.
 const size_t kQueuedSamplesLimit = 10000;
+const int kInvalidStreamIndex = -1;
+const int kBaseVideoOutputStreamIndex = 0x100;
+const int kBaseAudioOutputStreamIndex = 0x200;
+
+std::string GetStreamLabel(int stream_index) {
+  switch (stream_index) {
+    case kBaseVideoOutputStreamIndex:
+      return "video";
+    case kBaseAudioOutputStreamIndex:
+      return "audio";
+    default:
+      return base::IntToString(stream_index);
+  }
+}
+
+bool GetStreamIndex(const std::string& stream_label, int* stream_index) {
+  DCHECK(stream_index);
+  if (stream_label == "video") {
+    *stream_index = kBaseVideoOutputStreamIndex;
+  } else if (stream_label == "audio") {
+    *stream_index = kBaseAudioOutputStreamIndex;
+  } else {
+    // Expect stream_label to be a zero based stream id.
+    if (!base::StringToInt(stream_label, stream_index)) {
+      LOG(ERROR) << "Invalid argument --stream=" << stream_label << "; "
+                 << "should be 'audio', 'video', or a number";
+      return false;
+    }
+  }
+  return true;
+}
+
 }
 
 namespace shaka {
 namespace media {
 
 Demuxer::Demuxer(const std::string& file_name)
-    : file_name_(file_name),
-      media_file_(NULL),
-      init_event_received_(false),
-      container_name_(CONTAINER_UNKNOWN),
-      buffer_(new uint8_t[kBufSize]),
-      cancelled_(false) {
-}
+    : file_name_(file_name), buffer_(new uint8_t[kBufSize]) {}
 
 Demuxer::~Demuxer() {
   if (media_file_)
@@ -51,9 +79,74 @@ void Demuxer::SetKeySource(std::unique_ptr<KeySource> key_source) {
   key_source_ = std::move(key_source);
 }
 
-Status Demuxer::Initialize() {
+Status Demuxer::Run() {
+  LOG(INFO) << "Demuxer::Run() on file '" << file_name_ << "'.";
+  Status status = InitializeParser();
+  // ParserInitEvent callback is called after a few calls to Parse(), which sets
+  // up the streams. Only after that, we can verify the outputs below.
+  while (!all_streams_ready_ && status.ok())
+    status.Update(Parse());
+  // If no output is defined, then return success after receiving all stream
+  // info.
+  if (all_streams_ready_ && output_handlers().empty())
+    return Status::OK;
+  // Check if all specified outputs exists.
+  for (const auto& pair : output_handlers()) {
+    if (std::find(stream_indexes_.begin(), stream_indexes_.end(), pair.first) ==
+        stream_indexes_.end()) {
+      LOG(ERROR) << "Invalid argument, stream=" << GetStreamLabel(pair.first)
+                 << " not available.";
+      return Status(error::INVALID_ARGUMENT, "Stream not available");
+    }
+  }
+
+  while (!cancelled_ && status.ok())
+    status.Update(Parse());
+  if (cancelled_ && status.ok())
+    return Status(error::CANCELLED, "Demuxer run cancelled");
+
+  if (status.error_code() == error::END_OF_STREAM) {
+    for (int stream_index : stream_indexes_) {
+      status = FlushStream(stream_index);
+      if (!status.ok())
+        return status;
+    }
+    return Status::OK;
+  }
+  return status;
+}
+
+void Demuxer::Cancel() {
+  cancelled_ = true;
+}
+
+Status Demuxer::SetHandler(const std::string& stream_label,
+                           std::shared_ptr<MediaHandler> handler) {
+  int stream_index = kInvalidStreamIndex;
+  if (!GetStreamIndex(stream_label, &stream_index)) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Invalid stream: " + stream_label);
+  }
+  return MediaHandler::SetHandler(stream_index, std::move(handler));
+}
+
+void Demuxer::SetLanguageOverride(const std::string& stream_label,
+                                  const std::string& language_override) {
+  int stream_index = kInvalidStreamIndex;
+  if (!GetStreamIndex(stream_label, &stream_index))
+    LOG(WARNING) << "Invalid stream for language override " << stream_label;
+  language_overrides_[stream_index] = language_override;
+}
+
+Demuxer::QueuedSample::QueuedSample(uint32_t local_track_id,
+                                    std::shared_ptr<MediaSample> local_sample)
+    : track_id(local_track_id), sample(local_sample) {}
+
+Demuxer::QueuedSample::~QueuedSample() {}
+
+Status Demuxer::InitializeParser() {
   DCHECK(!media_file_);
-  DCHECK(!init_event_received_);
+  DCHECK(!all_streams_ready_);
 
   LOG(INFO) << "Initialize Demuxer for file '" << file_name_ << "'.";
 
@@ -105,34 +198,65 @@ Status Demuxer::Initialize() {
   // Handle trailing 'moov'.
   if (container_name_ == CONTAINER_MOV)
     static_cast<mp4::MP4MediaParser*>(parser_.get())->LoadMoov(file_name_);
-
   if (!parser_->Parse(buffer_.get(), bytes_read)) {
-    init_parsing_status_ =
-        Status(error::PARSER_FAILURE, "Cannot parse media file " + file_name_);
+    return Status(error::PARSER_FAILURE,
+                  "Cannot parse media file " + file_name_);
   }
-
-  // Parse until init event received or on error.
-  while (!init_event_received_ && init_parsing_status_.ok())
-    init_parsing_status_ = Parse();
-  // Defer error reporting if init completed successfully.
-  return init_event_received_ ? Status::OK : init_parsing_status_;
+  return Status::OK;
 }
 
 void Demuxer::ParserInitEvent(
     const std::vector<std::shared_ptr<StreamInfo>>& stream_infos) {
-  init_event_received_ = true;
-  for (const std::shared_ptr<StreamInfo>& stream_info : stream_infos)
-    streams_.emplace_back(new MediaStream(stream_info, this));
-}
+  if (dump_stream_info_) {
+    printf("\nFile \"%s\":\n", file_name_.c_str());
+    printf("Found %zu stream(s).\n", stream_infos.size());
+    for (size_t i = 0; i < stream_infos.size(); ++i)
+      printf("Stream [%zu] %s\n", i, stream_infos[i]->ToString().c_str());
+  }
 
-Demuxer::QueuedSample::QueuedSample(uint32_t local_track_id,
-                                    std::shared_ptr<MediaSample> local_sample)
-    : track_id(local_track_id), sample(local_sample) {}
-Demuxer::QueuedSample::~QueuedSample() {}
+  int base_stream_index = 0;
+  bool video_handler_set =
+      output_handlers().find(kBaseVideoOutputStreamIndex) !=
+      output_handlers().end();
+  bool audio_handler_set =
+      output_handlers().find(kBaseAudioOutputStreamIndex) !=
+      output_handlers().end();
+  for (const std::shared_ptr<StreamInfo>& stream_info : stream_infos) {
+    int stream_index = base_stream_index;
+    if (video_handler_set && stream_info->stream_type() == kStreamVideo) {
+      stream_index = kBaseVideoOutputStreamIndex;
+      // Only for the first video stream.
+      video_handler_set = false;
+    }
+    if (audio_handler_set && stream_info->stream_type() == kStreamAudio) {
+      stream_index = kBaseAudioOutputStreamIndex;
+      // Only for the first audio stream.
+      audio_handler_set = false;
+    }
+
+    const bool handler_set =
+        output_handlers().find(stream_index) != output_handlers().end();
+    if (handler_set) {
+      track_id_to_stream_index_map_[stream_info->track_id()] = stream_index;
+      stream_indexes_.push_back(stream_index);
+      auto iter = language_overrides_.find(stream_index);
+      if (iter != language_overrides_.end() &&
+          stream_info->stream_type() != kStreamVideo) {
+        stream_info->set_language(iter->second);
+      }
+      DispatchStreamInfo(stream_index, stream_info);
+    } else {
+      track_id_to_stream_index_map_[stream_info->track_id()] =
+          kInvalidStreamIndex;
+    }
+    ++base_stream_index;
+  }
+  all_streams_ready_ = true;
+}
 
 bool Demuxer::NewSampleEvent(uint32_t track_id,
                              const std::shared_ptr<MediaSample>& sample) {
-  if (!init_event_received_) {
+  if (!all_streams_ready_) {
     if (queued_samples_.size() >= kQueuedSamplesLimit) {
       LOG(ERROR) << "Queued samples limit reached: " << kQueuedSamplesLimit;
       return false;
@@ -152,57 +276,25 @@ bool Demuxer::NewSampleEvent(uint32_t track_id,
 
 bool Demuxer::PushSample(uint32_t track_id,
                          const std::shared_ptr<MediaSample>& sample) {
-  for (const std::unique_ptr<MediaStream>& stream : streams_) {
-    if (track_id == stream->info()->track_id()) {
-      Status status = stream->PushSample(sample);
-      if (!status.ok())
-        LOG(ERROR) << "Demuxer::PushSample failed with " << status;
-      return status.ok();
-    }
+  auto stream_index_iter = track_id_to_stream_index_map_.find(track_id);
+  if (stream_index_iter == track_id_to_stream_index_map_.end()) {
+    LOG(ERROR) << "Track " << track_id << " not found.";
+    return false;
   }
-  LOG(ERROR) << "Track " << track_id << " not found.";
-  return false;
-}
-
-Status Demuxer::Run() {
-  Status status;
-
-  LOG(INFO) << "Demuxer::Run() on file '" << file_name_ << "'.";
-
-  // Start the streams.
-  for (const std::unique_ptr<MediaStream>& stream : streams_) {
-    status = stream->Start(MediaStream::kPush);
-    if (!status.ok())
-      return status;
+  if (stream_index_iter->second == kInvalidStreamIndex)
+    return true;
+  Status status = DispatchMediaSample(stream_index_iter->second, sample);
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to process sample " << stream_index_iter->second
+               << " " << status;
   }
-
-  while (!cancelled_ && (status = Parse()).ok())
-    continue;
-
-  if (cancelled_ && status.ok())
-    return Status(error::CANCELLED, "Demuxer run cancelled");
-
-  if (status.error_code() == error::END_OF_STREAM) {
-    // Push EOS sample to muxer to indicate end of stream.
-    const std::shared_ptr<MediaSample>& sample = MediaSample::CreateEOSBuffer();
-    for (const std::unique_ptr<MediaStream>& stream : streams_) {
-      status = stream->PushSample(sample);
-      if (!status.ok())
-        return status;
-    }
-  }
-  return status;
+  return status.ok();
 }
 
 Status Demuxer::Parse() {
   DCHECK(media_file_);
   DCHECK(parser_);
   DCHECK(buffer_);
-
-  // Return early and avoid call Parse(...) again if it has already failed at
-  // the initialization.
-  if (!init_parsing_status_.ok())
-    return init_parsing_status_;
 
   int64_t bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read == 0) {
@@ -217,10 +309,6 @@ Status Demuxer::Parse() {
              ? Status::OK
              : Status(error::PARSER_FAILURE,
                       "Cannot parse media file " + file_name_);
-}
-
-void Demuxer::Cancel() {
-  cancelled_ = true;
 }
 
 }  // namespace media

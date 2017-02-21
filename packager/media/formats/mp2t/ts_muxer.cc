@@ -17,15 +17,14 @@ const uint32_t kTsTimescale = 90000;
 TsMuxer::TsMuxer(const MuxerOptions& muxer_options) : Muxer(muxer_options) {}
 TsMuxer::~TsMuxer() {}
 
-Status TsMuxer::Initialize() {
+Status TsMuxer::InitializeMuxer() {
   if (streams().size() > 1u)
     return Status(error::MUXER_FAILURE, "Cannot handle more than one streams.");
 
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
-  Status status =
-      segmenter_->Initialize(*streams()[0]->info(), encryption_key_source(),
-                             max_sd_pixels(), max_hd_pixels(),
-                             max_uhd1_pixels(), clear_lead_in_seconds());
+  Status status = segmenter_->Initialize(
+      *streams()[0], encryption_key_source(), max_sd_pixels(), max_hd_pixels(),
+      max_uhd1_pixels(), clear_lead_in_seconds());
   FireOnMediaStartEvent();
   return status;
 }
@@ -35,16 +34,15 @@ Status TsMuxer::Finalize() {
   return segmenter_->Finalize();
 }
 
-Status TsMuxer::DoAddSample(const MediaStream* stream,
-                            std::shared_ptr<MediaSample> sample) {
+Status TsMuxer::DoAddSample(std::shared_ptr<MediaSample> sample) {
   return segmenter_->AddSample(sample);
 }
 
 void TsMuxer::FireOnMediaStartEvent() {
   if (!muxer_listener())
     return;
-  muxer_listener()->OnMediaStart(options(), *streams().front()->info(),
-                                 kTsTimescale, MuxerListener::kContainerWebM);
+  muxer_listener()->OnMediaStart(options(), *streams().front(), kTsTimescale,
+                                 MuxerListener::kContainerWebM);
 }
 
 void TsMuxer::FireOnMediaEndEvent() {

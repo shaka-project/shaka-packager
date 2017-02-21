@@ -172,6 +172,10 @@ class MediaHandler {
 
   int num_input_streams() const { return num_input_streams_; }
   int next_output_stream_index() const { return next_output_stream_index_; }
+  const std::map<int, std::pair<std::shared_ptr<MediaHandler>, int>>&
+  output_handlers() {
+    return output_handlers_;
+  }
 
  private:
   MediaHandler(const MediaHandler&) = delete;

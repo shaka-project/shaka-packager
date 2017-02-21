@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
