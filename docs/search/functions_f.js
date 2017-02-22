@@ -16,7 +16,7 @@ var searchData=
   ['readwriteheaderinternal',['ReadWriteHeaderInternal',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a160958fd4dd933f8b760bf61ec0f72c6',1,'shaka::media::mp4::Box::ReadWriteHeaderInternal()'],['../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html#ad72e5a2d0def5bbba75b440d060ef1cf',1,'shaka::media::mp4::FullBox::ReadWriteHeaderInternal()']]],
   ['readwritestring',['ReadWriteString',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#ac00df060effff87645b9508ba15fb67d',1,'shaka::media::mp4::BoxBuffer']]],
   ['readwriteuint64nbytes',['ReadWriteUInt64NBytes',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a53c6b6a9bce0bb0fa61b9ce95c3f5cef',1,'shaka::media::mp4::BoxBuffer']]],
-  ['readysamplessize',['ReadySamplesSize',['../d0/d22/classshaka_1_1media_1_1mp4_1_1WebVttFragmenter.html#a0235d632ac8fb9592fc6aae59680d367',1,'shaka::media::mp4::WebVttFragmenter']]],
+  ['readysamplessize',['ReadySamplesSize',['../de/ddd/classshaka_1_1media_1_1WebVttSampleConverter.html#a3b0e60f307c5ea57d232216eced6af76',1,'shaka::media::WebVttSampleConverter']]],
   ['release',['Release',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ae5cb2c3000ccbd53c0a1867db0b8a2d0',1,'shaka::xml::XmlNode']]],
   ['reopen',['Reopen',['../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185',1,'shaka::media::IoCache']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb',1,'shaka::Representation']]],
