@@ -43,8 +43,8 @@ class ChunkingHandlerTest : public MediaHandlerTestBase {
     return chunking_handler_->Process(std::move(stream_data));
   }
 
-  Status FlushStream(int stream_index) {
-    return chunking_handler_->FlushStream(stream_index);
+  Status OnFlushRequest(int stream_index) {
+    return chunking_handler_->OnFlushRequest(stream_index);
   }
 
  protected:
@@ -80,7 +80,7 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
   }
 
   ClearOutputStreamDataVector();
-  ASSERT_OK(FlushStream(kStreamIndex0));
+  ASSERT_OK(OnFlushRequest(kStreamIndex0));
   EXPECT_THAT(GetOutputStreamDataVector(),
               ElementsAre(IsSegmentInfo(kStreamIndex0, kDuration1 * 3,
                                         kDuration1 * 2, !kIsSubsegment)));
@@ -210,7 +210,7 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
                         kDuration1)));
 
   ClearOutputStreamDataVector();
-  ASSERT_OK(FlushStream(kStreamIndex0));
+  ASSERT_OK(OnFlushRequest(kStreamIndex0));
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
@@ -220,7 +220,7 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
                         kDuration0 * 3, !kIsSubsegment)));
 
   ClearOutputStreamDataVector();
-  ASSERT_OK(FlushStream(kStreamIndex1));
+  ASSERT_OK(OnFlushRequest(kStreamIndex1));
   EXPECT_THAT(GetOutputStreamDataVector(),
               ElementsAre(IsSegmentInfo(kStreamIndex1,
                                         kVideoStartTimestamp + kDuration1 * 3,
@@ -228,8 +228,8 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
 
   // Flush again will do nothing.
   ClearOutputStreamDataVector();
-  ASSERT_OK(FlushStream(kStreamIndex0));
-  ASSERT_OK(FlushStream(kStreamIndex1));
+  ASSERT_OK(OnFlushRequest(kStreamIndex0));
+  ASSERT_OK(OnFlushRequest(kStreamIndex1));
   EXPECT_THAT(GetOutputStreamDataVector(), IsEmpty());
 }
 

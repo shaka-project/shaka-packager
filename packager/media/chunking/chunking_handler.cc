@@ -111,7 +111,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
   return Dispatch(std::move(stream_data));
 }
 
-Status ChunkingHandler::FlushStream(int input_stream_index) {
+Status ChunkingHandler::OnFlushRequest(int input_stream_index) {
   if (segment_info_[input_stream_index]) {
     Status status;
     if (input_stream_index != main_stream_index_) {
@@ -128,7 +128,8 @@ Status ChunkingHandler::FlushStream(int input_stream_index) {
         return status;
     }
   }
-  return MediaHandler::FlushStream(input_stream_index);
+  const int output_stream_index = input_stream_index;
+  return FlushDownstream(output_stream_index);
 }
 
 Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {

@@ -68,7 +68,7 @@ class ChunkingHandler : public MediaHandler {
   /// @{
   Status InitializeInternal() override;
   Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status FlushStream(int input_stream_index) override;
+  Status OnFlushRequest(int input_stream_index) override;
   /// @}
 
  private:

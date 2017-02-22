@@ -107,7 +107,7 @@ Status Demuxer::Run() {
 
   if (status.error_code() == error::END_OF_STREAM) {
     for (int stream_index : stream_indexes_) {
-      status = FlushStream(stream_index);
+      status = FlushDownstream(stream_index);
       if (!status.ok())
         return status;
     }

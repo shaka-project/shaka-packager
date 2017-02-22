@@ -96,8 +96,8 @@ class MediaHandler {
   /// handlers after finishing processing if needed.
   virtual Status Process(std::unique_ptr<StreamData> stream_data) = 0;
 
-  /// Flush the stream at the specified input stream index.
-  virtual Status FlushStream(int input_stream_index);
+  /// Event handler for flush request at the specific input stream index.
+  virtual Status OnFlushRequest(int input_stream_index);
 
   /// Validate if the stream at the specified index actually exists.
   virtual bool ValidateOutputStreamIndex(int stream_index) const;
@@ -169,6 +169,9 @@ class MediaHandler {
     stream_data->segment_info = std::move(segment_info);
     return Dispatch(std::move(stream_data));
   }
+
+  /// Flush the downstream connected at the specified output stream index.
+  Status FlushDownstream(int output_stream_index);
 
   int num_input_streams() const { return num_input_streams_; }
   int next_output_stream_index() const { return next_output_stream_index_; }

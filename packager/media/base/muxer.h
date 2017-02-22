@@ -97,7 +97,7 @@ class Muxer : public MediaHandler {
   /// @{
   Status InitializeInternal() override { return Status::OK; }
   Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status FlushStream(int input_stream_index) override { return Finalize(); }
+  Status OnFlushRequest(int input_stream_index) override { return Finalize(); }
   /// @}
 
   const MuxerOptions& options() const { return options_; }

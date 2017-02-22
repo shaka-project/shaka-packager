@@ -73,7 +73,7 @@ class FakeMediaHandler : public MediaHandler {
     stream_data_vector_.push_back(std::move(stream_data));
     return Status::OK;
   }
-  Status FlushStream(int input_stream_index) override { return Status::OK; }
+  Status OnFlushRequest(int input_stream_index) override { return Status::OK; }
   bool ValidateOutputStreamIndex(int stream_index) const override {
     return true;
   }

@@ -38,15 +38,11 @@ Status MediaHandler::Initialize() {
   return Status::OK;
 }
 
-Status MediaHandler::FlushStream(int input_stream_index) {
+Status MediaHandler::OnFlushRequest(int input_stream_index) {
   // The default implementation treats the output stream index to be identical
   // to the input stream index, which is true for most handlers.
-  auto handler_it = output_handlers_.find(input_stream_index);
-  if (handler_it == output_handlers_.end()) {
-    return Status(error::NOT_FOUND,
-                  "No output handler exist at the specified index.");
-  }
-  return handler_it->second.first->FlushStream(handler_it->second.second);
+  const int output_stream_index = input_stream_index;
+  return FlushDownstream(output_stream_index);
 }
 
 bool MediaHandler::ValidateOutputStreamIndex(int stream_index) const {
@@ -62,6 +58,15 @@ Status MediaHandler::Dispatch(std::unique_ptr<StreamData> stream_data) {
   }
   stream_data->stream_index = handler_it->second.second;
   return handler_it->second.first->Process(std::move(stream_data));
+}
+
+Status MediaHandler::FlushDownstream(int output_stream_index) {
+  auto handler_it = output_handlers_.find(output_stream_index);
+  if (handler_it == output_handlers_.end()) {
+    return Status(error::NOT_FOUND,
+                  "No output handler exist at the specified index.");
+  }
+  return handler_it->second.first->OnFlushRequest(handler_it->second.second);
 }
 
 }  // namespace media
