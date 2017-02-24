@@ -14,6 +14,7 @@ namespace media {
 namespace {
 
 const uint64_t kDuration = 1000;
+const bool kSubsegment = true;
 
 const uint8_t kBasicSupportDataInit[] = {
   // ID: EBML Header omitted.
@@ -124,6 +125,7 @@ TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -134,18 +136,21 @@ TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
   EXPECT_FALSE(File::Open(TemplateFileName(1).c_str(), "r"));
 }
 
-TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
+TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegment) {
   MuxerOptions options = CreateMuxerOptions();
   options.segment_template = segment_template_;
-  options.segment_duration = 5;  // seconds
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
+    if (i == 5)
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(
+      segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -161,47 +166,20 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
   EXPECT_FALSE(File::Open(TemplateFileName(2).c_str(), "r"));
 }
 
-TEST_F(MultiSegmentSegmenterTest, RespectsSegmentSAPAlign) {
+TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnSubsegment) {
   MuxerOptions options = CreateMuxerOptions();
   options.segment_template = segment_template_;
-  options.segment_duration = 3;  // seconds
-  options.segment_sap_aligned = true;
-  ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
-
-  // Write the samples to the Segmenter.
-  for (int i = 0; i < 10; i++) {
-    const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
-    std::shared_ptr<MediaSample> sample =
-        CreateSample(key_frame_flag, kDuration, kNoSideData);
-    ASSERT_OK(segmenter_->AddSample(sample));
-  }
-  ASSERT_OK(segmenter_->Finalize());
-
-  // Verify the resulting data.
-  ClusterParser parser;
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
-  ASSERT_EQ(1u, parser.cluster_count());
-  EXPECT_EQ(6, parser.GetFrameCountForCluster(0));
-
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(1)));
-  ASSERT_EQ(1u, parser.cluster_count());
-  EXPECT_EQ(4, parser.GetFrameCountForCluster(0));
-
-  EXPECT_FALSE(File::Open(TemplateFileName(2).c_str(), "r"));
-}
-
-TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
-  MuxerOptions options = CreateMuxerOptions();
-  options.segment_template = segment_template_;
-  options.fragment_duration = 5;  // seconds
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
+    if (i == 5)
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment));
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -210,32 +188,6 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
   ASSERT_EQ(2u, parser.cluster_count());
   EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
   EXPECT_EQ(3, parser.GetFrameCountForCluster(1));
-
-  EXPECT_FALSE(File::Open(TemplateFileName(1).c_str(), "r"));
-}
-
-TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
-  MuxerOptions options = CreateMuxerOptions();
-  options.segment_template = segment_template_;
-  options.fragment_duration = 3;  // seconds
-  options.fragment_sap_aligned = true;
-  ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
-
-  // Write the samples to the Segmenter.
-  for (int i = 0; i < 10; i++) {
-    const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
-    std::shared_ptr<MediaSample> sample =
-        CreateSample(key_frame_flag, kDuration, kNoSideData);
-    ASSERT_OK(segmenter_->AddSample(sample));
-  }
-  ASSERT_OK(segmenter_->Finalize());
-
-  // Verify the resulting data.
-  ClusterParser parser;
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
-  ASSERT_EQ(2u, parser.cluster_count());
-  EXPECT_EQ(6, parser.GetFrameCountForCluster(0));
-  EXPECT_EQ(4, parser.GetFrameCountForCluster(1));
 
   EXPECT_FALSE(File::Open(TemplateFileName(1).c_str(), "r"));
 }

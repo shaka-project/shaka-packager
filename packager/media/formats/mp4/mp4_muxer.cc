@@ -161,9 +161,18 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::DoAddSample(std::shared_ptr<MediaSample> sample) {
+Status MP4Muxer::AddSample(int stream_id, std::shared_ptr<MediaSample> sample) {
   DCHECK(segmenter_);
-  return segmenter_->AddSample(*streams()[0], sample);
+  return segmenter_->AddSample(stream_id, sample);
+}
+
+Status MP4Muxer::FinalizeSegment(int stream_id,
+                                 std::shared_ptr<SegmentInfo> segment_info) {
+  DCHECK(segmenter_);
+  VLOG(3) << "Finalize " << (segment_info->is_subsegment ? "sub" : "")
+          << "segment " << segment_info->start_timestamp << " duration "
+          << segment_info->duration;
+  return segmenter_->FinalizeSegment(stream_id, segment_info->is_subsegment);
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {

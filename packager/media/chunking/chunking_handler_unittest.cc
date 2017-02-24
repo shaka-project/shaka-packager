@@ -86,6 +86,30 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
                                         kDuration1 * 2, !kIsSubsegment)));
 }
 
+TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
+  ChunkingOptions chunking_options;
+  chunking_options.segment_duration_in_seconds = 1;
+  chunking_options.subsegment_duration_in_seconds = 0.5;
+  SetUpChunkingHandler(1, chunking_options);
+
+  ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
+  for (int i = 0; i < 5; ++i) {
+    ASSERT_OK(Process(GetMediaSampleStreamData(kStreamIndex0, i * kDuration1,
+                                               kDuration1, kKeyFrame)));
+  }
+  EXPECT_THAT(
+      GetOutputStreamDataVector(),
+      ElementsAre(
+          IsStreamInfo(kStreamIndex0, kTimeScale0, !kEncrypted),
+          IsMediaSample(kStreamIndex0, 0, kDuration1),
+          IsMediaSample(kStreamIndex0, kDuration1, kDuration1),
+          IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 2, kIsSubsegment),
+          IsMediaSample(kStreamIndex0, 2 * kDuration1, kDuration1),
+          IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 3, !kIsSubsegment),
+          IsMediaSample(kStreamIndex0, 3 * kDuration1, kDuration1),
+          IsMediaSample(kStreamIndex0, 4 * kDuration1, kDuration1)));
+}
+
 TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
   ChunkingOptions chunking_options;
   chunking_options.segment_duration_in_seconds = 1;

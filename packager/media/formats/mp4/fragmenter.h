@@ -52,6 +52,8 @@ class Fragmenter {
   /// Fill @a reference with current fragment information.
   void GenerateSegmentReference(SegmentReference* reference);
 
+  void ClearFragmentFinalized() { fragment_finalized_ = false; }
+
   uint64_t fragment_duration() const { return fragment_duration_; }
   uint64_t first_sap_time() const { return first_sap_time_; }
   uint64_t earliest_presentation_time() const {

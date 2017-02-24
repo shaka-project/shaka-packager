@@ -54,6 +54,18 @@ class TsSegmenter {
   /// @return OK on success.
   Status AddSample(std::shared_ptr<MediaSample> sample);
 
+  /// Flush all the samples that are (possibly) buffered and write them to the
+  /// current segment, this will close the file. If a file is not already opened
+  /// before calling this, this will open one and write them to file.
+  /// @param start_timestamp is the segment's start timestamp in the input
+  ///        stream's time scale.
+  /// @param duration is the segment's duration in the input stream's time
+  ///        scale.
+  // TODO(kqyang): Remove the usage of segment start timestamp and duration in
+  // xx_segmenter, which could cause confusions on which is the source of truth
+  // as the segment start timestamp and duration could be tracked locally.
+  Status FinalizeSegment(uint64_t start_timestamp, uint64_t duration);
+
   /// Only for testing.
   void InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer);
 
@@ -71,11 +83,6 @@ class TsSegmenter {
   // it will open one. This will not close the file.
   Status WritePesPacketsToFile();
 
-  // Flush all the samples that are (possibly) buffered and write them to the
-  // current segment, this will close the file. If a file is not already opened
-  // before calling this, this will open one and write them to file.
-  Status Flush();
-
   // If conditions are met, notify objects that the data is encrypted.
   Status NotifyEncrypted();
 
@@ -85,12 +92,6 @@ class TsSegmenter {
   // Scale used to scale the input stream to TS's timesccale (which is 90000).
   // Used for calculating the duration in seconds fo the current segment.
   double timescale_scale_ = 1.0;
-
-  // This is the sum of the durations of the samples that were added to
-  // PesPacketGenerator for the current segment (in seconds). Note that this is
-  // not necessarily the same as the length of the PesPackets that have been
-  // written to the current segment in WritePesPacketsToFile().
-  double current_segment_total_sample_duration_ = 0.0;
 
   // Used for segment template.
   uint64_t segment_number_ = 0;
@@ -102,7 +103,6 @@ class TsSegmenter {
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
   // For OnNewSegment().
-  uint64_t current_segment_start_time_ = 0;
   // Path of the current segment so that File::GetFileSize() can be used after
   // the segment has been finalized.
   std::string current_segment_path_;

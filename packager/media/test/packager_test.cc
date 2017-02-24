@@ -17,6 +17,7 @@
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/test/status_test_util.h"
+#include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -89,7 +90,9 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
   // Check if |file1| and |file2| are the same.
   bool ContentsEqual(const std::string& file1, const std::string file2);
 
-  MuxerOptions SetupOptions(const std::string& output, bool single_segment);
+  ChunkingOptions SetupChunkingOptions();
+  MuxerOptions SetupMuxerOptions(const std::string& output,
+                                 bool single_segment);
   void Remux(const std::string& input,
              const std::string& video_output,
              const std::string& audio_output,
@@ -116,19 +119,23 @@ bool PackagerTestBasic::ContentsEqual(const std::string& file1,
                              test_directory_.AppendASCII(file2));
 }
 
-MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
-                                             bool single_segment) {
+MuxerOptions PackagerTestBasic::SetupMuxerOptions(const std::string& output,
+                                                  bool single_segment) {
   MuxerOptions options;
-  options.segment_duration = kSegmentDurationInSeconds;
-  options.fragment_duration = kFragmentDurationInSecodns;
-  options.segment_sap_aligned = kSegmentSapAligned;
-  options.fragment_sap_aligned = kFragmentSapAligned;
   options.num_subsegments_per_sidx = kNumSubsegmentsPerSidx;
-
   options.output_file_name = GetFullPath(output);
   if (!single_segment)
     options.segment_template = GetFullPath(kSegmentTemplate);
   options.temp_dir = test_directory_.AsUTF8Unsafe();
+  return options;
+}
+
+ChunkingOptions PackagerTestBasic::SetupChunkingOptions() {
+  ChunkingOptions options;
+  options.segment_duration_in_seconds = kSegmentDurationInSeconds;
+  options.subsegment_duration_in_seconds = kFragmentDurationInSecodns;
+  options.segment_sap_aligned = kSegmentSapAligned;
+  options.subsegment_sap_aligned = kFragmentSapAligned;
   return options;
 }
 
@@ -140,7 +147,6 @@ void PackagerTestBasic::Remux(const std::string& input,
   CHECK(!video_output.empty() || !audio_output.empty());
 
   Demuxer demuxer(GetFullPath(input));
-
   std::unique_ptr<KeySource> encryption_key_source(
       FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   DCHECK(encryption_key_source);
@@ -148,7 +154,7 @@ void PackagerTestBasic::Remux(const std::string& input,
   std::shared_ptr<Muxer> muxer_video;
   if (!video_output.empty()) {
     muxer_video.reset(
-        new mp4::MP4Muxer(SetupOptions(video_output, single_segment)));
+        new mp4::MP4Muxer(SetupMuxerOptions(video_output, single_segment)));
     muxer_video->set_clock(&fake_clock_);
 
     if (enable_encryption) {
@@ -157,13 +163,17 @@ void PackagerTestBasic::Remux(const std::string& input,
                                 kMaxUHD1Pixels, kClearLeadInSeconds,
                                 kCryptoDurationInSeconds, FOURCC_cenc);
     }
-    ASSERT_OK(demuxer.SetHandler("video", muxer_video));
+
+    auto chunking_handler =
+        std::make_shared<ChunkingHandler>(SetupChunkingOptions());
+    ASSERT_OK(demuxer.SetHandler("video", chunking_handler));
+    ASSERT_OK(chunking_handler->SetHandler(0, muxer_video));
   }
 
   std::shared_ptr<Muxer> muxer_audio;
   if (!audio_output.empty()) {
     muxer_audio.reset(
-        new mp4::MP4Muxer(SetupOptions(audio_output, single_segment)));
+        new mp4::MP4Muxer(SetupMuxerOptions(audio_output, single_segment)));
     muxer_audio->set_clock(&fake_clock_);
 
     if (enable_encryption) {
@@ -172,7 +182,11 @@ void PackagerTestBasic::Remux(const std::string& input,
                                 kMaxUHD1Pixels, kClearLeadInSeconds,
                                 kCryptoDurationInSeconds, FOURCC_cenc);
     }
-    ASSERT_OK(demuxer.SetHandler("audio", muxer_audio));
+
+    auto chunking_handler =
+        std::make_shared<ChunkingHandler>(SetupChunkingOptions());
+    ASSERT_OK(demuxer.SetHandler("audio", chunking_handler));
+    ASSERT_OK(chunking_handler->SetHandler(0, muxer_audio));
   }
 
   ASSERT_OK(demuxer.Initialize());
@@ -193,18 +207,20 @@ void PackagerTestBasic::Decrypt(const std::string& input,
 
   std::shared_ptr<Muxer> muxer;
   if (!video_output.empty()) {
-    muxer.reset(
-        new mp4::MP4Muxer(SetupOptions(video_output, true)));
+    muxer.reset(new mp4::MP4Muxer(SetupMuxerOptions(video_output, true)));
   }
   if (!audio_output.empty()) {
-    muxer.reset(
-        new mp4::MP4Muxer(SetupOptions(audio_output, true)));
+    muxer.reset(new mp4::MP4Muxer(SetupMuxerOptions(audio_output, true)));
   }
   ASSERT_TRUE(muxer);
   muxer->set_clock(&fake_clock_);
-  ASSERT_OK(demuxer.SetHandler("0", muxer));
-  ASSERT_OK(demuxer.Initialize());
 
+  auto chunking_handler =
+      std::make_shared<ChunkingHandler>(SetupChunkingOptions());
+  ASSERT_OK(demuxer.SetHandler("0", chunking_handler));
+  ASSERT_OK(chunking_handler->SetHandler(0, muxer));
+
+  ASSERT_OK(demuxer.Initialize());
   ASSERT_OK(demuxer.Run());
 }
 

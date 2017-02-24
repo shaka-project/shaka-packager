@@ -76,6 +76,11 @@ class Segmenter {
   /// @return OK on success, an error status otherwise.
   Status AddSample(std::shared_ptr<MediaSample> sample);
 
+  /// Finalize the (sub)segment.
+  virtual Status FinalizeSegment(uint64_t start_timescale,
+                                 uint64_t duration_timescale,
+                                 bool is_subsegment) = 0;
+
   /// @return true if there is an initialization range, while setting @a start
   ///         and @a end; or false if initialization range does not apply.
   virtual bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) = 0;
@@ -113,9 +118,6 @@ class Segmenter {
 
   int track_id() const { return track_id_; }
   uint64_t segment_payload_pos() const { return segment_payload_pos_; }
-  uint64_t cluster_length_in_time_scale() const {
-    return cluster_length_in_time_scale_;
-  }
 
   virtual Status DoInitialize(std::unique_ptr<MkvWriter> writer) = 0;
   virtual Status DoFinalize() = 0;
@@ -129,25 +131,23 @@ class Segmenter {
   // Writes the previous frame to the file.
   Status WriteFrame(bool write_duration);
 
-  // This is called when there needs to be a new subsegment.  This does nothing
-  // in single-segment mode.  In multi-segment mode this creates a new Cluster
-  // element.
-  virtual Status NewSubsegment(uint64_t start_timescale) = 0;
-  // This is called when there needs to be a new segment.  In single-segment
-  // mode, this creates a new Cluster element.  In multi-segment mode this
-  // creates a new output file.
-  virtual Status NewSegment(uint64_t start_timescale) = 0;
+  // This is called when there needs to be a new (sub)segment.
+  // In single-segment mode, a Cluster is a segment and there is no subsegment.
+  // In multi-segment mode, a new file is a segment and the clusters in the file
+  // are subsegments.
+  virtual Status NewSegment(uint64_t start_timescale, bool is_subsegment) = 0;
 
   // Store the previous sample so we know which one is the last frame.
   std::shared_ptr<MediaSample> prev_sample_;
   // The reference frame timestamp; used to populate the ReferenceBlock element
   // when writing non-keyframe BlockGroups.
-  uint64_t reference_frame_timestamp_;
+  uint64_t reference_frame_timestamp_ = 0;
 
   const MuxerOptions& options_;
   std::unique_ptr<Encryptor> encryptor_;
-  double clear_lead_;
-  bool enable_encryption_;  // Encryption is enabled only after clear_lead_.
+  double clear_lead_ = 0;
+  // Encryption is enabled only after clear_lead_.
+  bool enable_encryption_ = false;
 
   std::unique_ptr<mkvmuxer::Cluster> cluster_;
   mkvmuxer::Cues cues_;
@@ -155,22 +155,23 @@ class Segmenter {
   mkvmuxer::SegmentInfo segment_info_;
   mkvmuxer::Tracks tracks_;
 
-  StreamInfo* info_;
-  MuxerListener* muxer_listener_;
-  ProgressListener* progress_listener_;
-  uint64_t progress_target_;
-  uint64_t accumulated_progress_;
-  uint64_t first_timestamp_;
-  int64_t sample_duration_;
+  StreamInfo* info_ = nullptr;
+  MuxerListener* muxer_listener_ = nullptr;
+  ProgressListener* progress_listener_ = nullptr;
+  uint64_t progress_target_ = 0;
+  uint64_t accumulated_progress_ = 0;
+  uint64_t first_timestamp_ = 0;
+  int64_t sample_duration_ = 0;
   // The position (in bytes) of the start of the Segment payload in the init
   // file.  This is also the size of the header before the SeekHead.
-  uint64_t segment_payload_pos_;
+  uint64_t segment_payload_pos_ = 0;
 
-  // Durations in timescale.
-  uint64_t cluster_length_in_time_scale_;
-  uint64_t segment_length_in_time_scale_;
-
-  int track_id_;
+  // Indicate whether a new segment needed to be created, which is always true
+  // in the beginning.
+  bool new_segment_ = true;
+  // Indicate whether a new subsegment needed to be created.
+  bool new_subsegment_ = false;
+  int track_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

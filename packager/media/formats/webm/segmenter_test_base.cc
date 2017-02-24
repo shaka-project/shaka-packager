@@ -75,10 +75,6 @@ std::shared_ptr<MediaSample> SegmentTestBase::CreateSample(
 MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
   MuxerOptions ret;
   ret.output_file_name = output_file_name_;
-  ret.segment_duration = 30;  // seconds
-  ret.fragment_duration = 30;  // seconds
-  ret.segment_sap_aligned = false;
-  ret.fragment_sap_aligned = false;
   // Use memory files for temp storage.  Normally this would be a bad idea
   // since it wouldn't support large files, but for tests the files are small.
   ret.temp_dir = std::string(kMemoryFilePrefix) + "temp/";

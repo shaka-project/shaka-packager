@@ -91,8 +91,9 @@ TEST_F(EncryptionHandlerTest, Initialize) {
 
 TEST_F(EncryptionHandlerTest, OnlyOneOutput) {
   // Connecting another handler will fail.
+  ASSERT_OK(encryption_handler_->AddHandler(some_handler()));
   ASSERT_EQ(error::INVALID_ARGUMENT,
-            encryption_handler_->AddHandler(some_handler()).error_code());
+            encryption_handler_->Initialize().error_code());
 }
 
 TEST_F(EncryptionHandlerTest, OnlyOneInput) {

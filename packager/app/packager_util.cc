@@ -21,6 +21,7 @@
 #include "packager/media/base/playready_key_source.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_key_source.h"
+#include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_options.h"
 
@@ -146,45 +147,45 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource() {
   return decryption_key_source;
 }
 
-bool GetMuxerOptions(MuxerOptions* muxer_options) {
-  DCHECK(muxer_options);
+ChunkingOptions GetChunkingOptions() {
+  ChunkingOptions chunking_options;
+  chunking_options.segment_duration_in_seconds = FLAGS_segment_duration;
+  chunking_options.subsegment_duration_in_seconds = FLAGS_fragment_duration;
+  chunking_options.segment_sap_aligned = FLAGS_segment_sap_aligned;
+  chunking_options.subsegment_sap_aligned = FLAGS_fragment_sap_aligned;
+  return chunking_options;
+}
 
-  muxer_options->segment_duration = FLAGS_segment_duration;
-  muxer_options->fragment_duration = FLAGS_fragment_duration;
-  muxer_options->segment_sap_aligned = FLAGS_segment_sap_aligned;
-  muxer_options->fragment_sap_aligned = FLAGS_fragment_sap_aligned;
-  muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
-  muxer_options->webm_subsample_encryption = FLAGS_webm_subsample_encryption;
+MuxerOptions GetMuxerOptions() {
+  MuxerOptions muxer_options;
+  muxer_options.num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
+  muxer_options.webm_subsample_encryption = FLAGS_webm_subsample_encryption;
   if (FLAGS_mp4_use_decoding_timestamp_in_timeline) {
     LOG(WARNING) << "Flag --mp4_use_decoding_timestamp_in_timeline is set. "
                     "Note that it is a temporary hack to workaround Chromium "
                     "bug https://crbug.com/398130. The flag may be removed "
                     "when the Chromium bug is fixed.";
   }
-  muxer_options->mp4_use_decoding_timestamp_in_timeline =
+  muxer_options.mp4_use_decoding_timestamp_in_timeline =
       FLAGS_mp4_use_decoding_timestamp_in_timeline;
-
-  muxer_options->temp_dir = FLAGS_temp_dir;
-  return true;
+  muxer_options.temp_dir = FLAGS_temp_dir;
+  return muxer_options;
 }
 
-bool GetMpdOptions(bool on_demand_profile, MpdOptions* mpd_options) {
-  DCHECK(mpd_options);
-
-  mpd_options->dash_profile =
+MpdOptions GetMpdOptions(bool on_demand_profile) {
+  MpdOptions mpd_options;
+  mpd_options.dash_profile =
       on_demand_profile ? DashProfile::kOnDemand : DashProfile::kLive;
-  mpd_options->mpd_type =
-      (on_demand_profile || FLAGS_generate_static_mpd)
-          ? MpdType::kStatic
-          : MpdType::kDynamic;
-  mpd_options->availability_time_offset = FLAGS_availability_time_offset;
-  mpd_options->minimum_update_period = FLAGS_minimum_update_period;
-  mpd_options->min_buffer_time = FLAGS_min_buffer_time;
-  mpd_options->time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
-  mpd_options->suggested_presentation_delay =
-      FLAGS_suggested_presentation_delay;
-  mpd_options->default_language = FLAGS_default_language;
-  return true;
+  mpd_options.mpd_type = (on_demand_profile || FLAGS_generate_static_mpd)
+                             ? MpdType::kStatic
+                             : MpdType::kDynamic;
+  mpd_options.availability_time_offset = FLAGS_availability_time_offset;
+  mpd_options.minimum_update_period = FLAGS_minimum_update_period;
+  mpd_options.min_buffer_time = FLAGS_min_buffer_time;
+  mpd_options.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+  mpd_options.suggested_presentation_delay = FLAGS_suggested_presentation_delay;
+  mpd_options.default_language = FLAGS_default_language;
+  return mpd_options;
 }
 
 }  // namespace media

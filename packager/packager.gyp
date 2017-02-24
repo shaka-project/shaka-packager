@@ -42,6 +42,7 @@
       'dependencies': [
         'hls/hls.gyp:hls_builder',
         'media/codecs/codecs.gyp:codecs',
+        'media/chunking/chunking.gyp:chunking',
         'media/event/media_event.gyp:media_event',
         'media/file/file.gyp:file',
         'media/formats/mp2t/mp2t.gyp:mp2t',
@@ -85,6 +86,7 @@
       ],
       'dependencies': [
         'media/codecs/codecs.gyp:codecs',
+        'media/chunking/chunking.gyp:chunking',
         'media/file/file.gyp:file',
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',

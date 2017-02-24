@@ -85,10 +85,16 @@ class Segmenter {
   Status Finalize();
 
   /// Add sample to the indicated stream.
+  /// @param stream_id is the zero-based stream index.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(const StreamInfo& stream_Info,
-                   std::shared_ptr<MediaSample> sample);
+  Status AddSample(int stream_id, std::shared_ptr<MediaSample> sample);
+
+  /// Finalize the segment / subsegment.
+  /// @param stream_id is the zero-based stream index.
+  /// @param is_subsegment indicates if it is a subsegment (fragment).
+  /// @return OK on success, an error status otherwise.
+  Status FinalizeSegment(int stream_id, bool is_subsegment);
 
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.
@@ -130,10 +136,7 @@ class Segmenter {
   virtual Status DoFinalize() = 0;
   virtual Status DoFinalizeSegment() = 0;
 
-  Status FinalizeSegment();
   uint32_t GetReferenceStreamId();
-
-  Status FinalizeFragment(bool finalize_segment, Fragmenter* fragment);
 
   const MuxerOptions& options_;
   std::unique_ptr<FileType> ftyp_;
@@ -142,7 +145,6 @@ class Segmenter {
   std::unique_ptr<BufferWriter> fragment_buffer_;
   std::unique_ptr<SegmentIndex> sidx_;
   std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
-  std::vector<uint64_t> segment_durations_;
   MuxerListener* muxer_listener_;
   ProgressListener* progress_listener_;
   uint64_t progress_target_;

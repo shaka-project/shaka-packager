@@ -26,7 +26,9 @@ class TsMuxer : public Muxer {
   // Muxer implementation.
   Status InitializeMuxer() override;
   Status Finalize() override;
-  Status DoAddSample(std::shared_ptr<MediaSample> sample) override;
+  Status AddSample(int stream_id, std::shared_ptr<MediaSample> sample) override;
+  Status FinalizeSegment(int stream_id,
+                         std::shared_ptr<SegmentInfo> sample) override;
 
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();

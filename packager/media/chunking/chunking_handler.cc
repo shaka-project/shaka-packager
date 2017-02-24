@@ -142,6 +142,8 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
     const int64_t segment_index = timestamp / segment_duration_;
     if (segment_index != current_segment_index_) {
       current_segment_index_ = segment_index;
+      // Reset subsegment index.
+      current_subsegment_index_ = 0;
       new_segment = true;
     }
   }

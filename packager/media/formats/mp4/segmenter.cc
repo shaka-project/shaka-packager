@@ -178,7 +178,6 @@ Status Segmenter::Initialize(
   moof_->header.sequence_number = 0;
 
   moof_->tracks.resize(streams.size());
-  segment_durations_.resize(streams.size());
   fragmenters_.resize(streams.size());
   const bool key_rotation_enabled = crypto_period_duration_in_seconds != 0;
   const bool kInitialEncryptionInfo = true;
@@ -292,12 +291,6 @@ Status Segmenter::Initialize(
 }
 
 Status Segmenter::Finalize() {
-  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_) {
-    Status status = FinalizeFragment(true, fragmenter.get());
-    if (!status.ok())
-      return status;
-  }
-
   // Set tracks and moov durations.
   // Note that the updated moov box will be written to output file for VOD case
   // only.
@@ -315,111 +308,35 @@ Status Segmenter::Finalize() {
   return DoFinalize();
 }
 
-Status Segmenter::AddSample(const StreamInfo& stream_info,
+Status Segmenter::AddSample(int stream_id,
                             std::shared_ptr<MediaSample> sample) {
-  // TODO(kqyang): Stream id should be passed in.
-  const uint32_t stream_id = 0;
-  Fragmenter* fragmenter = fragmenters_[stream_id].get();
-
   // Set default sample duration if it has not been set yet.
   if (moov_->extends.tracks[stream_id].default_sample_duration == 0) {
     moov_->extends.tracks[stream_id].default_sample_duration =
         sample->duration();
   }
 
+  DCHECK_LT(stream_id, static_cast<int>(fragmenters_.size()));
+  Fragmenter* fragmenter = fragmenters_[stream_id].get();
   if (fragmenter->fragment_finalized()) {
     return Status(error::FRAGMENT_FINALIZED,
                   "Current fragment is finalized already.");
   }
 
-  bool finalize_fragment = false;
-  if (fragmenter->fragment_duration() >=
-      options_.fragment_duration * stream_info.time_scale()) {
-    if (sample->is_key_frame() || !options_.fragment_sap_aligned) {
-      finalize_fragment = true;
-    }
-  }
-  bool finalize_segment = false;
-  if (segment_durations_[stream_id] >=
-      options_.segment_duration * stream_info.time_scale()) {
-    if (sample->is_key_frame() || !options_.segment_sap_aligned) {
-      finalize_segment = true;
-      finalize_fragment = true;
-    }
-  }
-
-  Status status;
-  if (finalize_fragment) {
-    status = FinalizeFragment(finalize_segment, fragmenter);
-    if (!status.ok())
-      return status;
-  }
-
-  status = fragmenter->AddSample(sample);
+  Status status = fragmenter->AddSample(sample);
   if (!status.ok())
     return status;
 
   if (sample_duration_ == 0)
     sample_duration_ = sample->duration();
   moov_->tracks[stream_id].media.header.duration += sample->duration();
-  segment_durations_[stream_id] += sample->duration();
-  DCHECK_GE(segment_durations_[stream_id], fragmenter->fragment_duration());
   return Status::OK;
 }
 
-uint32_t Segmenter::GetReferenceTimeScale() const {
-  return moov_->header.timescale;
-}
-
-double Segmenter::GetDuration() const {
-  if (moov_->header.timescale == 0) {
-    // Handling the case where this is not properly initialized.
-    return 0.0;
-  }
-
-  return static_cast<double>(moov_->header.duration) / moov_->header.timescale;
-}
-
-void Segmenter::UpdateProgress(uint64_t progress) {
-  accumulated_progress_ += progress;
-
-  if (!progress_listener_) return;
-  if (progress_target_ == 0) return;
-  // It might happen that accumulated progress exceeds progress_target due to
-  // computation errors, e.g. rounding error. Cap it so it never reports > 100%
-  // progress.
-  if (accumulated_progress_ >= progress_target_) {
-    progress_listener_->OnProgress(1.0);
-  } else {
-    progress_listener_->OnProgress(static_cast<double>(accumulated_progress_) /
-                                   progress_target_);
-  }
-}
-
-void Segmenter::SetComplete() {
-  if (!progress_listener_) return;
-  progress_listener_->OnProgress(1.0);
-}
-
-Status Segmenter::FinalizeSegment() {
-  Status status = DoFinalizeSegment();
-
-  // Reset segment information to initial state.
-  sidx_->references.clear();
-  std::vector<uint64_t>::iterator it = segment_durations_.begin();
-  for (; it != segment_durations_.end(); ++it)
-    *it = 0;
-
-  return status;
-}
-
-uint32_t Segmenter::GetReferenceStreamId() {
-  DCHECK(sidx_);
-  return sidx_->reference_id - 1;
-}
-
-Status Segmenter::FinalizeFragment(bool finalize_segment,
-                                   Fragmenter* fragmenter) {
+Status Segmenter::FinalizeSegment(int stream_id, bool is_subsegment) {
+  DCHECK_LT(stream_id, static_cast<int>(fragmenters_.size()));
+  Fragmenter* fragmenter = fragmenters_[stream_id].get();
+  DCHECK(fragmenter);
   fragmenter->FinalizeFragment();
 
   // Check if all tracks are ready for fragmentation.
@@ -468,10 +385,54 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
   // Increase sequence_number for next fragment.
   ++moof_->header.sequence_number;
 
-  if (finalize_segment)
-    return FinalizeSegment();
-
+  for (std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
+    fragmenter->ClearFragmentFinalized();
+  if (!is_subsegment) {
+    Status status = DoFinalizeSegment();
+    // Reset segment information to initial state.
+    sidx_->references.clear();
+    return status;
+  }
   return Status::OK;
+}
+
+uint32_t Segmenter::GetReferenceTimeScale() const {
+  return moov_->header.timescale;
+}
+
+double Segmenter::GetDuration() const {
+  if (moov_->header.timescale == 0) {
+    // Handling the case where this is not properly initialized.
+    return 0.0;
+  }
+
+  return static_cast<double>(moov_->header.duration) / moov_->header.timescale;
+}
+
+void Segmenter::UpdateProgress(uint64_t progress) {
+  accumulated_progress_ += progress;
+
+  if (!progress_listener_) return;
+  if (progress_target_ == 0) return;
+  // It might happen that accumulated progress exceeds progress_target due to
+  // computation errors, e.g. rounding error. Cap it so it never reports > 100%
+  // progress.
+  if (accumulated_progress_ >= progress_target_) {
+    progress_listener_->OnProgress(1.0);
+  } else {
+    progress_listener_->OnProgress(static_cast<double>(accumulated_progress_) /
+                                   progress_target_);
+  }
+}
+
+void Segmenter::SetComplete() {
+  if (!progress_listener_) return;
+  progress_listener_->OnProgress(1.0);
+}
+
+uint32_t Segmenter::GetReferenceStreamId() {
+  DCHECK(sidx_);
+  return sidx_->reference_id - 1;
 }
 
 }  // namespace mp4

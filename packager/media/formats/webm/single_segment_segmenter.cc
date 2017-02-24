@@ -18,53 +18,20 @@ SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options)
 
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
 
-Status SingleSegmentSegmenter::DoInitialize(std::unique_ptr<MkvWriter> writer) {
-  writer_ = std::move(writer);
-  Status ret = WriteSegmentHeader(0, writer_.get());
-  init_end_ = writer_->Position() - 1;
-  seek_head()->set_cluster_pos(init_end_ + 1 - segment_payload_pos());
-  return ret;
-}
-
-Status SingleSegmentSegmenter::DoFinalize() {
+Status SingleSegmentSegmenter::FinalizeSegment(uint64_t start_timescale,
+                                               uint64_t duration_timescale,
+                                               bool is_subsegment) {
+  Status status = Segmenter::FinalizeSegment(start_timescale,
+                                             duration_timescale, is_subsegment);
+  if (!status.ok())
+    return status;
+  // No-op for subsegment in single segment mode.
+  if (is_subsegment)
+    return Status::OK;
+  CHECK(cluster());
   if (!cluster()->Finalize())
     return Status(error::FILE_FAILURE, "Error finalizing cluster.");
-
-  // Write the Cues to the end of the file.
-  index_start_ = writer_->Position();
-  seek_head()->set_cues_pos(index_start_ - segment_payload_pos());
-  if (!cues()->Write(writer_.get()))
-    return Status(error::FILE_FAILURE, "Error writing Cues data.");
-
-  // The WebM index is at the end of the file.
-  index_end_ = writer_->Position() - 1;
-  writer_->Position(0);
-
-  Status status = WriteSegmentHeader(index_end_ + 1, writer_.get());
-  status.Update(writer_->Close());
-  return status;
-}
-
-Status SingleSegmentSegmenter::NewSubsegment(uint64_t start_timescale) {
   return Status::OK;
-}
-
-Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale) {
-  if (cluster() && !cluster()->Finalize())
-    return Status(error::FILE_FAILURE, "Error finalizing cluster.");
-
-  // Create a new Cue point.
-  uint64_t position = writer_->Position();
-  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);
-
-  mkvmuxer::CuePoint* cue_point = new mkvmuxer::CuePoint;
-  cue_point->set_time(start_webm_timecode);
-  cue_point->set_track(track_id());
-  cue_point->set_cluster_pos(position - segment_payload_pos());
-  if (!cues()->AddCue(cue_point))
-    return Status(error::INTERNAL_ERROR, "Error adding CuePoint.");
-
-  return SetCluster(start_webm_timecode, position, writer_.get());
 }
 
 bool SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
@@ -83,6 +50,49 @@ bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
   *start = index_start_;
   *end = index_end_;
   return true;
+}
+
+Status SingleSegmentSegmenter::DoInitialize(std::unique_ptr<MkvWriter> writer) {
+  writer_ = std::move(writer);
+  Status ret = WriteSegmentHeader(0, writer_.get());
+  init_end_ = writer_->Position() - 1;
+  seek_head()->set_cluster_pos(init_end_ + 1 - segment_payload_pos());
+  return ret;
+}
+
+Status SingleSegmentSegmenter::DoFinalize() {
+  // Write the Cues to the end of the file.
+  index_start_ = writer_->Position();
+  seek_head()->set_cues_pos(index_start_ - segment_payload_pos());
+  if (!cues()->Write(writer_.get()))
+    return Status(error::FILE_FAILURE, "Error writing Cues data.");
+
+  // The WebM index is at the end of the file.
+  index_end_ = writer_->Position() - 1;
+  writer_->Position(0);
+
+  Status status = WriteSegmentHeader(index_end_ + 1, writer_.get());
+  status.Update(writer_->Close());
+  return status;
+}
+
+Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale,
+                                          bool is_subsegment) {
+  // No-op for subsegment in single segment mode.
+  if (is_subsegment)
+    return Status::OK;
+  // Create a new Cue point.
+  uint64_t position = writer_->Position();
+  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);
+
+  mkvmuxer::CuePoint* cue_point = new mkvmuxer::CuePoint;
+  cue_point->set_time(start_webm_timecode);
+  cue_point->set_track(track_id());
+  cue_point->set_cluster_pos(position - segment_payload_pos());
+  if (!cues()->AddCue(cue_point))
+    return Status(error::INTERNAL_ERROR, "Error adding CuePoint.");
+
+  return SetCluster(start_webm_timecode, position, writer_.get());
 }
 
 }  // namespace webm

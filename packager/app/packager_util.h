@@ -22,6 +22,7 @@ struct MpdOptions;
 namespace media {
 
 class KeySource;
+struct ChunkingOptions;
 struct MuxerOptions;
 
 /// Create KeySource based on provided command line options for content
@@ -36,11 +37,14 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource();
 ///         decryption is not required.
 std::unique_ptr<KeySource> CreateDecryptionKeySource();
 
-/// Fill MuxerOptions members using provided command line options.
-bool GetMuxerOptions(MuxerOptions* muxer_options);
+/// @return ChunkingOptions from provided command line options.
+ChunkingOptions GetChunkingOptions();
 
-/// Fill MpdOptions members using provided command line options.
-bool GetMpdOptions(bool on_demand_profile, MpdOptions* mpd_options);
+/// @return MuxerOptions from provided command line options.
+MuxerOptions GetMuxerOptions();
+
+/// @return MpdOptions from provided command line options.
+MpdOptions GetMpdOptions(bool on_demand_profile);
 
 }  // namespace media
 }  // namespace shaka

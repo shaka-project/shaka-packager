@@ -11,7 +11,7 @@ namespace media {
 
 Status MediaHandler::SetHandler(int output_stream_index,
                                 std::shared_ptr<MediaHandler> handler) {
-  if (!ValidateOutputStreamIndex(output_stream_index))
+  if (output_stream_index < 0)
     return Status(error::INVALID_ARGUMENT, "Invalid output stream index");
   if (output_handlers_.find(output_stream_index) != output_handlers_.end()) {
     return Status(error::ALREADY_EXISTS,
@@ -30,6 +30,8 @@ Status MediaHandler::Initialize() {
   if (!status.ok())
     return status;
   for (auto& pair : output_handlers_) {
+    if (!ValidateOutputStreamIndex(pair.first))
+      return Status(error::INVALID_ARGUMENT, "Invalid output stream index");
     status = pair.second.first->Initialize();
     if (!status.ok())
       return status;

@@ -8,6 +8,7 @@
 
 #include "packager/base/time/time.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/media_handler.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
@@ -28,22 +29,7 @@ int64_t kTimecodeScale = 1000000;
 int64_t kSecondsToNs = 1000000000L;
 }  // namespace
 
-Segmenter::Segmenter(const MuxerOptions& options)
-    : reference_frame_timestamp_(0),
-      options_(options),
-      clear_lead_(0),
-      enable_encryption_(false),
-      info_(NULL),
-      muxer_listener_(NULL),
-      progress_listener_(NULL),
-      progress_target_(0),
-      accumulated_progress_(0),
-      first_timestamp_(0),
-      sample_duration_(0),
-      segment_payload_pos_(0),
-      cluster_length_in_time_scale_(0),
-      segment_length_in_time_scale_(0),
-      track_id_(0) {}
+Segmenter::Segmenter(const MuxerOptions& options) : options_(options) {}
 
 Segmenter::~Segmenter() {}
 
@@ -110,10 +96,6 @@ Status Segmenter::Initialize(std::unique_ptr<MkvWriter> writer,
 }
 
 Status Segmenter::Finalize() {
-  Status status = WriteFrame(true /* write_duration */);
-  if (!status.ok())
-    return status;
-
   uint64_t duration =
       prev_sample_->pts() - first_timestamp_ + prev_sample_->duration();
   segment_info_.set_duration(FromBMFFTimescale(duration));
@@ -137,33 +119,9 @@ Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   // previous frame first before creating the new Cluster.
 
   Status status;
-  bool wrote_frame = false;
-  bool new_segment = false;
-  if (!cluster_) {
-    status = NewSegment(sample->pts());
-    new_segment = true;
-    // First frame, so no previous frame to write.
-    wrote_frame = true;
-  } else if (segment_length_in_time_scale_ >=
-             options_.segment_duration * info_->time_scale()) {
-    if (sample->is_key_frame() || !options_.segment_sap_aligned) {
-      status = WriteFrame(true /* write_duration */);
-      status.Update(NewSegment(sample->pts()));
-      new_segment = true;
-      segment_length_in_time_scale_ = 0;
-      cluster_length_in_time_scale_ = 0;
-      wrote_frame = true;
-    }
-  } else if (cluster_length_in_time_scale_ >=
-             options_.fragment_duration * info_->time_scale()) {
-    if (sample->is_key_frame() || !options_.fragment_sap_aligned) {
-      status = WriteFrame(true /* write_duration */);
-      status.Update(NewSubsegment(sample->pts()));
-      cluster_length_in_time_scale_ = 0;
-      wrote_frame = true;
-    }
-  }
-  if (!wrote_frame) {
+  if (new_segment_ || new_subsegment_) {
+    status = NewSegment(sample->pts(), new_subsegment_);
+  } else {
     status = WriteFrame(false /* write_duration */);
   }
   if (!status.ok())
@@ -173,7 +131,7 @@ Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   if (encryptor_) {
     // Don't enable encryption in the middle of a segment, i.e. only at the
     // first frame of a segment.
-    if (new_segment && !enable_encryption_) {
+    if (new_segment_ && !enable_encryption_) {
       if (sample->pts() - first_timestamp_ >=
           clear_lead_ * info_->time_scale()) {
         enable_encryption_ = true;
@@ -189,14 +147,20 @@ Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
     }
   }
 
-  // Add the sample to the durations even though we have not written the frame
-  // yet.  This is needed to make sure we split Clusters at the correct point.
-  // These are only used in this method.
-  cluster_length_in_time_scale_ += sample->duration();
-  segment_length_in_time_scale_ += sample->duration();
-
+  new_subsegment_ = false;
+  new_segment_ = false;
   prev_sample_ = sample;
   return Status::OK;
+}
+
+Status Segmenter::FinalizeSegment(uint64_t start_timescale,
+                                  uint64_t duration_timescale,
+                                  bool is_subsegment) {
+  if (is_subsegment)
+    new_subsegment_ = true;
+  else
+    new_segment_ = true;
+  return WriteFrame(true /* write duration */);
 }
 
 float Segmenter::GetDuration() const {

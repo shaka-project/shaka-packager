@@ -82,21 +82,10 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
 }
 
 Status TsSegmenter::Finalize() {
-  return Flush();
+  return Status::OK;
 }
 
-// First checks whether the sample is a key frame. If so and the segment has
-// passed the segment duration, then flush the generator and write all the data
-// to file.
 Status TsSegmenter::AddSample(std::shared_ptr<MediaSample> sample) {
-  const bool passed_segment_duration =
-      current_segment_total_sample_duration_ > muxer_options_.segment_duration;
-  if (sample->is_key_frame() && passed_segment_duration) {
-    Status status = Flush();
-    if (!status.ok())
-      return status;
-  }
-
   if (!ts_writer_file_opened_ && !sample->is_key_frame())
     LOG(WARNING) << "A segment will start with a non key frame.";
 
@@ -104,11 +93,6 @@ Status TsSegmenter::AddSample(std::shared_ptr<MediaSample> sample) {
     return Status(error::MUXER_FAILURE,
                   "Failed to add sample to PesPacketGenerator.");
   }
-
-  const double scaled_sample_duration = sample->duration() * timescale_scale_;
-  current_segment_total_sample_duration_ +=
-      scaled_sample_duration / kTsTimescale;
-
   return WritePesPacketsToFile();
 }
 
@@ -133,7 +117,6 @@ Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
                      segment_number_++, muxer_options_.bandwidth);
   if (!ts_writer_->NewSegment(segment_name))
     return Status(error::MUXER_FAILURE, "Failed to initilize TsPacketWriter.");
-  current_segment_start_time_ = next_pts;
   current_segment_path_ = segment_name;
   ts_writer_file_opened_ = true;
   return Status::OK;
@@ -154,7 +137,8 @@ Status TsSegmenter::WritePesPacketsToFile() {
   return Status::OK;
 }
 
-Status TsSegmenter::Flush() {
+Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
+                                    uint64_t duration) {
   if (!pes_packet_generator_->Flush()) {
     return Status(error::MUXER_FAILURE,
                   "Failed to flush PesPacketGenerator.");
@@ -172,15 +156,13 @@ Status TsSegmenter::Flush() {
     if (listener_) {
       const int64_t file_size =
           File::GetFileSize(current_segment_path_.c_str());
-      listener_->OnNewSegment(
-          current_segment_path_, current_segment_start_time_,
-          current_segment_total_sample_duration_ * kTsTimescale, file_size);
+      listener_->OnNewSegment(current_segment_path_,
+                              start_timestamp * timescale_scale_,
+                              duration * timescale_scale_, file_size);
     }
     ts_writer_file_opened_ = false;
-    total_duration_in_seconds_ += current_segment_total_sample_duration_;
+    total_duration_in_seconds_ += duration * timescale_scale_ / kTsTimescale;
   }
-  current_segment_total_sample_duration_ = 0.0;
-  current_segment_start_time_ = 0;
   current_segment_path_.clear();
   return NotifyEncrypted();
 }

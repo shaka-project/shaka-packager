@@ -34,6 +34,7 @@
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
+#include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
@@ -235,6 +236,7 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
 }
 
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
+                     const ChunkingOptions& chunking_options,
                      const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
                      KeySource* key_source,
@@ -361,11 +363,15 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (muxer_listener)
       muxer->SetMuxerListener(std::move(muxer_listener));
 
+    auto chunking_handler = std::make_shared<ChunkingHandler>(chunking_options);
+    Status status = chunking_handler->SetHandler(0, std::move(muxer));
+
     auto* demuxer = remux_jobs->back()->demuxer();
     const std::string& stream_selector = stream_iter->stream_selector;
-    Status status = demuxer->SetHandler(stream_selector, std::move(muxer));
+    status.Update(demuxer->SetHandler(stream_selector, chunking_handler));
+
     if (!status.ok()) {
-      LOG(ERROR) << "Demuxer::SetHandler failed " << status;
+      LOG(ERROR) << "Failed to setup graph: " << status;
       return false;
     }
     if (!stream_iter->language.empty())
@@ -426,10 +432,8 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     return false;
   }
 
-  // Get basic muxer options.
-  MuxerOptions muxer_options;
-  if (!GetMuxerOptions(&muxer_options))
-    return false;
+  ChunkingOptions chunking_options = GetChunkingOptions();
+  MuxerOptions muxer_options = GetMuxerOptions();
 
   DCHECK(!stream_descriptors.empty());
   // On demand profile generates single file segment while live profile
@@ -451,9 +455,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     return false;
   }
 
-  MpdOptions mpd_options;
-  if (!GetMpdOptions(on_demand_dash_profile, &mpd_options))
-    return false;
+  MpdOptions mpd_options = GetMpdOptions(on_demand_dash_profile);
 
   // Create encryption key source if needed.
   std::unique_ptr<KeySource> encryption_key_source;
@@ -495,9 +497,9 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 
   std::vector<std::unique_ptr<RemuxJob>> remux_jobs;
   FakeClock fake_clock;
-  if (!CreateRemuxJobs(stream_descriptors, muxer_options, &fake_clock,
-                       encryption_key_source.get(), mpd_notifier.get(),
-                       hls_notifier.get(), &remux_jobs)) {
+  if (!CreateRemuxJobs(stream_descriptors, chunking_options, muxer_options,
+                       &fake_clock, encryption_key_source.get(),
+                       mpd_notifier.get(), hls_notifier.get(), &remux_jobs)) {
     return false;
   }
 

@@ -14,6 +14,7 @@ namespace media {
 namespace {
 
 const uint64_t kDuration = 1000;
+const bool kSubsegment = true;
 const std::string kKeyId = "4c6f72656d20697073756d20646f6c6f";
 const std::string kIv = "0123456789012345";
 const std::string kKey = "01234567890123456789012345678901";
@@ -210,17 +211,20 @@ class EncrypedSegmenterTest : public SegmentTestBase {
 
 TEST_F(EncrypedSegmenterTest, BasicSupport) {
   MuxerOptions options = CreateMuxerOptions();
-  options.segment_duration = 3.0;
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
   // Write the samples to the Segmenter.
   // There should be 2 segments with the first segment in clear and the second
   // segment encrypted.
   for (int i = 0; i < 5; i++) {
+    if (i == 3)
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 3 * kDuration, !kSubsegment));
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(
+      segmenter_->FinalizeSegment(3 * kDuration, 2 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);

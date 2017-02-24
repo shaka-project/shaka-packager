@@ -13,6 +13,7 @@ namespace media {
 namespace {
 
 const uint64_t kDuration = 1000;
+const bool kSubsegment = true;
 
 const uint8_t kBasicSupportData[] = {
   // ID: EBML Header omitted.
@@ -159,22 +160,26 @@ TEST_F(SingleSegmentSegmenterTest, BasicSupport) {
         CreateSample(kKeyFrame, kDuration, side_data_flag);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);
 }
 
-TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegmentDuration) {
+TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegment) {
   MuxerOptions options = CreateMuxerOptions();
-  options.segment_duration = 4.5;  // seconds
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
+    if (i == 5)
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(
+      segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -185,17 +190,19 @@ TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegmentDuration) {
   EXPECT_EQ(3, parser.GetFrameCountForCluster(1));
 }
 
-TEST_F(SingleSegmentSegmenterTest, IgnoresFragmentDuration) {
+TEST_F(SingleSegmentSegmenterTest, IgnoresSubsegment) {
   MuxerOptions options = CreateMuxerOptions();
-  options.fragment_duration = 5;  // seconds
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
+    if (i == 5)
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment));
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -203,32 +210,6 @@ TEST_F(SingleSegmentSegmenterTest, IgnoresFragmentDuration) {
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
   ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(8, parser.GetFrameCountForCluster(0));
-}
-
-TEST_F(SingleSegmentSegmenterTest, RespectsSAPAlign) {
-  MuxerOptions options = CreateMuxerOptions();
-  options.segment_duration = 3;  // seconds
-  options.segment_sap_aligned = true;
-  ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
-
-  // Write the samples to the Segmenter.
-  for (int i = 0; i < 10; i++) {
-    const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
-    std::shared_ptr<MediaSample> sample =
-        CreateSample(key_frame_flag, kDuration, kNoSideData);
-    ASSERT_OK(segmenter_->AddSample(sample));
-  }
-  ASSERT_OK(segmenter_->Finalize());
-
-  // Verify the resulting data.
-  ClusterParser parser;
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
-  // Segments are 1 second, so there would normally be 3 frames per cluster,
-  // but since it's SAP aligned and only frame 7 is a key-frame, there are
-  // two clusters with 6 and 4 frames respectively.
-  ASSERT_EQ(2u, parser.cluster_count());
-  EXPECT_EQ(6, parser.GetFrameCountForCluster(0));
-  EXPECT_EQ(4, parser.GetFrameCountForCluster(1));
 }
 
 }  // namespace media

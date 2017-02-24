@@ -87,9 +87,6 @@ Status TwoPassSingleSegmentSegmenter::DoInitialize(
 }
 
 Status TwoPassSingleSegmentSegmenter::DoFinalize() {
-  if (!cluster()->Finalize())
-    return Status(error::FILE_FAILURE, "Error finalizing cluster.");
-
   const uint64_t header_size = init_end() + 1;
   const uint64_t cues_pos = header_size - segment_payload_pos();
   const uint64_t cues_size = UpdateCues(cues());

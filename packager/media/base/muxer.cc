@@ -64,8 +64,12 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
     case StreamDataType::kStreamInfo:
       streams_.push_back(std::move(stream_data->stream_info));
       return InitializeMuxer();
+    case StreamDataType::kSegmentInfo:
+      return FinalizeSegment(stream_data->stream_index,
+                             std::move(stream_data->segment_info));
     case StreamDataType::kMediaSample:
-      return DoAddSample(stream_data->media_sample);
+      return AddSample(stream_data->stream_index,
+                       std::move(stream_data->media_sample));
     default:
       VLOG(3) << "Stream data type "
               << static_cast<int>(stream_data->stream_data_type) << " ignored.";

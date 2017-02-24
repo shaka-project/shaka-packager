@@ -17,7 +17,7 @@
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
-      <Representation id="1" bandwidth="124195" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="1" bandwidth="124560" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
         <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
@@ -25,8 +25,9 @@
         </ContentProtection>
         <SegmentTemplate timescale="44100" initialization="output_audio-init.mp4" media="output_audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
-            <S t="0" d="45056" r="1"/>
-            <S t="90112" d="31744"/>
+            <S t="0" d="45056"/>
+            <S t="45056" d="44032"/>
+            <S t="89088" d="32768"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
