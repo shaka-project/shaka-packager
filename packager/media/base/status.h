@@ -78,6 +78,9 @@ enum Code {
   // The entity that a client attempted to create (e.g., file or directory)
   // already exists.
   ALREADY_EXISTS,
+
+  // Error when trying to generate trick play stream.
+  TRICK_PLAY_ERROR,
 };
 
 }  // namespace error

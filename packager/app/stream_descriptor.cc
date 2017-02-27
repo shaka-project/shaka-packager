@@ -30,6 +30,7 @@ enum FieldType {
   kHlsNameField,
   kHlsGroupIdField,
   kHlsPlaylistNameField,
+  kTrickPlayRateField,
 };
 
 struct FieldNameToTypeMapping {
@@ -57,6 +58,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"hls_name", kHlsNameField},
     {"hls_group_id", kHlsGroupIdField},
     {"playlist_name", kHlsPlaylistNameField},
+    {"trick_play_rate", kTrickPlayRateField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {

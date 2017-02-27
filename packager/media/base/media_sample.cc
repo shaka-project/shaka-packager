@@ -64,6 +64,32 @@ std::shared_ptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
 }
 
 // static
+std::shared_ptr<MediaSample> MediaSample::CopyFrom(
+    const MediaSample& media_sample) {
+  std::shared_ptr<MediaSample> new_media_sample = CopyFrom(
+      media_sample.data(), media_sample.data_size(), media_sample.side_data(),
+      media_sample.side_data_size(), media_sample.is_key_frame());
+
+  new_media_sample->set_dts(media_sample.dts());
+  new_media_sample->set_pts(media_sample.pts());
+  new_media_sample->set_is_encrypted(media_sample.is_encrypted());
+  new_media_sample->set_config_id(media_sample.config_id());
+  new_media_sample->set_duration(media_sample.duration());
+
+  if (media_sample.decrypt_config()) {
+    std::unique_ptr<DecryptConfig> decrypt_config(
+        new DecryptConfig(media_sample.decrypt_config()->key_id(),
+                          media_sample.decrypt_config()->iv(),
+                          media_sample.decrypt_config()->subsamples(),
+                          media_sample.decrypt_config()->protection_scheme(),
+                          media_sample.decrypt_config()->crypt_byte_block(),
+                          media_sample.decrypt_config()->skip_byte_block()));
+    new_media_sample->set_decrypt_config(std::move(decrypt_config));
+  }
+  return new_media_sample;
+}
+
+// static
 std::shared_ptr<MediaSample> MediaSample::FromMetadata(const uint8_t* metadata,
                                                        size_t metadata_size) {
   return std::make_shared<MediaSample>(nullptr, 0, metadata, metadata_size,

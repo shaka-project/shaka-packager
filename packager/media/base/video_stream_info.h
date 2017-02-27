@@ -22,6 +22,8 @@ enum class H26xStreamFormat {
 /// Holds video stream information.
 class VideoStreamInfo : public StreamInfo {
  public:
+  VideoStreamInfo() = default;
+
   /// Construct an initialized video stream info object.
   /// @param pixel_width is the width of the pixel. 0 if unknown.
   /// @param pixel_height is the height of the pixels. 0 if unknown.
@@ -67,6 +69,9 @@ class VideoStreamInfo : public StreamInfo {
   void set_height(uint32_t height) { height_ = height; }
   void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }
   void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
+  void set_trick_play_rate(int16_t trick_play_rate) {
+    trick_play_rate_ = trick_play_rate;
+  }
   void set_eme_init_data(const uint8_t* eme_init_data,
                          size_t eme_init_data_size) {
     eme_init_data_.assign(eme_init_data, eme_init_data + eme_init_data_size);

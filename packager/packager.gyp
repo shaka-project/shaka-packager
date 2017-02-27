@@ -127,6 +127,7 @@
         'media/formats/webm/webm.gyp:webm_unittest',
         'media/formats/webvtt/webvtt.gyp:webvtt_unittest',
         'media/formats/wvm/wvm.gyp:wvm_unittest',
+        'media/trick_play/trick_play.gyp:trick_play_unittest',
         'mpd/mpd.gyp:mpd_unittest',
         'packager_test',
       ],

@@ -45,6 +45,10 @@ class MediaSample {
                                                size_t side_data_size,
                                                bool is_key_frame);
 
+  /// Make a copy of MediaSample.
+  /// @param media_sample is the source MediaSample to copy from.
+  static std::shared_ptr<MediaSample> CopyFrom(const MediaSample& media_sample);
+
   /// Create a MediaSample object from metadata.
   /// Unlike other factory methods, this cannot be a key frame. It must be only
   /// for metadata.
@@ -108,12 +112,12 @@ class MediaSample {
   }
   const uint8_t* data() const {
     DCHECK(!end_of_stream());
-    return &data_[0];
+    return data_.data();
   }
 
   uint8_t* writable_data() {
     DCHECK(!end_of_stream());
-    return &data_[0];
+    return data_.data();
   }
 
   size_t data_size() const {
@@ -122,7 +126,7 @@ class MediaSample {
   }
 
   const uint8_t* side_data() const {
-    return &side_data_[0];
+    return side_data_.data();
   }
 
   size_t side_data_size() const {

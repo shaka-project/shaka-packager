@@ -33,6 +33,7 @@ struct StreamDescriptor {
   std::string hls_name;
   std::string hls_group_id;
   std::string hls_playlist_name;
+  int16_t trick_play_rate;
 };
 
 class StreamDescriptorCompareFn {
