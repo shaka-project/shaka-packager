@@ -73,7 +73,7 @@ bool EsParserH265::ProcessNalu(const Nalu& nalu,
       break;
     }
     default: {
-      if (nalu.is_video_slice() && nalu.nuh_layer_id() == 0) {
+      if (nalu.is_vcl() && nalu.nuh_layer_id() == 0) {
         const bool is_key_frame = nalu.type() == Nalu::H265_IDR_W_RADL ||
                                   nalu.type() == Nalu::H265_IDR_N_LP;
         DVLOG(LOG_LEVEL_ES) << "Nalu: slice KeyFrame=" << is_key_frame;

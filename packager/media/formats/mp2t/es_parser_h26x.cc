@@ -192,14 +192,14 @@ bool EsParserH26x::ParseInternal() {
         next_access_unit_position_ = position;
       }
       RCHECK(ProcessNalu(nalu, &video_slice_info));
-      if (nalu.is_video_slice() && !video_slice_info.valid) {
+      if (nalu.is_vcl() && !video_slice_info.valid) {
         // This could happen only if decoder config is not available yet. Drop
         // this frame.
         DCHECK(!current_video_slice_info_.valid);
         next_access_unit_position_set_ = false;
         continue;
       }
-    } else if (nalu.is_video_slice()) {
+    } else if (nalu.is_vcl()) {
       // This isn't the first VCL NAL unit. Next access unit should start after
       // this NAL unit.
       next_access_unit_position_set_ = false;

@@ -111,6 +111,8 @@ class Nalu {
   /// return value.
   int type() const { return type_; }
   bool is_aud() const { return is_aud_; }
+  bool is_vcl() const { return is_vcl_; }
+  /// Slice data partition NALs are not considered as slice NALs.
   bool is_video_slice() const { return is_video_slice_; }
   bool can_start_access_unit() const { return can_start_access_unit_; }
 
@@ -132,6 +134,7 @@ class Nalu {
   int nuh_temporal_id_ = 0;
   int type_ = 0;
   bool is_aud_ = false;
+  bool is_vcl_ = false;
   bool is_video_slice_ = false;
   bool can_start_access_unit_ = false;
 

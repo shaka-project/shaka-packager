@@ -79,10 +79,11 @@ bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   }
 
   is_aud_ = type_ == H264_AUD;
-  is_video_slice_ = (type_ >= Nalu::H264_NonIDRSlice &&
-                     type_ <= Nalu::H264_IDRSlice);
+  is_vcl_ = (type_ >= Nalu::H264_NonIDRSlice && type_ <= Nalu::H264_IDRSlice);
+  is_video_slice_ =
+      (type_ == Nalu::H264_NonIDRSlice || type_ == Nalu::H264_IDRSlice);
   can_start_access_unit_ =
-      (is_video_slice_ || type_ == Nalu::H264_AUD || type_ == Nalu::H264_SPS ||
+      (is_vcl_ || type_ == Nalu::H264_AUD || type_ == Nalu::H264_SPS ||
        type_ == Nalu::H264_PPS || type_ == Nalu::H264_SEIMessage ||
        (type_ >= Nalu::H264_PrefixNALUnit && type_ <= Nalu::H264_Reserved18));
   return true;
@@ -147,10 +148,11 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
   }
 
   is_aud_ = type_ == H265_AUD;
-  is_video_slice_ = type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_CRA_NUT;
+  is_vcl_ = type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_CRA_NUT;
+  is_video_slice_ = is_vcl_;
   can_start_access_unit_ =
       nuh_layer_id_ == 0 &&
-      (is_video_slice_ || type_ == Nalu::H265_AUD || type_ == Nalu::H265_VPS ||
+      (is_vcl_ || type_ == Nalu::H265_AUD || type_ == Nalu::H265_VPS ||
        type_ == Nalu::H265_SPS || type_ == Nalu::H265_PPS ||
        type_ == Nalu::H265_PREFIX_SEI ||
        (type_ >= Nalu::H265_RSV_NVCL41 && type_ <= Nalu::H265_RSV_NVCL44) ||

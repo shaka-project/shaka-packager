@@ -93,7 +93,7 @@ class TestableEsParser : public EsParserH26x {
                                    : (nalu.type() == Nalu::H265_SPS)) {
       video_slice_info->valid = false;
       decoder_config_check_pending_ = true;
-    } else if (nalu.is_video_slice()) {
+    } else if (nalu.is_vcl()) {
       video_slice_info->valid = true;
       // This should be the same as EsParserH26x::ProcessNalu.
       if (codec_type_ == Nalu::kH264) {
