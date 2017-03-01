@@ -85,10 +85,9 @@ const uint32_t kAverageBitrate = 256000;
 
 class MockNalUnitToByteStreamConverter : public NalUnitToByteStreamConverter {
  public:
-  MOCK_METHOD3(Initialize,
+  MOCK_METHOD2(Initialize,
                bool(const uint8_t* decoder_configuration_data,
-                    size_t decoder_configuration_data_size,
-                    bool escape_data));
+                    size_t decoder_configuration_data_size));
   MOCK_METHOD4(ConvertUnitToByteStream,
                bool(const uint8_t* sample,
                     size_t sample_size,

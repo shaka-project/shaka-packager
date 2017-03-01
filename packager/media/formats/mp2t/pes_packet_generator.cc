@@ -26,7 +26,6 @@ namespace media {
 namespace mp2t {
 
 namespace {
-const bool kEscapeData = true;
 const uint8_t kVideoStreamId = 0xE0;
 const uint8_t kAudioStreamId = 0xC0;
 const double kTsTimescale = 90000.0;
@@ -105,8 +104,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
     timescale_scale_ = kTsTimescale / video_stream_info.time_scale();
     converter_.reset(new NalUnitToByteStreamConverter());
     return converter_->Initialize(video_stream_info.codec_config().data(),
-                                  video_stream_info.codec_config().size(),
-                                  !kEscapeData);
+                                  video_stream_info.codec_config().size());
   } else if (stream_type_ == kStreamAudio) {
     const AudioStreamInfo& audio_stream_info =
         static_cast<const AudioStreamInfo&>(stream_info);

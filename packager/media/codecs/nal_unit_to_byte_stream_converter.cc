@@ -29,15 +29,9 @@ const uint8_t kAccessUnitDelimiterRbspAnyPrimaryPicType = 0xF0;
 
 void AppendNalu(const Nalu& nalu,
                 int nalu_length_size,
-                bool escape_data,
                 BufferWriter* buffer_writer) {
-  if (escape_data) {
-    EscapeNalByteSequence(nalu.data(), nalu.header_size() + nalu.payload_size(),
-                          buffer_writer);
-  } else {
-    buffer_writer->AppendArray(nalu.data(),
-                               nalu.header_size() + nalu.payload_size());
-  }
+  buffer_writer->AppendArray(nalu.data(),
+                             nalu.header_size() + nalu.payload_size());
 }
 
 void AddAccessUnitDelimiter(BufferWriter* buffer_writer) {
@@ -107,14 +101,12 @@ void EscapeNalByteSequence(const uint8_t* input,
 }
 
 NalUnitToByteStreamConverter::NalUnitToByteStreamConverter()
-    : nalu_length_size_(0), escape_data_(false) {}
+    : nalu_length_size_(0) {}
 NalUnitToByteStreamConverter::~NalUnitToByteStreamConverter() {}
 
 bool NalUnitToByteStreamConverter::Initialize(
     const uint8_t* decoder_configuration_data,
-    size_t decoder_configuration_data_size,
-    bool escape_data) {
-  escape_data_ = escape_data;
+    size_t decoder_configuration_data_size) {
   if (!decoder_configuration_data || decoder_configuration_data_size == 0) {
     LOG(ERROR) << "Decoder conguration is empty.";
     return false;
@@ -141,11 +133,11 @@ bool NalUnitToByteStreamConverter::Initialize(
     const Nalu& nalu = decoder_config.nalu(i);
     if (nalu.type() == Nalu::H264NaluType::H264_SPS) {
       buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
-      AppendNalu(nalu, nalu_length_size_, escape_data, &buffer_writer);
+      AppendNalu(nalu, nalu_length_size_, &buffer_writer);
       found_sps = true;
     } else if (nalu.type() == Nalu::H264NaluType::H264_PPS) {
       buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
-      AppendNalu(nalu, nalu_length_size_, escape_data, &buffer_writer);
+      AppendNalu(nalu, nalu_length_size_, &buffer_writer);
       found_pps = true;
     }
   }
@@ -182,12 +174,6 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
     LOG(WARNING) << "Sample is empty.";
     return true;
   }
-
-  if (subsamples && escape_data_) {
-    LOG(ERROR) << "escape_data_ should not be set when updating subsamples.";
-    return false;
-  }
-
 
   BufferWriter buffer_writer(sample_size);
   buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
@@ -230,7 +216,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
         break;
       default:
         buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
-        AppendNalu(nalu, nalu_length_size_, escape_data_, &buffer_writer);
+        AppendNalu(nalu, nalu_length_size_, &buffer_writer);
 
         if (subsamples) {
           const size_t old_nalu_size =

@@ -40,13 +40,9 @@ class NalUnitToByteStreamConverter {
   /// @param decoder_configuration_data is the pointer to a decoder config data.
   /// @param decoder_configuration_data_size is the size of @a
   ///        decoder_configuration_data.
-  /// @param escape_data flags whether the decoder configuration and data
-  ///        passed to ConvertUnitToByteStream() should be escaped with
-  ///        emulation prevention byte.
   /// @return true on success, false otherwise.
   virtual bool Initialize(const uint8_t* decoder_configuration_data,
-                          size_t decoder_configuration_data_size,
-                          bool escape_data);
+                          size_t decoder_configuration_data_size);
 
   /// Converts unit stream to byte stream using the data passed to Initialize().
   /// The method will function correctly even if @a sample is encrypted using
@@ -82,7 +78,6 @@ class NalUnitToByteStreamConverter {
 
   int nalu_length_size_;
   std::vector<uint8_t> decoder_configuration_in_byte_stream_;
-  bool escape_data_;
 
   DISALLOW_COPY_AND_ASSIGN(NalUnitToByteStreamConverter);
 };
