@@ -281,14 +281,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        next_access_unit_position_ = position;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      }</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      RCHECK(ProcessNalu(nalu, &amp;video_slice_info));</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="keywordflow">if</span> (nalu.is_video_slice() &amp;&amp; !video_slice_info.valid) {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="keywordflow">if</span> (nalu.is_vcl() &amp;&amp; !video_slice_info.valid) {</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        <span class="comment">// This could happen only if decoder config is not available yet. Drop</span></div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="comment">// this frame.</span></div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        DCHECK(!current_video_slice_info_.valid);</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      }</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nalu.is_video_slice()) {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nalu.is_vcl()) {</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="comment">// This isn&#39;t the first VCL NAL unit. Next access unit should start after</span></div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      <span class="comment">// this NAL unit.</span></div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
@@ -410,7 +410,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 22 2017 19:43:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 2 2017 00:23:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

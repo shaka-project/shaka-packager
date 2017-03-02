@@ -193,113 +193,116 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
 <div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">  112</a></span>&#160;  <span class="keywordtype">int</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">type</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordtype">bool</span> is_aud()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_aud_; }</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordtype">bool</span> is_video_slice()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_video_slice_; }</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keywordtype">bool</span> can_start_access_unit()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> can_start_access_unit_; }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordtype">bool</span> InitializeFromH264(<span class="keyword">const</span> uint8_t* data, uint64_t size);</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordtype">bool</span> InitializeFromH265(<span class="keyword">const</span> uint8_t* data, uint64_t size);</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="comment">// A pointer to the NALU (i.e. points to the header).  This pointer is not</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// owned by this instance.</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keyword">const</span> uint8_t* data_ = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">// NALU header size (e.g. 1 byte for H.264).  Note that it does not include</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">// header extension data in some NAL units.</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  uint64_t header_size_ = 0;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="comment">// Size of data after the header.</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  uint64_t payload_size_ = 0;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keywordtype">int</span> ref_idc_ = 0;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordtype">int</span> nuh_layer_id_ = 0;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">int</span> nuh_temporal_id_ = 0;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordtype">int</span> type_ = 0;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordtype">bool</span> is_aud_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="keywordtype">bool</span> is_video_slice_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keywordtype">bool</span> can_start_access_unit_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  <span class="comment">// Don&#39;t use DISALLOW_COPY_AND_ASSIGN since it is just numbers and a pointer</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="comment">// it does not own.  This allows Nalus to be stored in a vector.</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;};</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
-<div class="line"><a name="l00145"></a><span class="lineno"><a class="line" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">  145</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a> {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="keyword">enum</span> Result {</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    kOk,</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    kInvalidStream,      <span class="comment">// error in stream</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    kEOStream,           <span class="comment">// end of stream</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  };</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0">NaluReader</a>(Nalu::CodecType type,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;             uint8_t nal_length_size,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;             <span class="keyword">const</span> uint8_t* stream,</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;             uint64_t stream_size);</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  ~<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a>();</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="comment">// Find offset from start of data to next NALU start code</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="comment">// and size of found start code (3 or 4 bytes).</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="comment">// If no start code is found, offset is pointing to the first unprocessed byte</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="comment">// (i.e. the first byte that was not considered as a possible start of a start</span></div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="comment">// code) and |*start_code_size| is set to 0.</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="comment">// Postconditions:</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="comment">// - |*offset| is between 0 and |data_size| included.</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="comment">//   It is strictly less than |data_size| if |data_size| &gt; 0.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="comment">// - |*start_code_size| is either 0, 3 or 4.</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> FindStartCode(<span class="keyword">const</span> uint8_t* data,</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;                            uint64_t data_size,</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;                            uint64_t* offset,</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                            uint8_t* start_code_size);</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  Result <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a>(<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>* nalu);</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a9ed9d56a06f43717cdb7035f86075975">StartsWithStartCode</a>();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordtype">bool</span> is_vcl()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_vcl_; }</div>
+<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a95f9428735ea6967d278198b09f48484">  116</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a95f9428735ea6967d278198b09f48484">is_video_slice</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_video_slice_; }</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">bool</span> can_start_access_unit()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> can_start_access_unit_; }</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordtype">bool</span> InitializeFromH264(<span class="keyword">const</span> uint8_t* data, uint64_t size);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordtype">bool</span> InitializeFromH265(<span class="keyword">const</span> uint8_t* data, uint64_t size);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="comment">// A pointer to the NALU (i.e. points to the header).  This pointer is not</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">// owned by this instance.</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="keyword">const</span> uint8_t* data_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="comment">// NALU header size (e.g. 1 byte for H.264).  Note that it does not include</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="comment">// header extension data in some NAL units.</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  uint64_t header_size_ = 0;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="comment">// Size of data after the header.</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  uint64_t payload_size_ = 0;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">int</span> ref_idc_ = 0;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordtype">int</span> nuh_layer_id_ = 0;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordtype">int</span> nuh_temporal_id_ = 0;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="keywordtype">int</span> type_ = 0;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keywordtype">bool</span> is_aud_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordtype">bool</span> is_vcl_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  <span class="keywordtype">bool</span> is_video_slice_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="keywordtype">bool</span> can_start_access_unit_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="comment">// Don&#39;t use DISALLOW_COPY_AND_ASSIGN since it is just numbers and a pointer</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="comment">// it does not own.  This allows Nalus to be stored in a vector.</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;};</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno"><a class="line" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">  148</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a> {</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keyword">enum</span> Result {</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    kOk,</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    kInvalidStream,      <span class="comment">// error in stream</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    kEOStream,           <span class="comment">// end of stream</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  };</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0">NaluReader</a>(Nalu::CodecType type,</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;             uint8_t nal_length_size,</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;             <span class="keyword">const</span> uint8_t* stream,</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;             uint64_t stream_size);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  ~<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a>();</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="comment">// Find offset from start of data to next NALU start code</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="comment">// and size of found start code (3 or 4 bytes).</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="comment">// If no start code is found, offset is pointing to the first unprocessed byte</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="comment">// (i.e. the first byte that was not considered as a possible start of a start</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="comment">// code) and |*start_code_size| is set to 0.</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="comment">// Postconditions:</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="comment">// - |*offset| is between 0 and |data_size| included.</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">//   It is strictly less than |data_size| if |data_size| &gt; 0.</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="comment">// - |*start_code_size| is either 0, 3 or 4.</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> FindStartCode(<span class="keyword">const</span> uint8_t* data,</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                            uint64_t data_size,</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                            uint64_t* offset,</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                            uint8_t* start_code_size);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  Result <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a>(<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>* nalu);</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keyword">enum</span> Format {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    kAnnexbByteStreamFormat,</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    kNalUnitStreamFormat</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  };</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="comment">// Move the stream pointer to the beginning of the next NALU,</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="comment">// i.e. pointing at the next start code.</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="comment">// Return true if a NALU has been found.</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="comment">// If a NALU is found:</span></div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="comment">// - its size in bytes is returned in |*nalu_size| and includes</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="comment">//   the start code as well as the trailing zero bits.</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="comment">// - the size in bytes of the start code is returned in |*start_code_size|.</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordtype">bool</span> LocateNaluByStartCode(uint64_t* nalu_size, uint8_t* start_code_size);</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="comment">// Pointer to the current NALU in the stream.</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keyword">const</span> uint8_t* stream_;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="comment">// The remaining size of the stream.</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  uint64_t stream_size_;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="comment">// The type of NALU being read.</span></div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  Nalu::CodecType nalu_type_;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="comment">// The number of bytes the prefix length is; only valid if format is</span></div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <span class="comment">// kAnnexbByteStreamFormat.</span></div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  uint8_t nalu_length_size_;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="comment">// The format of the stream.</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  Format format_;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a>);</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;};</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a9ed9d56a06f43717cdb7035f86075975">StartsWithStartCode</a>();</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keyword">enum</span> Format {</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    kAnnexbByteStreamFormat,</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    kNalUnitStreamFormat</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  };</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="comment">// Move the stream pointer to the beginning of the next NALU,</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="comment">// i.e. pointing at the next start code.</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="comment">// Return true if a NALU has been found.</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="comment">// If a NALU is found:</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="comment">// - its size in bytes is returned in |*nalu_size| and includes</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <span class="comment">//   the start code as well as the trailing zero bits.</span></div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="comment">// - the size in bytes of the start code is returned in |*start_code_size|.</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keywordtype">bool</span> LocateNaluByStartCode(uint64_t* nalu_size, uint8_t* start_code_size);</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <span class="comment">// Pointer to the current NALU in the stream.</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="keyword">const</span> uint8_t* stream_;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="comment">// The remaining size of the stream.</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  uint64_t stream_size_;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <span class="comment">// The type of NALU being read.</span></div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  Nalu::CodecType nalu_type_;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="comment">// The number of bytes the prefix length is; only valid if format is</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  <span class="comment">// kAnnexbByteStreamFormat.</span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  uint8_t nalu_length_size_;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="comment">// The format of the stream.</span></div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  Format format_;</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a>);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;};</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="preprocessor">#endif  // MEDIA_CODECS_NALU_READER_H_</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="preprocessor">#endif  // MEDIA_CODECS_NALU_READER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a6bcba03125313ea515a61a67c9d2a821"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a6bcba03125313ea515a61a67c9d2a821">shaka::media::Nalu::payload_size</a></div><div class="ttdeci">uint64_t payload_size() const </div><div class="ttdoc">Size of this Nalu minus header_size(). </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00101">nalu_reader.h:101</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">shaka::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00145">nalu_reader.h:145</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_a9ed9d56a06f43717cdb7035f86075975"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a9ed9d56a06f43717cdb7035f86075975">shaka::media::NaluReader::StartsWithStartCode</a></div><div class="ttdeci">bool StartsWithStartCode()</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00227">nalu_reader.cc:227</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a95f9428735ea6967d278198b09f48484"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a95f9428735ea6967d278198b09f48484">shaka::media::Nalu::is_video_slice</a></div><div class="ttdeci">bool is_video_slice() const </div><div class="ttdoc">Slice data partition NALs are not considered as slice NALs. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00116">nalu_reader.h:116</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">shaka::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00148">nalu_reader.h:148</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_a9ed9d56a06f43717cdb7035f86075975"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a9ed9d56a06f43717cdb7035f86075975">shaka::media::NaluReader::StartsWithStartCode</a></div><div class="ttdeci">bool StartsWithStartCode()</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00229">nalu_reader.cc:229</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a86143bb8a31825f06668e97bff66ce2c"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">shaka::media::Nalu::type</a></div><div class="ttdeci">int type() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00112">nalu_reader.h:112</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a9eb982bdbb66c10643b2fb8e2ae7a9ae"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a9eb982bdbb66c10643b2fb8e2ae7a9ae">shaka::media::Nalu::header_size</a></div><div class="ttdeci">uint64_t header_size() const </div><div class="ttdoc">The size of the header, e.g. 1 for H.264. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00099">nalu_reader.h:99</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_ae051f1f92d84acfcd4cc159d972d647a"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">shaka::media::NaluReader::Advance</a></div><div class="ttdeci">Result Advance(Nalu *nalu)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00175">nalu_reader.cc:175</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_ae051f1f92d84acfcd4cc159d972d647a"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">shaka::media::NaluReader::Advance</a></div><div class="ttdeci">Result Advance(Nalu *nalu)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00177">nalu_reader.cc:177</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">shaka::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_a2d1611fe3e60fc6570fe0c21e13911b0"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0">shaka::media::NaluReader::NaluReader</a></div><div class="ttdeci">NaluReader(Nalu::CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00161">nalu_reader.cc:161</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_a2d1611fe3e60fc6570fe0c21e13911b0"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0">shaka::media::NaluReader::NaluReader</a></div><div class="ttdeci">NaluReader(Nalu::CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00163">nalu_reader.cc:163</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a3175755a2a847c3bfc8292434d4ea3b6"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a3175755a2a847c3bfc8292434d4ea3b6">shaka::media::Nalu::data</a></div><div class="ttdeci">const uint8_t * data() const </div><div class="ttdoc">This is the pointer to the Nalu data, pointing to the header. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00096">nalu_reader.h:96</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 22 2017 19:43:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 2 2017 00:23:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

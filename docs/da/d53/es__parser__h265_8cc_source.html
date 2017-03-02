@@ -162,7 +162,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">default</span>: {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordflow">if</span> (nalu.is_video_slice() &amp;&amp; nalu.nuh_layer_id() == 0) {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordflow">if</span> (nalu.is_vcl() &amp;&amp; nalu.nuh_layer_id() == 0) {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">bool</span> is_key_frame = nalu.type() == Nalu::H265_IDR_W_RADL ||</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                  nalu.type() == Nalu::H265_IDR_N_LP;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: slice KeyFrame=&quot;</span> &lt;&lt; is_key_frame;</div>
@@ -260,7 +260,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Feb 22 2017 19:43:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 2 2017 00:23:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

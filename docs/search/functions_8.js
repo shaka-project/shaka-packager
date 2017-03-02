@@ -10,6 +10,7 @@ var searchData=
   ['injectclockfortesting',['InjectClockForTesting',['../dc/da1/classshaka_1_1MpdBuilder.html#a7a4f96f12b589cfc4b5c2f44532eec53',1,'shaka::MpdBuilder']]],
   ['injectpespacketgeneratorfortesting',['InjectPesPacketGeneratorForTesting',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#abb78b18426643d58bc44ea61823dc29c',1,'shaka::media::mp2t::TsSegmenter']]],
   ['injecttswriterfortesting',['InjectTsWriterForTesting',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#ae3ed0f86d2163444e24a2577e35517a9',1,'shaka::media::mp2t::TsSegmenter']]],
+  ['is_5fvideo_5fslice',['is_video_slice',['../d6/dff/classshaka_1_1media_1_1Nalu.html#a95f9428735ea6967d278198b09f48484',1,'shaka::media::Nalu']]],
   ['isaac',['IsAAC',['../d5/d13/classshaka_1_1media_1_1ESDescriptor.html#a47592ec424dc9dd2beb5cc0f505e6681',1,'shaka::media::ESDescriptor']]],
   ['iskeyframe',['IsKeyframe',['../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37',1,'shaka::media::VP8Parser::IsKeyframe()'],['../db/d5a/classshaka_1_1media_1_1VP9Parser.html#a52e6a17fa34c5676cd0cdc547cb355a5',1,'shaka::media::VP9Parser::IsKeyframe()']]],
   ['isparsingcomplete',['IsParsingComplete',['../dc/dca/classshaka_1_1media_1_1WebMListParser.html#acf786fc2e07143c3f1a481401240d105',1,'shaka::media::WebMListParser']]],
