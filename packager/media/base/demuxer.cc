@@ -30,22 +30,22 @@ const size_t kBufSize = 0x200000;  // 2MB
 // samples before seeing init_event, something is not right. The number
 // set here is arbitrary though.
 const size_t kQueuedSamplesLimit = 10000;
-const int kInvalidStreamIndex = -1;
-const int kBaseVideoOutputStreamIndex = 0x100;
-const int kBaseAudioOutputStreamIndex = 0x200;
+const size_t kInvalidStreamIndex = static_cast<size_t>(-1);
+const size_t kBaseVideoOutputStreamIndex = 0x100;
+const size_t kBaseAudioOutputStreamIndex = 0x200;
 
-std::string GetStreamLabel(int stream_index) {
+std::string GetStreamLabel(size_t stream_index) {
   switch (stream_index) {
     case kBaseVideoOutputStreamIndex:
       return "video";
     case kBaseAudioOutputStreamIndex:
       return "audio";
     default:
-      return base::IntToString(stream_index);
+      return base::SizeTToString(stream_index);
   }
 }
 
-bool GetStreamIndex(const std::string& stream_label, int* stream_index) {
+bool GetStreamIndex(const std::string& stream_label, size_t* stream_index) {
   DCHECK(stream_index);
   if (stream_label == "video") {
     *stream_index = kBaseVideoOutputStreamIndex;
@@ -53,7 +53,7 @@ bool GetStreamIndex(const std::string& stream_label, int* stream_index) {
     *stream_index = kBaseAudioOutputStreamIndex;
   } else {
     // Expect stream_label to be a zero based stream id.
-    if (!base::StringToInt(stream_label, stream_index)) {
+    if (!base::StringToSizeT(stream_label, stream_index)) {
       LOG(ERROR) << "Invalid argument --stream=" << stream_label << "; "
                  << "should be 'audio', 'video', or a number";
       return false;
@@ -106,7 +106,7 @@ Status Demuxer::Run() {
     return Status(error::CANCELLED, "Demuxer run cancelled");
 
   if (status.error_code() == error::END_OF_STREAM) {
-    for (int stream_index : stream_indexes_) {
+    for (size_t stream_index : stream_indexes_) {
       status = FlushDownstream(stream_index);
       if (!status.ok())
         return status;
@@ -122,7 +122,7 @@ void Demuxer::Cancel() {
 
 Status Demuxer::SetHandler(const std::string& stream_label,
                            std::shared_ptr<MediaHandler> handler) {
-  int stream_index = kInvalidStreamIndex;
+  size_t stream_index = kInvalidStreamIndex;
   if (!GetStreamIndex(stream_label, &stream_index)) {
     return Status(error::INVALID_ARGUMENT,
                   "Invalid stream: " + stream_label);
@@ -132,7 +132,7 @@ Status Demuxer::SetHandler(const std::string& stream_label,
 
 void Demuxer::SetLanguageOverride(const std::string& stream_label,
                                   const std::string& language_override) {
-  int stream_index = kInvalidStreamIndex;
+  size_t stream_index = kInvalidStreamIndex;
   if (!GetStreamIndex(stream_label, &stream_index))
     LOG(WARNING) << "Invalid stream for language override " << stream_label;
   language_overrides_[stream_index] = language_override;
@@ -222,7 +222,7 @@ void Demuxer::ParserInitEvent(
       output_handlers().find(kBaseAudioOutputStreamIndex) !=
       output_handlers().end();
   for (const std::shared_ptr<StreamInfo>& stream_info : stream_infos) {
-    int stream_index = base_stream_index;
+    size_t stream_index = base_stream_index;
     if (video_handler_set && stream_info->stream_type() == kStreamVideo) {
       stream_index = kBaseVideoOutputStreamIndex;
       // Only for the first video stream.

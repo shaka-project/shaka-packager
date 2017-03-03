@@ -41,7 +41,7 @@ struct SegmentInfo {
 
 // TODO(kqyang): Should we use protobuf?
 struct StreamData {
-  int stream_index = -1;
+  size_t stream_index = -1;
   StreamDataType stream_data_type = StreamDataType::kUnknown;
 
   std::shared_ptr<PeriodInfo> period_info;
@@ -73,7 +73,7 @@ class MediaHandler {
   virtual ~MediaHandler() = default;
 
   /// Connect downstream handler at the specified output stream index.
-  Status SetHandler(int output_stream_index,
+  Status SetHandler(size_t output_stream_index,
                     std::shared_ptr<MediaHandler> handler);
 
   /// Connect downstream handler to the next availble output stream index.
@@ -97,20 +97,20 @@ class MediaHandler {
   virtual Status Process(std::unique_ptr<StreamData> stream_data) = 0;
 
   /// Event handler for flush request at the specific input stream index.
-  virtual Status OnFlushRequest(int input_stream_index);
+  virtual Status OnFlushRequest(size_t input_stream_index);
 
   /// Validate if the stream at the specified index actually exists.
-  virtual bool ValidateOutputStreamIndex(int stream_index) const;
+  virtual bool ValidateOutputStreamIndex(size_t stream_index) const;
 
   bool initialized() { return initialized_; }
-  int num_input_streams() { return num_input_streams_; }
+  size_t num_input_streams() { return num_input_streams_; }
 
   /// Dispatch the stream data to downstream handlers. Note that
   /// stream_data.stream_index should be the output stream index.
   Status Dispatch(std::unique_ptr<StreamData> stream_data);
 
   /// Dispatch the period info to downstream handlers.
-  Status DispatchPeriodInfo(int stream_index,
+  Status DispatchPeriodInfo(size_t stream_index,
                             std::shared_ptr<PeriodInfo> period_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
@@ -120,7 +120,7 @@ class MediaHandler {
   }
 
   /// Dispatch the stream info to downstream handlers.
-  Status DispatchStreamInfo(int stream_index,
+  Status DispatchStreamInfo(size_t stream_index,
                             std::shared_ptr<StreamInfo> stream_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
@@ -131,7 +131,7 @@ class MediaHandler {
 
   /// Dispatch the encryption config to downstream handlers.
   Status DispatchEncryptionConfig(
-      int stream_index,
+      size_t stream_index,
       std::unique_ptr<EncryptionConfig> encryption_config) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
@@ -141,7 +141,7 @@ class MediaHandler {
   }
 
   /// Dispatch the media sample to downstream handlers.
-  Status DispatchMediaSample(int stream_index,
+  Status DispatchMediaSample(size_t stream_index,
                              std::shared_ptr<MediaSample> media_sample) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
@@ -151,7 +151,7 @@ class MediaHandler {
   }
 
   /// Dispatch the media event to downstream handlers.
-  Status DispatchMediaEvent(int stream_index,
+  Status DispatchMediaEvent(size_t stream_index,
                             std::shared_ptr<MediaEvent> media_event) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
@@ -161,7 +161,7 @@ class MediaHandler {
   }
 
   /// Dispatch the segment info to downstream handlers.
-  Status DispatchSegmentInfo(int stream_index,
+  Status DispatchSegmentInfo(size_t stream_index,
                              std::shared_ptr<SegmentInfo> segment_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
@@ -171,11 +171,11 @@ class MediaHandler {
   }
 
   /// Flush the downstream connected at the specified output stream index.
-  Status FlushDownstream(int output_stream_index);
+  Status FlushDownstream(size_t output_stream_index);
 
-  int num_input_streams() const { return num_input_streams_; }
-  int next_output_stream_index() const { return next_output_stream_index_; }
-  const std::map<int, std::pair<std::shared_ptr<MediaHandler>, int>>&
+  size_t num_input_streams() const { return num_input_streams_; }
+  size_t next_output_stream_index() const { return next_output_stream_index_; }
+  const std::map<size_t, std::pair<std::shared_ptr<MediaHandler>, size_t>>&
   output_handlers() {
     return output_handlers_;
   }
@@ -186,12 +186,13 @@ class MediaHandler {
 
   bool initialized_ = false;
   // Number of input streams.
-  int num_input_streams_ = 0;
+  size_t num_input_streams_ = 0;
   // The next available output stream index, used by AddHandler.
-  int next_output_stream_index_ = 0;
+  size_t next_output_stream_index_ = 0;
   // output stream index -> {output handler, output handler input stream index}
   // map.
-  std::map<int, std::pair<std::shared_ptr<MediaHandler>, int>> output_handlers_;
+  std::map<size_t, std::pair<std::shared_ptr<MediaHandler>, size_t>>
+      output_handlers_;
 };
 
 }  // namespace media

@@ -308,7 +308,7 @@ Status Segmenter::Finalize() {
   return DoFinalize();
 }
 
-Status Segmenter::AddSample(int stream_id,
+Status Segmenter::AddSample(size_t stream_id,
                             std::shared_ptr<MediaSample> sample) {
   // Set default sample duration if it has not been set yet.
   if (moov_->extends.tracks[stream_id].default_sample_duration == 0) {
@@ -316,7 +316,7 @@ Status Segmenter::AddSample(int stream_id,
         sample->duration();
   }
 
-  DCHECK_LT(stream_id, static_cast<int>(fragmenters_.size()));
+  DCHECK_LT(stream_id, fragmenters_.size());
   Fragmenter* fragmenter = fragmenters_[stream_id].get();
   if (fragmenter->fragment_finalized()) {
     return Status(error::FRAGMENT_FINALIZED,
@@ -333,8 +333,8 @@ Status Segmenter::AddSample(int stream_id,
   return Status::OK;
 }
 
-Status Segmenter::FinalizeSegment(int stream_id, bool is_subsegment) {
-  DCHECK_LT(stream_id, static_cast<int>(fragmenters_.size()));
+Status Segmenter::FinalizeSegment(size_t stream_id, bool is_subsegment) {
+  DCHECK_LT(stream_id, fragmenters_.size());
   Fragmenter* fragmenter = fragmenters_[stream_id].get();
   DCHECK(fragmenter);
   fragmenter->FinalizeFragment();

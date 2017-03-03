@@ -82,7 +82,7 @@ class Demuxer : public MediaHandler {
     return Status(error::INTERNAL_ERROR,
                   "Demuxer should not be the downstream handler.");
   }
-  bool ValidateOutputStreamIndex(int stream_index) const override {
+  bool ValidateOutputStreamIndex(size_t stream_index) const override {
     // We don't know if the stream is valid or not when setting up the graph.
     // Will validate the stream index later when stream info is available.
     return true;
@@ -128,12 +128,12 @@ class Demuxer : public MediaHandler {
   std::deque<QueuedSample> queued_samples_;
   std::unique_ptr<MediaParser> parser_;
   // TrackId -> StreamIndex map.
-  std::map<uint32_t, int> track_id_to_stream_index_map_;
+  std::map<uint32_t, size_t> track_id_to_stream_index_map_;
   // The list of stream indexes in the above map (in the same order as the input
   // stream info vector).
-  std::vector<int> stream_indexes_;
+  std::vector<size_t> stream_indexes_;
   // StreamIndex -> language_override map.
-  std::map<int, std::string> language_overrides_;
+  std::map<size_t, std::string> language_overrides_;
   MediaContainerName container_name_ = CONTAINER_UNKNOWN;
   std::unique_ptr<uint8_t[]> buffer_;
   std::unique_ptr<KeySource> key_source_;

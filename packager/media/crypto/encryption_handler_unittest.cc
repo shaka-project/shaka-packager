@@ -104,7 +104,7 @@ TEST_F(EncryptionHandlerTest, OnlyOneInput) {
 
 namespace {
 
-const int kStreamIndex = 0;
+const size_t kStreamIndex = 0;
 const bool kEncrypted = true;
 const uint32_t kTimeScale = 1000;
 const uint32_t kMaxSdPixels = 100u;
@@ -335,7 +335,7 @@ TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
   ASSERT_OK(Process(std::move(stream_data)));
   ASSERT_EQ(2u, GetOutputStreamDataVector().size());
-  ASSERT_EQ(0, GetOutputStreamDataVector().back()->stream_index);
+  ASSERT_EQ(0u, GetOutputStreamDataVector().back()->stream_index);
   ASSERT_EQ(StreamDataType::kMediaSample,
             GetOutputStreamDataVector().back()->stream_data_type);
 

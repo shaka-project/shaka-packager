@@ -18,8 +18,8 @@ using ::testing::IsEmpty;
 namespace shaka {
 namespace media {
 namespace {
-const int kStreamIndex0 = 0;
-const int kStreamIndex1 = 1;
+const size_t kStreamIndex0 = 0;
+const size_t kStreamIndex1 = 1;
 const uint32_t kTimeScale0 = 800;
 const uint32_t kTimeScale1 = 1000;
 const int64_t kDuration0 = 200;

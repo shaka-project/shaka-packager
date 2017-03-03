@@ -88,13 +88,13 @@ class Segmenter {
   /// @param stream_id is the zero-based stream index.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(int stream_id, std::shared_ptr<MediaSample> sample);
+  Status AddSample(size_t stream_id, std::shared_ptr<MediaSample> sample);
 
   /// Finalize the segment / subsegment.
   /// @param stream_id is the zero-based stream index.
   /// @param is_subsegment indicates if it is a subsegment (fragment).
   /// @return OK on success, an error status otherwise.
-  Status FinalizeSegment(int stream_id, bool is_subsegment);
+  Status FinalizeSegment(size_t stream_id, bool is_subsegment);
 
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.

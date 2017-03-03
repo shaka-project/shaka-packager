@@ -68,7 +68,7 @@ class ChunkingHandler : public MediaHandler {
   /// @{
   Status InitializeInternal() override;
   Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status OnFlushRequest(int input_stream_index) override;
+  Status OnFlushRequest(size_t input_stream_index) override;
   /// @}
 
  private:
@@ -94,7 +94,8 @@ class ChunkingHandler : public MediaHandler {
 
   // The video stream is the main stream; if there is only one stream, it is the
   // main stream. The chunking is based on the main stream.
-  int main_stream_index_ = -1;
+  const size_t kInvalidStreamIndex = static_cast<size_t>(-1);
+  size_t main_stream_index_ = kInvalidStreamIndex;
   // Segment and subsegment duration in main stream's time scale.
   int64_t segment_duration_ = 0;
   int64_t subsegment_duration_ = 0;

@@ -50,7 +50,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
       // The video stream is treated as the main stream. If there is only one
       // stream, it is the main stream.
       const bool is_main_stream =
-          main_stream_index_ == -1 &&
+          main_stream_index_ == kInvalidStreamIndex &&
           (stream_data->stream_info->stream_type() == kStreamVideo ||
            num_input_streams() == 1);
       if (is_main_stream) {
@@ -70,7 +70,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
       VLOG(3) << "Drop existing segment info.";
       return Status::OK;
     case StreamDataType::kMediaSample: {
-      const int stream_index = stream_data->stream_index;
+      const size_t stream_index = stream_data->stream_index;
       DCHECK_NE(time_scales_[stream_index], 0u)
           << "kStreamInfo should arrive before kMediaSample";
       if (stream_index != main_stream_index_) {
@@ -111,7 +111,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
   return Dispatch(std::move(stream_data));
 }
 
-Status ChunkingHandler::OnFlushRequest(int input_stream_index) {
+Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
   if (segment_info_[input_stream_index]) {
     Status status;
     if (input_stream_index != main_stream_index_) {
@@ -185,7 +185,7 @@ Status ChunkingHandler::DispatchNonMainSamples(int64_t timestamp_threshold) {
   while (status.ok() && !non_main_samples_.empty()) {
     DCHECK_EQ(non_main_samples_.front()->stream_data_type,
               StreamDataType::kMediaSample);
-    const int stream_index = non_main_samples_.front()->stream_index;
+    const size_t stream_index = non_main_samples_.front()->stream_index;
     const MediaSample* sample = non_main_samples_.front()->media_sample.get();
     // If the portion of the sample before |timestamp_threshold| is bigger than
     // the other portion, we consider it part of the current segment.
@@ -225,8 +225,7 @@ Status ChunkingHandler::DispatchNonMainSamples(int64_t timestamp_threshold) {
 
 Status ChunkingHandler::DispatchSegmentInfoForAllStreams() {
   Status status;
-  for (int i = 0; i < static_cast<int>(segment_info_.size()) && status.ok();
-       ++i) {
+  for (size_t i = 0; i < segment_info_.size() && status.ok(); ++i) {
     if (segment_info_[i] && segment_info_[i]->start_timestamp != -1) {
       segment_info_[i]->duration =
           last_sample_end_timestamps_[i] - segment_info_[i]->start_timestamp;
@@ -240,8 +239,7 @@ Status ChunkingHandler::DispatchSegmentInfoForAllStreams() {
 
 Status ChunkingHandler::DispatchSubsegmentInfoForAllStreams() {
   Status status;
-  for (int i = 0; i < static_cast<int>(subsegment_info_.size()) && status.ok();
-       ++i) {
+  for (size_t i = 0; i < subsegment_info_.size() && status.ok(); ++i) {
     if (subsegment_info_[i] && subsegment_info_[i]->start_timestamp != -1) {
       subsegment_info_[i]->duration =
           last_sample_end_timestamps_[i] - subsegment_info_[i]->start_timestamp;

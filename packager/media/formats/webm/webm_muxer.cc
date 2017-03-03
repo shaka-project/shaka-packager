@@ -72,17 +72,17 @@ Status WebMMuxer::Finalize() {
   return Status::OK;
 }
 
-Status WebMMuxer::AddSample(int stream_id,
+Status WebMMuxer::AddSample(size_t stream_id,
                             std::shared_ptr<MediaSample> sample) {
   DCHECK(segmenter_);
-  DCHECK_EQ(stream_id, 0);
+  DCHECK_EQ(stream_id, 0u);
   return segmenter_->AddSample(sample);
 }
 
-Status WebMMuxer::FinalizeSegment(int stream_id,
+Status WebMMuxer::FinalizeSegment(size_t stream_id,
                                   std::shared_ptr<SegmentInfo> segment_info) {
   DCHECK(segmenter_);
-  DCHECK_EQ(stream_id, 0);
+  DCHECK_EQ(stream_id, 0u);
   return segmenter_->FinalizeSegment(segment_info->start_timestamp,
                                      segment_info->duration,
                                      segment_info->is_subsegment);

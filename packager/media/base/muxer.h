@@ -97,7 +97,7 @@ class Muxer : public MediaHandler {
   /// @{
   Status InitializeInternal() override { return Status::OK; }
   Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status OnFlushRequest(int input_stream_index) override { return Finalize(); }
+  Status OnFlushRequest(size_t input_stream_index) override { return Finalize(); }
   /// @}
 
   const MuxerOptions& options() const { return options_; }
@@ -124,11 +124,11 @@ class Muxer : public MediaHandler {
   virtual Status Finalize() = 0;
 
   // Add a new sample.
-  virtual Status AddSample(int stream_id,
+  virtual Status AddSample(size_t stream_id,
                            std::shared_ptr<MediaSample> sample) = 0;
 
   // Finalize the segment or subsegment.
-  virtual Status FinalizeSegment(int stream_id,
+  virtual Status FinalizeSegment(size_t stream_id,
                                  std::shared_ptr<SegmentInfo> segment_info) = 0;
 
   MuxerOptions options_;

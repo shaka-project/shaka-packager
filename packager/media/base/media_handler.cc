@@ -9,10 +9,8 @@
 namespace shaka {
 namespace media {
 
-Status MediaHandler::SetHandler(int output_stream_index,
+Status MediaHandler::SetHandler(size_t output_stream_index,
                                 std::shared_ptr<MediaHandler> handler) {
-  if (output_stream_index < 0)
-    return Status(error::INVALID_ARGUMENT, "Invalid output stream index");
   if (output_handlers_.find(output_stream_index) != output_handlers_.end()) {
     return Status(error::ALREADY_EXISTS,
                   "The handler at the specified index already exists.");
@@ -40,19 +38,19 @@ Status MediaHandler::Initialize() {
   return Status::OK;
 }
 
-Status MediaHandler::OnFlushRequest(int input_stream_index) {
+Status MediaHandler::OnFlushRequest(size_t input_stream_index) {
   // The default implementation treats the output stream index to be identical
   // to the input stream index, which is true for most handlers.
-  const int output_stream_index = input_stream_index;
+  const size_t output_stream_index = input_stream_index;
   return FlushDownstream(output_stream_index);
 }
 
-bool MediaHandler::ValidateOutputStreamIndex(int stream_index) const {
-  return stream_index >= 0 && stream_index < num_input_streams_;
+bool MediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
+  return stream_index < num_input_streams_;
 }
 
 Status MediaHandler::Dispatch(std::unique_ptr<StreamData> stream_data) {
-  int output_stream_index = stream_data->stream_index;
+  size_t output_stream_index = stream_data->stream_index;
   auto handler_it = output_handlers_.find(output_stream_index);
   if (handler_it == output_handlers_.end()) {
     return Status(error::NOT_FOUND,
@@ -62,7 +60,7 @@ Status MediaHandler::Dispatch(std::unique_ptr<StreamData> stream_data) {
   return handler_it->second.first->Process(std::move(stream_data));
 }
 
-Status MediaHandler::FlushDownstream(int output_stream_index) {
+Status MediaHandler::FlushDownstream(size_t output_stream_index) {
   auto handler_it = output_handlers_.find(output_stream_index);
   if (handler_it == output_handlers_.end()) {
     return Status(error::NOT_FOUND,
