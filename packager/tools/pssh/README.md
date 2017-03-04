@@ -25,5 +25,5 @@ the previous step:
 
 ```bash
 cd packager/third_party/protobuf/python
-PATH=../../../../out/Debug/:"$PATH" python setup.py build
+PATH=../../../../out/{Debug,Release}/:"$PATH" python setup.py build
 ```
