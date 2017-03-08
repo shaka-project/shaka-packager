@@ -141,9 +141,6 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
       *stream_info, encryption_options_.max_sd_pixels,
       encryption_options_.max_hd_pixels, encryption_options_.max_uhd1_pixels);
   switch (video_codec_) {
-    case kCodecVP8:
-      vpx_parser_.reset(new VP8Parser);
-      break;
     case kCodecVP9:
       vpx_parser_.reset(new VP9Parser);
       break;
@@ -156,7 +153,7 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
       header_parser_.reset(new H265VideoSliceHeaderParser);
       break;
     default:
-      // Expect an audio codec with nalu length size == 0.
+      // Other codecs should have nalu length size == 0.
       if (nalu_length_size_ > 0) {
         LOG(WARNING) << "Unknown video codec '" << video_codec_ << "'";
         return Status(error::ENCRYPTION_FAILURE, "Unknown video codec.");
@@ -299,9 +296,10 @@ bool EncryptionHandler::CreateEncryptor(EncryptionKey* encryption_key) {
   return initialized;
 }
 
-bool EncryptionHandler::EncryptVpxFrame(const std::vector<VPxFrameInfo>& vpx_frames,
-                                        MediaSample* sample,
-                                        DecryptConfig* decrypt_config) {
+bool EncryptionHandler::EncryptVpxFrame(
+    const std::vector<VPxFrameInfo>& vpx_frames,
+    MediaSample* sample,
+    DecryptConfig* decrypt_config) {
   uint8_t* data = sample->writable_data();
   const bool is_superframe = vpx_frames.size() > 1;
   for (const VPxFrameInfo& frame : vpx_frames) {
@@ -317,12 +315,10 @@ bool EncryptionHandler::EncryptVpxFrame(const std::vector<VPxFrameInfo>& vpx_fra
     // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
     // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
     // avoid partial blocks in Subsamples.
-    if (is_superframe || encryption_options_.protection_scheme == FOURCC_cbc1 ||
-        encryption_options_.protection_scheme == FOURCC_cens) {
-      const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
-      clear_bytes += misalign_bytes;
-      cipher_bytes -= misalign_bytes;
-    }
+    // For consistency, apply block alignment to all frames.
+    const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
+    clear_bytes += misalign_bytes;
+    cipher_bytes -= misalign_bytes;
 
     decrypt_config->AddSubsample(clear_bytes, cipher_bytes);
     if (cipher_bytes > 0)

@@ -79,9 +79,6 @@ EncryptingFragmenter::EncryptingFragmenter(
       listener_(listener) {
   DCHECK(encryption_key_);
   switch (video_codec_) {
-    case kCodecVP8:
-      vpx_parser_.reset(new VP8Parser);
-      break;
     case kCodecVP9:
       vpx_parser_.reset(new VP9Parser);
       break;
@@ -280,13 +277,10 @@ Status EncryptingFragmenter::EncryptSample(
         // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
         // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
         // avoid partial blocks in Subsamples.
-        if (is_superframe || protection_scheme_ == FOURCC_cbc1 ||
-            protection_scheme_ == FOURCC_cens) {
-          const uint16_t misalign_bytes =
-              subsample.cipher_bytes % kCencBlockSize;
-          subsample.clear_bytes += misalign_bytes;
-          subsample.cipher_bytes -= misalign_bytes;
-        }
+        // For consistency, apply block alignment to all frames.
+        const uint16_t misalign_bytes = subsample.cipher_bytes % kCencBlockSize;
+        subsample.clear_bytes += misalign_bytes;
+        subsample.cipher_bytes -= misalign_bytes;
 
         sample_encryption_entry.subsamples.push_back(subsample);
         if (subsample.cipher_bytes > 0)
