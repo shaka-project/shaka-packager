@@ -102,8 +102,13 @@ Inheritance diagram for shaka::media::MediaHandler:</div>
  <div class="center">
   <img src="../../da/dfd/classshaka_1_1media_1_1MediaHandler.png" usemap="#shaka::media::MediaHandler_map" alt=""/>
   <map id="shaka::media::MediaHandler_map" name="shaka::media::MediaHandler_map">
-<area href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html" alt="shaka::media::ChunkingHandler" shape="rect" coords="0,56,196,80"/>
-<area href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html" alt="shaka::media::EncryptionHandler" shape="rect" coords="206,56,402,80"/>
+<area href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html" alt="shaka::media::ChunkingHandler" shape="rect" coords="0,56,200,80"/>
+<area href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html" alt="shaka::media::Demuxer" shape="rect" coords="210,56,410,80"/>
+<area href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html" alt="shaka::media::EncryptionHandler" shape="rect" coords="420,56,620,80"/>
+<area href="../../df/d46/classshaka_1_1media_1_1Muxer.html" alt="shaka::media::Muxer" shape="rect" coords="630,56,830,80"/>
+<area href="../../d3/d71/classshaka_1_1media_1_1mp2t_1_1TsMuxer.html" alt="shaka::media::mp2t::TsMuxer" shape="rect" coords="420,112,620,136"/>
+<area href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html" alt="shaka::media::mp4::MP4Muxer" shape="rect" coords="630,112,830,136"/>
+<area href="../../d3/d73/classshaka_1_1media_1_1webm_1_1WebMMuxer.html" title="Implements WebM Muxer. " alt="shaka::media::webm::WebMMuxer" shape="rect" coords="840,112,1040,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -172,6 +177,11 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> 
 <tr class="memitem:a4be1e5619dd577b76f7d10919d8d10b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4be1e5619dd577b76f7d10919d8d10b3"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_index</b> () const </td></tr>
 <tr class="separator:a4be1e5619dd577b76f7d10919d8d10b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ab09ed6799a15cdac7788ed5a1bc52c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7ab09ed6799a15cdac7788ed5a1bc52c"></a>
+const std::map&lt; int, std::pair<br class="typebreak"/>
+&lt; std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> &gt;, int &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>output_handlers</b> ()</td></tr>
+<tr class="separator:a7ab09ed6799a15cdac7788ed5a1bc52c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> is the base media processing unit. Media handlers transform the input streams and propagate the outputs to downstream media handlers. There are three different types of media handlers: 1) Single input single output This is the most basic handler. It only supports one input and one output with both index as 0. 2) Multiple inputs multiple outputs The number of outputs must be equal to the number of inputs. The output stream at a specific index comes from the input stream at the same index. Different streams usually share a common resource, although they may be independent. One example of this is encryptor handler. 3) Single input multiple outputs The input stream is splitted into multiple output streams. One example of this is trick play handler. Other types of media handlers are disallowed and not supported. </p>
@@ -245,7 +255,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_ind
 </div><div class="memdoc">
 <p>Internal implementation of initialize. Note that it should only initialize the <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> itself. Downstream handlers are handled in <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aed0da512bbd998ec9d0a5c019ad17acb">Initialize()</a>. </p>
 
-<p>Implemented in <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a36882e12df5c5bfd48a7b94d1dfad857">shaka::media::Muxer</a>, <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">shaka::media::Demuxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">shaka::media::EncryptionHandler</a>.</p>
 
 </div>
 </div>
@@ -272,7 +282,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_ind
 </div><div class="memdoc">
 <p>Process the incoming stream data. Note that (1) stream_data.stream_index should be the input stream index; (2) The implementation needs to call DispatchXxx to dispatch the processed stream data to the downstream handlers after finishing processing if needed. </p>
 
-<p>Implemented in <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#aec730b070245231a0887787005c06eee">shaka::media::Muxer</a>, <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">shaka::media::Demuxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
 
 </div>
 </div>
@@ -283,7 +293,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>next_output_stream_ind
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 7 2017 01:19:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 8 2017 19:14:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

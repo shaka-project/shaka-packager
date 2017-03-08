@@ -31,7 +31,6 @@ var searchData=
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../db/d4e/classshaka_1_1media_1_1mp4_1_1CompositionOffsetIterator.html',1,'shaka::media::mp4']]],
   ['compositiontimetosample',['CompositionTimeToSample',['../df/d7b/structshaka_1_1media_1_1mp4_1_1CompositionTimeToSample.html',1,'shaka::media::mp4']]],
   ['computesize',['ComputeSize',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#aa4e47d0ba81e234707c76ca36e32c1d5',1,'shaka::media::mp4::Box::ComputeSize()'],['../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#a253fbc00315441efac7ea917a5952e2c',1,'shaka::media::mp4::SampleEncryptionEntry::ComputeSize()']]],
-  ['connect',['Connect',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a98e53e299c7258419623b3d709553562',1,'shaka::media::MediaStream']]],
   ['container_5fname',['container_name',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a385c93fd8d589b7d3bccd35e14c58290',1,'shaka::media::Demuxer']]],
   ['contentencoding',['ContentEncoding',['../dc/da6/classshaka_1_1media_1_1ContentEncoding.html',1,'shaka::media']]],
   ['contentprotectionelement',['ContentProtectionElement',['../da/d43/structshaka_1_1ContentProtectionElement.html',1,'shaka']]],

@@ -14,7 +14,6 @@ var searchData=
   ['codec_5fconfig',['codec_config',['../db/dcb/classshaka_1_1media_1_1VPxParser.html#a79057bf3418757cc7d47c3979479220d',1,'shaka::media::VPxParser']]],
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../db/d4e/classshaka_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a70511a15ee2f03d447b18668de57ca93',1,'shaka::media::mp4::CompositionOffsetIterator']]],
   ['computesize',['ComputeSize',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#aa4e47d0ba81e234707c76ca36e32c1d5',1,'shaka::media::mp4::Box::ComputeSize()'],['../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#a253fbc00315441efac7ea917a5952e2c',1,'shaka::media::mp4::SampleEncryptionEntry::ComputeSize()']]],
-  ['connect',['Connect',['../d8/d5c/classshaka_1_1media_1_1MediaStream.html#a98e53e299c7258419623b3d709553562',1,'shaka::media::MediaStream']]],
   ['container_5fname',['container_name',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a385c93fd8d589b7d3bccd35e14c58290',1,'shaka::media::Demuxer']]],
   ['convertbytestreamtonalunitstream',['ConvertByteStreamToNalUnitStream',['../de/dea/classshaka_1_1media_1_1H26xByteToUnitStreamConverter.html#a8f85f99c1cc939382c4eecd6580ecd17',1,'shaka::media::H26xByteToUnitStreamConverter']]],
   ['converttoadts',['ConvertToADTS',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#af0ab71e8365a6a93c63badc3150fdacd',1,'shaka::media::AACAudioSpecificConfig']]],
