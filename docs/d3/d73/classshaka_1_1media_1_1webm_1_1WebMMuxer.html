@@ -185,10 +185,10 @@ FourCC&#160;</td><td class="memItemRight" valign="bottom"><b>protection_scheme</
 <tr class="separator:a36882e12df5c5bfd48a7b94d1dfad857 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec730b070245231a0887787005c06eee inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#aec730b070245231a0887787005c06eee">Process</a> (std::unique_ptr&lt; <a class="el" href="../../d0/d4c/structshaka_1_1media_1_1StreamData.html">StreamData</a> &gt; stream_data) override</td></tr>
 <tr class="separator:aec730b070245231a0887787005c06eee inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a522a24c661f6e50aa6fb2a04afbfe5f8 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a522a24c661f6e50aa6fb2a04afbfe5f8"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a522a24c661f6e50aa6fb2a04afbfe5f8">FlushStream</a> (int input_stream_index) override</td></tr>
-<tr class="memdesc:a522a24c661f6e50aa6fb2a04afbfe5f8 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush the stream at the specified input stream index. <br/></td></tr>
-<tr class="separator:a522a24c661f6e50aa6fb2a04afbfe5f8 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13962b229c114eb0dc38db98b39613e1 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a13962b229c114eb0dc38db98b39613e1"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a13962b229c114eb0dc38db98b39613e1">OnFlushRequest</a> (int input_stream_index) override</td></tr>
+<tr class="memdesc:a13962b229c114eb0dc38db98b39613e1 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event handler for flush request at the specific input stream index. <br/></td></tr>
+<tr class="separator:a13962b229c114eb0dc38db98b39613e1 inherit pro_methods_classshaka_1_1media_1_1Muxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classshaka_1_1media_1_1MediaHandler"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classshaka_1_1media_1_1MediaHandler')"><img src="../../closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">shaka::media::MediaHandler</a></td></tr>
 <tr class="memitem:a7b61972eedda125b436dc4d26f88c1e6 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b61972eedda125b436dc4d26f88c1e6"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7b61972eedda125b436dc4d26f88c1e6">ValidateOutputStreamIndex</a> (int stream_index) const </td></tr>
@@ -226,6 +226,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> 
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">DispatchSegmentInfo</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt; segment_info)</td></tr>
 <tr class="memdesc:a7c2da8615f6880abf4e198dd4c17ad45 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the segment info to downstream handlers. <br/></td></tr>
 <tr class="separator:a7c2da8615f6880abf4e198dd4c17ad45 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12bf0d7f548d971c709c8644461dc9d3 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12bf0d7f548d971c709c8644461dc9d3"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a12bf0d7f548d971c709c8644461dc9d3">FlushDownstream</a> (int output_stream_index)</td></tr>
+<tr class="memdesc:a12bf0d7f548d971c709c8644461dc9d3 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush the downstream connected at the specified output stream index. <br/></td></tr>
+<tr class="separator:a12bf0d7f548d971c709c8644461dc9d3 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95d62b8863212d4cf3d1daacdaf4d0e6 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95d62b8863212d4cf3d1daacdaf4d0e6"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> () const </td></tr>
 <tr class="separator:a95d62b8863212d4cf3d1daacdaf4d0e6 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -249,7 +253,7 @@ const std::map&lt; int, std::pair<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 8 2017 19:14:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 8 2017 19:28:57 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

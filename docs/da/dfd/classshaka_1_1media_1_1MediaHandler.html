@@ -131,10 +131,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a0e05325d62bfb66318301c1ed790a46e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb614e9f43e1eb6f837801b15b78c0b4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#acb614e9f43e1eb6f837801b15b78c0b4">Process</a> (std::unique_ptr&lt; <a class="el" href="../../d0/d4c/structshaka_1_1media_1_1StreamData.html">StreamData</a> &gt; stream_data)=0</td></tr>
 <tr class="separator:acb614e9f43e1eb6f837801b15b78c0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7b4b8f83bf00b3bac0441f3fd991d4b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7b4b8f83bf00b3bac0441f3fd991d4b"></a>
-virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ae7b4b8f83bf00b3bac0441f3fd991d4b">FlushStream</a> (int input_stream_index)</td></tr>
-<tr class="memdesc:ae7b4b8f83bf00b3bac0441f3fd991d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush the stream at the specified input stream index. <br/></td></tr>
-<tr class="separator:ae7b4b8f83bf00b3bac0441f3fd991d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bffc546e0cfc668599f9e172aebeecd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bffc546e0cfc668599f9e172aebeecd"></a>
+virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a5bffc546e0cfc668599f9e172aebeecd">OnFlushRequest</a> (int input_stream_index)</td></tr>
+<tr class="memdesc:a5bffc546e0cfc668599f9e172aebeecd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event handler for flush request at the specific input stream index. <br/></td></tr>
+<tr class="separator:a5bffc546e0cfc668599f9e172aebeecd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b61972eedda125b436dc4d26f88c1e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b61972eedda125b436dc4d26f88c1e6"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7b61972eedda125b436dc4d26f88c1e6">ValidateOutputStreamIndex</a> (int stream_index) const </td></tr>
 <tr class="memdesc:a7b61972eedda125b436dc4d26f88c1e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate if the stream at the specified index actually exists. <br/></td></tr>
@@ -171,6 +171,10 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> 
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">DispatchSegmentInfo</a> (int stream_index, std::shared_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt; segment_info)</td></tr>
 <tr class="memdesc:a7c2da8615f6880abf4e198dd4c17ad45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the segment info to downstream handlers. <br/></td></tr>
 <tr class="separator:a7c2da8615f6880abf4e198dd4c17ad45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12bf0d7f548d971c709c8644461dc9d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12bf0d7f548d971c709c8644461dc9d3"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a12bf0d7f548d971c709c8644461dc9d3">FlushDownstream</a> (int output_stream_index)</td></tr>
+<tr class="memdesc:a12bf0d7f548d971c709c8644461dc9d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush the downstream connected at the specified output stream index. <br/></td></tr>
+<tr class="separator:a12bf0d7f548d971c709c8644461dc9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95d62b8863212d4cf3d1daacdaf4d0e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95d62b8863212d4cf3d1daacdaf4d0e6"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</b> () const </td></tr>
 <tr class="separator:a95d62b8863212d4cf3d1daacdaf4d0e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,7 +215,7 @@ const std::map&lt; int, std::pair<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Dispatch the stream data to downstream handlers. Note that stream_data.stream_index should be the output stream index. </p>
 
-<p>Definition at line <a class="el" href="../../d2/de9/media__handler_8cc_source.html#l00056">56</a> of file <a class="el" href="../../d2/de9/media__handler_8cc_source.html">media_handler.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/de9/media__handler_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d2/de9/media__handler_8cc_source.html">media_handler.cc</a>.</p>
 
 </div>
 </div>
@@ -293,7 +297,7 @@ const std::map&lt; int, std::pair<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 8 2017 19:14:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 8 2017 19:28:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
