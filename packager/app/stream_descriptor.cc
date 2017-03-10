@@ -11,7 +11,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/media/base/container_names.h"
-#include "packager/mpd/base/language_utils.h"
+#include "packager/media/base/language_utils.h"
 
 namespace shaka {
 namespace media {

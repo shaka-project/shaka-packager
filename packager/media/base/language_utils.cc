@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/mpd/base/language_utils.h"
+#include "packager/media/base/language_utils.h"
 
 #include "packager/base/logging.h"
 
@@ -87,6 +87,11 @@ void SplitLanguageTag(const std::string& tag,
 namespace shaka {
 
 std::string LanguageToShortestForm(const std::string& language) {
+  // Do not try to mangle blank strings.
+  if (language.size() == 0) {
+    return language;
+  }
+
   std::string main_language;
   std::string subtag;
   SplitLanguageTag(language, &main_language, &subtag);

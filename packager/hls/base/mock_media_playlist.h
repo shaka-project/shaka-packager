@@ -40,6 +40,7 @@ class MockMediaPlaylist : public MediaPlaylist {
   MOCK_CONST_METHOD0(Bitrate, uint64_t());
   MOCK_CONST_METHOD0(GetLongestSegmentDuration, double());
   MOCK_METHOD1(SetTargetDuration, bool(uint32_t target_duration));
+  MOCK_CONST_METHOD0(GetLanguage, std::string());
 };
 
 }  // namespace hls

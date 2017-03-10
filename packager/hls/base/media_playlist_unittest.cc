@@ -352,5 +352,23 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
   EXPECT_TRUE(media_playlist_.WriteToFile(&file));
 }
 
+TEST_F(MediaPlaylistTest, GetLanguage) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(90000);
+
+  // Check conversions from long to short form.
+  media_info.mutable_audio_info()->set_language("eng");
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
+  EXPECT_EQ("en", media_playlist_.GetLanguage());  // short form
+
+  media_info.mutable_audio_info()->set_language("eng-US");
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
+  EXPECT_EQ("en-US", media_playlist_.GetLanguage());  // region preserved
+
+  media_info.mutable_audio_info()->set_language("apa");
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
+  EXPECT_EQ("apa", media_playlist_.GetLanguage());  // no short form exists
+}
+
 }  // namespace hls
 }  // namespace shaka

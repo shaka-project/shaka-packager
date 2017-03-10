@@ -12,6 +12,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/media/base/language_utils.h"
 #include "packager/media/file/file.h"
 #include "packager/version/version.h"
 
@@ -342,6 +343,21 @@ bool MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
   target_duration_ = target_duration;
   target_duration_set_ = true;
   return true;
+}
+
+// Duplicated from MpdUtils because:
+// 1. MpdUtils header depends on libxml header, which is not in the deps here
+// 2. GetLanguage depends on MediaInfo from packager/mpd/
+// 3. Moving GetLanguage to LanguageUtils would create a a media => mpd dep.
+// TODO: fix this dependency situation and factor this out to a common location
+std::string MediaPlaylist::GetLanguage() const {
+  std::string lang;
+  if (media_info_.has_audio_info()) {
+    lang = media_info_.audio_info().language();
+  } else if (media_info_.has_text_info()) {
+    lang = media_info_.text_info().language();
+  }
+  return LanguageToShortestForm(lang);
 }
 
 }  // namespace hls

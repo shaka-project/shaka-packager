@@ -52,6 +52,8 @@
         'key_fetcher.h',
         'key_source.cc',
         'key_source.h',
+        'language_utils.cc',
+        'language_utils.h',
         'limits.h',
         'macros.h',
         'media_handler.cc',

@@ -149,6 +149,10 @@ class MediaPlaylist {
   /// @return true if set, false otherwise.
   virtual bool SetTargetDuration(uint32_t target_duration);
 
+  /// @return the language of the media, as an ISO language tag in its shortest
+  ///         form.  May be an empty string for video.
+  virtual std::string GetLanguage() const;
+
  private:
   // Mainly for MasterPlaylist to use these values.
   const std::string file_name_;

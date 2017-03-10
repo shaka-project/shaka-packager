@@ -130,6 +130,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   std::string audio_codec = "audiocodec";
   MockMediaPlaylist english_playlist(kVodPlaylist, "eng.m3u8", "english",
                                      "audiogroup");
+  EXPECT_CALL(english_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   english_playlist.SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
   english_playlist.SetCodecForTesting(audio_codec);
@@ -141,6 +142,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   // Second audio, spanish.m3u8.
   MockMediaPlaylist spanish_playlist(kVodPlaylist, "spa.m3u8", "espanol",
                                      "audiogroup");
+  EXPECT_CALL(spanish_playlist, GetLanguage()).WillRepeatedly(Return("es"));
   spanish_playlist.SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
   spanish_playlist.SetCodecForTesting(audio_codec);
@@ -166,9 +168,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audiogroup\",NAME=\"english\","
-      "URI=\"http://playlists.org/eng.m3u8\"\n"
+      "LANGUAGE=\"en\",URI=\"http://playlists.org/eng.m3u8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audiogroup\",NAME=\"espanol\","
-      "URI=\"http://playlists.org/spa.m3u8\"\n"
+      "LANGUAGE=\"es\",URI=\"http://playlists.org/spa.m3u8\"\n"
       "#EXT-X-STREAM-INF:AUDIO=\"audiogroup\","
       "CODECS=\"sdvideocodec,audiocodec\","
       "BANDWIDTH=360000\n"
@@ -198,6 +200,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   std::string audio_codec_lo = "audiocodec_lo";
   MockMediaPlaylist eng_lo_playlist(kVodPlaylist, "eng_lo.m3u8", "english_lo",
                                     "audio_lo");
+  EXPECT_CALL(eng_lo_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   eng_lo_playlist.SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
   eng_lo_playlist.SetCodecForTesting(audio_codec_lo);
@@ -209,6 +212,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   std::string audio_codec_hi = "audiocodec_hi";
   MockMediaPlaylist eng_hi_playlist(kVodPlaylist, "eng_hi.m3u8", "english_hi",
                                     "audio_hi");
+  EXPECT_CALL(eng_hi_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   eng_hi_playlist.SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
   eng_hi_playlist.SetCodecForTesting(audio_codec_hi);
@@ -233,9 +237,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_hi\",NAME=\"english_hi\","
-      "URI=\"http://anydomain.com/eng_hi.m3u8\"\n"
+      "LANGUAGE=\"en\",URI=\"http://anydomain.com/eng_hi.m3u8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_lo\",NAME=\"english_lo\","
-      "URI=\"http://anydomain.com/eng_lo.m3u8\"\n"
+      "LANGUAGE=\"en\",URI=\"http://anydomain.com/eng_lo.m3u8\"\n"
       "#EXT-X-STREAM-INF:AUDIO=\"audio_hi\","
       "CODECS=\"videocodec,audiocodec_hi\","
       "BANDWIDTH=400000\n"

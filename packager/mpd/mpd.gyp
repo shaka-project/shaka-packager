@@ -39,8 +39,6 @@
         'base/content_protection_element.h',
         'base/dash_iop_mpd_notifier.cc',
         'base/dash_iop_mpd_notifier.h',
-        'base/language_utils.cc',
-        'base/language_utils.h',
         'base/mpd_builder.cc',
         'base/mpd_builder.h',
         'base/mpd_notifier_util.cc',

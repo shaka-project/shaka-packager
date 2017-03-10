@@ -121,8 +121,18 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     for (const MediaPlaylist* audio_playlist : audio_playlists) {
       base::StringAppendF(
           &audio_output,
-          "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"%s\",NAME=\"%s\",URI=\"%s\"\n",
-          group_id.c_str(), audio_playlist->name().c_str(),
+          "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"%s\",NAME=\"%s\",",
+          group_id.c_str(), audio_playlist->name().c_str());
+      std::string language = audio_playlist->GetLanguage();
+      if (!language.empty()) {
+        base::StringAppendF(
+            &audio_output,
+            "LANGUAGE=\"%s\",",
+            language.c_str());
+      }
+      base::StringAppendF(
+          &audio_output,
+          "URI=\"%s\"\n",
           (base_url + audio_playlist->file_name()).c_str());
       const uint64_t audio_bitrate = audio_playlist->Bitrate();
       if (audio_bitrate > max_audio_bitrate)

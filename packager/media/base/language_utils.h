@@ -6,16 +6,19 @@
 //
 // Funtions used by MpdBuilder class to generate an MPD file.
 
-#ifndef MPD_BASE_LANGUAGE_UTILS_H_
-#define MPD_BASE_LANGUAGE_UTILS_H_
+#ifndef MEDIA_BASE_LANGUAGE_UTILS_H_
+#define MEDIA_BASE_LANGUAGE_UTILS_H_
 
 #include <string>
 
 namespace shaka {
 
+class MediaInfo;
+
 /// Convert a language tag to its shortest form, as required by RFC 5646
-/// indicated in the MPD spec.  Assumes the input is a valid ISO-639-2 or
-/// ISO-639-1 language tag.  Regions and variants are not supported.
+/// indicated in the MPD and HLS specs.  Assumes the input is a valid ISO-639-2
+/// or ISO-639-1 language tag, or an empty string.  Regions and variants are
+/// preserved in the conversion.
 std::string LanguageToShortestForm(const std::string& language);
 
 /// Convert a language tag to a 3-letter ISO-639-2 code, as required by the ISO
@@ -25,4 +28,4 @@ std::string LanguageToISO_639_2(const std::string& language);
 
 }  // namespace shaka
 
-#endif  // MPD_BASE_LANGUAGE_UTILS_H_
+#endif  // MEDIA_BASE_LANGUAGE_UTILS_H_
