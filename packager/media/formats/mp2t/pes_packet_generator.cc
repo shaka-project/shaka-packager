@@ -10,8 +10,6 @@
 #include <cstring>
 #include <memory>
 
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/aes_pattern_cryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_sample.h"
@@ -29,61 +27,6 @@ namespace {
 const uint8_t kVideoStreamId = 0xE0;
 const uint8_t kAudioStreamId = 0xC0;
 const double kTsTimescale = 90000.0;
-
-// |target_data| is input as well as output. On success |target_data| contains
-// the encrypted sample. The input data should be Nal unit byte stream.
-// This function constructs encrypted sample in |encrypted_sample_data| then
-// swap with target_data on success.
-bool EncryptH264Sample(AesCryptor* encryptor,
-                       std::vector<uint8_t>* target_data) {
-  BufferWriter encrypted_sample_data(target_data->size() * 1.5);
-
-  const int kLeadingClearBytesSize = 32;
-  // Any Nalu smaller than 48 bytes shall not be encrypted.
-  const uint64_t kSmallNalUnitSize = 48;
-
-  NaluReader nalu_reader(Nalu::kH264, 0, target_data->data(),
-                         target_data->size());
-  NaluReader::Result result;
-  Nalu nalu;
-  while ((result = nalu_reader.Advance(&nalu)) == NaluReader::Result::kOk) {
-    encrypted_sample_data.AppendInt(static_cast<uint32_t>(0x00000001));
-    const uint64_t nalu_total_size = nalu.header_size() + nalu.payload_size();
-    if (nalu.type() != Nalu::H264NaluType::H264_NonIDRSlice &&
-        nalu.type() != Nalu::H264NaluType::H264_IDRSlice) {
-      VLOG(3) << "Found Nalu type: " << nalu.type() << " skipping encryption.";
-      encrypted_sample_data.AppendArray(nalu.data(), nalu_total_size);
-      continue;
-    }
-
-    if (nalu_total_size <= kSmallNalUnitSize) {
-      encrypted_sample_data.AppendArray(nalu.data(), nalu_total_size);
-      continue;
-    }
-
-    const uint8_t* current = nalu.data() + kLeadingClearBytesSize;
-    const uint64_t bytes_remaining = nalu_total_size - kLeadingClearBytesSize;
-
-    if (!encryptor->Crypt(current, bytes_remaining,
-                          const_cast<uint8_t*>(current))) {
-      return false;
-    }
-    EscapeNalByteSequence(nalu.data(), nalu_total_size, &encrypted_sample_data);
-  }
-
-  encrypted_sample_data.SwapBuffer(target_data);
-  return true;
-}
-
-bool EncryptAacSample(AesCryptor* encryptor,
-                      std::vector<uint8_t>* target_data) {
-  const int kUnencryptedLeaderSize = 16;
-  if (target_data->size() <= kUnencryptedLeaderSize)
-    return true;
-  uint8_t* data_ptr = target_data->data() + kUnencryptedLeaderSize;
-  return encryptor->Crypt(
-      data_ptr, target_data->size() - kUnencryptedLeaderSize, data_ptr);
-}
 }  // namespace
 
 PesPacketGenerator::PesPacketGenerator() {}
@@ -130,20 +73,18 @@ bool PesPacketGenerator::PushSample(std::shared_ptr<MediaSample> sample) {
   current_processing_pes_->set_dts(timescale_scale_ * sample->dts());
   if (stream_type_ == kStreamVideo) {
     DCHECK(converter_);
+    std::vector<SubsampleEntry> subsamples;
+    if (sample->decrypt_config())
+      subsamples = sample->decrypt_config()->subsamples();
+    const bool kEscapeEncryptedNalu = true;
     std::vector<uint8_t> byte_stream;
-    if (!converter_->ConvertUnitToByteStream(
+    if (!converter_->ConvertUnitToByteStreamWithSubsamples(
             sample->data(), sample->data_size(), sample->is_key_frame(),
-            &byte_stream)) {
+            kEscapeEncryptedNalu, &byte_stream, &subsamples)) {
       LOG(ERROR) << "Failed to convert sample to byte stream.";
       return false;
     }
 
-    if (encryptor_) {
-      if (!EncryptH264Sample(encryptor_.get(), &byte_stream)) {
-        LOG(ERROR) << "Failed to encrypt byte stream.";
-        return false;
-      }
-    }
     current_processing_pes_->mutable_data()->swap(byte_stream);
     current_processing_pes_->set_stream_id(kVideoStreamId);
     pes_packets_.push_back(std::move(current_processing_pes_));
@@ -154,13 +95,6 @@ bool PesPacketGenerator::PushSample(std::shared_ptr<MediaSample> sample) {
 
   std::vector<uint8_t> aac_frame(sample->data(),
                                  sample->data() + sample->data_size());
-
-  if (encryptor_) {
-    if (!EncryptAacSample(encryptor_.get(), &aac_frame)) {
-      LOG(ERROR) << "Failed to encrypt ADTS AAC.";
-      return false;
-    }
-  }
 
   // TODO(rkuroiwa): ConvertToADTS() makes another copy of aac_frame internally.
   // Optimize copying in this function, possibly by adding a method on
@@ -175,30 +109,6 @@ bool PesPacketGenerator::PushSample(std::shared_ptr<MediaSample> sample) {
   current_processing_pes_->set_stream_id(kAudioStreamId);
   pes_packets_.push_back(std::move(current_processing_pes_));
   return true;
-}
-
-bool PesPacketGenerator::SetEncryptionKey(
-    std::unique_ptr<EncryptionKey> encryption_key) {
-  if (stream_type_ == kStreamVideo) {
-    std::unique_ptr<AesCbcEncryptor> cbc(
-        new AesCbcEncryptor(CbcPaddingScheme::kNoPadding));
-
-    const uint8_t kEncryptedBlocks = 1;
-    const uint8_t kClearBlocks = 9;
-    encryptor_.reset(new AesPatternCryptor(
-        kEncryptedBlocks, kClearBlocks,
-        AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
-        AesCryptor::ConstantIvFlag::kUseConstantIv, std::move(cbc)));
-  } else if (stream_type_ == kStreamAudio) {
-    encryptor_.reset(
-        new AesCbcEncryptor(CbcPaddingScheme::kNoPadding,
-                            AesCryptor::ConstantIvFlag::kUseConstantIv));
-  } else {
-    LOG(ERROR) << "Cannot encrypt stream type: " << stream_type_;
-    return false;
-  }
-
-  return encryptor_->InitializeWithIv(encryption_key->key, encryption_key->iv);
 }
 
 size_t PesPacketGenerator::NumberOfReadyPesPackets() {

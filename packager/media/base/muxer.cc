@@ -8,42 +8,18 @@
 
 #include <algorithm>
 
-#include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
 
 namespace shaka {
 namespace media {
+namespace {
+const bool kInitialEncryptionInfo = true;
+}  // namespace
 
 Muxer::Muxer(const MuxerOptions& options)
-    : options_(options),
-      encryption_key_source_(NULL),
-      max_sd_pixels_(0),
-      max_hd_pixels_(0),
-      max_uhd1_pixels_(0),
-      clear_lead_in_seconds_(0),
-      crypto_period_duration_in_seconds_(0),
-      protection_scheme_(FOURCC_NULL),
-      cancelled_(false),
-      clock_(NULL) {}
+    : options_(options), cancelled_(false), clock_(NULL) {}
 
 Muxer::~Muxer() {}
-
-void Muxer::SetKeySource(KeySource* encryption_key_source,
-                         uint32_t max_sd_pixels,
-                         uint32_t max_hd_pixels,
-                         uint32_t max_uhd1_pixels,
-                         double clear_lead_in_seconds,
-                         double crypto_period_duration_in_seconds,
-                         FourCC protection_scheme) {
-  DCHECK(encryption_key_source);
-  encryption_key_source_ = encryption_key_source;
-  max_sd_pixels_ = max_sd_pixels;
-  max_hd_pixels_ = max_hd_pixels;
-  max_uhd1_pixels_ = max_uhd1_pixels;
-  clear_lead_in_seconds_ = clear_lead_in_seconds;
-  crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
-  protection_scheme_ = protection_scheme;
-}
 
 void Muxer::Cancel() {
   cancelled_ = true;
@@ -63,10 +39,34 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
   switch (stream_data->stream_data_type) {
     case StreamDataType::kStreamInfo:
       streams_.push_back(std::move(stream_data->stream_info));
+      if (muxer_listener_ && streams_.back()->is_encrypted()) {
+        const EncryptionConfig& encryption_config =
+            streams_.back()->encryption_config();
+        muxer_listener_->OnEncryptionInfoReady(
+            kInitialEncryptionInfo, encryption_config.protection_scheme,
+            encryption_config.key_id, encryption_config.constant_iv,
+            encryption_config.key_system_info);
+      }
       return InitializeMuxer();
-    case StreamDataType::kSegmentInfo:
+    case StreamDataType::kSegmentInfo: {
+      auto& segment_info = stream_data->segment_info;
+      if (muxer_listener_) {
+        const EncryptionConfig* encryption_config =
+            segment_info->key_rotation_encryption_config.get();
+        if (encryption_config) {
+          muxer_listener_->OnEncryptionInfoReady(
+              !kInitialEncryptionInfo, encryption_config->protection_scheme,
+              encryption_config->key_id, encryption_config->constant_iv,
+              encryption_config->key_system_info);
+        }
+        if (segment_info->is_encrypted && !encryption_started_) {
+          encryption_started_ = true;
+          muxer_listener_->OnEncryptionStart();
+        }
+      }
       return FinalizeSegment(stream_data->stream_index,
-                             std::move(stream_data->segment_info));
+                             std::move(segment_info));
+    }
     case StreamDataType::kMediaSample:
       return AddSample(stream_data->stream_index,
                        std::move(stream_data->media_sample));

@@ -18,10 +18,11 @@
 namespace shaka {
 namespace media {
 
+struct EncryptionConfig;
 struct MuxerOptions;
+struct SegmentInfo;
 
 class BufferWriter;
-class KeySource;
 class MediaSample;
 class MuxerListener;
 class ProgressListener;
@@ -50,35 +51,10 @@ class Segmenter {
   /// @param streams contains the vector of MediaStreams to be segmented.
   /// @param muxer_listener receives muxer events. Can be NULL.
   /// @param progress_listener receives progress updates. Can be NULL.
-  /// @param encryption_key_source points to the key source which contains
-  ///        the encryption keys. It can be NULL to indicate that no encryption
-  ///        is required.
-  /// @param max_sd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as SD. If the max pixels per frame is
-  ///        no higher than max_sd_pixels, it is SD.
-  /// @param max_hd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as HD. If the max pixels per frame is
-  ///        higher than max_sd_pixels, but no higher than max_hd_pixels,
-  ///        it is HD.
-  /// @param max_uhd1_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as UHD1. If the max pixels per frame is
-  ///        higher than max_hd_pixels, but no higher than max_uhd1_pixels,
-  ///        it is UHD1. Otherwise it is UHD2.
-  /// @param clear_time specifies clear lead duration in seconds.
-  /// @param crypto_period_duration specifies crypto period duration in seconds.
-  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
-  ///        'cbc1', 'cbcs'.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<std::shared_ptr<StreamInfo>>& streams,
                     MuxerListener* muxer_listener,
-                    ProgressListener* progress_listener,
-                    KeySource* encryption_key_source,
-                    uint32_t max_sd_pixels,
-                    uint32_t max_hd_pixels,
-                    uint32_t max_uhd1_pixels,
-                    double clear_lead_in_seconds,
-                    double crypto_period_duration_in_seconds,
-                    FourCC protection_scheme);
+                    ProgressListener* progress_listener);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.
@@ -94,7 +70,8 @@ class Segmenter {
   /// @param stream_id is the zero-based stream index.
   /// @param is_subsegment indicates if it is a subsegment (fragment).
   /// @return OK on success, an error status otherwise.
-  Status FinalizeSegment(size_t stream_id, bool is_subsegment);
+  Status FinalizeSegment(size_t stream_id,
+                         std::shared_ptr<SegmentInfo> segment_info);
 
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.
@@ -137,6 +114,11 @@ class Segmenter {
   virtual Status DoFinalizeSegment() = 0;
 
   uint32_t GetReferenceStreamId();
+
+  void FinalizeFragmentForKeyRotation(
+      size_t stream_id,
+      bool fragment_encrypted,
+      const EncryptionConfig& encryption_config);
 
   const MuxerOptions& options_;
   std::unique_ptr<FileType> ftyp_;

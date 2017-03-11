@@ -744,7 +744,8 @@ bool WvmMediaParser::ParseIndexEntry() {
           stream_id_count_, time_scale, track_duration, video_codec,
           std::string(), video_codec_config.data(), video_codec_config.size(),
           video_width, video_height, pixel_width, pixel_height, trick_play_rate,
-          nalu_length_size, std::string(), true));
+          nalu_length_size, std::string(),
+          decryption_key_source_ ? false : true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(
                                     video_pes_stream_id
@@ -760,7 +761,8 @@ bool WvmMediaParser::ParseIndexEntry() {
           std::string(), audio_codec_config.data(), audio_codec_config.size(),
           kAacSampleSizeBits, num_channels, sampling_frequency,
           0 /* seek preroll */, 0 /* codec delay */, 0 /* max bitrate */,
-          0 /* avg bitrate */, std::string(), true));
+          0 /* avg bitrate */, std::string(),
+          decryption_key_source_ ? false : true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(
                                     audio_pes_stream_id

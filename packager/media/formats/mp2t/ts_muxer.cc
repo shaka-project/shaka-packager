@@ -22,9 +22,7 @@ Status TsMuxer::InitializeMuxer() {
     return Status(error::MUXER_FAILURE, "Cannot handle more than one streams.");
 
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
-  Status status = segmenter_->Initialize(
-      *streams()[0], encryption_key_source(), max_sd_pixels(), max_hd_pixels(),
-      max_uhd1_pixels(), clear_lead_in_seconds());
+  Status status = segmenter_->Initialize(*streams()[0]);
   FireOnMediaStartEvent();
   return status;
 }
@@ -43,6 +41,11 @@ Status TsMuxer::AddSample(size_t stream_id,
 Status TsMuxer::FinalizeSegment(size_t stream_id,
                                 std::shared_ptr<SegmentInfo> segment_info) {
   DCHECK_EQ(stream_id, 0u);
+  if (segment_info->key_rotation_encryption_config) {
+    NOTIMPLEMENTED() << "Key rotation is not implemented for TS.";
+    return Status(error::UNIMPLEMENTED,
+                  "Key rotation is not implemented for TS");
+  }
   return segment_info->is_subsegment
              ? Status::OK
              : segmenter_->FinalizeSegment(segment_info->start_timestamp,

@@ -31,12 +31,7 @@ TsSegmenter::TsSegmenter(const MuxerOptions& options, MuxerListener* listener)
       pes_packet_generator_(new PesPacketGenerator()) {}
 TsSegmenter::~TsSegmenter() {}
 
-Status TsSegmenter::Initialize(const StreamInfo& stream_info,
-                               KeySource* encryption_key_source,
-                               uint32_t max_sd_pixels,
-                               uint32_t max_hd_pixels,
-                               uint32_t max_uhd1_pixels,
-                               double clear_lead_in_seconds) {
+Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
   if (muxer_options_.segment_template.empty())
     return Status(error::MUXER_FAILURE, "Segment template not specified.");
   if (!ts_writer_->Initialize(stream_info))
@@ -44,37 +39,6 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
   if (!pes_packet_generator_->Initialize(stream_info)) {
     return Status(error::MUXER_FAILURE,
                   "Failed to initialize PesPacketGenerator.");
-  }
-
-  if (encryption_key_source) {
-    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
-    const KeySource::TrackType type =
-        GetTrackTypeForEncryption(stream_info, max_sd_pixels,
-                                  max_hd_pixels, max_uhd1_pixels);
-    Status status = encryption_key_source->GetKey(type, encryption_key.get());
-
-    if (encryption_key->iv.empty()) {
-      if (!AesCryptor::GenerateRandomIv(FOURCC_cbcs, &encryption_key->iv)) {
-        return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
-      }
-    }
-    if (!status.ok())
-      return status;
-
-    encryption_key_ = std::move(encryption_key);
-    clear_lead_in_seconds_ = clear_lead_in_seconds;
-
-    if (listener_) {
-      // For now this only happens once, so send true.
-      const bool kIsInitialEncryptionInfo = true;
-      listener_->OnEncryptionInfoReady(
-          kIsInitialEncryptionInfo, FOURCC_cbcs, encryption_key_->key_id,
-          encryption_key_->iv, encryption_key_->key_system_info);
-    }
-
-    status = NotifyEncrypted();
-    if (!status.ok())
-      return status;
   }
 
   timescale_scale_ = kTsTimescale / stream_info.time_scale();
@@ -86,6 +50,9 @@ Status TsSegmenter::Finalize() {
 }
 
 Status TsSegmenter::AddSample(std::shared_ptr<MediaSample> sample) {
+  if (sample->is_encrypted())
+    ts_writer_->SignalEncrypted();
+
   if (!ts_writer_file_opened_ && !sample->is_key_frame())
     LOG(WARNING) << "A segment will start with a non key frame.";
 
@@ -161,21 +128,8 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
                               duration * timescale_scale_, file_size);
     }
     ts_writer_file_opened_ = false;
-    total_duration_in_seconds_ += duration * timescale_scale_ / kTsTimescale;
   }
   current_segment_path_.clear();
-  return NotifyEncrypted();
-}
-
-Status TsSegmenter::NotifyEncrypted() {
-  if (encryption_key_ && total_duration_in_seconds_ >= clear_lead_in_seconds_) {
-    if (listener_)
-      listener_->OnEncryptionStart();
-
-    if (!pes_packet_generator_->SetEncryptionKey(std::move(encryption_key_)))
-      return Status(error::INTERNAL_ERROR, "Failed to set encryption key.");
-    ts_writer_->SignalEncrypted();
-  }
   return Status::OK;
 }
 

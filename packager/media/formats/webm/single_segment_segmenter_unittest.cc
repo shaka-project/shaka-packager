@@ -141,7 +141,7 @@ class SingleSegmentSegmenterTest : public SegmentTestBase {
   void InitializeSegmenter(const MuxerOptions& options) {
     ASSERT_NO_FATAL_FAILURE(
         CreateAndInitializeSegmenter<webm::TwoPassSingleSegmentSegmenter>(
-            options, info_.get(), NULL, &segmenter_));
+            options, info_.get(), &segmenter_));
   }
 
   std::shared_ptr<StreamInfo> info_;

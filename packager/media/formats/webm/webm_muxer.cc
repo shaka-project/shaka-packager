@@ -24,16 +24,10 @@ WebMMuxer::~WebMMuxer() {}
 Status WebMMuxer::InitializeMuxer() {
   CHECK_EQ(streams().size(), 1U);
 
-  if (crypto_period_duration_in_seconds() > 0) {
-    NOTIMPLEMENTED() << "Key rotation is not implemented for WebM";
-    return Status(error::UNIMPLEMENTED,
-                  "Key rotation is not implemented for WebM");
-  }
-
-  if (encryption_key_source() && (protection_scheme() != FOURCC_cenc)) {
-    NOTIMPLEMENTED()
-        << "WebM does not support protection scheme other than 'cenc'.";
-    return Status(error::UNIMPLEMENTED,
+  if (streams()[0]->is_encrypted() &&
+      streams()[0]->encryption_config().protection_scheme != FOURCC_cenc) {
+    LOG(ERROR) << "WebM does not support protection scheme other than 'cenc'.";
+    return Status(error::INVALID_ARGUMENT,
                   "WebM does not support protection scheme other than 'cenc'.");
   }
 
@@ -44,10 +38,7 @@ Status WebMMuxer::InitializeMuxer() {
   }
 
   Status initialized = segmenter_->Initialize(
-      streams()[0].get(), progress_listener(), muxer_listener(),
-      encryption_key_source(), max_sd_pixels(), max_hd_pixels(),
-      max_uhd1_pixels(), clear_lead_in_seconds());
-
+      streams()[0].get(), progress_listener(), muxer_listener());
   if (!initialized.ok())
     return initialized;
 
@@ -78,6 +69,12 @@ Status WebMMuxer::FinalizeSegment(size_t stream_id,
                                   std::shared_ptr<SegmentInfo> segment_info) {
   DCHECK(segmenter_);
   DCHECK_EQ(stream_id, 0u);
+
+  if (segment_info->key_rotation_encryption_config) {
+    NOTIMPLEMENTED() << "Key rotation is not implemented for WebM.";
+    return Status(error::UNIMPLEMENTED,
+                  "Key rotation is not implemented for WebM");
+  }
   return segmenter_->FinalizeSegment(segment_info->start_timestamp,
                                      segment_info->duration,
                                      segment_info->is_subsegment);

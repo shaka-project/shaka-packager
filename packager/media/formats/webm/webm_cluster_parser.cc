@@ -57,8 +57,13 @@ WebMClusterParser::WebMClusterParser(
              true,
              video_default_duration,
              new_sample_cb) {
-  if (decryption_key_source)
+  if (decryption_key_source) {
     decryptor_source_.reset(new DecryptorSource(decryption_key_source));
+    if (audio_stream_info_)
+      audio_stream_info_->set_is_encrypted(false);
+    if (video_stream_info_)
+      video_stream_info_->set_is_encrypted(false);
+  }
   for (WebMTracksParser::TextTracks::const_iterator it = text_tracks.begin();
        it != text_tracks.end();
        ++it) {

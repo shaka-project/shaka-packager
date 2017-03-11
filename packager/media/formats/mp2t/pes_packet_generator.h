@@ -10,8 +10,6 @@
 #include <list>
 #include <memory>
 
-#include "packager/media/base/aes_cryptor.h"
-#include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 
@@ -46,12 +44,6 @@ class PesPacketGenerator {
   /// @return true on success, false otherwise.
   virtual bool PushSample(std::shared_ptr<MediaSample> sample);
 
-  /// Sets the encryption key for encrypting samples.
-  /// @param encryption_key is the key that will be used to encrypt further
-  ///        samples.
-  /// @return true on success, false otherwise.
-  virtual bool SetEncryptionKey(std::unique_ptr<EncryptionKey> encryption_key);
-
   /// @return The number of PES packets that are ready to be consumed.
   virtual size_t NumberOfReadyPesPackets();
 
@@ -82,9 +74,6 @@ class PesPacketGenerator {
   std::unique_ptr<PesPacket> current_processing_pes_;
 
   std::list<std::unique_ptr<PesPacket>> pes_packets_;
-
-  // Current encryption key.
-  std::unique_ptr<AesCryptor> encryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(PesPacketGenerator);
 };

@@ -55,6 +55,7 @@
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
+        '../../crypto/crypto.gyp:crypto',
         '../../codecs/codecs.gyp:codecs',
       ],
     },

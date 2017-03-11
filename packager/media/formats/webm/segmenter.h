@@ -9,7 +9,6 @@
 
 #include <memory>
 #include "packager/media/base/status.h"
-#include "packager/media/formats/webm/encryptor.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/seek_head.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
@@ -20,9 +19,7 @@ namespace media {
 struct MuxerOptions;
 
 class AudioStreamInfo;
-class KeySource;
 class MediaSample;
-class StreamInfo;
 class MuxerListener;
 class ProgressListener;
 class StreamInfo;
@@ -40,30 +37,10 @@ class Segmenter {
   /// Status::OK results in an undefined behavior.
   /// @param info The stream info for the stream being segmented.
   /// @param muxer_listener receives muxer events. Can be NULL.
-  /// @param encryption_key_source points to the key source which contains
-  ///        the encryption keys. It can be NULL to indicate that no encryption
-  ///        is required.
-  /// @param max_sd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as SD. If the max pixels per frame is
-  ///        no higher than max_sd_pixels, it is SD.
-  /// @param max_hd_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as HD. If the max pixels per frame is
-  ///        higher than max_sd_pixels, but no higher than max_hd_pixels,
-  ///        it is HD.
-  /// @param max_uhd1_pixels specifies the threshold to determine whether a video
-  ///        track should be considered as UHD1. If the max pixels per frame is
-  ///        higher than max_hd_pixels, but no higher than max_uhd1_pixels,
-  ///        it is UHD1. Otherwise it is UHD2.
-  /// @param clear_time specifies clear lead duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(StreamInfo* info,
                     ProgressListener* progress_listener,
-                    MuxerListener* muxer_listener,
-                    KeySource* encryption_key_source,
-                    uint32_t max_sd_pixels,
-                    uint32_t max_hd_pixels,
-                    uint32_t max_uhd1_pixels,
-                    double clear_lead_in_seconds);
+                    MuxerListener* muxer_listener);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.
@@ -121,10 +98,10 @@ class Segmenter {
   virtual Status DoFinalize() = 0;
 
  private:
-  Status CreateVideoTrack(VideoStreamInfo* info);
-  Status CreateAudioTrack(AudioStreamInfo* info);
-  Status InitializeEncryptor(KeySource* key_source, uint32_t max_sd_pixels,
-                             uint32_t max_hd_pixels, uint32_t max_uhd1_pixels);
+  Status InitializeAudioTrack(const AudioStreamInfo* info,
+                              mkvmuxer::AudioTrack* track);
+  Status InitializeVideoTrack(const VideoStreamInfo* info,
+                              mkvmuxer::VideoTrack* track);
 
   // Writes the previous frame to the file.
   Status WriteFrame(bool write_duration);
@@ -142,10 +119,6 @@ class Segmenter {
   uint64_t reference_frame_timestamp_ = 0;
 
   const MuxerOptions& options_;
-  std::unique_ptr<Encryptor> encryptor_;
-  double clear_lead_ = 0;
-  // Encryption is enabled only after clear_lead_.
-  bool enable_encryption_ = false;
 
   std::unique_ptr<mkvmuxer::Cluster> cluster_;
   mkvmuxer::Cues cues_;

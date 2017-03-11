@@ -7,63 +7,26 @@
 #ifndef MEDIA_FORMATS_WEBM_ENCRYPTOR_H_
 #define MEDIA_FORMATS_WEBM_ENCRYPTOR_H_
 
-#include <memory>
-#include "packager/base/macros.h"
-#include "packager/media/base/key_source.h"
+#include <vector>
+
 #include "packager/media/base/status.h"
-#include "packager/media/base/stream_info.h"
-#include "packager/media/codecs/vpx_parser.h"
-#include "packager/media/event/muxer_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
 namespace shaka {
 namespace media {
 
-class AesCtrEncryptor;
 class MediaSample;
 
 namespace webm {
 
-/// A helper class used to encrypt WebM frames before being written to the
-/// Cluster.  This can also handle unencrypted frames.
-class Encryptor {
- public:
-  Encryptor();
-  ~Encryptor();
+/// Adds the encryption info with the specified key_id to the given track.
+/// @return OK on success, an error status otherwise.
+Status UpdateTrackForEncryption(const std::vector<uint8_t>& key_id,
+                                mkvmuxer::Track* track);
 
-  /// Initializes the encryptor with the given key source.
-  /// @return OK on success, an error status otherwise.
-  Status Initialize(MuxerListener* muxer_listener,
-                    KeySource::TrackType track_type,
-                    Codec codec,
-                    KeySource* key_source,
-                    bool webm_subsample_encryption);
-
-  /// Adds the encryption info to the given track.  Initialize must be called
-  /// first.
-  /// @return OK on success, an error status otherwise.
-  Status AddTrackInfo(mkvmuxer::Track* track);
-
-  /// Encrypt the data.  This needs to be told whether the current frame will
-  /// be encrypted (e.g. for a clear lead).
-  /// @return OK on success, an error status otherwise.
-  Status EncryptFrame(std::shared_ptr<MediaSample> sample, bool encrypt_frame);
-
- private:
-  // Create the encryptor for the internal encryption key.
-  Status CreateEncryptor(MuxerListener* muxer_listener,
-                         KeySource::TrackType track_type,
-                         Codec codec,
-                         KeySource* key_source,
-                         bool webm_subsample_encryption);
-
- private:
-  std::unique_ptr<EncryptionKey> key_;
-  std::unique_ptr<AesCtrEncryptor> encryptor_;
-  std::unique_ptr<VPxParser> vpx_parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(Encryptor);
-};
+/// Update the frame with signal bytes and encryption information if it is
+/// encrypted.
+void UpdateFrameForEncryption(MediaSample* sample);
 
 }  // namespace webm
 }  // namespace media

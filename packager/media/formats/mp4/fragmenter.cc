@@ -27,17 +27,35 @@ uint64_t GetSeekPreroll(const StreamInfo& stream_info) {
       static_cast<const AudioStreamInfo&>(stream_info);
   return audio_stream_info.seek_preroll_ns();
 }
+
+void NewSampleEncryptionEntry(const DecryptConfig& decrypt_config,
+                              bool use_constant_iv,
+                              TrackFragment* traf) {
+  SampleEncryption& sample_encryption = traf->sample_encryption;
+  SampleEncryptionEntry sample_encryption_entry;
+  if (!use_constant_iv)
+    sample_encryption_entry.initialization_vector = decrypt_config.iv();
+  sample_encryption_entry.subsamples = decrypt_config.subsamples();
+  sample_encryption.sample_encryption_entries.push_back(
+      sample_encryption_entry);
+  traf->auxiliary_size.sample_info_sizes.push_back(
+      sample_encryption_entry.ComputeSize());
+}
+
 }  // namespace
 
-Fragmenter::Fragmenter(std::shared_ptr<StreamInfo> info, TrackFragment* traf)
-    : use_decoding_timestamp_in_timeline_(false),
+Fragmenter::Fragmenter(std::shared_ptr<StreamInfo> stream_info,
+                       TrackFragment* traf)
+    : stream_info_(std::move(stream_info)),
+      use_decoding_timestamp_in_timeline_(false),
       traf_(traf),
-      seek_preroll_(GetSeekPreroll(*info)),
+      seek_preroll_(GetSeekPreroll(*stream_info_)),
       fragment_initialized_(false),
       fragment_finalized_(false),
       fragment_duration_(0),
       earliest_presentation_time_(kInvalidTime),
       first_sap_time_(kInvalidTime) {
+  DCHECK(stream_info_);
   DCHECK(traf);
 }
 
@@ -65,6 +83,12 @@ Status Fragmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   traf_->runs[0].sample_durations.push_back(sample->duration());
   traf_->runs[0].sample_flags.push_back(
       sample->is_key_frame() ? 0 : TrackFragmentHeader::kNonKeySampleMask);
+
+  if (sample->decrypt_config()) {
+    NewSampleEncryptionEntry(
+        *sample->decrypt_config(),
+        !stream_info_->encryption_config().constant_iv.empty(), traf_);
+  }
 
   data_->AppendArray(sample->data(), sample->data_size());
   fragment_duration_ += sample->duration();
@@ -96,11 +120,15 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   traf_->runs.clear();
   traf_->runs.resize(1);
   traf_->runs[0].flags = TrackFragmentRun::kDataOffsetPresentMask;
+  traf_->auxiliary_size.sample_info_sizes.clear();
+  traf_->auxiliary_offset.offsets.clear();
+  traf_->sample_encryption.sample_encryption_entries.clear();
   traf_->sample_group_descriptions.clear();
   traf_->sample_to_groups.clear();
   traf_->header.sample_description_index = 1;  // 1-based.
   traf_->header.flags = TrackFragmentHeader::kDefaultBaseIsMoofMask |
                         TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
+
   fragment_duration_ = 0;
   earliest_presentation_time_ = kInvalidTime;
   first_sap_time_ = kInvalidTime;
@@ -108,7 +136,13 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   return Status::OK;
 }
 
-void Fragmenter::FinalizeFragment() {
+Status Fragmenter::FinalizeFragment() {
+  if (stream_info_->is_encrypted()) {
+    Status status = FinalizeFragmentForEncryption();
+    if (!status.ok())
+      return status;
+  }
+
   // Optimize trun box.
   traf_->runs[0].sample_count =
       static_cast<uint32_t>(traf_->runs[0].sample_sizes.size());
@@ -164,6 +198,7 @@ void Fragmenter::FinalizeFragment() {
 
   fragment_finalized_ = true;
   fragment_initialized_ = false;
+  return Status::OK;
 }
 
 void Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
@@ -179,6 +214,58 @@ void Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
     reference->sap_delta_time = first_sap_time_ - earliest_presentation_time_;
   }
   reference->earliest_presentation_time = earliest_presentation_time_;
+}
+
+Status Fragmenter::FinalizeFragmentForEncryption() {
+  SampleEncryption& sample_encryption = traf_->sample_encryption;
+  if (sample_encryption.sample_encryption_entries.empty()) {
+    // This fragment is not encrypted.
+    // There are two sample description entries, an encrypted entry and a clear
+    // entry, are generated. The 1-based clear entry index is always 2.
+    const uint32_t kClearSampleDescriptionIndex = 2;
+    traf_->header.sample_description_index = kClearSampleDescriptionIndex;
+    return Status::OK;
+  }
+  if (sample_encryption.sample_encryption_entries.size() !=
+      traf_->runs[0].sample_sizes.size()) {
+    LOG(ERROR) << "Partially encrypted segment is not supported";
+    return Status(error::MUXER_FAILURE,
+                  "Partially encrypted segment is not supported.");
+  }
+
+  const SampleEncryptionEntry& sample_encryption_entry =
+      sample_encryption.sample_encryption_entries.front();
+  const bool use_subsample_encryption =
+      !sample_encryption_entry.subsamples.empty();
+  if (use_subsample_encryption)
+    traf_->sample_encryption.flags |= SampleEncryption::kUseSubsampleEncryption;
+  traf_->sample_encryption.iv_size =
+      sample_encryption_entry.initialization_vector.size();
+
+  // The offset will be adjusted in Segmenter after knowing moof size.
+  traf_->auxiliary_offset.offsets.push_back(0);
+
+  // Optimize saiz box.
+  SampleAuxiliaryInformationSize& saiz = traf_->auxiliary_size;
+  saiz.sample_count = static_cast<uint32_t>(saiz.sample_info_sizes.size());
+  DCHECK_EQ(saiz.sample_info_sizes.size(),
+            traf_->sample_encryption.sample_encryption_entries.size());
+  if (!OptimizeSampleEntries(&saiz.sample_info_sizes,
+                             &saiz.default_sample_info_size)) {
+    saiz.default_sample_info_size = 0;
+  }
+
+  // It should only happen with full sample encryption + constant iv, i.e.
+  // 'cbcs' applying to audio.
+  if (saiz.default_sample_info_size == 0 && saiz.sample_info_sizes.empty()) {
+    DCHECK(!use_subsample_encryption);
+    // ISO/IEC 23001-7:2016(E) The sample auxiliary information would then be
+    // empty and should be omitted. Clear saiz and saio boxes so they are not
+    // written.
+    saiz.sample_count = 0;
+    traf_->auxiliary_offset.offsets.clear();
+  }
+  return Status::OK;
 }
 
 bool Fragmenter::StartsWithSAP() {

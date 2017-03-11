@@ -23,6 +23,7 @@ namespace media {
 
 class KeySource;
 struct ChunkingOptions;
+struct EncryptionOptions;
 struct MuxerOptions;
 
 /// Create KeySource based on provided command line options for content
@@ -39,6 +40,9 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource();
 
 /// @return ChunkingOptions from provided command line options.
 ChunkingOptions GetChunkingOptions();
+
+/// @return EncryptionOptions from provided command line options.
+EncryptionOptions GetEncryptionOptions();
 
 /// @return MuxerOptions from provided command line options.
 MuxerOptions GetMuxerOptions();

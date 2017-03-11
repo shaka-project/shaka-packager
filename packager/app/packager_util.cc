@@ -22,6 +22,7 @@
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/chunking/chunking_handler.h"
+#include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_options.h"
 
@@ -35,6 +36,24 @@ DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 
 namespace shaka {
 namespace media {
+namespace {
+
+FourCC GetProtectionScheme(const std::string& protection_scheme) {
+  if (protection_scheme == "cenc") {
+    return FOURCC_cenc;
+  } else if (protection_scheme == "cens") {
+    return FOURCC_cens;
+  } else if (protection_scheme == "cbc1") {
+    return FOURCC_cbc1;
+  } else if (protection_scheme == "cbcs") {
+    return FOURCC_cbcs;
+  } else {
+    LOG(ERROR) << "Unknown protection scheme: " << protection_scheme;
+    return FOURCC_NULL;
+  }
+}
+
+}  // namespace
 
 std::unique_ptr<RequestSigner> CreateSigner() {
   std::unique_ptr<RequestSigner> signer;
@@ -154,6 +173,19 @@ ChunkingOptions GetChunkingOptions() {
   chunking_options.segment_sap_aligned = FLAGS_segment_sap_aligned;
   chunking_options.subsegment_sap_aligned = FLAGS_fragment_sap_aligned;
   return chunking_options;
+}
+
+EncryptionOptions GetEncryptionOptions() {
+  EncryptionOptions encryption_options;
+  encryption_options.clear_lead_in_seconds = FLAGS_clear_lead;
+  encryption_options.protection_scheme =
+      GetProtectionScheme(FLAGS_protection_scheme);
+  encryption_options.max_sd_pixels = FLAGS_max_sd_pixels;
+  encryption_options.max_hd_pixels = FLAGS_max_hd_pixels;
+  encryption_options.max_uhd1_pixels = FLAGS_max_uhd1_pixels;
+  encryption_options.crypto_period_duration_in_seconds =
+      FLAGS_crypto_period_duration;
+  return encryption_options;
 }
 
 MuxerOptions GetMuxerOptions() {

@@ -462,8 +462,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         break;
       }
 
+      // The stream will be decrypted if a |decryptor_source_| is available.
       const bool is_encrypted =
-          entry.sinf.info.track_encryption.default_is_protected == 1;
+          decryptor_source_
+              ? false
+              : entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
       streams.emplace_back(new AudioStreamInfo(
           track->header.track_id, timescale, duration, codec,
@@ -558,8 +561,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         return false;
       }
 
+      // The stream will be decrypted if a |decryptor_source_| is available.
       const bool is_encrypted =
-          entry.sinf.info.track_encryption.default_is_protected == 1;
+          decryptor_source_
+              ? false
+              : entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       std::shared_ptr<VideoStreamInfo> video_stream_info(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,

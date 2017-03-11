@@ -47,14 +47,11 @@ class SegmentTestBase : public ::testing::Test {
   void CreateAndInitializeSegmenter(
       const MuxerOptions& options,
       StreamInfo* info,
-      KeySource* key_source,
       std::unique_ptr<webm::Segmenter>* result) const {
     std::unique_ptr<S> segmenter(new S(options));
 
-    ASSERT_OK(segmenter->Initialize(
-        info, NULL /* progress_listener */, NULL /* muxer_listener */,
-        key_source, 0 /* max_sd_pixels */, 0 /* max_hd_pixels */,
-        0 /* max_uhd1_pixels */, 1 /* clear_lead_in_seconds */));
+    ASSERT_OK(segmenter->Initialize(info, nullptr /* progress_listener */,
+                                    nullptr /* muxer_listener */));
     *result = std::move(segmenter);
   }
 

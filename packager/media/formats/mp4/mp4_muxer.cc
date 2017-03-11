@@ -76,6 +76,29 @@ FourCC CodecToFourCC(Codec codec) {
   }
 }
 
+void GenerateSinf(FourCC old_type,
+                  const EncryptionConfig& encryption_config,
+                  ProtectionSchemeInfo* sinf) {
+  sinf->format.format = old_type;
+
+  DCHECK_NE(encryption_config.protection_scheme, FOURCC_NULL);
+  sinf->type.type = encryption_config.protection_scheme;
+
+  // The version of cenc implemented here. CENC 4.
+  const int kCencSchemeVersion = 0x00010000;
+  sinf->type.version = kCencSchemeVersion;
+
+  auto& track_encryption = sinf->info.track_encryption;
+  track_encryption.default_is_protected = 1;
+  track_encryption.default_crypt_byte_block =
+      encryption_config.crypt_byte_block;
+  track_encryption.default_skip_byte_block = encryption_config.skip_byte_block;
+  track_encryption.default_per_sample_iv_size =
+      encryption_config.per_sample_iv_size;
+  track_encryption.default_constant_iv = encryption_config.constant_iv;
+  track_encryption.default_kid = encryption_config.key_id;
+}
+
 }  // namespace
 
 MP4Muxer::MP4Muxer(const MuxerOptions& options) : Muxer(options) {}
@@ -126,6 +149,14 @@ Status MP4Muxer::InitializeMuxer() {
         NOTIMPLEMENTED() << "Not implemented for stream type: "
                          << streams()[i]->stream_type();
     }
+
+    if (streams()[i]->is_encrypted()) {
+      const auto& key_system_info =
+          streams()[i]->encryption_config().key_system_info;
+      moov->pssh.resize(key_system_info.size());
+      for (size_t j = 0; j < key_system_info.size(); j++)
+        moov->pssh[j].raw_box = key_system_info[j].CreateBox();
+    }
   }
 
   if (options().segment_template.empty()) {
@@ -136,12 +167,8 @@ Status MP4Muxer::InitializeMuxer() {
         new MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov)));
   }
 
-  const Status segmenter_initialized = segmenter_->Initialize(
-      streams(), muxer_listener(), progress_listener(), encryption_key_source(),
-      max_sd_pixels(), max_hd_pixels(), max_uhd1_pixels(),
-      clear_lead_in_seconds(), crypto_period_duration_in_seconds(),
-      protection_scheme());
-
+  const Status segmenter_initialized =
+      segmenter_->Initialize(streams(), muxer_listener(), progress_listener());
   if (!segmenter_initialized.ok())
     return segmenter_initialized;
 
@@ -173,7 +200,7 @@ Status MP4Muxer::FinalizeSegment(size_t stream_id,
   VLOG(3) << "Finalize " << (segment_info->is_subsegment ? "sub" : "")
           << "segment " << segment_info->start_timestamp << " duration "
           << segment_info->duration;
-  return segmenter_->FinalizeSegment(stream_id, segment_info->is_subsegment);
+  return segmenter_->FinalizeSegment(stream_id, std::move(segment_info));
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
@@ -236,6 +263,15 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
       trak->media.information.sample_table.description;
   sample_description.type = kVideo;
   sample_description.video_entries.push_back(video);
+
+  if (video_info->is_encrypted()) {
+    // Add a second entry for clear content.
+    sample_description.video_entries.push_back(video);
+    // Convert the first entry to an encrypted entry.
+    VideoSampleEntry& entry = sample_description.video_entries[0];
+    GenerateSinf(entry.format, video_info->encryption_config(), &entry.sinf);
+    entry.format = FOURCC_encv;
+  }
 }
 
 void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
@@ -288,6 +324,15 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   SampleDescription& sample_description = sample_table.description;
   sample_description.type = kAudio;
   sample_description.audio_entries.push_back(audio);
+
+  if (audio_info->is_encrypted()) {
+    // Add a second entry for clear content.
+    sample_description.audio_entries.push_back(audio);
+    // Convert the first entry to an encrypted entry.
+    AudioSampleEntry& entry = sample_description.audio_entries[0];
+    GenerateSinf(entry.format, audio_info->encryption_config(), &entry.sinf);
+    entry.format = FOURCC_enca;
+  }
 
   // Opus requires at least one sample group description box and at least one
   // sample to group box with grouping type 'roll' within sample table box.

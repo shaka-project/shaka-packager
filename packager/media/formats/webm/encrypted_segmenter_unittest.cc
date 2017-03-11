@@ -6,19 +6,22 @@
 
 #include <gtest/gtest.h>
 #include <memory>
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
 namespace shaka {
 namespace media {
 namespace {
 
-const uint64_t kDuration = 1000;
+const uint64_t kDuration = 1000u;
 const bool kSubsegment = true;
-const std::string kKeyId = "4c6f72656d20697073756d20646f6c6f";
-const std::string kIv = "0123456789012345";
-const std::string kKey = "01234567890123456789012345678901";
-const std::string kPsshData = "";
+const uint8_t kPerSampleIvSize = 8u;
+const uint8_t kKeyId[] = {
+    0x4c, 0x6f, 0x72, 0x65, 0x6d, 0x20, 0x69, 0x70,
+    0x73, 0x75, 0x6d, 0x20, 0x64, 0x6f, 0x6c, 0x6f,
+};
+const uint8_t kIv[] = {
+    0x01, 0x23, 0x45, 0x67, 0x89, 0x01, 0x23, 0x45,
+};
 const uint8_t kBasicSupportData[] = {
   // ID: EBML Header omitted.
   // ID: Segment, Payload Size: 432
@@ -174,7 +177,7 @@ const uint8_t kBasicSupportData[] = {
         // IV:
         0x01, 0x23, 0x45, 0x67, 0x89, 0x01, 0x23, 0x45,
         // Frame Data:
-        0xcc, 0x03, 0xef, 0xc4, 0xf4,
+        0xde, 0xad, 0xbe, 0xef, 0x00,
       // ID: BlockGroup, Payload Size: 24
       0xa0, 0x98,
         // ID: Block, Payload Size: 18
@@ -182,34 +185,37 @@ const uint8_t kBasicSupportData[] = {
           // Signal Byte: Encrypted
           0x01,
           // IV:
-          0x01, 0x23, 0x45, 0x67, 0x89, 0x01, 0x23, 0x46,
+          0x01, 0x23, 0x45, 0x67, 0x89, 0x01, 0x23, 0x45,
           // Frame Data:
-          0xbf, 0x38, 0x72, 0x20, 0xac,
+          0xde, 0xad, 0xbe, 0xef, 0x00,
         // BlockDuration: 1000
         0x9b, 0x82, 0x03, 0xe8,
 };
 
 }  // namespace
 
-class EncrypedSegmenterTest : public SegmentTestBase {
+class EncryptedSegmenterTest : public SegmentTestBase {
  public:
-  EncrypedSegmenterTest() : info_(CreateVideoStreamInfo()) {}
+  EncryptedSegmenterTest() : info_(CreateVideoStreamInfo()) {
+    EncryptionConfig encryption_config;
+    encryption_config.per_sample_iv_size = kPerSampleIvSize;
+    encryption_config.key_id.assign(kKeyId, kKeyId + sizeof(kKeyId));
+    info_->set_is_encrypted(true);
+    info_->set_encryption_config(encryption_config);
+  }
 
  protected:
   void InitializeSegmenter(const MuxerOptions& options) {
-    key_source_ =
-        FixedKeySource::CreateFromHexStrings(kKeyId, kKey, kPsshData, kIv);
     ASSERT_NO_FATAL_FAILURE(
         CreateAndInitializeSegmenter<webm::TwoPassSingleSegmentSegmenter>(
-            options, info_.get(), key_source_.get(), &segmenter_));
+            options, info_.get(), &segmenter_));
   }
 
   std::shared_ptr<StreamInfo> info_;
   std::unique_ptr<webm::Segmenter> segmenter_;
-  std::unique_ptr<KeySource> key_source_;
 };
 
-TEST_F(EncrypedSegmenterTest, BasicSupport) {
+TEST_F(EncryptedSegmenterTest, BasicSupport) {
   MuxerOptions options = CreateMuxerOptions();
   ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
 
@@ -221,6 +227,14 @@ TEST_F(EncrypedSegmenterTest, BasicSupport) {
       ASSERT_OK(segmenter_->FinalizeSegment(0, 3 * kDuration, !kSubsegment));
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
+    if (i >= 3) {
+      sample->set_is_encrypted(true);
+      std::unique_ptr<DecryptConfig> decrypt_config(
+          new DecryptConfig(info_->encryption_config().key_id,
+                            std::vector<uint8_t>(kIv, kIv + sizeof(kIv)),
+                            std::vector<SubsampleEntry>()));
+      sample->set_decrypt_config(std::move(decrypt_config));
+    }
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(

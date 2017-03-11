@@ -33,21 +33,21 @@ class Fragmenter {
   /// @param traf points to a TrackFragment box.
   Fragmenter(std::shared_ptr<StreamInfo> info, TrackFragment* traf);
 
-  virtual ~Fragmenter();
+  ~Fragmenter();
 
   /// Add a sample to the fragmenter.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  virtual Status AddSample(std::shared_ptr<MediaSample> sample);
+  Status AddSample(std::shared_ptr<MediaSample> sample);
 
   /// Initialize the fragment with default data.
   /// @param first_sample_dts specifies the decoding timestamp for the first
   ///        sample for this fragment.
   /// @return OK on success, an error status otherwise.
-  virtual Status InitializeFragment(int64_t first_sample_dts);
+  Status InitializeFragment(int64_t first_sample_dts);
 
   /// Finalize and optimize the fragment.
-  virtual void FinalizeFragment();
+  Status FinalizeFragment();
 
   /// Fill @a reference with current fragment information.
   void GenerateSegmentReference(SegmentReference* reference);
@@ -82,9 +82,11 @@ class Fragmenter {
   bool OptimizeSampleEntries(std::vector<T>* entries, T* default_value);
 
  private:
+  Status FinalizeFragmentForEncryption();
   // Check if the current fragment starts with SAP.
   bool StartsWithSAP();
 
+  std::shared_ptr<StreamInfo> stream_info_;
   bool use_decoding_timestamp_in_timeline_;
   TrackFragment* traf_;
   uint64_t seek_preroll_;

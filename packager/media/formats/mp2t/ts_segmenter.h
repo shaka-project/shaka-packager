@@ -36,15 +36,9 @@ class TsSegmenter {
   ~TsSegmenter();
 
   /// Initialize the object.
-  /// Key rotation is not supported.
   /// @param stream_info is the stream info for the segmenter.
   /// @return OK on success.
-  Status Initialize(const StreamInfo& stream_info,
-                    KeySource* encryption_key_source,
-                    uint32_t max_sd_pixels,
-                    uint32_t max_hd_pixels,
-                    uint32_t max_uhd1_pixels,
-                    double clear_lead_in_seconds);
+  Status Initialize(const StreamInfo& stream_info);
 
   /// Finalize the segmenter.
   /// @return OK on success.
@@ -83,9 +77,6 @@ class TsSegmenter {
   // it will open one. This will not close the file.
   Status WritePesPacketsToFile();
 
-  // If conditions are met, notify objects that the data is encrypted.
-  Status NotifyEncrypted();
-
   const MuxerOptions& muxer_options_;
   MuxerListener* const listener_;
 
@@ -106,14 +97,6 @@ class TsSegmenter {
   // Path of the current segment so that File::GetFileSize() can be used after
   // the segment has been finalized.
   std::string current_segment_path_;
-
-  std::unique_ptr<EncryptionKey> encryption_key_;
-  double clear_lead_in_seconds_ = 0;
-
-  // The total duration of the segments that it has segmented. This only
-  // includes segments that have been finailzed. IOW, this does not count the
-  // current segments duration.
-  double total_duration_in_seconds_ = 0.0;
 
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
 };

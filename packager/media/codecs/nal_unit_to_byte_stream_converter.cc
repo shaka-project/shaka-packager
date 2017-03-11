@@ -164,7 +164,6 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
     size_t sample_size,
     bool is_key_frame,
     std::vector<uint8_t>* output) {
-  LOG(INFO) << "ConvertUnitToByte";
   return ConvertUnitToByteStreamWithSubsamples(
       sample, sample_size, is_key_frame, false, output,
       nullptr);  // Skip subsample update.

@@ -69,6 +69,7 @@
         'cluster_builder.cc',
         'cluster_builder.h',
         'encrypted_segmenter_unittest.cc',
+        'encryptor_unittest.cc',
         'multi_segment_segmenter_unittest.cc',
         'segmenter_test_base.cc',
         'segmenter_test_base.h',

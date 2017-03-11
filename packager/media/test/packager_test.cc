@@ -18,6 +18,7 @@
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/test/status_test_util.h"
 #include "packager/media/chunking/chunking_handler.h"
+#include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -91,6 +92,7 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
   bool ContentsEqual(const std::string& file1, const std::string file2);
 
   ChunkingOptions SetupChunkingOptions();
+  EncryptionOptions SetupEncryptionOptions();
   MuxerOptions SetupMuxerOptions(const std::string& output,
                                  bool single_segment);
   void Remux(const std::string& input,
@@ -139,6 +141,17 @@ ChunkingOptions PackagerTestBasic::SetupChunkingOptions() {
   return options;
 }
 
+EncryptionOptions PackagerTestBasic::SetupEncryptionOptions() {
+  EncryptionOptions options;
+  options.clear_lead_in_seconds = kClearLeadInSeconds;
+  options.protection_scheme = FOURCC_cenc;
+  options.max_sd_pixels = kMaxSDPixels;
+  options.max_hd_pixels = kMaxHDPixels;
+  options.max_uhd1_pixels = kMaxUHD1Pixels;
+  options.crypto_period_duration_in_seconds = kCryptoDurationInSeconds;
+  return options;
+}
+
 void PackagerTestBasic::Remux(const std::string& input,
                               const std::string& video_output,
                               const std::string& audio_output,
@@ -157,17 +170,17 @@ void PackagerTestBasic::Remux(const std::string& input,
         new mp4::MP4Muxer(SetupMuxerOptions(video_output, single_segment)));
     muxer_video->set_clock(&fake_clock_);
 
-    if (enable_encryption) {
-      muxer_video->SetKeySource(encryption_key_source.get(),
-                                kMaxSDPixels, kMaxHDPixels,
-                                kMaxUHD1Pixels, kClearLeadInSeconds,
-                                kCryptoDurationInSeconds, FOURCC_cenc);
-    }
-
     auto chunking_handler =
         std::make_shared<ChunkingHandler>(SetupChunkingOptions());
     ASSERT_OK(demuxer.SetHandler("video", chunking_handler));
-    ASSERT_OK(chunking_handler->SetHandler(0, muxer_video));
+    if (enable_encryption) {
+      auto encryption_handler = std::make_shared<EncryptionHandler>(
+          SetupEncryptionOptions(), encryption_key_source.get());
+      ASSERT_OK(chunking_handler->SetHandler(0, encryption_handler));
+      ASSERT_OK(encryption_handler->SetHandler(0, muxer_video));
+    } else {
+      ASSERT_OK(chunking_handler->SetHandler(0, muxer_video));
+    }
   }
 
   std::shared_ptr<Muxer> muxer_audio;
@@ -176,17 +189,17 @@ void PackagerTestBasic::Remux(const std::string& input,
         new mp4::MP4Muxer(SetupMuxerOptions(audio_output, single_segment)));
     muxer_audio->set_clock(&fake_clock_);
 
-    if (enable_encryption) {
-      muxer_audio->SetKeySource(encryption_key_source.get(),
-                                kMaxSDPixels, kMaxHDPixels,
-                                kMaxUHD1Pixels, kClearLeadInSeconds,
-                                kCryptoDurationInSeconds, FOURCC_cenc);
-    }
-
     auto chunking_handler =
         std::make_shared<ChunkingHandler>(SetupChunkingOptions());
     ASSERT_OK(demuxer.SetHandler("audio", chunking_handler));
-    ASSERT_OK(chunking_handler->SetHandler(0, muxer_audio));
+    if (enable_encryption) {
+      auto encryption_handler = std::make_shared<EncryptionHandler>(
+          SetupEncryptionOptions(), encryption_key_source.get());
+      ASSERT_OK(chunking_handler->SetHandler(0, encryption_handler));
+      ASSERT_OK(encryption_handler->SetHandler(0, muxer_audio));
+    } else {
+      ASSERT_OK(chunking_handler->SetHandler(0, muxer_audio));
+    }
   }
 
   ASSERT_OK(demuxer.Initialize());

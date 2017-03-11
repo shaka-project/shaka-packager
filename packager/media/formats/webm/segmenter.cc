@@ -17,9 +17,14 @@
 #include "packager/media/codecs/vp_codec_configuration_record.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
+#include "packager/media/formats/webm/encryptor.h"
+#include "packager/media/formats/webm/webm_constants.h"
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"
 #include "packager/version/version.h"
+
+using mkvmuxer::AudioTrack;
+using mkvmuxer::VideoTrack;
 
 namespace shaka {
 namespace media {
@@ -35,15 +40,9 @@ Segmenter::~Segmenter() {}
 
 Status Segmenter::Initialize(StreamInfo* info,
                              ProgressListener* progress_listener,
-                             MuxerListener* muxer_listener,
-                             KeySource* encryption_key_source,
-                             uint32_t max_sd_pixels,
-                             uint32_t max_hd_pixels,
-                             uint32_t max_uhd1_pixels,
-                             double clear_lead_in_seconds) {
+                             MuxerListener* muxer_listener) {
   muxer_listener_ = muxer_listener;
   info_ = info;
-  clear_lead_ = clear_lead_in_seconds;
 
   // Use media duration as progress target.
   progress_target_ = info_->duration();
@@ -65,24 +64,26 @@ Status Segmenter::Initialize(StreamInfo* info,
     segment_info_.set_duration(1);
   }
 
-  Status status;
-  if (encryption_key_source) {
-    status = InitializeEncryptor(encryption_key_source,
-                                 max_sd_pixels,
-                                 max_hd_pixels,
-                                 max_uhd1_pixels);
-    if (!status.ok())
-      return status;
-  }
-
   // Create the track info.
+  // The seed is only used to create a UID which we overwrite later.
+  unsigned int seed = 0;
+  std::unique_ptr<mkvmuxer::Track> track;
+  Status status;
   switch (info_->stream_type()) {
-    case kStreamVideo:
-      status = CreateVideoTrack(static_cast<VideoStreamInfo*>(info_));
+    case kStreamVideo: {
+      std::unique_ptr<VideoTrack> video_track(new VideoTrack(&seed));
+      status = InitializeVideoTrack(static_cast<VideoStreamInfo*>(info_),
+                                    video_track.get());
+      track = std::move(video_track);
       break;
-    case kStreamAudio:
-      status = CreateAudioTrack(static_cast<AudioStreamInfo*>(info_));
+    }
+    case kStreamAudio: {
+      std::unique_ptr<AudioTrack> audio_track(new AudioTrack(&seed));
+      status = InitializeAudioTrack(static_cast<AudioStreamInfo*>(info_),
+                                    audio_track.get());
+      track = std::move(audio_track);
       break;
+    }
     default:
       NOTIMPLEMENTED() << "Not implemented for stream type: "
                        << info_->stream_type();
@@ -91,6 +92,20 @@ Status Segmenter::Initialize(StreamInfo* info,
   if (!status.ok())
     return status;
 
+  if (info_->is_encrypted()) {
+    if (info->encryption_config().per_sample_iv_size != kWebMIvSize)
+      return Status(error::MUXER_FAILURE, "Incorrect size WebM encryption IV.");
+    status = UpdateTrackForEncryption(info_->encryption_config().key_id,
+                                      track.get());
+    if (!status.ok())
+      return status;
+  }
+
+  tracks_.AddTrack(track.get(), info_->track_id());
+  // number() is only available after the above instruction.
+  track_id_ = track->number();
+  // |tracks_| owns |track|.
+  track.release();
   return DoInitialize();
 }
 
@@ -126,25 +141,8 @@ Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   if (!status.ok())
     return status;
 
-  // Encrypt the frame.
-  if (encryptor_) {
-    // Don't enable encryption in the middle of a segment, i.e. only at the
-    // first frame of a segment.
-    if (new_segment_ && !enable_encryption_) {
-      if (sample->pts() - first_timestamp_ >=
-          clear_lead_ * info_->time_scale()) {
-        enable_encryption_ = true;
-        if (muxer_listener_)
-          muxer_listener_->OnEncryptionStart();
-      }
-    }
-
-    status = encryptor_->EncryptFrame(sample, enable_encryption_);
-    if (!status.ok()) {
-      LOG(ERROR) << "Error encrypting frame.";
-      return status;
-    }
-  }
+  if (info_->is_encrypted())
+    UpdateFrameForEncryption(sample.get());
 
   new_subsegment_ = false;
   new_segment_ = false;
@@ -242,13 +240,8 @@ void Segmenter::UpdateProgress(uint64_t progress) {
   }
 }
 
-Status Segmenter::CreateVideoTrack(VideoStreamInfo* info) {
-  // The seed is only used to create a UID which we overwrite later.
-  unsigned int seed = 0;
-  mkvmuxer::VideoTrack* track = new mkvmuxer::VideoTrack(&seed);
-  if (!track)
-    return Status(error::INTERNAL_ERROR, "Failed to create video track.");
-
+Status Segmenter::InitializeVideoTrack(const VideoStreamInfo* info,
+                                       VideoTrack* track) {
   if (info->codec() == kCodecVP8) {
     track->set_codec_id(mkvmuxer::Tracks::kVp8CodecId);
   } else if (info->codec() == kCodecVP9) {
@@ -283,22 +276,11 @@ Status Segmenter::CreateVideoTrack(VideoStreamInfo* info) {
   track->set_display_height(info->height());
   track->set_display_width(info->width() * info->pixel_width() /
                            info->pixel_height());
-
-  if (encryptor_)
-    encryptor_->AddTrackInfo(track);
-
-  tracks_.AddTrack(track, info->track_id());
-  track_id_ = track->number();
   return Status::OK;
 }
 
-Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
-  // The seed is only used to create a UID which we overwrite later.
-  unsigned int seed = 0;
-  mkvmuxer::AudioTrack* track = new mkvmuxer::AudioTrack(&seed);
-  if (!track)
-    return Status(error::INTERNAL_ERROR, "Failed to create audio track.");
-
+Status Segmenter::InitializeAudioTrack(const AudioStreamInfo* info,
+                                       AudioTrack* track) {
   if (info->codec() == kCodecOpus) {
     track->set_codec_id(mkvmuxer::Tracks::kOpusCodecId);
   } else if (info->codec() == kCodecVorbis) {
@@ -322,27 +304,7 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
   track->set_channels(info->num_channels());
   track->set_seek_pre_roll(info->seek_preroll_ns());
   track->set_codec_delay(info->codec_delay_ns());
-
-  if (encryptor_)
-    encryptor_->AddTrackInfo(track);
-
-  tracks_.AddTrack(track, info->track_id());
-  track_id_ = track->number();
   return Status::OK;
-}
-
-Status Segmenter::InitializeEncryptor(KeySource* key_source,
-                                      uint32_t max_sd_pixels,
-                                      uint32_t max_hd_pixels,
-                                      uint32_t max_uhd1_pixels) {
-  encryptor_.reset(new Encryptor());
-  const KeySource::TrackType track_type =
-      GetTrackTypeForEncryption(*info_, max_sd_pixels, max_hd_pixels,
-                                max_uhd1_pixels);
-  if (track_type == KeySource::TrackType::TRACK_TYPE_UNKNOWN)
-    return Status::OK;
-  return encryptor_->Initialize(muxer_listener_, track_type, info_->codec(),
-                                key_source, options_.webm_subsample_encryption);
 }
 
 Status Segmenter::WriteFrame(bool write_duration) {

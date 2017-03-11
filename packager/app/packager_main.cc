@@ -35,6 +35,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/chunking/chunking_handler.h"
+#include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
@@ -137,21 +138,6 @@ std::string DetermineTextFileFormat(const std::string& file) {
   return "";
 }
 
-FourCC GetProtectionScheme(const std::string& protection_scheme) {
-  if (protection_scheme == "cenc") {
-    return FOURCC_cenc;
-  } else if (protection_scheme == "cens") {
-    return FOURCC_cens;
-  } else if (protection_scheme == "cbc1") {
-    return FOURCC_cbc1;
-  } else if (protection_scheme == "cbcs") {
-    return FOURCC_cbcs;
-  } else {
-    LOG(ERROR) << "Unknown protection scheme: " << protection_scheme;
-    return FOURCC_NULL;
-  }
-}
-
 }  // namespace
 
 // A fake clock that always return time 0 (epoch). Should only be used for
@@ -237,9 +223,10 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
 
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const ChunkingOptions& chunking_options,
+                     const EncryptionOptions& encryption_options,
                      const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
-                     KeySource* key_source,
+                     KeySource* encryption_key_source,
                      MpdNotifier* mpd_notifier,
                      hls::HlsNotifier* hls_notifier,
                      std::vector<std::unique_ptr<RemuxJob>>* remux_jobs) {
@@ -300,10 +287,11 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       demuxer->set_dump_stream_info(FLAGS_dump_stream_info);
       if (FLAGS_enable_widevine_decryption ||
           FLAGS_enable_fixed_key_decryption) {
-        std::unique_ptr<KeySource> key_source(CreateDecryptionKeySource());
-        if (!key_source)
+        std::unique_ptr<KeySource> decryption_key_source(
+            CreateDecryptionKeySource());
+        if (!decryption_key_source)
           return false;
-        demuxer->SetKeySource(std::move(key_source));
+        demuxer->SetKeySource(std::move(decryption_key_source));
       }
       remux_jobs->emplace_back(new RemuxJob(std::move(demuxer)));
       previous_input = stream_iter->input;
@@ -316,16 +304,6 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     std::shared_ptr<Muxer> muxer(
         CreateOutputMuxer(stream_muxer_options, stream_iter->output_format));
     if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
-
-    if (key_source) {
-      muxer->SetKeySource(key_source,
-                          FLAGS_max_sd_pixels,
-                          FLAGS_max_hd_pixels,
-                          FLAGS_max_uhd1_pixels,
-                          FLAGS_clear_lead,
-                          FLAGS_crypto_period_duration,
-                          GetProtectionScheme(FLAGS_protection_scheme));
-    }
 
     std::unique_ptr<MuxerListener> muxer_listener;
     DCHECK(!(FLAGS_output_media_info && mpd_notifier));
@@ -363,8 +341,26 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (muxer_listener)
       muxer->SetMuxerListener(std::move(muxer_listener));
 
+    Status status;
     auto chunking_handler = std::make_shared<ChunkingHandler>(chunking_options);
-    Status status = chunking_handler->SetHandler(0, std::move(muxer));
+    if (encryption_key_source) {
+      auto new_encryption_options = encryption_options;
+      // Use Sample AES in MPEG2TS.
+      // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
+      // will support CENC in TS in the future.
+      if (stream_iter->output_format == CONTAINER_MPEG2TS) {
+        LOG(INFO) << "Use Apple Sample AES encryption for MPEG2TS.";
+        new_encryption_options.protection_scheme =
+            kAppleSampleAesProtectionScheme;
+      }
+      auto encryption_handler = std::make_shared<EncryptionHandler>(
+          new_encryption_options, encryption_key_source);
+      status.Update(encryption_handler->SetHandler(0, std::move(muxer)));
+      status.Update(
+          chunking_handler->SetHandler(0, std::move(encryption_handler)));
+    } else {
+      status.Update(chunking_handler->SetHandler(0, std::move(muxer)));
+    }
 
     auto* demuxer = remux_jobs->back()->demuxer();
     const std::string& stream_selector = stream_iter->stream_selector;
@@ -415,10 +411,6 @@ Status RunRemuxJobs(const std::vector<std::unique_ptr<RemuxJob>>& remux_jobs) {
 }
 
 bool RunPackager(const StreamDescriptorList& stream_descriptors) {
-  const FourCC protection_scheme = GetProtectionScheme(FLAGS_protection_scheme);
-  if (protection_scheme == FOURCC_NULL)
-    return false;
-
   if (FLAGS_output_media_info && !FLAGS_mpd_output.empty()) {
     NOTIMPLEMENTED() << "ERROR: --output_media_info and --mpd_output do not "
                         "work together.";
@@ -433,6 +425,8 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   }
 
   ChunkingOptions chunking_options = GetChunkingOptions();
+  EncryptionOptions encryption_options = GetEncryptionOptions();
+
   MuxerOptions muxer_options = GetMuxerOptions();
 
   DCHECK(!stream_descriptors.empty());
@@ -461,6 +455,8 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   std::unique_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption ||
       FLAGS_enable_playready_encryption) {
+    if (encryption_options.protection_scheme == FOURCC_NULL)
+      return false;
     encryption_key_source = CreateEncryptionKeySource();
     if (!encryption_key_source)
       return false;
@@ -497,8 +493,8 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 
   std::vector<std::unique_ptr<RemuxJob>> remux_jobs;
   FakeClock fake_clock;
-  if (!CreateRemuxJobs(stream_descriptors, chunking_options, muxer_options,
-                       &fake_clock, encryption_key_source.get(),
+  if (!CreateRemuxJobs(stream_descriptors, chunking_options, encryption_options,
+                       muxer_options, &fake_clock, encryption_key_source.get(),
                        mpd_notifier.get(), hls_notifier.get(), &remux_jobs)) {
     return false;
   }
