@@ -21,6 +21,7 @@ namespace media {
 
 namespace {
 
+const bool kEscapeData = true;
 const uint8_t kNaluStartCode[] = {0x00, 0x00, 0x00, 0x01};
 
 const uint8_t kEmulationPreventionByte = 0x03;
@@ -29,9 +30,15 @@ const uint8_t kAccessUnitDelimiterRbspAnyPrimaryPicType = 0xF0;
 
 void AppendNalu(const Nalu& nalu,
                 int nalu_length_size,
+                bool escape_data,
                 BufferWriter* buffer_writer) {
-  buffer_writer->AppendArray(nalu.data(),
-                             nalu.header_size() + nalu.payload_size());
+  if (escape_data) {
+    EscapeNalByteSequence(nalu.data(), nalu.header_size() + nalu.payload_size(),
+                          buffer_writer);
+  } else {
+    buffer_writer->AppendArray(nalu.data(),
+                               nalu.header_size() + nalu.payload_size());
+  }
 }
 
 void AddAccessUnitDelimiter(BufferWriter* buffer_writer) {
@@ -40,7 +47,7 @@ void AddAccessUnitDelimiter(BufferWriter* buffer_writer) {
   buffer_writer->AppendInt(kAccessUnitDelimiterRbspAnyPrimaryPicType);
 }
 
-bool CheckSubsampleValid(const std::vector<SubsampleEntry>* subsamples,
+bool CheckIsClearNalu(const std::vector<SubsampleEntry>* subsamples,
                          size_t subsample_id,
                          size_t nalu_size,
                          bool* is_nalu_all_clear) {
@@ -133,11 +140,11 @@ bool NalUnitToByteStreamConverter::Initialize(
     const Nalu& nalu = decoder_config.nalu(i);
     if (nalu.type() == Nalu::H264NaluType::H264_SPS) {
       buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
-      AppendNalu(nalu, nalu_length_size_, &buffer_writer);
+      AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
       found_sps = true;
     } else if (nalu.type() == Nalu::H264NaluType::H264_PPS) {
       buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
-      AppendNalu(nalu, nalu_length_size_, &buffer_writer);
+      AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
       found_pps = true;
     }
   }
@@ -157,9 +164,10 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
     size_t sample_size,
     bool is_key_frame,
     std::vector<uint8_t>* output) {
+  LOG(INFO) << "ConvertUnitToByte";
   return ConvertUnitToByteStreamWithSubsamples(
-      sample, sample_size, is_key_frame, output,
-      nullptr);       // Skip subsample update.
+      sample, sample_size, is_key_frame, false, output,
+      nullptr);  // Skip subsample update.
 }
 
 // This ignores all AUD, SPS, and PPS in the sample. Instead uses the data
@@ -168,6 +176,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
     const uint8_t* sample,
     size_t sample_size,
     bool is_key_frame,
+    bool escape_encrypted_nalu,
     std::vector<uint8_t>* output,
     std::vector<SubsampleEntry>* subsamples) {
   if (!sample || sample_size == 0) {
@@ -195,12 +204,12 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
       case Nalu::H264_SPS:
         FALLTHROUGH_INTENDED;
       case Nalu::H264_PPS:
-        if (subsamples) {
+        if (subsamples && !subsamples->empty()) {
           const size_t old_nalu_size =
               nalu_length_size_ + nalu.header_size() + nalu.payload_size();
           bool is_nalu_all_clear;
-          if (!CheckSubsampleValid(subsamples, subsample_id, old_nalu_size,
-                                   &is_nalu_all_clear)) {
+          if (!CheckIsClearNalu(subsamples, subsample_id, old_nalu_size,
+                                &is_nalu_all_clear)) {
             return false;
           }
           if (is_nalu_all_clear) {
@@ -215,15 +224,13 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
         }
         break;
       default:
-        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
-        AppendNalu(nalu, nalu_length_size_, &buffer_writer);
-
-        if (subsamples) {
+        bool escape_data = false;
+        if (subsamples && !subsamples->empty()) {
           const size_t old_nalu_size =
               nalu_length_size_ + nalu.header_size() + nalu.payload_size();
           bool is_nalu_all_clear;
-          if (!CheckSubsampleValid(subsamples, subsample_id, old_nalu_size,
-                                   &is_nalu_all_clear)) {
+          if (!CheckIsClearNalu(subsamples, subsample_id, old_nalu_size,
+                                &is_nalu_all_clear)) {
             return false;
           }
           if (is_nalu_all_clear) {
@@ -231,15 +238,21 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
             DCHECK_LT(old_nalu_size, subsamples->at(subsample_id).clear_bytes);
             subsamples->at(subsample_id).clear_bytes -=
                 static_cast<uint16_t>(old_nalu_size);
-            adjustment += static_cast<int>(old_nalu_size);
+            adjustment += static_cast<int>(old_nalu_size) +
+                          arraysize(kNaluStartCode) - nalu_length_size_;
           } else {
+            if (escape_encrypted_nalu)
+              escape_data = subsamples->at(subsample_id).cipher_bytes != 0;
             // Apply the adjustment on the current subsample, reset the
             // adjustment and move to the next subsample.
-            subsamples->at(subsample_id).clear_bytes += adjustment;
+            subsamples->at(subsample_id).clear_bytes +=
+                adjustment + arraysize(kNaluStartCode) - nalu_length_size_;
             subsample_id++;
             adjustment = 0;
           }
         }
+        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+        AppendNalu(nalu, nalu_length_size_, escape_data, &buffer_writer);
         break;
     }
 

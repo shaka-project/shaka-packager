@@ -49,6 +49,7 @@ class NalUnitToByteStreamConverter {
   /// SAMPLE-AES encryption.
   /// @param sample is the sample to be converted.
   /// @param sample_size is the size of @a sample.
+  /// @param is_key_frame indicates if the sample is a key frame.
   /// @param[out] output is set to the the converted sample, on success.
   /// @return true on success, false otherwise.
   virtual bool ConvertUnitToByteStream(const uint8_t* sample,
@@ -62,14 +63,19 @@ class NalUnitToByteStreamConverter {
   /// SAMPLE-AES encryption.
   /// @param sample is the sample to be converted.
   /// @param sample_size is the size of @a sample.
+  /// @param is_key_frame indicates if the sample is a key frame.
+  /// @param escape_encrypted_nalu indicates whether an encrypted nalu should be
+  ///        escaped. This is needed for Apple Sample AES. Note that
+  ///        |subsamples| on return contains the sizes before escaping.
   /// @param[out] output is set to the the converted sample, on success.
   /// @param[in,out] subsamples has the input subsamples and output updated
-  ///                subsamples, on sucess.
+  ///                subsamples, on success.
   /// @return true on success, false otherwise.
   virtual bool ConvertUnitToByteStreamWithSubsamples(
       const uint8_t* sample,
       size_t sample_size,
       bool is_key_frame,
+      bool escape_encrypted_nalu,
       std::vector<uint8_t>* output,
       std::vector<SubsampleEntry>* subsamples);
 
