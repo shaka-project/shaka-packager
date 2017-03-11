@@ -65,9 +65,9 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t pixel_height_;
   int16_t trick_play_rate_;  // Non-zero for trick-play streams.
 
-  // Specifies the normalized size of the NAL unit length field. Can be 1, 2 or
-  // 4 bytes, or 0 if the size if unknown or the stream is not a AVC stream
-  // (H.264).
+  // Specifies the size of the NAL unit length field. Can be 1, 2 or 4 bytes, or
+  // 0 if the stream is not a NAL structured video stream or if it is an AnnexB
+  // byte stream.
   uint8_t nalu_length_size_;
 
   // Container-specific data used by CDM to generate a license request:

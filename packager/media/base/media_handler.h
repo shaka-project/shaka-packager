@@ -22,7 +22,6 @@ enum class StreamDataType {
   kUnknown,
   kPeriodInfo,
   kStreamInfo,
-  kEncryptionConfig,
   kMediaSample,
   kMediaEvent,
   kSegmentInfo,
@@ -30,13 +29,16 @@ enum class StreamDataType {
 
 // TODO(kqyang): Define these structures.
 struct PeriodInfo {};
-struct EncryptionConfig {};
 struct MediaEvent {};
 struct SegmentInfo {
   bool is_subsegment = false;
   bool is_encrypted = false;
   int64_t start_timestamp = -1;
   int64_t duration = 0;
+  // This is only available if key rotation is enabled. Note that we may have
+  // a |key_rotation_encryption_config| even if the segment is not encrypted,
+  // which is the case for clear lead.
+  std::shared_ptr<EncryptionConfig> key_rotation_encryption_config;
 };
 
 // TODO(kqyang): Should we use protobuf?
@@ -46,7 +48,6 @@ struct StreamData {
 
   std::shared_ptr<PeriodInfo> period_info;
   std::shared_ptr<StreamInfo> stream_info;
-  std::shared_ptr<EncryptionConfig> encryption_config;
   std::shared_ptr<MediaSample> media_sample;
   std::shared_ptr<MediaEvent> media_event;
   std::shared_ptr<SegmentInfo> segment_info;
@@ -126,17 +127,6 @@ class MediaHandler {
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kStreamInfo;
     stream_data->stream_info = std::move(stream_info);
-    return Dispatch(std::move(stream_data));
-  }
-
-  /// Dispatch the encryption config to downstream handlers.
-  Status DispatchEncryptionConfig(
-      size_t stream_index,
-      std::unique_ptr<EncryptionConfig> encryption_config) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kEncryptionConfig;
-    stream_data->encryption_config = std::move(encryption_config);
     return Dispatch(std::move(stream_data));
   }
 

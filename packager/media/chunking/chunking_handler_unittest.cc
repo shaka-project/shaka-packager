@@ -67,23 +67,24 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
                                                kDuration1, kKeyFrame)));
     // One output stream_data except when i == 3, which also has SegmentInfo.
     if (i == 3) {
-      EXPECT_THAT(
-          GetOutputStreamDataVector(),
-          ElementsAre(
-              IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 3, !kIsSubsegment),
-              IsMediaSample(kStreamIndex0, i * kDuration1, kDuration1)));
+      EXPECT_THAT(GetOutputStreamDataVector(),
+                  ElementsAre(IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 3,
+                                            !kIsSubsegment, !kEncrypted),
+                              IsMediaSample(kStreamIndex0, i * kDuration1,
+                                            kDuration1, !kEncrypted)));
     } else {
       EXPECT_THAT(GetOutputStreamDataVector(),
                   ElementsAre(IsMediaSample(kStreamIndex0, i * kDuration1,
-                                            kDuration1)));
+                                            kDuration1, !kEncrypted)));
     }
   }
 
   ClearOutputStreamDataVector();
   ASSERT_OK(OnFlushRequest(kStreamIndex0));
-  EXPECT_THAT(GetOutputStreamDataVector(),
-              ElementsAre(IsSegmentInfo(kStreamIndex0, kDuration1 * 3,
-                                        kDuration1 * 2, !kIsSubsegment)));
+  EXPECT_THAT(
+      GetOutputStreamDataVector(),
+      ElementsAre(IsSegmentInfo(kStreamIndex0, kDuration1 * 3, kDuration1 * 2,
+                                !kIsSubsegment, !kEncrypted)));
 }
 
 TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
@@ -101,13 +102,16 @@ TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
       GetOutputStreamDataVector(),
       ElementsAre(
           IsStreamInfo(kStreamIndex0, kTimeScale0, !kEncrypted),
-          IsMediaSample(kStreamIndex0, 0, kDuration1),
-          IsMediaSample(kStreamIndex0, kDuration1, kDuration1),
-          IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 2, kIsSubsegment),
-          IsMediaSample(kStreamIndex0, 2 * kDuration1, kDuration1),
-          IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 3, !kIsSubsegment),
-          IsMediaSample(kStreamIndex0, 3 * kDuration1, kDuration1),
-          IsMediaSample(kStreamIndex0, 4 * kDuration1, kDuration1)));
+          IsMediaSample(kStreamIndex0, 0, kDuration1, !kEncrypted),
+          IsMediaSample(kStreamIndex0, kDuration1, kDuration1, !kEncrypted),
+          IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 2, kIsSubsegment,
+                        !kEncrypted),
+          IsMediaSample(kStreamIndex0, 2 * kDuration1, kDuration1, !kEncrypted),
+          IsSegmentInfo(kStreamIndex0, 0, kDuration1 * 3, !kIsSubsegment,
+                        !kEncrypted),
+          IsMediaSample(kStreamIndex0, 3 * kDuration1, kDuration1, !kEncrypted),
+          IsMediaSample(kStreamIndex0, 4 * kDuration1, kDuration1,
+                        !kEncrypted)));
 }
 
 TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
@@ -131,22 +135,22 @@ TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
           IsStreamInfo(kStreamIndex0, kTimeScale1, !kEncrypted),
           // The first samples @ kStartTimestamp is discarded - not key frame.
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 2,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           // The next segment boundary 13245 / 1000 != 12645 / 1000.
           IsSegmentInfo(kStreamIndex0, kVideoStartTimestamp + kDuration1,
-                        kDuration1 * 2, !kIsSubsegment),
+                        kDuration1 * 2, !kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 3,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 4,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           // The subsegment has duration kDuration1 * 2 since it can only
           // terminate before key frame.
           IsSegmentInfo(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 3,
-                        kDuration1 * 2, kIsSubsegment),
+                        kDuration1 * 2, kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 5,
-                        kDuration1)));
+                        kDuration1, !kEncrypted)));
 }
 
 TEST_F(ChunkingHandlerTest, AudioAndVideo) {
@@ -182,56 +186,56 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
       ElementsAre(
           // The first samples @ kStartTimestamp is discarded - not key frame.
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0,
-                        kDuration0),
+                        kDuration0, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 2,
-                        kDuration0),
+                        kDuration0, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 2,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 3,
-                        kDuration0),
+                        kDuration0, !kEncrypted),
           // The audio segment is terminated together with video stream.
           IsSegmentInfo(kStreamIndex0, kAudioStartTimestamp + kDuration0,
-                        kDuration0 * 3, !kIsSubsegment),
+                        kDuration0 * 3, !kIsSubsegment, !kEncrypted),
           // The next segment boundary 13245 / 1000 != 12645 / 1000.
           IsSegmentInfo(kStreamIndex1, kVideoStartTimestamp + kDuration1,
-                        kDuration1 * 2, !kIsSubsegment),
+                        kDuration1 * 2, !kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 3,
-                        kDuration1),
+                        kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 4,
-                        kDuration0),
+                        kDuration0, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 4,
-                        kDuration1)));
+                        kDuration1, !kEncrypted)));
   ClearOutputStreamDataVector();
 
   // The side comments below show the equivalent timestamp in video timescale.
   // The audio and video are made ~aligned.
-  ASSERT_OK(Process(GetMediaSampleStreamData(kStreamIndex0,
-                                             kAudioStartTimestamp + kDuration0 * 5,
-                                             kDuration0, true)));  // 13595
-  ASSERT_OK(Process(GetMediaSampleStreamData(kStreamIndex1,
-                                             kVideoStartTimestamp + kDuration1 * 5,
-                                             kDuration1, true)));  // 13845
-  ASSERT_OK(Process(GetMediaSampleStreamData(kStreamIndex0,
-                                             kAudioStartTimestamp + kDuration0 * 6,
-                                             kDuration0, true)));  // 13845
+  ASSERT_OK(Process(GetMediaSampleStreamData(
+      kStreamIndex0, kAudioStartTimestamp + kDuration0 * 5, kDuration0,
+      true)));  // 13595
+  ASSERT_OK(Process(GetMediaSampleStreamData(
+      kStreamIndex1, kVideoStartTimestamp + kDuration1 * 5, kDuration1,
+      true)));  // 13845
+  ASSERT_OK(Process(GetMediaSampleStreamData(
+      kStreamIndex0, kAudioStartTimestamp + kDuration0 * 6, kDuration0,
+      true)));  // 13845
   // This expectation are separated from the expectation above because
   // ElementsAre supports at most 10 elements.
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 5,
-                        kDuration0),
+                        kDuration0, !kEncrypted),
           // Audio is terminated along with video below.
           IsSegmentInfo(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 4,
-                        kDuration0 * 2, kIsSubsegment),
+                        kDuration0 * 2, kIsSubsegment, !kEncrypted),
           // The subsegment has duration kDuration1 * 2 since it can only
           // terminate before key frame.
           IsSegmentInfo(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 3,
-                        kDuration1 * 2, kIsSubsegment),
+                        kDuration1 * 2, kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 5,
-                        kDuration1)));
+                        kDuration1, !kEncrypted)));
 
   ClearOutputStreamDataVector();
   ASSERT_OK(OnFlushRequest(kStreamIndex0));
@@ -239,16 +243,16 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
       GetOutputStreamDataVector(),
       ElementsAre(
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 6,
-                        kDuration0),
+                        kDuration0, !kEncrypted),
           IsSegmentInfo(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 4,
-                        kDuration0 * 3, !kIsSubsegment)));
+                        kDuration0 * 3, !kIsSubsegment, !kEncrypted)));
 
   ClearOutputStreamDataVector();
   ASSERT_OK(OnFlushRequest(kStreamIndex1));
   EXPECT_THAT(GetOutputStreamDataVector(),
-              ElementsAre(IsSegmentInfo(kStreamIndex1,
-                                        kVideoStartTimestamp + kDuration1 * 3,
-                                        kDuration1 * 3, !kIsSubsegment)));
+              ElementsAre(IsSegmentInfo(
+                  kStreamIndex1, kVideoStartTimestamp + kDuration1 * 3,
+                  kDuration1 * 3, !kIsSubsegment, !kEncrypted)));
 
   // Flush again will do nothing.
   ClearOutputStreamDataVector();

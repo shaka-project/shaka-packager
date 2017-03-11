@@ -111,6 +111,21 @@ std::unique_ptr<StreamData> MediaHandlerTestBase::GetMediaSampleStreamData(
   return stream_data;
 }
 
+std::unique_ptr<StreamData> MediaHandlerTestBase::GetSegmentInfoStreamData(
+    int stream_index,
+    int64_t start_timestamp,
+    int64_t duration,
+    bool is_subsegment) {
+  std::unique_ptr<StreamData> stream_data(new StreamData);
+  stream_data->stream_index = stream_index;
+  stream_data->stream_data_type = StreamDataType::kSegmentInfo;
+  stream_data->segment_info.reset(new SegmentInfo);
+  stream_data->segment_info->start_timestamp = start_timestamp;
+  stream_data->segment_info->duration = duration;
+  stream_data->segment_info->is_subsegment = is_subsegment;
+  return stream_data;
+}
+
 void MediaHandlerTestBase::SetUpGraph(int num_inputs,
                                       int num_outputs,
                                       std::shared_ptr<MediaHandler> handler) {

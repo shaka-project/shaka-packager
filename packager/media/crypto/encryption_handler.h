@@ -68,7 +68,8 @@ class EncryptionHandler : public MediaHandler {
   // Processes media sample and encrypts it if needed.
   Status ProcessMediaSample(MediaSample* sample);
 
-  bool CreateEncryptor(EncryptionKey* encryption_key);
+  Status SetupProtectionPattern(StreamType stream_type);
+  bool CreateEncryptor(const EncryptionKey& encryption_key);
   bool EncryptVpxFrame(const std::vector<VPxFrameInfo>& vpx_frames,
                        MediaSample* sample,
                        DecryptConfig* decrypt_config);
@@ -83,26 +84,30 @@ class EncryptionHandler : public MediaHandler {
   const EncryptionOptions encryption_options_;
   KeySource* key_source_ = nullptr;
   KeySource::TrackType track_type_ = KeySource::TRACK_TYPE_UNKNOWN;
+  // Current encryption config and encryptor.
+  std::shared_ptr<EncryptionConfig> encryption_config_;
   std::unique_ptr<AesCryptor> encryptor_;
+  Codec codec_ = kUnknownCodec;
   // Specifies the size of NAL unit length in bytes. Can be 1, 2 or 4 bytes. 0
   // if it is not a NAL structured video.
   uint8_t nalu_length_size_ = 0;
-  Codec video_codec_ = kUnknownCodec;
+  // For Sample AES, 32 bytes for Video and 16 bytes for audio.
+  size_t leading_clear_bytes_size_ = 0;
+  // For Sample AES, 48+1 bytes for video NAL and 16+1 bytes for audio.
+  size_t min_protected_data_size_ = 0;
   // Remaining clear lead in the stream's time scale.
   int64_t remaining_clear_lead_ = 0;
   // Crypto period duration in the stream's time scale.
   uint64_t crypto_period_duration_ = 0;
   // Previous crypto period index if key rotation is enabled.
   int64_t prev_crypto_period_index_ = -1;
-  bool new_segment_ = true;
+  bool check_new_crypto_period_ = false;
 
   // Number of encrypted blocks (16-byte-block) in pattern based encryption.
   uint8_t crypt_byte_block_ = 0;
   /// Number of unencrypted blocks (16-byte-block) in pattern based encryption.
   uint8_t skip_byte_block_ = 0;
 
-  // Current key id.
-  std::vector<uint8_t> key_id_;
   // VPx parser for VPx streams.
   std::unique_ptr<VPxParser> vpx_parser_;
   // Video slice header parser for NAL strucutred streams.

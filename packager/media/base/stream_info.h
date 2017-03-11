@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "packager/media/base/encryption_config.h"
+
 namespace shaka {
 namespace media {
 
@@ -80,6 +82,9 @@ class StreamInfo {
   const std::vector<uint8_t>& codec_config() const { return codec_config_; }
   const std::string& language() const { return language_; }
   bool is_encrypted() const { return is_encrypted_; }
+  const EncryptionConfig& encryption_config() const {
+    return encryption_config_;
+  }
 
   void set_duration(int duration) { duration_ = duration; }
   void set_codec(Codec codec) { codec_ = codec; }
@@ -89,6 +94,9 @@ class StreamInfo {
   }
   void set_language(const std::string& language) { language_ = language; }
   void set_is_encrypted(bool is_encrypted) { is_encrypted_ = is_encrypted; }
+  void set_encryption_config(const EncryptionConfig& encryption_config) {
+    encryption_config_ = encryption_config;
+  }
 
  private:
   // Whether the stream is Audio or Video.
@@ -105,6 +113,7 @@ class StreamInfo {
   // Note that in a potentially encrypted stream, individual buffers
   // can be encrypted or not encrypted.
   bool is_encrypted_;
+  EncryptionConfig encryption_config_;
   // Optional byte data required for some audio/video decoders such as Vorbis
   // codebooks.
   std::vector<uint8_t> codec_config_;

@@ -26,6 +26,11 @@ namespace media {
 namespace {
 const size_t kCencBlockSize = 16u;
 
+// The default KID for key rotation is all 0s.
+const uint8_t kKeyRotationDefaultKeyId[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 // Adds one or more subsamples to |*subsamples|.  This may add more than one
 // if one of the values overflows the integer in the subsample.
 void AddSubsample(uint64_t clear_bytes,
@@ -40,13 +45,6 @@ void AddSubsample(uint64_t clear_bytes,
 
   if (clear_bytes > 0 || cipher_bytes > 0)
     decrypt_config->AddSubsample(clear_bytes, cipher_bytes);
-}
-
-Codec GetVideoCodec(const StreamInfo& stream_info) {
-  if (stream_info.stream_type() != kStreamVideo) return kUnknownCodec;
-  const VideoStreamInfo& video_stream_info =
-      static_cast<const VideoStreamInfo&>(stream_info);
-  return video_stream_info.codec();
 }
 
 uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
@@ -104,15 +102,21 @@ Status EncryptionHandler::Process(std::unique_ptr<StreamData> stream_data) {
     case StreamDataType::kStreamInfo:
       status = ProcessStreamInfo(stream_data->stream_info.get());
       break;
-    case StreamDataType::kSegmentInfo:
-      if (!stream_data->segment_info->is_subsegment) {
-        new_segment_ = true;
+    case StreamDataType::kSegmentInfo: {
+      SegmentInfo* segment_info = stream_data->segment_info.get();
+      segment_info->is_encrypted = remaining_clear_lead_ <= 0;
+
+      const bool key_rotation_enabled = crypto_period_duration_ != 0;
+      if (key_rotation_enabled)
+        segment_info->key_rotation_encryption_config = encryption_config_;
+      if (!segment_info->is_subsegment) {
+        if (key_rotation_enabled)
+          check_new_crypto_period_ = true;
         if (remaining_clear_lead_ > 0)
-          remaining_clear_lead_ -= stream_data->segment_info->duration;
-        else
-          stream_data->segment_info->is_encrypted = true;
+          remaining_clear_lead_ -= segment_info->duration;
       }
       break;
+    }
     case StreamDataType::kMediaSample:
       status = ProcessMediaSample(stream_data->media_sample.get());
       break;
@@ -135,12 +139,12 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
   crypto_period_duration_ =
       encryption_options_.crypto_period_duration_in_seconds *
       stream_info->time_scale();
+  codec_ = stream_info->codec();
   nalu_length_size_ = GetNaluLengthSize(*stream_info);
-  video_codec_ = GetVideoCodec(*stream_info);
   track_type_ = GetTrackTypeForEncryption(
       *stream_info, encryption_options_.max_sd_pixels,
       encryption_options_.max_hd_pixels, encryption_options_.max_uhd1_pixels);
-  switch (video_codec_) {
+  switch (codec_) {
     case kCodecVP9:
       vpx_parser_.reset(new VP9Parser);
       break;
@@ -155,41 +159,43 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
     default:
       // Other codecs should have nalu length size == 0.
       if (nalu_length_size_ > 0) {
-        LOG(WARNING) << "Unknown video codec '" << video_codec_ << "'";
+        LOG(WARNING) << "Unknown video codec '" << codec_ << "'";
         return Status(error::ENCRYPTION_FAILURE, "Unknown video codec.");
       }
   }
-  if (header_parser_ &&
-      !header_parser_->Initialize(stream_info->codec_config())) {
-    return Status(error::ENCRYPTION_FAILURE, "Fail to read SPS and PPS data.");
+  if (header_parser_) {
+    CHECK_NE(nalu_length_size_, 0u) << "AnnexB stream is not supported yet";
+    if (!header_parser_->Initialize(stream_info->codec_config())) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "Fail to read SPS and PPS data.");
+    }
   }
 
-  // Set up protection pattern.
-  if (encryption_options_.protection_scheme == FOURCC_cbcs ||
-      encryption_options_.protection_scheme == FOURCC_cens) {
-    if (stream_info->stream_type() == kStreamVideo) {
-      // Use 1:9 pattern for video.
-      crypt_byte_block_ = 1u;
-      skip_byte_block_ = 9u;
-    } else {
-      // Tracks other than video are protected using whole-block full-sample
-      // encryption, which is essentially a pattern of 1:0. Note that this may
-      // not be the same as the non-pattern based encryption counterparts, e.g.
-      // in 'cens' for full sample encryption, the whole sample is encrypted up
-      // to the last 16-byte boundary, see 23001-7:2016(E) 9.7; while in 'cenc'
-      // for full sample encryption, the last partial 16-byte block is also
-      // encrypted, see 23001-7:2016(E) 9.4.2. Another difference is the use of
-      // constant iv.
-      crypt_byte_block_ = 1u;
-      skip_byte_block_ = 0u;
-    }
+  Status status = SetupProtectionPattern(stream_info->stream_type());
+  if (!status.ok())
+    return status;
+
+  EncryptionKey encryption_key;
+  const bool key_rotation_enabled = crypto_period_duration_ != 0;
+  if (key_rotation_enabled) {
+    check_new_crypto_period_ = true;
+    // Setup dummy key id and key to signal encryption for key rotation.
+    encryption_key.key_id.assign(
+        kKeyRotationDefaultKeyId,
+        kKeyRotationDefaultKeyId + sizeof(kKeyRotationDefaultKeyId));
+    // The key is not really used to encrypt any data. It is there just for
+    // convenience.
+    encryption_key.key = encryption_key.key_id;
   } else {
-    // Not using pattern encryption.
-    crypt_byte_block_ = 0u;
-    skip_byte_block_ = 0u;
+    status = key_source_->GetKey(track_type_, &encryption_key);
+    if (!status.ok())
+      return status;
   }
+  if (!CreateEncryptor(encryption_key))
+    return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
 
   stream_info->set_is_encrypted(true);
+  stream_info->set_encryption_config(*encryption_config_);
   return Status::OK;
 }
 
@@ -202,59 +208,122 @@ Status EncryptionHandler::ProcessMediaSample(MediaSample* sample) {
       !vpx_parser_->Parse(sample->data(), sample->data_size(), &vpx_frames)) {
     return Status(error::ENCRYPTION_FAILURE, "Failed to parse vpx frame.");
   }
+
+  // Need to setup the encryptor for new segments even if this segment does not
+  // need to be encrypted, so we can signal encryption metadata earlier to
+  // allows clients to prefetch the keys.
+  if (check_new_crypto_period_) {
+    const int64_t current_crypto_period_index =
+        sample->dts() / crypto_period_duration_;
+    if (current_crypto_period_index != prev_crypto_period_index_) {
+      EncryptionKey encryption_key;
+      Status status = key_source_->GetCryptoPeriodKey(
+          current_crypto_period_index, track_type_, &encryption_key);
+      if (!status.ok())
+        return status;
+      if (!CreateEncryptor(encryption_key))
+        return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
+    }
+    check_new_crypto_period_ = false;
+  }
+
   if (remaining_clear_lead_ > 0)
     return Status::OK;
 
-  Status status;
-  if (new_segment_) {
-    EncryptionKey encryption_key;
-    bool create_encryptor = false;
-    if (crypto_period_duration_ != 0) {
-      const int64_t current_crypto_period_index =
-          sample->dts() / crypto_period_duration_;
-      if (current_crypto_period_index != prev_crypto_period_index_) {
-        status = key_source_->GetCryptoPeriodKey(current_crypto_period_index,
-                                                 track_type_, &encryption_key);
-        if (!status.ok())
-          return status;
-        create_encryptor = true;
-      }
-    } else if (!encryptor_) {
-      status = key_source_->GetKey(track_type_, &encryption_key);
-      if (!status.ok())
-        return status;
-      create_encryptor = true;
-    }
-    if (create_encryptor && !CreateEncryptor(&encryption_key))
-      return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
-    new_segment_ = false;
-  }
-
   std::unique_ptr<DecryptConfig> decrypt_config(new DecryptConfig(
-      key_id_, encryptor_->iv(), std::vector<SubsampleEntry>(),
-      encryption_options_.protection_scheme, crypt_byte_block_,
-      skip_byte_block_));
+      encryption_config_->key_id, encryptor_->iv(),
+      std::vector<SubsampleEntry>(), encryption_options_.protection_scheme,
+      crypt_byte_block_, skip_byte_block_));
+  bool result = true;
   if (vpx_parser_) {
-    if (!EncryptVpxFrame(vpx_frames, sample, decrypt_config.get()))
-      return Status(error::ENCRYPTION_FAILURE, "Failed to encrypt VPx frames.");
-    DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(), sample->data_size());
-  } else if (nalu_length_size_ > 0) {
-    if (!EncryptNalFrame(sample, decrypt_config.get())) {
-      return Status(error::ENCRYPTION_FAILURE,
-                    "Failed to encrypt video frames.");
+    result = EncryptVpxFrame(vpx_frames, sample, decrypt_config.get());
+    if (result) {
+      DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
+                sample->data_size());
     }
-    DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(), sample->data_size());
+  } else if (header_parser_) {
+    result = EncryptNalFrame(sample, decrypt_config.get());
+    if (result) {
+      DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
+                sample->data_size());
+    }
   } else {
     DCHECK_LE(crypt_byte_block_, 1u);
     DCHECK_EQ(skip_byte_block_, 0u);
-    EncryptBytes(sample->writable_data(), sample->data_size());
+    if (sample->data_size() > leading_clear_bytes_size_) {
+      EncryptBytes(sample->writable_data() + leading_clear_bytes_size_,
+                   sample->data_size() - leading_clear_bytes_size_);
+    }
   }
+  if (!result)
+    return Status(error::ENCRYPTION_FAILURE, "Failed to encrypt samples.");
+  sample->set_is_encrypted(true);
   sample->set_decrypt_config(std::move(decrypt_config));
   encryptor_->UpdateIv();
   return Status::OK;
 }
 
-bool EncryptionHandler::CreateEncryptor(EncryptionKey* encryption_key) {
+Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
+  switch (encryption_options_.protection_scheme) {
+    case kAppleSampleAesProtectionScheme: {
+      const size_t kH264LeadingClearBytesSize = 32u;
+      const size_t kSmallNalUnitSize = 32u + 16u;
+      const size_t kAudioLeadingClearBytesSize = 16u;
+      switch (codec_) {
+        case kCodecH264:
+          // Apple Sample AES uses 1:9 pattern for video.
+          crypt_byte_block_ = 1u;
+          skip_byte_block_ = 9u;
+          leading_clear_bytes_size_ = kH264LeadingClearBytesSize;
+          min_protected_data_size_ = kSmallNalUnitSize + 1u;
+          break;
+        case kCodecAAC:
+          FALLTHROUGH_INTENDED;
+        case kCodecAC3:
+          // Audio is whole sample encrypted. We could not use a
+          // crypto_byte_block_ of 1 here as if there is one crypto block
+          // remaining, it need not be encrypted for video but it needs to be
+          // encrypted for audio.
+          crypt_byte_block_ = 0u;
+          skip_byte_block_ = 0u;
+          leading_clear_bytes_size_ = kAudioLeadingClearBytesSize;
+          min_protected_data_size_ = leading_clear_bytes_size_ + 1u;
+          break;
+        default:
+          return Status(error::ENCRYPTION_FAILURE,
+                        "Only AAC/AC3 and H264 are supported in Sample AES.");
+      }
+      break;
+    }
+    case FOURCC_cbcs:
+      FALLTHROUGH_INTENDED;
+    case FOURCC_cens:
+      if (stream_type == kStreamVideo) {
+        // Use 1:9 pattern for video.
+        crypt_byte_block_ = 1u;
+        skip_byte_block_ = 9u;
+      } else {
+        // Tracks other than video are protected using whole-block full-sample
+        // encryption, which is essentially a pattern of 1:0. Note that this may
+        // not be the same as the non-pattern based encryption counterparts,
+        // e.g. in 'cens' for full sample encryption, the whole sample is
+        // encrypted up to the last 16-byte boundary, see 23001-7:2016(E) 9.7;
+        // while in 'cenc' for full sample encryption, the last partial 16-byte
+        // block is also encrypted, see 23001-7:2016(E) 9.4.2. Another
+        // difference is the use of constant iv.
+        crypt_byte_block_ = 1u;
+        skip_byte_block_ = 0u;
+      }
+      break;
+    default:
+      // Not using pattern encryption.
+      crypt_byte_block_ = 0u;
+      skip_byte_block_ = 0u;
+  }
+  return Status::OK;
+}
+
+bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   std::unique_ptr<AesCryptor> encryptor;
   switch (encryption_options_.protection_scheme) {
     case FOURCC_cenc:
@@ -277,22 +346,47 @@ bool EncryptionHandler::CreateEncryptor(EncryptionKey* encryption_key) {
           AesCryptor::kUseConstantIv,
           std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
       break;
+    case kAppleSampleAesProtectionScheme:
+      if (crypt_byte_block_ == 0 && skip_byte_block_ == 0) {
+        encryptor.reset(
+            new AesCbcEncryptor(kNoPadding, AesCryptor::kUseConstantIv));
+      } else {
+        encryptor.reset(new AesPatternCryptor(
+            crypt_byte_block_, skip_byte_block_,
+            AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
+            AesCryptor::kUseConstantIv,
+            std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
+      }
+      break;
     default:
       LOG(ERROR) << "Unsupported protection scheme.";
       return false;
   }
 
-  if (encryption_key->iv.empty()) {
+  std::vector<uint8_t> iv = encryption_key.iv;
+  if (iv.empty()) {
     if (!AesCryptor::GenerateRandomIv(encryption_options_.protection_scheme,
-                                      &encryption_key->iv)) {
+                                      &iv)) {
       LOG(ERROR) << "Failed to generate random iv.";
       return false;
     }
   }
   const bool initialized =
-      encryptor->InitializeWithIv(encryption_key->key, encryption_key->iv);
+      encryptor->InitializeWithIv(encryption_key.key, iv);
   encryptor_ = std::move(encryptor);
-  key_id_ = encryption_key->key_id;
+
+  encryption_config_.reset(new EncryptionConfig);
+  encryption_config_->protection_scheme = encryption_options_.protection_scheme;
+  encryption_config_->crypt_byte_block = crypt_byte_block_;
+  encryption_config_->skip_byte_block = skip_byte_block_;
+  if (encryptor_->use_constant_iv()) {
+    encryption_config_->per_sample_iv_size = 0;
+    encryption_config_->constant_iv = iv;
+  } else {
+    encryption_config_->per_sample_iv_size = iv.size();
+  }
+  encryption_config_->key_id = encryption_key.key_id;
+  encryption_config_->key_system_info = encryption_key.key_system_info;
   return initialized;
 }
 
@@ -301,7 +395,6 @@ bool EncryptionHandler::EncryptVpxFrame(
     MediaSample* sample,
     DecryptConfig* decrypt_config) {
   uint8_t* data = sample->writable_data();
-  const bool is_superframe = vpx_frames.size() > 1;
   for (const VPxFrameInfo& frame : vpx_frames) {
     uint16_t clear_bytes =
         static_cast<uint16_t>(frame.uncompressed_header_size);
@@ -326,6 +419,7 @@ bool EncryptionHandler::EncryptVpxFrame(
     data += frame.frame_size;
   }
   // Add subsample for the superframe index if exists.
+  const bool is_superframe = vpx_frames.size() > 1;
   if (is_superframe) {
     size_t index_size = sample->data() + sample->data_size() - data;
     DCHECK_LE(index_size, 2 + vpx_frames.size() * 4);
@@ -339,9 +433,11 @@ bool EncryptionHandler::EncryptVpxFrame(
 
 bool EncryptionHandler::EncryptNalFrame(MediaSample* sample,
                                         DecryptConfig* decrypt_config) {
+  DCHECK_NE(nalu_length_size_, 0u);
+  DCHECK(header_parser_);
   const Nalu::CodecType nalu_type =
-      (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1) ? Nalu::kH265
-                                                                 : Nalu::kH264;
+      (codec_ == kCodecHVC1 || codec_ == kCodecHEV1) ? Nalu::kH265
+                                                     : Nalu::kH264;
   NaluReader reader(nalu_type, nalu_length_size_, sample->writable_data(),
                     sample->data_size());
 
@@ -352,20 +448,21 @@ bool EncryptionHandler::EncryptNalFrame(MediaSample* sample,
   Nalu nalu;
   NaluReader::Result result;
   while ((result = reader.Advance(&nalu)) == NaluReader::kOk) {
-    if (nalu.is_video_slice()) {
-      // For video-slice NAL units, encrypt the video slice.  This skips
-      // the frame header.  If this is an unrecognized codec, the whole NAL unit
-      // will be encrypted.
-      const int64_t video_slice_header_size =
-          header_parser_ ? header_parser_->GetHeaderSize(nalu) : 0;
-      if (video_slice_header_size < 0) {
-        LOG(ERROR) << "Failed to read slice header.";
-        return false;
+    const uint64_t nalu_total_size = nalu.header_size() + nalu.payload_size();
+    if (nalu.is_video_slice() && nalu_total_size >= min_protected_data_size_) {
+      uint64_t current_clear_bytes = leading_clear_bytes_size_;
+      if (current_clear_bytes == 0) {
+        // For video-slice NAL units, encrypt the video slice.  This skips
+        // the frame header.
+        const int64_t video_slice_header_size =
+            header_parser_->GetHeaderSize(nalu);
+        if (video_slice_header_size < 0) {
+          LOG(ERROR) << "Failed to read slice header.";
+          return false;
+        }
+        current_clear_bytes = nalu.header_size() + video_slice_header_size;
       }
-
-      uint64_t current_clear_bytes =
-          nalu.header_size() + video_slice_header_size;
-      uint64_t cipher_bytes = nalu.payload_size() - video_slice_header_size;
+      uint64_t cipher_bytes = nalu_total_size - current_clear_bytes;
 
       // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
       // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
@@ -385,9 +482,8 @@ bool EncryptionHandler::EncryptNalFrame(MediaSample* sample,
           cipher_bytes, decrypt_config);
       accumulated_clear_bytes = 0;
     } else {
-      // For non-video-slice NAL units, don't encrypt.
-      accumulated_clear_bytes +=
-          nalu_length_size_ + nalu.header_size() + nalu.payload_size();
+      // For non-video-slice or small NAL units, don't encrypt.
+      accumulated_clear_bytes += nalu_length_size_ + nalu_total_size;
     }
   }
   if (result != NaluReader::kEOStream) {

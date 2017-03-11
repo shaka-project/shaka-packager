@@ -25,6 +25,8 @@ enum FourCC : uint32_t {
   FOURCC_avcC = 0x61766343,
   FOURCC_bloc = 0x626C6F63,
   FOURCC_cbc1 = 0x63626331,
+  // This is a fake protection scheme fourcc code to indicate Apple Sample AES.
+  FOURCC_cbca = 0x63626361,
   FOURCC_cbcs = 0x63626373,
   FOURCC_cenc = 0x63656e63,
   FOURCC_cens = 0x63656e73,
@@ -120,8 +122,8 @@ enum FourCC : uint32_t {
   FOURCC_trex = 0x74726578,
   FOURCC_trun = 0x7472756e,
   FOURCC_udta = 0x75647461,
-  FOURCC_url  = 0x75726c20,  // "url "
-  FOURCC_urn  = 0x75726e20,  // "urn "
+  FOURCC_url = 0x75726c20,  // "url "
+  FOURCC_urn = 0x75726e20,  // "urn "
   FOURCC_uuid = 0x75756964,
   FOURCC_vide = 0x76696465,
   FOURCC_vlab = 0x766c6162,
@@ -141,6 +143,8 @@ enum FourCC : uint32_t {
   FOURCC_zach = 0x7A616368,
   FOURCC_zacp = 0x7A616370,
 };
+
+const FourCC kAppleSampleAesProtectionScheme = FOURCC_cbca;
 
 const inline std::string FourCCToString(FourCC fourcc) {
   char buf[5];
