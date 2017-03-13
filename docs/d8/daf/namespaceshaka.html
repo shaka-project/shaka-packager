@@ -169,12 +169,12 @@ Functions</h2></td></tr>
 <tr class="separator:a54fadd9c7ef14b39cd0355a5c269c772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3cbb360c0dcaacc5667676af885008"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#ade3cbb360c0dcaacc5667676af885008">ValidateWidevineCryptoFlags</a> ()</td></tr>
 <tr class="separator:ade3cbb360c0dcaacc5667676af885008"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66e7e156c1f83435fb6c130803e48f62"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">TempFilePath</a> (const std::string &amp;temp_dir, std::string *temp_file_path)</td></tr>
-<tr class="separator:a66e7e156c1f83435fb6c130803e48f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f657931280fdf63cae2ed8a8f891288"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a5f657931280fdf63cae2ed8a8f891288">LanguageToShortestForm</a> (const std::string &amp;language)</td></tr>
 <tr class="separator:a5f657931280fdf63cae2ed8a8f891288"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05a31cd741e2ee18f1399284e921e527"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a05a31cd741e2ee18f1399284e921e527">LanguageToISO_639_2</a> (const std::string &amp;language)</td></tr>
 <tr class="separator:a05a31cd741e2ee18f1399284e921e527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66e7e156c1f83435fb6c130803e48f62"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">TempFilePath</a> (const std::string &amp;temp_dir, std::string *temp_file_path)</td></tr>
+<tr class="separator:a66e7e156c1f83435fb6c130803e48f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e940cda37fa0dbefef3b3cc9c802ab8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">WriteMpdToFile</a> (const std::string &amp;output_path, <a class="el" href="../../dc/da1/classshaka_1_1MpdBuilder.html">MpdBuilder</a> *mpd_builder)</td></tr>
 <tr class="separator:a7e940cda37fa0dbefef3b3cc9c802ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea880937da26d677ff6a48c0219d090"><td class="memItemLeft" align="right" valign="top">ContentType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">GetContentType</a> (const MediaInfo &amp;media_info)</td></tr>
@@ -420,7 +420,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 </div><div class="memdoc">
 <p>Convert a language tag to a 3-letter ISO-639-2 code, as required by the ISO BMFF spec. The input is assumed to be a valid ISO-639-2 or ISO-639-1 language code. Regions and variants are not supported. </p>
 
-<p>Definition at line <a class="el" href="../../d1/d72/language__utils_8cc_source.html#l00112">112</a> of file <a class="el" href="../../d1/d72/language__utils_8cc_source.html">language_utils.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d72/language__utils_8cc_source.html#l00117">117</a> of file <a class="el" href="../../d1/d72/language__utils_8cc_source.html">language_utils.cc</a>.</p>
 
 </div>
 </div>
@@ -437,7 +437,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Convert a language tag to its shortest form, as required by RFC 5646 indicated in the MPD spec. Assumes the input is a valid ISO-639-2 or ISO-639-1 language tag. Regions and variants are not supported. </p>
+<p>Convert a language tag to its shortest form, as required by RFC 5646 indicated in the MPD and HLS specs. Assumes the input is a valid ISO-639-2 or ISO-639-1 language tag, or an empty string. Regions and variants are preserved in the conversion. </p>
 
 <p>Definition at line <a class="el" href="../../d1/d72/language__utils_8cc_source.html#l00089">89</a> of file <a class="el" href="../../d1/d72/language__utils_8cc_source.html">language_utils.cc</a>.</p>
 
@@ -658,7 +658,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 8 2017 19:28:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 13 2017 23:19:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
