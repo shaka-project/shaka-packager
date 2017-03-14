@@ -296,7 +296,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       remux_jobs->emplace_back(new RemuxJob(std::move(demuxer)));
       previous_input = stream_iter->input;
       // Skip setting up muxers if output is not needed.
-      if (stream_iter->output.empty())
+      if (stream_iter->output.empty() && stream_iter->segment_template.empty())
         continue;
     }
     DCHECK(!remux_jobs->empty());

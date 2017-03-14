@@ -119,7 +119,7 @@ TEST_F(MediaPlaylistTest, WriteToFile) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:0\n"
@@ -176,7 +176,7 @@ TEST_F(MediaPlaylistTest, SetTargetDuration) {
   EXPECT_TRUE(media_playlist_.SetTargetDuration(20));
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:20\n"
@@ -204,7 +204,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithSegments) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:30\n"
@@ -235,7 +235,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfo) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:30\n"
@@ -269,7 +269,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:30\n"
@@ -302,7 +302,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithClearLead) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
@@ -336,7 +336,7 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
 
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
+      "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:30\n"
@@ -368,6 +368,36 @@ TEST_F(MediaPlaylistTest, GetLanguage) {
   media_info.mutable_audio_info()->set_language("apa");
   ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
   EXPECT_EQ("apa", media_playlist_.GetLanguage());  // no short form exists
+}
+
+TEST_F(MediaPlaylistTest, InitSegment) {
+  valid_video_media_info_.set_reference_time_scale(90000);
+  valid_video_media_info_.set_init_segment_name("init_segment.mp4");
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
+
+  // 10 seconds.
+  media_playlist_.AddSegment("file1.mp4", 900000, 1000000);
+  // 30 seconds.
+  media_playlist_.AddSegment("file2.mp4", 2700000, 5000000);
+
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/google/shaka-packager version test\n"
+      "#EXT-X-TARGETDURATION:30\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-MAP:URI=\"init_segment.mp4\"\n"
+      "#EXTINF:10.000,\n"
+      "file1.mp4\n"
+      "#EXTINF:30.000,\n"
+      "file2.mp4\n"
+      "#EXT-X-ENDLIST\n";
+
+  MockFile file;
+  EXPECT_CALL(file,
+              Write(MatchesString(kExpectedOutput), kExpectedOutput.size()))
+      .WillOnce(ReturnArg<1>());
+  EXPECT_TRUE(media_playlist_.WriteToFile(&file));
 }
 
 }  // namespace hls

@@ -32,6 +32,39 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
+std::string CreatePlaylistHeader(
+    const std::string& init_segment_name,
+    uint32_t target_duration,
+    MediaPlaylist::MediaPlaylistType type) {
+  const std::string version = GetPackagerVersion();
+  std::string version_line;
+  if (!version.empty()) {
+    version_line =
+        base::StringPrintf("## Generated with %s version %s\n",
+                           GetPackagerProjectUrl().c_str(), version.c_str());
+  }
+
+  // 6 is required for EXT-X-MAP without EXT-X-I-FRAMES-ONLY.
+  std::string header = base::StringPrintf(
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "%s"
+      "#EXT-X-TARGETDURATION:%d\n",
+      version_line.c_str(), target_duration);
+
+  if (type == MediaPlaylist::MediaPlaylistType::kVod) {
+    header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
+  }
+
+  // Put EXT-X-MAP at the end since the rest of the playlist is about the
+  // segment and key info.
+  if (!init_segment_name.empty()) {
+    header += "#EXT-X-MAP:URI=\"" + init_segment_name + "\"\n";
+  }
+
+  return header;
+}
+
 class SegmentInfoEntry : public HlsEntry {
  public:
   SegmentInfoEntry(const std::string& file_name, double duration);
@@ -266,24 +299,8 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
-  const std::string version = GetPackagerVersion();
-  std::string version_line;
-  if (!version.empty()) {
-    version_line =
-        base::StringPrintf("## Generated with %s version %s\n",
-                           GetPackagerProjectUrl().c_str(), version.c_str());
-  }
-
-  // KEYFORMAT and KEYFORMATVERSIONS on EXT-X-KEY requires 5 or above.
-  std::string header = base::StringPrintf(
-      "#EXTM3U\n"
-      "#EXT-X-VERSION:5\n"
-      "%s"
-      "#EXT-X-TARGETDURATION:%d\n",
-      version_line.c_str(), target_duration_);
-  if (type_ == MediaPlaylistType::kVod) {
-    header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
-  }
+  std::string header = CreatePlaylistHeader(media_info_.init_segment_name(),
+                                            target_duration_, type_);
 
   std::string body;
   if (!entries_.empty()) {

@@ -187,12 +187,15 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
                    << "' ignored. TS muxer does not support initialization "
                       "segment generation.";
     }
-    // For convenience, set descriptor.output to descriptor.segment_template. It
-    // is only used for flag checking in variuos places.
-    descriptor.output = descriptor.segment_template;
   }
 
-  if (!FLAGS_dump_stream_info && descriptor.output.empty()) {
+  // For TS output, segment template is sufficient, and does not require an
+  // output entry.
+  const bool output_specified =
+      !descriptor.output.empty() ||
+      (descriptor.output_format == CONTAINER_MPEG2TS &&
+       !descriptor.segment_template.empty());
+  if (!FLAGS_dump_stream_info && !output_specified) {
     LOG(ERROR) << "Stream output not specified.";
     return false;
   }
