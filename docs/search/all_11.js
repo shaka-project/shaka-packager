@@ -8,7 +8,7 @@ var searchData=
   ['templatefilename',['TemplateFileName',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afa2cdde90c04bf69301a9589faa7efd9',1,'shaka::media::SegmentTestBase']]],
   ['textsampleentry',['TextSampleEntry',['../d7/dc3/structshaka_1_1media_1_1mp4_1_1TextSampleEntry.html',1,'shaka::media::mp4']]],
   ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html',1,'shaka::media']]],
-  ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3cc97869179c6e1f845ee84ba630048f',1,'shaka::media::TextStreamInfo']]],
+  ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3e759066195689154ef2a8cf2825ea4b',1,'shaka::media::TextStreamInfo']]],
   ['texttrack',['TextTrack',['../d4/d0b/classshaka_1_1media_1_1TextTrack.html',1,'shaka::media']]],
   ['texttrackconfig',['TextTrackConfig',['../de/db3/classshaka_1_1media_1_1TextTrackConfig.html',1,'shaka::media']]],
   ['threadediofile',['ThreadedIoFile',['../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html',1,'shaka::media']]],

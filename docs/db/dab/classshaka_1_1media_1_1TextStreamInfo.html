@@ -105,8 +105,8 @@ Inheritance diagram for shaka::media::TextStreamInfo:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3cc97869179c6e1f845ee84ba630048f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3cc97869179c6e1f845ee84ba630048f">TextStreamInfo</a> (int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;codec_config, uint16_t width, uint16_t height, const std::string &amp;language)</td></tr>
-<tr class="separator:a3cc97869179c6e1f845ee84ba630048f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e759066195689154ef2a8cf2825ea4b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3e759066195689154ef2a8cf2825ea4b">TextStreamInfo</a> (int track_id, uint32_t time_scale, uint64_t duration, Codec codec, const std::string &amp;codec_string, const std::string &amp;codec_config, uint16_t width, uint16_t height, const std::string &amp;language)</td></tr>
+<tr class="separator:a3e759066195689154ef2a8cf2825ea4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab40aed17c046e639efde04a2075e25a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#ab40aed17c046e639efde04a2075e25a8">IsValidConfig</a> () const override</td></tr>
 <tr class="separator:ab40aed17c046e639efde04a2075e25a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a218aa26b26f8a6784acff7817d825606"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a218aa26b26f8a6784acff7817d825606"></a>
@@ -171,7 +171,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_encrypted</b> 
 <div class="textblock">
 <p>Definition at line <a class="el" href="../../da/d2a/text__stream__info_8h_source.html#l00017">17</a> of file <a class="el" href="../../da/d2a/text__stream__info_8h_source.html">text_stream_info.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a3cc97869179c6e1f845ee84ba630048f"></a>
+<a class="anchor" id="a3e759066195689154ef2a8cf2825ea4b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -192,6 +192,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_encrypted</b> 
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
           <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Codec&#160;</td>
+          <td class="paramname"><em>codec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -236,7 +242,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_encrypted</b> 
     <tr><td class="paramname">track_id</td><td>is the track ID of this stream. </td></tr>
     <tr><td class="paramname">time_scale</td><td>is the time scale of this stream. </td></tr>
     <tr><td class="paramname">duration</td><td>is the duration of this stream. </td></tr>
-    <tr><td class="paramname">codec_string</td><td>is the codec. </td></tr>
+    <tr><td class="paramname">codec</td><td>is the media codec. </td></tr>
+    <tr><td class="paramname">codec_string</td><td>is the codec in string format. </td></tr>
     <tr><td class="paramname">codec_config</td><td>is configuration for this text stream. This could be the metadata that applies to all the samples of this stream. This may be empty. </td></tr>
     <tr><td class="paramname">width</td><td>of the text. This may be 0. </td></tr>
     <tr><td class="paramname">height</td><td>of the text. This may be 0. </td></tr>
@@ -274,7 +281,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_encrypted</b> 
 
 <p>Implements <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#a6e5c5ade77b7bcf0b7822de568695dc8">shaka::media::StreamInfo</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d16/text__stream__info_8cc_source.html#l00026">26</a> of file <a class="el" href="../../d6/d16/text__stream__info_8cc_source.html">text_stream_info.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d16/text__stream__info_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d6/d16/text__stream__info_8cc_source.html">text_stream_info.cc</a>.</p>
 
 </div>
 </div>
@@ -285,7 +292,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_encrypted</b> 
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 13 2017 23:19:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 15 2017 20:48:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
