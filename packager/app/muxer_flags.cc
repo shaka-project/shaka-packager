@@ -41,3 +41,6 @@ DEFINE_string(temp_dir,
               "",
               "Specify a directory in which to store temporary (intermediate) "
               " files. Used only if single_segment=true.");
+DEFINE_bool(mp4_include_pssh_in_stream,
+            true,
+            "MP4 only: include pssh in the encrypted stream.");

@@ -463,8 +463,12 @@ bool EncryptionHandler::EncryptNalFrame(MediaSample* sample,
       // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
       // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
       // avoid partial blocks in Subsamples.
+      // CMAF requires 'cenc' scheme BytesOfProtectedData SHALL be a multiple
+      // of 16 bytes; while 'cbcs' scheme BytesOfProtectedData SHALL start on
+      // the first byte of video data following the slice header.
       if (encryption_options_.protection_scheme == FOURCC_cbc1 ||
-          encryption_options_.protection_scheme == FOURCC_cens) {
+          encryption_options_.protection_scheme == FOURCC_cens ||
+          encryption_options_.protection_scheme == FOURCC_cenc) {
         const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
         current_clear_bytes += misalign_bytes;
         cipher_bytes -= misalign_bytes;

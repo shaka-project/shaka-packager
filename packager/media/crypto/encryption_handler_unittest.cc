@@ -237,7 +237,8 @@ class EncryptionHandlerEncryptionTest
       subsamples.emplace_back(static_cast<uint16_t>(kSubsampleSize3), 0u);
     } else {
       if (codec_ == kCodecVP9 || protection_scheme_ == FOURCC_cbc1 ||
-          protection_scheme_ == FOURCC_cens) {
+          protection_scheme_ == FOURCC_cens ||
+          protection_scheme_ == FOURCC_cenc) {
         // Align the encrypted bytes to multiple of 16 bytes.
         subsamples.emplace_back(static_cast<uint16_t>(kAlignedClearSize1),
                                 static_cast<uint32_t>(kAlignedCipherSize1));

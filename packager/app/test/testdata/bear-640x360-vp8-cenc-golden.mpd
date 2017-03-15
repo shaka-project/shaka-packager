@@ -7,10 +7,10 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="340983" codecs="vp08.00.00.08.01.01.00.00" mimeType="video/mp4" sar="1:1">
+      <Representation id="0" bandwidth="341006" codecs="vp08.00.00.08.01.01.00.00" mimeType="video/mp4" sar="1:1">
         <BaseURL>output_video.mp4</BaseURL>
-        <SegmentBase indexRange="1019-1086" timescale="1000000">
-          <Initialization range="0-1018"/>
+        <SegmentBase indexRange="1027-1094" timescale="1000000">
+          <Initialization range="0-1026"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

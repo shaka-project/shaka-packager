@@ -50,6 +50,12 @@ struct MuxerOptions {
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
   uint32_t bandwidth = 0;
+
+  // MP4 only: include pssh in the encrypted stream. CMAF recommends carrying
+  // license acquisition information in the manifest and not duplicate the
+  // information in the stream. (This is not a hard requirement so we are still
+  // CMAF compatible even if pssh is included in the stream.)
+  bool mp4_include_pssh_in_stream = true;
 };
 
 }  // namespace media

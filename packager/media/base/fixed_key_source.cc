@@ -103,6 +103,11 @@ std::unique_ptr<FixedKeySource> FixedKeySource::CreateFromHexStrings(
   if (!base::HexStringToBytes(key_hex, &encryption_key->key)) {
     LOG(ERROR) << "Cannot parse key_hex " << key_hex;
     return std::unique_ptr<FixedKeySource>();
+  } else if (encryption_key->key.size() != 16) {
+    // CENC only supports AES-128, i.e. 16 bytes.
+    LOG(ERROR) << "Invalid key size '" << encryption_key->key.size()
+               << "', must be 16 bytes.";
+    return std::unique_ptr<FixedKeySource>();
   }
 
   std::vector<uint8_t> pssh_boxes;

@@ -42,11 +42,7 @@ Segmenter::Segmenter(const MuxerOptions& options,
       moov_(std::move(moov)),
       moof_(new MovieFragment()),
       fragment_buffer_(new BufferWriter()),
-      sidx_(new SegmentIndex()),
-      progress_listener_(NULL),
-      progress_target_(0),
-      accumulated_progress_(0),
-      sample_duration_(0u) {}
+      sidx_(new SegmentIndex()) {}
 
 Segmenter::~Segmenter() {}
 
@@ -61,6 +57,7 @@ Status Segmenter::Initialize(
 
   moof_->tracks.resize(streams.size());
   fragmenters_.resize(streams.size());
+  stream_durations_.resize(streams.size());
 
   for (uint32_t i = 0; i < streams.size(); ++i) {
     moof_->tracks[i].header.track_id = i + 1;
@@ -101,20 +98,17 @@ Status Segmenter::Initialize(
 }
 
 Status Segmenter::Finalize() {
-  // Set tracks and moov durations.
-  // Note that the updated moov box will be written to output file for VOD case
-  // only.
-  for (std::vector<Track>::iterator track = moov_->tracks.begin();
-       track != moov_->tracks.end();
-       ++track) {
-    track->header.duration = Rescale(track->media.header.duration,
-                                     track->media.header.timescale,
-                                     moov_->header.timescale);
-    if (track->header.duration > moov_->header.duration)
-      moov_->header.duration = track->header.duration;
+  // Set movie duration. Note that the duration in mvhd, tkhd, mdhd should not
+  // be touched, i.e. kept at 0. The updated moov box will be written to output
+  // file for VOD case only.
+  moov_->extends.header.fragment_duration = 0;
+  for (size_t i = 0; i < stream_durations_.size(); ++i) {
+    uint64_t duration =
+        Rescale(stream_durations_[i], moov_->tracks[i].media.header.timescale,
+                moov_->header.timescale);
+    if (duration > moov_->extends.header.fragment_duration)
+      moov_->extends.header.fragment_duration = duration;
   }
-  moov_->extends.header.fragment_duration = moov_->header.duration;
-
   return DoFinalize();
 }
 
@@ -139,7 +133,7 @@ Status Segmenter::AddSample(size_t stream_id,
 
   if (sample_duration_ == 0)
     sample_duration_ = sample->duration();
-  moov_->tracks[stream_id].media.header.duration += sample->duration();
+  stream_durations_[stream_id] += sample->duration();
   return Status::OK;
 }
 
@@ -220,12 +214,12 @@ uint32_t Segmenter::GetReferenceTimeScale() const {
 }
 
 double Segmenter::GetDuration() const {
-  if (moov_->header.timescale == 0) {
+  uint64_t duration = moov_->extends.header.fragment_duration;
+  if (duration == 0) {
     // Handling the case where this is not properly initialized.
     return 0.0;
   }
-
-  return static_cast<double>(moov_->header.duration) / moov_->header.timescale;
+  return static_cast<double>(duration) / moov_->header.timescale;
 }
 
 void Segmenter::UpdateProgress(uint64_t progress) {
@@ -258,11 +252,16 @@ void Segmenter::FinalizeFragmentForKeyRotation(
     size_t stream_id,
     bool fragment_encrypted,
     const EncryptionConfig& encryption_config) {
-  const std::vector<ProtectionSystemSpecificInfo>& system_info =
-      encryption_config.key_system_info;
-  moof_->pssh.resize(system_info.size());
-  for (size_t i = 0; i < system_info.size(); i++)
-    moof_->pssh[i].raw_box = system_info[i].CreateBox();
+  if (options_.mp4_include_pssh_in_stream) {
+    const std::vector<ProtectionSystemSpecificInfo>& system_info =
+        encryption_config.key_system_info;
+    moof_->pssh.resize(system_info.size());
+    for (size_t i = 0; i < system_info.size(); i++)
+      moof_->pssh[i].raw_box = system_info[i].CreateBox();
+  } else {
+    LOG(WARNING)
+        << "Key rotation and no pssh in stream may not work well together.";
+  }
 
   // Skip the following steps if the current fragment is not going to be
   // encrypted. 'pssh' box needs to be included in the fragment, which is

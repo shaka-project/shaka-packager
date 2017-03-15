@@ -1,4 +1,4 @@
-bandwidth: 129139
+bandwidth: 129162
 audio_info {
   codec: "mp4a.40.2"
   sampling_frequency: 44100
@@ -8,11 +8,11 @@ audio_info {
 }
 init_range {
   begin: 0
-  end: 958
+  end: 966
 }
 index_range {
-  begin: 959
-  end: 1026
+  begin: 967
+  end: 1034
 }
 media_file_name: "place_holder"
 media_duration_seconds: 2.7631745

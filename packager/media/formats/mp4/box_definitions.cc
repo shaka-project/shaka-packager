@@ -562,7 +562,7 @@ TrackHeader::TrackHeader()
       volume(-1),
       width(0),
       height(0) {
-  flags = kTrackEnabled | kTrackInMovie;
+  flags = kTrackEnabled | kTrackInMovie | kTrackInPreview;
 }
 TrackHeader::~TrackHeader() {}
 FourCC TrackHeader::BoxType() const { return FOURCC_tkhd; }
@@ -2219,16 +2219,17 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&header) &&
-         buffer->TryReadWriteChild(&metadata) &&
-         buffer->TryReadWriteChild(&extends));
+         buffer->TryReadWriteChild(&metadata));
   if (buffer->Reading()) {
     BoxReader* reader = buffer->reader();
     DCHECK(reader);
     RCHECK(reader->ReadChildren(&tracks) &&
+           reader->TryReadChild(&extends) &&
            reader->TryReadChildren(&pssh));
   } else {
     for (uint32_t i = 0; i < tracks.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&tracks[i]));
+    RCHECK(buffer->TryReadWriteChild(&extends));
     for (uint32_t i = 0; i < pssh.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&pssh[i]));
   }

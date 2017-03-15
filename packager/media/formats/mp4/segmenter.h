@@ -127,11 +127,12 @@ class Segmenter {
   std::unique_ptr<BufferWriter> fragment_buffer_;
   std::unique_ptr<SegmentIndex> sidx_;
   std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
-  MuxerListener* muxer_listener_;
-  ProgressListener* progress_listener_;
-  uint64_t progress_target_;
-  uint64_t accumulated_progress_;
-  uint32_t sample_duration_;
+  MuxerListener* muxer_listener_ = nullptr;
+  ProgressListener* progress_listener_ = nullptr;
+  uint64_t progress_target_ = 0u;
+  uint64_t accumulated_progress_ = 0u;
+  uint32_t sample_duration_ = 0u;
+  std::vector<uint64_t> stream_durations_;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

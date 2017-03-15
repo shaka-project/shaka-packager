@@ -193,6 +193,7 @@ EncryptionOptions GetEncryptionOptions() {
 MuxerOptions GetMuxerOptions() {
   MuxerOptions muxer_options;
   muxer_options.num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
+  muxer_options.mp4_include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
   if (FLAGS_mp4_use_decoding_timestamp_in_timeline) {
     LOG(WARNING) << "Flag --mp4_use_decoding_timestamp_in_timeline is set. "
                     "Note that it is a temporary hack to workaround Chromium "

@@ -115,15 +115,27 @@ Status MP4Muxer::InitializeMuxer() {
   std::unique_ptr<FileType> ftyp(new FileType);
   std::unique_ptr<Movie> moov(new Movie);
 
-  ftyp->major_brand = FOURCC_dash;
-  ftyp->compatible_brands.push_back(FOURCC_iso6);
+  ftyp->major_brand = FOURCC_isom;
+  ftyp->compatible_brands.push_back(FOURCC_iso8);
   ftyp->compatible_brands.push_back(FOURCC_mp41);
-  if (streams().size() == 1 && streams()[0]->stream_type() == kStreamVideo) {
-    const FourCC codec_fourcc = CodecToFourCC(
-        streams()[0]->codec(), static_cast<VideoStreamInfo*>(streams()[0].get())
-                                   ->h26x_stream_format());
-    if (codec_fourcc != FOURCC_NULL)
-      ftyp->compatible_brands.push_back(codec_fourcc);
+  ftyp->compatible_brands.push_back(FOURCC_dash);
+
+  if (streams().size() == 1) {
+    FourCC codec_fourcc = FOURCC_NULL;
+    if (streams()[0]->stream_type() == kStreamVideo) {
+      codec_fourcc =
+          CodecToFourCC(streams()[0]->codec(),
+                        static_cast<VideoStreamInfo*>(streams()[0].get())
+                            ->h26x_stream_format());
+      if (codec_fourcc != FOURCC_NULL)
+        ftyp->compatible_brands.push_back(codec_fourcc);
+    }
+
+    // CMAF allows only one track/stream per file.
+    // CMAF requires single initialization switching for AVC3/HEV1, which is not
+    // supported yet.
+    if (codec_fourcc != FOURCC_avc3 && codec_fourcc != FOURCC_hev1)
+      ftyp->compatible_brands.push_back(FOURCC_cmfc);
   }
 
   moov->header.creation_time = IsoTimeNow();
@@ -160,7 +172,7 @@ Status MP4Muxer::InitializeMuxer() {
                          << streams()[i]->stream_type();
     }
 
-    if (streams()[i]->is_encrypted()) {
+    if (streams()[i]->is_encrypted() && options().mp4_include_pssh_in_stream) {
       const auto& key_system_info =
           streams()[i]->encryption_config().key_system_info;
       moov->pssh.resize(key_system_info.size());

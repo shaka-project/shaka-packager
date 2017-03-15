@@ -187,6 +187,16 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
+  def testPackageWithEncryptionAndNoPsshInStream(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(encryption=True, include_pssh_in_stream=False))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-no-pssh-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-no-pssh-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-no-pssh-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
   def testPackageWithEncryptionCbc1(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
@@ -432,6 +442,19 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffLiveMpdGold(self.mpd_output,
                           'bear-640x360-av-live-cenc-rotation-golden.mpd')
 
+  def testPackageWithLiveProfileAndKeyRotationAndNoPsshInStream(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'], live=True),
+        self._GetFlags(
+            encryption=True, key_rotation=True, include_pssh_in_stream=False))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-live-cenc-rotation-no-pssh-golden')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-live-cenc-rotation-no-pssh-golden')
+    self._DiffLiveMpdGold(
+        self.mpd_output,
+        'bear-640x360-av-live-cenc-rotation-no-pssh-golden.mpd')
+
   def testPackageWithLiveProfileAndKeyRotationAndNonDashIfIop(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], live=True),
@@ -550,6 +573,7 @@ class PackagerAppTest(unittest.TestCase):
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
+                include_pssh_in_stream=True,
                 dash_if_iop=True,
                 output_media_info=False,
                 output_hls=False,
@@ -586,6 +610,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if key_rotation:
       flags.append('--crypto_period_duration=1')
+
+    if not include_pssh_in_stream:
+      flags.append('--mp4_include_pssh_in_stream=false')
 
     if not dash_if_iop:
       flags.append('--generate_dash_if_iop_compliant_mpd=false')

@@ -30,6 +30,9 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
   // Use the same brands for styp as ftyp.
   styp_->major_brand = Segmenter::ftyp()->major_brand;
   styp_->compatible_brands = Segmenter::ftyp()->compatible_brands;
+  // Replace 'cmfc' with 'cmfs' for CMAF segments compatibility.
+  std::replace(styp_->compatible_brands.begin(), styp_->compatible_brands.end(),
+               FOURCC_cmfc, FOURCC_cmfs);
 }
 
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
