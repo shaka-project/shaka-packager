@@ -139,7 +139,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="comment">// The video stream is treated as the main stream. If there is only one</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="comment">// stream, it is the main stream.</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">bool</span> is_main_stream =</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          main_stream_index_ == -1 &amp;&amp;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;          main_stream_index_ == kInvalidStreamIndex &amp;&amp;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;          (stream_data-&gt;stream_info-&gt;stream_type() == kStreamVideo ||</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;           num_input_streams() == 1);</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keywordflow">if</span> (is_main_stream) {</div>
@@ -159,7 +159,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      VLOG(3) &lt;&lt; <span class="stringliteral">&quot;Drop existing segment info.&quot;</span>;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordflow">return</span> Status::OK;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">case</span> StreamDataType::kMediaSample: {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">int</span> stream_index = stream_data-&gt;stream_index;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">size_t</span> stream_index = stream_data-&gt;stream_index;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      DCHECK_NE(time_scales_[stream_index], 0u)</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;kStreamInfo should arrive before kMediaSample&quot;</span>;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordflow">if</span> (stream_index != main_stream_index_) {</div>
@@ -200,7 +200,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca">Dispatch</a>(std::move(stream_data));</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno"><a class="line" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a87d573b0142a7574a6d93cddcbdd92c4">  114</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a87d573b0142a7574a6d93cddcbdd92c4">ChunkingHandler::OnFlushRequest</a>(<span class="keywordtype">int</span> input_stream_index) {</div>
+<div class="line"><a name="l00114"></a><span class="lineno"><a class="line" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#ab526bd53e4d49d7209f01d9b10b9ab52">  114</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#ab526bd53e4d49d7209f01d9b10b9ab52">ChunkingHandler::OnFlushRequest</a>(<span class="keywordtype">size_t</span> input_stream_index) {</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keywordflow">if</span> (segment_info_[input_stream_index]) {</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">if</span> (input_stream_index != main_stream_index_) {</div>
@@ -212,13 +212,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">if</span> (segment_info-&gt;start_timestamp != -1) {</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      segment_info-&gt;duration = last_sample_end_timestamps_[input_stream_index] -</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                               segment_info-&gt;start_timestamp;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      status = <a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">DispatchSegmentInfo</a>(input_stream_index, std::move(segment_info));</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      status = <a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a505c70d5e911e45ebcabcce09e2658f9">DispatchSegmentInfo</a>(input_stream_index, std::move(segment_info));</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <span class="keywordflow">if</span> (!status.ok())</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    }</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  }</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> output_stream_index = input_stream_index;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a12bf0d7f548d971c709c8644461dc9d3">FlushDownstream</a>(output_stream_index);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ad5001bf12073101a949b062943769f5b">FlushDownstream</a>(output_stream_index);</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ChunkingHandler::ProcessMediaSample(<span class="keyword">const</span> <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a>* sample) {</div>
@@ -274,7 +274,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">while</span> (status.ok() &amp;&amp; !non_main_samples_.empty()) {</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    DCHECK_EQ(non_main_samples_.front()-&gt;stream_data_type,</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;              StreamDataType::kMediaSample);</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> stream_index = non_main_samples_.front()-&gt;stream_index;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">size_t</span> stream_index = non_main_samples_.front()-&gt;stream_index;</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keyword">const</span> MediaSample* sample = non_main_samples_.front()-&gt;media_sample.get();</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="comment">// If the portion of the sample before |timestamp_threshold| is bigger than</span></div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="comment">// the other portion, we consider it part of the current segment.</span></div>
@@ -314,52 +314,50 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;Status ChunkingHandler::DispatchSegmentInfoForAllStreams() {</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  Status status;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; static_cast&lt;int&gt;(segment_info_.size()) &amp;&amp; status.ok();</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;       ++i) {</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keywordflow">if</span> (segment_info_[i] &amp;&amp; segment_info_[i]-&gt;start_timestamp != -1) {</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;      segment_info_[i]-&gt;duration =</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;          last_sample_end_timestamps_[i] - segment_info_[i]-&gt;start_timestamp;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      status.Update(<a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">DispatchSegmentInfo</a>(i, std::move(segment_info_[i])));</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    }</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    segment_info_[i].reset(<span class="keyword">new</span> SegmentInfo);</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    subsegment_info_[i].reset();</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  }</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;}</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;Status ChunkingHandler::DispatchSubsegmentInfoForAllStreams() {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  Status status;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; static_cast&lt;int&gt;(subsegment_info_.size()) &amp;&amp; status.ok();</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;       ++i) {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keywordflow">if</span> (subsegment_info_[i] &amp;&amp; subsegment_info_[i]-&gt;start_timestamp != -1) {</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      subsegment_info_[i]-&gt;duration =</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;          last_sample_end_timestamps_[i] - subsegment_info_[i]-&gt;start_timestamp;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;      status.Update(<a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">DispatchSegmentInfo</a>(i, std::move(subsegment_info_[i])));</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    }</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    subsegment_info_[i].reset(<span class="keyword">new</span> SegmentInfo);</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    subsegment_info_[i]-&gt;is_subsegment = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  }</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;}</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; segment_info_.size() &amp;&amp; status.ok(); ++i) {</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keywordflow">if</span> (segment_info_[i] &amp;&amp; segment_info_[i]-&gt;start_timestamp != -1) {</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;      segment_info_[i]-&gt;duration =</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;          last_sample_end_timestamps_[i] - segment_info_[i]-&gt;start_timestamp;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;      status.Update(<a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a505c70d5e911e45ebcabcce09e2658f9">DispatchSegmentInfo</a>(i, std::move(segment_info_[i])));</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    }</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    segment_info_[i].reset(<span class="keyword">new</span> SegmentInfo);</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    subsegment_info_[i].reset();</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  }</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;Status ChunkingHandler::DispatchSubsegmentInfoForAllStreams() {</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  Status status;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; subsegment_info_.size() &amp;&amp; status.ok(); ++i) {</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordflow">if</span> (subsegment_info_[i] &amp;&amp; subsegment_info_[i]-&gt;start_timestamp != -1) {</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;      subsegment_info_[i]-&gt;duration =</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;          last_sample_end_timestamps_[i] - subsegment_info_[i]-&gt;start_timestamp;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      status.Update(<a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a505c70d5e911e45ebcabcce09e2658f9">DispatchSegmentInfo</a>(i, std::move(subsegment_info_[i])));</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    }</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    subsegment_info_[i].reset(<span class="keyword">new</span> SegmentInfo);</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    subsegment_info_[i]-&gt;is_subsegment = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  }</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1ChunkingHandler_html_a44c30ffd7c283be2ba4347bda7848633"><div class="ttname"><a href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler::Process</a></div><div class="ttdeci">Status Process(std::unique_ptr&lt; StreamData &gt; stream_data) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d12/chunking__handler_8cc_source.html#l00036">chunking_handler.cc:36</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_a0ae39a9eef9c4adc63916fa594f0fe64"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a0ae39a9eef9c4adc63916fa594f0fe64">shaka::media::ChunkingOptions::segment_sap_aligned</a></div><div class="ttdeci">bool segment_sap_aligned</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00027">chunking_handler.h:27</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_accd62dd4def920571f95f4e1a98ab7ca"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca">shaka::media::MediaHandler::Dispatch</a></div><div class="ttdeci">Status Dispatch(std::unique_ptr&lt; StreamData &gt; stream_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/de9/media__handler_8cc_source.html#l00054">media_handler.cc:54</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_accd62dd4def920571f95f4e1a98ab7ca"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca">shaka::media::MediaHandler::Dispatch</a></div><div class="ttdeci">Status Dispatch(std::unique_ptr&lt; StreamData &gt; stream_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/de9/media__handler_8cc_source.html#l00052">media_handler.cc:52</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ChunkingHandler_html_a76a5f4b74da3876cc72f44301c389ebd"><div class="ttname"><a href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">shaka::media::ChunkingHandler::InitializeInternal</a></div><div class="ttdeci">Status InitializeInternal() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d12/chunking__handler_8cc_source.html#l00028">chunking_handler.cc:28</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_a12bf0d7f548d971c709c8644461dc9d3"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a12bf0d7f548d971c709c8644461dc9d3">shaka::media::MediaHandler::FlushDownstream</a></div><div class="ttdeci">Status FlushDownstream(int output_stream_index)</div><div class="ttdoc">Flush the downstream connected at the specified output stream index. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/de9/media__handler_8cc_source.html#l00065">media_handler.cc:65</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_a7c2da8615f6880abf4e198dd4c17ad45"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a7c2da8615f6880abf4e198dd4c17ad45">shaka::media::MediaHandler::DispatchSegmentInfo</a></div><div class="ttdeci">Status DispatchSegmentInfo(int stream_index, std::shared_ptr&lt; SegmentInfo &gt; segment_info)</div><div class="ttdoc">Dispatch the segment info to downstream handlers. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00164">media_handler.h:164</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1ChunkingHandler_html_ab526bd53e4d49d7209f01d9b10b9ab52"><div class="ttname"><a href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#ab526bd53e4d49d7209f01d9b10b9ab52">shaka::media::ChunkingHandler::OnFlushRequest</a></div><div class="ttdeci">Status OnFlushRequest(size_t input_stream_index) override</div><div class="ttdoc">Event handler for flush request at the specific input stream index. </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d12/chunking__handler_8cc_source.html#l00114">chunking_handler.cc:114</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_ad5001bf12073101a949b062943769f5b"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ad5001bf12073101a949b062943769f5b">shaka::media::MediaHandler::FlushDownstream</a></div><div class="ttdeci">Status FlushDownstream(size_t output_stream_index)</div><div class="ttdoc">Flush the downstream connected at the specified output stream index. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/de9/media__handler_8cc_source.html#l00063">media_handler.cc:63</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_ac9368f6edb53d9dd90bc128b664a12e5"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#ac9368f6edb53d9dd90bc128b664a12e5">shaka::media::ChunkingOptions::subsegment_duration_in_seconds</a></div><div class="ttdeci">double subsegment_duration_in_seconds</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00023">chunking_handler.h:23</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">shaka::media::MediaSample</a></div><div class="ttdoc">Class to hold a media sample. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d80/media__sample_8h_source.html#l00022">media_sample.h:22</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1ChunkingHandler_html_a87d573b0142a7574a6d93cddcbdd92c4"><div class="ttname"><a href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a87d573b0142a7574a6d93cddcbdd92c4">shaka::media::ChunkingHandler::OnFlushRequest</a></div><div class="ttdeci">Status OnFlushRequest(int input_stream_index) override</div><div class="ttdoc">Event handler for flush request at the specific input stream index. </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d12/chunking__handler_8cc_source.html#l00114">chunking_handler.cc:114</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_a1cdbde61303f629cc9b4cbcd98f2d711"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a1cdbde61303f629cc9b4cbcd98f2d711">shaka::media::ChunkingOptions::segment_duration_in_seconds</a></div><div class="ttdeci">double segment_duration_in_seconds</div><div class="ttdoc">Segment duration in seconds. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00019">chunking_handler.h:19</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00085">status.h:85</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_a505c70d5e911e45ebcabcce09e2658f9"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a505c70d5e911e45ebcabcce09e2658f9">shaka::media::MediaHandler::DispatchSegmentInfo</a></div><div class="ttdeci">Status DispatchSegmentInfo(size_t stream_index, std::shared_ptr&lt; SegmentInfo &gt; segment_info)</div><div class="ttdoc">Dispatch the segment info to downstream handlers. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00164">media_handler.h:164</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_a6d9761fdfca7819c94baa23845ce9ad7"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a6d9761fdfca7819c94baa23845ce9ad7">shaka::media::ChunkingOptions::subsegment_sap_aligned</a></div><div class="ttdeci">bool subsegment_sap_aligned</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00032">chunking_handler.h:32</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 16 2017 20:58:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 22:29:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -116,10 +116,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a871281f21d7c5e4194febe925860305c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a464a30159b8888a54254356d191947ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a> ()</td></tr>
 <tr class="separator:a464a30159b8888a54254356d191947ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3be336ca9df9686a9f186b51bbd8b021"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a3be336ca9df9686a9f186b51bbd8b021">AddSample</a> (int stream_id, std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
-<tr class="separator:a3be336ca9df9686a9f186b51bbd8b021"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21fcf0f3074416762a52fd54b4ec8a03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a21fcf0f3074416762a52fd54b4ec8a03">FinalizeSegment</a> (int stream_id, bool is_subsegment)</td></tr>
-<tr class="separator:a21fcf0f3074416762a52fd54b4ec8a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad57a8ed22af5499bcb6c3fa88767dabe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#ad57a8ed22af5499bcb6c3fa88767dabe">AddSample</a> (size_t stream_id, std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
+<tr class="separator:ad57a8ed22af5499bcb6c3fa88767dabe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed20ad0cc5e6686926ad02106012fc94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#aed20ad0cc5e6686926ad02106012fc94">FinalizeSegment</a> (size_t stream_id, bool is_subsegment)</td></tr>
+<tr class="separator:aed20ad0cc5e6686926ad02106012fc94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a1c6721aa53a124af8be50bb3f7599c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a3a1c6721aa53a124af8be50bb3f7599c">GetInitRange</a> (size_t *offset, size_t *size)=0</td></tr>
 <tr class="separator:a3a1c6721aa53a124af8be50bb3f7599c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ab68d898343b322dc32c08ad42e859c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a7ab68d898343b322dc32c08ad42e859c">GetIndexRange</a> (size_t *offset, size_t *size)=0</td></tr>
@@ -172,14 +172,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 
 <p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00040">40</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a3be336ca9df9686a9f186b51bbd8b021"></a>
+<a class="anchor" id="ad57a8ed22af5499bcb6c3fa88767dabe"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::mp4::Segmenter::AddSample </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>stream_id</em>, </td>
         </tr>
         <tr>
@@ -228,14 +228,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 
 </div>
 </div>
-<a class="anchor" id="a21fcf0f3074416762a52fd54b4ec8a03"></a>
+<a class="anchor" id="aed20ad0cc5e6686926ad02106012fc94"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::mp4::Segmenter::FinalizeSegment </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>stream_id</em>, </td>
         </tr>
         <tr>
@@ -483,7 +483,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 16 2017 20:58:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 22:29:43 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

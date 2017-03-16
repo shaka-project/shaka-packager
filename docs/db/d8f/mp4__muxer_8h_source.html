@@ -123,44 +123,45 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// Muxer implementation overrides.</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> InitializeMuxer() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> Finalize() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> AddSample(<span class="keywordtype">int</span> stream_id, std::shared_ptr&lt;MediaSample&gt; sample) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> FinalizeSegment(<span class="keywordtype">int</span> stream_id,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                         std::shared_ptr&lt;SegmentInfo&gt; segment_info) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// Generate Audio/Video Track box.</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordtype">void</span> InitializeTrak(<span class="keyword">const</span> <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>* info, <a class="code" href="../../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html">Track</a>* trak);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">void</span> GenerateAudioTrak(<span class="keyword">const</span> <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a>* audio_info,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                         <a class="code" href="../../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html">Track</a>* trak,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                         uint32_t track_id);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">void</span> GenerateVideoTrak(<span class="keyword">const</span> <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>* video_info,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                         <a class="code" href="../../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html">Track</a>* trak,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                         uint32_t track_id);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// Gets |start| and |end| initialization range. Returns true if there is an</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// init range and sets start-end byte-range-spec specified in RFC2616.</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">bool</span> GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="comment">// Gets |start| and |end| index range. Returns true if there is an index range</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// and sets start-end byte-range-spec specified in RFC2616.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">bool</span> GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// Fire events if there are no errors and Muxer::muxer_listener() is not NULL.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">void</span> FireOnMediaStartEvent();</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">void</span> FireOnMediaEndEvent();</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  uint64_t IsoTimeNow();</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  std::unique_ptr&lt;Segmenter&gt; segmenter_;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html">MP4Muxer</a>);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_MP4_MUXER_H_</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> AddSample(<span class="keywordtype">size_t</span> stream_id,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                   std::shared_ptr&lt;MediaSample&gt; sample) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> FinalizeSegment(<span class="keywordtype">size_t</span> stream_id,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                         std::shared_ptr&lt;SegmentInfo&gt; segment_info) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// Generate Audio/Video Track box.</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">void</span> InitializeTrak(<span class="keyword">const</span> <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>* info, <a class="code" href="../../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html">Track</a>* trak);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">void</span> GenerateAudioTrak(<span class="keyword">const</span> <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a>* audio_info,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                         <a class="code" href="../../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html">Track</a>* trak,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                         uint32_t track_id);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> GenerateVideoTrak(<span class="keyword">const</span> <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>* video_info,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                         <a class="code" href="../../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html">Track</a>* trak,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                         uint32_t track_id);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// Gets |start| and |end| initialization range. Returns true if there is an</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// init range and sets start-end byte-range-spec specified in RFC2616.</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">bool</span> GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// Gets |start| and |end| index range. Returns true if there is an index range</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// and sets start-end byte-range-spec specified in RFC2616.</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">bool</span> GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// Fire events if there are no errors and Muxer::muxer_listener() is not NULL.</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">void</span> FireOnMediaStartEvent();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">void</span> FireOnMediaEndEvent();</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  uint64_t IsoTimeNow();</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::unique_ptr&lt;Segmenter&gt; segmenter_;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html">MP4Muxer</a>);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;};</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_MP4_MUXER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00058">stream_info.h:58</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4Muxer_html_a5b6a878865250e3e17268c011a361497"><div class="ttname"><a href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497">shaka::media::mp4::MP4Muxer::MP4Muxer</a></div><div class="ttdeci">MP4Muxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a MP4Muxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d88/mp4__muxer_8cc_source.html#l00081">mp4_muxer.cc:81</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
@@ -173,7 +174,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 16 2017 20:58:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 22:29:36 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

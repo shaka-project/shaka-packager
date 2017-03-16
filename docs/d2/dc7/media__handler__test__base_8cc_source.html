@@ -162,8 +162,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    stream_data_vector_.push_back(std::move(stream_data));</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">return</span> Status::OK;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  Status OnFlushRequest(<span class="keywordtype">int</span> input_stream_index)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> Status::OK; }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">bool</span> ValidateOutputStreamIndex(<span class="keywordtype">int</span> stream_index)<span class="keyword"> const override </span>{</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  Status OnFlushRequest(<span class="keywordtype">size_t</span> input_stream_index)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> Status::OK; }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">bool</span> ValidateOutputStreamIndex(<span class="keywordtype">size_t</span> stream_index)<span class="keyword"> const override </span>{</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  }</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
@@ -253,7 +253,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 16 2017 20:58:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 22:29:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

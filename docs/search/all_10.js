@@ -51,7 +51,7 @@ var searchData=
   ['setencryptionkey',['SetEncryptionKey',['../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#acc603c661a6e0c592091b8bde5a77e3a',1,'shaka::media::mp2t::PesPacketGenerator']]],
   ['seterror',['SetError',['../d0/d93/classshaka_1_1media_1_1Status.html#a26903fbb0ee18f6b8d7cd441e922b644',1,'shaka::media::Status']]],
   ['setfloatingpointattribute',['SetFloatingPointAttribute',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ac4b6c261b14ffe83e9820b76b16af1ba',1,'shaka::xml::XmlNode']]],
-  ['sethandler',['SetHandler',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a1247302b6c57fbafb09aec71ce0109e3',1,'shaka::media::Demuxer::SetHandler()'],['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aced66ff3e906e7dd45f1f3771d61edd7',1,'shaka::media::MediaHandler::SetHandler()']]],
+  ['sethandler',['SetHandler',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a1247302b6c57fbafb09aec71ce0109e3',1,'shaka::media::Demuxer::SetHandler()'],['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0fac1fe2d593e78d47244acdfa21759d',1,'shaka::media::MediaHandler::SetHandler()']]],
   ['setid',['SetId',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a7479055041708fb681957a838e7ecc1f',1,'shaka::xml::XmlNode']]],
   ['setintegerattribute',['SetIntegerAttribute',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ab15dbcc1a051218dc16f44584276ad20',1,'shaka::xml::XmlNode']]],
   ['setiv',['SetIv',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a4875146da4761bb757d6b00132ae6fea',1,'shaka::media::AesCryptor']]],
