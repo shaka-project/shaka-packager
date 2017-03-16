@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['fragment_5fduration',['fragment_duration',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a0dbe637b21f1f22f248437b59ad62a38',1,'shaka::media::MuxerOptions']]],
-  ['fragment_5fsap_5faligned',['fragment_sap_aligned',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#acb335182d4bd226c1f044cc83705f4fc',1,'shaka::media::MuxerOptions']]]
+  ['kadtsheadersize',['kADTSHeaderSize',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a233ffcb063079b9ca34863c48d4a19e1',1,'shaka::media::AACAudioSpecificConfig']]],
+  ['kdecryptionkeysize',['kDecryptionKeySize',['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#afa140203b87d3e46d5fd94b231734f53',1,'shaka::media::DecryptConfig']]],
+  ['korderinvalid',['kOrderInvalid',['../dc/da6/classshaka_1_1media_1_1ContentEncoding.html#a3ba32d5ca8b0688b2dc6b2ec8a5be6d2',1,'shaka::media::ContentEncoding']]]
 ];

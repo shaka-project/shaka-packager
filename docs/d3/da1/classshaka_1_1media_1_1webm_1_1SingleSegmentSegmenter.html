@@ -113,6 +113,10 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>SingleSegmentSegmenter</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:a29f5f4ad29093c2110456734db8bbb46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Segmenter implementation overrides.</div></td></tr>
+<tr class="memitem:a0fde214c6f5907d4eda9b439b78c7288"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0fde214c6f5907d4eda9b439b78c7288"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a0fde214c6f5907d4eda9b439b78c7288">FinalizeSegment</a> (uint64_t start_timescale, uint64_t duration_timescale, bool is_subsegment) override</td></tr>
+<tr class="memdesc:a0fde214c6f5907d4eda9b439b78c7288"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize the (sub)segment. <br/></td></tr>
+<tr class="separator:a0fde214c6f5907d4eda9b439b78c7288"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1395bcb6fb255b2695766c1e85b1aa3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#ae1395bcb6fb255b2695766c1e85b1aa3">GetInitRangeStartAndEnd</a> (uint64_t *start, uint64_t *end) override</td></tr>
 <tr class="separator:ae1395bcb6fb255b2695766c1e85b1aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1708739c73c4565d5dfda6bedffd89a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a1708739c73c4565d5dfda6bedffd89a8">GetIndexRangeStartAndEnd</a> (uint64_t *start, uint64_t *end) override</td></tr>
@@ -202,9 +206,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>track_id</b> () const 
 <tr class="memitem:afb164ac64e08314c8de4ca92debaa86b inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb164ac64e08314c8de4ca92debaa86b"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>segment_payload_pos</b> () const </td></tr>
 <tr class="separator:afb164ac64e08314c8de4ca92debaa86b inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ce459b4a8ca4181ed48b1baa2f29389 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3ce459b4a8ca4181ed48b1baa2f29389"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_length_in_time_scale</b> () const </td></tr>
-<tr class="separator:a3ce459b4a8ca4181ed48b1baa2f29389 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An implementation of a <a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html">Segmenter</a> for a single-segment. This assumes that the output file is seekable. For non-seekable files, use <a class="el" href="../../dd/da5/classshaka_1_1media_1_1webm_1_1TwoPassSingleSegmentSegmenter.html">TwoPassSingleSegmentSegmenter</a>. </p>
@@ -246,7 +247,7 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_length_in
 
 <p>Implements <a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a3a6c1932e6c4894a61eb7230022bceb5">shaka::media::webm::Segmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00079">79</a> of file <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html">single_segment_segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html">single_segment_segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -285,7 +286,7 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_length_in
 
 <p>Implements <a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a611b919c82885b6bcfe39a1def78548c">shaka::media::webm::Segmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00070">70</a> of file <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html">single_segment_segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html">single_segment_segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -296,7 +297,7 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_length_in
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 15 2017 20:49:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 20:58:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

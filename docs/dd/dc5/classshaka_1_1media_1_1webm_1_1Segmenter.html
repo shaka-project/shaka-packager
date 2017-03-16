@@ -117,6 +117,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa84782877f1afaf9519a552ac3d5d417"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad137d0ae95d3e47a32725276970e324"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aad137d0ae95d3e47a32725276970e324">AddSample</a> (std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:aad137d0ae95d3e47a32725276970e324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf471f83977c2db988694916abb712ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf471f83977c2db988694916abb712ff"></a>
+virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#abf471f83977c2db988694916abb712ff">FinalizeSegment</a> (uint64_t start_timescale, uint64_t duration_timescale, bool is_subsegment)=0</td></tr>
+<tr class="memdesc:abf471f83977c2db988694916abb712ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize the (sub)segment. <br/></td></tr>
+<tr class="separator:abf471f83977c2db988694916abb712ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a611b919c82885b6bcfe39a1def78548c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a611b919c82885b6bcfe39a1def78548c">GetInitRangeStartAndEnd</a> (uint64_t *start, uint64_t *end)=0</td></tr>
 <tr class="separator:a611b919c82885b6bcfe39a1def78548c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a6c1932e6c4894a61eb7230022bceb5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a3a6c1932e6c4894a61eb7230022bceb5">GetIndexRangeStartAndEnd</a> (uint64_t *start, uint64_t *end)=0</td></tr>
@@ -171,9 +175,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>track_id</b> () const 
 <tr class="memitem:afb164ac64e08314c8de4ca92debaa86b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb164ac64e08314c8de4ca92debaa86b"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>segment_payload_pos</b> () const </td></tr>
 <tr class="separator:afb164ac64e08314c8de4ca92debaa86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ce459b4a8ca4181ed48b1baa2f29389"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3ce459b4a8ca4181ed48b1baa2f29389"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_length_in_time_scale</b> () const </td></tr>
-<tr class="separator:a3ce459b4a8ca4181ed48b1baa2f29389"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94da091e038ad363eb7494624cffb2bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a94da091e038ad363eb7494624cffb2bd"></a>
 virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>DoInitialize</b> (std::unique_ptr&lt; <a class="el" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">MkvWriter</a> &gt; writer)=0</td></tr>
 <tr class="separator:a94da091e038ad363eb7494624cffb2bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -207,7 +208,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00123">123</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00105">105</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -226,7 +227,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 <p>Finalize the segmenter. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00112">112</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00098">98</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -253,7 +254,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </div><div class="memdoc">
 <p>Converts the given time in ISO BMFF timescale to the current WebM timecode. </p>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00207">207</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00171">171</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -271,7 +272,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The total length, in seconds, of segmented media files. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00202">202</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00166">166</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -430,7 +431,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00050">50</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html#l00036">36</a> of file <a class="el" href="../../dc/d53/webm_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -441,7 +442,7 @@ virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Sta
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 15 2017 20:49:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 20:58:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

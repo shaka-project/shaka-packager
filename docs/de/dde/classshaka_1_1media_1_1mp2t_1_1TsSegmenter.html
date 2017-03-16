@@ -104,6 +104,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac92da7c996e2a270fd704facc8f7a149"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16a92ce0a4d60e502135f89c4b7ffc9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a16a92ce0a4d60e502135f89c4b7ffc9b">AddSample</a> (std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:a16a92ce0a4d60e502135f89c4b7ffc9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0c76888b5c3b3a25600a3f126dc92f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#ac0c76888b5c3b3a25600a3f126dc92f8">FinalizeSegment</a> (uint64_t start_timestamp, uint64_t duration)</td></tr>
+<tr class="separator:ac0c76888b5c3b3a25600a3f126dc92f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3ed0f86d2163444e24a2577e35517a9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3ed0f86d2163444e24a2577e35517a9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#ae3ed0f86d2163444e24a2577e35517a9">InjectTsWriterForTesting</a> (std::unique_ptr&lt; <a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a> &gt; writer)</td></tr>
 <tr class="memdesc:ae3ed0f86d2163444e24a2577e35517a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
@@ -178,7 +180,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html#l00091">91</a> of file <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html">ts_segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html#l00088">88</a> of file <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html">ts_segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -198,6 +200,42 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <dl class="section return"><dt>Returns</dt><dd>OK on success. </dd></dl>
 
 <p>Definition at line <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html#l00084">84</a> of file <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html">ts_segmenter.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac0c76888b5c3b3a25600a3f126dc92f8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::mp2t::TsSegmenter::FinalizeSegment </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>start_timestamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Flush all the samples that are (possibly) buffered and write them to the current segment, this will close the file. If a file is not already opened before calling this, this will open one and write them to file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">start_timestamp</td><td>is the segment's start timestamp in the input stream's time scale. </td></tr>
+    <tr><td class="paramname">duration</td><td>is the segment's duration in the input stream's time scale. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html#l00140">140</a> of file <a class="el" href="../../d6/de9/ts__segmenter_8cc_source.html">ts_segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -268,7 +306,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 15 2017 20:48:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 20:58:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

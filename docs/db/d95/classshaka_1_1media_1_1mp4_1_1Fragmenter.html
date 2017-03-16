@@ -123,6 +123,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#af1f1d56215c1e9543bfb516136862fa6">GenerateSegmentReference</a> (<a class="el" href="../../dd/d9b/structshaka_1_1media_1_1mp4_1_1SegmentReference.html">SegmentReference</a> *reference)</td></tr>
 <tr class="memdesc:af1f1d56215c1e9543bfb516136862fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill <em>reference</em> with current fragment information. <br/></td></tr>
 <tr class="separator:af1f1d56215c1e9543bfb516136862fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a875956cb7783d4586c58cdd22dc109cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a875956cb7783d4586c58cdd22dc109cb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearFragmentFinalized</b> ()</td></tr>
+<tr class="separator:a875956cb7783d4586c58cdd22dc109cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa99a7045693f61efc109f81756612d6b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa99a7045693f61efc109f81756612d6b"></a>
 uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>fragment_duration</b> () const </td></tr>
 <tr class="separator:aa99a7045693f61efc109f81756612d6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -301,7 +304,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Optimize sample entries table. If all values in <em>entries</em> are identical, then <em>entries</em> is cleared and the value is assigned to <em>default_value</em>; otherwise it is a NOP. Return true if the table is optimized. </p>
 
-<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00100">100</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00102">102</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
 
 </div>
 </div>
@@ -328,7 +331,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Set the flag use_decoding_timestamp_in_timeline, which if set to true, use decoding timestamp instead of presentation timestamp in media timeline, which is needed to workaround a Chromium bug that decoding timestamp is used in buffered range, <a href="https://crbug.com/398130">https://crbug.com/398130</a>. </p>
 
-<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00068">68</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00070">70</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
 
 </div>
 </div>
@@ -339,7 +342,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 15 2017 20:48:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 20:58:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

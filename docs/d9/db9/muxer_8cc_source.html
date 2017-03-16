@@ -153,19 +153,23 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">case</span> StreamDataType::kStreamInfo:</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      streams_.push_back(std::move(stream_data-&gt;stream_info));</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      <span class="keywordflow">return</span> InitializeMuxer();</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">case</span> StreamDataType::kMediaSample:</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keywordflow">return</span> DoAddSample(stream_data-&gt;media_sample);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      VLOG(3) &lt;&lt; <span class="stringliteral">&quot;Stream data type &quot;</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;              &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(stream_data-&gt;stream_data_type) &lt;&lt; <span class="stringliteral">&quot; ignored.&quot;</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// No dispatch for muxer.</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">case</span> StreamDataType::kSegmentInfo:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keywordflow">return</span> FinalizeSegment(stream_data-&gt;stream_index,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                             std::move(stream_data-&gt;segment_info));</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">case</span> StreamDataType::kMediaSample:</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordflow">return</span> AddSample(stream_data-&gt;stream_index,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                       std::move(stream_data-&gt;media_sample));</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      VLOG(3) &lt;&lt; <span class="stringliteral">&quot;Stream data type &quot;</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;              &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(stream_data-&gt;stream_data_type) &lt;&lt; <span class="stringliteral">&quot; ignored.&quot;</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// No dispatch for muxer.</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html_a9204fe352d13cea8a367ae9c14e9639e"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a9204fe352d13cea8a367ae9c14e9639e">shaka::media::Muxer::Cancel</a></div><div class="ttdeci">void Cancel()</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00048">muxer.cc:48</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html_a25a146d553c385aad70dbff6b3e87eec"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a25a146d553c385aad70dbff6b3e87eec">shaka::media::Muxer::SetProgressListener</a></div><div class="ttdeci">void SetProgressListener(std::unique_ptr&lt; ProgressListener &gt; progress_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00056">muxer.cc:56</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00085">status.h:85</a></div></div>
@@ -176,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 15 2017 20:48:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 16 2017 20:58:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
