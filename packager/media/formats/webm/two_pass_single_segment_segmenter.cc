@@ -68,13 +68,10 @@ TwoPassSingleSegmentSegmenter::TwoPassSingleSegmentSegmenter(
 
 TwoPassSingleSegmentSegmenter::~TwoPassSingleSegmentSegmenter() {}
 
-Status TwoPassSingleSegmentSegmenter::DoInitialize(
-    std::unique_ptr<MkvWriter> writer) {
+Status TwoPassSingleSegmentSegmenter::DoInitialize() {
   // Assume the amount of time to copy the temp file as the same amount
   // of time as to make it.
   set_progress_target(info()->duration() * 2);
-
-  real_writer_ = std::move(writer);
 
   if (!TempFilePath(options().temp_dir, &temp_file_name_))
     return Status(error::FILE_FAILURE, "Unable to create temporary file.");
@@ -82,8 +79,9 @@ Status TwoPassSingleSegmentSegmenter::DoInitialize(
   Status status = temp->Open(temp_file_name_);
   if (!status.ok())
     return status;
+  set_writer(std::move(temp));
 
-  return SingleSegmentSegmenter::DoInitialize(std::move(temp));
+  return SingleSegmentSegmenter::DoInitialize();
 }
 
 Status TwoPassSingleSegmentSegmenter::DoFinalize() {
@@ -94,18 +92,23 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
   seek_head()->set_cluster_pos(cues_pos + cues_size);
 
   // Write the header to the real output file.
+  std::unique_ptr<MkvWriter> real_writer(new MkvWriter);
+  Status status = real_writer->Open(options().output_file_name);
+  if (!status.ok())
+    return status;
+
   const uint64_t file_size = writer()->Position() + cues_size;
-  Status temp = WriteSegmentHeader(file_size, real_writer_.get());
+  Status temp = WriteSegmentHeader(file_size, real_writer.get());
   if (!temp.ok())
     return temp;
-  DCHECK_EQ(real_writer_->Position(), static_cast<int64_t>(header_size));
+  DCHECK_EQ(real_writer->Position(), static_cast<int64_t>(header_size));
 
   // Write the cues to the real output file.
-  set_index_start(real_writer_->Position());
-  if (!cues()->Write(real_writer_.get()))
+  set_index_start(real_writer->Position());
+  if (!cues()->Write(real_writer.get()))
     return Status(error::FILE_FAILURE, "Error writing Cues data.");
-  set_index_end(real_writer_->Position() - 1);
-  DCHECK_EQ(real_writer_->Position(),
+  set_index_end(real_writer->Position() - 1);
+  DCHECK_EQ(real_writer->Position(),
             static_cast<int64_t>(segment_payload_pos() + cues_pos + cues_size));
 
   // Close the temp file and open it for reading.
@@ -120,7 +123,7 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
     return Status(error::FILE_FAILURE, "Error reading temp file.");
 
   // Copy the rest of the data over.
-  if (!CopyFileWithClusterRewrite(temp_reader.get(), real_writer_.get(),
+  if (!CopyFileWithClusterRewrite(temp_reader.get(), real_writer.get(),
                                   cluster()->Size())) {
     return Status(error::FILE_FAILURE, "Error copying temp file.");
   }
@@ -131,7 +134,7 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
     LOG(WARNING) << "Unable to delete temporary file " << temp_file_name_;
   }
 
-  return real_writer_->Close();
+  return real_writer->Close();
 }
 
 bool TwoPassSingleSegmentSegmenter::CopyFileWithClusterRewrite(

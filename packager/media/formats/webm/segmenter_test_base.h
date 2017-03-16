@@ -51,13 +51,10 @@ class SegmentTestBase : public ::testing::Test {
       std::unique_ptr<webm::Segmenter>* result) const {
     std::unique_ptr<S> segmenter(new S(options));
 
-    std::unique_ptr<MkvWriter> writer(new MkvWriter());
-    ASSERT_OK(writer->Open(options.output_file_name));
     ASSERT_OK(segmenter->Initialize(
-        std::move(writer), info, NULL /* progress_listener */,
-        NULL /* muxer_listener */, key_source, 0 /* max_sd_pixels */,
-        0 /* max_hd_pixels */, 0 /* max_uhd1_pixels */,
-        1 /* clear_lead_in_seconds */));
+        info, NULL /* progress_listener */, NULL /* muxer_listener */,
+        key_source, 0 /* max_sd_pixels */, 0 /* max_hd_pixels */,
+        0 /* max_uhd1_pixels */, 1 /* clear_lead_in_seconds */));
     *result = std::move(segmenter);
   }
 

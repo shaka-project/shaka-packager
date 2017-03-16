@@ -29,7 +29,7 @@ class TwoPassSingleSegmentSegmenter : public SingleSegmentSegmenter {
   ~TwoPassSingleSegmentSegmenter() override;
 
   // Segmenter implementation overrides.
-  Status DoInitialize(std::unique_ptr<MkvWriter> writer) override;
+  Status DoInitialize() override;
   Status DoFinalize() override;
 
  private:
@@ -41,7 +41,6 @@ class TwoPassSingleSegmentSegmenter : public SingleSegmentSegmenter {
                                   MkvWriter* dest,
                                   uint64_t last_size);
 
-  std::unique_ptr<MkvWriter> real_writer_;
   std::string temp_file_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoPassSingleSegmentSegmenter);

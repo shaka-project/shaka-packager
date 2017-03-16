@@ -48,7 +48,7 @@ class SingleSegmentSegmenter : public Segmenter {
   }
 
   // Segmenter implementation overrides.
-  Status DoInitialize(std::unique_ptr<MkvWriter> writer) override;
+  Status DoInitialize() override;
   Status DoFinalize() override;
 
  private:

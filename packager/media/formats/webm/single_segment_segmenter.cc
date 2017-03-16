@@ -52,8 +52,15 @@ bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
   return true;
 }
 
-Status SingleSegmentSegmenter::DoInitialize(std::unique_ptr<MkvWriter> writer) {
-  writer_ = std::move(writer);
+Status SingleSegmentSegmenter::DoInitialize() {
+  if (!writer_) {
+    std::unique_ptr<MkvWriter> writer(new MkvWriter);
+    Status status = writer->Open(options().output_file_name);
+    if (!status.ok())
+      return status;
+    writer_ = std::move(writer);
+  }
+
   Status ret = WriteSegmentHeader(0, writer_.get());
   init_end_ = writer_->Position() - 1;
   seek_head()->set_cluster_pos(init_end_ + 1 - segment_payload_pos());
