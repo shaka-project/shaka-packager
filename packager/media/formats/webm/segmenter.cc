@@ -48,8 +48,7 @@ Segmenter::Segmenter(const MuxerOptions& options)
 
 Segmenter::~Segmenter() {}
 
-Status Segmenter::Initialize(std::unique_ptr<MkvWriter> writer,
-                             StreamInfo* info,
+Status Segmenter::Initialize(StreamInfo* info,
                              ProgressListener* progress_listener,
                              MuxerListener* muxer_listener,
                              KeySource* encryption_key_source,
@@ -107,7 +106,7 @@ Status Segmenter::Initialize(std::unique_ptr<MkvWriter> writer,
   if (!status.ok())
     return status;
 
-  return DoInitialize(std::move(writer));
+  return DoInitialize();
 }
 
 Status Segmenter::Finalize() {

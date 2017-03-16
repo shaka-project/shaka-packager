@@ -39,7 +39,6 @@ class Segmenter {
   /// Initialize the segmenter.
   /// Calling other public methods of this class without this method returning
   /// Status::OK results in an undefined behavior.
-  /// @param writer contains the output file (or init file in multi-segment).
   /// @param info The stream info for the stream being segmented.
   /// @param muxer_listener receives muxer events. Can be NULL.
   /// @param encryption_key_source points to the key source which contains
@@ -58,8 +57,7 @@ class Segmenter {
   ///        it is UHD1. Otherwise it is UHD2.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @return OK on success, an error status otherwise.
-  Status Initialize(std::unique_ptr<MkvWriter> writer,
-                    StreamInfo* info,
+  Status Initialize(StreamInfo* info,
                     ProgressListener* progress_listener,
                     MuxerListener* muxer_listener,
                     KeySource* encryption_key_source,
@@ -118,7 +116,7 @@ class Segmenter {
     return cluster_length_in_time_scale_;
   }
 
-  virtual Status DoInitialize(std::unique_ptr<MkvWriter> writer) = 0;
+  virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
 
  private:
