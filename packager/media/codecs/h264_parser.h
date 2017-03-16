@@ -202,12 +202,7 @@ struct H264SliceHeader {
   int luma_log2_weight_denom;
   int chroma_log2_weight_denom;
 
-  bool luma_weight_l0_flag;
-  bool chroma_weight_l0_flag;
   H264WeightingFactors pred_weight_table_l0;
-
-  bool luma_weight_l1_flag;
-  bool chroma_weight_l1_flag;
   H264WeightingFactors pred_weight_table_l1;
 
   bool no_output_of_prior_pics_flag;
