@@ -41,7 +41,7 @@ struct SegmentInfo {
 
 // TODO(kqyang): Should we use protobuf?
 struct StreamData {
-  size_t stream_index = -1;
+  size_t stream_index = static_cast<size_t>(-1);
   StreamDataType stream_data_type = StreamDataType::kUnknown;
 
   std::shared_ptr<PeriodInfo> period_info;
