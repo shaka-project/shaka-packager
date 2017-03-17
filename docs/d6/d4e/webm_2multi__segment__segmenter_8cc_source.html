@@ -141,43 +141,48 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize(std::unique_ptr&lt;MkvWriter&gt; writer) {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  writer_ = std::move(writer);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">return</span> WriteSegmentHeader(0, writer_.get());</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoFinalize() {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">return</span> writer_-&gt;Close();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize() {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  std::unique_ptr&lt;MkvWriter&gt; writer(<span class="keyword">new</span> <a class="code" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">MkvWriter</a>);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = writer-&gt;Open(options().output_file_name);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  writer_ = std::move(writer);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">return</span> WriteSegmentHeader(0, writer_.get());</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                         <span class="keywordtype">bool</span> is_subsegment) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">if</span> (!is_subsegment) {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="comment">// Create a new file for the new segment.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    std::string segment_name =</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        GetSegmentName(options().segment_template, start_timescale,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                       num_segment_, options().bandwidth);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    writer_.reset(<span class="keyword">new</span> MkvWriter);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    Status status = writer_-&gt;Open(segment_name);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    num_segment_++;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoFinalize() {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> writer_-&gt;Close();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                         <span class="keywordtype">bool</span> is_subsegment) {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span> (!is_subsegment) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="comment">// Create a new file for the new segment.</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    std::string segment_name =</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        GetSegmentName(options().segment_template, start_timescale,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                       num_segment_, options().bandwidth);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    writer_.reset(<span class="keyword">new</span> MkvWriter);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    Status status = writer_-&gt;Open(segment_name);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    num_segment_++;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  }</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a4cb75da6ff50d6403da18ea8dcc04265"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MkvWriter_html"><div class="ttname"><a href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">shaka::media::MkvWriter</a></div><div class="ttdoc">An implementation of IMkvWriter using our File type. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dd6/mkv__writer_8h_source.html#l00021">mkv_writer.h:21</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00085">status.h:85</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_aed20ad0cc5e6686926ad02106012fc94"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#aed20ad0cc5e6686926ad02106012fc94">shaka::media::mp4::Segmenter::FinalizeSegment</a></div><div class="ttdeci">Status FinalizeSegment(size_t stream_id, bool is_subsegment)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00336">segmenter.cc:336</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2017 00:09:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 17 2017 17:24:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

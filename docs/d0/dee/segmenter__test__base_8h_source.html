@@ -139,74 +139,69 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      std::unique_ptr&lt;webm::Segmenter&gt;* result)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    std::unique_ptr&lt;S&gt; segmenter(<span class="keyword">new</span> S(options));</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    std::unique_ptr&lt;MkvWriter&gt; writer(<span class="keyword">new</span> <a class="code" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">MkvWriter</a>());</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    ASSERT_OK(writer-&gt;Open(options.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">output_file_name</a>));</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    ASSERT_OK(segmenter-&gt;Initialize(</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        std::move(writer), info, NULL <span class="comment">/* progress_listener */</span>,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        NULL <span class="comment">/* muxer_listener */</span>, key_source, 0 <span class="comment">/* max_sd_pixels */</span>,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        0 <span class="comment">/* max_hd_pixels */</span>, 0 <span class="comment">/* max_uhd1_pixels */</span>,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        1 <span class="comment">/* clear_lead_in_seconds */</span>));</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    *result = std::move(segmenter);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afd8845d029698f556ca09436da0c62ef">CreateSample</a>(KeyFrameFlag key_frame_flag,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                                            uint64_t duration,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                            SideDataFlag side_data_flag);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a89d5ae5a78134e108a4fe4adb6f79e4e">CreateMuxerOptions</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>* <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a7e34fd92e43914bd2f032835cdc9b8a7">CreateVideoStreamInfo</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::string <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ace8082bd6dcd3aa07177c648f6ad7ecf">OutputFileName</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  std::string <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afa2cdde90c04bf69301a9589faa7efd9">TemplateFileName</a>(<span class="keywordtype">int</span> number) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// A helper class used to determine the number of clusters and frames for a</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// given WebM file.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">   81</a></span>&#160;  <span class="keyword">class </span><a class="code" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a> : <span class="keyword">private</span> <a class="code" href="../../d5/dec/classshaka_1_1media_1_1WebMParserClient.html">WebMParserClient</a> {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;   <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <a class="code" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a>();</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    ~<a class="code" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// Make sure to use ASSERT_NO_FATAL_FAILURE.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">void</span> PopulateFromCluster(<span class="keyword">const</span> std::string&amp; file_name);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordtype">void</span> PopulateFromSegment(<span class="keyword">const</span> std::string&amp; file_name);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">int</span> GetFrameCountForCluster(<span class="keywordtype">size_t</span> i) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">size_t</span> cluster_count() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;   <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">// WebMParserClient overrides.</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="../../d5/dec/classshaka_1_1media_1_1WebMParserClient.html">WebMParserClient</a>* OnListStart(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">bool</span> OnListEnd(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span> OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">bool</span> OnFloat(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">double</span> val) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">bool</span> OnBinary(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">bool</span> OnString(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> std::string&amp; str) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;   <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    std::vector&lt;int&gt; cluster_sizes_;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordtype">bool</span> in_cluster_;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  };</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  std::string output_file_name_;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  std::string segment_template_;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  uint64_t cur_time_timescale_;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordtype">bool</span> single_segment_;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;};</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    ASSERT_OK(segmenter-&gt;Initialize(</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        info, NULL <span class="comment">/* progress_listener */</span>, NULL <span class="comment">/* muxer_listener */</span>,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        key_source, 0 <span class="comment">/* max_sd_pixels */</span>, 0 <span class="comment">/* max_hd_pixels */</span>,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        0 <span class="comment">/* max_uhd1_pixels */</span>, 1 <span class="comment">/* clear_lead_in_seconds */</span>));</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    *result = std::move(segmenter);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afd8845d029698f556ca09436da0c62ef">CreateSample</a>(KeyFrameFlag key_frame_flag,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                            uint64_t duration,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                            SideDataFlag side_data_flag);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a89d5ae5a78134e108a4fe4adb6f79e4e">CreateMuxerOptions</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>* <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a7e34fd92e43914bd2f032835cdc9b8a7">CreateVideoStreamInfo</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  std::string <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ace8082bd6dcd3aa07177c648f6ad7ecf">OutputFileName</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  std::string <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afa2cdde90c04bf69301a9589faa7efd9">TemplateFileName</a>(<span class="keywordtype">int</span> number) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// A helper class used to determine the number of clusters and frames for a</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// given WebM file.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">   78</a></span>&#160;  <span class="keyword">class </span><a class="code" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a> : <span class="keyword">private</span> <a class="code" href="../../d5/dec/classshaka_1_1media_1_1WebMParserClient.html">WebMParserClient</a> {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;   <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <a class="code" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a>();</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    ~<a class="code" href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">// Make sure to use ASSERT_NO_FATAL_FAILURE.</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">void</span> PopulateFromCluster(<span class="keyword">const</span> std::string&amp; file_name);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> PopulateFromSegment(<span class="keyword">const</span> std::string&amp; file_name);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">int</span> GetFrameCountForCluster(<span class="keywordtype">size_t</span> i) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">size_t</span> cluster_count() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;   <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="comment">// WebMParserClient overrides.</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <a class="code" href="../../d5/dec/classshaka_1_1media_1_1WebMParserClient.html">WebMParserClient</a>* OnListStart(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">bool</span> OnListEnd(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">bool</span> OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">bool</span> OnFloat(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">double</span> val) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordtype">bool</span> OnBinary(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span> OnString(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> std::string&amp; str) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;   <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    std::vector&lt;int&gt; cluster_sizes_;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">bool</span> in_cluster_;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  };</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  std::string output_file_name_;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  std::string segment_template_;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  uint64_t cur_time_timescale_;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordtype">bool</span> single_segment_;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_SEGMENTER_TEST_UTILS_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser_html"><div class="ttname"><a href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">shaka::media::SegmentTestBase::ClusterParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dee/segmenter__test__base_8h_source.html#l00081">segmenter_test_base.h:81</a></div></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_SEGMENTER_TEST_UTILS_H_</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser_html"><div class="ttname"><a href="../../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">shaka::media::SegmentTestBase::ClusterParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dee/segmenter__test__base_8h_source.html#l00078">segmenter_test_base.h:78</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00058">stream_info.h:58</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_html_a7e34fd92e43914bd2f032835cdc9b8a7"><div class="ttname"><a href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a7e34fd92e43914bd2f032835cdc9b8a7">shaka::media::SegmentTestBase::CreateVideoStreamInfo</a></div><div class="ttdeci">VideoStreamInfo * CreateVideoStreamInfo() const </div><div class="ttdoc">Creates a video stream info object for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/da7/segmenter__test__base_8cc_source.html#l00084">segmenter_test_base.cc:84</a></div></div>
-<div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00039">muxer_options.h:39</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_html_ace8082bd6dcd3aa07177c648f6ad7ecf"><div class="ttname"><a href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ace8082bd6dcd3aa07177c648f6ad7ecf">shaka::media::SegmentTestBase::OutputFileName</a></div><div class="ttdeci">std::string OutputFileName() const </div><div class="ttdoc">Gets the file name of the current output file. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/da7/segmenter__test__base_8cc_source.html#l00091">segmenter_test_base.cc:91</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_html_afd8845d029698f556ca09436da0c62ef"><div class="ttname"><a href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afd8845d029698f556ca09436da0c62ef">shaka::media::SegmentTestBase::CreateSample</a></div><div class="ttdeci">std::shared_ptr&lt; MediaSample &gt; CreateSample(KeyFrameFlag key_frame_flag, uint64_t duration, SideDataFlag side_data_flag)</div><div class="ttdoc">Creates a new media sample. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/da7/segmenter__test__base_8cc_source.html#l00052">segmenter_test_base.cc:52</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MkvWriter_html"><div class="ttname"><a href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">shaka::media::MkvWriter</a></div><div class="ttdoc">An implementation of IMkvWriter using our File type. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dd6/mkv__writer_8h_source.html#l00021">mkv_writer.h:21</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_html_a742824b930ae928f12214a5e350adc64"><div class="ttname"><a href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a742824b930ae928f12214a5e350adc64">shaka::media::SegmentTestBase::CreateAndInitializeSegmenter</a></div><div class="ttdeci">void CreateAndInitializeSegmenter(const MuxerOptions &amp;options, StreamInfo *info, KeySource *key_source, std::unique_ptr&lt; webm::Segmenter &gt; *result) const </div><div class="ttdoc">Creates a Segmenter of the given type and initializes it. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/dee/segmenter__test__base_8h_source.html#l00047">segmenter_test_base.h:47</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1SegmentTestBase_html_a89d5ae5a78134e108a4fe4adb6f79e4e"><div class="ttname"><a href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a89d5ae5a78134e108a4fe4adb6f79e4e">shaka::media::SegmentTestBase::CreateMuxerOptions</a></div><div class="ttdeci">MuxerOptions CreateMuxerOptions() const </div><div class="ttdoc">Creates a Muxer options object for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/da7/segmenter__test__base_8cc_source.html#l00075">segmenter_test_base.cc:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
@@ -217,7 +212,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 17 2017 00:09:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 17 2017 17:24:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
