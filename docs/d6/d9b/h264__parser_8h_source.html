@@ -291,156 +291,151 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keywordtype">int</span> luma_log2_weight_denom;</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="keywordtype">int</span> chroma_log2_weight_denom;</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="keywordtype">bool</span> luma_weight_l0_flag;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="keywordtype">bool</span> chroma_weight_l0_flag;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a> pred_weight_table_l0;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keywordtype">bool</span> luma_weight_l1_flag;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="keywordtype">bool</span> chroma_weight_l1_flag;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  <a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a> pred_weight_table_l1;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="keywordtype">bool</span> no_output_of_prior_pics_flag;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordtype">bool</span> long_term_reference_flag;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keywordtype">bool</span> adaptive_ref_pic_marking_mode_flag;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <a class="code" href="../../dc/d54/structshaka_1_1media_1_1H264DecRefPicMarking.html">H264DecRefPicMarking</a> ref_pic_marking[kRefListSize];</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  <span class="keywordtype">int</span> cabac_init_idc;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordtype">int</span> slice_qp_delta;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  <span class="keywordtype">bool</span> sp_for_switch_flag;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  <span class="keywordtype">int</span> slice_qs_delta;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  <span class="keywordtype">int</span> disable_deblocking_filter_idc;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordtype">int</span> slice_alpha_c0_offset_div2;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordtype">int</span> slice_beta_offset_div2;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;};</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno"><a class="line" href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">  228</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">H264SEIRecoveryPoint</a> {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keywordtype">int</span> recovery_frame_cnt;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="keywordtype">bool</span> exact_match_flag;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="keywordtype">bool</span> broken_link_flag;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <span class="keywordtype">int</span> changing_slice_group_idc;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;};</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00235"></a><span class="lineno"><a class="line" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">  235</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a> {</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <a class="code" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a>();</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  <span class="keyword">enum</span> Type {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    kSEIRecoveryPoint = 6,</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  };</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="keywordtype">int</span> type;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <span class="keywordtype">int</span> payload_size;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  <span class="keyword">union </span>{</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="comment">// Placeholder; in future more supported types will contribute to more</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="comment">// union members here.</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <a class="code" href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">H264SEIRecoveryPoint</a> recovery_point;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  };</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;};</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">// Class to parse an Annex-B H.264 stream,</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">// as specified in chapters 7 and Annex B of the H.264 spec.</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno"><a class="line" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">  253</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a> {</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <span class="keyword">enum</span> Result {</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    kOk,</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    kInvalidStream,      <span class="comment">// error in stream</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    kUnsupportedStream,  <span class="comment">// stream not supported by the parser</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    kEOStream,           <span class="comment">// end of stream</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  };</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a> pred_weight_table_l0;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a> pred_weight_table_l1;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <span class="keywordtype">bool</span> no_output_of_prior_pics_flag;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keywordtype">bool</span> long_term_reference_flag;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  <span class="keywordtype">bool</span> adaptive_ref_pic_marking_mode_flag;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  <a class="code" href="../../dc/d54/structshaka_1_1media_1_1H264DecRefPicMarking.html">H264DecRefPicMarking</a> ref_pic_marking[kRefListSize];</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordtype">int</span> cabac_init_idc;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="keywordtype">int</span> slice_qp_delta;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keywordtype">bool</span> sp_for_switch_flag;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keywordtype">int</span> slice_qs_delta;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <span class="keywordtype">int</span> disable_deblocking_filter_idc;</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  <span class="keywordtype">int</span> slice_alpha_c0_offset_div2;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordtype">int</span> slice_beta_offset_div2;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;};</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;</div>
+<div class="line"><a name="l00223"></a><span class="lineno"><a class="line" href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">  223</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">H264SEIRecoveryPoint</a> {</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordtype">int</span> recovery_frame_cnt;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordtype">bool</span> exact_match_flag;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="keywordtype">bool</span> broken_link_flag;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordtype">int</span> changing_slice_group_idc;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;};</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
+<div class="line"><a name="l00230"></a><span class="lineno"><a class="line" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">  230</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a> {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <a class="code" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a>();</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keyword">enum</span> Type {</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    kSEIRecoveryPoint = 6,</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  };</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordtype">int</span> type;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  <span class="keywordtype">int</span> payload_size;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  <span class="keyword">union </span>{</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="comment">// Placeholder; in future more supported types will contribute to more</span></div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="comment">// union members here.</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <a class="code" href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">H264SEIRecoveryPoint</a> recovery_point;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  };</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;};</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment">// Class to parse an Annex-B H.264 stream,</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment">// as specified in chapters 7 and Annex B of the H.264 spec.</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno"><a class="line" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">  248</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a> {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="keyword">enum</span> Result {</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    kOk,</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    kInvalidStream,      <span class="comment">// error in stream</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    kUnsupportedStream,  <span class="comment">// stream not supported by the parser</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    kEOStream,           <span class="comment">// end of stream</span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  };</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  <a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a>();</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  ~<a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a>();</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="comment">// NALU-specific parsing functions.</span></div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a>();</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  ~<a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a>();</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  <span class="comment">// NALU-specific parsing functions.</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// SPSes and PPSes are owned by the parser class and the memory for their</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">// structures is managed here, not by the caller, as they are reused</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="comment">// across NALUs.</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <span class="comment">//</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="comment">// Parse an SPS/PPS NALU and save their data in the parser, returning id</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// of the parsed structure in |*pps_id|/|*sps_id|.</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="comment">// To get a pointer to a given SPS/PPS structure, use GetSps()/GetPps(),</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="comment">// passing the returned |*sps_id|/|*pps_id| as parameter.</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  Result ParseSps(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <span class="keywordtype">int</span>* sps_id);</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  Result ParsePps(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <span class="keywordtype">int</span>* pps_id);</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="comment">// SPSes and PPSes are owned by the parser class and the memory for their</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  <span class="comment">// structures is managed here, not by the caller, as they are reused</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <span class="comment">// across NALUs.</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  <span class="comment">//</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="comment">// Parse an SPS/PPS NALU and save their data in the parser, returning id</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// of the parsed structure in |*pps_id|/|*sps_id|.</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">// To get a pointer to a given SPS/PPS structure, use GetSps()/GetPps(),</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="comment">// passing the returned |*sps_id|/|*pps_id| as parameter.</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  Result ParseSps(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <span class="keywordtype">int</span>* sps_id);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  Result ParsePps(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <span class="keywordtype">int</span>* pps_id);</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="comment">// Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or NULL if not</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="comment">// present.</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>* GetSps(<span class="keywordtype">int</span> sps_id);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../de/de4/structshaka_1_1media_1_1H264Pps.html">H264Pps</a>* GetPps(<span class="keywordtype">int</span> pps_id);</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="comment">// Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or NULL if not</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="comment">// present.</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>* GetSps(<span class="keywordtype">int</span> sps_id);</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../de/de4/structshaka_1_1media_1_1H264Pps.html">H264Pps</a>* GetPps(<span class="keywordtype">int</span> pps_id);</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="comment">// Slice headers and SEI messages are not used across NALUs by the parser</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="comment">// and can be discarded after current NALU, so the parser does not store</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="comment">// them, nor does it manage their memory.</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="comment">// The caller has to provide and manage it instead.</span></div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="comment">// Slice headers and SEI messages are not used across NALUs by the parser</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="comment">// and can be discarded after current NALU, so the parser does not store</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="comment">// them, nor does it manage their memory.</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="comment">// The caller has to provide and manage it instead.</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="comment">// Parse a slice header, returning it in |*shdr|. |*nalu| must be set to</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  Result ParseSliceHeader(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="comment">// Parse a SEI message, returning it in |*sei_msg|, provided and managed</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="comment">// by the caller.</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  Result ParseSEI(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <a class="code" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a>* sei_msg);</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="comment">// Parse scaling lists (see spec).</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  Result ParseScalingList(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                          <span class="keywordtype">int</span> size,</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                          <span class="keywordtype">int</span>* scaling_list,</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                          <span class="keywordtype">bool</span>* use_default);</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  Result ParseSpsScalingLists(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>* sps);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  Result ParsePpsScalingLists(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>&amp; sps,</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;                              <a class="code" href="../../de/de4/structshaka_1_1media_1_1H264Pps.html">H264Pps</a>* pps);</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <span class="comment">// Parse optional VUI parameters in SPS (see spec).</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  Result ParseVUIParameters(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>* sps);</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="comment">// Set |hrd_parameters_present| to true only if they are present.</span></div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  Result ParseAndIgnoreHRDParameters(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                                     <span class="keywordtype">bool</span>* hrd_parameters_present);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="comment">// Parse reference picture lists&#39; modifications (see spec).</span></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  Result ParseRefPicListModifications(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  Result ParseRefPicListModification(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                                     <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                                     <a class="code" href="../../d9/dff/structshaka_1_1media_1_1H264ModificationOfPicNum.html">H264ModificationOfPicNum</a>* ref_list_mods);</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="comment">// Parse a slice header, returning it in |*shdr|. |*nalu| must be set to</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="comment">// the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  Result ParseSliceHeader(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="comment">// Parse a SEI message, returning it in |*sei_msg|, provided and managed</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="comment">// by the caller.</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  Result ParseSEI(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <a class="code" href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a>* sei_msg);</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="comment">// Parse scaling lists (see spec).</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  Result ParseScalingList(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;                          <span class="keywordtype">int</span> size,</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                          <span class="keywordtype">int</span>* scaling_list,</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                          <span class="keywordtype">bool</span>* use_default);</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  Result ParseSpsScalingLists(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>* sps);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  Result ParsePpsScalingLists(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>&amp; sps,</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                              <a class="code" href="../../de/de4/structshaka_1_1media_1_1H264Pps.html">H264Pps</a>* pps);</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="comment">// Parse optional VUI parameters in SPS (see spec).</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  Result ParseVUIParameters(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>* sps);</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="comment">// Set |hrd_parameters_present| to true only if they are present.</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  Result ParseAndIgnoreHRDParameters(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;                                     <span class="keywordtype">bool</span>* hrd_parameters_present);</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <span class="comment">// Parse reference picture lists&#39; modifications (see spec).</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  Result ParseRefPicListModifications(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  Result ParseRefPicListModification(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                                     <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                                     <a class="code" href="../../d9/dff/structshaka_1_1media_1_1H264ModificationOfPicNum.html">H264ModificationOfPicNum</a>* ref_list_mods);</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="comment">// Parse prediction weight table (see spec).</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  Result ParsePredWeightTable(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>&amp; sps,</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                              <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  <span class="comment">// Parse prediction weight table (see spec).</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  Result ParsePredWeightTable(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">H264Sps</a>&amp; sps,</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                              <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="comment">// Parse weighting factors (see spec).</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  Result ParseWeightingFactors(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                               <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                               <span class="keywordtype">int</span> chroma_array_type,</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                               <span class="keywordtype">int</span> luma_log2_weight_denom,</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                               <span class="keywordtype">int</span> chroma_log2_weight_denom,</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                               <a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a>* w_facts);</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="comment">// Parse decoded reference picture marking information (see spec).</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  Result ParseDecRefPicMarking(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  <span class="comment">// PPSes and SPSes stored for future reference.</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, std::unique_ptr&lt;H264Sps&gt;&gt; SpsById;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, std::unique_ptr&lt;H264Pps&gt;&gt; PpsById;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  SpsById active_SPSes_;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  PpsById active_PPSes_;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a>);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;};</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="preprocessor">#endif  // MEDIA_CODECS_H264_PARSER_H_</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  <span class="comment">// Parse weighting factors (see spec).</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  Result ParseWeightingFactors(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br,</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                               <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                               <span class="keywordtype">int</span> chroma_array_type,</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                               <span class="keywordtype">int</span> luma_log2_weight_denom,</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;                               <span class="keywordtype">int</span> chroma_log2_weight_denom,</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                               <a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a>* w_facts);</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="comment">// Parse decoded reference picture marking information (see spec).</span></div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  Result ParseDecRefPicMarking(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br, <a class="code" href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  <span class="comment">// PPSes and SPSes stored for future reference.</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, std::unique_ptr&lt;H264Sps&gt;&gt; SpsById;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, std::unique_ptr&lt;H264Pps&gt;&gt; PpsById;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  SpsById active_SPSes_;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  PpsById active_PPSes_;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">H264Parser</a>);</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;};</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="preprocessor">#endif  // MEDIA_CODECS_H264_PARSER_H_</span></div>
 <div class="ttc" id="structshaka_1_1media_1_1H264SliceHeader_html"><div class="ttname"><a href="../../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html">shaka::media::H264SliceHeader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00144">h264_parser.h:144</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1H264Parser_html"><div class="ttname"><a href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">shaka::media::H264Parser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00253">h264_parser.h:253</a></div></div>
-<div class="ttc" id="structshaka_1_1media_1_1H264SEIRecoveryPoint_html"><div class="ttname"><a href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">shaka::media::H264SEIRecoveryPoint</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00228">h264_parser.h:228</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1H264Parser_html"><div class="ttname"><a href="../../d3/d91/classshaka_1_1media_1_1H264Parser.html">shaka::media::H264Parser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00248">h264_parser.h:248</a></div></div>
+<div class="ttc" id="structshaka_1_1media_1_1H264SEIRecoveryPoint_html"><div class="ttname"><a href="../../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html">shaka::media::H264SEIRecoveryPoint</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00223">h264_parser.h:223</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1H264Pps_html"><div class="ttname"><a href="../../de/de4/structshaka_1_1media_1_1H264Pps.html">shaka::media::H264Pps</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00092">h264_parser.h:92</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1H264Sps_html"><div class="ttname"><a href="../../d1/d0a/structshaka_1_1media_1_1H264Sps.html">shaka::media::H264Sps</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00037">h264_parser.h:37</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1H264DecRefPicMarking_html"><div class="ttname"><a href="../../dc/d54/structshaka_1_1media_1_1H264DecRefPicMarking.html">shaka::media::H264DecRefPicMarking</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00136">h264_parser.h:136</a></div></div>
-<div class="ttc" id="structshaka_1_1media_1_1H264SEIMessage_html"><div class="ttname"><a href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">shaka::media::H264SEIMessage</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00235">h264_parser.h:235</a></div></div>
+<div class="ttc" id="structshaka_1_1media_1_1H264SEIMessage_html"><div class="ttname"><a href="../../d6/dd0/structshaka_1_1media_1_1H264SEIMessage.html">shaka::media::H264SEIMessage</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00230">h264_parser.h:230</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1H264ModificationOfPicNum_html"><div class="ttname"><a href="../../d9/dff/structshaka_1_1media_1_1H264ModificationOfPicNum.html">shaka::media::H264ModificationOfPicNum</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00119">h264_parser.h:119</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">shaka::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1H26xBitReader_html"><div class="ttname"><a href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">shaka::media::H26xBitReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc2/h26x__bit__reader_8h_source.html#l00022">h26x_bit_reader.h:22</a></div></div>
@@ -448,7 +443,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 16 2017 22:29:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 17 2017 00:09:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
