@@ -128,7 +128,7 @@ Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
         return status;
     }
   }
-  const int output_stream_index = input_stream_index;
+  const size_t output_stream_index = input_stream_index;
   return FlushDownstream(output_stream_index);
 }
 
