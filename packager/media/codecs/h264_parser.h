@@ -125,8 +125,8 @@ struct H264ModificationOfPicNum {
 };
 
 struct H264WeightingFactors {
-  bool luma_weight_flag;
-  bool chroma_weight_flag;
+  bool luma_weight_flag[32];
+  bool chroma_weight_flag[32];
   int luma_weight[32];
   int luma_offset[32];
   int chroma_weight[32][2];

@@ -858,8 +858,8 @@ H264Parser::Result H264Parser::ParseWeightingFactors(
   int def_chroma_weight = 1 << chroma_log2_weight_denom;
 
   for (int i = 0; i < num_ref_idx_active_minus1 + 1; ++i) {
-    READ_BOOL_OR_RETURN(&w_facts->luma_weight_flag);
-    if (w_facts->luma_weight_flag) {
+    READ_BOOL_OR_RETURN(&w_facts->luma_weight_flag[i]);
+    if (w_facts->luma_weight_flag[i]) {
       READ_SE_OR_RETURN(&w_facts->luma_weight[i]);
       IN_RANGE_OR_RETURN(w_facts->luma_weight[i], -128, 127);
 
@@ -871,8 +871,8 @@ H264Parser::Result H264Parser::ParseWeightingFactors(
     }
 
     if (chroma_array_type != 0) {
-      READ_BOOL_OR_RETURN(&w_facts->chroma_weight_flag);
-      if (w_facts->chroma_weight_flag) {
+      READ_BOOL_OR_RETURN(&w_facts->chroma_weight_flag[i]);
+      if (w_facts->chroma_weight_flag[i]) {
         for (int j = 0; j < 2; ++j) {
           READ_SE_OR_RETURN(&w_facts->chroma_weight[i][j]);
           IN_RANGE_OR_RETURN(w_facts->chroma_weight[i][j], -128, 127);
