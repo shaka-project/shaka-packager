@@ -267,6 +267,11 @@ class AdaptationSet {
                                        uint32_t frame_duration,
                                        uint32_t timescale);
 
+  /// Add the id of the adaptation set this trick play adaptation set belongs
+  /// to.
+  /// @param id the id of the reference (or main) adapation set.
+  virtual void AddTrickPlayReferenceId(uint32_t id);
+
  protected:
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param lang is the language of this AdaptationSet. Mainly relevant for
@@ -383,6 +388,12 @@ class AdaptationSet {
   // implementation comment) because storing the entire timeline is not
   // reasonable and may cause an out-of-memory problem.
   RepresentationTimeline representation_segment_start_times_;
+
+  // Record the reference id for the original adaptation sets the trick play
+  // stream belongs to. This is a set because the trick play streams may be for
+  // multiple AdaptationSets (e.g. SD and HD videos in different AdaptationSets
+  // can share the same trick play stream.)
+  std::set<uint32_t> trick_play_reference_ids_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };

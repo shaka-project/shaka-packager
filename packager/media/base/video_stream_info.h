@@ -39,7 +39,7 @@ class VideoStreamInfo : public StreamInfo {
                   uint16_t height,
                   uint32_t pixel_width,
                   uint32_t pixel_height,
-                  int16_t trick_play_rate,
+                  uint32_t trick_play_rate,
                   uint8_t nalu_length_size,
                   const std::string& language,
                   bool is_encrypted);
@@ -62,15 +62,19 @@ class VideoStreamInfo : public StreamInfo {
   /// @return 0 if unknown.
   uint32_t pixel_height() const { return pixel_height_; }
   uint8_t nalu_length_size() const { return nalu_length_size_; }
-  int16_t trick_play_rate() const { return trick_play_rate_; }
+  uint32_t trick_play_rate() const { return trick_play_rate_; }
+  uint32_t playback_rate() const { return playback_rate_; }
   const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
 
   void set_width(uint32_t width) { width_ = width; }
   void set_height(uint32_t height) { height_ = height; }
   void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }
   void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
-  void set_trick_play_rate(int16_t trick_play_rate) {
+  void set_trick_play_rate(uint32_t trick_play_rate) {
     trick_play_rate_ = trick_play_rate;
+  }
+  void set_playback_rate(uint32_t playback_rate) {
+    playback_rate_ = playback_rate;
   }
   void set_eme_init_data(const uint8_t* eme_init_data,
                          size_t eme_init_data_size) {
@@ -86,7 +90,19 @@ class VideoStreamInfo : public StreamInfo {
   // 0 means unknown.
   uint32_t pixel_width_;
   uint32_t pixel_height_;
-  int16_t trick_play_rate_;  // Non-zero for trick-play streams.
+  uint32_t trick_play_rate_ = 0;  // Non-zero for trick-play streams.
+
+  // Playback rate is the attribute for trick play stream, which signals the
+  // playout capabilities
+  // (http://dashif.org/wp-content/uploads/2016/12/DASH-IF-IOP-v4.0-clean.pdf,
+  // page 18, line 1). It is the ratio of main frame rate to the trick play
+  // frame rate. If the time scale and frame duration are not modified after
+  // trick play handler processing, the playback_rate equals to the number of
+  // frames between consecutive key frames selected for trick play stream. For
+  // example, if the video stream has GOP size of 10 and the trick play rate is
+  // 3, the key frames are in this trick play stream are [frame_0, frame_30,
+  // frame_60, ...]. Then the playback_rate is 30.
+  uint32_t playback_rate_;
 
   // Specifies the size of the NAL unit length field. Can be 1, 2 or 4 bytes, or
   // 0 if the stream is not a NAL structured video stream or if it is an AnnexB

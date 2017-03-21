@@ -11,16 +11,18 @@
 
 #include "packager/app/crypto_flags.h"
 #include "packager/app/fixed_key_encryption_flags.h"
-#include "packager/app/playready_key_encryption_flags.h"
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
+#include "packager/app/playready_key_encryption_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/media_handler.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/playready_key_source.h"
 #include "packager/media/base/request_signer.h"
+#include "packager/media/base/status.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
@@ -220,6 +222,15 @@ MpdOptions GetMpdOptions(bool on_demand_profile) {
   mpd_options.suggested_presentation_delay = FLAGS_suggested_presentation_delay;
   mpd_options.default_language = FLAGS_default_language;
   return mpd_options;
+}
+
+Status ConnectHandlers(std::vector<std::shared_ptr<MediaHandler>>& handlers) {
+  size_t num_handlers = handlers.size();
+  Status status;
+  for (size_t i = 1; i < num_handlers; ++i) {
+    status.Update(handlers[i - 1]->AddHandler(handlers[i]));
+  }
+  return status;
 }
 
 }  // namespace media

@@ -105,6 +105,11 @@ class RepresentationBaseXmlNode : public XmlNode {
   void AddSupplementalProperty(const std::string& scheme_id_uri,
                                const std::string& value);
 
+  /// @param scheme_id_uri is content of the schemeIdUri attribute.
+  /// @param value is the content of value attribute.
+  void AddEssentialProperty(const std::string& scheme_id_uri,
+                            const std::string& value);
+
  protected:
   explicit RepresentationBaseXmlNode(const char* name);
 

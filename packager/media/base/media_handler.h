@@ -86,6 +86,9 @@ class MediaHandler {
   /// called after setting up the graph before running the graph.
   Status Initialize();
 
+  /// Validate if the handler is connected to its upstream handler.
+  bool IsConnected() { return num_input_streams_ > 0; }
+
  protected:
   /// Internal implementation of initialize. Note that it should only initialize
   /// the MediaHandler itself. Downstream handlers are handled in Initialize().
@@ -159,6 +162,9 @@ class MediaHandler {
 
   /// Flush the downstream connected at the specified output stream index.
   Status FlushDownstream(size_t output_stream_index);
+
+  /// Flush all connected downstreams.
+  Status FlushAllDownstreams();
 
   bool initialized() { return initialized_; }
   size_t num_input_streams() const { return num_input_streams_; }

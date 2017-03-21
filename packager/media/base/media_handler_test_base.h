@@ -13,8 +13,6 @@
 namespace shaka {
 namespace media {
 
-class FakeMediaHandler;
-
 MATCHER_P3(IsStreamInfo, stream_index, time_scale, encrypted, "") {
   *result_listener << "which is (" << stream_index << "," << time_scale << ","
                    << (encrypted ? "encrypted" : "not encrypted") << ")";
@@ -76,6 +74,23 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
          arg->media_sample->is_encrypted() == encrypted;
 }
 
+// A fake media handler definition used for testing.
+class FakeMediaHandler : public MediaHandler {
+ public:
+  const std::vector<std::unique_ptr<StreamData>>& stream_data_vector() const {
+    return stream_data_vector_;
+  }
+  void clear_stream_data_vector() { stream_data_vector_.clear(); }
+
+ protected:
+  Status InitializeInternal() override;
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
+  Status OnFlushRequest(size_t input_stream_index) override;
+  bool ValidateOutputStreamIndex(size_t stream_index) const override;
+
+  std::vector<std::unique_ptr<StreamData>> stream_data_vector_;
+};
+
 class MediaHandlerTestBase : public ::testing::Test {
  public:
   MediaHandlerTestBase();
@@ -125,6 +140,9 @@ class MediaHandlerTestBase : public ::testing::Test {
 
   /// @return some random handler that can be used for testing.
   std::shared_ptr<MediaHandler> some_handler() { return some_handler_; }
+
+  /// @return some a downstream handler that can be used for connecting.
+  std::shared_ptr<FakeMediaHandler> next_handler() { return next_handler_; }
 
  private:
   MediaHandlerTestBase(const MediaHandlerTestBase&) = delete;

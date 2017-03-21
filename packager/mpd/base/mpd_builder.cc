@@ -824,6 +824,17 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
     return xml::scoped_xml_ptr<xmlNode>();
   }
 
+  if (!trick_play_reference_ids_.empty()) {
+    std::string id_string;
+    for (uint32_t id : trick_play_reference_ids_) {
+      id_string += std::to_string(id) + ",";
+    }
+    DCHECK(!id_string.empty());
+    id_string.resize(id_string.size() - 1);
+    adaptation_set.AddEssentialProperty(
+        "http://dashif.org/guidelines/trickmode", id_string);
+  }
+
   std::string switching_ids;
   for (uint32_t id : adaptation_set_switching_ids_) {
     if (!switching_ids.empty())
@@ -887,6 +898,10 @@ void AdaptationSet::OnSetFrameRateForRepresentation(
     uint32_t frame_duration,
     uint32_t timescale) {
   RecordFrameRate(frame_duration, timescale);
+}
+
+void AdaptationSet::AddTrickPlayReferenceId(uint32_t id) {
+  trick_play_reference_ids_.insert(id);
 }
 
 bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
@@ -1279,7 +1294,7 @@ bool Representation::IsContiguous(uint64_t start_time,
     LOG(ERROR) << "Segments should not be out of order segment. Adding segment "
                   "with start_time == "
                << start_time << " but the previous segment starts at "
-               << previous.start_time << ".";
+               << previous_segment_start_time << ".";
     return false;
   }
 

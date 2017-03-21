@@ -151,6 +151,34 @@ bool DashIopMpdNotifier::Flush() {
   return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 
+AdaptationSet* DashIopMpdNotifier::ReuseAdaptationSet(
+    const std::list<AdaptationSet*>& adaptation_sets,
+    const MediaInfo& media_info) {
+  const bool has_protected_content = media_info.has_protected_content();
+  for (AdaptationSet* adaptation_set : adaptation_sets) {
+    ProtectedContentMap::const_iterator protected_content_it =
+        protected_content_map_.find(adaptation_set->id());
+
+    // If the AdaptationSet ID is not registered in the map, then it is clear
+    // content.
+    if (protected_content_it == protected_content_map_.end()) {
+      // Can reuse the AdaptationSet without content protection.
+      if (!has_protected_content) {
+        return adaptation_set;
+      }
+      continue;
+    }
+
+    if (ProtectedContentEq(protected_content_it->second,
+                           media_info.protected_content())) {
+      // Content protection info matches. Reuse the AdaptationSet.
+      return adaptation_set;
+    }
+  }
+
+  return nullptr;
+}
+
 AdaptationSet* DashIopMpdNotifier::GetAdaptationSetForMediaInfo(
     const std::string& key,
     const MediaInfo& media_info) {
@@ -158,30 +186,10 @@ AdaptationSet* DashIopMpdNotifier::GetAdaptationSetForMediaInfo(
   if (adaptation_sets.empty())
     return NewAdaptationSet(media_info, &adaptation_sets);
 
-  const bool has_protected_content = media_info.has_protected_content();
-
-  for (std::list<AdaptationSet*>::const_iterator adaptation_set_it =
-           adaptation_sets.begin();
-       adaptation_set_it != adaptation_sets.end(); ++adaptation_set_it) {
-    ProtectedContentMap::const_iterator protected_content_it =
-        protected_content_map_.find((*adaptation_set_it)->id());
-
-    // If the AdaptationSet ID is not registered in the map, then it is clear
-    // content (or encrypted but doesn't need <ContentProtection> element
-    // possibly because the player knows how to handle it).
-    if (protected_content_it == protected_content_map_.end()) {
-      // Can reuse the AdaptationSet without content protection.
-      if (!has_protected_content)
-        return *adaptation_set_it;
-      continue;
-    }
-
-    if (ProtectedContentEq(protected_content_it->second,
-                           media_info.protected_content())) {
-      // Content protection info matches. Reuse the AdaptationSet.
-      return *adaptation_set_it;
-    }
-  }
+  AdaptationSet* reuse_adaptation_set =
+      ReuseAdaptationSet(adaptation_sets, media_info);
+  if (reuse_adaptation_set)
+    return reuse_adaptation_set;
 
   // None of the adaptation sets match with the new content protection.
   // Need a new one.
@@ -267,8 +275,42 @@ AdaptationSet* DashIopMpdNotifier::NewAdaptationSet(
       (*adaptation_sets->begin())->AddRole(AdaptationSet::kRoleMain);
       new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
     }
+
+    if (media_info.video_info().trick_play_rate() > 0) {
+      uint32_t trick_play_reference_id = 0;
+      if (!FindOriginalAdaptationSetForTrickPlay(media_info,
+                                                 &trick_play_reference_id)) {
+        LOG(ERROR) << "Failed to find main adaptation set for trick play.";
+        return nullptr;
+      }
+      DCHECK_NE(new_adaptation_set->id(), trick_play_reference_id);
+      new_adaptation_set->AddTrickPlayReferenceId(trick_play_reference_id);
+    }
   }
   return new_adaptation_set;
+}
+
+bool DashIopMpdNotifier::FindOriginalAdaptationSetForTrickPlay(
+    const MediaInfo& media_info,
+    uint32_t* main_adaptation_set_id) {
+  MediaInfo media_info_no_trickplay = media_info;
+  media_info_no_trickplay.mutable_video_info()->clear_trick_play_rate();
+  std::string key = GetAdaptationSetKey(media_info_no_trickplay);
+  const std::list<AdaptationSet*>& adaptation_sets =
+      adaptation_set_list_map_[key];
+  if (adaptation_sets.empty()) {
+    return false;
+  }
+
+  AdaptationSet* reuse_adaptation_set =
+      ReuseAdaptationSet(adaptation_sets, media_info);
+  if (!reuse_adaptation_set) {
+    return false;
+  }
+
+  *main_adaptation_set_id = reuse_adaptation_set->id();
+
+  return true;
 }
 
 }  // namespace shaka

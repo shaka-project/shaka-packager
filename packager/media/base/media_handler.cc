@@ -69,5 +69,15 @@ Status MediaHandler::FlushDownstream(size_t output_stream_index) {
   return handler_it->second.first->OnFlushRequest(handler_it->second.second);
 }
 
+Status MediaHandler::FlushAllDownstreams() {
+  for (const auto& pair : output_handlers_) {
+    Status status = pair.second.first->OnFlushRequest(pair.second.second);
+    if (!status.ok()) {
+      return status;
+    }
+  }
+  return Status::OK;
+}
+
 }  // namespace media
 }  // namespace shaka

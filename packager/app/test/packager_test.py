@@ -101,6 +101,41 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-golden.mpd')
 
+  def testPackageAudioVideoWithTrickPlay(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1']),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-trick-1-golden.mpd')
+
+  def testPackageAudioVideoWithTwoTrickPlay(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1',
+                          'video,trick_play_rate=2']),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
+    self._DiffGold(self.output[3], 'bear-640x360-v-trick-2-golden.mp4')
+    self._DiffGold(self.mpd_output,
+                   'bear-640x360-av-trick-1-trick-2-golden.mpd')
+
+  def testPackageAudioVideoWithTwoTrickPlayDecreasingRate(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video', 'video,trick_play_rate=2',
+                          'video,trick_play_rate=1']),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-v-trick-2-golden.mp4')
+    self._DiffGold(self.output[3], 'bear-640x360-v-trick-1-golden.mp4')
+    # Since the stream descriptors are sorted in packager app, a different
+    # order of trick play rates gets the same mpd.
+    self._DiffGold(self.mpd_output,
+                   'bear-640x360-av-trick-1-trick-2-golden.mpd')
+
   def testPackageAudioVideoWithLanguageOverride(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video'], language_override='por-BR'),
@@ -204,6 +239,36 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testPackageWithEncryptionAndTrickPlay(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-trick-1-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
+
+  # TODO(hmchen): Add a test case that SD and HD AdapatationSet share one trick
+  # play stream.
+  def testPackageWithEncryptionAndTwoTrickPlays(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1',
+                          'video,trick_play_rate=2']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-cenc-golden.mp4')
+    self._DiffGold(self.output[3], 'bear-640x360-v-trick-2-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output,
+                   'bear-640x360-av-trick-1-trick-2-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
+    self._VerifyDecryption(self.output[3], 'bear-640x360-v-trick-2-golden.mp4')
 
   def testPackageWithEncryptionAndNoPsshInStream(self):
     self.packager.Package(
@@ -574,6 +639,11 @@ class PackagerAppTest(unittest.TestCase):
         else:
           output_prefix = '%s_%d_%s' % (self.output_prefix, test_file_index,
                                         stream_descriptor)
+        # Replace ',', '=' with '_' to make it more like a filename, also
+        # avoid potential illegal charactors for a filename.
+        for ch in [',', '=']:
+          output_prefix = output_prefix.replace(ch, '_')
+
         if live:
           if output_format == 'ts':
             stream = ('input=%s,stream=%s,segment_template=%s-$Number$.ts,'

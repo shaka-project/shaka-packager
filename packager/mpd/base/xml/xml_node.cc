@@ -175,6 +175,15 @@ void RepresentationBaseXmlNode::AddSupplementalProperty(
   AddChild(supplemental_property.PassScopedPtr());
 }
 
+void RepresentationBaseXmlNode::AddEssentialProperty(
+    const std::string& scheme_id_uri,
+    const std::string& value) {
+  XmlNode essential_property("EssentialProperty");
+  essential_property.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  essential_property.SetStringAttribute("value", value);
+  AddChild(essential_property.PassScopedPtr());
+}
+
 bool RepresentationBaseXmlNode::AddContentProtectionElement(
     const ContentProtectionElement& content_protection_element) {
   XmlNode content_protection_node("ContentProtection");
@@ -244,6 +253,16 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info,
     SetStringAttribute("frameRate",
                        base::IntToString(video_info.time_scale()) + "/" +
                            base::IntToString(video_info.frame_duration()));
+  }
+
+  if (video_info.has_playback_rate()) {
+    SetStringAttribute("maxPlayoutRate",
+                       base::IntToString(video_info.playback_rate()));
+    // Since the trick play stream contains only key frames, there is no coding
+    // dependency on the main stream. Simply set the codingDependency to false.
+    // TODO(hmchen): propagate this attribute up to the AdaptationSet, since
+    // all are set to false.
+    SetStringAttribute("codingDependency", "false");
   }
   return true;
 }

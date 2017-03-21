@@ -12,17 +12,40 @@
 namespace shaka {
 namespace media {
 
-TrickPlayHandler::TrickPlayHandler(const TrickPlayOptions& trick_play_option)
-    : trick_play_options_(trick_play_option),
-      cached_stream_data_(trick_play_option.trick_play_rates.size()) {
-  for (auto rate : trick_play_option.trick_play_rates) {
-    CHECK_GT(rate, 0);
-  }
+namespace {
+const size_t kMainStreamIndex = 0;
 }
+
+TrickPlayHandler::TrickPlayHandler() {}
 
 TrickPlayHandler::~TrickPlayHandler() {}
 
+void TrickPlayHandler::SetHandlerForMainStream(
+    std::shared_ptr<MediaHandler> handler) {
+  SetHandler(kMainStreamIndex, std::move(handler));
+}
+
+void TrickPlayHandler::SetHandlerForTrickPlay(
+    uint32_t trick_play_rate,
+    std::shared_ptr<MediaHandler> handler) {
+  trick_play_rates_.push_back(trick_play_rate);
+  // Trick play streams start from index 1.
+  SetHandler(trick_play_rates_.size(), std::move(handler));
+}
+
 Status TrickPlayHandler::InitializeInternal() {
+  if (!HasMainStream()) {
+    return Status(error::TRICK_PLAY_ERROR,
+                  "Trick play does not have main stream");
+  }
+  if (trick_play_rates_.empty()) {
+    return Status(error::TRICK_PLAY_ERROR,
+                  "Trick play rates are not specified.");
+  }
+  size_t num_trick_play_rates = trick_play_rates_.size();
+  cached_stream_data_.resize(num_trick_play_rates);
+  playback_rates_.resize(num_trick_play_rates, 0);
+
   return Status::OK;
 }
 
@@ -54,6 +77,18 @@ Status TrickPlayHandler::Process(
     }
   }
 
+  if (stream_data->stream_data_type == StreamDataType::kSegmentInfo) {
+    for (auto& cached_data : cached_stream_data_) {
+      // It is possible that trick play stream has large frame duration that
+      // some segments in the main stream are skipped. To avoid empty segments,
+      // only cache SegementInfo with MediaSample before it.
+      if (!cached_data.empty() &&
+          cached_data.back()->stream_data_type == StreamDataType::kMediaSample)
+        cached_data.push_back(stream_data);
+    }
+    return Status::OK;
+  }
+
   if (stream_data->stream_data_type != StreamDataType::kMediaSample) {
     // Non media sample stream data needs to be dispatched to every output
     // stream. It is just cached in every queue until a new key frame comes or
@@ -66,12 +101,18 @@ Status TrickPlayHandler::Process(
   if (stream_data->media_sample->is_key_frame()) {
     // For a new key frame, some of the trick play streams may include it.
     // The cached data in those trick play streams will be processed.
-    DCHECK_EQ(trick_play_options_.trick_play_rates.size(),
-              cached_stream_data_.size());
+    DCHECK_EQ(trick_play_rates_.size(), cached_stream_data_.size());
     for (size_t i = 0; i < cached_stream_data_.size(); ++i) {
-      int16_t rate = trick_play_options_.trick_play_rates[i];
+      uint32_t rate = trick_play_rates_[i];
       if (total_key_frames_ % rate == 0) {
-        if (!cached_stream_data_[i].empty()) {
+        // Delay processing cached stream data until receiving the second key
+        // frame so that the GOP size could be derived.
+        if (!cached_stream_data_[i].empty() && total_key_frames_ > 0) {
+          // Num of frames between first two key frames in the trick play
+          // streams. Use this as the playback_rate.
+          if (playback_rates_[i] == 0)
+            playback_rates_[i] = total_frames_;
+
           Status status =
               ProcessCachedStreamData(i + 1, &cached_stream_data_[i]);
           if (!status.ok())
@@ -84,24 +125,40 @@ Status TrickPlayHandler::Process(
     total_key_frames_++;
   }
 
+  total_frames_++;
   prev_sample_end_timestamp_ =
       stream_data->media_sample->dts() + stream_data->media_sample->duration();
+
   return Status::OK;
 }
 
 bool TrickPlayHandler::ValidateOutputStreamIndex(size_t stream_index) const {
   // Output stream index should be less than the number of trick play
   // streams + one original stream.
-  return stream_index <= trick_play_options_.trick_play_rates.size();
+  return stream_index <= trick_play_rates_.size();
 };
 
 Status TrickPlayHandler::OnFlushRequest(size_t input_stream_index) {
   DCHECK_EQ(input_stream_index, 0u)
       << "Trick Play Handler should only have single input.";
   for (size_t i = 0; i < cached_stream_data_.size(); ++i) {
+    LOG_IF(WARNING, playback_rates_[i] == 0)
+        << "Max playout rate for trick play rate " << trick_play_rates_[i]
+        << " is not determined. "
+        << "Specify it as total number of frames: " << total_frames_ << ".";
+    playback_rates_[i] = total_frames_;
     ProcessCachedStreamData(i + 1, &cached_stream_data_[i]);
   }
-  return MediaHandler::FlushDownstream(input_stream_index);
+  return MediaHandler::FlushAllDownstreams();
+}
+
+bool TrickPlayHandler::HasMainStream() {
+  const auto& handlers = output_handlers();
+  const auto& main_stream_handler = handlers.find(kMainStreamIndex);
+  if (main_stream_handler == handlers.end()) {
+    return false;
+  }
+  return main_stream_handler->second.first != nullptr;
 }
 
 Status TrickPlayHandler::ProcessCachedStreamData(
@@ -121,8 +178,8 @@ Status TrickPlayHandler::ProcessCachedStreamData(
 Status TrickPlayHandler::ProcessOneStreamData(
     size_t output_stream_index,
     const std::shared_ptr<StreamData>& stream_data) {
-  uint32_t trick_play_rate =
-      trick_play_options_.trick_play_rates[output_stream_index - 1];
+  size_t trick_play_index = output_stream_index - 1;
+  uint32_t trick_play_rate = trick_play_rates_[trick_play_index];
   Status status;
   switch (stream_data->stream_data_type) {
     // trick_play_rate in StreamInfo should be modified.
@@ -132,6 +189,9 @@ Status TrickPlayHandler::ProcessOneStreamData(
       std::shared_ptr<VideoStreamInfo> trick_play_video_stream_info(
           new VideoStreamInfo(video_stream_info));
       trick_play_video_stream_info->set_trick_play_rate(trick_play_rate);
+      DCHECK_GT(playback_rates_[trick_play_index], 0u);
+      trick_play_video_stream_info->set_playback_rate(
+          playback_rates_[trick_play_index]);
       status =
           DispatchStreamInfo(output_stream_index, trick_play_video_stream_info);
       break;
@@ -142,7 +202,6 @@ Status TrickPlayHandler::ProcessOneStreamData(
             MediaSample::CopyFrom(*(stream_data->media_sample));
         trick_play_media_sample->set_duration(prev_sample_end_timestamp_ -
                                               stream_data->media_sample->dts());
-
         status =
             DispatchMediaSample(output_stream_index, trick_play_media_sample);
       }

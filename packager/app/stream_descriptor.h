@@ -27,18 +27,26 @@ struct StreamDescriptor {
   std::string input;
   std::string output;
   std::string segment_template;
-  uint32_t bandwidth;
+  uint32_t bandwidth = 0;
   std::string language;
-  MediaContainerName output_format;
+  MediaContainerName output_format = CONTAINER_UNKNOWN;
   std::string hls_name;
   std::string hls_group_id;
   std::string hls_playlist_name;
-  int16_t trick_play_rate;
+  uint32_t trick_play_rate = 0;
 };
 
 class StreamDescriptorCompareFn {
  public:
   bool operator()(const StreamDescriptor& a, const StreamDescriptor& b) {
+    if (a.input == b.input) {
+      if (a.stream_selector == b.stream_selector)
+        // Stream with high trick_play_rate is at the beginning.
+        return a.trick_play_rate > b.trick_play_rate;
+      else
+        return a.stream_selector < b.stream_selector;
+    }
+
     return a.input < b.input;
   }
 };

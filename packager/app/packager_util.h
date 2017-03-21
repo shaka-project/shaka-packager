@@ -21,7 +21,9 @@ struct MpdOptions;
 
 namespace media {
 
+class MediaHandler;
 class KeySource;
+class Status;
 struct ChunkingOptions;
 struct EncryptionOptions;
 struct MuxerOptions;
@@ -49,6 +51,12 @@ MuxerOptions GetMuxerOptions();
 
 /// @return MpdOptions from provided command line options.
 MpdOptions GetMpdOptions(bool on_demand_profile);
+
+/// Connect handlers in the vector.
+/// @param handlers A vector of media handlers to be conncected. the handlers
+///        are chained from front() to back().
+/// @return OK on success.
+Status ConnectHandlers(std::vector<std::shared_ptr<MediaHandler>>& handlers);
 
 }  // namespace media
 }  // namespace shaka

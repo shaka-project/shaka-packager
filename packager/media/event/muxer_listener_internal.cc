@@ -101,6 +101,13 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   if (!codec_config.empty()) {
     video_info->set_decoder_config(&codec_config[0], codec_config.size());
   }
+
+  if (video_stream_info->trick_play_rate() > 0) {
+    video_info->set_trick_play_rate(video_stream_info->trick_play_rate());
+    CHECK_GT(video_stream_info->playback_rate(), 0u)
+        << "Max playout rate should be > 0 for trick play streams.";
+    video_info->set_playback_rate(video_stream_info->playback_rate());
+  }
 }
 
 void AddAudioInfo(const AudioStreamInfo* audio_stream_info,

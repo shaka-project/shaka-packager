@@ -12,17 +12,6 @@
 namespace shaka {
 namespace media {
 
-struct TrickPlayOptions {
-  /// Trick play rates. Note that there can be multiple trick play rates,
-  /// e.g., 2, 4 and 8. That means, one input video stream will generate 3
-  /// output trick play streams and original stream. Three trick play streams
-  /// are:
-  /// [key_frame_0, key_frame_2, key_frame_4, ...]
-  /// [key_frame_0, key_frame_4, key_frame_8,...]
-  /// [key_frame_0, key_frame_8, key_frame_16, ...].
-  std::vector<int16_t> trick_play_rates;
-};
-
 /// TrickPlayHandler is a single-input-multiple-output media handler. It creates
 /// trick play streams from the input.
 // The stream data in trick play stream is not a simple duplicate. Some
@@ -33,8 +22,12 @@ struct TrickPlayOptions {
 // input stream data before the next key frame.
 class TrickPlayHandler : public MediaHandler {
  public:
-  explicit TrickPlayHandler(const TrickPlayOptions& trick_play_options);
+  TrickPlayHandler();
   ~TrickPlayHandler() override;
+
+  void SetHandlerForMainStream(std::shared_ptr<MediaHandler> handler);
+  void SetHandlerForTrickPlay(uint32_t trick_play_rate,
+                              std::shared_ptr<MediaHandler> handler);
 
  protected:
   /// @name MediaHandler implementation overrides.
@@ -47,6 +40,10 @@ class TrickPlayHandler : public MediaHandler {
 
  private:
   friend class TrickPlayHandlerTest;
+
+  // Returns true if the trick play handler has main stream output handler
+  // connected, otherwise returns false.
+  bool HasMainStream();
 
   // Process the cached stream data for one trick play stream.
   // The cached data is dispatched to the |output_stream_index|.
@@ -62,7 +59,14 @@ class TrickPlayHandler : public MediaHandler {
   Status ProcessOneStreamData(size_t output_stream_index,
                               const std::shared_ptr<StreamData>& stream_data);
 
-  const TrickPlayOptions trick_play_options_;
+  // Trick play rates. Note that there can be multiple trick play rates,
+  // e.g., 2, 4 and 8. That means, one input video stream will generate 3
+  // output trick play streams and original stream. Three trick play streams
+  // are:
+  // [key_frame_0, key_frame_2, key_frame_4, ...]
+  // [key_frame_0, key_frame_4, key_frame_8,...]
+  // [key_frame_0, key_frame_8, key_frame_16, ...].
+  std::vector<uint32_t> trick_play_rates_;
 
   TrickPlayHandler(const TrickPlayHandler&) = delete;
   TrickPlayHandler& operator=(const TrickPlayHandler&) = delete;
@@ -70,10 +74,16 @@ class TrickPlayHandler : public MediaHandler {
   /// Num of key frames received.
   uint32_t total_key_frames_ = 0;
 
+  // Num of frames received.
+  uint32_t total_frames_ = 0;
+
   // End timestamp of the previous processed media_sample, which is |dts| +
   // |duration|. The duration of key frame in trick play stream is updated based
   // on this timestamp.
   int64_t prev_sample_end_timestamp_ = 0;
+
+  // Record playback_rate for each trick play stream.
+  std::vector<uint32_t> playback_rates_;
 
   // The data in output streams should be in the same order as in the input
   // stream. Cache the stream data before next key frame so that we can

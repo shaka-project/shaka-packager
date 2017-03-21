@@ -59,27 +59,22 @@ const uint8_t kData[]{
 namespace shaka {
 namespace media {
 
-// A fake media handler definition used for testing.
-class FakeMediaHandler : public MediaHandler {
- public:
-  const std::vector<std::unique_ptr<StreamData>>& stream_data_vector() const {
-    return stream_data_vector_;
-  }
-  void clear_stream_data_vector() { stream_data_vector_.clear(); }
+Status FakeMediaHandler::InitializeInternal() {
+  return Status::OK;
+}
 
- protected:
-  Status InitializeInternal() override { return Status::OK; }
-  Status Process(std::unique_ptr<StreamData> stream_data) override {
-    stream_data_vector_.push_back(std::move(stream_data));
-    return Status::OK;
-  }
-  Status OnFlushRequest(size_t input_stream_index) override { return Status::OK; }
-  bool ValidateOutputStreamIndex(size_t stream_index) const override {
-    return true;
-  }
+Status FakeMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
+  stream_data_vector_.push_back(std::move(stream_data));
+  return Status::OK;
+}
 
-  std::vector<std::unique_ptr<StreamData>> stream_data_vector_;
-};
+Status FakeMediaHandler::OnFlushRequest(size_t input_stream_index) {
+  return Status::OK;
+}
+
+bool FakeMediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
+  return true;
+}
 
 MediaHandlerTestBase::MediaHandlerTestBase()
     : next_handler_(new FakeMediaHandler),

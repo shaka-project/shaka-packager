@@ -43,6 +43,7 @@
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/formats/webm/webm_muxer.h"
+#include "packager/media/trick_play/trick_play_handler.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
@@ -234,7 +235,10 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
   DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(remux_jobs);
 
+  std::shared_ptr<TrickPlayHandler> trick_play_handler;
+
   std::string previous_input;
+  std::string previous_stream_selector;
   int stream_number = 0;
   for (StreamDescriptorList::const_iterator
            stream_iter = stream_descriptors.begin();
@@ -294,12 +298,22 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         demuxer->SetKeySource(std::move(decryption_key_source));
       }
       remux_jobs->emplace_back(new RemuxJob(std::move(demuxer)));
+      trick_play_handler.reset();
       previous_input = stream_iter->input;
       // Skip setting up muxers if output is not needed.
       if (stream_iter->output.empty() && stream_iter->segment_template.empty())
         continue;
     }
     DCHECK(!remux_jobs->empty());
+
+    // Each stream selector requires an individual trick play handler.
+    // E.g., an input with two video streams needs two trick play handlers.
+    // TODO(hmchen): add a test case in packager_test.py for two video streams
+    // input.
+    if (stream_iter->stream_selector != previous_stream_selector) {
+      previous_stream_selector = stream_iter->stream_selector;
+      trick_play_handler.reset();
+    }
 
     std::shared_ptr<Muxer> muxer(
         CreateOutputMuxer(stream_muxer_options, stream_iter->output_format));
@@ -341,8 +355,29 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (muxer_listener)
       muxer->SetMuxerListener(std::move(muxer_listener));
 
-    Status status;
+    // Create a new trick_play_handler. Note that the stream_decriptors
+    // are sorted so that for the same input and stream_selector, the main
+    // stream is always the last one following the trick play streams.
+    if (stream_iter->trick_play_rate > 0) {
+      if (!trick_play_handler) {
+        trick_play_handler.reset(new TrickPlayHandler());
+      }
+      trick_play_handler->SetHandlerForTrickPlay(stream_iter->trick_play_rate,
+                                                 std::move(muxer));
+      if (trick_play_handler->IsConnected())
+        continue;
+    } else if (trick_play_handler) {
+      trick_play_handler->SetHandlerForMainStream(std::move(muxer));
+      DCHECK(trick_play_handler->IsConnected());
+      continue;
+    }
+
+    std::vector<std::shared_ptr<MediaHandler>> handlers;
+
     auto chunking_handler = std::make_shared<ChunkingHandler>(chunking_options);
+    handlers.push_back(chunking_handler);
+
+    Status status;
     if (encryption_key_source) {
       auto new_encryption_options = encryption_options;
       // Use Sample AES in MPEG2TS.
@@ -353,18 +388,22 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         new_encryption_options.protection_scheme =
             kAppleSampleAesProtectionScheme;
       }
-      auto encryption_handler = std::make_shared<EncryptionHandler>(
-          new_encryption_options, encryption_key_source);
-      status.Update(encryption_handler->SetHandler(0, std::move(muxer)));
-      status.Update(
-          chunking_handler->SetHandler(0, std::move(encryption_handler)));
+      handlers.emplace_back(
+          new EncryptionHandler(new_encryption_options, encryption_key_source));
+    }
+
+    // If trick_play_handler is available, muxer should already be connected to
+    // trick_play_handler.
+    if (trick_play_handler) {
+      handlers.push_back(trick_play_handler);
     } else {
-      status.Update(chunking_handler->SetHandler(0, std::move(muxer)));
+      handlers.push_back(std::move(muxer));
     }
 
     auto* demuxer = remux_jobs->back()->demuxer();
     const std::string& stream_selector = stream_iter->stream_selector;
     status.Update(demuxer->SetHandler(stream_selector, chunking_handler));
+    status.Update(ConnectHandlers(handlers));
 
     if (!status.ok()) {
       LOG(ERROR) << "Failed to setup graph: " << status;

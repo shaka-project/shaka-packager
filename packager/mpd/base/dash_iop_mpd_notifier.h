@@ -64,6 +64,19 @@ class DashIopMpdNotifier : public MpdNotifier {
   // Maps AdaptationSet ID to ProtectedContent.
   typedef std::map<uint32_t, MediaInfo::ProtectedContent> ProtectedContentMap;
 
+  // Find reusable AdaptationSet, instead of creating a new AdaptationSet for
+  // the |media_info|. There are two cases that an |existing_adaptation_set|
+  // can be used:
+  // 1) The media info does not have protected content and there is an existing
+  // unprotected content AdapationSet.
+  // 2) The media info has protected content and there is an exisiting
+  // AdaptationSet, which has same MediaInfo::ProtectedContent protobuf.
+  // Returns the reusable AdaptationSet pointer if found, otherwise returns
+  // nullptr.
+  AdaptationSet* ReuseAdaptationSet(
+      const std::list<AdaptationSet*>& adaptation_sets,
+      const MediaInfo& media_info);
+
   // Checks the protected_content field of media_info and returns a non-null
   // AdaptationSet* for a new Representation.
   // This does not necessarily return a new AdaptationSet. If
@@ -82,6 +95,15 @@ class DashIopMpdNotifier : public MpdNotifier {
   // If the media is encrypted, registers data to protected_content_map_.
   AdaptationSet* NewAdaptationSet(const MediaInfo& media_info,
                                   std::list<AdaptationSet*>* adaptation_sets);
+
+  // Gets the original AdaptationSet which the trick play video belongs
+  // to and returns the id of the original adapatation set.
+  // It is assumed that the corresponding AdaptationSet has been created before
+  // the trick play AdaptationSet.
+  // Returns true if main_adaptation_id is found, otherwise false;
+  bool FindOriginalAdaptationSetForTrickPlay(
+      const MediaInfo& media_info,
+      uint32_t* original_adaptation_set_id);
 
   // Testing only method. Returns a pointer to MpdBuilder.
   MpdBuilder* MpdBuilderForTesting() const {

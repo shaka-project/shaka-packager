@@ -154,6 +154,72 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewContainer) {
   EXPECT_TRUE(notifier.Flush());
 }
 
+// Verify that basic VOD NotifyNewContainer() operation works on trick play
+// streams.
+// No encrypted contents.
+TEST_F(DashIopMpdNotifierTest, NotifyNewContainerForTrickPlay) {
+  const char kTrickPlayMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "  trick_play_rate: 2\n"
+      "  playback_rate: 10\n"
+      "}\n"
+      "container_type: 1\n";
+  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
+                              output_path_);
+
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
+
+  // Not using default mocks in this test so that we can keep track of
+  // mocks by named mocks.
+  const uint32_t kAdaptationSetId = 2u;
+  const uint32_t kTrickPlayAdaptationSetId = 3u;
+  std::unique_ptr<MockAdaptationSet> mock_adaptation_set(
+      new MockAdaptationSet(kAdaptationSetId));
+  std::unique_ptr<MockAdaptationSet> mock_tp_adaptation_set(
+      new MockAdaptationSet(kTrickPlayAdaptationSetId));
+
+  const uint32_t kRepresentationId = 4u;
+  const uint32_t kTrickPlayRepresentationId = 5u;
+  std::unique_ptr<MockRepresentation> mock_representation(
+      new MockRepresentation(kRepresentationId));
+  std::unique_ptr<MockRepresentation> mock_tp_representation(
+      new MockRepresentation(kTrickPlayRepresentationId));
+
+  InSequence in_sequence;
+  EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
+      .WillOnce(Return(mock_adaptation_set.get()));
+  EXPECT_CALL(*mock_adaptation_set, AddRole(_)).Times(0);
+  EXPECT_CALL(*mock_adaptation_set, AddRepresentation(_))
+      .WillOnce(Return(mock_representation.get()));
+
+  // Calls for trick-play stream.
+  EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
+      .WillOnce(Return(mock_tp_adaptation_set.get()));
+  EXPECT_CALL(*mock_tp_adaptation_set, AddRole(_)).Times(0);
+  EXPECT_CALL(*mock_tp_adaptation_set,
+              AddTrickPlayReferenceId(kAdaptationSetId))
+      .Times(1);
+  EXPECT_CALL(*mock_tp_adaptation_set, AddRepresentation(_))
+      .WillOnce(Return(mock_tp_representation.get()));
+
+  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
+
+  uint32_t unused_container_id;
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
+  EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
+                                          &unused_container_id));
+  EXPECT_TRUE(notifier.NotifyNewContainer(
+      ConvertToMediaInfo(kTrickPlayMediaInfo), &unused_container_id));
+  EXPECT_TRUE(notifier.Flush());
+}
+
 // Verify that if the MediaInfo contains text information, then
 // MpdBuilder::ForceSetSegmentAlignment() is called.
 TEST_F(DashIopMpdNotifierTest, NotifyNewTextContainer) {

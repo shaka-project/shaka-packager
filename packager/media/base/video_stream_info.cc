@@ -48,7 +48,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  uint16_t height,
                                  uint32_t pixel_width,
                                  uint32_t pixel_height,
-                                 int16_t trick_play_rate,
+                                 uint32_t trick_play_rate,
                                  uint8_t nalu_length_size,
                                  const std::string& language,
                                  bool is_encrypted)

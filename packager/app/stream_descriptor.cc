@@ -71,8 +71,7 @@ FieldType GetFieldType(const std::string& field_name) {
 
 }  // anonymous namespace
 
-StreamDescriptor::StreamDescriptor()
-    : bandwidth(0), output_format(CONTAINER_UNKNOWN) {}
+StreamDescriptor::StreamDescriptor() {}
 
 StreamDescriptor::~StreamDescriptor() {}
 
@@ -142,6 +141,20 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
       }
       case kHlsPlaylistNameField: {
         descriptor.hls_playlist_name = iter->second;
+        break;
+      }
+      case kTrickPlayRateField: {
+        unsigned rate;
+        if (!base::StringToUint(iter->second, &rate)) {
+          LOG(ERROR) << "Non-numeric trick play rate " << iter->second
+                     << " specified.";
+          return false;
+        }
+        if (rate == 0) {
+          LOG(ERROR) << "Stream trick_play_rate should be > 0.";
+          return false;
+        }
+        descriptor.trick_play_rate = rate;
         break;
       }
       default:
