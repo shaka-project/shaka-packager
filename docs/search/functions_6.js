@@ -34,6 +34,7 @@ var searchData=
   ['getpps',['GetPps',['../de/dc2/classshaka_1_1media_1_1H265Parser.html#af4a103a131c849bf54018b747dbdd80c',1,'shaka::media::H265Parser']]],
   ['getrawptr',['GetRawPtr',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#aac9765712087dcc47a0afef4bf7849ff',1,'shaka::xml::XmlNode']]],
   ['getsamplingfrequency',['GetSamplingFrequency',['../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#afda9a7656576556af8ddec599d5d8d3b',1,'shaka::media::mp2t::AdtsHeader']]],
+  ['getsegmentinfostreamdata',['GetSegmentInfoStreamData',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#a4c8aedd9b32d4cc067d816d429e44922',1,'shaka::media::MediaHandlerTestBase']]],
   ['getsps',['GetSps',['../de/dc2/classshaka_1_1media_1_1H265Parser.html#ab917855df00b9003c6be4612e2fe0211',1,'shaka::media::H265Parser']]],
   ['getstreaminfostreamdata',['GetStreamInfoStreamData',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#ac697d026d8da483cbbfbf866b0540830',1,'shaka::media::MediaHandlerTestBase']]],
   ['gettotalsizeofsubsamples',['GetTotalSizeOfSubsamples',['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a338024925bc46a2f65a058906cdcb4a3',1,'shaka::media::DecryptConfig::GetTotalSizeOfSubsamples()'],['../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#a870ef304f376ec0822686e1d78765bf2',1,'shaka::media::mp4::SampleEncryptionEntry::GetTotalSizeOfSubsamples()']]],

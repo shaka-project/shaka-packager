@@ -155,10 +155,6 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_input_streams</
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a855263bdfc4c0e24d94277dc4a1b415f">DispatchStreamInfo</a> (size_t stream_index, std::shared_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; stream_info)</td></tr>
 <tr class="memdesc:a855263bdfc4c0e24d94277dc4a1b415f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the stream info to downstream handlers. <br/></td></tr>
 <tr class="separator:a855263bdfc4c0e24d94277dc4a1b415f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0db36acc38f9a620ba8453f9b1964482"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0db36acc38f9a620ba8453f9b1964482"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0db36acc38f9a620ba8453f9b1964482">DispatchEncryptionConfig</a> (size_t stream_index, std::unique_ptr&lt; <a class="el" href="../../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html">EncryptionConfig</a> &gt; encryption_config)</td></tr>
-<tr class="memdesc:a0db36acc38f9a620ba8453f9b1964482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the encryption config to downstream handlers. <br/></td></tr>
-<tr class="separator:a0db36acc38f9a620ba8453f9b1964482"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73dfbc5de4901830cfd25775e2e4fcff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73dfbc5de4901830cfd25775e2e4fcff"></a>
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a73dfbc5de4901830cfd25775e2e4fcff">DispatchMediaSample</a> (size_t stream_index, std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; media_sample)</td></tr>
 <tr class="memdesc:a73dfbc5de4901830cfd25775e2e4fcff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatch the media sample to downstream handlers. <br/></td></tr>
@@ -190,7 +186,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> is the base media processing unit. Media handlers transform the input streams and propagate the outputs to downstream media handlers. There are three different types of media handlers: 1) Single input single output This is the most basic handler. It only supports one input and one output with both index as 0. 2) Multiple inputs multiple outputs The number of outputs must be equal to the number of inputs. The output stream at a specific index comes from the input stream at the same index. Different streams usually share a common resource, although they may be independent. One example of this is encryptor handler. 3) Single input multiple outputs The input stream is splitted into multiple output streams. One example of this is trick play handler. Other types of media handlers are disallowed and not supported. </p>
 
-<p>Definition at line <a class="el" href="../../d3/d93/media__handler_8h_source.html#l00070">70</a> of file <a class="el" href="../../d3/d93/media__handler_8h_source.html">media_handler.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d93/media__handler_8h_source.html#l00071">71</a> of file <a class="el" href="../../d3/d93/media__handler_8h_source.html">media_handler.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="accd62dd4def920571f95f4e1a98ab7ca"></a>
 <div class="memitem">
@@ -297,7 +293,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 21 2017 23:18:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 22 2017 00:49:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

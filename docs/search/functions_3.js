@@ -10,7 +10,6 @@ var searchData=
   ['deleteall',['DeleteAll',['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a79f4eedb79cd2251bca60c861eccf3ba',1,'shaka::media::MemoryFile']]],
   ['demuxer',['Demuxer',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e',1,'shaka::media::Demuxer']]],
   ['dispatch',['Dispatch',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca',1,'shaka::media::MediaHandler']]],
-  ['dispatchencryptionconfig',['DispatchEncryptionConfig',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0db36acc38f9a620ba8453f9b1964482',1,'shaka::media::MediaHandler']]],
   ['dispatchmediaevent',['DispatchMediaEvent',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a860716d6beae66729df7bb86b19aa81d',1,'shaka::media::MediaHandler']]],
   ['dispatchmediasample',['DispatchMediaSample',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a73dfbc5de4901830cfd25775e2e4fcff',1,'shaka::media::MediaHandler']]],
   ['dispatchperiodinfo',['DispatchPeriodInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ac5c28b9b8e5aa8471186b35f005986a1',1,'shaka::media::MediaHandler']]],
