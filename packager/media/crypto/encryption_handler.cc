@@ -383,7 +383,7 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
     encryption_config_->per_sample_iv_size = 0;
     encryption_config_->constant_iv = iv;
   } else {
-    encryption_config_->per_sample_iv_size = iv.size();
+    encryption_config_->per_sample_iv_size = static_cast<uint8_t>(iv.size());
   }
   encryption_config_->key_id = encryption_key.key_id;
   encryption_config_->key_system_info = encryption_key.key_system_info;
