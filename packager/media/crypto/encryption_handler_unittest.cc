@@ -228,19 +228,23 @@ class EncryptionHandlerEncryptionTest
     if (codec_ == kCodecAAC)
       return subsamples;
     if (protection_scheme_ == kAppleSampleAesProtectionScheme) {
-      subsamples.emplace_back(kSampleAesClearSize1, kSampleAesCipherSize1);
-      subsamples.emplace_back(kSubsampleSize3, 0u);
+      subsamples.emplace_back(static_cast<uint16_t>(kSampleAesClearSize1),
+                              static_cast<uint32_t>(kSampleAesCipherSize1));
+      subsamples.emplace_back(static_cast<uint16_t>(kSubsampleSize3), 0u);
     } else {
       if (codec_ == kCodecVP9 || protection_scheme_ == FOURCC_cbc1 ||
           protection_scheme_ == FOURCC_cens) {
         // Align the encrypted bytes to multiple of 16 bytes.
-        subsamples.emplace_back(kAlignedClearSize1, kAlignedCipherSize1);
+        subsamples.emplace_back(static_cast<uint16_t>(kAlignedClearSize1),
+                                static_cast<uint32_t>(kAlignedCipherSize1));
         // Subsample 2 is already aligned.
       } else {
-        subsamples.emplace_back(kClearSize1, kCipherSize1);
+        subsamples.emplace_back(static_cast<uint16_t>(kClearSize1),
+                                static_cast<uint32_t>(kCipherSize1));
       }
-      subsamples.emplace_back(kClearSize2, kCipherSize2);
-      subsamples.emplace_back(kSubsampleSize3, 0u);
+      subsamples.emplace_back(static_cast<uint16_t>(kClearSize2),
+                              static_cast<uint32_t>(kCipherSize2));
+      subsamples.emplace_back(static_cast<uint16_t>(kSubsampleSize3), 0u);
     }
     return subsamples;
   }
