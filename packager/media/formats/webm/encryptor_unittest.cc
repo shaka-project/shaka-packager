@@ -38,11 +38,10 @@ TEST(EncryptionUtilTest, UpdateTrack) {
 }
 
 TEST(EncryptionUtilTest, UpdateTrackWithEmptyKeyId) {
-  const uint8_t kKeyId[] = {};
   unsigned int seed = 0;
   mkvmuxer::VideoTrack video_track(&seed);
-  Status status = UpdateTrackForEncryption(
-      std::vector<uint8_t>(kKeyId, kKeyId + sizeof(kKeyId)), &video_track);
+  const std::vector<uint8_t> empty_key_id;
+  Status status = UpdateTrackForEncryption(empty_key_id, &video_track);
   EXPECT_EQ(error::INTERNAL_ERROR, status.error_code());
 }
 
