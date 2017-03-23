@@ -74,7 +74,7 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
   const std::string& language() const { return language_; }
   bool is_encrypted() const { return is_encrypted_; }
 
-  void set_duration(int duration) { duration_ = duration; }
+  void set_duration(uint64_t duration) { duration_ = duration; }
   void set_codec(Codec codec) { codec_ = codec; }
   void set_codec_config(const std::vector<uint8_t>& data) { codec_config_ = data; }
   void set_codec_string(const std::string& codec_string) {
