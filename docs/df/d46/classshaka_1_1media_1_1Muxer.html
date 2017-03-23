@@ -114,8 +114,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac2f53c94d6ecb25d28bd2865dfe03649"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2f53c94d6ecb25d28bd2865dfe03649"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Muxer</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:ac2f53c94d6ecb25d28bd2865dfe03649"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9c8f69897171ab81db6e7e9c367b4ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#ad9c8f69897171ab81db6e7e9c367b4ce">SetKeySource</a> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, uint32_t max_hd_pixels, uint32_t max_uhd1_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</td></tr>
-<tr class="separator:ad9c8f69897171ab81db6e7e9c367b4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9204fe352d13cea8a367ae9c14e9639e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a9204fe352d13cea8a367ae9c14e9639e">Cancel</a> ()</td></tr>
 <tr class="separator:a9204fe352d13cea8a367ae9c14e9639e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e76dd0a5c07dd538221459365ae824a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a0e76dd0a5c07dd538221459365ae824a">SetMuxerListener</a> (std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt; muxer_listener)</td></tr>
@@ -145,24 +143,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a045bc1a139bfbc03f6b1424ecc2fc963"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a045bc1a139bfbc03f6b1424ecc2fc963"></a>
 const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>options</b> () const </td></tr>
 <tr class="separator:a045bc1a139bfbc03f6b1424ecc2fc963"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27f8527bdd8691444a44e8a707fb4036"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27f8527bdd8691444a44e8a707fb4036"></a>
-<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>encryption_key_source</b> ()</td></tr>
-<tr class="separator:a27f8527bdd8691444a44e8a707fb4036"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b0eaf368a957e3f16ef3b0f121ff31c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b0eaf368a957e3f16ef3b0f121ff31c"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_sd_pixels</b> () const </td></tr>
-<tr class="separator:a4b0eaf368a957e3f16ef3b0f121ff31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66179cd59c84f7c7dc524729b300a27f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66179cd59c84f7c7dc524729b300a27f"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_hd_pixels</b> () const </td></tr>
-<tr class="separator:a66179cd59c84f7c7dc524729b300a27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8be12e69977c811f0f90fbc4981cb53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8be12e69977c811f0f90fbc4981cb53"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_uhd1_pixels</b> () const </td></tr>
-<tr class="separator:ad8be12e69977c811f0f90fbc4981cb53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06093b39eacada6dca64260d6df3dd13"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06093b39eacada6dca64260d6df3dd13"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>clear_lead_in_seconds</b> () const </td></tr>
-<tr class="separator:a06093b39eacada6dca64260d6df3dd13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fa0d03aeb98db98a36343c337d1e1a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6fa0d03aeb98db98a36343c337d1e1a1"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>crypto_period_duration_in_seconds</b> () const </td></tr>
-<tr class="separator:a6fa0d03aeb98db98a36343c337d1e1a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe95933100307abf0268591f9bf172a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe95933100307abf0268591f9bf172a0"></a>
 <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>muxer_listener</b> ()</td></tr>
 <tr class="separator:abe95933100307abf0268591f9bf172a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,9 +152,6 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>crypto_period_durat
 <tr class="memitem:ae593c2f20635794e87ad7658c4858821"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae593c2f20635794e87ad7658c4858821"></a>
 base::Clock *&#160;</td><td class="memItemRight" valign="bottom"><b>clock</b> ()</td></tr>
 <tr class="separator:ae593c2f20635794e87ad7658c4858821"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52f0953075513fb93ec7aba948118325"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52f0953075513fb93ec7aba948118325"></a>
-FourCC&#160;</td><td class="memItemRight" valign="bottom"><b>protection_scheme</b> () const </td></tr>
-<tr class="separator:a52f0953075513fb93ec7aba948118325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MediaHandler implementation overrides.</div></td></tr>
 <tr class="memitem:a36882e12df5c5bfd48a7b94d1dfad857"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a36882e12df5c5bfd48a7b94d1dfad857">InitializeInternal</a> () override</td></tr>
 <tr class="separator:a36882e12df5c5bfd48a7b94d1dfad857"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,7 +213,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a> is responsible for taking elementary stream samples and producing media containers. An optional <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> can be provided to <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a> to generate encrypted outputs. </p>
 
-<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00033">33</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00030">30</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a9204fe352d13cea8a367ae9c14e9639e"></a>
 <div class="memitem">
@@ -252,7 +229,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Cancel a muxing job in progress. Will cause <em>Run</em> to exit with an error status of type CANCELLED. </p>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00048">48</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00024">24</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -280,7 +257,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0e05325d62bfb66318301c1ed790a46e">shaka::media::MediaHandler</a>.</p>
 
-<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00098">98</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00064">64</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
 
 </div>
 </div>
@@ -309,7 +286,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#acb614e9f43e1eb6f837801b15b78c0b4">shaka::media::MediaHandler</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00061">61</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -342,78 +319,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00091">91</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad9c8f69897171ab81db6e7e9c367b4ce"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void shaka::media::Muxer::SetKeySource </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *&#160;</td>
-          <td class="paramname"><em>encryption_key_source</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>max_sd_pixels</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>max_hd_pixels</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>max_uhd1_pixels</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>clear_lead_in_seconds</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>crypto_period_duration_in_seconds</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">FourCC&#160;</td>
-          <td class="paramname"><em>protection_scheme</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set encryption key source. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">encryption_key_source</td><td>points to the encryption key source. The caller retains ownership, and should not be NULL. </td></tr>
-    <tr><td class="paramname">max_sd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as SD. If the max pixels per frame is no higher than max_sd_pixels, it is SD. </td></tr>
-    <tr><td class="paramname">max_hd_pixels</td><td>specifies the threshold to determine whether a video track should be considered as HD. If the max pixels per frame is higher than max_sd_pixels, but no higher than max_hd_pixels, it is HD. </td></tr>
-    <tr><td class="paramname">max_uhd1_pixels</td><td>specifies the threshold to determine whether a video track should be considered as UHD1. If the max pixels per frame is higher than max_hd_pixels, but no higher than max_uhd1_pixels, it is UHD1. Otherwise it is UHD2. </td></tr>
-    <tr><td class="paramname">clear_lead_in_seconds</td><td>specifies clear lead duration in seconds. </td></tr>
-    <tr><td class="paramname">crypto_period_duration_in_seconds</td><td>specifies crypto period duration in seconds. A positive value means key rotation is enabled, the key source must support key rotation in this case. </td></tr>
-    <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00057">57</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
 
 </div>
 </div>
@@ -438,7 +344,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00028">28</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -463,7 +369,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00056">56</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00032">32</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -474,7 +380,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 18:24:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 18:29:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

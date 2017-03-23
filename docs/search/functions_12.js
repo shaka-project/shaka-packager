@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['udpfile',['UdpFile',['../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a9668328623027330d9552f116d61ae86',1,'shaka::media::UdpFile']]],
-  ['uint8vectortobase64',['Uint8VectorToBase64',['../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994',1,'shaka']]],
-  ['update',['Update',['../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4',1,'shaka::media::Status']]],
-  ['updatecontentprotectionpssh',['UpdateContentProtectionPssh',['../d8/d8e/classshaka_1_1AdaptationSet.html#ae8a28838bf1bbc1ad8f5b80961fe33c2',1,'shaka::AdaptationSet::UpdateContentProtectionPssh()'],['../de/d52/classshaka_1_1Representation.html#a3d17325903aa01f0c8ff7753d94ff330',1,'shaka::Representation::UpdateContentProtectionPssh()']]],
-  ['updateiv',['UpdateIv',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a812dfc641212f8eb877ab153de7fbb37',1,'shaka::media::AesCryptor']]],
-  ['updateprogress',['UpdateProgress',['../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#afd8bb3584c984c711615800ad93642a3',1,'shaka::media::mp4::Segmenter::UpdateProgress()'],['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2',1,'shaka::media::webm::Segmenter::UpdateProgress()']]],
-  ['use_5fconstant_5fiv',['use_constant_iv',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a731765982d899509626b4979322db926',1,'shaka::media::AesCryptor']]]
+  ['validatefixedcryptoflags',['ValidateFixedCryptoFlags',['../d8/daf/namespaceshaka.html#abc3f498491fb895860ebdee359935d93',1,'shaka']]],
+  ['validateflag',['ValidateFlag',['../d8/daf/namespaceshaka.html#a9eab59c66195b54a0f4f2ff67630c2cd',1,'shaka']]],
+  ['validateoutputstreamindex',['ValidateOutputStreamIndex',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a908f4c9bb410d1528b85e2c7f824deb6',1,'shaka::media::Demuxer::ValidateOutputStreamIndex()'],['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a71df357be46c02dc0e71b2eabb034c10',1,'shaka::media::MediaHandler::ValidateOutputStreamIndex()']]],
+  ['validateprcryptoflags',['ValidatePRCryptoFlags',['../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b',1,'shaka']]],
+  ['validatewidevinecryptoflags',['ValidateWidevineCryptoFlags',['../d8/daf/namespaceshaka.html#ade3cbb360c0dcaacc5667676af885008',1,'shaka']]],
+  ['verifysignature',['VerifySignature',['../d9/d0c/classshaka_1_1media_1_1RsaPublicKey.html#a146cc97c8fcacadde1b08c373b766fe4',1,'shaka::media::RsaPublicKey']]],
+  ['video_5fdescription',['video_description',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#aee813f01267e89ff00fdb836bb3a159d',1,'shaka::media::mp4::TrackRunIterator']]],
+  ['videostreaminfo',['VideoStreamInfo',['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a3de6a7d65ddd877c513f3047a86db59e',1,'shaka::media::VideoStreamInfo']]]
 ];

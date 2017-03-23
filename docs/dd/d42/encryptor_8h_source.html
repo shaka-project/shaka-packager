@@ -96,70 +96,32 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef MEDIA_FORMATS_WEBM_ENCRYPTOR_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_FORMATS_WEBM_ENCRYPTOR_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/macros.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/stream_info.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/vpx_parser.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/event/muxer_listener.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxer.hpp&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>shaka {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxer.hpp&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>MediaSample;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>webm {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>AesCtrEncryptor;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">class </span>MediaSample;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>webm {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;Status UpdateTrackForEncryption(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                mkvmuxer::Track* track);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html">Encryptor</a> {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html">Encryptor</a>();</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  ~<a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html">Encryptor</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#afa6065049fad093b96643b9e3d70595f">Initialize</a>(<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                    KeySource::TrackType track_type,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                    Codec codec,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                    <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* key_source,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                    <span class="keywordtype">bool</span> webm_subsample_encryption);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a866bb619cd0fde0c28ee522cbd4a8c59">AddTrackInfo</a>(mkvmuxer::Track* track);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a51a014fbe5ff6cfe4fad9e8f92c85561">EncryptFrame</a>(std::shared_ptr&lt;MediaSample&gt; sample, <span class="keywordtype">bool</span> encrypt_frame);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// Create the encryptor for the internal encryption key.</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> CreateEncryptor(<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                         KeySource::TrackType track_type,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                         Codec codec,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                         <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* key_source,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                         <span class="keywordtype">bool</span> webm_subsample_encryption);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  std::unique_ptr&lt;EncryptionKey&gt; key_;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  std::unique_ptr&lt;AesCtrEncryptor&gt; encryptor_;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  std::unique_ptr&lt;VPxParser&gt; vpx_parser_;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html">Encryptor</a>);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;};</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_ENCRYPTOR_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1webm_1_1Encryptor_html_a866bb619cd0fde0c28ee522cbd4a8c59"><div class="ttname"><a href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a866bb619cd0fde0c28ee522cbd4a8c59">shaka::media::webm::Encryptor::AddTrackInfo</a></div><div class="ttdeci">Status AddTrackInfo(mkvmuxer::Track *track)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d98/encryptor_8cc_source.html#l00071">encryptor.cc:71</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1webm_1_1Encryptor_html_a51a014fbe5ff6cfe4fad9e8f92c85561"><div class="ttname"><a href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a51a014fbe5ff6cfe4fad9e8f92c85561">shaka::media::webm::Encryptor::EncryptFrame</a></div><div class="ttdeci">Status EncryptFrame(std::shared_ptr&lt; MediaSample &gt; sample, bool encrypt_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d98/encryptor_8cc_source.html#l00076">encryptor.cc:76</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1webm_1_1Encryptor_html_afa6065049fad093b96643b9e3d70595f"><div class="ttname"><a href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#afa6065049fad093b96643b9e3d70595f">shaka::media::webm::Encryptor::Initialize</a></div><div class="ttdeci">Status Initialize(MuxerListener *muxer_listener, KeySource::TrackType track_type, Codec codec, KeySource *key_source, bool webm_subsample_encryption)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d98/encryptor_8cc_source.html#l00061">encryptor.cc:61</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1webm_1_1Encryptor_html"><div class="ttname"><a href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html">shaka::media::webm::Encryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d42/encryptor_8h_source.html#l00029">encryptor.h:29</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00085">status.h:85</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">shaka::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00030">muxer_listener.h:30</a></div></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keywordtype">void</span> UpdateFrameForEncryption(MediaSample* sample);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_ENCRYPTOR_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 18:24:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 18:29:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -96,29 +96,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for shaka::media::mp4::Fragmenter:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.png" usemap="#shaka::media::mp4::Fragmenter_map" alt=""/>
-  <map id="shaka::media::mp4::Fragmenter_map" name="shaka::media::mp4::Fragmenter_map">
-<area href="../../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html" title="EncryptingFragmenter generates MP4 fragments with sample encrypted. " alt="shaka::media::mp4::EncryptingFragmenter" shape="rect" coords="0,56,251,80"/>
-<area href="../../d2/d29/classshaka_1_1media_1_1mp4_1_1KeyRotationFragmenter.html" alt="shaka::media::mp4::KeyRotationFragmenter" shape="rect" coords="0,112,251,136"/>
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1be96f51fc8ea765aab7142df1bf6006"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a1be96f51fc8ea765aab7142df1bf6006">Fragmenter</a> (std::shared_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf)</td></tr>
 <tr class="separator:a1be96f51fc8ea765aab7142df1bf6006"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9453ee5952fc923eae502467e50317e2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a9453ee5952fc923eae502467e50317e2">AddSample</a> (std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
+<tr class="memitem:a9453ee5952fc923eae502467e50317e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a9453ee5952fc923eae502467e50317e2">AddSample</a> (std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:a9453ee5952fc923eae502467e50317e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa702c2af5ea5096d94f2943076a21e4a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#aa702c2af5ea5096d94f2943076a21e4a">InitializeFragment</a> (int64_t first_sample_dts)</td></tr>
+<tr class="memitem:aa702c2af5ea5096d94f2943076a21e4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#aa702c2af5ea5096d94f2943076a21e4a">InitializeFragment</a> (int64_t first_sample_dts)</td></tr>
 <tr class="separator:aa702c2af5ea5096d94f2943076a21e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0295126af5e6b278a980021f43ae17ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0295126af5e6b278a980021f43ae17ea"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a0295126af5e6b278a980021f43ae17ea">FinalizeFragment</a> ()</td></tr>
-<tr class="memdesc:a0295126af5e6b278a980021f43ae17ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize and optimize the fragment. <br/></td></tr>
-<tr class="separator:a0295126af5e6b278a980021f43ae17ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae943e13eb86d54cffb7174d4513e4541"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae943e13eb86d54cffb7174d4513e4541"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#ae943e13eb86d54cffb7174d4513e4541">FinalizeFragment</a> ()</td></tr>
+<tr class="memdesc:ae943e13eb86d54cffb7174d4513e4541"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize and optimize the fragment. <br/></td></tr>
+<tr class="separator:ae943e13eb86d54cffb7174d4513e4541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1f1d56215c1e9543bfb516136862fa6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af1f1d56215c1e9543bfb516136862fa6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#af1f1d56215c1e9543bfb516136862fa6">GenerateSegmentReference</a> (<a class="el" href="../../dd/d9b/structshaka_1_1media_1_1mp4_1_1SegmentReference.html">SegmentReference</a> *reference)</td></tr>
 <tr class="memdesc:af1f1d56215c1e9543bfb516136862fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill <em>reference</em> with current fragment information. <br/></td></tr>
@@ -192,7 +182,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00032">32</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00047">47</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -200,9 +190,6 @@ Protected Member Functions</h2></td></tr>
 <a class="anchor" id="a9453ee5952fc923eae502467e50317e2"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::mp4::Fragmenter::AddSample </td>
@@ -212,11 +199,6 @@ Protected Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Add a sample to the fragmenter. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -227,18 +209,13 @@ Protected Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a47bfcdce7bfcf5884fa805130856c5b4">shaka::media::mp4::EncryptingFragmenter</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00064">64</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
 
 </div>
 </div>
 <a class="anchor" id="aa702c2af5ea5096d94f2943076a21e4a"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::mp4::Fragmenter::InitializeFragment </td>
@@ -248,11 +225,6 @@ Protected Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Initialize the fragment with default data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -263,9 +235,7 @@ Protected Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a126294f104809268975fe04391902ad3">shaka::media::mp4::EncryptingFragmenter</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00092">92</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00116">116</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -304,7 +274,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Optimize sample entries table. If all values in <em>entries</em> are identical, then <em>entries</em> is cleared and the value is assigned to <em>default_value</em>; otherwise it is a NOP. Return true if the table is optimized. </p>
 
-<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00102">102</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00104">104</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
 
 </div>
 </div>
@@ -342,7 +312,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 18:24:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 18:29:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
