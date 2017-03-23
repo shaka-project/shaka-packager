@@ -190,6 +190,8 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
     buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);
 
   int adjustment = static_cast<int>(buffer_writer.Size());
+  const int start_code_size_adjustment =
+      arraysize(kNaluStartCode) - nalu_length_size_;
   size_t subsample_id = 0;
 
   NaluReader nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);
@@ -237,15 +239,15 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
             DCHECK_LT(old_nalu_size, subsamples->at(subsample_id).clear_bytes);
             subsamples->at(subsample_id).clear_bytes -=
                 static_cast<uint16_t>(old_nalu_size);
-            adjustment += static_cast<int>(old_nalu_size) +
-                          arraysize(kNaluStartCode) - nalu_length_size_;
+            adjustment +=
+                static_cast<int>(old_nalu_size) + start_code_size_adjustment;
           } else {
             if (escape_encrypted_nalu)
               escape_data = subsamples->at(subsample_id).cipher_bytes != 0;
             // Apply the adjustment on the current subsample, reset the
             // adjustment and move to the next subsample.
             subsamples->at(subsample_id).clear_bytes +=
-                adjustment + arraysize(kNaluStartCode) - nalu_length_size_;
+                adjustment + start_code_size_adjustment;
             subsample_id++;
             adjustment = 0;
           }
