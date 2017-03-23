@@ -87,9 +87,9 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
 
 VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo() const {
   return new VideoStreamInfo(kTrackId, kTimeScale, kDuration, kCodec,
-                             kCodecString, NULL, 0, kWidth, kHeight,
-                             kPixelWidth, kPixelHeight, kTrickPlayRate,
-                             kNaluLengthSize, kLanguage, false);
+                             H26xStreamFormat::kUnSpecified, kCodecString, NULL,
+                             0, kWidth, kHeight, kPixelWidth, kPixelHeight,
+                             kTrickPlayRate, kNaluLengthSize, kLanguage, false);
 }
 
 std::string SegmentTestBase::OutputFileName() const {

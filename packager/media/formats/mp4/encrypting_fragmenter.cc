@@ -88,9 +88,7 @@ EncryptingFragmenter::EncryptingFragmenter(
     case kCodecH264:
       header_parser_.reset(new H264VideoSliceHeaderParser);
       break;
-    case kCodecHVC1:
-      FALLTHROUGH_INTENDED;
-    case kCodecHEV1:
+    case kCodecH265:
       header_parser_.reset(new H265VideoSliceHeaderParser);
       break;
     default:
@@ -304,9 +302,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
       }
     } else {
       const Nalu::CodecType nalu_type =
-          (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)
-              ? Nalu::kH265
-              : Nalu::kH264;
+          (video_codec_ == kCodecH265) ? Nalu::kH265 : Nalu::kH264;
       NaluReader reader(nalu_type, nalu_length_size_, data,
                         sample->data_size());
 

@@ -40,14 +40,18 @@ void SetStartAndEndFromOffsetAndSize(size_t offset,
   *end = *start + static_cast<uint32_t>(size) - 1;
 }
 
-FourCC CodecToFourCC(Codec codec) {
+FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
   switch (codec) {
     case kCodecH264:
-      return FOURCC_avc1;
-    case kCodecHEV1:
-      return FOURCC_hev1;
-    case kCodecHVC1:
-      return FOURCC_hvc1;
+      return h26x_stream_format ==
+                     H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
+                 ? FOURCC_avc3
+                 : FOURCC_avc1;
+    case kCodecH265:
+      return h26x_stream_format ==
+                     H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
+                 ? FOURCC_hev1
+                 : FOURCC_hvc1;
     case kCodecVP8:
       return FOURCC_vp08;
     case kCodecVP9:
@@ -93,8 +97,10 @@ Status MP4Muxer::Initialize() {
   ftyp->compatible_brands.push_back(FOURCC_mp41);
   if (streams().size() == 1 &&
       streams()[0]->info()->stream_type() == kStreamVideo) {
-    const FourCC codec_fourcc = CodecToFourCC(
-        static_cast<VideoStreamInfo*>(streams()[0]->info().get())->codec());
+    const FourCC codec_fourcc =
+        CodecToFourCC(streams()[0]->info()->codec(),
+                      static_cast<VideoStreamInfo*>(streams()[0]->info().get())
+                          ->h26x_stream_format());
     if (codec_fourcc != FOURCC_NULL)
       ftyp->compatible_brands.push_back(codec_fourcc);
   }
@@ -220,7 +226,8 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   trak->header.height = video_info->height() * 0x10000;
 
   VideoSampleEntry video;
-  video.format = CodecToFourCC(video_info->codec());
+  video.format =
+      CodecToFourCC(video_info->codec(), video_info->h26x_stream_format());
   video.width = video_info->width();
   video.height = video_info->height();
   video.codec_configuration.data = video_info->codec_config();
@@ -243,7 +250,8 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   trak->header.volume = 0x100;
 
   AudioSampleEntry audio;
-  audio.format = CodecToFourCC(audio_info->codec());
+  audio.format =
+      CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
   switch(audio_info->codec()){
     case kCodecAAC:
       audio.esds.es_descriptor.set_object_type(kISO_14496_3);  // MPEG4 AAC.

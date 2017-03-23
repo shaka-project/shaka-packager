@@ -25,17 +25,14 @@ enum StreamType {
 enum Codec {
   kUnknownCodec = 0,
   kCodecH264,
-  kCodecHEV1,
-  kCodecHVC1,
-  kCodecVC1,
-  kCodecMPEG2,
-  kCodecMPEG4,
-  kCodecTheora,
+  kCodecH265,
   kCodecVP8,
   kCodecVP9,
   kCodecVP10,
   kCodecAAC,
   kCodecAC3,
+  // TODO(kqyang): Use kCodecDTS and a kDtsStreamFormat for the various DTS
+  // streams.
   kCodecDTSC,
   kCodecDTSE,
   kCodecDTSH,

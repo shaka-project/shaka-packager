@@ -148,6 +148,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
 
   last_video_decoder_config_ = scoped_refptr<StreamInfo>(new VideoStreamInfo(
       pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH264,
+      stream_converter()->stream_format(),
       AVCDecoderConfigurationRecord::GetCodecString(decoder_config_record[1],
                                                     decoder_config_record[2],
                                                     decoder_config_record[3]),

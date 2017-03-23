@@ -12,18 +12,34 @@
 namespace shaka {
 namespace media {
 
+enum class H26xStreamFormat {
+  kUnSpecified,
+  kAnnexbByteStream,
+  kNalUnitStreamWithParameterSetNalus,
+  kNalUnitStreamWithoutParameterSetNalus,
+};
+
 /// Holds video stream information.
 class VideoStreamInfo : public StreamInfo {
  public:
   /// Construct an initialized video stream info object.
   /// @param pixel_width is the width of the pixel. 0 if unknown.
   /// @param pixel_height is the height of the pixels. 0 if unknown.
-  VideoStreamInfo(int track_id, uint32_t time_scale, uint64_t duration,
-                  Codec codec, const std::string& codec_string,
-                  const uint8_t* codec_config, size_t codec_config_size,
-                  uint16_t width, uint16_t height, uint32_t pixel_width,
-                  uint32_t pixel_height, int16_t trick_play_rate,
-                  uint8_t nalu_length_size, const std::string& language,
+  VideoStreamInfo(int track_id,
+                  uint32_t time_scale,
+                  uint64_t duration,
+                  Codec codec,
+                  H26xStreamFormat h26x_stream_format,
+                  const std::string& codec_string,
+                  const uint8_t* codec_config,
+                  size_t codec_config_size,
+                  uint16_t width,
+                  uint16_t height,
+                  uint32_t pixel_width,
+                  uint32_t pixel_height,
+                  int16_t trick_play_rate,
+                  uint8_t nalu_length_size,
+                  const std::string& language,
                   bool is_encrypted);
 
   /// @name StreamInfo implementation overrides.
@@ -32,6 +48,7 @@ class VideoStreamInfo : public StreamInfo {
   std::string ToString() const override;
   /// @}
 
+  H26xStreamFormat h26x_stream_format() const { return h26x_stream_format_; }
   uint16_t width() const { return width_; }
   uint16_t height() const { return height_; }
   /// Returns the pixel width.
@@ -56,6 +73,7 @@ class VideoStreamInfo : public StreamInfo {
  private:
   ~VideoStreamInfo() override;
 
+  H26xStreamFormat h26x_stream_format_;
   uint16_t width_;
   uint16_t height_;
 

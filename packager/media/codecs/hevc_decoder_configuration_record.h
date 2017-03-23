@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "packager/base/macros.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/decoder_configuration_record.h"
 
@@ -25,7 +26,7 @@ class HEVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   ~HEVCDecoderConfigurationRecord() override;
 
   /// @return The codec string.
-  std::string GetCodecString(Codec codec) const;
+  std::string GetCodecString(FourCC codec_fourcc) const;
 
  private:
   bool ParseInternal() override;

@@ -20,16 +20,17 @@ const char kExpectedConfigRecord[] =
 namespace shaka {
 namespace media {
 
-TEST(H264ByteToUnitStreamConverter, ConversionSuccess) {
+TEST(H264ByteToUnitStreamConverter, StripParameterSetsNalu) {
   std::vector<uint8_t> input_frame =
       ReadTestDataFile("avc-byte-stream-frame.h264");
   ASSERT_FALSE(input_frame.empty());
 
   std::vector<uint8_t> expected_output_frame =
-      ReadTestDataFile("avc-unit-stream-frame.h264");
+      ReadTestDataFile("avc1-unit-stream-frame.h264");
   ASSERT_FALSE(expected_output_frame.empty());
 
-  H264ByteToUnitStreamConverter converter;
+  H264ByteToUnitStreamConverter converter(
+      H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus);
   std::vector<uint8_t> output_frame;
   ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
                                                          input_frame.size(),
@@ -44,10 +45,29 @@ TEST(H264ByteToUnitStreamConverter, ConversionSuccess) {
   EXPECT_EQ(expected_decoder_config, decoder_config);
 }
 
+TEST(H264ByteToUnitStreamConverter, KeepParameterSetsNalu) {
+  std::vector<uint8_t> input_frame =
+      ReadTestDataFile("avc-byte-stream-frame.h264");
+  ASSERT_FALSE(input_frame.empty());
+
+  std::vector<uint8_t> expected_output_frame =
+      ReadTestDataFile("avc3-unit-stream-frame.h264");
+  ASSERT_FALSE(expected_output_frame.empty());
+
+  H264ByteToUnitStreamConverter converter(
+      H26xStreamFormat::kNalUnitStreamWithParameterSetNalus);
+  std::vector<uint8_t> output_frame;
+  ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
+                                                         input_frame.size(),
+                                                         &output_frame));
+  EXPECT_EQ(expected_output_frame, output_frame);
+}
+
 TEST(H264ByteToUnitStreamConverter, ConversionFailure) {
   std::vector<uint8_t> input_frame(100, 0);
 
-  H264ByteToUnitStreamConverter converter;
+  H264ByteToUnitStreamConverter converter(
+      H26xStreamFormat::kNalUnitStreamWithParameterSetNalus);
   std::vector<uint8_t> output_frame;
   EXPECT_FALSE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
                                                           0,

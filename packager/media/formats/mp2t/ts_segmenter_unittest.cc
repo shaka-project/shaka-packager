@@ -109,7 +109,8 @@ class TsSegmenterTest : public ::testing::Test {
 
 TEST_F(TsSegmenterTest, Initialize) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -129,7 +130,8 @@ TEST_F(TsSegmenterTest, Initialize) {
 
 TEST_F(TsSegmenterTest, AddSample) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -184,9 +186,10 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   // done correctly in the segmenter.
   const uint32_t kInputTimescale = 1001;
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kInputTimescale, kDuration, kH264Codec, kCodecString,
-      kExtraData, arraysize(kExtraData), kWidth, kHeight, kPixelWidth,
-      kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrackId, kInputTimescale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
+      arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
@@ -283,7 +286,8 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
 // Finalize right after Initialize(). The writer will not be initialized.
 TEST_F(TsSegmenterTest, InitializeThenFinalize) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -312,7 +316,8 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
 // writer with a mock.
 TEST_F(TsSegmenterTest, Finalize) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -341,7 +346,8 @@ TEST_F(TsSegmenterTest, Finalize) {
 // Verify that it won't finish a segment if the sample is not a key frame.
 TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -447,7 +453,8 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
 
 TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -490,7 +497,8 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
 // not null.
 TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -530,7 +538,8 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
 // Verify that encryption notification is sent to objects after clear lead.
 TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;

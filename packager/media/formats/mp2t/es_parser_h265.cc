@@ -151,9 +151,14 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
     return false;
   }
 
+  const H26xStreamFormat stream_format = stream_converter()->stream_format();
+  const FourCC codec_fourcc =
+      stream_format == H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
+          ? FOURCC_hev1
+          : FOURCC_hvc1;
   last_video_decoder_config_ = scoped_refptr<StreamInfo>(new VideoStreamInfo(
-      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecHVC1,
-      decoder_config.GetCodecString(kCodecHVC1), decoder_config_record.data(),
+      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH265, stream_format,
+      decoder_config.GetCodecString(codec_fourcc), decoder_config_record.data(),
       decoder_config_record.size(), coded_width, coded_height, pixel_width,
       pixel_height, 0, H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
       std::string(), false));
