@@ -97,7 +97,8 @@ class TsSegmenterTest : public ::testing::Test {
 
 TEST_F(TsSegmenterTest, Initialize) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -117,7 +118,8 @@ TEST_F(TsSegmenterTest, Initialize) {
 
 TEST_F(TsSegmenterTest, AddSample) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -168,9 +170,10 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   // done correctly in the segmenter.
   const uint32_t kInputTimescale = 1001;
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kInputTimescale, kDuration, kH264Codec, kCodecString,
-      kExtraData, arraysize(kExtraData), kWidth, kHeight, kPixelWidth,
-      kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrackId, kInputTimescale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
+      arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
 
@@ -262,7 +265,8 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
 // Finalize right after Initialize(). The writer will not be initialized.
 TEST_F(TsSegmenterTest, InitializeThenFinalize) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -290,7 +294,8 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
 // writer with a mock.
 TEST_F(TsSegmenterTest, FinalizeSegment) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
@@ -317,7 +322,8 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
 
 TEST_F(TsSegmenterTest, EncryptedSample) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;

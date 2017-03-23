@@ -18,6 +18,11 @@ namespace media {
 
 H265ByteToUnitStreamConverter::H265ByteToUnitStreamConverter()
     : H26xByteToUnitStreamConverter(Nalu::kH265) {}
+
+H265ByteToUnitStreamConverter::H265ByteToUnitStreamConverter(
+    H26xStreamFormat stream_format)
+    : H26xByteToUnitStreamConverter(Nalu::kH265, stream_format) {}
+
 H265ByteToUnitStreamConverter::~H265ByteToUnitStreamConverter() {}
 
 bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
@@ -100,17 +105,23 @@ bool H265ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu) {
 
   switch (nalu.type()) {
     case Nalu::H265_SPS:
+      if (strip_parameter_set_nalus())
+        WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_sps_);
       // Grab SPS NALU.
       last_sps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return true;
+      return strip_parameter_set_nalus();
     case Nalu::H265_PPS:
+      if (strip_parameter_set_nalus())
+        WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_pps_);
       // Grab PPS NALU.
       last_pps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return true;
+      return strip_parameter_set_nalus();
     case Nalu::H265_VPS:
+      if (strip_parameter_set_nalus())
+        WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_vps_);
       // Grab VPS NALU.
       last_vps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return true;
+      return strip_parameter_set_nalus();
     case Nalu::H265_AUD:
       // Ignore AUD NALU.
       return true;

@@ -17,6 +17,11 @@ namespace media {
 
 H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
     : H26xByteToUnitStreamConverter(Nalu::kH264) {}
+
+H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter(
+    H26xStreamFormat stream_format)
+    : H26xByteToUnitStreamConverter(Nalu::kH264, stream_format) {}
+
 H264ByteToUnitStreamConverter::~H264ByteToUnitStreamConverter() {}
 
 bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
@@ -60,13 +65,17 @@ bool H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu) {
 
   switch (nalu.type()) {
     case Nalu::H264_SPS:
+      if (strip_parameter_set_nalus())
+        WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_sps_);
       // Grab SPS NALU.
       last_sps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return true;
+      return strip_parameter_set_nalus();
     case Nalu::H264_PPS:
+      if (strip_parameter_set_nalus())
+        WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_pps_);
       // Grab PPS NALU.
       last_pps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return true;
+      return strip_parameter_set_nalus();
     case Nalu::H264_AUD:
       // Ignore AUD NALU.
       return true;

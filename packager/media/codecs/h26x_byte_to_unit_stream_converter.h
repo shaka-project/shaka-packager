@@ -11,6 +11,7 @@
 
 #include <vector>
 
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/nalu_reader.h"
 
 namespace shaka {
@@ -23,7 +24,15 @@ class H26xByteToUnitStreamConverter {
  public:
   static constexpr size_t kUnitStreamNaluLengthSize = 4;
 
+  /// Create a byte to unit stream converter with specified codec type.
+  /// The setting of @a KeepParameterSetNalus is defined by a gflag.
   explicit H26xByteToUnitStreamConverter(Nalu::CodecType type);
+
+  /// Create a byte to unit stream converter with specified codec type and
+  /// desired output stream format (whether to include parameter set nal units).
+  H26xByteToUnitStreamConverter(Nalu::CodecType type,
+                                H26xStreamFormat stream_format);
+
   virtual ~H26xByteToUnitStreamConverter();
 
   /// Converts a whole byte stream encoded video frame to NAL unit stream
@@ -47,12 +56,27 @@ class H26xByteToUnitStreamConverter {
   virtual bool GetDecoderConfigurationRecord(
       std::vector<uint8_t>* decoder_config) const = 0;
 
+  H26xStreamFormat stream_format() const { return stream_format_; }
+
+ protected:
+  bool strip_parameter_set_nalus() const {
+    return stream_format_ ==
+           H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
+  }
+
+  // Warn if (nalu_ptr, nalu_size) does not match with |vector|.
+  void WarnIfNotMatch(int nalu_type,
+                      const uint8_t* nalu_ptr,
+                      size_t nalu_size,
+                      const std::vector<uint8_t>& vector);
+
  private:
   // Process the given Nalu.  If this returns true, it was handled and should
   // not be copied to the buffer.
   virtual bool ProcessNalu(const Nalu& nalu) = 0;
 
   Nalu::CodecType type_;
+  H26xStreamFormat stream_format_;
 
   DISALLOW_COPY_AND_ASSIGN(H26xByteToUnitStreamConverter);
 };

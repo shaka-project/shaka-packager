@@ -1509,6 +1509,7 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     const FourCC actual_format = GetActualFormat();
     switch (actual_format) {
       case FOURCC_avc1:
+      case FOURCC_avc3:
         compressor_name.assign(
             kAvcCompressorName,
             kAvcCompressorName + arraysize(kAvcCompressorName));
@@ -1595,6 +1596,7 @@ size_t VideoSampleEntry::ComputeSizeInternal() {
 FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
   switch (format) {
     case FOURCC_avc1:
+    case FOURCC_avc3:
       return FOURCC_avcC;
     case FOURCC_hev1:
     case FOURCC_hvc1:

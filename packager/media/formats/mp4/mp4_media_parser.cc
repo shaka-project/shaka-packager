@@ -40,14 +40,29 @@ uint64_t Rescale(uint64_t time_in_old_scale,
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
+H26xStreamFormat GetH26xStreamFormat(FourCC fourcc) {
+  switch (fourcc) {
+    case FOURCC_avc1:
+      return H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
+    case FOURCC_avc3:
+      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
+    case FOURCC_hev1:
+      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
+    case FOURCC_hvc1:
+      return H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
+    default:
+      return H26xStreamFormat::kUnSpecified;
+  }
+}
+
 Codec FourCCToCodec(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_avc1:
+    case FOURCC_avc3:
       return kCodecH264;
     case FOURCC_hev1:
-      return kCodecHEV1;
     case FOURCC_hvc1:
-      return kCodecHVC1;
+      return kCodecH265;
     case FOURCC_vp08:
       return kCodecVP8;
     case FOURCC_vp09:
@@ -497,7 +512,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
       switch (actual_format) {
-        case FOURCC_avc1: {
+        case FOURCC_avc1:
+        case FOURCC_avc3: {
           AVCDecoderConfigurationRecord avc_config;
           if (!avc_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse avcc.";
@@ -540,7 +556,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse hevc.";
             return false;
           }
-          codec_string = hevc_config.GetCodecString(video_codec);
+          codec_string = hevc_config.GetCodecString(actual_format);
           nalu_length_size = hevc_config.nalu_length_size();
           break;
         }
@@ -569,7 +585,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       std::shared_ptr<VideoStreamInfo> video_stream_info(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,
-          codec_string, entry.codec_configuration.data.data(),
+          GetH26xStreamFormat(actual_format), codec_string,
+          entry.codec_configuration.data.data(),
           entry.codec_configuration.data.size(), coded_width, coded_height,
           pixel_width, pixel_height,
           0,  // trick_play_rate

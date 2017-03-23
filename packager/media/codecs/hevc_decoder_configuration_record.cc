@@ -59,18 +59,6 @@ std::string ReverseBitsAndHexEncode(uint32_t x) {
   return TrimLeadingZeros(base::HexEncode(bytes, arraysize(bytes)));
 }
 
-std::string CodecAsString(Codec codec) {
-  switch (codec) {
-    case kCodecHEV1:
-      return "hev1";
-    case kCodecHVC1:
-      return "hvc1";
-    default:
-      LOG(WARNING) << "Unknown codec: " << codec;
-      return std::string();
-  }
-}
-
 }  // namespace
 
 HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord()
@@ -132,10 +120,11 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
   return true;
 }
 
-std::string HEVCDecoderConfigurationRecord::GetCodecString(Codec codec) const {
+std::string HEVCDecoderConfigurationRecord::GetCodecString(
+    FourCC codec_fourcc) const {
   // ISO/IEC 14496-15:2014 Annex E.
   std::vector<std::string> fields;
-  fields.push_back(CodecAsString(codec));
+  fields.push_back(FourCCToString(codec_fourcc));
   fields.push_back(GeneralProfileSpaceAsString(general_profile_space_) +
                    base::IntToString(general_profile_idc_));
   fields.push_back(

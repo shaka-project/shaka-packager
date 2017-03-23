@@ -27,12 +27,7 @@ enum Codec {
 
   kCodecVideo = 100,
   kCodecH264 = kCodecVideo,
-  kCodecHEV1,
-  kCodecHVC1,
-  kCodecVC1,
-  kCodecMPEG2,
-  kCodecMPEG4,
-  kCodecTheora,
+  kCodecH265,
   kCodecVP8,
   kCodecVP9,
   kCodecVP10,
@@ -41,6 +36,8 @@ enum Codec {
   kCodecAudio = 200,
   kCodecAAC = kCodecAudio,
   kCodecAC3,
+  // TODO(kqyang): Use kCodecDTS and a kDtsStreamFormat for the various DTS
+  // streams.
   kCodecDTSC,
   kCodecDTSE,
   kCodecDTSH,

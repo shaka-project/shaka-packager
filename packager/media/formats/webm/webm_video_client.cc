@@ -109,9 +109,10 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   sar_y /= gcd;
 
   return std::make_shared<VideoStreamInfo>(
-      track_num, kWebMTimeScale, 0, video_codec, std::string(),
-      codec_private.data(), codec_private.size(), width_after_crop,
-      height_after_crop, sar_x, sar_y, 0, 0, std::string(), is_encrypted);
+      track_num, kWebMTimeScale, 0, video_codec, H26xStreamFormat::kUnSpecified,
+      std::string(), codec_private.data(), codec_private.size(),
+      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, std::string(),
+      is_encrypted);
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {

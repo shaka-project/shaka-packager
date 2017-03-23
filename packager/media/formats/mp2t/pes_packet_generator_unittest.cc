@@ -115,7 +115,8 @@ class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
 
 std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, codec, kCodecString, kVideoExtraData,
+      kTrackId, kTimeScale, kDuration, codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
       arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   return stream_info;
@@ -344,9 +345,10 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   const uint32_t kTestTimescale = 1000;
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTestTimescale, kDuration, kH264Codec, kCodecString,
-      kVideoExtraData, arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth,
-      kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrackId, kTestTimescale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kVideoExtraData,
+      arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());

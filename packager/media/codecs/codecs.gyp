@@ -53,6 +53,7 @@
       ],
       'dependencies': [
         '../../base/base.gyp:base',
+        '../../third_party/gflags/gflags.gyp:gflags',
       ],
     },
     {

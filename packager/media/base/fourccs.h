@@ -22,6 +22,7 @@ enum FourCC : uint32_t {
   FOURCC_ac_3 = 0x61632d33,  // "ac-3"
   FOURCC_apad = 0x61706164,
   FOURCC_avc1 = 0x61766331,
+  FOURCC_avc3 = 0x61766333,
   FOURCC_avcC = 0x61766343,
   FOURCC_bloc = 0x626C6F63,
   FOURCC_cbc1 = 0x63626331,

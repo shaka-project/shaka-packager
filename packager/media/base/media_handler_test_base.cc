@@ -159,9 +159,10 @@ std::shared_ptr<StreamInfo> MediaHandlerTestBase::GetMockStreamInfo(
         !kEncrypted));
   } else if (codec >= kCodecVideo && codec < kCodecVideoMaxPlusOne) {
     return std::shared_ptr<StreamInfo>(new VideoStreamInfo(
-        kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,
-        sizeof(kCodecConfig), kWidth, kHeight, kPixelWidth, kPixelHeight,
-        kTrickPlayRate, kNaluLengthSize, kLanguage, !kEncrypted));
+        kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
+        kCodecString, kCodecConfig, sizeof(kCodecConfig), kWidth, kHeight,
+        kPixelWidth, kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage,
+        !kEncrypted));
   }
   return nullptr;
 }

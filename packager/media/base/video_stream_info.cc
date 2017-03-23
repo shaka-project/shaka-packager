@@ -20,18 +20,8 @@ std::string VideoCodecToString(Codec codec) {
   switch (codec) {
     case kCodecH264:
       return "H264";
-    case kCodecHEV1:
-      return "HEV1";
-    case kCodecHVC1:
-      return "HVC1";
-    case kCodecVC1:
-      return "VC1";
-    case kCodecMPEG2:
-      return "MPEG2";
-    case kCodecMPEG4:
-      return "MPEG4";
-    case kCodecTheora:
-      return "Theora";
+    case kCodecH265:
+      return "H265";
     case kCodecVP8:
       return "VP8";
     case kCodecVP9:
@@ -46,15 +36,33 @@ std::string VideoCodecToString(Codec codec) {
 
 }  // namespace
 
-VideoStreamInfo::VideoStreamInfo(
-    int track_id, uint32_t time_scale, uint64_t duration, Codec codec,
-    const std::string& codec_string, const uint8_t* codec_config,
-    size_t codec_config_size, uint16_t width, uint16_t height,
-    uint32_t pixel_width, uint32_t pixel_height, int16_t trick_play_rate,
-    uint8_t nalu_length_size, const std::string& language, bool is_encrypted)
-    : StreamInfo(kStreamVideo, track_id, time_scale, duration, codec,
-                 codec_string, codec_config, codec_config_size, language,
+VideoStreamInfo::VideoStreamInfo(int track_id,
+                                 uint32_t time_scale,
+                                 uint64_t duration,
+                                 Codec codec,
+                                 H26xStreamFormat h26x_stream_format,
+                                 const std::string& codec_string,
+                                 const uint8_t* codec_config,
+                                 size_t codec_config_size,
+                                 uint16_t width,
+                                 uint16_t height,
+                                 uint32_t pixel_width,
+                                 uint32_t pixel_height,
+                                 int16_t trick_play_rate,
+                                 uint8_t nalu_length_size,
+                                 const std::string& language,
+                                 bool is_encrypted)
+    : StreamInfo(kStreamVideo,
+                 track_id,
+                 time_scale,
+                 duration,
+                 codec,
+                 codec_string,
+                 codec_config,
+                 codec_config_size,
+                 language,
                  is_encrypted),
+      h26x_stream_format_(h26x_stream_format),
       width_(width),
       height_(height),
       pixel_width_(pixel_width),

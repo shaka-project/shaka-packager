@@ -45,8 +45,8 @@ TEST(HEVCDecoderConfigurationRecordTest, Success) {
 
   EXPECT_EQ(4u, hevc_config.nalu_length_size());
 
-  EXPECT_EQ("hev1.2.4.L63.90", hevc_config.GetCodecString(kCodecHEV1));
-  EXPECT_EQ("hvc1.2.4.L63.90", hevc_config.GetCodecString(kCodecHVC1));
+  EXPECT_EQ("hev1.2.4.L63.90", hevc_config.GetCodecString(FOURCC_hev1));
+  EXPECT_EQ("hvc1.2.4.L63.90", hevc_config.GetCodecString(FOURCC_hvc1));
 
   EXPECT_EQ(2u, hevc_config.nalu_count());
   EXPECT_EQ(0x16u, hevc_config.nalu(0).payload_size());

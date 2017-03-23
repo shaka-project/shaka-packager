@@ -108,8 +108,7 @@ WvmMediaParser::WvmMediaParser()
       media_sample_(NULL),
       crypto_unit_start_pos_(0),
       stream_id_count_(0),
-      decryption_key_source_(NULL) {
-}
+      decryption_key_source_(NULL) {}
 
 WvmMediaParser::~WvmMediaParser() {}
 
@@ -250,6 +249,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         if (HAS_HEADER_EXTENSION(pes_stream_id_)) {
           parse_state_ = PesExtension1;
         } else {
+          prev_pes_flags_1_ = pes_flags_1_;
           pes_flags_1_ = pes_flags_2_ = 0;
           pes_header_data_bytes_ = 0;
           parse_state_ = PesPayload;
@@ -739,11 +739,11 @@ bool WvmMediaParser::ParseIndexEntry() {
     index_size = read_ptr - index_data_.data();
 
     if (has_video) {
-      Codec video_codec = kCodecH264;
       stream_infos_.emplace_back(new VideoStreamInfo(
-          stream_id_count_, time_scale, track_duration, video_codec,
-          std::string(), video_codec_config.data(), video_codec_config.size(),
-          video_width, video_height, pixel_width, pixel_height, trick_play_rate,
+          stream_id_count_, time_scale, track_duration, kCodecH264,
+          byte_to_unit_stream_converter_.stream_format(), std::string(),
+          video_codec_config.data(), video_codec_config.size(), video_width,
+          video_height, pixel_width, pixel_height, trick_play_rate,
           nalu_length_size, std::string(),
           decryption_key_source_ ? false : true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +

@@ -151,9 +151,7 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
     case kCodecH264:
       header_parser_.reset(new H264VideoSliceHeaderParser);
       break;
-    case kCodecHVC1:
-      FALLTHROUGH_INTENDED;
-    case kCodecHEV1:
+    case kCodecH265:
       header_parser_.reset(new H265VideoSliceHeaderParser);
       break;
     default:
@@ -436,8 +434,7 @@ bool EncryptionHandler::EncryptNalFrame(MediaSample* sample,
   DCHECK_NE(nalu_length_size_, 0u);
   DCHECK(header_parser_);
   const Nalu::CodecType nalu_type =
-      (codec_ == kCodecHVC1 || codec_ == kCodecHEV1) ? Nalu::kH265
-                                                     : Nalu::kH264;
+      (codec_ == kCodecH265) ? Nalu::kH265 : Nalu::kH264;
   NaluReader reader(nalu_type, nalu_length_size_, sample->writable_data(),
                     sample->data_size());
 

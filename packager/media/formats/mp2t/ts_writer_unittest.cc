@@ -158,7 +158,8 @@ class TsWriterTest : public ::testing::Test {
 
 TEST_F(TsWriterTest, InitializeVideoH264) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -166,9 +167,10 @@ TEST_F(TsWriterTest, InitializeVideoH264) {
 
 TEST_F(TsWriterTest, InitializeVideoNonH264) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, Codec::kCodecVP9, kCodecString,
-      kExtraData, arraysize(kExtraData), kWidth, kHeight, kPixelWidth,
-      kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrackId, kTimeScale, kDuration, Codec::kCodecVP9,
+      H26xStreamFormat::kUnSpecified, kCodecString, kExtraData,
+      arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_FALSE(ts_writer_.Initialize(*stream_info));
 }
 
@@ -199,7 +201,8 @@ TEST_F(TsWriterTest, ClearH264Psi) {
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteOnePmt());
 
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -281,7 +284,8 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
       .WillOnce(WriteTwoPmts());
 
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -310,7 +314,8 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
   EXPECT_CALL(*mock_pmt_writer, EncryptedSegmentPmt(_)).WillOnce(WriteOnePmt());
 
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -398,7 +403,8 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
 
 TEST_F(TsWriterTest, AddPesPacket) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -463,7 +469,8 @@ TEST_F(TsWriterTest, AddPesPacket) {
 // Verify that PES packet > 64KiB can be handled.
 TEST_F(TsWriterTest, BigPesPacket) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -499,7 +506,8 @@ TEST_F(TsWriterTest, BigPesPacket) {
 // PTS (implicilty) cast to bool is true.
 TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
@@ -559,7 +567,8 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
 // adaptation_field_length should be 0.
 TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
   std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264Codec, kCodecString, kExtraData,
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));

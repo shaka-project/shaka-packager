@@ -21,7 +21,14 @@ namespace media {
 /// Annex B) into H.264 NAL unit streams (as specified in ISO/IEC 14496-15).
 class H264ByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
  public:
+  /// Create a H264 byte to unit stream converter.
+  /// The setting of @a KeepParameterSetNalus is defined by a gflag.
   H264ByteToUnitStreamConverter();
+
+  /// Create a H264 byte to unit stream converter with desired output stream
+  /// format (whether to include parameter set nal units).
+  explicit H264ByteToUnitStreamConverter(H26xStreamFormat stream_format);
+
   ~H264ByteToUnitStreamConverter() override;
 
   /// @name H26xByteToUnitStreamConverter implementation override.
