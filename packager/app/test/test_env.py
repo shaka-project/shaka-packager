@@ -27,6 +27,15 @@ SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--test_update_golden_files', default=0, type=int)
+# Overwrite the test to encryption key/iv specified in the command line.
+parser.add_argument('--encryption_key')
+parser.add_argument('--encryption_iv')
+
+parser.add_argument('--remove_temp_files_after_test',
+                    dest='remove_test_files_after_test', action='store_true')
+parser.add_argument('--no-remove_temp_files_after_test',
+                    dest='remove_temp_files_after_test', action='store_false')
+parser.set_defaults(remove_temp_files_after_test=True)
 
 aes = parser.add_argument_group(
     'aes flags',

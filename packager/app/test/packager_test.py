@@ -35,7 +35,8 @@ class PackagerAppTest(unittest.TestCase):
     self.output = None
 
   def tearDown(self):
-    shutil.rmtree(self.tmp_dir)
+    if test_env.options.remove_temp_files_after_test:
+      shutil.rmtree(self.tmp_dir)
 
   def testVersion(self):
     self.assertRegexpMatches(
@@ -251,6 +252,27 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(
         os.path.join(self.tmp_dir, 'video.m3u8'),
         'bear-640x360-v-enc-golden.m3u8')
+
+  def testPackageAvcTsWithEncryptionExerciseEmulationPrevention(self):
+    # Currently we only support live packaging for ts.
+    self.packager.Package(
+        self._GetStreams(
+            ['video'],
+            output_format='ts',
+            live=True,
+            test_files=['sintel-1024x436.mp4']),
+        self._GetFlags(
+            encryption=True,
+            encryption_key='ad7e9786def9159db6724be06dfcde7a',
+            output_hls=True))
+    self._DiffLiveGold(self.output[0],
+                       'sintel-1024x436-v-enc-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'sintel-1024x436-v-enc-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'sintel-1024x436-v-enc-golden.m3u8')
 
   def testPackageWebmWithEncryption(self):
     self.packager.Package(
@@ -511,6 +533,8 @@ class PackagerAppTest(unittest.TestCase):
                 encryption=False,
                 protection_scheme=None,
                 decryption=False,
+                encryption_key='32333435363738393021323334353637',
+                encryption_iv='3334353637383930',
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
@@ -529,10 +553,15 @@ class PackagerAppTest(unittest.TestCase):
     elif encryption:
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
-                '--key=32333435363738393021323334353637', '--clear_lead=1']
+                '--clear_lead=1']
 
+      if test_env.options.encryption_key:
+        encryption_key = test_env.options.encryption_key
+      flags.append('--key=' + encryption_key)
       if not random_iv:
-        flags.append('--iv=3334353637383930')
+        if test_env.options.encryption_iv:
+          encryption_iv = test_env.options.encryption_iv
+        flags.append('--iv=' + encryption_iv)
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
 
