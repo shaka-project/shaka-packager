@@ -148,12 +148,16 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
 
   const uint8_t nalu_length_size =
       H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize;
+  const H26xStreamFormat stream_format = stream_converter()->stream_format();
+  const FourCC codec_fourcc =
+      stream_format == H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
+          ? FOURCC_avc3
+          : FOURCC_avc1;
   last_video_decoder_config_ = std::make_shared<VideoStreamInfo>(
-      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH264,
-      stream_converter()->stream_format(),
-      AVCDecoderConfigurationRecord::GetCodecString(decoder_config_record[1],
-                                                    decoder_config_record[2],
-                                                    decoder_config_record[3]),
+      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH264, stream_format,
+      AVCDecoderConfigurationRecord::GetCodecString(
+          codec_fourcc, decoder_config_record[1], decoder_config_record[2],
+          decoder_config_record[3]),
       decoder_config_record.data(), decoder_config_record.size(), coded_width,
       coded_height, pixel_width, pixel_height, 0, nalu_length_size,
       std::string(), false);

@@ -520,7 +520,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse avcc.";
             return false;
           }
-          codec_string = avc_config.GetCodecString();
+          codec_string = avc_config.GetCodecString(actual_format);
           nalu_length_size = avc_config.nalu_length_size();
 
           if (coded_width != avc_config.coded_width() ||

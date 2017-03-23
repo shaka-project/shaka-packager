@@ -354,6 +354,34 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0], 'bear-320x240-opus-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-320x240-vp9-golden.mp4')
 
+  def testPackageWvmInput(self):
+    self.packager.Package(
+        self._GetStreams(
+            ['0', '1', '2', '3'], test_files=['bear-multi-configs.wvm']),
+        self._GetFlags(
+            decryption=True, encryption_key='9248d245390e0a49d483ba9b43fc69c3'))
+    # Output timescale is 90000.
+    self._DiffGold(self.output[0], 'bear-320x180-v-wvm-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-320x180-a-wvm-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-v-wvm-golden.mp4')
+    self._DiffGold(self.output[3], 'bear-640x360-a-wvm-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-wvm-golden.mpd')
+
+  def testPackageWvmInputWithoutStrippingParameterSetNalus(self):
+    self.packager.Package(
+        self._GetStreams(
+            ['0', '1', '2', '3'], test_files=['bear-multi-configs.wvm']),
+        self._GetFlags(
+            strip_parameter_set_nalus=False,
+            decryption=True,
+            encryption_key='9248d245390e0a49d483ba9b43fc69c3'))
+    # Output timescale is 90000.
+    self._DiffGold(self.output[0], 'bear-320x180-avc3-wvm-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-320x180-a-wvm-golden.mp4')
+    self._DiffGold(self.output[2], 'bear-640x360-avc3-wvm-golden.mp4')
+    self._DiffGold(self.output[3], 'bear-640x360-a-wvm-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-avc3-wvm-golden.mpd')
+
   def testPackageWithEncryptionAndRandomIv(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
@@ -582,6 +610,7 @@ class PackagerAppTest(unittest.TestCase):
     return 'mp4'
 
   def _GetFlags(self,
+                strip_parameter_set_nalus=True,
                 encryption=False,
                 protection_scheme=None,
                 vp9_subsample_encryption=True,
@@ -598,6 +627,10 @@ class PackagerAppTest(unittest.TestCase):
                 generate_static_mpd=False,
                 use_fake_clock=True):
     flags = []
+
+    if not strip_parameter_set_nalus:
+      flags += ['--strip_parameter_set_nalus=false']
+
     if widevine_encryption:
       widevine_server_url = ('https://license.uat.widevine.com/cenc'
                              '/getcontentkey/widevine_test')
@@ -624,7 +657,7 @@ class PackagerAppTest(unittest.TestCase):
     if decryption:
       flags += ['--enable_fixed_key_decryption',
                 '--key_id=31323334353637383930313233343536',
-                '--key=32333435363738393021323334353637']
+                '--key=' + encryption_key]
 
     if key_rotation:
       flags.append('--crypto_period_duration=1')

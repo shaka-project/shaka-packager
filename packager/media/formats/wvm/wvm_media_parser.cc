@@ -861,7 +861,13 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
                 return false;
               }
             }
-            video_stream_info->set_codec_string(avc_config.GetCodecString());
+            const FourCC codec_fourcc =
+                byte_to_unit_stream_converter_.stream_format() ==
+                        H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
+                    ? FOURCC_avc3
+                    : FOURCC_avc1;
+            video_stream_info->set_codec_string(
+                avc_config.GetCodecString(codec_fourcc));
 
             if (avc_config.pixel_width() != video_stream_info->pixel_width() ||
                 avc_config.pixel_height() !=

@@ -215,7 +215,7 @@ TEST_F(WvmMediaParserTest, ParseMultiConfigWvm) {
   EXPECT_CALL(*key_source_, GetKey(_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
   Parse(kMultiConfigWvmFile);
-  EXPECT_EQ(6u, stream_map_.size());
+  ASSERT_EQ(4u, stream_map_.size());
 
   ASSERT_EQ(kStreamVideo, stream_map_[0]->stream_type());
   VideoStreamInfo* video_info = reinterpret_cast<VideoStreamInfo*>(
@@ -242,18 +242,6 @@ TEST_F(WvmMediaParserTest, ParseMultiConfigWvm) {
   EXPECT_EQ("mp4a.40.2", audio_info->codec_string());
   EXPECT_EQ(2u, audio_info->num_channels());
   EXPECT_EQ(44100u, audio_info->sampling_frequency());
-
-  ASSERT_EQ(kStreamVideo, stream_map_[4]->stream_type());
-  video_info = reinterpret_cast<VideoStreamInfo*>(stream_map_[4].get());
-  EXPECT_EQ("avc1.64001f", video_info->codec_string());
-  EXPECT_EQ(1280u, video_info->width());
-  EXPECT_EQ(720u, video_info->height());
-
-  ASSERT_EQ(kStreamAudio, stream_map_[5]->stream_type());
-  audio_info = reinterpret_cast<AudioStreamInfo*>(stream_map_[5].get());
-  EXPECT_EQ("mp4a.40.2", audio_info->codec_string());
-  EXPECT_EQ(2u, audio_info->num_channels());
-  EXPECT_EQ(48000u, audio_info->sampling_frequency());
 }
 
 }  // namespace wvm

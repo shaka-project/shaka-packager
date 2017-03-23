@@ -32,7 +32,8 @@ TEST(AVCDecoderConfigurationRecordTest, Success) {
   EXPECT_EQ(8u, avc_config.pixel_width());
   EXPECT_EQ(9u, avc_config.pixel_height());
 
-  EXPECT_EQ("avc1.64001e", avc_config.GetCodecString());
+  EXPECT_EQ("avc1.64001e", avc_config.GetCodecString(FOURCC_avc1));
+  EXPECT_EQ("avc3.64001e", avc_config.GetCodecString(FOURCC_avc3));
 }
 
 TEST(AVCDecoderConfigurationRecordTest, FailsOnInvalidNaluLengthSize) {
@@ -56,8 +57,8 @@ TEST(AVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
 }
 
 TEST(AVCDecoderConfigurationRecordTest, GetCodecString) {
-  EXPECT_EQ("avc1.123456",
-            AVCDecoderConfigurationRecord::GetCodecString(0x12, 0x34, 0x56));
+  EXPECT_EQ("avc1.123456", AVCDecoderConfigurationRecord::GetCodecString(
+                               FOURCC_avc1, 0x12, 0x34, 0x56));
 }
 
 }  // namespace media

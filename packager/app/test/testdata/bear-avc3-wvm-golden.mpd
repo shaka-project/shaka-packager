@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.73607S">
+  <Period id="0">
+    <AdaptationSet id="0" contentType="video" maxWidth="640" maxHeight="360" frameRate="90000/3003" subsegmentAlignment="true" par="16:9">
+      <Representation id="0" bandwidth="354240" codecs="avc3.64000d" mimeType="video/mp4" sar="1:1" width="320" height="180">
+        <BaseURL>output_0.mp4</BaseURL>
+        <SegmentBase indexRange="818-885" timescale="90000">
+          <Initialization range="0-817"/>
+        </SegmentBase>
+      </Representation>
+      <Representation id="2" bandwidth="888442" codecs="avc3.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360">
+        <BaseURL>output_2.mp4</BaseURL>
+        <SegmentBase indexRange="819-886" timescale="90000">
+          <Initialization range="0-818"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
+      <Representation id="1" bandwidth="132362" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <BaseURL>output_1.mp4</BaseURL>
+        <SegmentBase indexRange="757-824" timescale="90000">
+          <Initialization range="0-756"/>
+        </SegmentBase>
+      </Representation>
+      <Representation id="3" bandwidth="136806" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <BaseURL>output_3.mp4</BaseURL>
+        <SegmentBase indexRange="757-824" timescale="90000">
+          <Initialization range="0-756"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>

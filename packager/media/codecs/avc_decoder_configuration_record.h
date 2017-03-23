@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "packager/base/macros.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/decoder_configuration_record.h"
 
 namespace shaka {
@@ -24,7 +25,7 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   ~AVCDecoderConfigurationRecord() override;
 
   /// @return The codec string.
-  std::string GetCodecString() const;
+  std::string GetCodecString(FourCC codec_fourcc) const;
 
   uint8_t version() const { return version_; }
   uint8_t profile_indication() const { return profile_indication_; }
@@ -37,7 +38,8 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
 
   /// Static version of GetCodecString.
   /// @return The codec string.
-  static std::string GetCodecString(uint8_t profile_indication,
+  static std::string GetCodecString(FourCC codec_fourcc,
+                                    uint8_t profile_indication,
                                     uint8_t profile_compatibility,
                                     uint8_t avc_level);
 

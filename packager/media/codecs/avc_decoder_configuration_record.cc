@@ -88,18 +88,21 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
   return true;
 }
 
-std::string AVCDecoderConfigurationRecord::GetCodecString() const {
-  return GetCodecString(profile_indication_, profile_compatibility_,
-                        avc_level_);
+std::string AVCDecoderConfigurationRecord::GetCodecString(
+    FourCC codec_fourcc) const {
+  return GetCodecString(codec_fourcc, profile_indication_,
+                        profile_compatibility_, avc_level_);
 }
 
 std::string AVCDecoderConfigurationRecord::GetCodecString(
+    FourCC codec_fourcc,
     uint8_t profile_indication,
     uint8_t profile_compatibility,
     uint8_t avc_level) {
   const uint8_t bytes[] = {profile_indication, profile_compatibility,
                            avc_level};
-  return "avc1." + base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+  return FourCCToString(codec_fourcc) + "." +
+         base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
 }
 
 }  // namespace media
