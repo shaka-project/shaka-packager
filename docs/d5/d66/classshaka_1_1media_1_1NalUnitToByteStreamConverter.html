@@ -101,8 +101,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a27986db8a2e62669fe1983a39383c546"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acde0ff823ed23fd3d8b8704cf243f3d5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">ConvertUnitToByteStream</a> (const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</td></tr>
 <tr class="separator:acde0ff823ed23fd3d8b8704cf243f3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88c2997b4d912ba7caa8066bac417622"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#a88c2997b4d912ba7caa8066bac417622">ConvertUnitToByteStreamWithSubsamples</a> (const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output, std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; *subsamples)</td></tr>
-<tr class="separator:a88c2997b4d912ba7caa8066bac417622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae727e801c989d3ede17f1d1bd86a4ab4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#ae727e801c989d3ede17f1d1bd86a4ab4">ConvertUnitToByteStreamWithSubsamples</a> (const uint8_t *sample, size_t sample_size, bool is_key_frame, bool escape_encrypted_nalu, std::vector&lt; uint8_t &gt; *output, std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; *subsamples)</td></tr>
+<tr class="separator:ae727e801c989d3ede17f1d1bd86a4ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -162,17 +162,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">sample</td><td>is the sample to be converted. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sample_size</td><td>is the size of <em>sample</em>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">is_key_frame</td><td>indicates if the sample is a key frame. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>is set to the the converted sample, on success. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00155">155</a> of file <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html">nal_unit_to_byte_stream_converter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00162">162</a> of file <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html">nal_unit_to_byte_stream_converter.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a88c2997b4d912ba7caa8066bac417622"></a>
+<a class="anchor" id="ae727e801c989d3ede17f1d1bd86a4ab4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -196,6 +197,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
           <td></td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>is_key_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>escape_encrypted_nalu</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -226,14 +233,16 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">sample</td><td>is the sample to be converted. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">sample_size</td><td>is the size of <em>sample</em>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">is_key_frame</td><td>indicates if the sample is a key frame. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">escape_encrypted_nalu</td><td>indicates whether an encrypted nalu should be escaped. This is needed for Apple Sample AES. Note that |subsamples| on return contains the sizes before escaping. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>is set to the the converted sample, on success. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">subsamples</td><td>has the input subsamples and output updated subsamples, on sucess. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">subsamples</td><td>has the input subsamples and output updated subsamples, on success. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00167">167</a> of file <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html">nal_unit_to_byte_stream_converter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00175">175</a> of file <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html">nal_unit_to_byte_stream_converter.cc</a>.</p>
 
 </div>
 </div>
@@ -278,7 +287,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00107">107</a> of file <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html">nal_unit_to_byte_stream_converter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00114">114</a> of file <a class="el" href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html">nal_unit_to_byte_stream_converter.cc</a>.</p>
 
 </div>
 </div>
@@ -289,7 +298,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 16:44:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 18:24:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -121,39 +121,40 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#a27986db8a2e62669fe1983a39383c546">Initialize</a>(<span class="keyword">const</span> uint8_t* decoder_configuration_data,</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                          <span class="keywordtype">size_t</span> decoder_configuration_data_size);</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">ConvertUnitToByteStream</a>(<span class="keyword">const</span> uint8_t* sample,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                       <span class="keywordtype">size_t</span> sample_size,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                       <span class="keywordtype">bool</span> is_key_frame,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                       std::vector&lt;uint8_t&gt;* output);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#a88c2997b4d912ba7caa8066bac417622">ConvertUnitToByteStreamWithSubsamples</a>(</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="keyword">const</span> uint8_t* sample,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordtype">size_t</span> sample_size,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordtype">bool</span> is_key_frame,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      std::vector&lt;uint8_t&gt;* output,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      std::vector&lt;SubsampleEntry&gt;* subsamples);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>NalUnitToByteStreamConverterTest;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">int</span> nalu_length_size_;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::vector&lt;uint8_t&gt; decoder_configuration_in_byte_stream_;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">ConvertUnitToByteStream</a>(<span class="keyword">const</span> uint8_t* sample,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                       <span class="keywordtype">size_t</span> sample_size,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                       <span class="keywordtype">bool</span> is_key_frame,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                       std::vector&lt;uint8_t&gt;* output);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#ae727e801c989d3ede17f1d1bd86a4ab4">ConvertUnitToByteStreamWithSubsamples</a>(</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keyword">const</span> uint8_t* sample,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordtype">size_t</span> sample_size,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      <span class="keywordtype">bool</span> is_key_frame,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordtype">bool</span> escape_encrypted_nalu,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      std::vector&lt;uint8_t&gt;* output,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;      std::vector&lt;SubsampleEntry&gt;* subsamples);</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html">NalUnitToByteStreamConverter</a>);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>NalUnitToByteStreamConverterTest;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">int</span> nalu_length_size_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  std::vector&lt;uint8_t&gt; decoder_configuration_in_byte_stream_;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_a88c2997b4d912ba7caa8066bac417622"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#a88c2997b4d912ba7caa8066bac417622">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStreamWithSubsamples(const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output, std::vector&lt; SubsampleEntry &gt; *subsamples)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00167">nal_unit_to_byte_stream_converter.cc:167</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_acde0ff823ed23fd3d8b8704cf243f3d5"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStream</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStream(const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00155">nal_unit_to_byte_stream_converter.cc:155</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_a27986db8a2e62669fe1983a39383c546"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#a27986db8a2e62669fe1983a39383c546">shaka::media::NalUnitToByteStreamConverter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00107">nal_unit_to_byte_stream_converter.cc:107</a></div></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html">NalUnitToByteStreamConverter</a>);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_acde0ff823ed23fd3d8b8704cf243f3d5"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStream</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStream(const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00162">nal_unit_to_byte_stream_converter.cc:162</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_a27986db8a2e62669fe1983a39383c546"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#a27986db8a2e62669fe1983a39383c546">shaka::media::NalUnitToByteStreamConverter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00114">nal_unit_to_byte_stream_converter.cc:114</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_ae727e801c989d3ede17f1d1bd86a4ab4"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#ae727e801c989d3ede17f1d1bd86a4ab4">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStreamWithSubsamples(const uint8_t *sample, size_t sample_size, bool is_key_frame, bool escape_encrypted_nalu, std::vector&lt; uint8_t &gt; *output, std::vector&lt; SubsampleEntry &gt; *subsamples)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00175">nal_unit_to_byte_stream_converter.cc:175</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html">shaka::media::NalUnitToByteStreamConverter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dfa/nal__unit__to__byte__stream__converter_8h_source.html#l00034">nal_unit_to_byte_stream_converter.h:34</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 16:44:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 18:24:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
