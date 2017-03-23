@@ -239,30 +239,31 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize;</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  last_video_decoder_config_ = std::make_shared&lt;VideoStreamInfo&gt;(</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH264,</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">AVCDecoderConfigurationRecord::GetCodecString</a>(decoder_config_record[1],</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                                                    decoder_config_record[2],</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                                                    decoder_config_record[3]),</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      decoder_config_record.data(), decoder_config_record.size(), coded_width,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      coded_height, pixel_width, pixel_height, 0, nalu_length_size,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      std::string(), <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Profile IDC: &quot;</span> &lt;&lt; sps-&gt;profile_idc;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Level IDC: &quot;</span> &lt;&lt; sps-&gt;level_idc;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;log2_max_frame_num_minus4: &quot;</span> &lt;&lt; sps-&gt;log2_max_frame_num_minus4;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="comment">// Video config notification.</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      stream_converter()-&gt;stream_format(),</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">AVCDecoderConfigurationRecord::GetCodecString</a>(decoder_config_record[1],</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                                                    decoder_config_record[2],</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                                                    decoder_config_record[3]),</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      decoder_config_record.data(), decoder_config_record.size(), coded_width,</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      coded_height, pixel_width, pixel_height, 0, nalu_length_size,</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      std::string(), <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Profile IDC: &quot;</span> &lt;&lt; sps-&gt;profile_idc;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Level IDC: &quot;</span> &lt;&lt; sps-&gt;level_idc;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;log2_max_frame_num_minus4: &quot;</span> &lt;&lt; sps-&gt;log2_max_frame_num_minus4;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="comment">// Video config notification.</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1AVCDecoderConfigurationRecord_html_a52fbab2c863be9e771eafa20b34b89bc"><div class="ttname"><a href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">shaka::media::AVCDecoderConfigurationRecord::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html#l00091">avc_decoder_configuration_record.cc:91</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 18:29:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 23:54:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

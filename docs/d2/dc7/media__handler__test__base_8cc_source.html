@@ -248,15 +248,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        !kEncrypted));</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (codec &gt;= kCodecVideo &amp;&amp; codec &lt; kCodecVideoMaxPlusOne) {</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordflow">return</span> std::shared_ptr&lt;StreamInfo&gt;(<span class="keyword">new</span> VideoStreamInfo(</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        <span class="keyword">sizeof</span>(kCodecConfig), kWidth, kHeight, kPixelWidth, kPixelHeight,</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        kTrickPlayRate, kNaluLengthSize, kLanguage, !kEncrypted));</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        kCodecString, kCodecConfig, <span class="keyword">sizeof</span>(kCodecConfig), kWidth, kHeight,</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        kPixelWidth, kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage,</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        !kEncrypted));</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  }</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandlerTestBase_html_ab3e2820a25ce35ad3697a586bba45957"><div class="ttname"><a href="../../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#ab3e2820a25ce35ad3697a586bba45957">shaka::media::MediaHandlerTestBase::GetMediaSampleStreamData</a></div><div class="ttdeci">std::unique_ptr&lt; StreamData &gt; GetMediaSampleStreamData(int stream_index, int64_t timestamp, int64_t duration, bool is_keyframe)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dc7/media__handler__test__base_8cc_source.html#l00099">media_handler_test_base.cc:99</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandlerTestBase_html_ac697d026d8da483cbbfbf866b0540830"><div class="ttname"><a href="../../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#ac697d026d8da483cbbfbf866b0540830">shaka::media::MediaHandlerTestBase::GetStreamInfoStreamData</a></div><div class="ttdeci">std::unique_ptr&lt; StreamData &gt; GetStreamInfoStreamData(int stream_index, Codec codec, uint32_t time_scale)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dc7/media__handler__test__base_8cc_source.html#l00088">media_handler_test_base.cc:88</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1SegmentInfo_html"><div class="ttname"><a href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">shaka::media::SegmentInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00033">media_handler.h:33</a></div></div>
@@ -270,7 +271,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 18:29:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 23 2017 23:54:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
