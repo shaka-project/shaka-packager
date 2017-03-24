@@ -279,86 +279,88 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="keywordtype">int</span> adjustment = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(buffer_writer.Size());</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="keywordtype">size_t</span> subsample_id = 0;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a> nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  NaluReader::Result result = nalu_reader.<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a>(&amp;nalu);</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordflow">while</span> (result == NaluReader::kOk) {</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="keywordflow">switch</span> (nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">type</a>()) {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD:</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS:</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> start_code_size_adjustment =</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      arraysize(kNaluStartCode) - nalu_length_size_;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordtype">size_t</span> subsample_id = 0;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">NaluReader</a> nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  NaluReader::Result result = nalu_reader.<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a>(&amp;nalu);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="keywordflow">while</span> (result == NaluReader::kOk) {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="keywordflow">switch</span> (nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">type</a>()) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD:</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_PPS:</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">if</span> (subsamples &amp;&amp; !subsamples-&gt;empty()) {</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;          <span class="keyword">const</span> <span class="keywordtype">size_t</span> old_nalu_size =</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;              nalu_length_size_ + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a9eb982bdbb66c10643b2fb8e2ae7a9ae">header_size</a>() + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a6bcba03125313ea515a61a67c9d2a821">payload_size</a>();</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;          <span class="keywordtype">bool</span> is_nalu_all_clear;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;          <span class="keywordflow">if</span> (!CheckIsClearNalu(subsamples, subsample_id, old_nalu_size,</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;                                &amp;is_nalu_all_clear)) {</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;          }</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;          <span class="keywordflow">if</span> (is_nalu_all_clear) {</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;            <span class="comment">// If AUD/SPS/PPS is all clear, reduce the clear bytes.</span></div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;            DCHECK_LT(old_nalu_size, subsamples-&gt;at(subsample_id).clear_bytes);</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes -=</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(old_nalu_size);</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;            <span class="comment">// If AUD/SPS/PPS has cipher, drop the corresponding subsample.</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;            subsamples-&gt;erase(subsamples-&gt;begin() + subsample_id);</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          }</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        }</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="keywordtype">bool</span> escape_data = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <span class="keywordflow">if</span> (subsamples &amp;&amp; !subsamples-&gt;empty()) {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;          <span class="keyword">const</span> <span class="keywordtype">size_t</span> old_nalu_size =</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;              nalu_length_size_ + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a9eb982bdbb66c10643b2fb8e2ae7a9ae">header_size</a>() + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a6bcba03125313ea515a61a67c9d2a821">payload_size</a>();</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          <span class="keywordtype">bool</span> is_nalu_all_clear;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;          <span class="keywordflow">if</span> (!CheckIsClearNalu(subsamples, subsample_id, old_nalu_size,</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                                &amp;is_nalu_all_clear)) {</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          }</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;          <span class="keywordflow">if</span> (is_nalu_all_clear) {</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;            <span class="comment">// Add this nalu to the adjustment and remove it from clear_bytes.</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            DCHECK_LT(old_nalu_size, subsamples-&gt;at(subsample_id).clear_bytes);</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes -=</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;                <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(old_nalu_size);</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;            adjustment += <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(old_nalu_size) +</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                          arraysize(kNaluStartCode) - nalu_length_size_;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;            <span class="keywordflow">if</span> (escape_encrypted_nalu)</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;              escape_data = subsamples-&gt;at(subsample_id).cipher_bytes != 0;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            <span class="comment">// Apply the adjustment on the current subsample, reset the</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            <span class="comment">// adjustment and move to the next subsample.</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes +=</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                adjustment + arraysize(kNaluStartCode) - nalu_length_size_;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            subsample_id++;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;            adjustment = 0;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;          }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        }</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        AppendNalu(nalu, nalu_length_size_, escape_data, &amp;buffer_writer);</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    result = nalu_reader.<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a>(&amp;nalu);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  }</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  DCHECK_NE(result, NaluReader::kOk);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="keywordflow">if</span> (result != NaluReader::kEOStream) {</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stopped reading before end of stream.&quot;</span>;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  }</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  buffer_writer.SwapBuffer(output);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;}</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS:</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        FALLTHROUGH_INTENDED;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_PPS:</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">if</span> (subsamples &amp;&amp; !subsamples-&gt;empty()) {</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;          <span class="keyword">const</span> <span class="keywordtype">size_t</span> old_nalu_size =</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;              nalu_length_size_ + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a9eb982bdbb66c10643b2fb8e2ae7a9ae">header_size</a>() + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a6bcba03125313ea515a61a67c9d2a821">payload_size</a>();</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;          <span class="keywordtype">bool</span> is_nalu_all_clear;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;          <span class="keywordflow">if</span> (!CheckIsClearNalu(subsamples, subsample_id, old_nalu_size,</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                                &amp;is_nalu_all_clear)) {</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;          }</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;          <span class="keywordflow">if</span> (is_nalu_all_clear) {</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;            <span class="comment">// If AUD/SPS/PPS is all clear, reduce the clear bytes.</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;            DCHECK_LT(old_nalu_size, subsamples-&gt;at(subsample_id).clear_bytes);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes -=</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;                <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(old_nalu_size);</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            <span class="comment">// If AUD/SPS/PPS has cipher, drop the corresponding subsample.</span></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;            subsamples-&gt;erase(subsamples-&gt;begin() + subsample_id);</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          }</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        }</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        <span class="keywordtype">bool</span> escape_data = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        <span class="keywordflow">if</span> (subsamples &amp;&amp; !subsamples-&gt;empty()) {</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          <span class="keyword">const</span> <span class="keywordtype">size_t</span> old_nalu_size =</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;              nalu_length_size_ + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a9eb982bdbb66c10643b2fb8e2ae7a9ae">header_size</a>() + nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a6bcba03125313ea515a61a67c9d2a821">payload_size</a>();</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;          <span class="keywordtype">bool</span> is_nalu_all_clear;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;          <span class="keywordflow">if</span> (!CheckIsClearNalu(subsamples, subsample_id, old_nalu_size,</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;                                &amp;is_nalu_all_clear)) {</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;          }</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;          <span class="keywordflow">if</span> (is_nalu_all_clear) {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            <span class="comment">// Add this nalu to the adjustment and remove it from clear_bytes.</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;            DCHECK_LT(old_nalu_size, subsamples-&gt;at(subsample_id).clear_bytes);</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes -=</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(old_nalu_size);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;            adjustment +=</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(old_nalu_size) + start_code_size_adjustment;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            <span class="keywordflow">if</span> (escape_encrypted_nalu)</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;              escape_data = subsamples-&gt;at(subsample_id).cipher_bytes != 0;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            <span class="comment">// Apply the adjustment on the current subsample, reset the</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            <span class="comment">// adjustment and move to the next subsample.</span></div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            subsamples-&gt;at(subsample_id).clear_bytes +=</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                adjustment + start_code_size_adjustment;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            subsample_id++;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            adjustment = 0;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;          }</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        }</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        AppendNalu(nalu, nalu_length_size_, escape_data, &amp;buffer_writer);</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    }</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    result = nalu_reader.<a class="code" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a>(&amp;nalu);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  }</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  DCHECK_NE(result, NaluReader::kOk);</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <span class="keywordflow">if</span> (result != NaluReader::kEOStream) {</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stopped reading before end of stream.&quot;</span>;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  }</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  buffer_writer.SwapBuffer(output);</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;}</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a6bcba03125313ea515a61a67c9d2a821"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a6bcba03125313ea515a61a67c9d2a821">shaka::media::Nalu::payload_size</a></div><div class="ttdeci">uint64_t payload_size() const </div><div class="ttdoc">Size of this Nalu minus header_size(). </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00101">nalu_reader.h:101</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">shaka::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00148">nalu_reader.h:148</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_acde0ff823ed23fd3d8b8704cf243f3d5"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStream</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStream(const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00162">nal_unit_to_byte_stream_converter.cc:162</a></div></div>
@@ -377,7 +379,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 23:54:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 24 2017 17:29:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

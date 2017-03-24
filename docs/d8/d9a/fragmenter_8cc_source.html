@@ -328,8 +328,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      !sample_encryption_entry.subsamples.empty();</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  <span class="keywordflow">if</span> (use_subsample_encryption)</div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    traf_-&gt;sample_encryption.flags |= SampleEncryption::kUseSubsampleEncryption;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  traf_-&gt;sample_encryption.iv_size =</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      sample_encryption_entry.initialization_vector.size();</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  traf_-&gt;sample_encryption.iv_size = <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      sample_encryption_entry.initialization_vector.size());</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  <span class="comment">// The offset will be adjusted in Segmenter after knowing moof size.</span></div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  traf_-&gt;auxiliary_offset.offsets.push_back(0);</div>
@@ -390,7 +390,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 23 2017 23:54:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 24 2017 17:29:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
