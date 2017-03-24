@@ -1308,7 +1308,8 @@ bool Representation::IsContiguous(uint64_t start_time,
 
 void Representation::SlideWindow() {
   DCHECK(!segment_infos_.empty());
-  if (mpd_options_.time_shift_buffer_depth <= 0.0)
+  if (mpd_options_.time_shift_buffer_depth <= 0.0 ||
+      mpd_options_.mpd_type == MpdType::kStatic)
     return;
 
   const uint32_t time_scale = GetTimeScale(media_info_);
