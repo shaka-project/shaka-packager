@@ -214,8 +214,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;};</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
 <div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">  127</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a> {</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">bool</span> luma_weight_flag;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">bool</span> chroma_weight_flag;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">bool</span> luma_weight_flag[32];</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">bool</span> chroma_weight_flag[32];</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keywordtype">int</span> luma_weight[32];</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordtype">int</span> luma_offset[32];</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">int</span> chroma_weight[32][2];</div>
@@ -443,7 +443,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 24 2017 17:44:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 24 2017 21:19:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

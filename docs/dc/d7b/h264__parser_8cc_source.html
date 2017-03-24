@@ -947,8 +947,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00858"></a><span class="lineno">  858</span>&#160;  <span class="keywordtype">int</span> def_chroma_weight = 1 &lt;&lt; chroma_log2_weight_denom;</div>
 <div class="line"><a name="l00859"></a><span class="lineno">  859</span>&#160;</div>
 <div class="line"><a name="l00860"></a><span class="lineno">  860</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; num_ref_idx_active_minus1 + 1; ++i) {</div>
-<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;    READ_BOOL_OR_RETURN(&amp;w_facts-&gt;luma_weight_flag);</div>
-<div class="line"><a name="l00862"></a><span class="lineno">  862</span>&#160;    <span class="keywordflow">if</span> (w_facts-&gt;luma_weight_flag) {</div>
+<div class="line"><a name="l00861"></a><span class="lineno">  861</span>&#160;    READ_BOOL_OR_RETURN(&amp;w_facts-&gt;luma_weight_flag[i]);</div>
+<div class="line"><a name="l00862"></a><span class="lineno">  862</span>&#160;    <span class="keywordflow">if</span> (w_facts-&gt;luma_weight_flag[i]) {</div>
 <div class="line"><a name="l00863"></a><span class="lineno">  863</span>&#160;      READ_SE_OR_RETURN(&amp;w_facts-&gt;luma_weight[i]);</div>
 <div class="line"><a name="l00864"></a><span class="lineno">  864</span>&#160;      IN_RANGE_OR_RETURN(w_facts-&gt;luma_weight[i], -128, 127);</div>
 <div class="line"><a name="l00865"></a><span class="lineno">  865</span>&#160;</div>
@@ -960,8 +960,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00871"></a><span class="lineno">  871</span>&#160;    }</div>
 <div class="line"><a name="l00872"></a><span class="lineno">  872</span>&#160;</div>
 <div class="line"><a name="l00873"></a><span class="lineno">  873</span>&#160;    <span class="keywordflow">if</span> (chroma_array_type != 0) {</div>
-<div class="line"><a name="l00874"></a><span class="lineno">  874</span>&#160;      READ_BOOL_OR_RETURN(&amp;w_facts-&gt;chroma_weight_flag);</div>
-<div class="line"><a name="l00875"></a><span class="lineno">  875</span>&#160;      <span class="keywordflow">if</span> (w_facts-&gt;chroma_weight_flag) {</div>
+<div class="line"><a name="l00874"></a><span class="lineno">  874</span>&#160;      READ_BOOL_OR_RETURN(&amp;w_facts-&gt;chroma_weight_flag[i]);</div>
+<div class="line"><a name="l00875"></a><span class="lineno">  875</span>&#160;      <span class="keywordflow">if</span> (w_facts-&gt;chroma_weight_flag[i]) {</div>
 <div class="line"><a name="l00876"></a><span class="lineno">  876</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 2; ++j) {</div>
 <div class="line"><a name="l00877"></a><span class="lineno">  877</span>&#160;          READ_SE_OR_RETURN(&amp;w_facts-&gt;chroma_weight[i][j]);</div>
 <div class="line"><a name="l00878"></a><span class="lineno">  878</span>&#160;          IN_RANGE_OR_RETURN(w_facts-&gt;chroma_weight[i][j], -128, 127);</div>
@@ -1256,7 +1256,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 24 2017 17:44:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 24 2017 21:19:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
