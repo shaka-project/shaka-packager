@@ -239,8 +239,8 @@ Status Fragmenter::FinalizeFragmentForEncryption() {
       !sample_encryption_entry.subsamples.empty();
   if (use_subsample_encryption)
     traf_->sample_encryption.flags |= SampleEncryption::kUseSubsampleEncryption;
-  traf_->sample_encryption.iv_size =
-      sample_encryption_entry.initialization_vector.size();
+  traf_->sample_encryption.iv_size = static_cast<uint8_t>(
+      sample_encryption_entry.initialization_vector.size());
 
   // The offset will be adjusted in Segmenter after knowing moof size.
   traf_->auxiliary_offset.offsets.push_back(0);
