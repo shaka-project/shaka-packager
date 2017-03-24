@@ -1397,104 +1397,105 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;</div>
 <div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;<span class="keywordtype">void</span> Representation::SlideWindow() {</div>
 <div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;  DCHECK(!segment_infos_.empty());</div>
-<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;  <span class="keywordflow">if</span> (mpd_options_.time_shift_buffer_depth &lt;= 0.0)</div>
-<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;</div>
-<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;  <span class="keyword">const</span> uint32_t time_scale = GetTimeScale(media_info_);</div>
-<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;  DCHECK_GT(time_scale, 0u);</div>
-<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;</div>
-<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;  uint64_t time_shift_buffer_depth =</div>
-<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160;      <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(mpd_options_.time_shift_buffer_depth * time_scale);</div>
-<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160;</div>
-<div class="line"><a name="l01320"></a><span class="lineno"> 1320</span>&#160;  <span class="comment">// The start time of the latest segment is considered the current_play_time,</span></div>
-<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160;  <span class="comment">// and this should guarantee that the latest segment will stay in the list.</span></div>
-<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;  <span class="keyword">const</span> uint64_t current_play_time = LatestSegmentStartTime(segment_infos_);</div>
-<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160;  <span class="keywordflow">if</span> (current_play_time &lt;= time_shift_buffer_depth)</div>
-<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;</div>
-<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;  <span class="keyword">const</span> uint64_t timeshift_limit = current_play_time - time_shift_buffer_depth;</div>
-<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;</div>
-<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;  <span class="comment">// First remove all the SegmentInfos that are completely out of range, by</span></div>
-<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;  <span class="comment">// looking at the very last segment&#39;s end time.</span></div>
-<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator first = segment_infos_.begin();</div>
-<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator last = first;</div>
-<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;  <span class="keywordtype">size_t</span> num_segments_removed = 0;</div>
-<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160;  <span class="keywordflow">for</span> (; last != segment_infos_.end(); ++last) {</div>
-<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;    <span class="keyword">const</span> uint64_t last_segment_end_time = LastSegmentEndTime(*last);</div>
-<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;    <span class="keywordflow">if</span> (timeshift_limit &lt; last_segment_end_time)</div>
-<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;    num_segments_removed += last-&gt;repeat + 1;</div>
-<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;  }</div>
-<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;  segment_infos_.erase(first, last);</div>
-<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;  start_number_ += num_segments_removed;</div>
-<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;</div>
-<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;  <span class="comment">// Now some segment in the first SegmentInfo should be left in the list.</span></div>
-<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;  SegmentInfo* first_segment_info = &amp;segment_infos_.front();</div>
-<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;  DCHECK_LE(timeshift_limit, LastSegmentEndTime(*first_segment_info));</div>
-<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;</div>
-<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;  <span class="comment">// Identify which segments should still be in the SegmentInfo.</span></div>
-<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> repeat_index =</div>
-<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;      SearchTimedOutRepeatIndex(timeshift_limit, *first_segment_info);</div>
-<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;  CHECK_GE(repeat_index, 0);</div>
-<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;  <span class="keywordflow">if</span> (repeat_index == 0)</div>
-<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;</div>
-<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;  first_segment_info-&gt;start_time = first_segment_info-&gt;start_time +</div>
-<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160;                                   first_segment_info-&gt;duration * repeat_index;</div>
-<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;</div>
-<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;  first_segment_info-&gt;repeat = first_segment_info-&gt;repeat - repeat_index;</div>
-<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;  start_number_ += repeat_index;</div>
-<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;}</div>
-<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;</div>
-<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;std::string Representation::GetVideoMimeType()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;video&quot;</span>, media_info_.container_type());</div>
-<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;}</div>
-<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;</div>
-<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;std::string Representation::GetAudioMimeType()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;audio&quot;</span>, media_info_.container_type());</div>
-<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;}</div>
-<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;</div>
-<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;std::string Representation::GetTextMimeType()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;  CHECK(media_info_.has_text_info());</div>
-<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().format() == <span class="stringliteral">&quot;ttml&quot;</span>) {</div>
-<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;    <span class="keywordflow">switch</span> (media_info_.container_type()) {</div>
-<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_TEXT:</div>
-<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/ttml+xml&quot;</span>;</div>
-<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_MP4:</div>
-<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/mp4&quot;</span>;</div>
-<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for TTML container: &quot;</span></div>
-<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;                   &lt;&lt; media_info_.container_type();</div>
-<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;    }</div>
-<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;  }</div>
-<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().format() == <span class="stringliteral">&quot;vtt&quot;</span>) {</div>
-<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;    <span class="keywordflow">if</span> (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {</div>
-<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;text/vtt&quot;</span>;</div>
-<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;    }</div>
-<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for VTT container: &quot;</span></div>
-<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;               &lt;&lt; media_info_.container_type();</div>
-<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;  }</div>
-<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;</div>
-<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;  LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot determine MIME type for format: &quot;</span></div>
-<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;             &lt;&lt; media_info_.text_info().format()</div>
-<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;             &lt;&lt; <span class="stringliteral">&quot; container: &quot;</span> &lt;&lt; media_info_.container_type();</div>
-<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;}</div>
-<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;</div>
-<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;<span class="keywordtype">bool</span> Representation::GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds) {</div>
-<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;  DCHECK(timestamp_seconds);</div>
-<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;</div>
-<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;  <span class="keywordflow">if</span> (segment_infos_.empty())</div>
-<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;</div>
-<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;  *timestamp_seconds = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(segment_infos_.begin()-&gt;start_time) /</div>
-<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;                       GetTimeScale(media_info_);</div>
-<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;}</div>
-<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;</div>
-<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;  <span class="keywordflow">if</span> (mpd_options_.time_shift_buffer_depth &lt;= 0.0 ||</div>
+<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;      mpd_options_.mpd_type == MpdType::kStatic)</div>
+<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;</div>
+<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;  <span class="keyword">const</span> uint32_t time_scale = GetTimeScale(media_info_);</div>
+<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;  DCHECK_GT(time_scale, 0u);</div>
+<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;</div>
+<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160;  uint64_t time_shift_buffer_depth =</div>
+<div class="line"><a name="l01319"></a><span class="lineno"> 1319</span>&#160;      <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(mpd_options_.time_shift_buffer_depth * time_scale);</div>
+<div class="line"><a name="l01320"></a><span class="lineno"> 1320</span>&#160;</div>
+<div class="line"><a name="l01321"></a><span class="lineno"> 1321</span>&#160;  <span class="comment">// The start time of the latest segment is considered the current_play_time,</span></div>
+<div class="line"><a name="l01322"></a><span class="lineno"> 1322</span>&#160;  <span class="comment">// and this should guarantee that the latest segment will stay in the list.</span></div>
+<div class="line"><a name="l01323"></a><span class="lineno"> 1323</span>&#160;  <span class="keyword">const</span> uint64_t current_play_time = LatestSegmentStartTime(segment_infos_);</div>
+<div class="line"><a name="l01324"></a><span class="lineno"> 1324</span>&#160;  <span class="keywordflow">if</span> (current_play_time &lt;= time_shift_buffer_depth)</div>
+<div class="line"><a name="l01325"></a><span class="lineno"> 1325</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01326"></a><span class="lineno"> 1326</span>&#160;</div>
+<div class="line"><a name="l01327"></a><span class="lineno"> 1327</span>&#160;  <span class="keyword">const</span> uint64_t timeshift_limit = current_play_time - time_shift_buffer_depth;</div>
+<div class="line"><a name="l01328"></a><span class="lineno"> 1328</span>&#160;</div>
+<div class="line"><a name="l01329"></a><span class="lineno"> 1329</span>&#160;  <span class="comment">// First remove all the SegmentInfos that are completely out of range, by</span></div>
+<div class="line"><a name="l01330"></a><span class="lineno"> 1330</span>&#160;  <span class="comment">// looking at the very last segment&#39;s end time.</span></div>
+<div class="line"><a name="l01331"></a><span class="lineno"> 1331</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator first = segment_infos_.begin();</div>
+<div class="line"><a name="l01332"></a><span class="lineno"> 1332</span>&#160;  std::list&lt;SegmentInfo&gt;::iterator last = first;</div>
+<div class="line"><a name="l01333"></a><span class="lineno"> 1333</span>&#160;  <span class="keywordtype">size_t</span> num_segments_removed = 0;</div>
+<div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;  <span class="keywordflow">for</span> (; last != segment_infos_.end(); ++last) {</div>
+<div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;    <span class="keyword">const</span> uint64_t last_segment_end_time = LastSegmentEndTime(*last);</div>
+<div class="line"><a name="l01336"></a><span class="lineno"> 1336</span>&#160;    <span class="keywordflow">if</span> (timeshift_limit &lt; last_segment_end_time)</div>
+<div class="line"><a name="l01337"></a><span class="lineno"> 1337</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l01338"></a><span class="lineno"> 1338</span>&#160;    num_segments_removed += last-&gt;repeat + 1;</div>
+<div class="line"><a name="l01339"></a><span class="lineno"> 1339</span>&#160;  }</div>
+<div class="line"><a name="l01340"></a><span class="lineno"> 1340</span>&#160;  segment_infos_.erase(first, last);</div>
+<div class="line"><a name="l01341"></a><span class="lineno"> 1341</span>&#160;  start_number_ += num_segments_removed;</div>
+<div class="line"><a name="l01342"></a><span class="lineno"> 1342</span>&#160;</div>
+<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;  <span class="comment">// Now some segment in the first SegmentInfo should be left in the list.</span></div>
+<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160;  SegmentInfo* first_segment_info = &amp;segment_infos_.front();</div>
+<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;  DCHECK_LE(timeshift_limit, LastSegmentEndTime(*first_segment_info));</div>
+<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;</div>
+<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;  <span class="comment">// Identify which segments should still be in the SegmentInfo.</span></div>
+<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> repeat_index =</div>
+<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;      SearchTimedOutRepeatIndex(timeshift_limit, *first_segment_info);</div>
+<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160;  CHECK_GE(repeat_index, 0);</div>
+<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;  <span class="keywordflow">if</span> (repeat_index == 0)</div>
+<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;</div>
+<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160;  first_segment_info-&gt;start_time = first_segment_info-&gt;start_time +</div>
+<div class="line"><a name="l01355"></a><span class="lineno"> 1355</span>&#160;                                   first_segment_info-&gt;duration * repeat_index;</div>
+<div class="line"><a name="l01356"></a><span class="lineno"> 1356</span>&#160;</div>
+<div class="line"><a name="l01357"></a><span class="lineno"> 1357</span>&#160;  first_segment_info-&gt;repeat = first_segment_info-&gt;repeat - repeat_index;</div>
+<div class="line"><a name="l01358"></a><span class="lineno"> 1358</span>&#160;  start_number_ += repeat_index;</div>
+<div class="line"><a name="l01359"></a><span class="lineno"> 1359</span>&#160;}</div>
+<div class="line"><a name="l01360"></a><span class="lineno"> 1360</span>&#160;</div>
+<div class="line"><a name="l01361"></a><span class="lineno"> 1361</span>&#160;std::string Representation::GetVideoMimeType()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;video&quot;</span>, media_info_.container_type());</div>
+<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160;}</div>
+<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;</div>
+<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;std::string Representation::GetAudioMimeType()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;  <span class="keywordflow">return</span> GetMimeType(<span class="stringliteral">&quot;audio&quot;</span>, media_info_.container_type());</div>
+<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160;}</div>
+<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;</div>
+<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160;std::string Representation::GetTextMimeType()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;  CHECK(media_info_.has_text_info());</div>
+<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().format() == <span class="stringliteral">&quot;ttml&quot;</span>) {</div>
+<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;    <span class="keywordflow">switch</span> (media_info_.container_type()) {</div>
+<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_TEXT:</div>
+<div class="line"><a name="l01374"></a><span class="lineno"> 1374</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/ttml+xml&quot;</span>;</div>
+<div class="line"><a name="l01375"></a><span class="lineno"> 1375</span>&#160;      <span class="keywordflow">case</span> MediaInfo::CONTAINER_MP4:</div>
+<div class="line"><a name="l01376"></a><span class="lineno"> 1376</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;application/mp4&quot;</span>;</div>
+<div class="line"><a name="l01377"></a><span class="lineno"> 1377</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l01378"></a><span class="lineno"> 1378</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for TTML container: &quot;</span></div>
+<div class="line"><a name="l01379"></a><span class="lineno"> 1379</span>&#160;                   &lt;&lt; media_info_.container_type();</div>
+<div class="line"><a name="l01380"></a><span class="lineno"> 1380</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l01381"></a><span class="lineno"> 1381</span>&#160;    }</div>
+<div class="line"><a name="l01382"></a><span class="lineno"> 1382</span>&#160;  }</div>
+<div class="line"><a name="l01383"></a><span class="lineno"> 1383</span>&#160;  <span class="keywordflow">if</span> (media_info_.text_info().format() == <span class="stringliteral">&quot;vtt&quot;</span>) {</div>
+<div class="line"><a name="l01384"></a><span class="lineno"> 1384</span>&#160;    <span class="keywordflow">if</span> (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {</div>
+<div class="line"><a name="l01385"></a><span class="lineno"> 1385</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;text/vtt&quot;</span>;</div>
+<div class="line"><a name="l01386"></a><span class="lineno"> 1386</span>&#160;    }</div>
+<div class="line"><a name="l01387"></a><span class="lineno"> 1387</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to determine MIME type for VTT container: &quot;</span></div>
+<div class="line"><a name="l01388"></a><span class="lineno"> 1388</span>&#160;               &lt;&lt; media_info_.container_type();</div>
+<div class="line"><a name="l01389"></a><span class="lineno"> 1389</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l01390"></a><span class="lineno"> 1390</span>&#160;  }</div>
+<div class="line"><a name="l01391"></a><span class="lineno"> 1391</span>&#160;</div>
+<div class="line"><a name="l01392"></a><span class="lineno"> 1392</span>&#160;  LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot determine MIME type for format: &quot;</span></div>
+<div class="line"><a name="l01393"></a><span class="lineno"> 1393</span>&#160;             &lt;&lt; media_info_.text_info().format()</div>
+<div class="line"><a name="l01394"></a><span class="lineno"> 1394</span>&#160;             &lt;&lt; <span class="stringliteral">&quot; container: &quot;</span> &lt;&lt; media_info_.container_type();</div>
+<div class="line"><a name="l01395"></a><span class="lineno"> 1395</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l01396"></a><span class="lineno"> 1396</span>&#160;}</div>
+<div class="line"><a name="l01397"></a><span class="lineno"> 1397</span>&#160;</div>
+<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;<span class="keywordtype">bool</span> Representation::GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds) {</div>
+<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;  DCHECK(timestamp_seconds);</div>
+<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160;</div>
+<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;  <span class="keywordflow">if</span> (segment_infos_.empty())</div>
+<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;</div>
+<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;  *timestamp_seconds = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(segment_infos_.begin()-&gt;start_time) /</div>
+<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;                       GetTimeScale(media_info_);</div>
+<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;}</div>
+<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;</div>
+<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html_a37904780833b552b7f95f124ffd10456"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a37904780833b552b7f95f124ffd10456">shaka::AdaptationSet::OnSetFrameRateForRepresentation</a></div><div class="ttdeci">void OnSetFrameRateForRepresentation(uint32_t representation_id, uint32_t frame_duration, uint32_t timescale)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00883">mpd_builder.cc:883</a></div></div>
 <div class="ttc" id="classshaka_1_1Representation_html_a6ca8bbfd34ef8ca782d2ef18aeaad932"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a6ca8bbfd34ef8ca782d2ef18aeaad932">shaka::Representation::AddNewSegment</a></div><div class="ttdeci">virtual void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01118">mpd_builder.cc:1118</a></div></div>
 <div class="ttc" id="classshaka_1_1Representation_html_ae998409ae94f3ba12909a96e8f3f4f7e"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#ae998409ae94f3ba12909a96e8f3f4f7e">shaka::Representation::Init</a></div><div class="ttdeci">bool Init()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01064">mpd_builder.cc:1064</a></div></div>
@@ -1530,7 +1531,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 24 2017 17:29:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 24 2017 17:44:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
