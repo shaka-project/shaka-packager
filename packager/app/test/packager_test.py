@@ -240,6 +240,15 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
+  def testPackageWithEncryptionOfOnlyVideoStream(self):
+    self.packager.Package(
+        self._GetStreams(['audio,skip_encryption=1', 'video']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-a-clear-v-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
   def testPackageWithEncryptionAndTrickPlay(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video', 'video,trick_play_factor=1']),

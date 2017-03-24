@@ -107,7 +107,9 @@ const char kUsage[] =
     "    The group ID for the output stream. For HLS this is used as the\n"
     "    GROUP-ID attribute for EXT-X-MEDIA.\n"
     "  - playlist_name: Required for HLS output.\n"
-    "    Name of the playlist for the stream. Usually ends with '.m3u8'.\n";
+    "    Name of the playlist for the stream. Usually ends with '.m3u8'.\n"
+    "  - skip_encryption=0|1: Optional. Defaults to 0 if not specified. If\n"
+    "    it is set to 1, no encryption of the stream will be made.\n";
 
 const char kMediaInfoSuffix[] = ".media_info";
 
@@ -378,7 +380,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     handlers.push_back(chunking_handler);
 
     Status status;
-    if (encryption_key_source) {
+    if (encryption_key_source && !stream_iter->skip_encryption) {
       auto new_encryption_options = encryption_options;
       // Use Sample AES in MPEG2TS.
       // TODO(kqyang): Consider adding a new flag to enable Sample AES as we

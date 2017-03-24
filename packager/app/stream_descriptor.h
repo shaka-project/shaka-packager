@@ -34,6 +34,7 @@ struct StreamDescriptor {
   std::string hls_group_id;
   std::string hls_playlist_name;
   uint32_t trick_play_factor = 0;
+  bool skip_encryption = false;
 };
 
 class StreamDescriptorCompareFn {
