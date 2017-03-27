@@ -50,11 +50,8 @@ class TrickPlayHandler : public MediaHandler {
 
   // Process the cached stream data for one trick play stream.
   // The cached data is dispatched to the |output_stream_index|.
-  // The |current_dts| is for updating the duration of key frames,
-  // so that there is no gap between consecutive key frames. When
-  // |current_dts| = -1, the original duration of the key frame is used.
   Status ProcessCachedStreamData(
-      int output_stream_index,
+      size_t output_stream_index,
       std::deque<std::shared_ptr<StreamData>>* cached_stream_data);
 
   // Process a single stream data. Depending on the stream data type, some
@@ -62,7 +59,7 @@ class TrickPlayHandler : public MediaHandler {
   // Decoding timestamp for current key media sample. It is used for calculating
   // the duration of previous key media sample, to make sure there is no gap
   // between two key media samples.
-  Status ProcessOneStreamData(int output_stream_index,
+  Status ProcessOneStreamData(size_t output_stream_index,
                               const std::shared_ptr<StreamData>& stream_data);
 
   const TrickPlayOptions trick_play_options_;

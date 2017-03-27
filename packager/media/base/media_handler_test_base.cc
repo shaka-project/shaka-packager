@@ -126,16 +126,16 @@ std::unique_ptr<StreamData> MediaHandlerTestBase::GetSegmentInfoStreamData(
   return stream_data;
 }
 
-void MediaHandlerTestBase::SetUpGraph(int num_inputs,
-                                      int num_outputs,
+void MediaHandlerTestBase::SetUpGraph(size_t num_inputs,
+                                      size_t num_outputs,
                                       std::shared_ptr<MediaHandler> handler) {
   // Input handler is not really used anywhere but just to satisfy one input
   // one output restriction for the encryption handler.
   auto input_handler = std::make_shared<FakeMediaHandler>();
-  for (int i = 0; i < num_inputs; ++i)
+  for (size_t i = 0; i < num_inputs; ++i)
     ASSERT_OK(input_handler->SetHandler(i, handler));
   // All outputs are routed to |next_handler_|.
-  for (int i = 0; i < num_outputs; ++i)
+  for (size_t i = 0; i < num_outputs; ++i)
     ASSERT_OK(handler->SetHandler(i, next_handler_));
 }
 
