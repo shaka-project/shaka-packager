@@ -276,26 +276,29 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot;&#39; ignored. TS muxer does not support initialization &quot;</span></div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                      <span class="stringliteral">&quot;segment generation.&quot;</span>;</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    }</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="comment">// For convenience, set descriptor.output to descriptor.segment_template. It</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="comment">// is only used for flag checking in variuos places.</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    descriptor.output = descriptor.segment_template;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  }</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">if</span> (!FLAGS_dump_stream_info &amp;&amp; descriptor.output.empty()) {</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stream output not specified.&quot;</span>;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  }</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  descriptor_list-&gt;insert(descriptor);</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;}</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="comment">// For TS output, segment template is sufficient, and does not require an</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="comment">// output entry.</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> output_specified =</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      !descriptor.output.empty() ||</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      (descriptor.output_format == CONTAINER_MPEG2TS &amp;&amp;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;       !descriptor.segment_template.empty());</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordflow">if</span> (!FLAGS_dump_stream_info &amp;&amp; !output_specified) {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stream output not specified.&quot;</span>;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  }</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  descriptor_list-&gt;insert(descriptor);</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;}</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="namespaceshaka_html_a05a31cd741e2ee18f1399284e921e527"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a05a31cd741e2ee18f1399284e921e527">shaka::LanguageToISO_639_2</a></div><div class="ttdeci">std::string LanguageToISO_639_2(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00117">language_utils.cc:117</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 27 2017 19:39:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 27 2017 22:33:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -385,7 +385,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;      remux_jobs-&gt;emplace_back(<span class="keyword">new</span> RemuxJob(std::move(demuxer)));</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      previous_input = stream_iter-&gt;input;</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="comment">// Skip setting up muxers if output is not needed.</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      <span class="keywordflow">if</span> (stream_iter-&gt;output.empty())</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      <span class="keywordflow">if</span> (stream_iter-&gt;output.empty() &amp;&amp; stream_iter-&gt;segment_template.empty())</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    }</div>
 <div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    DCHECK(!remux_jobs-&gt;empty());</div>
@@ -682,7 +682,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 27 2017 19:39:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 27 2017 22:33:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
