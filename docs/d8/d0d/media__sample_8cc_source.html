@@ -153,47 +153,75 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">// static</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">   67</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">MediaSample::FromMetadata</a>(<span class="keyword">const</span> uint8_t* metadata,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                                       <span class="keywordtype">size_t</span> metadata_size) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;MediaSample&gt;(<span class="keyword">nullptr</span>, 0, metadata, metadata_size,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                       <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a311a7302af6405531ebafa04d877d160">   67</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">MediaSample::CopyFrom</a>(</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a>&amp; media_sample) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::shared_ptr&lt;MediaSample&gt; new_media_sample = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">CopyFrom</a>(</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      media_sample.data(), media_sample.data_size(), media_sample.side_data(),</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      media_sample.side_data_size(), media_sample.is_key_frame());</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">// static</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">   74</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">MediaSample::CreateEmptyMediaSample</a>() {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;MediaSample&gt;();</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// static</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">   79</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">MediaSample::CreateEOSBuffer</a>() {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;MediaSample&gt;(<span class="keyword">nullptr</span>, 0, <span class="keyword">nullptr</span>, 0, <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">   83</a></span>&#160;std::string <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">MediaSample::ToString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">if</span> (end_of_stream())</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;End of stream sample\n&quot;</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      <span class="stringliteral">&quot;dts: %&quot;</span> PRId64 <span class="stringliteral">&quot;\n pts: %&quot;</span> PRId64 <span class="stringliteral">&quot;\n duration: %&quot;</span> PRId64 <span class="stringliteral">&quot;\n &quot;</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="stringliteral">&quot;is_key_frame: %s\n size: %zu\n side_data_size: %zu\n&quot;</span>,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      dts_,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      pts_,</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      duration_,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      is_key_frame_ ? <span class="stringliteral">&quot;true&quot;</span> : <span class="stringliteral">&quot;false&quot;</span>,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      data_.size(),</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      side_data_.size());</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a236e80a98d7f22ec585bbbf2e91397f5"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">shaka::media::MediaSample::CreateEOSBuffer</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CreateEOSBuffer()</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00079">media_sample.cc:79</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a4a7f8d79f9ec3cd3df9a395eef71f0c6"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">shaka::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00074">media_sample.cc:74</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_aa3cbd9fee3a228403c3128be5141a614"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">shaka::media::MediaSample::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00083">media_sample.cc:83</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a8c70ae863851c7a1066923cf387fb178"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">shaka::media::MediaSample::FromMetadata</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; FromMetadata(const uint8_t *metadata, size_t metadata_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00067">media_sample.cc:67</a></div></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  new_media_sample-&gt;set_dts(media_sample.dts());</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  new_media_sample-&gt;set_pts(media_sample.pts());</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  new_media_sample-&gt;set_is_encrypted(media_sample.is_encrypted());</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  new_media_sample-&gt;set_config_id(media_sample.config_id());</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  new_media_sample-&gt;set_duration(media_sample.duration());</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">if</span> (media_sample.decrypt_config()) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    std::unique_ptr&lt;DecryptConfig&gt; decrypt_config(</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keyword">new</span> <a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a>(media_sample.decrypt_config()-&gt;key_id(),</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                          media_sample.decrypt_config()-&gt;iv(),</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                          media_sample.decrypt_config()-&gt;subsamples(),</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                          media_sample.decrypt_config()-&gt;protection_scheme(),</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                          media_sample.decrypt_config()-&gt;crypt_byte_block(),</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                          media_sample.decrypt_config()-&gt;skip_byte_block()));</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    new_media_sample-&gt;set_decrypt_config(std::move(decrypt_config));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> new_media_sample;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">// static</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">   93</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">MediaSample::FromMetadata</a>(<span class="keyword">const</span> uint8_t* metadata,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                                                       <span class="keywordtype">size_t</span> metadata_size) {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;MediaSample&gt;(<span class="keyword">nullptr</span>, 0, metadata, metadata_size,</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                                       <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">// static</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">  100</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">MediaSample::CreateEmptyMediaSample</a>() {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;MediaSample&gt;();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">// static</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">  105</a></span>&#160;std::shared_ptr&lt;MediaSample&gt; <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">MediaSample::CreateEOSBuffer</a>() {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordflow">return</span> std::make_shared&lt;MediaSample&gt;(<span class="keyword">nullptr</span>, 0, <span class="keyword">nullptr</span>, 0, <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">  109</a></span>&#160;std::string <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">MediaSample::ToString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keywordflow">if</span> (end_of_stream())</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span> <span class="stringliteral">&quot;End of stream sample\n&quot;</span>;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      <span class="stringliteral">&quot;dts: %&quot;</span> PRId64 <span class="stringliteral">&quot;\n pts: %&quot;</span> PRId64 <span class="stringliteral">&quot;\n duration: %&quot;</span> PRId64 <span class="stringliteral">&quot;\n &quot;</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      <span class="stringliteral">&quot;is_key_frame: %s\n size: %zu\n side_data_size: %zu\n&quot;</span>,</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      dts_,</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      pts_,</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      duration_,</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      is_key_frame_ ? <span class="stringliteral">&quot;true&quot;</span> : <span class="stringliteral">&quot;false&quot;</span>,</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      data_.size(),</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      side_data_.size());</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">shaka::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00040">decrypt_config.h:40</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a236e80a98d7f22ec585bbbf2e91397f5"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">shaka::media::MediaSample::CreateEOSBuffer</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CreateEOSBuffer()</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00105">media_sample.cc:105</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a4a7f8d79f9ec3cd3df9a395eef71f0c6"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">shaka::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00100">media_sample.cc:100</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_aa3cbd9fee3a228403c3128be5141a614"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">shaka::media::MediaSample::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00109">media_sample.cc:109</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a8c70ae863851c7a1066923cf387fb178"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">shaka::media::MediaSample::FromMetadata</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; FromMetadata(const uint8_t *metadata, size_t metadata_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00093">media_sample.cc:93</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">shaka::media::MediaSample</a></div><div class="ttdoc">Class to hold a media sample. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d80/media__sample_8h_source.html#l00022">media_sample.h:22</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_ad8975dbb21747ff32c8604f5489bf5c9"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 24 2017 21:19:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 27 2017 19:39:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

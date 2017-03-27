@@ -15,6 +15,8 @@ var searchData=
   ['trackheader',['TrackHeader',['../da/dc4/structshaka_1_1media_1_1mp4_1_1TrackHeader.html',1,'shaka::media::mp4']]],
   ['trackruniterator',['TrackRunIterator',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html',1,'shaka::media::mp4']]],
   ['tracksbuilder',['TracksBuilder',['../d8/d74/classshaka_1_1media_1_1TracksBuilder.html',1,'shaka::media']]],
+  ['trickplayhandler',['TrickPlayHandler',['../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html',1,'shaka::media']]],
+  ['trickplayoptions',['TrickPlayOptions',['../d5/d72/structshaka_1_1media_1_1TrickPlayOptions.html',1,'shaka::media']]],
   ['tsmuxer',['TsMuxer',['../d3/d71/classshaka_1_1media_1_1mp2t_1_1TsMuxer.html',1,'shaka::media::mp2t']]],
   ['tspacket',['TsPacket',['../da/da1/classshaka_1_1media_1_1mp2t_1_1TsPacket.html',1,'shaka::media::mp2t']]],
   ['tssection',['TsSection',['../da/d1c/classshaka_1_1media_1_1mp2t_1_1TsSection.html',1,'shaka::media::mp2t']]],

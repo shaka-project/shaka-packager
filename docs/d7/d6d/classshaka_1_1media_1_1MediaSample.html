@@ -182,6 +182,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a910e68f46b9464e4ea36cf9cd5116b55"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a910e68f46b9464e4ea36cf9cd5116b55">CopyFrom</a> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
 <tr class="separator:a910e68f46b9464e4ea36cf9cd5116b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311a7302af6405531ebafa04d877d160"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a311a7302af6405531ebafa04d877d160">CopyFrom</a> (const <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &amp;media_sample)</td></tr>
+<tr class="separator:a311a7302af6405531ebafa04d877d160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c70ae863851c7a1066923cf387fb178"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">FromMetadata</a> (const uint8_t *metadata, size_t metadata_size)</td></tr>
 <tr class="separator:a8c70ae863851c7a1066923cf387fb178"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -315,6 +318,39 @@ static std::shared_ptr<br class="typebreak"/>
 
 </div>
 </div>
+<a class="anchor" id="a311a7302af6405531ebafa04d877d160"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CopyFrom </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &amp;&#160;</td>
+          <td class="paramname"><em>media_sample</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Make a copy of <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">media_sample</td><td>is the source <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> to copy from. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a236e80a98d7f22ec585bbbf2e91397f5"></a>
 <div class="memitem">
 <div class="memproto">
@@ -337,7 +373,7 @@ static std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Create a <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> indicating we've reached end of stream. Calling any method other than end_of_stream() on the resulting buffer is disallowed. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00079">79</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00105">105</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -381,7 +417,7 @@ static std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00093">93</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -399,7 +435,7 @@ static std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a human-readable string describing |*this|. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00083">83</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00109">109</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -410,7 +446,7 @@ static std::shared_ptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 24 2017 21:19:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 27 2017 19:39:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

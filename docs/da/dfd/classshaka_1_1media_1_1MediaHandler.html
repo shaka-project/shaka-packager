@@ -106,6 +106,7 @@ Inheritance diagram for shaka::media::MediaHandler:</div>
 <area href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html" alt="shaka::media::Demuxer" shape="rect" coords="210,56,410,80"/>
 <area href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html" alt="shaka::media::EncryptionHandler" shape="rect" coords="420,56,620,80"/>
 <area href="../../df/d46/classshaka_1_1media_1_1Muxer.html" alt="shaka::media::Muxer" shape="rect" coords="630,56,830,80"/>
+<area href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html" alt="shaka::media::TrickPlayHandler" shape="rect" coords="840,56,1040,80"/>
 <area href="../../d3/d71/classshaka_1_1media_1_1mp2t_1_1TsMuxer.html" alt="shaka::media::mp2t::TsMuxer" shape="rect" coords="420,112,620,136"/>
 <area href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html" alt="shaka::media::mp4::MP4Muxer" shape="rect" coords="630,112,830,136"/>
 <area href="../../d3/d73/classshaka_1_1media_1_1webm_1_1WebMMuxer.html" title="Implements WebM Muxer. " alt="shaka::media::webm::WebMMuxer" shape="rect" coords="840,112,1040,136"/>
@@ -255,7 +256,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Internal implementation of initialize. Note that it should only initialize the <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> itself. Downstream handlers are handled in <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aed0da512bbd998ec9d0a5c019ad17acb">Initialize()</a>. </p>
 
-<p>Implemented in <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">shaka::media::Demuxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">shaka::media::ChunkingHandler</a>, <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a36882e12df5c5bfd48a7b94d1dfad857">shaka::media::Muxer</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">shaka::media::Demuxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">shaka::media::ChunkingHandler</a>, <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a36882e12df5c5bfd48a7b94d1dfad857">shaka::media::Muxer</a>, <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">shaka::media::EncryptionHandler</a>, and <a class="el" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html#a3fd2fae199e0a9607e83e02724896c10">shaka::media::TrickPlayHandler</a>.</p>
 
 </div>
 </div>
@@ -282,7 +283,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Process the incoming stream data. Note that (1) stream_data.stream_index should be the input stream index; (2) The implementation needs to call DispatchXxx to dispatch the processed stream data to the downstream handlers after finishing processing if needed. </p>
 
-<p>Implemented in <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">shaka::media::Demuxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#aec730b070245231a0887787005c06eee">shaka::media::Muxer</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">shaka::media::Demuxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#aec730b070245231a0887787005c06eee">shaka::media::Muxer</a>, <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>, and <a class="el" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html#afdd13bb4e762c4b904ed75b268359757">shaka::media::TrickPlayHandler</a>.</p>
 
 </div>
 </div>
@@ -293,7 +294,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 24 2017 21:19:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 27 2017 19:39:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
