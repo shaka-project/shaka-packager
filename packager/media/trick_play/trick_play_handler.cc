@@ -105,7 +105,7 @@ Status TrickPlayHandler::OnFlushRequest(size_t input_stream_index) {
 }
 
 Status TrickPlayHandler::ProcessCachedStreamData(
-    int output_stream_index,
+    size_t output_stream_index,
     std::deque<std::shared_ptr<StreamData>>* cached_stream_data) {
   while (!cached_stream_data->empty()) {
     Status status =
@@ -119,7 +119,7 @@ Status TrickPlayHandler::ProcessCachedStreamData(
 }
 
 Status TrickPlayHandler::ProcessOneStreamData(
-    int output_stream_index,
+    size_t output_stream_index,
     const std::shared_ptr<StreamData>& stream_data) {
   uint32_t trick_play_rate =
       trick_play_options_.trick_play_rates[output_stream_index - 1];

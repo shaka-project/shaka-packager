@@ -112,8 +112,8 @@ class MediaHandlerTestBase : public ::testing::Test {
                                                        bool is_subsegment);
 
   /// Setup a graph using |handler| with |num_inputs| and |num_outputs|.
-  void SetUpGraph(int num_inputs,
-                  int num_outputs,
+  void SetUpGraph(size_t num_inputs,
+                  size_t num_outputs,
                   std::shared_ptr<MediaHandler> handler);
 
   /// @return the output stream data vector from handler.
