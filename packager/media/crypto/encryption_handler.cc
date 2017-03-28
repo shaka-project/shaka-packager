@@ -146,7 +146,8 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
       encryption_options_.max_hd_pixels, encryption_options_.max_uhd1_pixels);
   switch (codec_) {
     case kCodecVP9:
-      vpx_parser_.reset(new VP9Parser);
+      if (encryption_options_.vp9_subsample_encryption)
+        vpx_parser_.reset(new VP9Parser);
       break;
     case kCodecH264:
       header_parser_.reset(new H264VideoSliceHeaderParser);
@@ -246,8 +247,6 @@ Status EncryptionHandler::ProcessMediaSample(MediaSample* sample) {
                 sample->data_size());
     }
   } else {
-    DCHECK_LE(crypt_byte_block_, 1u);
-    DCHECK_EQ(skip_byte_block_, 0u);
     if (sample->data_size() > leading_clear_bytes_size_) {
       EncryptBytes(sample->writable_data() + leading_clear_bytes_size_,
                    sample->data_size() - leading_clear_bytes_size_);

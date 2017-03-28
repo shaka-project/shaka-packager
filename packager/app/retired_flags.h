@@ -8,3 +8,4 @@
 
 DECLARE_string(profile);
 DECLARE_bool(single_segment);
+DECLARE_bool(webm_subsample_encryption);

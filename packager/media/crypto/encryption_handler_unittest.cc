@@ -133,6 +133,7 @@ TEST_F(EncryptionHandlerTest, OnlyOneInput) {
 
 namespace {
 
+const bool kVp9SubsampleEncryption = true;
 const bool kIsKeyFrame = true;
 const bool kIsSubsegment = true;
 const bool kEncrypted = true;
@@ -205,11 +206,12 @@ inline bool operator==(const SubsampleEntry& lhs, const SubsampleEntry& rhs) {
 
 class EncryptionHandlerEncryptionTest
     : public EncryptionHandlerTest,
-      public WithParamInterface<std::tr1::tuple<FourCC, Codec>> {
+      public WithParamInterface<std::tr1::tuple<FourCC, Codec, bool>> {
  public:
   void SetUp() override {
     protection_scheme_ = std::tr1::get<0>(GetParam());
     codec_ = std::tr1::get<1>(GetParam());
+    vp9_subsample_encryption_ = std::tr1::get<2>(GetParam());
   }
 
   std::vector<VPxFrameInfo> GetMockVpxFrameInfo() {
@@ -225,8 +227,10 @@ class EncryptionHandlerEncryptionTest
   // The subsamples values should match |GetMockVpxFrameInfo| above.
   std::vector<SubsampleEntry> GetExpectedSubsamples() {
     std::vector<SubsampleEntry> subsamples;
-    if (codec_ == kCodecAAC)
+    if (codec_ == kCodecAAC ||
+        (codec_ == kCodecVP9 && !vp9_subsample_encryption_)) {
       return subsamples;
+    }
     if (protection_scheme_ == kAppleSampleAesProtectionScheme) {
       subsamples.emplace_back(static_cast<uint16_t>(kSampleAesClearSize1),
                               static_cast<uint32_t>(kSampleAesCipherSize1));
@@ -265,14 +269,15 @@ class EncryptionHandlerEncryptionTest
   // Inject vpx parser / video slice header parser if needed.
   void InjectCodecParser() {
     switch (codec_) {
-      case kCodecVP9: {
-        std::unique_ptr<MockVpxParser> mock_vpx_parser(new MockVpxParser);
-        EXPECT_CALL(*mock_vpx_parser, Parse(_, sizeof(kData), _))
-            .WillRepeatedly(
-                DoAll(SetArgPointee<2>(GetMockVpxFrameInfo()), Return(true)));
-        InjectVpxParserForTesting(std::move(mock_vpx_parser));
+      case kCodecVP9:
+        if (vp9_subsample_encryption_) {
+          std::unique_ptr<MockVpxParser> mock_vpx_parser(new MockVpxParser);
+          EXPECT_CALL(*mock_vpx_parser, Parse(_, sizeof(kData), _))
+              .WillRepeatedly(
+                  DoAll(SetArgPointee<2>(GetMockVpxFrameInfo()), Return(true)));
+          InjectVpxParserForTesting(std::move(mock_vpx_parser));
+        }
         break;
-      }
       case kCodecH264: {
         std::unique_ptr<MockVideoSliceHeaderParser> mock_header_parser(
             new MockVideoSliceHeaderParser);
@@ -441,6 +446,7 @@ class EncryptionHandlerEncryptionTest
  protected:
   FourCC protection_scheme_;
   Codec codec_;
+  bool vp9_subsample_encryption_;
 };
 
 TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
@@ -448,6 +454,7 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
   EncryptionOptions encryption_options;
   encryption_options.protection_scheme = protection_scheme_;
   encryption_options.clear_lead_in_seconds = kClearLeadInSeconds;
+  encryption_options.vp9_subsample_encryption = vp9_subsample_encryption_;
   SetUpEncryptionHandler(encryption_options);
 
   const EncryptionKey mock_encryption_key = GetMockEncryptionKey();
@@ -498,6 +505,7 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   encryption_options.clear_lead_in_seconds = kClearLeadInSeconds;
   encryption_options.crypto_period_duration_in_seconds =
       kCryptoPeriodDurationInSeconds;
+  encryption_options.vp9_subsample_encryption = vp9_subsample_encryption_;
   SetUpEncryptionHandler(encryption_options);
 
   ASSERT_OK(Process(GetStreamInfoStreamData(kStreamIndex, codec_, kTimeScale)));
@@ -549,6 +557,7 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
 TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
   EncryptionOptions encryption_options;
   encryption_options.protection_scheme = protection_scheme_;
+  encryption_options.vp9_subsample_encryption = vp9_subsample_encryption_;
   SetUpEncryptionHandler(encryption_options);
 
   const EncryptionKey mock_encryption_key = GetMockEncryptionKey();
@@ -597,11 +606,13 @@ INSTANTIATE_TEST_CASE_P(
     CencProtectionSchemes,
     EncryptionHandlerEncryptionTest,
     Combine(Values(FOURCC_cenc, FOURCC_cens, FOURCC_cbc1, FOURCC_cbcs),
-            Values(kCodecAAC, kCodecH264, kCodecVP9)));
+            Values(kCodecAAC, kCodecH264, kCodecVP9),
+            Values(kVp9SubsampleEncryption, !kVp9SubsampleEncryption)));
 INSTANTIATE_TEST_CASE_P(AppleSampleAes,
                         EncryptionHandlerEncryptionTest,
                         Combine(Values(kAppleSampleAesProtectionScheme),
-                                Values(kCodecAAC, kCodecH264)));
+                                Values(kCodecAAC, kCodecH264),
+                                Values(kVp9SubsampleEncryption)));
 
 namespace {
 

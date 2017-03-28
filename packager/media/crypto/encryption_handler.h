@@ -41,6 +41,8 @@ struct EncryptionOptions {
   /// Crypto period duration in seconds. A positive value means key rotation is
   /// enabled, the key source must support key rotation in this case.
   double crypto_period_duration_in_seconds = 0;
+  // Enable/disable subsample encryption for VP9.
+  bool vp9_subsample_encryption = true;
 };
 
 class EncryptionHandler : public MediaHandler {

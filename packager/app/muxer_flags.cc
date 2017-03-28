@@ -41,5 +41,3 @@ DEFINE_string(temp_dir,
               "",
               "Specify a directory in which to store temporary (intermediate) "
               " files. Used only if single_segment=true.");
-DEFINE_bool(webm_subsample_encryption, true,
-            "Enable WebM subsample encryption.");

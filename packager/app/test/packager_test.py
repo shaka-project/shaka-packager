@@ -230,6 +230,17 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0],
                            'bear-640x360-vp9-altref-dec-golden.webm')
 
+  def testPackageWithWebmVp9FullSampleEncryption(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['bear-640x360-vp9-altref.webm']),
+        self._GetFlags(encryption=True, vp9_subsample_encryption=False))
+    self._DiffGold(self.output[0],
+                   'bear-640x360-vp9-fullsample-enc-golden.webm')
+    self._VerifyDecryption(self.output[0],
+                           'bear-640x360-vp9-altref-dec-golden.webm')
+
   def testPackageAvcTsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.packager.Package(
@@ -532,6 +543,7 @@ class PackagerAppTest(unittest.TestCase):
   def _GetFlags(self,
                 encryption=False,
                 protection_scheme=None,
+                vp9_subsample_encryption=True,
                 decryption=False,
                 encryption_key='32333435363738393021323334353637',
                 encryption_iv='3334353637383930',
@@ -564,6 +576,8 @@ class PackagerAppTest(unittest.TestCase):
         flags.append('--iv=' + encryption_iv)
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
+    if not vp9_subsample_encryption:
+      flags += ['--vp9_subsample_encryption=false']
 
     if decryption:
       flags += ['--enable_fixed_key_decryption',

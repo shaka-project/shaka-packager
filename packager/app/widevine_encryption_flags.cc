@@ -65,10 +65,6 @@ DEFINE_int32(crypto_period_duration,
              0,
              "Crypto period duration in seconds. If it is non-zero, key "
              "rotation is enabled.");
-DEFINE_string(protection_scheme,
-              "cenc",
-              "Choose protection scheme, 'cenc' or 'cbc1' or pattern-based "
-              "protection schemes 'cens' or 'cbcs'.");
 
 namespace shaka {
 

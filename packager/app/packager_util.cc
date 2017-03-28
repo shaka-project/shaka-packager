@@ -9,6 +9,7 @@
 #include <gflags/gflags.h>
 #include <iostream>
 
+#include "packager/app/crypto_flags.h"
 #include "packager/app/fixed_key_encryption_flags.h"
 #include "packager/app/playready_key_encryption_flags.h"
 #include "packager/app/mpd_flags.h"
@@ -185,13 +186,13 @@ EncryptionOptions GetEncryptionOptions() {
   encryption_options.max_uhd1_pixels = FLAGS_max_uhd1_pixels;
   encryption_options.crypto_period_duration_in_seconds =
       FLAGS_crypto_period_duration;
+  encryption_options.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;
   return encryption_options;
 }
 
 MuxerOptions GetMuxerOptions() {
   MuxerOptions muxer_options;
   muxer_options.num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
-  muxer_options.webm_subsample_encryption = FLAGS_webm_subsample_encryption;
   if (FLAGS_mp4_use_decoding_timestamp_in_timeline) {
     LOG(WARNING) << "Flag --mp4_use_decoding_timestamp_in_timeline is set. "
                     "Note that it is a temporary hack to workaround Chromium "

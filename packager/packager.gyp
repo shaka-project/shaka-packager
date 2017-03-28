@@ -13,6 +13,8 @@
       'target_name': 'packager',
       'type': 'executable',
       'sources': [
+        'app/crypto_flags.cc',
+        'app/crypto_flags.h',
         'app/fixed_key_encryption_flags.cc',
         'app/fixed_key_encryption_flags.h',
         'app/hls_flags.cc',
