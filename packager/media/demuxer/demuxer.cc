@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/demuxer.h"
+#include "packager/media/demuxer/demuxer.h"
 
 #include <algorithm>
 
@@ -95,6 +95,8 @@ Status Demuxer::Run() {
   // info.
   if (all_streams_ready_ && output_handlers().empty())
     return Status::OK;
+  if (!status.ok())
+    return status;
   // Check if all specified outputs exists.
   for (const auto& pair : output_handlers()) {
     if (std::find(stream_indexes_.begin(), stream_indexes_.end(), pair.first) ==

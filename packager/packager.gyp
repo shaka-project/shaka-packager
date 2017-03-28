@@ -45,6 +45,7 @@
         'hls/hls.gyp:hls_builder',
         'media/codecs/codecs.gyp:codecs',
         'media/chunking/chunking.gyp:chunking',
+        'media/demuxer/demuxer.gyp:demuxer',
         'media/event/media_event.gyp:media_event',
         'media/file/file.gyp:file',
         'media/formats/mp2t/mp2t.gyp:mp2t',
@@ -89,6 +90,7 @@
       'dependencies': [
         'media/codecs/codecs.gyp:codecs',
         'media/chunking/chunking.gyp:chunking',
+        'media/demuxer/demuxer.gyp:demuxer',
         'media/file/file.gyp:file',
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
@@ -122,6 +124,7 @@
         'media/chunking/chunking.gyp:chunking_unittest',
         'media/codecs/codecs.gyp:codecs_unittest',
         'media/crypto/crypto.gyp:crypto_unittest',
+        'media/demuxer/demuxer.gyp:demuxer_unittest',
         'media/event/media_event.gyp:media_event_unittest',
         'media/file/file.gyp:file_unittest',
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',

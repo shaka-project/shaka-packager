@@ -10,7 +10,6 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/time/clock.h"
-#include "packager/media/base/demuxer.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/muxer.h"
@@ -19,6 +18,7 @@
 #include "packager/media/base/test/status_test_util.h"
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
+#include "packager/media/demuxer/demuxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/test/test_data_util.h"
 

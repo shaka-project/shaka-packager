@@ -37,8 +37,6 @@
         'closure_thread.h',
         'container_names.cc',
         'container_names.h',
-        'demuxer.cc',
-        'demuxer.h',
         'decrypt_config.cc',
         'decrypt_config.h',
         'decryptor_source.cc',
