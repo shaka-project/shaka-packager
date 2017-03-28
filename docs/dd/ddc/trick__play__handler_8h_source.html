@@ -127,47 +127,44 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// Process the cached stream data for one trick play stream.</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="comment">// The cached data is dispatched to the |output_stream_index|.</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// The |current_dts| is for updating the duration of key frames,</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// so that there is no gap between consecutive key frames. When</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// |current_dts| = -1, the original duration of the key frame is used.</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ProcessCachedStreamData(</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordtype">int</span> output_stream_index,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      std::deque&lt;std::shared_ptr&lt;StreamData&gt;&gt;* cached_stream_data);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// Process a single stream data. Depending on the stream data type, some</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// information needs to be updated.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// Decoding timestamp for current key media sample. It is used for calculating</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">// the duration of previous key media sample, to make sure there is no gap</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// between two key media samples.</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ProcessOneStreamData(<span class="keywordtype">int</span> output_stream_index,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                              <span class="keyword">const</span> std::shared_ptr&lt;StreamData&gt;&amp; stream_data);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d5/d72/structshaka_1_1media_1_1TrickPlayOptions.html">TrickPlayOptions</a> trick_play_options_;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ProcessCachedStreamData(</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordtype">size_t</span> output_stream_index,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      std::deque&lt;std::shared_ptr&lt;StreamData&gt;&gt;* cached_stream_data);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="comment">// Process a single stream data. Depending on the stream data type, some</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// information needs to be updated.</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// Decoding timestamp for current key media sample. It is used for calculating</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// the duration of previous key media sample, to make sure there is no gap</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// between two key media samples.</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ProcessOneStreamData(<span class="keywordtype">size_t</span> output_stream_index,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                              <span class="keyword">const</span> std::shared_ptr&lt;StreamData&gt;&amp; stream_data);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d5/d72/structshaka_1_1media_1_1TrickPlayOptions.html">TrickPlayOptions</a> trick_play_options_;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>(<span class="keyword">const</span> <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>(<span class="keyword">const</span> <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  uint32_t total_key_frames_ = 0;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  uint32_t total_key_frames_ = 0;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// End timestamp of the previous processed media_sample, which is |dts| +</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// |duration|. The duration of key frame in trick play stream is updated based</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// on this timestamp.</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  int64_t prev_sample_end_timestamp_ = 0;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// The data in output streams should be in the same order as in the input</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// stream. Cache the stream data before next key frame so that we can</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// determine the duration for the current key frame. Since one key frame may</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// be dispatched to different trick play stream, each trick play stream need</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// its own queue to handle the synchronization.</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// TODO(hmchen): Use one queue and multiple iterators, instead of multiple</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// queues.</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  std::vector&lt;std::deque&lt;std::shared_ptr&lt;StreamData&gt;&gt;&gt; cached_stream_data_;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// End timestamp of the previous processed media_sample, which is |dts| +</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// |duration|. The duration of key frame in trick play stream is updated based</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// on this timestamp.</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  int64_t prev_sample_end_timestamp_ = 0;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// The data in output streams should be in the same order as in the input</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// stream. Cache the stream data before next key frame so that we can</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// determine the duration for the current key frame. Since one key frame may</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// be dispatched to different trick play stream, each trick play stream need</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// its own queue to handle the synchronization.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// TODO(hmchen): Use one queue and multiple iterators, instead of multiple</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// queues.</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::vector&lt;std::deque&lt;std::shared_ptr&lt;StreamData&gt;&gt;&gt; cached_stream_data_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;};</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_TRICK_PLAY_HANDLER_H_</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_TRICK_PLAY_HANDLER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1TrickPlayHandler_html"><div class="ttname"><a href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">shaka::media::TrickPlayHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/ddc/trick__play__handler_8h_source.html#l00034">trick_play_handler.h:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">shaka::media::MediaHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00071">media_handler.h:71</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1TrickPlayHandler_html_addbe1be8281bceb8e84df865424dded3"><div class="ttname"><a href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html#addbe1be8281bceb8e84df865424dded3">shaka::media::TrickPlayHandler::ValidateOutputStreamIndex</a></div><div class="ttdeci">bool ValidateOutputStreamIndex(size_t stream_index) const override</div><div class="ttdoc">Validate if the stream at the specified index actually exists. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d87/trick__play__handler_8cc_source.html#l00092">trick_play_handler.cc:92</a></div></div>
@@ -180,7 +177,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 27 2017 22:33:57 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Mar 28 2017 06:13:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
