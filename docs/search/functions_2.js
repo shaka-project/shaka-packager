@@ -1,7 +1,7 @@
 var searchData=
 [
   ['cacheauxinfo',['CacheAuxInfo',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#ab7a8d3f44a663d63ef2415542239c540',1,'shaka::media::mp4::TrackRunIterator']]],
-  ['cancel',['Cancel',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a117ba5528a92b0cf4752d15d3692e158',1,'shaka::media::Demuxer::Cancel()'],['../df/d46/classshaka_1_1media_1_1Muxer.html#a9204fe352d13cea8a367ae9c14e9639e',1,'shaka::media::Muxer::Cancel()']]],
+  ['cancel',['Cancel',['../df/d46/classshaka_1_1media_1_1Muxer.html#a9204fe352d13cea8a367ae9c14e9639e',1,'shaka::media::Muxer::Cancel()'],['../dd/d17/classshaka_1_1media_1_1Demuxer.html#a117ba5528a92b0cf4752d15d3692e158',1,'shaka::media::Demuxer::Cancel()']]],
   ['childexist',['ChildExist',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aa65236a6b94ac59d5da409412992211c',1,'shaka::media::mp4::BoxReader']]],
   ['chunkinfoiterator',['ChunkInfoIterator',['../d9/d57/classshaka_1_1media_1_1mp4_1_1ChunkInfoIterator.html#adae19e8f34f3f962e9858c67f984445d',1,'shaka::media::mp4::ChunkInfoIterator']]],
   ['clear',['Clear',['../d0/d93/classshaka_1_1media_1_1Status.html#a3abb4bb8075e30af97b671017e6c18ca',1,'shaka::media::Status::Clear()'],['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48',1,'shaka::media::IoCache::Clear()']]],
