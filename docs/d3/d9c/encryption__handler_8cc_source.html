@@ -552,50 +552,54 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;      <span class="comment">// ISO/IEC 23001-7:2016 10.2 &#39;cbc1&#39; 10.3 &#39;cens&#39;</span></div>
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;      <span class="comment">// The BytesOfProtectedData size SHALL be a multiple of 16 bytes to</span></div>
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;      <span class="comment">// avoid partial blocks in Subsamples.</span></div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;      <span class="keywordflow">if</span> (encryption_options_.<a class="code" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">protection_scheme</a> == FOURCC_cbc1 ||</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;          encryption_options_.<a class="code" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">protection_scheme</a> == FOURCC_cens) {</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;        <span class="keyword">const</span> uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;        current_clear_bytes += misalign_bytes;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;        cipher_bytes -= misalign_bytes;</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;      }</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;      <span class="keyword">const</span> uint8_t* nalu_data = nalu.data() + current_clear_bytes;</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;      EncryptBytes(const_cast&lt;uint8_t*&gt;(nalu_data), cipher_bytes);</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;      AddSubsample(</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;          accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;          cipher_bytes, decrypt_config);</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;      accumulated_clear_bytes = 0;</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;      <span class="comment">// For non-video-slice or small NAL units, don&#39;t encrypt.</span></div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;      accumulated_clear_bytes += nalu_length_size_ + nalu_total_size;</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;    }</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  }</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  <span class="keywordflow">if</span> (result != NaluReader::kEOStream) {</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse NAL units.&quot;</span>;</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;      <span class="comment">// CMAF requires &#39;cenc&#39; scheme BytesOfProtectedData SHALL be a multiple</span></div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;      <span class="comment">// of 16 bytes; while &#39;cbcs&#39; scheme BytesOfProtectedData SHALL start on</span></div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;      <span class="comment">// the first byte of video data following the slice header.</span></div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;      <span class="keywordflow">if</span> (encryption_options_.<a class="code" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">protection_scheme</a> == FOURCC_cbc1 ||</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;          encryption_options_.<a class="code" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">protection_scheme</a> == FOURCC_cens ||</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;          encryption_options_.<a class="code" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">protection_scheme</a> == FOURCC_cenc) {</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;        <span class="keyword">const</span> uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;        current_clear_bytes += misalign_bytes;</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;        cipher_bytes -= misalign_bytes;</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;      }</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;      <span class="keyword">const</span> uint8_t* nalu_data = nalu.data() + current_clear_bytes;</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;      EncryptBytes(const_cast&lt;uint8_t*&gt;(nalu_data), cipher_bytes);</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;      AddSubsample(</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;          accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;          cipher_bytes, decrypt_config);</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;      accumulated_clear_bytes = 0;</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;      <span class="comment">// For non-video-slice or small NAL units, don&#39;t encrypt.</span></div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;      accumulated_clear_bytes += nalu_length_size_ + nalu_total_size;</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;    }</div>
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;  }</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  AddSubsample(accumulated_clear_bytes, 0, decrypt_config);</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;}</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;<span class="keywordtype">void</span> EncryptionHandler::EncryptBytes(uint8_t* data, <span class="keywordtype">size_t</span> size) {</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  DCHECK(encryptor_);</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  CHECK(encryptor_-&gt;Crypt(data, size, data));</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;}</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;<span class="keywordtype">void</span> EncryptionHandler::InjectVpxParserForTesting(</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    std::unique_ptr&lt;VPxParser&gt; vpx_parser) {</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  vpx_parser_ = std::move(vpx_parser);</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;}</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;<span class="keywordtype">void</span> EncryptionHandler::InjectVideoSliceHeaderParserForTesting(</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    std::unique_ptr&lt;VideoSliceHeaderParser&gt; header_parser) {</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;  header_parser_ = std::move(header_parser);</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;}</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  <span class="keywordflow">if</span> (result != NaluReader::kEOStream) {</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse NAL units.&quot;</span>;</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  }</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;  AddSubsample(accumulated_clear_bytes, 0, decrypt_config);</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;}</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;<span class="keywordtype">void</span> EncryptionHandler::EncryptBytes(uint8_t* data, <span class="keywordtype">size_t</span> size) {</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;  DCHECK(encryptor_);</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;  CHECK(encryptor_-&gt;Crypt(data, size, data));</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;}</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;<span class="keywordtype">void</span> EncryptionHandler::InjectVpxParserForTesting(</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    std::unique_ptr&lt;VPxParser&gt; vpx_parser) {</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  vpx_parser_ = std::move(vpx_parser);</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;}</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="keywordtype">void</span> EncryptionHandler::InjectVideoSliceHeaderParserForTesting(</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;    std::unique_ptr&lt;VideoSliceHeaderParser&gt; header_parser) {</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  header_parser_ = std::move(header_parser);</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;}</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionOptions_html_a2709a421f1d96bffc888fcd493c8e0a3"><div class="ttname"><a href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a2709a421f1d96bffc888fcd493c8e0a3">shaka::media::EncryptionOptions::max_sd_pixels</a></div><div class="ttdeci">uint32_t max_sd_pixels</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/encryption__handler_8h_source.html#l00031">encryption_handler.h:31</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00057">stream_info.h:57</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f">shaka::media::AesPatternCryptor::kSkipIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00035">aes_pattern_cryptor.h:35</a></div></div>
@@ -616,7 +620,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 30 2017 22:34:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 30 2017 23:38:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

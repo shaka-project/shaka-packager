@@ -131,260 +131,259 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      moov_(std::move(moov)),</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      moof_(new MovieFragment()),</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      fragment_buffer_(new BufferWriter()),</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      sidx_(new SegmentIndex()),</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      progress_listener_(NULL),</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      progress_target_(0),</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      accumulated_progress_(0),</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      sample_duration_(0u) {}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;Segmenter::~Segmenter() {}</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a42620d62ced8dc35953fa2a68c5b7fac">   53</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a5058fc394abf702d57f11e19a40c517e">Segmenter::Initialize</a>(</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;StreamInfo&gt;&gt;&amp; streams,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a>* progress_listener) {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK_LT(0u, streams.size());</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  muxer_listener_ = muxer_listener;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  progress_listener_ = progress_listener;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  moof_-&gt;header.sequence_number = 0;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      sidx_(new SegmentIndex()) {}</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;Segmenter::~Segmenter() {}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a42620d62ced8dc35953fa2a68c5b7fac">   49</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a5058fc394abf702d57f11e19a40c517e">Segmenter::Initialize</a>(</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;StreamInfo&gt;&gt;&amp; streams,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a>* progress_listener) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  DCHECK_LT(0u, streams.size());</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  muxer_listener_ = muxer_listener;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  progress_listener_ = progress_listener;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  moof_-&gt;header.sequence_number = 0;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  moof_-&gt;tracks.resize(streams.size());</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  fragmenters_.resize(streams.size());</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  stream_durations_.resize(streams.size());</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  moof_-&gt;tracks.resize(streams.size());</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  fragmenters_.resize(streams.size());</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; streams.size(); ++i) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    moof_-&gt;tracks[i].header.track_id = i + 1;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">if</span> (streams[i]-&gt;stream_type() == kStreamVideo) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="comment">// Use the first video stream as the reference stream (which is 1-based).</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="keywordflow">if</span> (sidx_-&gt;reference_id == 0)</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        sidx_-&gt;reference_id = i + 1;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    fragmenters_[i].reset(<span class="keyword">new</span> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>(streams[i], &amp;moof_-&gt;tracks[i]));</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span> (options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4d3d8c1923a2e0f684c2591cd7f4a890">mp4_use_decoding_timestamp_in_timeline</a>) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; streams.size(); ++i)</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      fragmenters_[i]-&gt;set_use_decoding_timestamp_in_timeline(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Choose the first stream if there is no VIDEO.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (sidx_-&gt;reference_id == 0)</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    sidx_-&gt;reference_id = 1;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  sidx_-&gt;timescale = streams[GetReferenceStreamId()]-&gt;time_scale();</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; streams.size(); ++i) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    moof_-&gt;tracks[i].header.track_id = i + 1;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">if</span> (streams[i]-&gt;stream_type() == kStreamVideo) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      <span class="comment">// Use the first video stream as the reference stream (which is 1-based).</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      <span class="keywordflow">if</span> (sidx_-&gt;reference_id == 0)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        sidx_-&gt;reference_id = i + 1;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    fragmenters_[i].reset(<span class="keyword">new</span> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>(streams[i], &amp;moof_-&gt;tracks[i]));</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">if</span> (options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4d3d8c1923a2e0f684c2591cd7f4a890">mp4_use_decoding_timestamp_in_timeline</a>) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; streams.size(); ++i)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      fragmenters_[i]-&gt;set_use_decoding_timestamp_in_timeline(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Choose the first stream if there is no VIDEO.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordflow">if</span> (sidx_-&gt;reference_id == 0)</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    sidx_-&gt;reference_id = 1;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  sidx_-&gt;timescale = streams[GetReferenceStreamId()]-&gt;time_scale();</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// Use media duration as progress target.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  progress_target_ = streams[GetReferenceStreamId()]-&gt;duration();</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// Use media duration as progress target.</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  progress_target_ = streams[GetReferenceStreamId()]-&gt;duration();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// Use the reference stream&#39;s time scale as movie time scale.</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  moov_-&gt;header.timescale = sidx_-&gt;timescale;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  moof_-&gt;header.sequence_number = 1;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">// Fill in version information.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">const</span> std::string version = GetPackagerVersion();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordflow">if</span> (!version.empty()) {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    moov_-&gt;metadata.handler.handler_type = FOURCC_ID32;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    moov_-&gt;metadata.id3v2.language.code = <span class="stringliteral">&quot;eng&quot;</span>;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    moov_-&gt;metadata.id3v2.private_frame.owner = GetPackagerProjectUrl();</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    moov_-&gt;metadata.id3v2.private_frame.value = version;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  }</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">return</span> DoInitialize();</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">  103</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa84782877f1afaf9519a552ac3d5d417">Segmenter::Finalize</a>() {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// Set tracks and moov durations.</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// Note that the updated moov box will be written to output file for VOD case</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// only.</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Track&gt;::iterator track = moov_-&gt;tracks.begin();</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;       track != moov_-&gt;tracks.end();</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;       ++track) {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    track-&gt;header.duration = Rescale(track-&gt;media.header.duration,</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                                     track-&gt;media.header.timescale,</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                                     moov_-&gt;header.timescale);</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordflow">if</span> (track-&gt;header.duration &gt; moov_-&gt;header.duration)</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      moov_-&gt;header.duration = track-&gt;header.duration;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  moov_-&gt;extends.header.fragment_duration = moov_-&gt;header.duration;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordflow">return</span> DoFinalize();</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#ad57a8ed22af5499bcb6c3fa88767dabe">  121</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aad137d0ae95d3e47a32725276970e324">Segmenter::AddSample</a>(<span class="keywordtype">size_t</span> stream_id,</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                            std::shared_ptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="comment">// Set default sample duration if it has not been set yet.</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;extends.tracks[stream_id].default_sample_duration == 0) {</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    moov_-&gt;extends.tracks[stream_id].default_sample_duration =</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        sample-&gt;duration();</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  }</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  DCHECK_LT(stream_id, fragmenters_.size());</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>* fragmenter = fragmenters_[stream_id].get();</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">if</span> (fragmenter-&gt;fragment_finalized()) {</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::FRAGMENT_FINALIZED,</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                  <span class="stringliteral">&quot;Current fragment is finalized already.&quot;</span>);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  }</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = fragmenter-&gt;AddSample(sample);</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// Use the reference stream&#39;s time scale as movie time scale.</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  moov_-&gt;header.timescale = sidx_-&gt;timescale;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  moof_-&gt;header.sequence_number = 1;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// Fill in version information.</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">const</span> std::string version = GetPackagerVersion();</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">if</span> (!version.empty()) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    moov_-&gt;metadata.handler.handler_type = FOURCC_ID32;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    moov_-&gt;metadata.id3v2.language.code = <span class="stringliteral">&quot;eng&quot;</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    moov_-&gt;metadata.id3v2.private_frame.owner = GetPackagerProjectUrl();</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    moov_-&gt;metadata.id3v2.private_frame.value = version;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">return</span> DoInitialize();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">  100</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa84782877f1afaf9519a552ac3d5d417">Segmenter::Finalize</a>() {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// Set movie duration. Note that the duration in mvhd, tkhd, mdhd should not</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// be touched, i.e. kept at 0. The updated moov box will be written to output</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// file for VOD case only.</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  moov_-&gt;extends.header.fragment_duration = 0;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; stream_durations_.size(); ++i) {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    uint64_t duration =</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        Rescale(stream_durations_[i], moov_-&gt;tracks[i].media.header.timescale,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                moov_-&gt;header.timescale);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordflow">if</span> (duration &gt; moov_-&gt;extends.header.fragment_duration)</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      moov_-&gt;extends.header.fragment_duration = duration;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">return</span> DoFinalize();</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#ad57a8ed22af5499bcb6c3fa88767dabe">  115</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aad137d0ae95d3e47a32725276970e324">Segmenter::AddSample</a>(<span class="keywordtype">size_t</span> stream_id,</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                            std::shared_ptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="comment">// Set default sample duration if it has not been set yet.</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;extends.tracks[stream_id].default_sample_duration == 0) {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    moov_-&gt;extends.tracks[stream_id].default_sample_duration =</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        sample-&gt;duration();</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  }</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  DCHECK_LT(stream_id, fragmenters_.size());</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>* fragmenter = fragmenters_[stream_id].get();</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="keywordflow">if</span> (fragmenter-&gt;fragment_finalized()) {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::FRAGMENT_FINALIZED,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                  <span class="stringliteral">&quot;Current fragment is finalized already.&quot;</span>);</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  }</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = fragmenter-&gt;AddSample(sample);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordflow">if</span> (sample_duration_ == 0)</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    sample_duration_ = sample-&gt;duration();</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  stream_durations_[stream_id] += sample-&gt;duration();</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="keywordflow">if</span> (sample_duration_ == 0)</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    sample_duration_ = sample-&gt;duration();</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  moov_-&gt;tracks[stream_id].media.header.duration += sample-&gt;duration();</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;}</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#af08c0f2dcab2f2c87e94f890cba71a70">  146</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#abf471f83977c2db988694916abb712ff">Segmenter::FinalizeSegment</a>(<span class="keywordtype">size_t</span> stream_id,</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                                  std::shared_ptr&lt;SegmentInfo&gt; segment_info) {</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <span class="keywordflow">if</span> (segment_info-&gt;key_rotation_encryption_config) {</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    FinalizeFragmentForKeyRotation(</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        stream_id, segment_info-&gt;is_encrypted,</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        *segment_info-&gt;key_rotation_encryption_config);</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  }</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  DCHECK_LT(stream_id, fragmenters_.size());</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>* fragmenter = fragmenters_[stream_id].get();</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  DCHECK(fragmenter);</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = fragmenter-&gt;FinalizeFragment();</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#af08c0f2dcab2f2c87e94f890cba71a70">  140</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#abf471f83977c2db988694916abb712ff">Segmenter::FinalizeSegment</a>(<span class="keywordtype">size_t</span> stream_id,</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                                  std::shared_ptr&lt;SegmentInfo&gt; segment_info) {</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="keywordflow">if</span> (segment_info-&gt;key_rotation_encryption_config) {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    FinalizeFragmentForKeyRotation(</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        stream_id, segment_info-&gt;is_encrypted,</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        *segment_info-&gt;key_rotation_encryption_config);</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  }</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  DCHECK_LT(stream_id, fragmenters_.size());</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>* fragmenter = fragmenters_[stream_id].get();</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  DCHECK(fragmenter);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = fragmenter-&gt;FinalizeFragment();</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="comment">// Check if all tracks are ready for fragmentation.</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> std::unique_ptr&lt;Fragmenter&gt;&amp; fragmenter : fragmenters_) {</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <span class="keywordflow">if</span> (!fragmenter-&gt;fragment_finalized())</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  }</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="comment">// Check if all tracks are ready for fragmentation.</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> std::unique_ptr&lt;Fragmenter&gt;&amp; fragmenter : fragmenters_) {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="keywordflow">if</span> (!fragmenter-&gt;fragment_finalized())</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;      <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <a class="code" href="../../d7/dae/structshaka_1_1media_1_1mp4_1_1MediaData.html">MediaData</a> mdat;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="comment">// Data offset relative to &#39;moof&#39;: moof size + mdat header size.</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="comment">// The code will also update box sizes for moof_ and its child boxes.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  uint64_t data_offset = moof_-&gt;<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#aa4e47d0ba81e234707c76ca36e32c1d5">ComputeSize</a>() + mdat.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a8dea1032b6875b763ec06a133933160a">HeaderSize</a>();</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="comment">// &#39;traf&#39; should follow &#39;mfhd&#39; moof header box.</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  uint64_t next_traf_position = moof_-&gt;HeaderSize() + moof_-&gt;header.box_size();</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <a class="code" href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>&amp; traf = moof_-&gt;tracks[i];</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; 0) {</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      next_traf_position += traf.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#ad0186e0f9301bd07c52a55a8b1db0419">box_size</a>();</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;      <span class="comment">// SampleEncryption &#39;senc&#39; box should be the last box in &#39;traf&#39;.</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;      <span class="comment">// |auxiliary_offset| should point to the data of SampleEncryption.</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      traf.auxiliary_offset.offsets[0] =</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;          next_traf_position - traf.sample_encryption.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#ad0186e0f9301bd07c52a55a8b1db0419">box_size</a>() +</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;          traf.sample_encryption.<a class="code" href="../../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html#a21cc4d085f650dc18a20a4dd05cb6750">HeaderSize</a>() +</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;          <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// for sample count field in &#39;senc&#39;</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    }</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    traf.runs[0].data_offset = data_offset + mdat.data_size;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    mdat.data_size += <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(fragmenters_[i]-&gt;data()-&gt;Size());</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  }</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="comment">// Generate segment reference.</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  sidx_-&gt;references.resize(sidx_-&gt;references.size() + 1);</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  fragmenters_[GetReferenceStreamId()]-&gt;GenerateSegmentReference(</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      &amp;sidx_-&gt;references[sidx_-&gt;references.size() - 1]);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  sidx_-&gt;references[sidx_-&gt;references.size() - 1].referenced_size =</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <a class="code" href="../../d7/dae/structshaka_1_1media_1_1mp4_1_1MediaData.html">MediaData</a> mdat;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="comment">// Data offset relative to &#39;moof&#39;: moof size + mdat header size.</span></div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="comment">// The code will also update box sizes for moof_ and its child boxes.</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  uint64_t data_offset = moof_-&gt;<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#aa4e47d0ba81e234707c76ca36e32c1d5">ComputeSize</a>() + mdat.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a8dea1032b6875b763ec06a133933160a">HeaderSize</a>();</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="comment">// &#39;traf&#39; should follow &#39;mfhd&#39; moof header box.</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  uint64_t next_traf_position = moof_-&gt;HeaderSize() + moof_-&gt;header.box_size();</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <a class="code" href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>&amp; traf = moof_-&gt;tracks[i];</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; 0) {</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;      next_traf_position += traf.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#ad0186e0f9301bd07c52a55a8b1db0419">box_size</a>();</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      <span class="comment">// SampleEncryption &#39;senc&#39; box should be the last box in &#39;traf&#39;.</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      <span class="comment">// |auxiliary_offset| should point to the data of SampleEncryption.</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      traf.auxiliary_offset.offsets[0] =</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;          next_traf_position - traf.sample_encryption.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#ad0186e0f9301bd07c52a55a8b1db0419">box_size</a>() +</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;          traf.sample_encryption.<a class="code" href="../../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html#a21cc4d085f650dc18a20a4dd05cb6750">HeaderSize</a>() +</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;          <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// for sample count field in &#39;senc&#39;</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    }</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    traf.runs[0].data_offset = data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    mdat.data_size += <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(fragmenters_[i]-&gt;data()-&gt;Size());</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  }</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="comment">// Generate segment reference.</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  sidx_-&gt;references.resize(sidx_-&gt;references.size() + 1);</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  fragmenters_[GetReferenceStreamId()]-&gt;GenerateSegmentReference(</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;      &amp;sidx_-&gt;references[sidx_-&gt;references.size() - 1]);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  sidx_-&gt;references[sidx_-&gt;references.size() - 1].referenced_size =</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="comment">// Write the fragment to buffer.</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  moof_-&gt;Write(fragment_buffer_.get());</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  mdat.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a57b8837c93d51f5cf03d3862069d509a">WriteHeader</a>(fragment_buffer_.get());</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> std::unique_ptr&lt;Fragmenter&gt;&amp; fragmenter : fragmenters_)</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;data());</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="comment">// Write the fragment to buffer.</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  moof_-&gt;Write(fragment_buffer_.get());</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  mdat.<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a57b8837c93d51f5cf03d3862069d509a">WriteHeader</a>(fragment_buffer_.get());</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> std::unique_ptr&lt;Fragmenter&gt;&amp; fragmenter : fragmenters_)</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;data());</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <span class="comment">// Increase sequence_number for next fragment.</span></div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  ++moof_-&gt;header.sequence_number;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="keywordflow">for</span> (std::unique_ptr&lt;Fragmenter&gt;&amp; fragmenter : fragmenters_)</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    fragmenter-&gt;ClearFragmentFinalized();</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keywordflow">if</span> (!segment_info-&gt;is_subsegment) {</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = DoFinalizeSegment();</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="comment">// Reset segment information to initial state.</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    sidx_-&gt;references.clear();</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  }</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;}</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;uint32_t Segmenter::GetReferenceTimeScale()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  <span class="keywordflow">return</span> moov_-&gt;header.timescale;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;}</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
-<div class="line"><a name="l00222"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a7283c64cb63a94264ff8fe405b8ce5c2">  222</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a277aeb59ed41fc484a86101d565017ae">Segmenter::GetDuration</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;header.timescale == 0) {</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="comment">// Handling the case where this is not properly initialized.</span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  }</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="comment">// Increase sequence_number for next fragment.</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  ++moof_-&gt;header.sequence_number;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="keywordflow">for</span> (std::unique_ptr&lt;Fragmenter&gt;&amp; fragmenter : fragmenters_)</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    fragmenter-&gt;ClearFragmentFinalized();</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="keywordflow">if</span> (!segment_info-&gt;is_subsegment) {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = DoFinalizeSegment();</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="comment">// Reset segment information to initial state.</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    sidx_-&gt;references.clear();</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  }</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;}</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;uint32_t Segmenter::GetReferenceTimeScale()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="keywordflow">return</span> moov_-&gt;header.timescale;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;}</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
+<div class="line"><a name="l00216"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a7283c64cb63a94264ff8fe405b8ce5c2">  216</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a277aeb59ed41fc484a86101d565017ae">Segmenter::GetDuration</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  uint64_t duration = moov_-&gt;extends.header.fragment_duration;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <span class="keywordflow">if</span> (duration == 0) {</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="comment">// Handling the case where this is not properly initialized.</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  }</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(duration) / moov_-&gt;header.timescale;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;}</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
+<div class="line"><a name="l00225"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#afd8bb3584c984c711615800ad93642a3">  225</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2">Segmenter::UpdateProgress</a>(uint64_t progress) {</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  accumulated_progress_ += progress;</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(moov_-&gt;header.duration) / moov_-&gt;header.timescale;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;}</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;</div>
-<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#afd8bb3584c984c711615800ad93642a3">  231</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2">Segmenter::UpdateProgress</a>(uint64_t progress) {</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  accumulated_progress_ += progress;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  <span class="keywordflow">if</span> (progress_target_ == 0) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <span class="comment">// It might happen that accumulated progress exceeds progress_target due to</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="comment">// computation errors, e.g. rounding error. Cap it so it never reports &gt; 100%</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  <span class="comment">// progress.</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  <span class="keywordflow">if</span> (accumulated_progress_ &gt;= progress_target_) {</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html#a9c32e569c50194a106f7e9242749e7e7">OnProgress</a>(1.0);</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html#a9c32e569c50194a106f7e9242749e7e7">OnProgress</a>(static_cast&lt;double&gt;(accumulated_progress_) /</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                                   progress_target_);</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  }</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;}</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
-<div class="line"><a name="l00247"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#adea4bf88a29660bd8612ae3bc5048068">  247</a></span>&#160;<span class="keywordtype">void</span> Segmenter::SetComplete() {</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  progress_listener_-&gt;<a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html#a9c32e569c50194a106f7e9242749e7e7">OnProgress</a>(1.0);</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;}</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;uint32_t Segmenter::GetReferenceStreamId() {</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  DCHECK(sidx_);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  <span class="keywordflow">return</span> sidx_-&gt;reference_id - 1;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;}</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="keywordtype">void</span> Segmenter::FinalizeFragmentForKeyRotation(</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordtype">size_t</span> stream_id,</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="keywordtype">bool</span> fragment_encrypted,</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html">EncryptionConfig</a>&amp; encryption_config) {</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keyword">const</span> std::vector&lt;ProtectionSystemSpecificInfo&gt;&amp; system_info =</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;      encryption_config.key_system_info;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  moof_-&gt;pssh.resize(system_info.size());</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; system_info.size(); i++)</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    moof_-&gt;pssh[i].raw_box = system_info[i].CreateBox();</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// Skip the following steps if the current fragment is not going to be</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">// encrypted. &#39;pssh&#39; box needs to be included in the fragment, which is</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="comment">// performed above, regardless of whether the fragment is encrypted. This is</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <span class="comment">// necessary for two reasons: 1) Requesting keys before reaching encrypted</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="comment">// content avoids playback delay due to license requests; 2) In Chrome, CDM</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// must be initialized before starting the playback and CDM can only be</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="comment">// initialized with a valid &#39;pssh&#39;.</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="keywordflow">if</span> (!fragment_encrypted)</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  DCHECK_LT(stream_id, moof_-&gt;tracks.size());</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  TrackFragment&amp; traf = moof_-&gt;tracks[stream_id];</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  traf.sample_group_descriptions.resize(traf.sample_group_descriptions.size() +</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                                        1);</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  SampleGroupDescription&amp; sample_group_description =</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;      traf.sample_group_descriptions.back();</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  sample_group_description.grouping_type = FOURCC_seig;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  sample_group_description.cenc_sample_encryption_info_entries.resize(1);</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  CencSampleEncryptionInfoEntry&amp; sample_group_entry =</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      sample_group_description.cenc_sample_encryption_info_entries.back();</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  sample_group_entry.is_protected = 1;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  sample_group_entry.per_sample_iv_size = encryption_config.per_sample_iv_size;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  sample_group_entry.constant_iv = encryption_config.constant_iv;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  sample_group_entry.crypt_byte_block = encryption_config.crypt_byte_block;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  sample_group_entry.skip_byte_block = encryption_config.skip_byte_block;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  sample_group_entry.key_id = encryption_config.key_id;</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;}</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keywordflow">if</span> (progress_target_ == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="comment">// It might happen that accumulated progress exceeds progress_target due to</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="comment">// computation errors, e.g. rounding error. Cap it so it never reports &gt; 100%</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <span class="comment">// progress.</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordflow">if</span> (accumulated_progress_ &gt;= progress_target_) {</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html#a9c32e569c50194a106f7e9242749e7e7">OnProgress</a>(1.0);</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html#a9c32e569c50194a106f7e9242749e7e7">OnProgress</a>(static_cast&lt;double&gt;(accumulated_progress_) /</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                                   progress_target_);</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  }</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;}</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
+<div class="line"><a name="l00241"></a><span class="lineno"><a class="line" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#adea4bf88a29660bd8612ae3bc5048068">  241</a></span>&#160;<span class="keywordtype">void</span> Segmenter::SetComplete() {</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  progress_listener_-&gt;<a class="code" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html#a9c32e569c50194a106f7e9242749e7e7">OnProgress</a>(1.0);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;}</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;uint32_t Segmenter::GetReferenceStreamId() {</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  DCHECK(sidx_);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  <span class="keywordflow">return</span> sidx_-&gt;reference_id - 1;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;}</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="keywordtype">void</span> Segmenter::FinalizeFragmentForKeyRotation(</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordtype">size_t</span> stream_id,</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keywordtype">bool</span> fragment_encrypted,</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html">EncryptionConfig</a>&amp; encryption_config) {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <span class="keywordflow">if</span> (options_.mp4_include_pssh_in_stream) {</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keyword">const</span> std::vector&lt;ProtectionSystemSpecificInfo&gt;&amp; system_info =</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        encryption_config.key_system_info;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    moof_-&gt;pssh.resize(system_info.size());</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; system_info.size(); i++)</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      moof_-&gt;pssh[i].raw_box = system_info[i].CreateBox();</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    LOG(WARNING)</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Key rotation and no pssh in stream may not work well together.&quot;</span>;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  }</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="comment">// Skip the following steps if the current fragment is not going to be</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// encrypted. &#39;pssh&#39; box needs to be included in the fragment, which is</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">// performed above, regardless of whether the fragment is encrypted. This is</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="comment">// necessary for two reasons: 1) Requesting keys before reaching encrypted</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <span class="comment">// content avoids playback delay due to license requests; 2) In Chrome, CDM</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="comment">// must be initialized before starting the playback and CDM can only be</span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// initialized with a valid &#39;pssh&#39;.</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="keywordflow">if</span> (!fragment_encrypted)</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  DCHECK_LT(stream_id, moof_-&gt;tracks.size());</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  TrackFragment&amp; traf = moof_-&gt;tracks[stream_id];</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  traf.sample_group_descriptions.resize(traf.sample_group_descriptions.size() +</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                                        1);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  SampleGroupDescription&amp; sample_group_description =</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;      traf.sample_group_descriptions.back();</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  sample_group_description.grouping_type = FOURCC_seig;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  sample_group_description.cenc_sample_encryption_info_entries.resize(1);</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  CencSampleEncryptionInfoEntry&amp; sample_group_entry =</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      sample_group_description.cenc_sample_encryption_info_entries.back();</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  sample_group_entry.is_protected = 1;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  sample_group_entry.per_sample_iv_size = encryption_config.per_sample_iv_size;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  sample_group_entry.constant_iv = encryption_config.constant_iv;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  sample_group_entry.crypt_byte_block = encryption_config.crypt_byte_block;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  sample_group_entry.skip_byte_block = encryption_config.skip_byte_block;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  sample_group_entry.key_id = encryption_config.key_id;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;}</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1Segmenter_html_a277aeb59ed41fc484a86101d565017ae"><div class="ttname"><a href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a277aeb59ed41fc484a86101d565017ae">shaka::media::webm::Segmenter::GetDuration</a></div><div class="ttdeci">float GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00163">segmenter.cc:163</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1mp4_1_1FullBox_html_a21cc4d085f650dc18a20a4dd05cb6750"><div class="ttname"><a href="../../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html#a21cc4d085f650dc18a20a4dd05cb6750">shaka::media::mp4::FullBox::HeaderSize</a></div><div class="ttdeci">uint32_t HeaderSize() const final</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00075">box.cc:75</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1mp4_1_1TrackFragment_html"><div class="ttname"><a href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">shaka::media::mp4::TrackFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00728">box_definitions.h:728</a></div></div>
@@ -408,7 +407,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 30 2017 22:34:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 30 2017 23:38:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
