@@ -253,8 +253,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  }</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="comment">// Read enough bytes before detecting the container.</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keywordtype">size_t</span> bytes_read = 0;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordflow">while</span> (bytes_read &lt; kInitBufSize) {</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  int64_t bytes_read = 0;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordflow">while</span> (static_cast&lt;size_t&gt;(bytes_read) &lt; kInitBufSize) {</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    int64_t read_result =</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        media_file_-&gt;<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aed0c0793fd8751330583314a4d3012b9">Read</a>(buffer_.get() + bytes_read, kInitBufSize);</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="keywordflow">if</span> (read_result &lt; 0)</div>
@@ -434,7 +434,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 30 2017 23:38:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 31 2017 21:44:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
