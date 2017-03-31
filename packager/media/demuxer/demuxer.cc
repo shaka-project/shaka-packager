@@ -165,7 +165,7 @@ Status Demuxer::InitializeParser() {
 
   // Read enough bytes before detecting the container.
   int64_t bytes_read = 0;
-  while (bytes_read < kInitBufSize) {
+  while (static_cast<size_t>(bytes_read) < kInitBufSize) {
     int64_t read_result =
         media_file_->Read(buffer_.get() + bytes_read, kInitBufSize);
     if (read_result < 0)
