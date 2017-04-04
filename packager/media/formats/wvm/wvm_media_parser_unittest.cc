@@ -52,7 +52,9 @@ class MockKeySource : public FixedKeySource {
   MockKeySource() {}
   ~MockKeySource() override {}
 
-  MOCK_METHOD1(FetchKeys, Status(uint32_t asset_id));
+  MOCK_METHOD2(FetchKeys,
+               Status(EmeInitDataType init_data_type,
+                      const std::vector<uint8_t>& init_data));
   MOCK_METHOD2(GetKey, Status(TrackType track_type,
                               EncryptionKey* key));
 
@@ -185,7 +187,7 @@ TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {
 }
 
 TEST_F(WvmMediaParserTest, ParseWvm) {
-  EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(*key_source_, FetchKeys(_, _)).WillOnce(Return(Status::OK));
   EXPECT_CALL(*key_source_, GetKey(_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
   Parse(kWvmFile);
@@ -196,7 +198,7 @@ TEST_F(WvmMediaParserTest, ParseWvm) {
 }
 
 TEST_F(WvmMediaParserTest, ParseWvmWith64ByteAssetKey) {
-  EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(*key_source_, FetchKeys(_, _)).WillOnce(Return(Status::OK));
   // WVM uses only the first 16 bytes of the asset key.
   encryption_key_.key.resize(64);
   encryption_key_.key.assign(k64ByteAssetKey, k64ByteAssetKey + 64);
@@ -209,7 +211,7 @@ TEST_F(WvmMediaParserTest, ParseWvmWith64ByteAssetKey) {
 }
 
 TEST_F(WvmMediaParserTest, ParseMultiConfigWvm) {
-  EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(*key_source_, FetchKeys(_, _)).WillOnce(Return(Status::OK));
   EXPECT_CALL(*key_source_, GetKey(_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
   Parse(kMultiConfigWvmFile);

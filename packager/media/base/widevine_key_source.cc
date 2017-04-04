@@ -14,6 +14,7 @@
 #include "packager/base/json/json_writer.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/http_key_fetcher.h"
+#include "packager/media/base/network_util.h"
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/rcheck.h"
@@ -40,6 +41,18 @@ const int kFirstRetryDelayMilliseconds = 1000;
 const int kDefaultCryptoPeriodCount = 10;
 const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
 const int kKeyFetchTimeoutInSeconds = 60;  // 1 minute.
+
+std::vector<uint8_t> StringToBytes(const std::string& string) {
+  return std::vector<uint8_t>(string.begin(), string.end());
+}
+
+std::vector<uint8_t> WidevinePsshFromKeyId(
+    const std::vector<std::vector<uint8_t>>& key_ids) {
+  media::WidevinePsshData widevine_pssh_data;
+  for (const std::vector<uint8_t>& key_id : key_ids)
+    widevine_pssh_data.add_key_id(key_id.data(), key_id.size());
+  return StringToBytes(widevine_pssh_data.SerializeAsString());
+}
 
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8_t>* bytes) {
@@ -147,61 +160,63 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
   return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
 
-Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_box) {
-  const std::vector<uint8_t> widevine_system_id(
-      kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
-
-  ProtectionSystemSpecificInfo info;
-  if (!info.Parse(pssh_box.data(), pssh_box.size()))
-    return Status(error::PARSER_FAILURE, "Error parsing the PSSH box.");
-
-  if (info.system_id() == widevine_system_id) {
-    base::AutoLock scoped_lock(lock_);
-    request_dict_.Clear();
-    std::string pssh_data_base64_string;
-
-    BytesToBase64String(info.pssh_data(), &pssh_data_base64_string);
-    request_dict_.SetString("pssh_data", pssh_data_base64_string);
-    return FetchKeysInternal(!kEnableKeyRotation, 0, false);
-  } else if (!info.key_ids().empty()) {
-    // This is not a Widevine PSSH box.  Try making the request for the key-IDs.
-    // Even if this is a different key-system, it should still work.  Either
-    // the server will not recognize it and return an error, or it will
-    // recognize it and the key must be correct (or the content is bad).
-    return FetchKeys(info.key_ids());
+Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
+                                    const std::vector<uint8_t>& init_data) {
+  std::vector<uint8_t> pssh_data;
+  uint32_t asset_id = 0;
+  switch (init_data_type) {
+    case EmeInitDataType::CENC: {
+      const std::vector<uint8_t> widevine_system_id(
+          kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+      std::vector<ProtectionSystemSpecificInfo> protection_systems_info;
+      if (!ProtectionSystemSpecificInfo::ParseBoxes(
+              init_data.data(), init_data.size(), &protection_systems_info)) {
+        return Status(error::PARSER_FAILURE, "Error parsing the PSSH boxes.");
+      }
+      for (const auto& info: protection_systems_info) {
+        // Use Widevine PSSH if available otherwise construct a Widevine PSSH
+        // from the first available key ids.
+        if (info.system_id() == widevine_system_id) {
+          pssh_data = info.pssh_data();
+          break;
+        } else if (pssh_data.empty() && !info.key_ids().empty()) {
+          pssh_data = WidevinePsshFromKeyId(info.key_ids());
+          // Continue to see if there is any Widevine PSSH. The KeyId generated
+          // PSSH is only used if a Widevine PSSH could not be found.
+          continue;
+        }
+      }
+      if (pssh_data.empty())
+        return Status(error::INVALID_ARGUMENT, "No supported PSSHs found.");
+      break;
+    }
+    case EmeInitDataType::WEBM:
+      pssh_data = WidevinePsshFromKeyId({init_data});
+      break;
+    case EmeInitDataType::WIDEVINE_CLASSIC:
+      if (init_data.size() < sizeof(asset_id))
+        return Status(error::INVALID_ARGUMENT, "Invalid asset id.");
+      asset_id = ntohlFromBuffer(init_data.data());
+      break;
+    default:
+      LOG(ERROR) << "Init data type " << static_cast<int>(init_data_type)
+                 << " not supported.";
+      return Status(error::INVALID_ARGUMENT, "Unsupported init data type.");
+  }
+  const bool widevine_classic =
+      init_data_type == EmeInitDataType::WIDEVINE_CLASSIC;
+  base::AutoLock scoped_lock(lock_);
+  request_dict_.Clear();
+  if (widevine_classic) {
+    // Javascript/JSON does not support int64_t or unsigned numbers. Use double
+    // instead as 32-bit integer can be lossless represented using double.
+    request_dict_.SetDouble("asset_id", asset_id);
   } else {
-    return Status(error::NOT_FOUND, "No key IDs given in PSSH box.");
+    std::string pssh_data_base64_string;
+    BytesToBase64String(pssh_data, &pssh_data_base64_string);
+    request_dict_.SetString("pssh_data", pssh_data_base64_string);
   }
-}
-
-Status WidevineKeySource::FetchKeys(
-    const std::vector<std::vector<uint8_t>>& key_ids) {
-  base::AutoLock scoped_lock(lock_);
-  request_dict_.Clear();
-  std::string pssh_data_base64_string;
-
-  // Generate Widevine PSSH data from the key-IDs.
-  WidevinePsshData widevine_pssh_data;
-  for (size_t i = 0; i < key_ids.size(); i++) {
-    widevine_pssh_data.add_key_id(key_ids[i].data(), key_ids[i].size());
-  }
-
-  const std::string serialized_string = widevine_pssh_data.SerializeAsString();
-  std::vector<uint8_t> pssh_data(serialized_string.begin(),
-                                 serialized_string.end());
-
-  BytesToBase64String(pssh_data, &pssh_data_base64_string);
-  request_dict_.SetString("pssh_data", pssh_data_base64_string);
-  return FetchKeysInternal(!kEnableKeyRotation, 0, false);
-}
-
-Status WidevineKeySource::FetchKeys(uint32_t asset_id) {
-  base::AutoLock scoped_lock(lock_);
-  request_dict_.Clear();
-  // Javascript/JSON does not support int64_t or unsigned numbers. Use double
-  // instead as 32-bit integer can be lossless represented using double.
-  request_dict_.SetDouble("asset_id", asset_id);
-  return FetchKeysInternal(!kEnableKeyRotation, 0, true);
+  return FetchKeysInternal(!kEnableKeyRotation, 0, widevine_classic);
 }
 
 Status WidevineKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
@@ -566,7 +581,9 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
   DCHECK(!encryption_key_map.empty());
   if (!enable_key_rotation) {
-    encryption_key_map_.swap(encryption_key_map);
+    // Merge with previously requested keys.
+    for (auto& pair : encryption_key_map)
+      encryption_key_map_[pair.first] = std::move(pair.second);
     return true;
   }
   return PushToKeyPool(&encryption_key_map);

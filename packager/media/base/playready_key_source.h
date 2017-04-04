@@ -40,10 +40,8 @@ class PlayReadyKeySource : public KeySource {
 
   /// @name KeySource implementation overrides.
   /// @{
-  Status FetchKeys(const std::vector<uint8_t>& pssh_box) override;
-  Status FetchKeys(const std::vector<std::vector<uint8_t>>& key_ids) override;
-  Status FetchKeys(uint32_t asset_id) override;
-
+  Status FetchKeys(EmeInitDataType init_data_type,
+                   const std::vector<uint8_t>& init_data) override;
   Status GetKey(TrackType track_type, EncryptionKey* key) override;
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;

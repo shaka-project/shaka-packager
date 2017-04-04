@@ -310,19 +310,9 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
   return Status::OK;
 }
 
-Status PlayReadyKeySource::FetchKeys(const std::vector<uint8_t>& pssh_box) {
-  // Does nothing for playready encryption/decryption.
-  return Status::OK;
-}
-
-Status PlayReadyKeySource::FetchKeys(
-    const std::vector<std::vector<uint8_t>>& key_ids) {
-  // Does nothing for playready encryption/decryption.
-  return Status::OK;
-}
-
-Status PlayReadyKeySource::FetchKeys(uint32_t asset_id) {
-  // Does nothing for playready encryption/decryption.
+Status PlayReadyKeySource::FetchKeys(EmeInitDataType init_data_type,
+                                     const std::vector<uint8_t>& init_data) {
+  // Do nothing for playready encryption/decryption.
   return Status::OK;
 }
 

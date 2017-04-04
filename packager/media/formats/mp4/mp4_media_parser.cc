@@ -640,27 +640,18 @@ bool MP4MediaParser::FetchKeysIfNecessary(
   if (!decryption_key_source_)
     return true;
 
-  Status status;
-  for (std::vector<ProtectionSystemSpecificHeader>::const_iterator iter =
-           headers.begin(); iter != headers.end(); ++iter) {
-    status = decryption_key_source_->FetchKeys(iter->raw_box);
-    if (!status.ok()) {
-      // If there is an error, try using the next PSSH box and report if none
-      // work.
-      VLOG(1) << "Unable to fetch decryption keys: " << status
-              << ", trying the next PSSH box";
-      continue;
-    }
-    return true;
+  std::vector<uint8_t> pssh_raw_data;
+  for (const auto& header : headers) {
+    pssh_raw_data.insert(pssh_raw_data.end(), header.raw_box.begin(),
+                         header.raw_box.end());
   }
-
+  Status status =
+      decryption_key_source_->FetchKeys(EmeInitDataType::CENC, pssh_raw_data);
   if (!status.ok()) {
     LOG(ERROR) << "Error fetching decryption keys: " << status;
     return false;
   }
-
-  LOG(ERROR) << "No viable 'pssh' box found for content decryption.";
-  return false;
+  return true;
 }
 
 bool MP4MediaParser::EnqueueSample(bool* err) {

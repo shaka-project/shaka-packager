@@ -75,6 +75,7 @@ const uint8_t kRequestKeyId[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
 // 32-bit with leading bit set, to verify that big uint32_t can be handled
 // correctly.
 const uint32_t kClassicAssetId = 0x80038cd9;
+const uint8_t kClassicAssetIdBytes[] = {0x80, 0x03, 0x8c, 0xd9};
 
 std::string Base64Encode(const std::string& input) {
   std::string output;
@@ -319,11 +320,11 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencWithPsshBoxOK) {
   widevine_key_source_->set_signer(std::move(mock_request_signer_));
   std::vector<uint8_t> pssh_box(kRequestPsshBox,
                                 kRequestPsshBox + arraysize(kRequestPsshBox));
-  ASSERT_OK(widevine_key_source_->FetchKeys(pssh_box));
+  ASSERT_OK(widevine_key_source_->FetchKeys(EmeInitDataType::CENC, pssh_box));
   VerifyKeys(false);
 }
 
-TEST_P(WidevineKeySourceTest, LicenseStatusCencWithKeyIdsOK) {
+TEST_P(WidevineKeySourceTest, LicenseStatusCencWithKeyIdOK) {
   std::string expected_pssh_data(
       kRequestPsshDataFromKeyIds,
       kRequestPsshDataFromKeyIds + arraysize(kRequestPsshDataFromKeyIds));
@@ -341,10 +342,9 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencWithKeyIdsOK) {
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(std::move(mock_request_signer_));
-  std::vector<std::vector<uint8_t>> key_ids;
-  key_ids.push_back(std::vector<uint8_t>(
-      kRequestKeyId, kRequestKeyId + arraysize(kRequestKeyId)));
-  ASSERT_OK(widevine_key_source_->FetchKeys(key_ids));
+  std::vector<uint8_t> key_id(kRequestKeyId,
+                              kRequestKeyId + arraysize(kRequestKeyId));
+  ASSERT_OK(widevine_key_source_->FetchKeys(EmeInitDataType::WEBM, key_id));
   VerifyKeys(false);
 }
 
@@ -363,7 +363,10 @@ TEST_P(WidevineKeySourceTest, LicenseStatusClassicOK) {
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(std::move(mock_request_signer_));
-  ASSERT_OK(widevine_key_source_->FetchKeys(kClassicAssetId));
+  ASSERT_OK(widevine_key_source_->FetchKeys(
+      EmeInitDataType::WIDEVINE_CLASSIC,
+      std::vector<uint8_t>(std::begin(kClassicAssetIdBytes),
+                           std::end(kClassicAssetIdBytes))));
   VerifyKeys(true);
 }
 

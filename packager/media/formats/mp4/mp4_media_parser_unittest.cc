@@ -31,7 +31,9 @@ const char kKeyId[] = "0123456789012345";
 
 class MockKeySource : public FixedKeySource {
  public:
-  MOCK_METHOD1(FetchKeys, Status(const std::vector<uint8_t>& pssh_data));
+  MOCK_METHOD2(FetchKeys,
+               Status(EmeInitDataType init_data_type,
+                      const std::vector<uint8_t>& init_data));
   MOCK_METHOD2(GetKey,
                Status(const std::vector<uint8_t>& key_id, EncryptionKey* key));
 };
@@ -247,7 +249,7 @@ TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {
 
 TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndAuxInMdat) {
   MockKeySource mock_key_source;
-  EXPECT_CALL(mock_key_source, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(mock_key_source, FetchKeys(_, _)).WillOnce(Return(Status::OK));
 
   EncryptionKey encryption_key;
   encryption_key.key.assign(kKey, kKey + strlen(kKey));
@@ -266,7 +268,7 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndAuxInMdat) {
 
 TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndSenc) {
   MockKeySource mock_key_source;
-  EXPECT_CALL(mock_key_source, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(mock_key_source, FetchKeys(_, _)).WillOnce(Return(Status::OK));
 
   EncryptionKey encryption_key;
   encryption_key.key.assign(kKey, kKey + strlen(kKey));

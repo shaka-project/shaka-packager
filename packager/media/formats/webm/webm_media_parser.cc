@@ -242,17 +242,19 @@ bool WebMMediaParser::FetchKeysIfNecessary(
   if (!decryption_key_source_)
     return true;
 
-  std::vector<std::vector<uint8_t>> key_ids;
+  Status status;
   if (!audio_encryption_key_id.empty()) {
-    key_ids.push_back(std::vector<uint8_t>(audio_encryption_key_id.begin(),
-                                           audio_encryption_key_id.end()));
+    status.Update(decryption_key_source_->FetchKeys(
+        EmeInitDataType::WEBM,
+        std::vector<uint8_t>(audio_encryption_key_id.begin(),
+                             audio_encryption_key_id.end())));
   }
   if (!video_encryption_key_id.empty()) {
-    key_ids.push_back(std::vector<uint8_t>(video_encryption_key_id.begin(),
-                                           video_encryption_key_id.end()));
+    status.Update(decryption_key_source_->FetchKeys(
+        EmeInitDataType::WEBM,
+        std::vector<uint8_t>(video_encryption_key_id.begin(),
+                             video_encryption_key_id.end())));
   }
-
-  Status status = decryption_key_source_->FetchKeys(key_ids);
   if (!status.ok()) {
     LOG(ERROR) << "Error fetching decryption keys: " << status;
     return false;

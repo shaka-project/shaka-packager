@@ -1058,21 +1058,23 @@ bool WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
   return true;
 }
 
-bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,
+bool WvmMediaParser::GetAssetKey(const uint8_t* asset_id,
                                  EncryptionKey* encryption_key) {
   DCHECK(decryption_key_source_);
-  Status status = decryption_key_source_->FetchKeys(asset_id);
+  Status status = decryption_key_source_->FetchKeys(
+      EmeInitDataType::WIDEVINE_CLASSIC,
+      std::vector<uint8_t>(asset_id, asset_id + sizeof(uint32_t)));
   if (!status.ok()) {
-    LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id
-               << ", error = " << status;
+    LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
+               << ntohlFromBuffer(asset_id) << ", error = " << status;
     return false;
   }
 
   status = decryption_key_source_->GetKey(KeySource::TRACK_TYPE_HD,
                                           encryption_key);
   if (!status.ok()) {
-    LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id
-               << ", error = " << status;
+    LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
+               << ntohlFromBuffer(asset_id) << ", error = " << status;
     return false;
   }
 
@@ -1097,22 +1099,17 @@ bool WvmMediaParser::ProcessEcm() {
   ecm_data += sizeof(uint32_t);  // old version field - skip.
   ecm_data += sizeof(uint32_t);  // clear lead - skip.
   ecm_data += sizeof(uint32_t);  // system id(includes ECM version) - skip.
-  uint32_t asset_id = ntohlFromBuffer(ecm_data);
-  if (asset_id == 0) {
-    LOG(ERROR) << "AssetID in ECM is not valid.";
-    return false;
-  }
-  ecm_data += sizeof(uint32_t);  // asset_id.
   EncryptionKey encryption_key;
-  if (!GetAssetKey(asset_id, &encryption_key)) {
+  if (!GetAssetKey(ecm_data, &encryption_key)) {
     return false;
   }
   if (encryption_key.key.size() < kAssetKeySizeBytes) {
     LOG(ERROR) << "Asset Key size of " << encryption_key.key.size()
-               << " for AssetID = " << asset_id
+               << " for AssetID = " << ntohlFromBuffer(ecm_data)
                << " is less than minimum asset key size.";
     return false;
   }
+  ecm_data += sizeof(uint32_t);  // asset_id.
   // Legacy WVM content may have asset keys > 16 bytes.
   // Use only the first 16 bytes of the asset key to get
   // the content key.

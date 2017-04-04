@@ -16,6 +16,21 @@
 namespace shaka {
 namespace media {
 
+/// Encrypted media init data types. It is extended from:
+/// https://www.w3.org/TR/eme-initdata-registry/#registry.
+enum class EmeInitDataType {
+  UNKNOWN,
+  /// One or multiple PSSH boxes.
+  CENC,
+  /// WebM init data is basically KeyId.
+  WEBM,
+  /// JSON formatted key ids.
+  KEYIDS,
+  /// Widevine classic asset id.
+  WIDEVINE_CLASSIC,
+  MAX = WIDEVINE_CLASSIC
+};
+
 struct EncryptionKey {
   EncryptionKey();
   ~EncryptionKey();
@@ -43,22 +58,12 @@ class KeySource {
   KeySource();
   virtual ~KeySource();
 
-  /// Fetch keys for CENC from the key server.
-  /// @param pssh_box The entire PSSH box for the content to be decrypted
+  /// Fetch keys based on the specified encrypted media init data.
+  /// @param init_data_type specifies the encrypted media init data type.
+  /// @param init_data contains the init data.
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_box) = 0;
-
-  /// Fetch keys for CENC from the key server.
-  /// @param key_ids the key IDs for the keys to fetch from the server.
-  /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(
-      const std::vector<std::vector<uint8_t>>& key_ids) = 0;
-
-  /// Fetch keys for WVM decryption from the key server.
-  /// @param asset_id is the Widevine Classic asset ID for the content to be
-  /// decrypted.
-  /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(uint32_t asset_id) = 0;
+  virtual Status FetchKeys(EmeInitDataType init_data_type,
+                           const std::vector<uint8_t>& init_data) = 0;
 
   /// Get encryption key of the specified track type.
   /// @param track_type is the type of track for which retrieving the key.

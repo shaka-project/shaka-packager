@@ -15,18 +15,8 @@ namespace media {
 
 FixedKeySource::~FixedKeySource() {}
 
-Status FixedKeySource::FetchKeys(const std::vector<uint8_t>& pssh_box) {
-  // Do nothing for fixed key encryption/decryption.
-  return Status::OK;
-}
-
-Status FixedKeySource::FetchKeys(
-    const std::vector<std::vector<uint8_t>>& key_ids) {
-  // Do nothing for fixed key encryption/decryption.
-  return Status::OK;
-}
-
-Status FixedKeySource::FetchKeys(uint32_t asset_id) {
+Status FixedKeySource::FetchKeys(EmeInitDataType init_data_type,
+                                 const std::vector<uint8_t>& init_data) {
   // Do nothing for fixed key encryption/decryption.
   return Status::OK;
 }

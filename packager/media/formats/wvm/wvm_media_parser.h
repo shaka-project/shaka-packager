@@ -200,7 +200,7 @@ class WvmMediaParser : public MediaParser {
   // to ouput media sample as encrypted.
   bool Output(bool must_process_encrypted);
 
-  bool GetAssetKey(const uint32_t asset_id, EncryptionKey* encryption_key);
+  bool GetAssetKey(const uint8_t* asset_id, EncryptionKey* encryption_key);
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
