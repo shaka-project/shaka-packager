@@ -22,6 +22,9 @@ class PackagerApp(object):
     if platform.system() == 'Windows':
       packager_name += '.exe'
     self.binary = os.path.join(test_env.SCRIPT_DIR, packager_name)
+    # Set this to empty for now in case GetCommandLine() is called before
+    # Package().
+    self.packaging_command_line = ''
     assert os.path.exists(self.binary), ('Please run from output directory, '
                                          'e.g. out/Debug/packager_test.py')
 
@@ -39,4 +42,10 @@ class PackagerApp(object):
     cmd = [self.binary]
     cmd.extend(streams)
     cmd.extend(flags)
+    # Put single-quotes around each entry so that things like '$' signs in
+    # segment templates won't be interpreted as shell variables.
+    self.packaging_command_line = ' '.join(["'%s'" % entry for entry in cmd])
     assert 0 == subprocess.call(cmd)
+
+  def GetCommandLine(self):
+    return self.packaging_command_line

@@ -19,6 +19,14 @@ import unittest
 import packager_app
 import test_env
 
+_TEST_FAILURE_COMMAND_LINE_MESSAGE = """
+!!! To reproduce the failure, change the output files to an !!!
+!!! existing directory, e.g. output artifacts to current    !!!
+!!! directory by removing /tmp/something/ in the following  !!!
+!!! command line.                                           !!!
+The test executed the following command line:
+"""
+
 
 class PackagerAppTest(unittest.TestCase):
 
@@ -658,7 +666,11 @@ class PackagerAppTest(unittest.TestCase):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         output, error = p.communicate()
-        self.fail(output + error)
+        command_line = self.packager.GetCommandLine()
+        failure_message = (output + error + '\n' +
+                           _TEST_FAILURE_COMMAND_LINE_MESSAGE +
+                           command_line)
+        self.fail(failure_message)
 
   # '*.media_info' outputs contain media file names, which is changing for
   # every test run. These needs to be replaced for comparison.
