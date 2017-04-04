@@ -54,7 +54,7 @@ bool SetVodInformation(bool has_init_range,
 ///        cannot be null.
 void SetContentProtectionFields(
     FourCC protection_scheme,
-    const std::string& default_key_id,
+    const std::vector<uint8_t>& default_key_id,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info,
     MediaInfo* media_info);
 

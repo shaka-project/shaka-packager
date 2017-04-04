@@ -49,11 +49,12 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     next_key_id_ = key_id;
     next_iv_ = iv;
     next_key_system_infos_ = key_system_infos;
+    protection_scheme_ = protection_scheme;
     return;
   }
   for (const ProtectionSystemSpecificInfo& info : key_system_infos) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
-        stream_id_, key_id, info.system_id(), iv, info.pssh_data());
+        stream_id_, key_id, info.system_id(), iv, info.CreateBox());
     LOG_IF(WARNING, !result) << "Failed to add encryption info.";
   }
 }
@@ -72,7 +73,7 @@ void HlsNotifyMuxerListener::OnEncryptionStart() {
   for (const ProtectionSystemSpecificInfo& info : next_key_system_infos_) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
         stream_id_, next_key_id_, info.system_id(), next_iv_,
-        info.pssh_data());
+        info.CreateBox());
     LOG_IF(WARNING, !result) << "Failed to add encryption info";
   }
   next_key_id_.clear();
@@ -91,6 +92,11 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
+  if (protection_scheme_ != FOURCC_NULL) {
+    internal::SetContentProtectionFields(protection_scheme_, next_key_id_,
+                                         next_key_system_infos_, &media_info);
+  }
+
   const bool result = hls_notifier_->NotifyNewStream(
       media_info, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
       &stream_id_);

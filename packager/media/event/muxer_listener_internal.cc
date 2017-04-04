@@ -241,19 +241,18 @@ bool SetVodInformation(bool has_init_range,
 
 void SetContentProtectionFields(
     FourCC protection_scheme,
-    const std::string& default_key_id,
+    const std::vector<uint8_t>& default_key_id,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info,
     MediaInfo* media_info) {
   DCHECK(media_info);
   MediaInfo::ProtectedContent* protected_content =
       media_info->mutable_protected_content();
-
-  DCHECK(protection_scheme == FOURCC_cenc || protection_scheme == FOURCC_cbc1 ||
-         protection_scheme == FOURCC_cens || protection_scheme == FOURCC_cbcs);
   protected_content->set_protection_scheme(FourCCToString(protection_scheme));
 
-  if (!default_key_id.empty())
-    protected_content->set_default_key_id(default_key_id);
+  if (!default_key_id.empty()) {
+    protected_content->set_default_key_id(default_key_id.data(),
+                                          default_key_id.size());
+  }
 
   for (const ProtectionSystemSpecificInfo& info : key_system_info) {
     MediaInfo::ProtectedContent::ContentProtectionEntry* entry =

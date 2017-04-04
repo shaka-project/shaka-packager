@@ -78,6 +78,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   std::vector<uint8_t> next_key_id_;
   std::vector<uint8_t> next_iv_;
   std::vector<ProtectionSystemSpecificInfo> next_key_system_infos_;
+  FourCC protection_scheme_ = FOURCC_NULL;
 
   DISALLOW_COPY_AND_ASSIGN(HlsNotifyMuxerListener);
 };

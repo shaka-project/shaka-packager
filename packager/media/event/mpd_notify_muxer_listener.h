@@ -74,7 +74,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
   bool is_encrypted_;
   // Storage for values passed to OnEncryptionInfoReady().
   FourCC protection_scheme_;
-  std::string default_key_id_;
+  std::vector<uint8_t> default_key_id_;
   std::vector<ProtectionSystemSpecificInfo> key_system_info_;
 
   // Saves all the subsegment information for VOD. This should be used to call

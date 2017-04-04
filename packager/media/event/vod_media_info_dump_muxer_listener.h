@@ -74,7 +74,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   bool is_encrypted_;
   // Storage for values passed to OnEncryptionInfoReady().
   FourCC protection_scheme_;
-  std::string default_key_id_;
+  std::vector<uint8_t> default_key_id_;
   std::vector<ProtectionSystemSpecificInfo> key_system_info_;
 
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListener);

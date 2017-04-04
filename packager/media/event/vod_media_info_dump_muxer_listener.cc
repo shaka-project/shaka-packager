@@ -35,7 +35,7 @@ void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
       << "Updating (non initial) encryption info is not supported by "
          "this module.";
   protection_scheme_ = protection_scheme;
-  default_key_id_.assign(default_key_id.begin(), default_key_id.end());
+  default_key_id_ = default_key_id;
   key_system_info_ = key_system_info;
   is_encrypted_ = true;
 }

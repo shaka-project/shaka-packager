@@ -38,7 +38,7 @@ void MpdNotifyMuxerListener::OnEncryptionInfoReady(
     LOG_IF(WARNING, is_encrypted_)
         << "Updating initial encryption information.";
     protection_scheme_ = protection_scheme;
-    default_key_id_.assign(key_id.begin(), key_id.end());
+    default_key_id_ = key_id;
     key_system_info_ = key_system_info;
     is_encrypted_ = true;
     return;

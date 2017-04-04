@@ -69,6 +69,17 @@ const char kDefaultPlaylistName[] = "default_playlist.m3u8";
 const char kDefaultName[] = "DEFAULTNAME";
 const char kDefaultGroupId[] = "DEFAULTGROUPID";
 
+MATCHER_P(HasEncryptionScheme, expected_scheme, "") {
+  *result_listener << "it has_protected_content: "
+                   << arg.has_protected_content() << " has_protection_scheme: "
+                   << arg.protected_content().has_protection_scheme()
+                   << " protection_scheme: "
+                   << arg.protected_content().protection_scheme();
+  return arg.has_protected_content() &&
+         arg.protected_content().has_protection_scheme() &&
+         arg.protected_content().protection_scheme() == expected_scheme;
+}
+
 }  // namespace
 
 class HlsNotifyMuxerListenerTest : public ::testing::Test {
@@ -152,8 +163,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
                          MuxerListener::kContainerMpeg2ts);
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
-  EXPECT_CALL(mock_notifier_,
-              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, key_id, system_id, iv,
+                                                     info.CreateBox()))
       .WillOnce(Return(true));
   listener_.OnEncryptionStart();
 }
@@ -190,8 +201,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
   // It doesn't really matter when this is called, could be called right away in
   // OnEncryptionStart() if that is possible. Just matters that it is called by
   // the time OnMediaStart() returns.
-  EXPECT_CALL(mock_notifier_,
-              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, key_id, system_id, iv,
+                                                     info.CreateBox()))
       .WillOnce(Return(true));
   listener_.OnEncryptionStart();
   listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
@@ -256,11 +267,43 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
 
   std::vector<uint8_t> iv(16, 0x54);
 
-  EXPECT_CALL(mock_notifier_,
-              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, key_id, system_id, iv,
+                                                     info.CreateBox()))
       .WillOnce(Return(true));
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
                                   iv, key_system_infos);
+}
+
+// Verify that if protection scheme is specified in OnEncryptionInfoReady(),
+// the information is copied to MediaInfo in OnMediaStart().
+TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyWithProtectionScheme) {
+  ProtectionSystemSpecificInfo info;
+  std::vector<uint8_t> system_id(kAnySystemId,
+                                 kAnySystemId + arraysize(kAnySystemId));
+  info.set_system_id(system_id.data(), system_id.size());
+  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
+  info.set_pssh_data(pssh_data);
+
+  std::vector<uint8_t> key_id(16, 0x05);
+  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
+  key_system_infos.push_back(info);
+
+  std::vector<uint8_t> iv(16, 0x54);
+
+  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc, key_id,
+                                  iv, key_system_infos);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
+
+  ON_CALL(mock_notifier_,
+          NotifyNewStream(HasEncryptionScheme("cenc"), _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  std::shared_ptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
 }
 
 // Make sure it doesn't crash.
