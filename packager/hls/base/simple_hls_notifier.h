@@ -76,12 +76,19 @@ class SimpleHlsNotifier : public HlsNotifier {
  private:
   friend class SimpleHlsNotifierTest;
 
+  struct StreamEntry {
+    std::unique_ptr<MediaPlaylist> media_playlist;
+    MediaPlaylist::EncryptionMethod encryption_method;
+  };
+
   const std::string prefix_;
   const std::string output_dir_;
 
   std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;
   std::unique_ptr<MasterPlaylist> master_playlist_;
-  std::map<uint32_t, std::unique_ptr<MediaPlaylist>> media_playlist_map_;
+
+  // Maps to unique_ptr because StreamEntry also holds unique_ptr
+  std::map<uint32_t, std::unique_ptr<StreamEntry>> stream_map_;
 
   base::AtomicSequenceNumber sequence_number_;
 

@@ -84,6 +84,7 @@ message MediaInfo {
     optional bytes default_key_id = 1;
     repeated ContentProtectionEntry content_protection_entry = 2;
     // Specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'.
+    // "cbca" is also valid which is a place holder for SAMPLE-AES encryption.
     optional string protection_scheme = 3 [default = 'cenc'];
   }
 

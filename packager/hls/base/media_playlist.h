@@ -55,9 +55,10 @@ class MediaPlaylist {
     kPlayListSubtitle,
   };
   enum class EncryptionMethod {
-    kNone,       // No encryption, i.e. clear.
-    kAes128,     // Completely encrypted using AES-CBC.
-    kSampleAes,  // Encrypted using Sample AES method.
+    kNone,           // No encryption, i.e. clear.
+    kAes128,         // Completely encrypted using AES-CBC.
+    kSampleAes,      // Encrypted using SAMPLE-AES method.
+    kSampleAesCenc,  // 'cenc' encrypted content.
   };
 
   /// @param type is the type of this media playlist.
@@ -107,6 +108,7 @@ class MediaPlaylist {
   /// the key that can be fetched from |url|, until calling this again.
   /// @param method is the encryption method.
   /// @param url specifies where the key is i.e. the value of the URI attribute.
+  /// #param key_id is the default key ID for the encrypted segements.
   /// @param iv is the initialization vector in human readable format, i.e. the
   ///        value for IV attribute. This may be empty.
   /// @param key_format is the key format, i.e. the KEYFORMAT value. This may be
@@ -115,6 +117,7 @@ class MediaPlaylist {
   ///        empty.
   virtual void AddEncryptionInfo(EncryptionMethod method,
                                  const std::string& url,
+                                 const std::string& key_id,
                                  const std::string& iv,
                                  const std::string& key_format,
                                  const std::string& key_format_versions);

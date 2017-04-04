@@ -112,7 +112,8 @@ TEST_F(MediaPlaylistTest, AddSegment) {
 TEST_F(MediaPlaylistTest, AddEncryptionInfo) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
-                                    "http://example.com", "0xabcedf", "", "");
+                                    "http://example.com", "", "0xabcedf", "",
+                                    "");
 }
 
 TEST_F(MediaPlaylistTest, WriteToFile) {
@@ -227,7 +228,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfo) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
 
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
-                                    "http://example.com", "0x12345678",
+                                    "http://example.com", "", "0x12345678",
                                     "com.widevine", "1/2/4");
   // 10 seconds.
   media_playlist_.AddSegment("file1.ts", 900000, 1000000);
@@ -261,7 +262,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
 
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
-                                    "http://example.com", "", "com.widevine",
+                                    "http://example.com", "", "", "com.widevine",
                                     "");
   // 10 seconds.
   media_playlist_.AddSegment("file1.ts", 900000, 1000000);
@@ -297,7 +298,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithClearLead) {
   media_playlist_.AddSegment("file1.ts", 900000, 1000000);
 
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
-                                    "http://example.com", "0x12345678",
+                                    "http://example.com", "", "0x12345678",
                                     "com.widevine", "1/2/4");
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
@@ -391,6 +392,86 @@ TEST_F(MediaPlaylistTest, InitSegment) {
       "file1.mp4\n"
       "#EXTINF:30.000,\n"
       "file2.mp4\n"
+      "#EXT-X-ENDLIST\n";
+
+  MockFile file;
+  EXPECT_CALL(file,
+              Write(MatchesString(kExpectedOutput), kExpectedOutput.size()))
+      .WillOnce(ReturnArg<1>());
+  EXPECT_TRUE(media_playlist_.WriteToFile(&file));
+}
+
+// Verify that kSampleAesCenc is handled correctly.
+TEST_F(MediaPlaylistTest, SampleAesCenc) {
+  valid_video_media_info_.set_reference_time_scale(90000);
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
+
+  media_playlist_.AddEncryptionInfo(
+      MediaPlaylist::EncryptionMethod::kSampleAesCenc, "http://example.com", "",
+      "0x12345678", "com.widevine", "1/2/4");
+
+  // 10 seconds.
+  media_playlist_.AddSegment("file1.ts", 900000, 1000000);
+  // 30 seconds.
+  media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-TARGETDURATION:30\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CENC,"
+      "URI=\"http://example.com\",IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\","
+      "KEYFORMAT=\"com.widevine\"\n"
+      "#EXTINF:10.000,\n"
+      "file1.ts\n"
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
+
+  MockFile file;
+  EXPECT_CALL(file,
+              Write(MatchesString(kExpectedOutput), kExpectedOutput.size()))
+      .WillOnce(ReturnArg<1>());
+  EXPECT_TRUE(media_playlist_.WriteToFile(&file));
+}
+
+// Verify that multiple encryption info can be set.
+TEST_F(MediaPlaylistTest, MultipleEncryptionInfo) {
+  valid_video_media_info_.set_reference_time_scale(90000);
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
+
+  media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
+                                    "http://example.com", "", "0x12345678",
+                                    "com.widevine", "1/2/4");
+
+  media_playlist_.AddEncryptionInfo(
+      MediaPlaylist::EncryptionMethod::kSampleAes, "http://mydomain.com",
+      "0xfedc", "0x12345678", "com.widevine.someother", "1");
+
+  // 10 seconds.
+  media_playlist_.AddSegment("file1.ts", 900000, 1000000);
+  // 30 seconds.
+  media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-TARGETDURATION:30\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-KEY:METHOD=SAMPLE-AES,"
+      "URI=\"http://example.com\",IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\","
+      "KEYFORMAT=\"com.widevine\"\n"
+      "#EXT-X-KEY:METHOD=SAMPLE-AES,"
+      "URI=\"http://mydomain.com\",KEYID=0xfedc,IV=0x12345678,"
+      "KEYFORMATVERSIONS=\"1\","
+      "KEYFORMAT=\"com.widevine.someother\"\n"
+      "#EXTINF:10.000,\n"
+      "file1.ts\n"
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
       "#EXT-X-ENDLIST\n";
 
   MockFile file;

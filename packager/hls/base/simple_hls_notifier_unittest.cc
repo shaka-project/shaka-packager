@@ -11,6 +11,7 @@
 #include "packager/hls/base/mock_media_playlist.h"
 #include "packager/hls/base/simple_hls_notifier.h"
 #include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
@@ -66,6 +67,9 @@ MATCHER_P(SegmentTemplateEq, expected_template, "") {
   return arg.segment_template() == expected_template;
 }
 
+const char kCencProtectionScheme[] = "cenc";
+const char kSampleAesProtectionScheme[] = "cbca";
+
 }  // namespace
 
 class SimpleHlsNotifierTest : public ::testing::Test {
@@ -101,12 +105,13 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     notifier->master_playlist_ = std::move(playlist);
   }
 
-  const std::map<uint32_t, std::unique_ptr<MediaPlaylist>>&
-  GetMediaPlaylistMap() {
-    return notifier_.media_playlist_map_;
-  }
+  size_t NumRegisteredMediaPlaylists() { return notifier_.stream_map_.size(); }
 
-  uint32_t SetupStream(MockMediaPlaylist* mock_media_playlist) {
+  uint32_t SetupStream(const std::string& protection_scheme,
+                       MockMediaPlaylist* mock_media_playlist) {
+    MediaInfo media_info;
+    media_info.mutable_protected_content()->set_protection_scheme(
+        protection_scheme);
     std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
         new MockMasterPlaylist());
     std::unique_ptr<MockMediaPlaylistFactory> factory(
@@ -122,7 +127,6 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     InjectMasterPlaylist(std::move(mock_master_playlist));
     InjectMediaPlaylistFactory(std::move(factory));
     EXPECT_TRUE(notifier_.Init());
-    MediaInfo media_info;
     uint32_t stream_id;
     EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "playlist.m3u8", "name",
                                           "groupid", &stream_id));
@@ -289,7 +293,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
   uint32_t stream_id;
   EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "video_playlist.m3u8",
                                         "name", "groupid", &stream_id));
-  EXPECT_EQ(1u, GetMediaPlaylistMap().size());
+  EXPECT_EQ(1u, NumRegisteredMediaPlaylists());
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
@@ -337,7 +341,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "", "", "");
-  const uint32_t stream_id = SetupStream(mock_media_playlist);
+  const uint32_t stream_id =
+      SetupStream(kSampleAesProtectionScheme, mock_media_playlist);
 
   const std::vector<uint8_t> iv(16, 0x45);
 
@@ -346,32 +351,54 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   widevine_pssh_data.set_content_id("contentid");
   const uint8_t kAnyKeyId[] = {
     0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
   };
+  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId));
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
                                           kAnyKeyId + arraysize(kAnyKeyId));
   std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
+
   EXPECT_TRUE(!widevine_pssh_data_str.empty());
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
+  media::ProtectionSystemSpecificInfo pssh_info;
+  pssh_info.set_pssh_data(pssh_data);
+  pssh_info.set_system_id(widevine_system_id_.data(),
+                          widevine_system_id_.size());
+  pssh_info.add_key_id(any_key_id);
+
   const char kExpectedJson[] =
       "{"
       "\"content_id\":\"Y29udGVudGlk\","
-      "\"key_ids\":[\"11223344\"],"
+      "\"key_ids\":[\"11223344112233441122334411223344\"],"
       "\"provider\":\"someprovider\"}";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
+  std::string expected_pssh_base64;
+  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+                     &expected_pssh_base64);
+
   EXPECT_CALL(
       *mock_media_playlist,
-      AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
+      AddEncryptionInfo(_,
                         StrEq("data:text/plain;base64," + expected_json_base64),
+                        StrEq(""),
                         StrEq("0x45454545454545454545454545454545"),
                         StrEq("com.widevine"), _));
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  _,
+                  StrEq("data:text/plain;base64," + expected_pssh_base64),
+                  StrEq("0x11223344112233441122334411223344"),
+                  StrEq("0x45454545454545454545454545454545"),
+                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), _));
   EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
-      stream_id,
-      std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId)),
-      widevine_system_id_, iv, pssh_data));
+      stream_id, any_key_id, widevine_system_id_, iv, pssh_box));
 }
 
 // Verify that key_ids in pssh is optional.
@@ -379,7 +406,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "", "", "");
-  const uint32_t stream_id = SetupStream(mock_media_playlist);
+  const uint32_t stream_id =
+      SetupStream(kSampleAesProtectionScheme, mock_media_playlist);
 
   const std::vector<uint8_t> iv(16, 0x45);
 
@@ -394,31 +422,54 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
   const char kExpectedJson[] =
       "{"
       "\"content_id\":\"Y29udGVudGlk\","
-      "\"key_ids\":[\"11223344\"],"
+      "\"key_ids\":[\"11223344112233441122334411223344\"],"
       "\"provider\":\"someprovider\"}";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
+  media::ProtectionSystemSpecificInfo pssh_info;
+  pssh_info.set_pssh_data(pssh_data);
+  pssh_info.set_system_id(widevine_system_id_.data(),
+                          widevine_system_id_.size());
+
+  std::string expected_pssh_base64;
+  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+                     &expected_pssh_base64);
+
   EXPECT_CALL(
       *mock_media_playlist,
-      AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
+      AddEncryptionInfo(_,
                         StrEq("data:text/plain;base64," + expected_json_base64),
+                        StrEq(""),
                         StrEq("0x45454545454545454545454545454545"),
                         StrEq("com.widevine"), _));
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddEncryptionInfo(
+          _,
+          StrEq("data:text/plain;base64," + expected_pssh_base64),
+          StrEq("0x11223344112233441122334411223344"),
+          StrEq("0x45454545454545454545454545454545"),
+          StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), _));
   const uint8_t kAnyKeyId[] = {
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
     0x11, 0x22, 0x33, 0x44,
   };
   EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
       stream_id,
       std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId)),
-      widevine_system_id_, iv, pssh_data));
+      widevine_system_id_, iv, pssh_box));
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFixedKey) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "", "", "");
-  const uint32_t stream_id = SetupStream(mock_media_playlist);
+  const uint32_t stream_id =
+      SetupStream(kSampleAesProtectionScheme, mock_media_playlist);
 
   const std::vector<uint8_t> key_id(16, 0x23);
   const std::vector<uint8_t> iv(16, 0x45);
@@ -431,8 +482,9 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFixedKey) {
   EXPECT_CALL(
       *mock_media_playlist,
       AddEncryptionInfo(
-          MediaPlaylist::EncryptionMethod::kSampleAes,
+          _,
           StrEq("data:text/plain;base64," + expected_key_uri_base64),
+          StrEq(""),
           StrEq("0x45454545454545454545454545454545"), StrEq("identity"), _));
   EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
       stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
@@ -445,7 +497,8 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "", "", "");
-  uint32_t stream_id = SetupStream(mock_media_playlist);
+  uint32_t stream_id =
+      SetupStream(kSampleAesProtectionScheme, mock_media_playlist);
 
   std::vector<uint8_t> iv(16, 0x45);
 
@@ -453,10 +506,21 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   widevine_pssh_data.set_provider("someprovider");
   const uint8_t kFirstKeyId[] = {
     0x11, 0x11, 0x11, 0x11,
+    0x11, 0x11, 0x11, 0x11,
+    0x11, 0x11, 0x11, 0x11,
+    0x11, 0x11, 0x11, 0x11,
   };
   const uint8_t kSecondKeyId[] = {
     0x22, 0x22, 0x22, 0x22,
+    0x22, 0x22, 0x22, 0x22,
+    0x22, 0x22, 0x22, 0x22,
+    0x22, 0x22, 0x22, 0x22,
   };
+  std::vector<uint8_t> first_keyid(kFirstKeyId,
+                                   kFirstKeyId + arraysize(kFirstKeyId));
+  std::vector<uint8_t> second_keyid(kSecondKeyId,
+                                    kSecondKeyId + arraysize(kSecondKeyId));
+
   widevine_pssh_data.add_key_id()->assign(kFirstKeyId,
                                           kFirstKeyId + arraysize(kFirstKeyId));
   widevine_pssh_data.add_key_id()->assign(
@@ -466,40 +530,144 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
+  media::ProtectionSystemSpecificInfo pssh_info;
+  pssh_info.set_pssh_data(pssh_data);
+  pssh_info.set_system_id(widevine_system_id_.data(),
+                          widevine_system_id_.size());
+  pssh_info.add_key_id(first_keyid);
+  pssh_info.add_key_id(second_keyid);
+
   const char kExpectedJson[] =
       "{"
-      "\"key_ids\":[\"22222222\",\"11111111\"],"
+      "\"key_ids\":[\"22222222222222222222222222222222\","
+      "\"11111111111111111111111111111111\"],"
       "\"provider\":\"someprovider\"}";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
+  std::string expected_pssh_base64;
+  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+                     &expected_pssh_base64);
+
   EXPECT_CALL(
       *mock_media_playlist,
-      AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
+      AddEncryptionInfo(_,
                         StrEq("data:text/plain;base64," + expected_json_base64),
+                        StrEq(""),
                         StrEq("0x45454545454545454545454545454545"),
                         StrEq("com.widevine"), _));
+
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  _,
+                  StrEq("data:text/plain;base64," + expected_pssh_base64),
+                  StrEq("0x22222222222222222222222222222222"),
+                  StrEq("0x45454545454545454545454545454545"),
+                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), _));
+
   EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
       stream_id,
       // Use the second key id here so that it will be thre first one in the
       // key_ids array in the JSON.
-      std::vector<uint8_t>(kSecondKeyId,
-                           kSecondKeyId + arraysize(kSecondKeyId)),
-      widevine_system_id_, iv, pssh_data));
+      second_keyid, widevine_system_id_, iv, pssh_box));
 }
 
-TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
+// Verify that the encryption scheme set in MediaInfo is passed to
+// MediaPlaylist::AddEncryptionInfo().
+TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "", "", "");
-  const uint32_t stream_id = SetupStream(mock_media_playlist);
+  const uint32_t stream_id =
+      SetupStream(kCencProtectionScheme, mock_media_playlist);
+
+  const std::vector<uint8_t> key_id(16, 0x23);
+  const std::vector<uint8_t> iv(16, 0x45);
+  const std::vector<uint8_t> dummy_pssh_data(10, 'p');
+
+  std::string expected_key_uri_base64;
+  base::Base64Encode(std::string(key_id.begin(), key_id.end()),
+                     &expected_key_uri_base64);
+
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddEncryptionInfo(
+          MediaPlaylist::EncryptionMethod::kSampleAesCenc,
+          StrEq("data:text/plain;base64," + expected_key_uri_base64),
+          StrEq(""),
+          StrEq("0x45454545454545454545454545454545"), StrEq("identity"), _));
+  EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
+      stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
+}
+
+// If using 'cenc' with Widevine, don't output the json form.
+TEST_F(SimpleHlsNotifierTest, WidevineCencEncryptionScheme) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
+  const uint32_t stream_id =
+      SetupStream(kCencProtectionScheme, mock_media_playlist);
+
+  const std::vector<uint8_t> iv(16, 0x45);
 
   media::WidevinePsshData widevine_pssh_data;
   widevine_pssh_data.set_provider("someprovider");
   widevine_pssh_data.set_content_id("contentid");
   const uint8_t kAnyKeyId[] = {
     0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
   };
+  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId));
+  widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
+                                          kAnyKeyId + arraysize(kAnyKeyId));
+  std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
+
+  EXPECT_TRUE(!widevine_pssh_data_str.empty());
+  std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
+                                 widevine_pssh_data_str.end());
+
+  media::ProtectionSystemSpecificInfo pssh_info;
+  pssh_info.set_pssh_data(pssh_data);
+  pssh_info.set_system_id(widevine_system_id_.data(),
+                          widevine_system_id_.size());
+  pssh_info.add_key_id(any_key_id);
+
+  std::string expected_pssh_base64;
+  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
+                     &expected_pssh_base64);
+
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  _,
+                  StrEq("data:text/plain;base64," + expected_pssh_base64),
+                  StrEq("0x11223344112233441122334411223344"),
+                  StrEq("0x45454545454545454545454545454545"),
+                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), _));
+  EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
+      stream_id, any_key_id, widevine_system_id_, iv, pssh_box));
+}
+
+TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
+  const uint32_t stream_id =
+      SetupStream(kSampleAesProtectionScheme, mock_media_playlist);
+
+  media::WidevinePsshData widevine_pssh_data;
+  widevine_pssh_data.set_provider("someprovider");
+  widevine_pssh_data.set_content_id("contentid");
+  const uint8_t kAnyKeyId[] = {
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+    0x11, 0x22, 0x33, 0x44,
+  };
+  std::vector<uint8_t> any_key_id(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId));
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
                                           kAnyKeyId + arraysize(kAnyKeyId));
   std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
@@ -510,22 +678,44 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
   const char kExpectedJson[] =
       "{"
       "\"content_id\":\"Y29udGVudGlk\","
-      "\"key_ids\":[\"11223344\"],"
+      "\"key_ids\":[\"11223344112233441122334411223344\"],"
       "\"provider\":\"someprovider\"}";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
+  media::ProtectionSystemSpecificInfo pssh_info;
+  pssh_info.set_pssh_data(pssh_data);
+  pssh_info.set_system_id(widevine_system_id_.data(),
+                          widevine_system_id_.size());
+  pssh_info.add_key_id(any_key_id);
+
   EXPECT_CALL(
       *mock_media_playlist,
-      AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
+      AddEncryptionInfo(_,
                         StrEq("data:text/plain;base64," + expected_json_base64),
+                        StrEq(""),
                         StrEq(""), StrEq("com.widevine"), _));
+
+  EXPECT_CALL(*mock_media_playlist,
+              AddEncryptionInfo(
+                  _,
+                  StrEq("data:text/plain;base64,"
+                        "AAAAS3Bzc2gAAAAA7e+"
+                        "LqXnWSs6jyCfc1R0h7QAAACsSEBEiM0QRIjNEESIzRBEiM0QaDHNvb"
+                        "WVwcm92aWRlciIJY29udGVudGlk"),
+                  StrEq("0x11223344112233441122334411223344"), StrEq(""),
+                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), _));
+  std::vector<uint8_t> pssh_as_vec = pssh_info.CreateBox();
+  std::string pssh_in_string(pssh_as_vec.begin(), pssh_as_vec.end());
+  std::string base_64_encoded_pssh;
+  base::Base64Encode(pssh_in_string, &base_64_encoded_pssh);
+  LOG(INFO) << base_64_encoded_pssh;
 
   std::vector<uint8_t> empty_iv;
   EXPECT_TRUE(notifier_.NotifyEncryptionUpdate(
       stream_id,
       std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId)),
-      widevine_system_id_, empty_iv, pssh_data));
+      widevine_system_id_, empty_iv, pssh_info.CreateBox()));
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {

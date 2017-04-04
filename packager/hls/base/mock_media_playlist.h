@@ -30,9 +30,10 @@ class MockMediaPlaylist : public MediaPlaylist {
                     uint64_t duration,
                     uint64_t size));
   MOCK_METHOD0(RemoveOldestSegment, void());
-  MOCK_METHOD5(AddEncryptionInfo,
+  MOCK_METHOD6(AddEncryptionInfo,
                void(EncryptionMethod method,
                     const std::string& url,
+                    const std::string& key_id,
                     const std::string& iv,
                     const std::string& key_format,
                     const std::string& key_format_versions));

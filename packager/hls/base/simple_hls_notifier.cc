@@ -10,10 +10,12 @@
 #include "packager/base/files/file_path.h"
 #include "packager/base/json/json_writer.h"
 #include "packager/base/logging.h"
+#include "packager/base/optional.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
@@ -21,6 +23,11 @@ namespace shaka {
 namespace hls {
 
 namespace {
+
+const char kUriBase64Prefix[] = "data:text/plain;base64,";
+const char kWidevineDashIfIopUUID[] =
+    "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
+
 bool IsWidevineSystemId(const std::vector<uint8_t>& system_id) {
   return system_id.size() == arraysize(media::kWidevineSystemId) &&
          std::equal(system_id.begin(), system_id.end(),
@@ -69,11 +76,18 @@ void MakePathsRelativeToOutputDirectory(const std::string& output_dir,
   }
 }
 
-bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_data,
+bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_box,
                         const std::vector<uint8_t>& key_id,
                         std::string* pssh_json) {
+  media::ProtectionSystemSpecificInfo pssh_info;
+  if (!pssh_info.Parse(pssh_box.data(), pssh_box.size())) {
+    LOG(ERROR) << "Failed to parse PSSH box.";
+    return false;
+  }
+
   media::WidevinePsshData pssh_proto;
-  if (!pssh_proto.ParseFromArray(pssh_data.data(), pssh_data.size())) {
+  if (!pssh_proto.ParseFromArray(pssh_info.pssh_data().data(),
+                                 pssh_info.pssh_data().size())) {
     LOG(ERROR) << "Failed to parse protection_system_specific_data.";
     return false;
   }
@@ -93,6 +107,7 @@ bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_data,
     pssh_dict.SetString("content_id", content_id_base64);
   }
   base::ListValue* key_ids = new base::ListValue();
+
   key_ids->AppendString(base::HexEncode(key_id.data(), key_id.size()));
   for (const std::string& id : pssh_proto.key_id()) {
     if (key_id.size() == id.size() &&
@@ -107,6 +122,72 @@ bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_data,
     LOG(ERROR) << "Failed to write to JSON.";
     return false;
   }
+  return true;
+}
+
+base::Optional<MediaPlaylist::EncryptionMethod> StringToEncrypionMethod(
+    const std::string& method) {
+  if (method == "cenc") {
+    return MediaPlaylist::EncryptionMethod::kSampleAesCenc;
+  } else if (method == "cbcs") {
+    return MediaPlaylist::EncryptionMethod::kSampleAes;
+  } else if (method == "cbca") {
+    // cbca is a place holder for sample aes.
+    return MediaPlaylist::EncryptionMethod::kSampleAes;
+  } else {
+    return base::nullopt;
+  }
+}
+
+void NotifyEncryptionToMediaPlaylist(
+    MediaPlaylist::EncryptionMethod encryption_method,
+    const std::string& uri,
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& iv,
+    const std::string& key_format,
+    const std::string& key_format_version,
+    MediaPlaylist* media_playlist) {
+  std::string iv_string;
+  if (!iv.empty()) {
+    iv_string = "0x" + base::HexEncode(iv.data(), iv.size());
+  }
+  std::string key_id_string;
+  if (!key_id.empty()) {
+    key_id_string = "0x" + base::HexEncode(key_id.data(), key_id.size());
+  }
+  std::string key_uri_data_base64;
+  base::Base64Encode(uri, &key_uri_data_base64);
+  media_playlist->AddEncryptionInfo(
+      encryption_method,
+      kUriBase64Prefix + key_uri_data_base64, key_id_string, iv_string,
+      key_format, key_format_version);
+}
+
+// Creates JSON format and the format similar to MPD.
+bool HandleWidevineKeyFormats(
+    MediaPlaylist::EncryptionMethod encryption_method,
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& iv,
+    const std::vector<uint8_t>& protection_system_specific_data,
+    MediaPlaylist* media_playlist) {
+  if (encryption_method == MediaPlaylist::EncryptionMethod::kSampleAes) {
+    // This format allows SAMPLE-AES only.
+    std::string key_uri_data;
+    if (!WidevinePsshToJson(protection_system_specific_data, key_id,
+                            &key_uri_data)) {
+      return false;
+    }
+    // This format does not have a key id field.
+    NotifyEncryptionToMediaPlaylist(
+        encryption_method, key_uri_data,
+        std::vector<uint8_t>(), iv, "com.widevine", "", media_playlist);
+  }
+
+  std::string pssh_as_string(
+      reinterpret_cast<const char*>(protection_system_specific_data.data()),
+      protection_system_specific_data.size());
+  NotifyEncryptionToMediaPlaylist(encryption_method, pssh_as_string, key_id, iv,
+                                  kWidevineDashIfIopUUID, "1", media_playlist);
   return true;
 }
 
@@ -169,11 +250,26 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     return false;
   }
 
+  MediaPlaylist::EncryptionMethod encryption_method =
+      MediaPlaylist::EncryptionMethod::kNone;
+  if (media_info.protected_content().has_protection_scheme()) {
+    const std::string& protection_scheme =
+        media_info.protected_content().protection_scheme();
+    base::Optional<MediaPlaylist::EncryptionMethod> enc_method =
+        StringToEncrypionMethod(protection_scheme);
+    if (!enc_method) {
+      LOG(ERROR) << "Failed to recognize protection scheme "
+                 << protection_scheme;
+      return false;
+    }
+    encryption_method = enc_method.value();
+  }
+
   *stream_id = sequence_number_.GetNext();
   base::AutoLock auto_lock(lock_);
   master_playlist_->AddMediaPlaylist(media_playlist.get());
-  media_playlist_map_.insert(
-      std::make_pair(*stream_id, std::move(media_playlist)));
+  stream_map_[*stream_id].reset(
+      new StreamEntry{std::move(media_playlist), encryption_method});
   return true;
 }
 
@@ -183,15 +279,15 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          uint64_t duration,
                                          uint64_t size) {
   base::AutoLock auto_lock(lock_);
-  auto result = media_playlist_map_.find(stream_id);
-  if (result == media_playlist_map_.end()) {
+  auto stream_iterator = stream_map_.find(stream_id);
+  if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
     return false;
   }
   const std::string relative_segment_name =
       MakePathRelative(segment_name, output_dir_);
 
-  auto& media_playlist = result->second;
+  auto& media_playlist = stream_iterator->second->media_playlist;
   media_playlist->AddSegment(prefix_ + relative_segment_name, duration, size);
   return true;
 }
@@ -203,43 +299,36 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     const std::vector<uint8_t>& iv,
     const std::vector<uint8_t>& protection_system_specific_data) {
   base::AutoLock auto_lock(lock_);
-  auto result = media_playlist_map_.find(stream_id);
-  if (result == media_playlist_map_.end()) {
+  auto stream_iterator = stream_map_.find(stream_id);
+  if (stream_iterator == stream_map_.end()) {
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
     return false;
   }
 
-  std::string key_format;
-  std::string key_uri_data;
+  std::unique_ptr<MediaPlaylist>& media_playlist =
+      stream_iterator->second->media_playlist;
+  const MediaPlaylist::EncryptionMethod encryption_method =
+      stream_iterator->second->encryption_method;
+  LOG_IF(WARNING, encryption_method == MediaPlaylist::EncryptionMethod::kNone)
+      << "Got encryption notification but the encryption method is NONE";
   if (IsWidevineSystemId(system_id)) {
-    key_format = "com.widevine";
-    if (!WidevinePsshToJson(protection_system_specific_data, key_id,
-                            &key_uri_data)) {
-      return false;
-    }
-  } else if (IsCommonSystemId(system_id)) {
-    key_format = "identity";
+    return HandleWidevineKeyFormats(encryption_method,
+                                    key_id, iv, protection_system_specific_data,
+                                    media_playlist.get());
+  }
+  if (IsCommonSystemId(system_id)) {
     // Use key_id as the key_uri. The player needs to have custom logic to
     // convert it to the actual key url.
+    std::string key_uri_data;
     key_uri_data.assign(key_id.begin(), key_id.end());
-  } else {
-    LOG(ERROR) << "Unknown system ID: "
-               << base::HexEncode(system_id.data(), system_id.size());
-    return false;
+    NotifyEncryptionToMediaPlaylist(encryption_method,
+                                    key_uri_data, std::vector<uint8_t>(), iv,
+                                    "identity", "", media_playlist.get());
+    return true;
   }
-
-  auto& media_playlist = result->second;
-  std::string iv_string;
-  if (!iv.empty()) {
-    iv_string = "0x" + base::HexEncode(iv.data(), iv.size());
-  }
-  std::string key_uri_data_base64;
-  base::Base64Encode(key_uri_data, &key_uri_data_base64);
-  media_playlist->AddEncryptionInfo(
-      MediaPlaylist::EncryptionMethod::kSampleAes,
-      "data:text/plain;base64," + key_uri_data_base64, iv_string, key_format,
-      "" /* key_format_versions */);
-  return true;
+  LOG(ERROR) << "Unknown system ID: "
+             << base::HexEncode(system_id.data(), system_id.size());
+  return false;
 }
 
 bool SimpleHlsNotifier::Flush() {

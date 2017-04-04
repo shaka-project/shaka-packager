@@ -95,6 +95,7 @@ class EncryptionInfoEntry : public HlsEntry {
  public:
   EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
                       const std::string& url,
+                      const std::string& key_id,
                       const std::string& iv,
                       const std::string& key_format,
                       const std::string& key_format_versions);
@@ -106,6 +107,7 @@ class EncryptionInfoEntry : public HlsEntry {
  private:
   const MediaPlaylist::EncryptionMethod method_;
   const std::string url_;
+  const std::string key_id_;
   const std::string iv_;
   const std::string key_format_;
   const std::string key_format_versions_;
@@ -115,12 +117,14 @@ class EncryptionInfoEntry : public HlsEntry {
 
 EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
                                          const std::string& url,
+                                         const std::string& key_id,
                                          const std::string& iv,
                                          const std::string& key_format,
                                          const std::string& key_format_versions)
     : HlsEntry(HlsEntry::EntryType::kExtKey),
       method_(method),
       url_(url),
+      key_id_(key_id),
       iv_(iv),
       key_format_(key_format),
       key_format_versions_(key_format_versions) {}
@@ -133,12 +137,17 @@ std::string EncryptionInfoEntry::ToString() {
     method_attribute = "METHOD=SAMPLE-AES";
   } else if (method_ == MediaPlaylist::EncryptionMethod::kAes128) {
     method_attribute = "METHOD=AES-128";
+  } else if (method_ == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
+    method_attribute = "METHOD=SAMPLE-AES-CENC";
   } else {
     DCHECK(method_ == MediaPlaylist::EncryptionMethod::kNone);
     method_attribute = "METHOD=NONE";
   }
   std::string ext_key = "#EXT-X-KEY:" + method_attribute + ",URI=\"" + url_ +
                         "\"";
+  if (!key_id_.empty()) {
+    ext_key += ",KEYID=" + key_id_;
+  }
   if (!iv_.empty()) {
     ext_key += ",IV=" + iv_;
   }
@@ -281,17 +290,12 @@ void MediaPlaylist::RemoveOldestSegment() {
 
 void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
                                       const std::string& url,
+                                      const std::string& key_id,
                                       const std::string& iv,
                                       const std::string& key_format,
                                       const std::string& key_format_versions) {
-  if (!entries_.empty()) {
-    // No reason to have two consecutive EXT-X-KEY entries. Remove the previous
-    // one.
-    if (entries_.back()->type() == HlsEntry::EntryType::kExtKey)
-      entries_.pop_back();
-  }
-  entries_.emplace_back(new EncryptionInfoEntry(method, url, iv, key_format,
-                                                key_format_versions));
+  entries_.emplace_back(new EncryptionInfoEntry(
+      method, url, key_id, iv, key_format, key_format_versions));
 }
 
 bool MediaPlaylist::WriteToFile(media::File* file) {
