@@ -1,3 +1,20 @@
+## [1.6.2] - 2017-04-18
+### Added
+- Added an option to keep parameter set NAL units (SPS/PPS for H264,
+  SPS/PPS/VPS for H265), which is necessary if the parameter set NAL units
+  are varying from frame to frame. The flag is --strip_parameter_set_nalus,
+  which is true by default. This addresses #206 (the flag needs to be set to
+  false).
+
+### Fixed
+- Fixed the problem that sliding window logic is still active with DASH static
+  live profile (#218).
+- Fixed AAC-HE not correctly signaled in codec string (#225).
+- [WebM] Fixed output truncated if using the same file for both input and
+  output (#210).
+- [WebM] Fixed possible integer overflow in stream duration in MPD manifest
+  (#214).
+
 ## [1.6.1] - 2017-02-10
 ### Changed
 - Enable --generate_dash_if_iop_compliant_mpd by default. This moves
