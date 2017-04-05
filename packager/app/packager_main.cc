@@ -496,7 +496,8 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
       FLAGS_enable_playready_encryption) {
     if (encryption_options.protection_scheme == FOURCC_NULL)
       return false;
-    encryption_key_source = CreateEncryptionKeySource();
+    encryption_key_source =
+        CreateEncryptionKeySource(encryption_options.protection_scheme);
     if (!encryption_key_source)
       return false;
   }

@@ -12,6 +12,7 @@
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/base/values.h"
 #include "packager/media/base/closure_thread.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 
 namespace shaka {
@@ -53,6 +54,11 @@ class WidevineKeySource : public KeySource {
   Status FetchKeys(const std::vector<uint8_t>& content_id,
                    const std::string& policy);
 
+  /// Set the protection scheme for the key source.
+  void set_protection_scheme(FourCC protection_scheme) {
+    protection_scheme_ = protection_scheme;
+  }
+
   /// Set signer for the key source.
   /// @param signer signs the request message.
   void set_signer(std::unique_ptr<RequestSigner> signer);
@@ -60,9 +66,6 @@ class WidevineKeySource : public KeySource {
   /// Inject an @b KeyFetcher object, mainly used for testing.
   /// @param key_fetcher points to the @b KeyFetcher object to be injected.
   void set_key_fetcher(std::unique_ptr<KeyFetcher> key_fetcher);
-
- protected:
-   ClosureThread key_production_thread_;
 
  private:
   typedef std::map<TrackType, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
@@ -104,6 +107,7 @@ class WidevineKeySource : public KeySource {
   // Push the keys to the key pool.
   bool PushToKeyPool(EncryptionKeyMap* encryption_key_map);
 
+  ClosureThread key_production_thread_;
   // The fetcher object used to fetch keys from the license service.
   // It is initialized to a default fetcher on class initialization.
   // Can be overridden using set_key_fetcher for testing or other purposes.
@@ -113,6 +117,7 @@ class WidevineKeySource : public KeySource {
   base::DictionaryValue request_dict_;
 
   const uint32_t crypto_period_count_;
+  FourCC protection_scheme_;
   base::Lock lock_;
   bool add_common_pssh_;
   bool key_production_started_;

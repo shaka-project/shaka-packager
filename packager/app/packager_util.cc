@@ -88,11 +88,12 @@ std::unique_ptr<RequestSigner> CreateSigner() {
   return signer;
 }
 
-std::unique_ptr<KeySource> CreateEncryptionKeySource() {
+std::unique_ptr<KeySource> CreateEncryptionKeySource(FourCC protection_scheme) {
   std::unique_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption) {
     std::unique_ptr<WidevineKeySource> widevine_key_source(
         new WidevineKeySource(FLAGS_key_server_url, FLAGS_include_common_pssh));
+    widevine_key_source->set_protection_scheme(protection_scheme);
     if (!FLAGS_signer.empty()) {
       std::unique_ptr<RequestSigner> request_signer(CreateSigner());
       if (!request_signer)

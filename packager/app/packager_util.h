@@ -13,6 +13,8 @@
 
 #include <memory>
 
+#include "packager/media/base/fourccs.h"
+
 DECLARE_bool(dump_stream_info);
 
 namespace shaka {
@@ -30,9 +32,11 @@ struct MuxerOptions;
 
 /// Create KeySource based on provided command line options for content
 /// encryption. Also fetches keys.
+/// @param protection_scheme specifies the protection scheme to be used for
+///        encryption.
 /// @return A std::unique_ptr containing a new KeySource, or nullptr if
 ///         encryption is not required.
-std::unique_ptr<KeySource> CreateEncryptionKeySource();
+std::unique_ptr<KeySource> CreateEncryptionKeySource(FourCC protection_scheme);
 
 /// Create KeySource based on provided command line options for content
 /// decryption. Does not fetch keys.

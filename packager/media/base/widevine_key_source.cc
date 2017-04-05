@@ -12,6 +12,7 @@
 #include "packager/base/bind.h"
 #include "packager/base/json/json_reader.h"
 #include "packager/base/json/json_writer.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/network_util.h"
@@ -22,6 +23,7 @@
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
 namespace shaka {
+namespace media {
 namespace {
 
 const bool kEnableKeyRotation = true;
@@ -118,9 +120,12 @@ bool GetPsshDataFromTrack(const base::DictionaryValue& track_dict,
   return true;
 }
 
-}  // namespace
+bool IsProtectionSchemeValid(FourCC protection_scheme) {
+  return protection_scheme == FOURCC_cenc || protection_scheme == FOURCC_cbcs ||
+         protection_scheme == FOURCC_cbc1 || protection_scheme == FOURCC_cens;
+}
 
-namespace media {
+}  // namespace
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
                                      bool add_common_pssh)
@@ -130,6 +135,7 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url,
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       crypto_period_count_(kDefaultCryptoPeriodCount),
+      protection_scheme_(FOURCC_cenc),
       add_common_pssh_(add_common_pssh),
       key_production_started_(false),
       start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -157,6 +163,18 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
   BytesToBase64String(content_id, &content_id_base64_string);
   request_dict_.SetString("content_id", content_id_base64_string);
   request_dict_.SetString("policy", policy);
+
+  FourCC protection_scheme = protection_scheme_;
+  // Treat sample aes as a variant of cbcs.
+  if (protection_scheme == kAppleSampleAesProtectionScheme)
+    protection_scheme = FOURCC_cbcs;
+  if (IsProtectionSchemeValid(protection_scheme)) {
+    request_dict_.SetInteger("protection_scheme", protection_scheme);
+  } else {
+    LOG(WARNING) << "Ignore unrecognized protection scheme "
+                 << FourCCToString(protection_scheme);
+  }
+
   return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
 

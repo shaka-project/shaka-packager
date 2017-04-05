@@ -19,13 +19,19 @@
 #include "packager/media/base/widevine_key_source.h"
 
 using ::testing::_;
+using ::testing::Bool;
+using ::testing::Combine;
 using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrEq;
+using ::testing::Test;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 namespace shaka {
+namespace media {
 namespace {
 const char kServerUrl[] = "http://www.foo.com/getcontentkey";
 const char kContentId[] = "ContentFoo";
@@ -45,6 +51,7 @@ const char kLicenseStatusUnknownError[] = "UNKNOWN_ERROR";
 
 const char kExpectedRequestMessageFormat[] =
     "{\"content_id\":\"%s\",\"drm_types\":[\"WIDEVINE\"],\"policy\":\"%s\","
+    "\"protection_scheme\":%d,"
     "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
     "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
 const char kExpectedRequestMessageWithAssetIdFormat[] =
@@ -64,11 +71,12 @@ const char kClassicTrackFormat[] = "{\"type\":\"%s\",\"key\":\"%s\"}";
 const char kLicenseResponseFormat[] = "{\"status\":\"%s\",\"tracks\":[%s]}";
 const char kHttpResponseFormat[] = "{\"response\":\"%s\"}";
 const uint8_t kRequestPsshBox[] = {
-    0,    0,    0,    41,   'p',  's',  's',  'h',  0,    0,    0,
+    0,    0,    0,    44,   'p',  's',  's',  'h',  0,    0,    0,
     0,    0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8,
-    0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed, 0,    0,    0,    0x09, 'P',
-    'S',  'S',  'H',  ' ',  'd',  'a',  't',  'a'};
-const char kRequestPsshData[] = "PSSH data";
+    0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed, 0,    0,    0,    12,   0x22,
+    0x0a, 'C',  'o',  'n',  't',  'e',  'n',  't',  'F',  'o',  'o'};
+const char kRequestPsshData[] = {0x22, 0x0a, 'C', 'o', 'n', 't', 'e',
+                                 'n',  't',  'F', 'o', 'o', '\0'};
 const uint8_t kRequestPsshDataFromKeyIds[] = {0x12, 0x06, 0x00, 0x01,
                                               0x02, 0x03, 0x04, 0x05};
 const uint8_t kRequestKeyId[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
@@ -98,8 +106,8 @@ std::string GetMockKey(const std::string& track_type) {
   return "MockKey" + track_type;
 }
 
-std::string GetMockPsshData(const std::string& track_type) {
-  return "MockPsshData" + track_type;
+std::string GetMockPsshData() {
+  return kRequestPsshData;
 }
 
 std::string GenerateMockLicenseResponse() {
@@ -108,12 +116,11 @@ std::string GenerateMockLicenseResponse() {
   for (size_t i = 0; i < 5; ++i) {
     if (!tracks.empty())
       tracks += ",";
-    tracks += base::StringPrintf(
-        kTrackFormat,
-        kTrackTypes[i].c_str(),
-        Base64Encode(GetMockKeyId(kTrackTypes[i])).c_str(),
-        Base64Encode(GetMockKey(kTrackTypes[i])).c_str(),
-        Base64Encode(GetMockPsshData(kTrackTypes[i])).c_str());
+    tracks +=
+        base::StringPrintf(kTrackFormat, kTrackTypes[i].c_str(),
+                           Base64Encode(GetMockKeyId(kTrackTypes[i])).c_str(),
+                           Base64Encode(GetMockKey(kTrackTypes[i])).c_str(),
+                           Base64Encode(GetMockPsshData()).c_str());
   }
   return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
 }
@@ -133,8 +140,6 @@ std::string GenerateMockClassicLicenseResponse() {
 }
 
 }  // namespace
-
-namespace media {
 
 class MockRequestSigner : public RequestSigner {
  public:
@@ -163,8 +168,7 @@ class MockKeyFetcher : public KeyFetcher {
   DISALLOW_COPY_AND_ASSIGN(MockKeyFetcher);
 };
 
-class WidevineKeySourceTest : public ::testing::Test,
-                              public ::testing::WithParamInterface<bool> {
+class WidevineKeySourceTest : public Test {
  public:
   WidevineKeySourceTest()
       : mock_request_signer_(new MockRequestSigner(kSignerName)),
@@ -177,8 +181,17 @@ class WidevineKeySourceTest : public ::testing::Test,
   }
 
  protected:
+  FourCC GetExpectedProtectionScheme() {
+    // Apple SAMPLE-AES is considered as a variation of cbcs.
+    if (protection_scheme_ == kAppleSampleAesProtectionScheme)
+      return FOURCC_cbcs;
+    return protection_scheme_;
+  }
+
   void CreateWidevineKeySource() {
-    widevine_key_source_.reset(new WidevineKeySource(kServerUrl, GetParam()));
+    widevine_key_source_.reset(
+        new WidevineKeySource(kServerUrl, add_common_pssh_));
+    widevine_key_source_->set_protection_scheme(protection_scheme_);
     widevine_key_source_->set_key_fetcher(std::move(mock_key_fetcher_));
   }
 
@@ -191,13 +204,14 @@ class WidevineKeySourceTest : public ::testing::Test,
           &encryption_key));
       EXPECT_EQ(GetMockKey(kTrackTypes[i]), ToString(encryption_key.key));
       if (!classic) {
-        ASSERT_EQ(GetParam() ? 2u : 1u, encryption_key.key_system_info.size());
+        ASSERT_EQ(add_common_pssh_ ? 2u : 1u,
+                  encryption_key.key_system_info.size());
         EXPECT_EQ(GetMockKeyId(kTrackTypes[i]),
                   ToString(encryption_key.key_id));
-        EXPECT_EQ(GetMockPsshData(kTrackTypes[i]),
+        EXPECT_EQ(GetMockPsshData(),
                   ToString(encryption_key.key_system_info[0].pssh_data()));
 
-        if (GetParam()) {
+        if (add_common_pssh_) {
           // Each of the keys contains all the key IDs.
           const std::vector<uint8_t> common_system_id(
               kCommonSystemId, kCommonSystemId + arraysize(kCommonSystemId));
@@ -222,12 +236,14 @@ class WidevineKeySourceTest : public ::testing::Test,
   std::unique_ptr<MockKeyFetcher> mock_key_fetcher_;
   std::unique_ptr<WidevineKeySource> widevine_key_source_;
   std::vector<uint8_t> content_id_;
+  bool add_common_pssh_ = false;
+  FourCC protection_scheme_ = FOURCC_cenc;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WidevineKeySourceTest);
 };
 
-TEST_P(WidevineKeySourceTest, GetTrackTypeFromString) {
+TEST_F(WidevineKeySourceTest, GetTrackTypeFromString) {
   EXPECT_EQ(KeySource::TRACK_TYPE_SD,
             KeySource::GetTrackTypeFromString("SD"));
   EXPECT_EQ(KeySource::TRACK_TYPE_HD,
@@ -242,7 +258,7 @@ TEST_P(WidevineKeySourceTest, GetTrackTypeFromString) {
             KeySource::GetTrackTypeFromString("FOO"));
 }
 
-TEST_P(WidevineKeySourceTest, GenerateSignatureFailure) {
+TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
       .WillOnce(Return(false));
 
@@ -252,11 +268,70 @@ TEST_P(WidevineKeySourceTest, GenerateSignatureFailure) {
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
 
+TEST_F(WidevineKeySourceTest, RetryOnHttpTimeout) {
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
+
+  // Retry is expected on HTTP timeout.
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+      .WillOnce(Return(Status(error::TIME_OUT, "")))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+
+  CreateWidevineKeySource();
+  ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
+  VerifyKeys(false);
+}
+
+TEST_F(WidevineKeySourceTest, RetryOnTransientError) {
+  std::string mock_license_status = base::StringPrintf(
+      kLicenseResponseFormat, kLicenseStatusTransientError, "");
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
+
+  std::string expected_retried_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
+
+  // Retry is expected on transient error.
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)))
+      .WillOnce(DoAll(SetArgPointee<2>(expected_retried_response),
+                      Return(Status::OK)));
+
+  CreateWidevineKeySource();
+  ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
+  VerifyKeys(false);
+}
+
+TEST_F(WidevineKeySourceTest, NoRetryOnUnknownError) {
+  std::string mock_license_status = base::StringPrintf(
+      kLicenseResponseFormat, kLicenseStatusUnknownError, "");
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
+
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+
+  CreateWidevineKeySource();
+  ASSERT_EQ(error::SERVER_ERROR,
+            widevine_key_source_->FetchKeys(content_id_, kPolicy).error_code());
+}
+
+class WidevineKeySourceParameterizedTest
+    : public WidevineKeySourceTest,
+      public WithParamInterface<std::tr1::tuple<bool, FourCC>> {
+ public:
+  WidevineKeySourceParameterizedTest() {
+    add_common_pssh_ = std::tr1::get<0>(GetParam());
+    protection_scheme_ = std::tr1::get<1>(GetParam());
+  }
+};
+
 // Check whether expected request message and post data was generated and
 // verify the correct behavior on http failure.
-TEST_P(WidevineKeySourceTest, HttpFetchFailure) {
+TEST_P(WidevineKeySourceParameterizedTest, HttpFetchFailure) {
   std::string expected_message = base::StringPrintf(
-      kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy);
+      kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy,
+      GetExpectedProtectionScheme());
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
@@ -277,7 +352,7 @@ TEST_P(WidevineKeySourceTest, HttpFetchFailure) {
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
 
-TEST_P(WidevineKeySourceTest, LicenseStatusCencOK) {
+TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencOK) {
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
@@ -289,7 +364,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencOK) {
   VerifyKeys(false);
 }
 
-TEST_P(WidevineKeySourceTest, LicenseStatusCencNotOK) {
+TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencNotOK) {
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(
           GenerateMockClassicLicenseResponse()).c_str());
@@ -303,7 +378,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencNotOK) {
             .error_code());
 }
 
-TEST_P(WidevineKeySourceTest, LicenseStatusCencWithPsshBoxOK) {
+TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithPsshBoxOK) {
   std::string expected_message =
       base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
                          Base64Encode(kRequestPsshData).c_str());
@@ -324,7 +399,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencWithPsshBoxOK) {
   VerifyKeys(false);
 }
 
-TEST_P(WidevineKeySourceTest, LicenseStatusCencWithKeyIdOK) {
+TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithKeyIdsOK) {
   std::string expected_pssh_data(
       kRequestPsshDataFromKeyIds,
       kRequestPsshDataFromKeyIds + arraysize(kRequestPsshDataFromKeyIds));
@@ -348,7 +423,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencWithKeyIdOK) {
   VerifyKeys(false);
 }
 
-TEST_P(WidevineKeySourceTest, LicenseStatusClassicOK) {
+TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusClassicOK) {
   std::string expected_message = base::StringPrintf(
       kExpectedRequestMessageWithAssetIdFormat, kClassicAssetId);
   EXPECT_CALL(*mock_request_signer_,
@@ -370,59 +445,12 @@ TEST_P(WidevineKeySourceTest, LicenseStatusClassicOK) {
   VerifyKeys(true);
 }
 
-TEST_P(WidevineKeySourceTest, RetryOnHttpTimeout) {
-  std::string mock_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
-
-  // Retry is expected on HTTP timeout.
-  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
-      .WillOnce(Return(Status(error::TIME_OUT, "")))
-      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
-
-  CreateWidevineKeySource();
-  ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
-  VerifyKeys(false);
-}
-
-TEST_P(WidevineKeySourceTest, RetryOnTransientError) {
-  std::string mock_license_status = base::StringPrintf(
-      kLicenseResponseFormat, kLicenseStatusTransientError, "");
-  std::string mock_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
-
-  std::string expected_retried_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
-
-  // Retry is expected on transient error.
-  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)))
-      .WillOnce(DoAll(SetArgPointee<2>(expected_retried_response),
-                      Return(Status::OK)));
-
-  CreateWidevineKeySource();
-  ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
-  VerifyKeys(false);
-}
-
-TEST_P(WidevineKeySourceTest, NoRetryOnUnknownError) {
-  std::string mock_license_status = base::StringPrintf(
-      kLicenseResponseFormat, kLicenseStatusUnknownError, "");
-  std::string mock_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
-
-  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
-
-  CreateWidevineKeySource();
-  ASSERT_EQ(error::SERVER_ERROR,
-            widevine_key_source_->FetchKeys(content_id_, kPolicy).error_code());
-}
-
 namespace {
 
 const char kCryptoPeriodRequestMessageFormat[] =
     "{\"content_id\":\"%s\",\"crypto_period_count\":%u,\"drm_types\":["
     "\"WIDEVINE\"],\"first_crypto_period_index\":%u,\"policy\":\"%s\","
+    "\"protection_scheme\":%d,"
     "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
     "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
 
@@ -459,7 +487,7 @@ std::string GenerateMockKeyRotationLicenseResponse(
 
 }  // namespace
 
-TEST_P(WidevineKeySourceTest, KeyRotationTest) {
+TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   const uint32_t kFirstCryptoPeriodIndex = 8;
   const uint32_t kCryptoPeriodCount = 10;
   // Array of indexes to be checked.
@@ -482,12 +510,10 @@ TEST_P(WidevineKeySourceTest, KeyRotationTest) {
   for (uint32_t i = 0; i < kCryptoIterations; ++i) {
     uint32_t first_crypto_period_index =
         kFirstCryptoPeriodIndex - 1 + i * kCryptoPeriodCount;
-    std::string expected_message =
-        base::StringPrintf(kCryptoPeriodRequestMessageFormat,
-                           Base64Encode(kContentId).c_str(),
-                           kCryptoPeriodCount,
-                           first_crypto_period_index,
-                           kPolicy);
+    std::string expected_message = base::StringPrintf(
+        kCryptoPeriodRequestMessageFormat, Base64Encode(kContentId).c_str(),
+        kCryptoPeriodCount, first_crypto_period_index, kPolicy,
+        GetExpectedProtectionScheme());
     EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
         .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
@@ -526,8 +552,13 @@ TEST_P(WidevineKeySourceTest, KeyRotationTest) {
 }
 
 INSTANTIATE_TEST_CASE_P(WidevineKeySourceInstance,
-                        WidevineKeySourceTest,
-                        ::testing::Bool());
+                        WidevineKeySourceParameterizedTest,
+                        Combine(Bool(),
+                                Values(FOURCC_cenc,
+                                       FOURCC_cbcs,
+                                       FOURCC_cens,
+                                       FOURCC_cbc1,
+                                       kAppleSampleAesProtectionScheme)));
 
 }  // namespace media
 }  // namespace shaka
