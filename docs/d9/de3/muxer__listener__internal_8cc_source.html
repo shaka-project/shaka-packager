@@ -330,49 +330,48 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="keywordtype">void</span> SetContentProtectionFields(</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    FourCC protection_scheme,</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="keyword">const</span> std::string&amp; default_key_id,</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; default_key_id,</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keyword">const</span> std::vector&lt;ProtectionSystemSpecificInfo&gt;&amp; key_system_info,</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    MediaInfo* media_info) {</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  DCHECK(media_info);</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  MediaInfo::ProtectedContent* protected_content =</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;      media_info-&gt;mutable_protected_content();</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  DCHECK(protection_scheme == FOURCC_cenc || protection_scheme == FOURCC_cbc1 ||</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;         protection_scheme == FOURCC_cens || protection_scheme == FOURCC_cbcs);</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  protected_content-&gt;set_protection_scheme(FourCCToString(protection_scheme));</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <span class="keywordflow">if</span> (!default_key_id.empty())</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    protected_content-&gt;set_default_key_id(default_key_id);</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> ProtectionSystemSpecificInfo&amp; info : key_system_info) {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    MediaInfo::ProtectedContent::ContentProtectionEntry* entry =</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        protected_content-&gt;add_content_protection_entry();</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keywordflow">if</span> (!info.system_id().empty())</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;      entry-&gt;set_uuid(CreateUUIDString(info.system_id()));</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt; pssh = info.CreateBox();</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    entry-&gt;set_pssh(pssh.data(), pssh.size());</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;}</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;std::string CreateUUIDString(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) {</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  DCHECK_EQ(16u, data.size());</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  std::string uuid =</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      base::ToLowerASCII(base::HexEncode(data.data(), data.size()));</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  uuid.insert(20, <span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  uuid.insert(16, <span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  uuid.insert(12, <span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  uuid.insert(8, <span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  <span class="keywordflow">return</span> uuid;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;}  <span class="comment">// namespace internal</span></div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  protected_content-&gt;set_protection_scheme(FourCCToString(protection_scheme));</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="keywordflow">if</span> (!default_key_id.empty()) {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    protected_content-&gt;set_default_key_id(default_key_id.data(),</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                                          default_key_id.size());</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> ProtectionSystemSpecificInfo&amp; info : key_system_info) {</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    MediaInfo::ProtectedContent::ContentProtectionEntry* entry =</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        protected_content-&gt;add_content_protection_entry();</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordflow">if</span> (!info.system_id().empty())</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      entry-&gt;set_uuid(CreateUUIDString(info.system_id()));</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt; pssh = info.CreateBox();</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    entry-&gt;set_pssh(pssh.data(), pssh.size());</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  }</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;}</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;std::string CreateUUIDString(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) {</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  DCHECK_EQ(16u, data.size());</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  std::string uuid =</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;      base::ToLowerASCII(base::HexEncode(data.data(), data.size()));</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  uuid.insert(20, <span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  uuid.insert(16, <span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  uuid.insert(12, <span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  uuid.insert(8, <span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keywordflow">return</span> uuid;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;}</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;}  <span class="comment">// namespace internal</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 31 2017 21:44:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 19:14:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

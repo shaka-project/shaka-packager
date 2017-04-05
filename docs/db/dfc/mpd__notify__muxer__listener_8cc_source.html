@@ -127,7 +127,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    LOG_IF(WARNING, is_encrypted_)</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Updating initial encryption information.&quot;</span>;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    protection_scheme_ = protection_scheme;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    default_key_id_.assign(key_id.begin(), key_id.end());</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    default_key_id_ = key_id;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    key_system_info_ = key_system_info;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    is_encrypted_ = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span>;</div>
@@ -280,7 +280,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 31 2017 21:44:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 5 2017 19:14:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
