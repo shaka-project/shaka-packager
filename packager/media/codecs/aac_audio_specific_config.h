@@ -22,6 +22,56 @@ class BitReader;
 /// for more details.
 class AACAudioSpecificConfig {
  public:
+  // Audio Object Types specified in ISO 14496-3 (2005), Table 1.3
+  enum AudioObjectType {
+    AOT_NULL             = 0,
+    AOT_AAC_MAIN         = 1,   // Main
+    AOT_AAC_LC           = 2,   // Low Complexity
+    AOT_AAC_SSR          = 3,   // Scalable Sample Rate
+    AOT_AAC_LTP          = 4,   // Long Term Prediction
+    AOT_SBR              = 5,   // Spectral Band Replication
+    AOT_AAC_SCALABLE     = 6,   // Scalable
+    AOT_TWINVQ           = 7,   // Twin Vector Quantizer
+    AOT_CELP             = 8,   // Code Excited Linear Prediction
+    AOT_HVXC             = 9,   // Harmonic Vector eXcitation Coding
+    AOT_TTSI             = 12,  // Text-To-Speech Interface
+    AOT_MAINSYNTH        = 13,  // Main Synthesis
+    AOT_WAVESYNTH        = 14,  // Wavetable Synthesis
+    AOT_MIDI             = 15,  // General MIDI
+    AOT_SAFX             = 16,  // Algorithmic Synthesis and Audio Effects
+    AOT_ER_AAC_LC        = 17,  // Error Resilient Low Complexity
+    AOT_ER_AAC_LTP       = 19,  // Error Resilient Long Term Prediction
+    AOT_ER_AAC_SCALABLE  = 20,  // Error Resilient Scalable
+    AOT_ER_TWINVQ        = 21,  // Error Resilient Twin Vector Quantizer
+    AOT_ER_BSAC          = 22,  // Error Resilient Bit-Sliced Arithmetic Coding
+    AOT_ER_AAC_LD        = 23,  // Error Resilient Low Delay
+    AOT_ER_CELP          = 24,  // Error Resilient Code Excited Linear
+                                // Prediction
+    AOT_ER_HVXC          = 25,  // Error Resilient Harmonic Vector eXcitation
+                                // Coding
+    AOT_ER_HILN          = 26,  // Error Resilient Harmonic and Individual Lines
+                                // plus Noise
+    AOT_ER_PARAM         = 27,  // Error Resilient Parametric
+    AOT_SSC              = 28,  // SinuSoidal Coding
+    AOT_PS               = 29,  // Parametric Stereo
+    AOT_SURROUND         = 30,  // MPEG Surround
+    AOT_ESCAPE           = 31,  // Escape Value
+    AOT_L1               = 32,  // Layer 1
+    AOT_L2               = 33,  // Layer 2
+    AOT_L3               = 34,  // Layer 3
+    AOT_DST              = 35,  // Direct Stream Transfer
+    AOT_ALS              = 36,  // Audio LosslesS
+    AOT_SLS              = 37,  // Scalable LosslesS
+    AOT_SLS_NON_CORE     = 38,  // Scalable LosslesS (non core)
+    AOT_ER_AAC_ELD       = 39,  // Error Resilient Enhanced Low Delay
+    AOT_SMR_SIMPLE       = 40,  // Symbolic Music Representation Simple
+    AOT_SMR_MAIN         = 41,  // Symbolic Music Representation Main
+    AOT_USAC_NOSBR       = 42,  // Unified Speech and Audio Coding (no SBR)
+    AOT_SAOC             = 43,  // Spatial Audio Object Coding
+    AOT_LD_SURROUND      = 44,  // Low Delay MPEG Surround
+    AOT_USAC             = 45,  // Unified Speech and Audio Coding
+  };
+
   AACAudioSpecificConfig();
   virtual ~AACAudioSpecificConfig();
 
@@ -40,27 +90,25 @@ class AACAudioSpecificConfig {
   /// @return true on success, false otherwise.
   virtual bool ConvertToADTS(std::vector<uint8_t>* buffer) const;
 
-  /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
-  ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
-  /// @return Output sample rate for the AAC stream.
-  uint32_t GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
+  /// @return The audio object type for this AAC config, with possible extension
+  ///         considered.
+  AudioObjectType GetAudioObjectType() const;
 
-  /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
-  ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
-  /// @return Number of channels for the AAC stream.
-  uint8_t GetNumChannels(bool sbr_in_mimetype) const;
+  /// @return Sample rate for the AAC stream, with possible extensions
+  ///         considered.
+  uint32_t GetSamplesPerSecond() const;
 
-  /// @return The audio object type for this AAC config.
-  uint8_t audio_object_type() const { return audio_object_type_; }
-
-  /// @return The sampling frequency for this AAC config.
-  uint32_t frequency() const { return frequency_; }
-
-  /// @return Number of channels for this AAC config.
-  uint8_t num_channels() const { return num_channels_; }
+  /// @return Number of channels for the AAC stream, with possible extensions
+  ///         considered.
+  uint8_t GetNumChannels() const;
 
   /// Size in bytes of the ADTS header added by ConvertEsdsToADTS().
   static const size_t kADTSHeaderSize = 7;
+
+  /// @return whether Spectral Band Repliation (SBR) is present in the stream.
+  bool sbr_present() const { return sbr_present_; }
+  /// Indicate whether SBR is present in the stream.
+  void set_sbr_present(bool sbr_present) { sbr_present_ = sbr_present; }
 
  private:
   bool SkipDecoderGASpecificConfig(BitReader* bit_reader) const;
@@ -69,18 +117,20 @@ class AACAudioSpecificConfig {
 
   // The following variables store the AAC specific configuration information
   // that are used to generate the ADTS header.
-  uint8_t audio_object_type_;
-  uint8_t frequency_index_;
-  uint8_t channel_config_;
-  // Is Parametric Stereo on?
-  bool ps_present_;
+  AudioObjectType audio_object_type_ = AOT_NULL;
+  uint8_t frequency_index_ = 0;
+  uint8_t channel_config_ = 0;
+  // Is Spectral Band Replication (SBR) available?
+  bool sbr_present_ = false;
+  // Is Parametric Stereo available?
+  bool ps_present_ = false;
 
   // The following variables store audio configuration information.
   // They are based on the AAC specific configuration but can be overridden
   // by extensions in elementary stream descriptor.
-  uint32_t frequency_;
-  uint32_t extension_frequency_;
-  uint8_t num_channels_;
+  uint32_t frequency_ = 0;
+  uint32_t extension_frequency_ = 0;
+  uint8_t num_channels_ = 0;
 };
 
 }  // namespace media

@@ -25,14 +25,7 @@ const uint8_t kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
 namespace shaka {
 namespace media {
 
-AACAudioSpecificConfig::AACAudioSpecificConfig()
-    : audio_object_type_(0),
-      frequency_index_(0),
-      channel_config_(0),
-      ps_present_(false),
-      frequency_(0),
-      extension_frequency_(0),
-      num_channels_(0) {}
+AACAudioSpecificConfig::AACAudioSpecificConfig() {}
 
 AACAudioSpecificConfig::~AACAudioSpecificConfig() {}
 
@@ -41,9 +34,10 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
     return false;
 
   BitReader reader(&data[0], data.size());
-  uint8_t extension_type = 0;
+  uint8_t extension_type = AOT_NULL;
   uint8_t extension_frequency_index = 0xff;
 
+  sbr_present_ = false;
   ps_present_ = false;
   frequency_ = 0;
   extension_frequency_ = 0;
@@ -62,9 +56,10 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
   RCHECK(reader.ReadBits(4, &channel_config_));
 
   // Read extension configuration.
-  if (audio_object_type_ == 5 || audio_object_type_ == 29) {
-    ps_present_ = (audio_object_type_ == 29);
-    extension_type = 5;
+  if (audio_object_type_ == AOT_SBR || audio_object_type_ == AOT_PS) {
+    sbr_present_ = audio_object_type_ == AOT_SBR;
+    ps_present_ = audio_object_type_ == AOT_PS;
+    extension_type = AOT_SBR;
     RCHECK(reader.ReadBits(4, &extension_frequency_index));
     if (extension_frequency_index == 0xf)
       RCHECK(reader.ReadBits(24, &extension_frequency_));
@@ -78,7 +73,7 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
 
   // Read extension configuration again
   // Note: The check for 16 available bits comes from the AAC spec.
-  if (extension_type != 5 && reader.bits_available() >= 16) {
+  if (extension_type != AOT_SBR && reader.bits_available() >= 16) {
     uint16_t sync_extension_type;
     uint8_t sbr_present_flag;
     uint8_t ps_present_flag;
@@ -87,6 +82,7 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
         sync_extension_type == 0x2b7) {
       if (reader.ReadBits(5, &extension_type) && extension_type == 5) {
         RCHECK(reader.ReadBits(1, &sbr_present_flag));
+        sbr_present_ = sbr_present_flag != 0;
 
         if (sbr_present_flag) {
           RCHECK(reader.ReadBits(4, &extension_frequency_index));
@@ -141,7 +137,7 @@ bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
   adts[0] = 0xff;
   adts[1] = 0xf1;
   adts[2] = ((audio_object_type_ - 1) << 6) + (frequency_index_ << 2) +
-      (channel_config_ >> 2);
+            (channel_config_ >> 2);
   adts[3] = ((channel_config_ & 0x3) << 6) + static_cast<uint8_t>(size >> 11);
   adts[4] = static_cast<uint8_t>((size & 0x7ff) >> 3);
   adts[5] = static_cast<uint8_t>(((size & 7) << 5) + 0x1f);
@@ -150,12 +146,20 @@ bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
   return true;
 }
 
-uint32_t AACAudioSpecificConfig::GetOutputSamplesPerSecond(
-    bool sbr_in_mimetype) const {
+AACAudioSpecificConfig::AudioObjectType
+AACAudioSpecificConfig::GetAudioObjectType() const {
+  if (ps_present_)
+    return AOT_PS;
+  if (sbr_present_)
+    return AOT_SBR;
+  return audio_object_type_;
+}
+
+uint32_t AACAudioSpecificConfig::GetSamplesPerSecond() const {
   if (extension_frequency_ > 0)
     return extension_frequency_;
 
-  if (!sbr_in_mimetype)
+  if (!sbr_present_)
     return frequency_;
 
   // The following code is written according to ISO 14496 Part 3 Table 1.11 and
@@ -165,11 +169,11 @@ uint32_t AACAudioSpecificConfig::GetOutputSamplesPerSecond(
   return std::min(2 * frequency_, 48000u);
 }
 
-uint8_t AACAudioSpecificConfig::GetNumChannels(bool sbr_in_mimetype) const {
+uint8_t AACAudioSpecificConfig::GetNumChannels() const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.
-  if (sbr_in_mimetype && channel_config_ == 1)
+  if (sbr_present_ && channel_config_ == 1)
     return 2;  // CHANNEL_LAYOUT_STEREO
 
   // When Parametric Stereo is on, mono will be played as stereo.

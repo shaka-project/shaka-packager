@@ -92,6 +92,16 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-golden.mpd')
 
+  def testPackageAacHe(self):
+    self.packager.Package(
+        self._GetStreams(
+            ['audio'], test_files=['bear-640x360-aac_he-silent_right.mp4']),
+        self._GetFlags())
+    self._DiffGold(self.output[0],
+                   'bear-640x360-aac_he-silent_right-golden.mp4')
+    self._DiffGold(self.mpd_output,
+                   'bear-640x360-aac_he-silent_right-golden.mpd')
+
   # Package all video, audio, and text.
   def testPackageVideoAudioText(self):
     audio_video_streams = self._GetStreams(['audio', 'video'])

@@ -209,20 +209,15 @@ bool WriteAacAudioSetupInformation(const uint8_t* aac_audio_specific_config,
     return false;
   }
 
-  const uint8_t kAacLc = 2;
-  const uint8_t kAacHeV1 = 5;
-  const uint8_t kAacHeV2 = 29;
-  uint8_t audio_object_type = 2;
-  audio_object_type = config.audio_object_type();
-
+  auto audio_object_type = config.GetAudioObjectType();
   switch (audio_object_type) {
-    case kAacLc:
+    case AACAudioSpecificConfig::AOT_AAC_LC:
       audio_setup_information->AppendInt(FOURCC_zaac);
       break;
-    case kAacHeV1:
+    case AACAudioSpecificConfig::AOT_SBR:
       audio_setup_information->AppendInt(FOURCC_zach);
       break;
-    case kAacHeV2:
+    case AACAudioSpecificConfig::AOT_PS:
       audio_setup_information->AppendInt(FOURCC_zacp);
       break;
     default:
