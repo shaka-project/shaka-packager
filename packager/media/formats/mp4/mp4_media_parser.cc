@@ -368,9 +368,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             codec = kCodecAAC;
             const AACAudioSpecificConfig& aac_audio_specific_config =
                 entry.esds.aac_audio_specific_config;
-            num_channels = aac_audio_specific_config.num_channels();
-            sampling_frequency = aac_audio_specific_config.frequency();
-            audio_object_type = aac_audio_specific_config.audio_object_type();
+            num_channels = aac_audio_specific_config.GetNumChannels();
+            sampling_frequency =
+                aac_audio_specific_config.GetSamplesPerSecond();
+            audio_object_type = aac_audio_specific_config.GetAudioObjectType();
             codec_config = entry.esds.es_descriptor.decoder_specific_info();
             break;
           } else if (entry.esds.es_descriptor.IsDTS()) {
@@ -393,7 +394,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                            << " in stsd box.";
                 return false;
             }
-            num_channels = entry.esds.aac_audio_specific_config.num_channels();
+            num_channels = entry.channelcount;
             // For dts audio in esds, current supported number of channels is 6
             // as the only supported channel layout is 5.1.
             if (num_channels != kDtsAudioNumChannels) {

@@ -923,7 +923,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
                   adts_header.GetSamplingFrequency());
               std::vector<uint8_t> audio_specific_config;
               if (!adts_header.GetAudioSpecificConfig(&audio_specific_config)) {
-                LOG(ERROR) << "Could not compute AACaudiospecificconfig";
+                LOG(ERROR) << "Could not compute AACAudiospecificconfig";
                 return false;
               }
               audio_stream_info->set_codec_config(audio_specific_config);
@@ -938,10 +938,11 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
                 LOG(ERROR) << "Could not parse AACAudioSpecificconfig";
                 return false;
               }
-              audio_stream_info->set_sampling_frequency(aac_config.frequency());
+              audio_stream_info->set_sampling_frequency(
+                  aac_config.GetSamplesPerSecond());
               audio_stream_info->set_codec_string(
                   AudioStreamInfo::GetCodecString(
-                      kCodecAAC, aac_config.audio_object_type()));
+                      kCodecAAC, aac_config.GetAudioObjectType()));
             }
           }
         }

@@ -17,8 +17,10 @@ TEST(AACAudioSpecificConfigTest, BasicProfileTest) {
   data.assign(buffer, buffer + sizeof(buffer));
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
-  EXPECT_EQ(44100u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
-  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(false));
+  EXPECT_EQ(44100u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_AAC_LC,
+            aac_audio_specific_config.GetAudioObjectType());
 }
 
 TEST(AACAudioSpecificConfigTest, ExtensionTest) {
@@ -29,9 +31,11 @@ TEST(AACAudioSpecificConfigTest, ExtensionTest) {
   data.assign(buffer, buffer + sizeof(buffer));
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
-  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
-  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(true));
-  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(false));
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_TRUE(aac_audio_specific_config.sbr_present());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_PS,
+            aac_audio_specific_config.GetAudioObjectType());
 }
 
 // Test implicit SBR with mono channel config.
@@ -47,13 +51,17 @@ TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig0) {
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
 
-  // Test w/o implict SBR.
-  EXPECT_EQ(24000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
-  EXPECT_EQ(1u, aac_audio_specific_config.GetNumChannels(false));
+  EXPECT_EQ(24000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(1u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_FALSE(aac_audio_specific_config.sbr_present());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_AAC_LC,
+            aac_audio_specific_config.GetAudioObjectType());
 
-  // Test implicit SBR.
-  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(true));
-  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(true));
+  aac_audio_specific_config.set_sbr_present(true);
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_SBR,
+            aac_audio_specific_config.GetAudioObjectType());
 }
 
 // Tests implicit SBR with a stereo channel config.
@@ -66,13 +74,17 @@ TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig1) {
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
 
-  // Test w/o implict SBR.
-  EXPECT_EQ(24000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
-  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(false));
+  EXPECT_EQ(24000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_FALSE(aac_audio_specific_config.sbr_present());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_AAC_LC,
+            aac_audio_specific_config.GetAudioObjectType());
 
-  // Test implicit SBR.
-  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(true));
-  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(true));
+  aac_audio_specific_config.set_sbr_present(true);
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_SBR,
+            aac_audio_specific_config.GetAudioObjectType());
 }
 
 TEST(AACAudioSpecificConfigTest, SixChannelTest) {
@@ -83,8 +95,10 @@ TEST(AACAudioSpecificConfigTest, SixChannelTest) {
   data.assign(buffer, buffer + sizeof(buffer));
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
-  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
-  EXPECT_EQ(6u, aac_audio_specific_config.GetNumChannels(false));
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(6u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_AAC_LC,
+            aac_audio_specific_config.GetAudioObjectType());
 }
 
 TEST(AACAudioSpecificConfigTest, DataTooShortTest) {
