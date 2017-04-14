@@ -35,7 +35,6 @@ var searchData=
   ['appendint',['AppendInt',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f',1,'shaka::media::BufferWriter']]],
   ['appendnbytes',['AppendNBytes',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ae44b09c03c9b8f0fbf58deb80355f299',1,'shaka::media::BufferWriter']]],
   ['audio_5fdescription',['audio_description',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#adb40e673e8025ca51740a50eb20d89b2',1,'shaka::media::mp4::TrackRunIterator']]],
-  ['audio_5fobject_5ftype',['audio_object_type',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a8c89c8845d90d292fad38f8caf378a63',1,'shaka::media::AACAudioSpecificConfig']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a1333ea7b15790da37addb60ba49131b4',1,'shaka::media::AudioStreamInfo']]],
   ['auxinfoneedstobecached',['AuxInfoNeedsToBeCached',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#a8d4fb433e66fec693035cac796ca6851',1,'shaka::media::mp4::TrackRunIterator']]]
 ];
