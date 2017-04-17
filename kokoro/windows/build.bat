@@ -1,9 +1,13 @@
 :: Copyright 2017 Google Inc. All Rights Reserved.
-set OUTPUT_DIRECTORY=Release_x64
-set GYP_DEFINES=target_arch=x64
-
 set ROOTDIR=%cd%
 set PACKAGERDIR=%ROOTDIR%\git\src
+
+set GYP_DEFINES="target_arch=%PLATFORM%"
+if "%PLATFORM%"=="x64" (
+  set OUTPUT_DIRECTORY="out\%CONFIGURATION%_x64"
+) else (
+  set OUTPUT_DIRECTORY="out\%CONFIGURATION%"
+)
 
 :: TODO(rkuroiwa): Put this in a batch script and source it, so that this
 :: doesn't need to be copied for all configurations.
@@ -23,8 +27,8 @@ call %DEPOTTOOLSDIR%\gclient sync
 echo on
 
 cd src
-%DEPOTTOOLSDIR%\ninja -C "out\%OUTPUT_DIRECTORY%" -k 100
+%DEPOTTOOLSDIR%\ninja -C "%OUTPUT_DIRECTORY%" -k 100
 
-copy "out\%OUTPUT_DIRECTORY%\packager.exe" packager-win.exe
-for %%f in ("out\%OUTPUT_DIRECTORY%\*_*test.exe") do (%%f || exit /b 666)
-python "out\%OUTPUT_DIRECTORY%\packager_test.py" -v
+copy "%OUTPUT_DIRECTORY%\packager.exe" packager-win.exe
+for %%f in ("%OUTPUT_DIRECTORY%\*_*test.exe") do (%%f || exit /b 666)
+python "%OUTPUT_DIRECTORY%\packager_test.py" -v
