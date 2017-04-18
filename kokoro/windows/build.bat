@@ -27,7 +27,7 @@ call %DEPOTTOOLSDIR%\gclient sync
 echo on
 
 cd src
-%DEPOTTOOLSDIR%\ninja -C "%OUTPUT_DIRECTORY%" -k 100
+%DEPOTTOOLSDIR%\ninja -C "%OUTPUT_DIRECTORY%" -k 100 || exit /b 1
 
 copy "%OUTPUT_DIRECTORY%\packager.exe" packager-win.exe
 for %%f in ("%OUTPUT_DIRECTORY%\*_*test.exe") do (%%f || exit /b 666)
