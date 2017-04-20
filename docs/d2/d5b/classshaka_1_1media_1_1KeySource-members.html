@@ -93,9 +93,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <p>This is the complete list of members for <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">FetchKeys</a>(const std::vector&lt; uint8_t &gt; &amp;pssh_box)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a42df88c1cdb415e7844eea18222692bb">FetchKeys</a>(const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;key_ids)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ad1c8f986a88647813f0e43a9b80d057e">FetchKeys</a>(uint32_t asset_id)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">GetCryptoPeriodKey</a>(uint32_t crypto_period_index, TrackType track_type, EncryptionKey *key)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a>(TrackType track_type, EncryptionKey *key)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
   <tr><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">GetKey</a>(const std::vector&lt; uint8_t &gt; &amp;key_id, EncryptionKey *key)=0</td><td class="entry"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
@@ -115,7 +113,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 19 2017 18:34:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 20 2017 21:19:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

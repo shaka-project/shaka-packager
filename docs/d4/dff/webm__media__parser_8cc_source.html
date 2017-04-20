@@ -331,40 +331,42 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="keywordflow">if</span> (!decryption_key_source_)</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  std::vector&lt;std::vector&lt;uint8_t&gt;&gt; key_ids;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  Status status;</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  <span class="keywordflow">if</span> (!audio_encryption_key_id.empty()) {</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    key_ids.push_back(std::vector&lt;uint8_t&gt;(audio_encryption_key_id.begin(),</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                                           audio_encryption_key_id.end()));</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  }</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="keywordflow">if</span> (!video_encryption_key_id.empty()) {</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    key_ids.push_back(std::vector&lt;uint8_t&gt;(video_encryption_key_id.begin(),</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                                           video_encryption_key_id.end()));</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  }</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  Status status = decryption_key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">FetchKeys</a>(key_ids);</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error fetching decryption keys: &quot;</span> &lt;&lt; status;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  }</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    status.Update(decryption_key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        EmeInitDataType::WEBM,</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        std::vector&lt;uint8_t&gt;(audio_encryption_key_id.begin(),</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                             audio_encryption_key_id.end())));</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  }</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="keywordflow">if</span> (!video_encryption_key_id.empty()) {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    status.Update(decryption_key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        EmeInitDataType::WEBM,</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        std::vector&lt;uint8_t&gt;(video_encryption_key_id.begin(),</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                             video_encryption_key_id.end())));</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  }</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error fetching decryption keys: &quot;</span> &lt;&lt; status;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  }</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMMediaParser_html_a6c2d4b5b36304831e637f7ae1b9e54a2"><div class="ttname"><a href="../../d2/ddb/classshaka_1_1media_1_1WebMMediaParser.html#a6c2d4b5b36304831e637f7ae1b9e54a2">shaka::media::WebMMediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00043">webm_media_parser.cc:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMMediaParser_html_a40940ec01d965e3a78213861a93f7cfc"><div class="ttname"><a href="../../d2/ddb/classshaka_1_1media_1_1WebMMediaParser.html#a40940ec01d965e3a78213861a93f7cfc">shaka::media::WebMMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00056">webm_media_parser.cc:56</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMMediaParser_html_a5cd5c298938e2c58c45f962b21e43b2e"><div class="ttname"><a href="../../d2/ddb/classshaka_1_1media_1_1WebMMediaParser.html#a5cd5c298938e2c58c45f962b21e43b2e">shaka::media::WebMMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00028">webm_media_parser.cc:28</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_acea792e406efe5119cec2e3e522e02c2"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">shaka::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_a31b30d39d14fca3ce722b4233de95c79"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a31b30d39d14fca3ce722b4233de95c79">shaka::media::ByteQueue::Pop</a></div><div class="ttdeci">void Pop(int count)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00070">byte_queue.cc:70</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_aca6ecdac6ebc131d3626b765f64cb2de"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(const std::vector&lt; uint8_t &gt; &amp;pssh_box)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a3a1f87fb3ed95a9cbd2b6873326a1a4c"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c">shaka::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const std::shared_ptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00043">media_parser.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_ab1659ef71098c37e9fb4e55ab1664e84"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">shaka::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_a838fe5642e533477a5e229981e5f06e7"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a838fe5642e533477a5e229981e5f06e7">shaka::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 19 2017 18:34:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 20 2017 21:19:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

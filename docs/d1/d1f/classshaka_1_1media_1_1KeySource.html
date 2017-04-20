@@ -130,12 +130,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aca6ecdac6ebc131d3626b765f64cb2de"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_box)=0</td></tr>
-<tr class="separator:aca6ecdac6ebc131d3626b765f64cb2de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42df88c1cdb415e7844eea18222692bb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a42df88c1cdb415e7844eea18222692bb">FetchKeys</a> (const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;key_ids)=0</td></tr>
-<tr class="separator:a42df88c1cdb415e7844eea18222692bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1c8f986a88647813f0e43a9b80d057e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ad1c8f986a88647813f0e43a9b80d057e">FetchKeys</a> (uint32_t asset_id)=0</td></tr>
-<tr class="separator:ad1c8f986a88647813f0e43a9b80d057e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td></tr>
+<tr class="separator:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a994eb66cf09d8b08fd1c964f6afd3ab3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a> (TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:a994eb66cf09d8b08fd1c964f6afd3ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
@@ -157,9 +153,9 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> is responsible for encryption key acquisition. </p>
 
-<p>Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00030">30</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00045">45</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aca6ecdac6ebc131d3626b765f64cb2de"></a>
+<a class="anchor" id="a38dc8e7c48f86e2b3ab3c1ffe0d7916f"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -169,43 +165,19 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
         <tr>
           <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::FetchKeys </td>
           <td>(</td>
+          <td class="paramtype">EmeInitDataType&#160;</td>
+          <td class="paramname"><em>init_data_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>pssh_box</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"><em>init_data</em>&#160;</td>
         </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Fetch keys for CENC from the key server. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">pssh_box</td><td>The entire PSSH box for the content to be decrypted </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
-
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#ab81121a70588e7a40e29ed30043f093d">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ae6490d21a6538b9c909fdf996398e576">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a358b0955ecec61e6ce23611e2772265b">shaka::media::FixedKeySource</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a42df88c1cdb415e7844eea18222692bb"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::FetchKeys </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>key_ids</em></td><td>)</td>
           <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -214,50 +186,17 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Fetch keys for CENC from the key server. </p>
+<p>Fetch keys based on the specified encrypted media init data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">key_ids</td><td>the key IDs for the keys to fetch from the server. </td></tr>
+    <tr><td class="paramname">init_data_type</td><td>specifies the encrypted media init data type. </td></tr>
+    <tr><td class="paramname">init_data</td><td>contains the init data. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a402d02206bb253436284e78a252f3952">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ae202f5af8c11fe3abe9f7b882ac57513">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#aab2d8d84067ae5e778e3c242fec6dcb1">shaka::media::FixedKeySource</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad1c8f986a88647813f0e43a9b80d057e"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::FetchKeys </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>asset_id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Fetch keys for WVM decryption from the key server. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">asset_id</td><td>is the Widevine Classic asset ID for the content to be decrypted. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
-
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#aca6dcd998cb19421302a262265448321">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ac0be37455c1ec0a7d177e6b78dd5a58e">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a4dd894ee7e68340771d34bb81dce0ae5">shaka::media::FixedKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#aeea3e62921c176aa6be1f0a95f03b6cf">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a5cd8641873f213b826fc32e1c0026041">shaka::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
@@ -410,7 +349,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 19 2017 18:34:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 20 2017 21:19:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

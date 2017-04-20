@@ -729,165 +729,156 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;  <span class="keywordflow">if</span> (!decryption_key_source_)</div>
 <div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;  Status status;</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;ProtectionSystemSpecificHeader&gt;::const_iterator iter =</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;           headers.begin(); iter != headers.end(); ++iter) {</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    status = decryption_key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">FetchKeys</a>(iter-&gt;raw_box);</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;    <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;      <span class="comment">// If there is an error, try using the next PSSH box and report if none</span></div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;      <span class="comment">// work.</span></div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;      VLOG(1) &lt;&lt; <span class="stringliteral">&quot;Unable to fetch decryption keys: &quot;</span> &lt;&lt; status</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;              &lt;&lt; <span class="stringliteral">&quot;, trying the next PSSH box&quot;</span>;</div>
-<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    }</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;  }</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;  std::vector&lt;uint8_t&gt; pssh_raw_data;</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; header : headers) {</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;    pssh_raw_data.insert(pssh_raw_data.end(), header.raw_box.begin(),</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;                         header.raw_box.end());</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;  }</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;  Status status =</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;      decryption_key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(EmeInitDataType::CENC, pssh_raw_data);</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error fetching decryption keys: &quot;</span> &lt;&lt; status;</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;  }</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;}</div>
 <div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;</div>
-<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error fetching decryption keys: &quot;</span> &lt;&lt; status;</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;  }</div>
-<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;  LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;No viable &#39;pssh&#39; box found for content decryption.&quot;</span>;</div>
-<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;}</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;</div>
-<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;<span class="keywordtype">bool</span> MP4MediaParser::EnqueueSample(<span class="keywordtype">bool</span>* err) {</div>
-<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;  <span class="keywordflow">if</span> (!runs_-&gt;IsRunValid()) {</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    <span class="comment">// Remain in kEnqueueingSamples state, discarding data, until the end of</span></div>
-<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    <span class="comment">// the current &#39;mdat&#39; box has been appended to the queue.</span></div>
-<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    <span class="keywordflow">if</span> (!queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">Trim</a>(mdat_tail_))</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;<span class="keywordtype">bool</span> MP4MediaParser::EnqueueSample(<span class="keywordtype">bool</span>* err) {</div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;  <span class="keywordflow">if</span> (!runs_-&gt;IsRunValid()) {</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    <span class="comment">// Remain in kEnqueueingSamples state, discarding data, until the end of</span></div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;    <span class="comment">// the current &#39;mdat&#39; box has been appended to the queue.</span></div>
+<div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160;    <span class="keywordflow">if</span> (!queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">Trim</a>(mdat_tail_))</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;</div>
+<div class="line"><a name="l00664"></a><span class="lineno">  664</span>&#160;    ChangeState(kParsingBoxes);</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;  }</div>
+<div class="line"><a name="l00667"></a><span class="lineno">  667</span>&#160;</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;  <span class="keywordflow">if</span> (!runs_-&gt;IsSampleValid()) {</div>
+<div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;    runs_-&gt;AdvanceRun();</div>
+<div class="line"><a name="l00670"></a><span class="lineno">  670</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;  }</div>
 <div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;</div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;    ChangeState(kParsingBoxes);</div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;  }</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;</div>
-<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;  <span class="keywordflow">if</span> (!runs_-&gt;IsSampleValid()) {</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    runs_-&gt;AdvanceRun();</div>
-<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;  }</div>
-<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;  DCHECK(!(*err));</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;</div>
-<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;  <span class="keyword">const</span> uint8_t* buf;</div>
-<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;  <span class="keywordtype">int</span> buf_size;</div>
-<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;  queue_.Peek(&amp;buf, &amp;buf_size);</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;  <span class="keywordflow">if</span> (!buf_size)</div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;</div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;  <span class="comment">// Skip this entire track if it is not audio nor video.</span></div>
-<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;  <span class="keywordflow">if</span> (!runs_-&gt;is_audio() &amp;&amp; !runs_-&gt;is_video())</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    runs_-&gt;AdvanceRun();</div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;</div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;  <span class="comment">// Attempt to cache the auxiliary information first. Aux info is usually</span></div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;  <span class="comment">// placed in a contiguous block before the sample data, rather than being</span></div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;  <span class="comment">// interleaved. If we didn&#39;t cache it, this would require that we retain the</span></div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;  <span class="comment">// start of the segment buffer while reading samples. Aux info is typically</span></div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;  <span class="comment">// quite small compared to sample data, so this pattern is useful on</span></div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;  <span class="comment">// memory-constrained devices where the source buffer consumes a substantial</span></div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;  <span class="comment">// portion of the total system memory.</span></div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;  <span class="keywordflow">if</span> (runs_-&gt;AuxInfoNeedsToBeCached()) {</div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;    queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(runs_-&gt;aux_info_offset() + moof_head_, &amp;buf, &amp;buf_size);</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;    <span class="keywordflow">if</span> (buf_size &lt; runs_-&gt;aux_info_size())</div>
-<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;    *err = !runs_-&gt;CacheAuxInfo(buf, buf_size);</div>
-<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;    <span class="keywordflow">return</span> !*err;</div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;  }</div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;</div>
-<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  int64_t sample_offset = runs_-&gt;sample_offset() + moof_head_;</div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;  queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(sample_offset, &amp;buf, &amp;buf_size);</div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  <span class="keywordflow">if</span> (buf_size &lt; runs_-&gt;sample_size()) {</div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;    <span class="keywordflow">if</span> (sample_offset &lt; queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">head</a>()) {</div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Incorrect sample offset &quot;</span> &lt;&lt; sample_offset</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot; &lt; &quot;</span> &lt;&lt; queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">head</a>();</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;      *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    }</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;  }</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;  std::shared_ptr&lt;MediaSample&gt; stream_sample(</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;      <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">MediaSample::CopyFrom</a>(buf, runs_-&gt;sample_size(), runs_-&gt;is_keyframe()));</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;  <span class="keywordflow">if</span> (runs_-&gt;is_encrypted()) {</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    std::unique_ptr&lt;DecryptConfig&gt; decrypt_config = runs_-&gt;GetDecryptConfig();</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;    <span class="keywordflow">if</span> (!decrypt_config) {</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Missing decrypt config.&quot;</span>;</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;    }</div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;    <span class="keywordflow">if</span> (!decryptor_source_) {</div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;      <span class="comment">// If the demuxer does not have the decryptor_source_, store</span></div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;      <span class="comment">// decrypt_config so that the demuxed sample can be decrypted later.</span></div>
-<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;      stream_sample-&gt;set_decrypt_config(std::move(decrypt_config));</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;      stream_sample-&gt;set_is_encrypted(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!decryptor_source_-&gt;DecryptSampleBuffer(</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;                   decrypt_config.get(), stream_sample-&gt;writable_data(),</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;                   stream_sample-&gt;data_size())) {</div>
-<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;      *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot decrypt samples.&quot;</span>;</div>
-<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    }</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;  }</div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;</div>
-<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;  stream_sample-&gt;set_dts(runs_-&gt;dts());</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;  stream_sample-&gt;set_pts(runs_-&gt;cts());</div>
-<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;  stream_sample-&gt;set_duration(runs_-&gt;duration());</div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;</div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;  DVLOG(3) &lt;&lt; <span class="stringliteral">&quot;Pushing frame: &quot;</span></div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, key=&quot;</span> &lt;&lt; runs_-&gt;is_keyframe()</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dur=&quot;</span> &lt;&lt; runs_-&gt;duration()</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; runs_-&gt;dts()</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, cts=&quot;</span> &lt;&lt; runs_-&gt;cts()</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; runs_-&gt;sample_size();</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;  <span class="keywordflow">if</span> (!new_sample_cb_.Run(runs_-&gt;track_id(), stream_sample)) {</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;    *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the sample.&quot;</span>;</div>
-<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;  }</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;</div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;  runs_-&gt;AdvanceSample();</div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;}</div>
-<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;</div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;<span class="keywordtype">bool</span> MP4MediaParser::ReadAndDiscardMDATsUntil(<span class="keyword">const</span> int64_t offset) {</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;  <span class="keywordtype">bool</span> err = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;  <span class="keywordflow">while</span> (mdat_tail_ &lt; offset) {</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    <span class="keyword">const</span> uint8_t* buf;</div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;    <span class="keywordtype">int</span> size;</div>
-<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;    queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(mdat_tail_, &amp;buf, &amp;size);</div>
-<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;</div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;    FourCC type;</div>
-<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;    uint64_t box_sz;</div>
-<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">BoxReader::StartBox</a>(buf, size, &amp;type, &amp;box_sz, &amp;err))</div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;</div>
-<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;    mdat_tail_ += box_sz;</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;  }</div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;  queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">Trim</a>(std::min(mdat_tail_, offset));</div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;  <span class="keywordflow">return</span> !err;</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;}</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;<span class="keywordtype">void</span> MP4MediaParser::ChangeState(State new_state) {</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;  DVLOG(2) &lt;&lt; <span class="stringliteral">&quot;Changing state: &quot;</span> &lt;&lt; new_state;</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;  state_ = new_state;</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;}</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;</div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160;  DCHECK(!(*err));</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;  <span class="keyword">const</span> uint8_t* buf;</div>
+<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;  <span class="keywordtype">int</span> buf_size;</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;  queue_.Peek(&amp;buf, &amp;buf_size);</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;  <span class="keywordflow">if</span> (!buf_size)</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00680"></a><span class="lineno">  680</span>&#160;</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;  <span class="comment">// Skip this entire track if it is not audio nor video.</span></div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;  <span class="keywordflow">if</span> (!runs_-&gt;is_audio() &amp;&amp; !runs_-&gt;is_video())</div>
+<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;    runs_-&gt;AdvanceRun();</div>
+<div class="line"><a name="l00684"></a><span class="lineno">  684</span>&#160;</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;  <span class="comment">// Attempt to cache the auxiliary information first. Aux info is usually</span></div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;  <span class="comment">// placed in a contiguous block before the sample data, rather than being</span></div>
+<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;  <span class="comment">// interleaved. If we didn&#39;t cache it, this would require that we retain the</span></div>
+<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;  <span class="comment">// start of the segment buffer while reading samples. Aux info is typically</span></div>
+<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;  <span class="comment">// quite small compared to sample data, so this pattern is useful on</span></div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;  <span class="comment">// memory-constrained devices where the source buffer consumes a substantial</span></div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;  <span class="comment">// portion of the total system memory.</span></div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;  <span class="keywordflow">if</span> (runs_-&gt;AuxInfoNeedsToBeCached()) {</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;    queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(runs_-&gt;aux_info_offset() + moof_head_, &amp;buf, &amp;buf_size);</div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;    <span class="keywordflow">if</span> (buf_size &lt; runs_-&gt;aux_info_size())</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;    *err = !runs_-&gt;CacheAuxInfo(buf, buf_size);</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;    <span class="keywordflow">return</span> !*err;</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;  }</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;  int64_t sample_offset = runs_-&gt;sample_offset() + moof_head_;</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;  queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(sample_offset, &amp;buf, &amp;buf_size);</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;  <span class="keywordflow">if</span> (buf_size &lt; runs_-&gt;sample_size()) {</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;    <span class="keywordflow">if</span> (sample_offset &lt; queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">head</a>()) {</div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Incorrect sample offset &quot;</span> &lt;&lt; sample_offset</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot; &lt; &quot;</span> &lt;&lt; queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">head</a>();</div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;      *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;    }</div>
+<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  }</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  std::shared_ptr&lt;MediaSample&gt; stream_sample(</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;      <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">MediaSample::CopyFrom</a>(buf, runs_-&gt;sample_size(), runs_-&gt;is_keyframe()));</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;  <span class="keywordflow">if</span> (runs_-&gt;is_encrypted()) {</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;    std::unique_ptr&lt;DecryptConfig&gt; decrypt_config = runs_-&gt;GetDecryptConfig();</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    <span class="keywordflow">if</span> (!decrypt_config) {</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;      *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Missing decrypt config.&quot;</span>;</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    }</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    <span class="keywordflow">if</span> (!decryptor_source_) {</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;      <span class="comment">// If the demuxer does not have the decryptor_source_, store</span></div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;      <span class="comment">// decrypt_config so that the demuxed sample can be decrypted later.</span></div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;      stream_sample-&gt;set_decrypt_config(std::move(decrypt_config));</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      stream_sample-&gt;set_is_encrypted(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!decryptor_source_-&gt;DecryptSampleBuffer(</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;                   decrypt_config.get(), stream_sample-&gt;writable_data(),</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;                   stream_sample-&gt;data_size())) {</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;      *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot decrypt samples.&quot;</span>;</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;    }</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;  }</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;  stream_sample-&gt;set_dts(runs_-&gt;dts());</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;  stream_sample-&gt;set_pts(runs_-&gt;cts());</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;  stream_sample-&gt;set_duration(runs_-&gt;duration());</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;  DVLOG(3) &lt;&lt; <span class="stringliteral">&quot;Pushing frame: &quot;</span></div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, key=&quot;</span> &lt;&lt; runs_-&gt;is_keyframe()</div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dur=&quot;</span> &lt;&lt; runs_-&gt;duration()</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; runs_-&gt;dts()</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, cts=&quot;</span> &lt;&lt; runs_-&gt;cts()</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; runs_-&gt;sample_size();</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;  <span class="keywordflow">if</span> (!new_sample_cb_.Run(runs_-&gt;track_id(), stream_sample)) {</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the sample.&quot;</span>;</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;  }</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;  runs_-&gt;AdvanceSample();</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;}</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;<span class="keywordtype">bool</span> MP4MediaParser::ReadAndDiscardMDATsUntil(<span class="keyword">const</span> int64_t offset) {</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;  <span class="keywordtype">bool</span> err = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;  <span class="keywordflow">while</span> (mdat_tail_ &lt; offset) {</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    <span class="keyword">const</span> uint8_t* buf;</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    <span class="keywordtype">int</span> size;</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;    queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(mdat_tail_, &amp;buf, &amp;size);</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    FourCC type;</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    uint64_t box_sz;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">BoxReader::StartBox</a>(buf, size, &amp;type, &amp;box_sz, &amp;err))</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    mdat_tail_ += box_sz;</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;  }</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;  queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">Trim</a>(std::min(mdat_tail_, offset));</div>
+<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;  <span class="keywordflow">return</span> !err;</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;}</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;<span class="keywordtype">void</span> MP4MediaParser::ChangeState(State new_state) {</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;  DVLOG(2) &lt;&lt; <span class="stringliteral">&quot;Changing state: &quot;</span> &lt;&lt; new_state;</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;  state_ = new_state;</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;}</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a1dfd11c891dd3b3171002cbc484eacdd"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">shaka::media::OffsetByteQueue::head</a></div><div class="ttdeci">int64_t head()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d34/offset__byte__queue_8h_source.html#l00052">offset_byte_queue.h:52</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a68832e85b25a9b543e54033bb70c4df6"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">shaka::media::OffsetByteQueue::PeekAt</a></div><div class="ttdeci">void PeekAt(int64_t offset, const uint8_t **buf, int *size)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1a/offset__byte__queue_8cc_source.html#l00041">offset_byte_queue.cc:41</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1File_html_ad1e9fc834093c8b35c0f8c1957974fda"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#ad1e9fc834093c8b35c0f8c1957974fda">shaka::media::File::OpenWithNoBuffering</a></div><div class="ttdeci">static File * OpenWithNoBuffering(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00152">file.cc:152</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_a6f26e0d76aeda601fa87190901de27ea"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#a6f26e0d76aeda601fa87190901de27ea">shaka::media::mp4::MP4MediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00132">mp4_media_parser.cc:132</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a77b9a12145dad80df95845bd2b66b6a8"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">shaka::media::OffsetByteQueue::Trim</a></div><div class="ttdeci">bool Trim(int64_t max_offset)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1a/offset__byte__queue_8cc_source.html#l00051">offset_byte_queue.cc:51</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_a4105cdbe5ece03071a17c06fb27699b0"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#a4105cdbe5ece03071a17c06fb27699b0">shaka::media::mp4::MP4MediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00139">mp4_media_parser.cc:139</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_aca6ecdac6ebc131d3626b765f64cb2de"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(const std::vector&lt; uint8_t &gt; &amp;pssh_box)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_af0ec1b44528a2997c0d548bee47862cf"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">shaka::media::mp4::MP4MediaParser::LoadMoov</a></div><div class="ttdeci">bool LoadMoov(const std::string &amp;file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00173">mp4_media_parser.cc:173</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_ad8975dbb21747ff32c8604f5489bf5c9"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_acc87b9752a7f6e8c739109acbc02b69d"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#acc87b9752a7f6e8c739109acbc02b69d">shaka::media::mp4::MP4MediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00109">mp4_media_parser.cc:109</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptorSource_html"><div class="ttname"><a href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">shaka::media::DecryptorSource</a></div><div class="ttdoc">DecryptorSource wraps KeySource and is responsible for decryptor management. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d7d/decryptor__source_8h_source.html#l00022">decryptor_source.h:22</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1BoxReader_html_a6bafd9cd95a97c4c1475d1806d602ae2"><div class="ttname"><a href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">shaka::media::mp4::BoxReader::StartBox</a></div><div class="ttdeci">static bool StartBox(const uint8_t *buf, const size_t buf_size, FourCC *type, uint64_t *box_size, bool *err) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00054">box_reader.cc:54</a></div></div>
@@ -895,7 +886,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 19 2017 18:34:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 20 2017 21:19:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

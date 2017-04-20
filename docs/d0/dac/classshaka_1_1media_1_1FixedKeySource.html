@@ -111,12 +111,8 @@ Inheritance diagram for shaka::media::FixedKeySource:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">KeySource implementation overrides.</div></td></tr>
-<tr class="memitem:a358b0955ecec61e6ce23611e2772265b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a358b0955ecec61e6ce23611e2772265b">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_box) override</td></tr>
-<tr class="separator:a358b0955ecec61e6ce23611e2772265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab2d8d84067ae5e778e3c242fec6dcb1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#aab2d8d84067ae5e778e3c242fec6dcb1">FetchKeys</a> (const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;key_ids) override</td></tr>
-<tr class="separator:aab2d8d84067ae5e778e3c242fec6dcb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4dd894ee7e68340771d34bb81dce0ae5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a4dd894ee7e68340771d34bb81dce0ae5">FetchKeys</a> (uint32_t asset_id) override</td></tr>
-<tr class="separator:a4dd894ee7e68340771d34bb81dce0ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd8641873f213b826fc32e1c0026041"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a5cd8641873f213b826fc32e1c0026041">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data) override</td></tr>
+<tr class="separator:a5cd8641873f213b826fc32e1c0026041"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a267d1f36d1c015fd5e8c20b93f270d0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a267d1f36d1c015fd5e8c20b93f270d0a">GetKey</a> (TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:a267d1f36d1c015fd5e8c20b93f270d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58f9eae1ce9148a82f70118879b6c3f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a58f9eae1ce9148a82f70118879b6c3f1">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
@@ -215,11 +211,11 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00087">87</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00077">77</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a358b0955ecec61e6ce23611e2772265b"></a>
+<a class="anchor" id="a5cd8641873f213b826fc32e1c0026041"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -229,9 +225,19 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::FixedKeySource::FetchKeys </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>pssh_box</em></td><td>)</td>
+          <td class="paramtype">EmeInitDataType&#160;</td>
+          <td class="paramname"><em>init_data_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>init_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -240,90 +246,19 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Fetch keys for CENC from the key server. </p>
+<p>Fetch keys based on the specified encrypted media init data. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pssh_box</td><td>The entire PSSH box for the content to be decrypted </td></tr>
+    <tr><td class="paramname">init_data_type</td><td>specifies the encrypted media init data type. </td></tr>
+    <tr><td class="paramname">init_data</td><td>contains the init data. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aca6ecdac6ebc131d3626b765f64cb2de">shaka::media::KeySource</a>.</p>
+<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource</a>.</p>
 
 <p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00018">18</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aab2d8d84067ae5e778e3c242fec6dcb1"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::FixedKeySource::FetchKeys </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>key_ids</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Fetch keys for CENC from the key server. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key_ids</td><td>the key IDs for the keys to fetch from the server. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
-
-<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a42df88c1cdb415e7844eea18222692bb">shaka::media::KeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00023">23</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4dd894ee7e68340771d34bb81dce0ae5"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::FixedKeySource::FetchKeys </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>asset_id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Fetch keys for WVM decryption from the key server. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">asset_id</td><td>is the Widevine Classic asset ID for the content to be decrypted. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
-
-<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ad1c8f986a88647813f0e43a9b80d057e">shaka::media::KeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00029">29</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -377,7 +312,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -424,7 +359,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00034">34</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00024">24</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -471,7 +406,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00041">41</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -482,7 +417,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 19 2017 18:34:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 20 2017 21:19:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
