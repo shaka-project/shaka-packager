@@ -821,7 +821,7 @@ TEST_F(WebMClusterParserTest, ParseVP8) {
   ASSERT_EQ(2u, streams_from_init_event_.size());
   EXPECT_EQ(kStreamAudio, streams_from_init_event_[0]->stream_type());
   EXPECT_EQ(kStreamVideo, streams_from_init_event_[1]->stream_type());
-  EXPECT_EQ("vp08.01.00.08.01.01.00.00",
+  EXPECT_EQ("vp08.01.10.08.01.02.02.02.00",
             streams_from_init_event_[1]->codec_string());
 }
 
@@ -835,7 +835,7 @@ TEST_F(WebMClusterParserTest, ParseVP9) {
   ASSERT_EQ(2u, streams_from_init_event_.size());
   EXPECT_EQ(kStreamAudio, streams_from_init_event_[0]->stream_type());
   EXPECT_EQ(kStreamVideo, streams_from_init_event_[1]->stream_type());
-  EXPECT_EQ("vp09.03.00.12.00.03.00.00",
+  EXPECT_EQ("vp09.03.10.12.03.02.02.02.00",
             streams_from_init_event_[1]->codec_string());
 }
 

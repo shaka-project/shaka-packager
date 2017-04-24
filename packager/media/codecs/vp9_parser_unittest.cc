@@ -76,7 +76,7 @@ TEST(VP9ParserTest, KeyframeChroma420) {
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
-  EXPECT_EQ("vp09.00.00.08.00.01.00.00",
+  EXPECT_EQ("vp09.00.10.08.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
   EXPECT_THAT(frames,
               ElementsAre(EqualVPxFrame(arraysize(kData), 18u, true, 32u, 8u)));
@@ -98,7 +98,7 @@ TEST(VP9ParserTest, KeyframeProfile1Chroma422) {
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
-  EXPECT_EQ("vp09.01.00.08.00.02.00.00",
+  EXPECT_EQ("vp09.01.10.08.02.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
   EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 18u, true,
                                                 160u, 90u)));
@@ -120,7 +120,7 @@ TEST(VP9ParserTest, KeyframeProfile2Chroma420) {
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
-  EXPECT_EQ("vp09.02.00.10.00.01.00.00",
+  EXPECT_EQ("vp09.02.10.10.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
   EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 18u, true,
                                                 160u, 90u)));
@@ -142,7 +142,7 @@ TEST(VP9ParserTest, KeyframeProfile3Chroma444) {
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
-  EXPECT_EQ("vp09.03.00.12.00.03.00.00",
+  EXPECT_EQ("vp09.03.10.12.03.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
   EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 19u, true, 160u, 90u)));
 }
@@ -164,7 +164,7 @@ TEST(VP9ParserTest, Intra) {
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
-  EXPECT_EQ("vp09.00.00.08.00.01.00.00",
+  EXPECT_EQ("vp09.00.10.08.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP9));
   EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 19u, false,
                                                 352u, 288u)));

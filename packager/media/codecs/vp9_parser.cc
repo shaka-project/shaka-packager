@@ -160,30 +160,66 @@ bool ReadSyncCode(BitReader* reader) {
   return sync_code == VP9_SYNC_CODE;
 }
 
-VPCodecConfigurationRecord::ColorSpace GetColorSpace(uint8_t color_space) {
+void SetColorAttributes(uint8_t bit_depth,
+                        uint8_t color_space,
+                        VPCodecConfigurationRecord* codec_config) {
   switch (color_space) {
     case VPX_COLOR_SPACE_UNKNOWN:
-      return VPCodecConfigurationRecord::COLOR_SPACE_UNSPECIFIED;
+      codec_config->set_color_primaries(AVCOL_PRI_UNSPECIFIED);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_UNSPECIFIED);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_UNSPECIFIED);
+      break;
     case VPX_COLOR_SPACE_BT_601:
-      return VPCodecConfigurationRecord::COLOR_SPACE_BT_601;
+      // Don't know if it is 525 line or 625 line.
+      codec_config->set_color_primaries(AVCOL_PRI_UNSPECIFIED);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_UNSPECIFIED);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_SMPTE170M);
+      break;
     case VPX_COLOR_SPACE_BT_709:
-      return VPCodecConfigurationRecord::COLOR_SPACE_BT_709;
+      codec_config->set_color_primaries(AVCOL_PRI_BT709);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_BT709);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_BT709);
+      break;
     case VPX_COLOR_SPACE_SMPTE_170:
-      return VPCodecConfigurationRecord::COLOR_SPACE_SMPTE_170;
+      codec_config->set_color_primaries(AVCOL_PRI_SMPTE170M);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_SMPTE170M);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_SMPTE170M);
+      break;
     case VPX_COLOR_SPACE_SMPTE_240:
-      return VPCodecConfigurationRecord::COLOR_SPACE_SMPTE_240;
+      codec_config->set_color_primaries(AVCOL_PRI_SMPTE240M);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_SMPTE240M);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_SMPTE240M);
+      break;
     case VPX_COLOR_SPACE_BT_2020:
+      codec_config->set_color_primaries(AVCOL_PRI_BT2020);
       // VP9 does not specify if it is in the form of “constant luminance” or
       // “non-constant luminance”. As such, application should rely on the
       // signaling outside of VP9 bitstream. If there is no such signaling,
       // application may assume non-constant luminance for BT.2020.
-      return VPCodecConfigurationRecord::
-          COLOR_SPACE_BT_2020_NON_CONSTANT_LUMINANCE;
+      codec_config->set_matrix_coefficients(AVCOL_SPC_BT2020_NCL);
+      switch (bit_depth) {
+        case 10:
+          codec_config->set_transfer_characteristics(AVCOL_TRC_BT2020_10);
+          break;
+        case 12:
+          codec_config->set_transfer_characteristics(AVCOL_TRC_BT2020_12);
+          break;
+        default:
+          codec_config->set_transfer_characteristics(AVCOL_TRC_UNSPECIFIED);
+          break;
+      }
+      break;
     case VPX_COLOR_SPACE_SRGB:
-      return VPCodecConfigurationRecord::COLOR_SPACE_SRGB;
+      codec_config->set_color_primaries(AVCOL_PRI_UNSPECIFIED);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_RGB);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_UNSPECIFIED);
+      break;
     default:
       LOG(WARNING) << "Unknown color space: " << static_cast<int>(color_space);
-      return VPCodecConfigurationRecord::COLOR_SPACE_UNSPECIFIED;
+      codec_config->set_color_primaries(AVCOL_PRI_UNSPECIFIED);
+      codec_config->set_matrix_coefficients(AVCOL_SPC_UNSPECIFIED);
+      codec_config->set_transfer_characteristics(AVCOL_TRC_UNSPECIFIED);
+      break;
   }
 }
 
@@ -219,7 +255,7 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
 
   uint8_t color_space;
   RCHECK(reader->ReadBits(3, &color_space));
-  codec_config->set_color_space(GetColorSpace(color_space));
+  SetColorAttributes(bit_depth, color_space, codec_config);
 
   bool yuv_full_range = false;
   auto chroma_subsampling = VPCodecConfigurationRecord::CHROMA_444;
@@ -261,7 +297,8 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
 
   VLOG(3) << "\n profile " << static_cast<int>(codec_config->profile())
           << "\n bit depth " << static_cast<int>(codec_config->bit_depth())
-          << "\n color space " << static_cast<int>(codec_config->color_space())
+          << "\n matrix coefficients "
+          << static_cast<int>(codec_config->matrix_coefficients())
           << "\n full_range "
           << static_cast<int>(codec_config->video_full_range_flag())
           << "\n chroma subsampling "

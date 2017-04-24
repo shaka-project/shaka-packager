@@ -43,7 +43,7 @@ TEST(VP8ParserTest, Keyframe) {
   VP8Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
-  EXPECT_EQ("vp08.02.00.08.01.01.00.00",
+  EXPECT_EQ("vp08.02.10.08.01.02.02.02.00",
             parser.codec_config().GetCodecString(kCodecVP8));
   EXPECT_THAT(frames, ElementsAre(EqualVPxFrame(arraysize(kData), 22u, true,
                                                 320u, 240u)));

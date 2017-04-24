@@ -154,10 +154,6 @@ bool VP8Parser::Parse(const uint8_t* data,
   writable_codec_config()->set_bit_depth(8);
   writable_codec_config()->set_chroma_subsampling(
       VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);
-  // VP8 uses YCrCb color space defined in ITU-R_BT.601.
-  // http://tools.ietf.org/html/rfc6386 Section 9.2.
-  writable_codec_config()->set_color_space(
-      VPCodecConfigurationRecord::COLOR_SPACE_BT_601);
 
   VPxFrameInfo vpx_frame;
   vpx_frame.frame_size = data_size;

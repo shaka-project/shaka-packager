@@ -1446,9 +1446,12 @@ bool CodecConfiguration::ReadWriteInternal(BoxBuffer* buffer) {
   // VPCodecConfiguration box inherits from FullBox instead of Box. The extra 4
   // bytes are handled here.
   if (box_type == FOURCC_vpcC) {
-    uint32_t version_flags = 0;
+    // Only version 1 box is supported.
+    uint8_t vpcc_version = 1;
+    uint32_t version_flags = vpcc_version << 24;
     RCHECK(buffer->ReadWriteUInt32(&version_flags));
-    RCHECK(version_flags == 0);
+    vpcc_version = version_flags >> 24;
+    RCHECK(vpcc_version == 1);
   }
 
   if (buffer->Reading()) {
