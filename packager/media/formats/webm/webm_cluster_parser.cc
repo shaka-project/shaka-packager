@@ -30,6 +30,7 @@ WebMClusterParser::WebMClusterParser(
     int64_t timecode_scale,
     std::shared_ptr<AudioStreamInfo> audio_stream_info,
     std::shared_ptr<VideoStreamInfo> video_stream_info,
+    const VPCodecConfigurationRecord& vp_config,
     int64_t audio_default_duration,
     int64_t video_default_duration,
     const WebMTracksParser::TextTracks& text_tracks,
@@ -39,9 +40,11 @@ WebMClusterParser::WebMClusterParser(
     const MediaParser::NewSampleCB& new_sample_cb,
     const MediaParser::InitCB& init_cb,
     KeySource* decryption_key_source)
-    : timecode_multiplier_(timecode_scale / 1000.0),
+    : timecode_multiplier_(timecode_scale /
+                           static_cast<double>(kMicrosecondsPerMillisecond)),
       audio_stream_info_(audio_stream_info),
       video_stream_info_(video_stream_info),
+      vp_config_(vp_config),
       ignored_tracks_(ignored_tracks),
       audio_encryption_key_id_(audio_encryption_key_id),
       video_encryption_key_id_(video_encryption_key_id),
@@ -441,15 +444,11 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
           return false;
         }
 
-        VPCodecConfigurationRecord codec_config;
-        if (!video_stream_info_->codec_config().empty())
-          codec_config.ParseWebM(video_stream_info_->codec_config());
-        codec_config.MergeFrom(vpx_parser->codec_config());
-
+        vp_config_.MergeFrom(vpx_parser->codec_config());
         video_stream_info_->set_codec_string(
-            codec_config.GetCodecString(video_stream_info_->codec()));
+            vp_config_.GetCodecString(video_stream_info_->codec()));
         std::vector<uint8_t> config_serialized;
-        codec_config.WriteMP4(&config_serialized);
+        vp_config_.WriteMP4(&config_serialized);
         video_stream_info_->set_codec_config(config_serialized);
         streams.push_back(video_stream_info_);
         init_cb_.Run(streams);

@@ -76,5 +76,90 @@ TEST(VPCodecConfigurationRecordTest, WriteWebM) {
             data);
 }
 
+TEST(VPCodecConfigurationRecordTest, SetAttributes) {
+  VPCodecConfigurationRecord vp_config;
+  // None of the members are set.
+  EXPECT_FALSE(vp_config.is_profile_set());
+  EXPECT_FALSE(vp_config.is_level_set());
+  EXPECT_FALSE(vp_config.is_bit_depth_set());
+  EXPECT_FALSE(vp_config.is_chroma_subsampling_set());
+  EXPECT_FALSE(vp_config.is_video_full_range_flag_set());
+  EXPECT_FALSE(vp_config.is_color_primaries_set());
+  EXPECT_FALSE(vp_config.is_transfer_characteristics_set());
+  EXPECT_FALSE(vp_config.is_matrix_coefficients_set());
+
+  const uint8_t kProfile = 2;
+  vp_config.set_profile(kProfile);
+  EXPECT_TRUE(vp_config.is_profile_set());
+  EXPECT_EQ(kProfile, vp_config.profile());
+}
+
+TEST(VPCodecConfigurationRecordTest, SetChromaSubsampling) {
+  VPCodecConfigurationRecord vp_config;
+  vp_config.SetChromaSubsampling(1, 1);
+  EXPECT_TRUE(vp_config.is_chroma_subsampling_set());
+  EXPECT_FALSE(vp_config.is_chroma_location_set());
+  EXPECT_EQ(VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA,
+            vp_config.chroma_subsampling());
+
+  vp_config.SetChromaLocation(VPCodecConfigurationRecord::kLeftCollocated,
+                              VPCodecConfigurationRecord::kHalf);
+  EXPECT_TRUE(vp_config.is_chroma_location_set());
+  EXPECT_EQ(VPCodecConfigurationRecord::CHROMA_420_VERTICAL,
+            vp_config.chroma_subsampling());
+}
+
+TEST(VPCodecConfigurationRecordTest, Merge) {
+  const uint8_t kProfile = 2;
+  const uint8_t kLevel = 20;
+
+  VPCodecConfigurationRecord vp_config;
+  vp_config.set_profile(kProfile);
+
+  VPCodecConfigurationRecord vp_config2;
+  vp_config2.set_profile(kProfile - 1);
+  vp_config2.set_level(kLevel);
+
+  vp_config.MergeFrom(vp_config2);
+  EXPECT_TRUE(vp_config.is_profile_set());
+  EXPECT_TRUE(vp_config.is_level_set());
+  EXPECT_FALSE(vp_config.is_bit_depth_set());
+  EXPECT_FALSE(vp_config.is_chroma_subsampling_set());
+  EXPECT_FALSE(vp_config.is_video_full_range_flag_set());
+  EXPECT_FALSE(vp_config.is_color_primaries_set());
+  EXPECT_FALSE(vp_config.is_transfer_characteristics_set());
+  EXPECT_FALSE(vp_config.is_matrix_coefficients_set());
+
+  // Profile is set in the original config, so not changed.
+  EXPECT_EQ(kProfile, vp_config.profile());
+  // Merge level from the other config.
+  EXPECT_EQ(kLevel, vp_config.level());
+}
+
+TEST(VPCodecConfigurationRecordTest, MergeChromaSubsampling) {
+  VPCodecConfigurationRecord vp_config;
+  vp_config.SetChromaSubsampling(
+      VPCodecConfigurationRecord::CHROMA_420_VERTICAL);
+
+  VPCodecConfigurationRecord vp_config2;
+  vp_config2.SetChromaLocation(VPCodecConfigurationRecord::kLeftCollocated,
+                               VPCodecConfigurationRecord::kTopCollocated);
+
+  vp_config.MergeFrom(vp_config2);
+  EXPECT_FALSE(vp_config.is_profile_set());
+  EXPECT_FALSE(vp_config.is_level_set());
+  EXPECT_FALSE(vp_config.is_bit_depth_set());
+  EXPECT_TRUE(vp_config.is_chroma_subsampling_set());
+  EXPECT_TRUE(vp_config.is_chroma_location_set());
+  EXPECT_FALSE(vp_config.is_video_full_range_flag_set());
+  EXPECT_FALSE(vp_config.is_color_primaries_set());
+  EXPECT_FALSE(vp_config.is_transfer_characteristics_set());
+  EXPECT_FALSE(vp_config.is_matrix_coefficients_set());
+
+  EXPECT_EQ(VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA,
+            vp_config.chroma_subsampling());
+  EXPECT_EQ(AVCHROMA_LOC_TOPLEFT, vp_config.chroma_location());
+}
+
 }  // namespace media
 }  // namespace shaka

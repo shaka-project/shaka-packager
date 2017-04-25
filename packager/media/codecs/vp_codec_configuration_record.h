@@ -121,6 +121,34 @@ enum AVColorSpace {
   AVCOL_SPC_NB
 };
 
+///  Location of chroma samples.
+///
+///  Illustration showing the location of the first (top left) chroma sample of
+///  the image, the left shows only luma, the right shows the location of the
+///  chroma sample, the 2 could be imagined to overlay each other but are drawn
+///  separately due to limitations of ASCII
+///
+///                 1st 2nd      1st 2nd horizontal luma sample positions
+///                  v   v        v   v
+///                  ______        ______
+/// 1st luma line > |X   X ...   |3 4 X ...   X are luma samples,
+///                 |            |1 2         1-6 are possible chroma positions
+/// 2nd luma line > |X   X ...   |5 6 X ...   0 is undefined/unknown position
+enum AVChromaLocation {
+  AVCHROMA_LOC_UNSPECIFIED = 0,
+  /// MPEG-2/4 4:2:0, H.264 default for 4:2:0
+  AVCHROMA_LOC_LEFT = 1,
+  /// MPEG-1 4:2:0, JPEG 4:2:0, H.263 4:2:0
+  AVCHROMA_LOC_CENTER = 2,
+  /// ITU-R 601, SMPTE 274M 296M S314M(DV 4:1:1), mpeg2 4:2:2
+  AVCHROMA_LOC_TOPLEFT = 3,
+  AVCHROMA_LOC_TOP = 4,
+  AVCHROMA_LOC_BOTTOMLEFT = 5,
+  AVCHROMA_LOC_BOTTOM = 6,
+  /// Not part of ABI
+  AVCHROMA_LOC_NB
+};
+
 /// Class for parsing or writing VP codec configuration record.
 class VPCodecConfigurationRecord {
  public:
@@ -130,6 +158,12 @@ class VPCodecConfigurationRecord {
     CHROMA_422 = 2,
     CHROMA_444 = 3,
     CHROMA_440 = 4,
+  };
+  enum ChromaSitingValues {
+    kUnspecified = 0,
+    kLeftCollocated = 1,
+    kTopCollocated = kLeftCollocated,
+    kHalf = 2,
   };
 
   VPCodecConfigurationRecord();
@@ -164,16 +198,17 @@ class VPCodecConfigurationRecord {
   /// @return The codec string.
   std::string GetCodecString(Codec codec) const;
 
-  // Merges the values from the given configuration.  If there are values in
-  // both |*this| and |other|, the values in |other| take precedence.
+  /// Merges the values from the given configuration.  If there are values in
+  /// both |*this| and |other|, |*this| is not updated.
   void MergeFrom(const VPCodecConfigurationRecord& other);
+
+  void SetChromaSubsampling(uint8_t subsampling_x, uint8_t subsampling_y);
+  void SetChromaSubsampling(ChromaSubsampling chroma_subsampling);
+  void SetChromaLocation(uint8_t chroma_siting_x, uint8_t chroma_siting_y);
 
   void set_profile(uint8_t profile) { profile_ = profile; }
   void set_level(uint8_t level) { level_ = level; }
   void set_bit_depth(uint8_t bit_depth) { bit_depth_ = bit_depth; }
-  void set_chroma_subsampling(uint8_t chroma_subsampling) {
-    chroma_subsampling_ = chroma_subsampling;
-  }
   void set_video_full_range_flag(bool video_full_range_flag) {
     video_full_range_flag_ = video_full_range_flag;
   }
@@ -185,6 +220,28 @@ class VPCodecConfigurationRecord {
   }
   void set_matrix_coefficients(uint8_t matrix_coefficients) {
     matrix_coefficients_ = matrix_coefficients;
+  }
+
+  bool is_profile_set() const { return static_cast<bool>(profile_); }
+  bool is_level_set() const { return static_cast<bool>(level_); }
+  bool is_bit_depth_set() const { return static_cast<bool>(bit_depth_); }
+  bool is_chroma_subsampling_set() const {
+    return static_cast<bool>(chroma_subsampling_);
+  }
+  bool is_video_full_range_flag_set() const {
+    return static_cast<bool>(video_full_range_flag_);
+  }
+  bool is_color_primaries_set() const {
+    return static_cast<bool>(color_primaries_);
+  }
+  bool is_transfer_characteristics_set() const {
+    return static_cast<bool>(transfer_characteristics_);
+  }
+  bool is_matrix_coefficients_set() const {
+    return static_cast<bool>(matrix_coefficients_);
+  }
+  bool is_chroma_location_set() const {
+    return static_cast<bool>(chroma_location_);
   }
 
   uint8_t profile() const { return profile_.value_or(0); }
@@ -205,8 +262,13 @@ class VPCodecConfigurationRecord {
   uint8_t matrix_coefficients() const {
     return matrix_coefficients_.value_or(AVCOL_SPC_UNSPECIFIED);
   }
+  uint8_t chroma_location() const {
+    return chroma_location_ ? *chroma_location_ : AVCHROMA_LOC_UNSPECIFIED;
+  }
 
  private:
+  void UpdateChromaSubsamplingIfNeeded();
+
   base::Optional<uint8_t> profile_;
   base::Optional<uint8_t> level_;
   base::Optional<uint8_t> bit_depth_;
@@ -217,6 +279,9 @@ class VPCodecConfigurationRecord {
   base::Optional<uint8_t> matrix_coefficients_;
   std::vector<uint8_t> codec_initialization_data_;
 
+  // Not in the decoder config. It is there to help determine chroma subsampling
+  // format.
+  base::Optional<uint8_t> chroma_location_;
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the internal data
   // is small, the performance impact is minimal.

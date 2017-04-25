@@ -252,22 +252,22 @@ class PackagerAppTest(unittest.TestCase):
     self.packager.Package(
         self._GetStreams(['video'],
                          output_format='webm',
-                         test_files=['bear-640x360-vp9-altref.webm']),
+                         test_files=['bear-320x180-vp9-altref.webm']),
         self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-vp9-altref-enc-golden.webm')
+    self._DiffGold(self.output[0], 'bear-320x180-vp9-altref-enc-golden.webm')
     self._VerifyDecryption(self.output[0],
-                           'bear-640x360-vp9-altref-dec-golden.webm')
+                           'bear-320x180-vp9-altref-dec-golden.webm')
 
   def testPackageWithWebmVp9FullSampleEncryption(self):
     self.packager.Package(
         self._GetStreams(['video'],
                          output_format='webm',
-                         test_files=['bear-640x360-vp9-altref.webm']),
+                         test_files=['bear-320x180-vp9-altref.webm']),
         self._GetFlags(encryption=True, vp9_subsample_encryption=False))
     self._DiffGold(self.output[0],
-                   'bear-640x360-vp9-fullsample-enc-golden.webm')
+                   'bear-320x180-vp9-fullsample-enc-golden.webm')
     self._VerifyDecryption(self.output[0],
-                           'bear-640x360-vp9-altref-dec-golden.webm')
+                           'bear-320x180-vp9-altref-dec-golden.webm')
 
   def testPackageAvcTsWithEncryption(self):
     # Currently we only support live packaging for ts.

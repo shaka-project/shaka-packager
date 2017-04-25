@@ -152,7 +152,7 @@ bool VP8Parser::Parse(const uint8_t* data,
   // VP8 uses an 8-bit YUV 4:2:0 format.
   // http://tools.ietf.org/html/rfc6386 Section 2.
   writable_codec_config()->set_bit_depth(8);
-  writable_codec_config()->set_chroma_subsampling(
+  writable_codec_config()->SetChromaSubsampling(
       VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);
 
   VPxFrameInfo vpx_frame;

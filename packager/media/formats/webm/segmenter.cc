@@ -255,11 +255,26 @@ Status Segmenter::InitializeVideoTrack(const VideoStreamInfo* info,
                     "Unable to parse VP9 codec configuration");
     }
 
+    mkvmuxer::Colour colour;
+    if (vp_config.matrix_coefficients() != AVCOL_SPC_UNSPECIFIED) {
+      colour.set_matrix_coefficients(vp_config.matrix_coefficients());
+    }
+    if (vp_config.transfer_characteristics() != AVCOL_TRC_UNSPECIFIED) {
+      colour.set_transfer_characteristics(vp_config.transfer_characteristics());
+    }
+    if (vp_config.color_primaries() != AVCOL_PRI_UNSPECIFIED) {
+      colour.set_primaries(vp_config.color_primaries());
+    }
+    if (!track->SetColour(colour)) {
+      return Status(error::INTERNAL_ERROR,
+                    "Failed to setup color element for VPx streams");
+    }
+
     std::vector<uint8_t> codec_config;
     vp_config.WriteWebM(&codec_config);
     if (!track->SetCodecPrivate(codec_config.data(), codec_config.size())) {
       return Status(error::INTERNAL_ERROR,
-                    "Private codec data required for VP9 streams");
+                    "Private codec data required for VPx streams");
     }
   } else {
     LOG(ERROR) << "Only VP8 and VP9 video codecs are supported.";

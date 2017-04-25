@@ -45,12 +45,17 @@ void WebMVideoClient::Reset() {
   display_height_ = -1;
   display_unit_ = -1;
   alpha_mode_ = -1;
+
+  vp_config_ = VPCodecConfigurationRecord();
+  chroma_subsampling_horz_ = -1;
+  chroma_subsampling_vert_ = -1;
+  chroma_siting_horz_ = -1;
+  chroma_siting_vert_ = -1;
 }
 
 std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     int64_t track_num,
     const std::string& codec_id,
-    const std::vector<uint8_t>& codec_private,
     bool is_encrypted) {
   Codec video_codec = kUnknownCodec;
   if (codec_id == "V_VP8") {
@@ -110,12 +115,33 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
 
   return std::make_shared<VideoStreamInfo>(
       track_num, kWebMTimeScale, 0, video_codec, H26xStreamFormat::kUnSpecified,
-      std::string(), codec_private.data(), codec_private.size(),
-      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, std::string(),
-      is_encrypted);
+      std::string(), nullptr, 0, width_after_crop, height_after_crop, sar_x,
+      sar_y, 0, 0, std::string(), is_encrypted);
+}
+
+const VPCodecConfigurationRecord& WebMVideoClient::GetVpCodecConfig(
+    const std::vector<uint8_t>& codec_private) {
+  vp_config_.ParseWebM(codec_private);
+  if (chroma_subsampling_horz_ != -1 && chroma_subsampling_vert_ != -1) {
+    vp_config_.SetChromaSubsampling(chroma_subsampling_horz_,
+                                    chroma_subsampling_vert_);
+  }
+  if (chroma_siting_horz_ != -1 && chroma_siting_vert_ != -1) {
+    vp_config_.SetChromaLocation(chroma_siting_horz_, chroma_siting_vert_);
+  }
+  return vp_config_;
+}
+
+WebMParserClient* WebMVideoClient::OnListStart(int id) {
+  return id == kWebMIdColor ? this : WebMParserClient::OnListStart(id);
+}
+
+bool WebMVideoClient::OnListEnd(int id) {
+  return id == kWebMIdColor ? true : WebMParserClient::OnListEnd(id);
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {
+  VPCodecConfigurationRecord vp_config;
   int64_t* dst = NULL;
 
   switch (id) {
@@ -149,6 +175,41 @@ bool WebMVideoClient::OnUInt(int id, int64_t val) {
     case kWebMIdAlphaMode:
       dst = &alpha_mode_;
       break;
+    case kWebMIdColorMatrixCoefficients:
+      vp_config.set_matrix_coefficients(static_cast<uint8_t>(val));
+      break;
+    case kWebMIdColorBitsPerChannel:
+      vp_config.set_bit_depth(static_cast<uint8_t>(val));
+      break;
+    case kWebMIdColorChromaSubsamplingHorz:
+      dst = &chroma_subsampling_horz_;
+      break;
+    case kWebMIdColorChromaSubsamplingVert:
+      dst = &chroma_subsampling_vert_;
+      break;
+    case kWebMIdColorChromaSitingHorz:
+      dst = &chroma_siting_horz_;
+      break;
+    case kWebMIdColorChromaSitingVert:
+      dst = &chroma_siting_vert_;
+      break;
+    case kWebMIdColorRange:
+      if (val == 0)
+        vp_config.set_video_full_range_flag(false);
+      else if (val == 1)
+        vp_config.set_video_full_range_flag(true);
+      // Ignore for other values of val.
+      break;
+    case kWebMIdColorTransferCharacteristics:
+      vp_config.set_transfer_characteristics(static_cast<uint8_t>(val));
+      break;
+    case kWebMIdColorPrimaries:
+      vp_config.set_color_primaries(static_cast<uint8_t>(val));
+      break;
+    case kWebMIdColorMaxCLL:
+    case kWebMIdColorMaxFALL:
+      NOTIMPLEMENTED() << "HDR is not supported yet.";
+      return true;
     default:
       return true;
   }

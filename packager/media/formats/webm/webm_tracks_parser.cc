@@ -224,9 +224,9 @@ bool WebMTracksParser::OnListEnd(int id) {
         video_default_duration_ = default_duration_;
 
         DCHECK(!video_stream_info_);
+        vp_config_ = video_client_.GetVpCodecConfig(codec_private_);
         video_stream_info_ = video_client_.GetVideoStreamInfo(
-            video_track_num_, codec_id_, codec_private_,
-            !video_encryption_key_id_.empty());
+            video_track_num_, codec_id_, !video_encryption_key_id_.empty());
         if (!video_stream_info_)
           return false;
       } else {

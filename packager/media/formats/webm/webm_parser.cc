@@ -197,6 +197,24 @@ static const ElementIdInfo kVideoIds[] = {
   {UINT, kWebMIdAspectRatioType},
   {BINARY, kWebMIdColorSpace},
   {FLOAT, kWebMIdFrameRate},
+  {LIST, kWebMIdColor},
+};
+
+static const ElementIdInfo kColorIds[] = {
+  {UINT, kWebMIdColorMatrixCoefficients},
+  {UINT, kWebMIdColorBitsPerChannel},
+  {UINT, kWebMIdColorChromaSubsamplingHorz},
+  {UINT, kWebMIdColorChromaSubsamplingVert},
+  {UINT, kWebMIdColorCbSamplingHorz},
+  {UINT, kWebMIdColorCbSamplingVert},
+  {UINT, kWebMIdColorChromaSitingHorz},
+  {UINT, kWebMIdColorChromaSitingVert},
+  {UINT, kWebMIdColorRange},
+  {UINT, kWebMIdColorTransferCharacteristics},
+  {UINT, kWebMIdColorPrimaries},
+  {UINT, kWebMIdColorMaxCLL},
+  {UINT, kWebMIdColorMaxFALL},
+  {LIST, kWebMIdColorMasteringMetadata},
 };
 
 static const ElementIdInfo kAudioIds[] = {
@@ -382,6 +400,7 @@ static const ListElementInfo kListElementInfo[] = {
   LIST_ELEMENT_INFO(kWebMIdTrackEntry, 2, kTrackEntryIds),
   LIST_ELEMENT_INFO(kWebMIdTrackTranslate, 3, kTrackTranslateIds),
   LIST_ELEMENT_INFO(kWebMIdVideo, 3, kVideoIds),
+  LIST_ELEMENT_INFO(kWebMIdColor, 4, kColorIds),
   LIST_ELEMENT_INFO(kWebMIdAudio, 3, kAudioIds),
   LIST_ELEMENT_INFO(kWebMIdTrackOperation, 3, kTrackOperationIds),
   LIST_ELEMENT_INFO(kWebMIdTrackCombinePlanes, 4, kTrackCombinePlanesIds),

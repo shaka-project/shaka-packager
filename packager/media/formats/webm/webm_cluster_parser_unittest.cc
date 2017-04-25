@@ -407,8 +407,9 @@ class WebMClusterParserTest : public testing::Test {
     video_stream_info_->set_codec(video_codec);
     return new WebMClusterParser(
         kTimecodeScale, audio_stream_info_, video_stream_info_,
-        audio_default_duration, video_default_duration, text_tracks,
-        ignored_tracks, audio_encryption_key_id, video_encryption_key_id,
+        VPCodecConfigurationRecord(), audio_default_duration,
+        video_default_duration, text_tracks, ignored_tracks,
+        audio_encryption_key_id, video_encryption_key_id,
         base::Bind(&WebMClusterParserTest::NewSampleEvent,
                    base::Unretained(this)),
         init_cb, &mock_key_source_);

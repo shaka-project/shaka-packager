@@ -269,7 +269,7 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
       if (chroma_subsampling ==
           VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA) {
         LOG(ERROR) << "4:2:0 color not supported in profile "
-                   << codec_config->profile();
+                   << static_cast<int>(codec_config->profile());
         return false;
       }
 
@@ -293,7 +293,7 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
     }
   }
   codec_config->set_video_full_range_flag(yuv_full_range);
-  codec_config->set_chroma_subsampling(chroma_subsampling);
+  codec_config->SetChromaSubsampling(chroma_subsampling);
 
   VLOG(3) << "\n profile " << static_cast<int>(codec_config->profile())
           << "\n bit depth " << static_cast<int>(codec_config->bit_depth())
@@ -511,7 +511,7 @@ bool VP9Parser::Parse(const uint8_t* data,
           // specification of either the color format or color sub-sampling in
           // profile 0. VP9 specifies that the default color format should be
           // YUV 4:2:0 in this case (normative).
-          writable_codec_config()->set_chroma_subsampling(
+          writable_codec_config()->SetChromaSubsampling(
               VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);
           writable_codec_config()->set_bit_depth(8);
         }

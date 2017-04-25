@@ -207,6 +207,7 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
 
   cluster_parser_.reset(new WebMClusterParser(
       info_parser.timecode_scale(), audio_stream_info, video_stream_info,
+      tracks_parser.vp_config(),
       tracks_parser.GetAudioDefaultDuration(timecode_scale_in_us),
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),

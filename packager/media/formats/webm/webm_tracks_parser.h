@@ -69,6 +69,8 @@ class WebMTracksParser : public WebMParserClient {
     return text_tracks_;
   }
 
+  const VPCodecConfigurationRecord& vp_config() const { return vp_config_; }
+
  private:
   // WebMParserClient implementation.
   WebMParserClient* OnListStart(int id) override;
@@ -103,6 +105,7 @@ class WebMTracksParser : public WebMParserClient {
   std::shared_ptr<AudioStreamInfo> audio_stream_info_;
 
   WebMVideoClient video_client_;
+  VPCodecConfigurationRecord vp_config_;
   std::shared_ptr<VideoStreamInfo> video_stream_info_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMTracksParser);

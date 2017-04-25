@@ -112,6 +112,7 @@ bool VPCodecConfigurationRecord::ParseMP4(const std::vector<uint8_t>& data) {
   return true;
 }
 
+// http://wiki.webmproject.org/vp9-codecprivate
 bool VPCodecConfigurationRecord::ParseWebM(const std::vector<uint8_t>& data) {
   BufferReader reader(data.data(), data.size());
 
@@ -245,6 +246,70 @@ void VPCodecConfigurationRecord::MergeFrom(
       LOG(WARNING) << "VPx codec initialization data is inconsistent";
     }
     codec_initialization_data_ = other.codec_initialization_data_;
+  }
+
+  MergeField("chroma location", other.chroma_location_, &chroma_location_);
+  UpdateChromaSubsamplingIfNeeded();
+}
+
+void VPCodecConfigurationRecord::SetChromaSubsampling(uint8_t subsampling_x,
+                                                      uint8_t subsampling_y) {
+  VLOG(3) << "Set Chroma subsampling " << static_cast<int>(subsampling_x) << " "
+          << static_cast<int>(subsampling_y);
+  if (subsampling_x == 0 && subsampling_y == 0) {
+    chroma_subsampling_ = CHROMA_444;
+  } else if (subsampling_x == 0 && subsampling_y == 1) {
+    chroma_subsampling_ = CHROMA_440;
+  } else if (subsampling_x == 1 && subsampling_y == 0) {
+    chroma_subsampling_ = CHROMA_422;
+  } else if (subsampling_x == 1 && subsampling_y == 1) {
+    // VP9 assumes that chrome samples are collocated with luma samples if
+    // there is no explicit signaling outside of VP9 bitstream.
+    chroma_subsampling_ = CHROMA_420_COLLOCATED_WITH_LUMA;
+  } else {
+    LOG(WARNING) << "Unexpected chroma subsampling values: "
+                 << static_cast<int>(subsampling_x) << " "
+                 << static_cast<int>(subsampling_y);
+  }
+  UpdateChromaSubsamplingIfNeeded();
+}
+
+void VPCodecConfigurationRecord::SetChromaSubsampling(
+    ChromaSubsampling chroma_subsampling) {
+  chroma_subsampling_ = chroma_subsampling;
+  UpdateChromaSubsamplingIfNeeded();
+}
+
+void VPCodecConfigurationRecord::SetChromaLocation(uint8_t chroma_siting_x,
+                                                   uint8_t chroma_siting_y) {
+  VLOG(3) << "Set Chroma Location " << static_cast<int>(chroma_siting_x) << " "
+          << static_cast<int>(chroma_siting_y);
+  if (chroma_siting_x == kLeftCollocated && chroma_siting_y == kTopCollocated) {
+    chroma_location_ = AVCHROMA_LOC_TOPLEFT;
+  } else if (chroma_siting_x == kLeftCollocated && chroma_siting_y == kHalf) {
+    chroma_location_ = AVCHROMA_LOC_LEFT;
+  } else if (chroma_siting_x == kHalf && chroma_siting_y == kTopCollocated) {
+    chroma_location_ = AVCHROMA_LOC_TOP;
+  } else if (chroma_siting_x == kHalf && chroma_siting_y == kHalf) {
+    chroma_location_ = AVCHROMA_LOC_CENTER;
+  } else {
+    LOG(WARNING) << "Unexpected chroma siting values: "
+                 << static_cast<int>(chroma_siting_x) << " "
+                 << static_cast<int>(chroma_siting_y);
+  }
+  UpdateChromaSubsamplingIfNeeded();
+}
+
+void VPCodecConfigurationRecord::UpdateChromaSubsamplingIfNeeded() {
+  // Use chroma location to fix the chroma subsampling format.
+  if (chroma_location_ && chroma_subsampling_ &&
+      (*chroma_subsampling_ == CHROMA_420_VERTICAL ||
+       *chroma_subsampling_ == CHROMA_420_COLLOCATED_WITH_LUMA)) {
+    if (*chroma_location_ == AVCHROMA_LOC_TOPLEFT)
+      chroma_subsampling_ = CHROMA_420_COLLOCATED_WITH_LUMA;
+    else if (*chroma_location_ == AVCHROMA_LOC_LEFT)
+      chroma_subsampling_ = CHROMA_420_VERTICAL;
+    VLOG(3) << "Chroma subsampling " << static_cast<int>(*chroma_subsampling_);
   }
 }
 

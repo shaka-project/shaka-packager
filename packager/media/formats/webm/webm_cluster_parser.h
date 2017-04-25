@@ -101,6 +101,8 @@ class WebMClusterParser : public WebMParserClient {
   ///        be NULL if there are no audio tracks available.
   /// @param video_stream_info references video stream information. It will
   ///        be NULL if there are no video tracks available.
+  /// @param vp_config references vp configuration record. Only useful for
+  ///        video.
   /// @param audio_default_duration indicates default duration for audio
   ///        samples.
   /// @param video_default_duration indicates default duration for video
@@ -120,6 +122,7 @@ class WebMClusterParser : public WebMParserClient {
   WebMClusterParser(int64_t timecode_scale,
                     std::shared_ptr<AudioStreamInfo> audio_stream_info,
                     std::shared_ptr<VideoStreamInfo> video_stream_info,
+                    const VPCodecConfigurationRecord& vp_config,
                     int64_t audio_default_duration,
                     int64_t video_default_duration,
                     const WebMTracksParser::TextTracks& text_tracks,
@@ -188,6 +191,7 @@ class WebMClusterParser : public WebMParserClient {
 
   std::shared_ptr<AudioStreamInfo> audio_stream_info_;
   std::shared_ptr<VideoStreamInfo> video_stream_info_;
+  VPCodecConfigurationRecord vp_config_;
   std::set<int64_t> ignored_tracks_;
 
   std::unique_ptr<DecryptorSource> decryptor_source_;

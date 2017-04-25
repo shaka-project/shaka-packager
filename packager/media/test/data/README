@@ -4,6 +4,12 @@
 
 bear-320x240.webm - WebM encode of bear.1280x720.mp4 resized to 320x240.
 bear-320x240-vp9-opus.webm - Same as above, but with vp9 and opus codec.
+bear-320x240-vp9-altref.webm - Same as above, but enabled altref:
+  ffmpeg -i bear-320x180.mp4 -c:v libvpx-vp9 -pass 1 -threads 8 -speed 4 \
+    -frame-parallel 1 -an -f webm /dev/null
+  ffmpeg -i bear-320x180.mp4 -c:v libvpx-vp9 -pass 2 -threads 8 -speed 1 \
+    -frame-parallel 1 -auto-alt-ref 1 -lag-in-frames 25 -an -f webm \
+    bear-320x240-vp9-altref.webm
 no_streams.webm - Header, Info, & Tracks element from bear-320x240.webm slightly corrupted so it looks
                   like there are no tracks.
 nonzero-start-time.webm - Has the same headers as bear-320x240.webm but the first cluster of this file
