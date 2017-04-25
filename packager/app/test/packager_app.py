@@ -37,11 +37,18 @@ class PackagerApp(object):
     return subprocess.check_output([self.binary, '--version'])
 
   def Package(self, streams, flags=None):
+    """Executes packager command."""
     if flags is None:
       flags = []
     cmd = [self.binary]
     cmd.extend(streams)
     cmd.extend(flags)
+
+    if test_env.options.v:
+      cmd.extend(['--v=%s' % test_env.options.v])
+    if test_env.options.vmodule:
+      cmd.extend(['--vmodule="%s"' % test_env.options.vmodule])
+
     # Put single-quotes around each entry so that things like '$' signs in
     # segment templates won't be interpreted as shell variables.
     self.packaging_command_line = ' '.join(["'%s'" % entry for entry in cmd])

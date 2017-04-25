@@ -27,6 +27,8 @@ SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--test_update_golden_files', default=0, type=int)
+parser.add_argument('--v')
+parser.add_argument('--vmodule')
 # Overwrite the test to encryption key/iv specified in the command line.
 parser.add_argument('--encryption_key')
 parser.add_argument('--encryption_iv')
