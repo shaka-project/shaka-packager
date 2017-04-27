@@ -243,57 +243,53 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  writable_codec_config()-&gt;set_bit_depth(8);</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  writable_codec_config()-&gt;set_chroma_subsampling(</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="comment">// VP8 uses YCrCb color space defined in ITU-R_BT.601.</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="comment">// http://tools.ietf.org/html/rfc6386 Section 9.2.</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  writable_codec_config()-&gt;set_color_space(</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      VPCodecConfigurationRecord::COLOR_SPACE_BT_601);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <a class="code" href="../../d0/d11/structshaka_1_1media_1_1VPxFrameInfo.html">VPxFrameInfo</a> vpx_frame;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  vpx_frame.frame_size = data_size;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  vpx_frame.uncompressed_header_size =</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      vpx_frame.frame_size - reader.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a1c1e1225c2780383e72996137bb7f86a">bits_available</a>() / 8;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  vpx_frame.is_keyframe = !is_interframe;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  vpx_frame.width = width_;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  vpx_frame.height = height_;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  vpx_frames-&gt;clear();</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  vpx_frames-&gt;push_back(vpx_frame);</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  VLOG(3) &lt;&lt; <span class="stringliteral">&quot;\n frame_size: &quot;</span> &lt;&lt; vpx_frame.frame_size</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n uncompressed_header_size: &quot;</span></div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;          &lt;&lt; vpx_frame.uncompressed_header_size</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n bits read: &quot;</span> &lt;&lt; reader.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a6b7456b84d6b463767127b57cd0dc898">bit_position</a>()</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n header_size: &quot;</span> &lt;&lt; header_size</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n width: &quot;</span> &lt;&lt; vpx_frame.width</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n height: &quot;</span> &lt;&lt; vpx_frame.height;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;}</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
-<div class="line"><a name="l00183"></a><span class="lineno"><a class="line" href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37">  183</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37">VP8Parser::IsKeyframe</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> data_size) {</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="comment">// Make sure the block is big enough for the minimal keyframe header size.</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">if</span> (data_size &lt; 10)</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <a class="code" href="../../d0/d11/structshaka_1_1media_1_1VPxFrameInfo.html">VPxFrameInfo</a> vpx_frame;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  vpx_frame.frame_size = data_size;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  vpx_frame.uncompressed_header_size =</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;      vpx_frame.frame_size - reader.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a1c1e1225c2780383e72996137bb7f86a">bits_available</a>() / 8;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  vpx_frame.is_keyframe = !is_interframe;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  vpx_frame.width = width_;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  vpx_frame.height = height_;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  vpx_frames-&gt;clear();</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  vpx_frames-&gt;push_back(vpx_frame);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  VLOG(3) &lt;&lt; <span class="stringliteral">&quot;\n frame_size: &quot;</span> &lt;&lt; vpx_frame.frame_size</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n uncompressed_header_size: &quot;</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;          &lt;&lt; vpx_frame.uncompressed_header_size</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n bits read: &quot;</span> &lt;&lt; reader.<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a6b7456b84d6b463767127b57cd0dc898">bit_position</a>()</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n header_size: &quot;</span> &lt;&lt; header_size</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n width: &quot;</span> &lt;&lt; vpx_frame.width</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n height: &quot;</span> &lt;&lt; vpx_frame.height;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;}</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00179"></a><span class="lineno"><a class="line" href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37">  179</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37">VP8Parser::IsKeyframe</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> data_size) {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="comment">// Make sure the block is big enough for the minimal keyframe header size.</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordflow">if</span> (data_size &lt; 10)</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="comment">// The LSb of the first byte must be a 0 for a keyframe.</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">if</span> ((data[0] &amp; 0x01) != 0)</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="comment">// The LSb of the first byte must be a 0 for a keyframe.</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keywordflow">if</span> ((data[0] &amp; 0x01) != 0)</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="keywordflow">return</span> VerifySyncCode(&amp;data[3]);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;}</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordflow">return</span> VerifySyncCode(&amp;data[3]);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">shaka::media::BitReader</a></div><div class="ttdoc">A class to read bit streams. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00017">bit_reader.h:17</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1VPxFrameInfo_html"><div class="ttname"><a href="../../d0/d11/structshaka_1_1media_1_1VPxFrameInfo.html">shaka::media::VPxFrameInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8a/vpx__parser_8h_source.html#l00019">vpx_parser.h:19</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VP8Parser_html_a8baec0e4c74b0b220b777426d0c463e1"><div class="ttname"><a href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#a8baec0e4c74b0b220b777426d0c463e1">shaka::media::VP8Parser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *data, size_t data_size, std::vector&lt; VPxFrameInfo &gt; *vpx_frames) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d70/vp8__parser_8cc_source.html#l00100">vp8_parser.cc:100</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a4ab20ef220c76072eaecb982aba0541d"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a4ab20ef220c76072eaecb982aba0541d">shaka::media::BitReader::SkipBits</a></div><div class="ttdeci">bool SkipBits(size_t num_bits)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00024">bit_reader.cc:24</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1VP8Parser_html_afae2dcb0c2652d53f2e23c9d3c07db37"><div class="ttname"><a href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37">shaka::media::VP8Parser::IsKeyframe</a></div><div class="ttdeci">static bool IsKeyframe(const uint8_t *data, size_t data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d70/vp8__parser_8cc_source.html#l00183">vp8_parser.cc:183</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VP8Parser_html_afae2dcb0c2652d53f2e23c9d3c07db37"><div class="ttname"><a href="../../d8/d14/classshaka_1_1media_1_1VP8Parser.html#afae2dcb0c2652d53f2e23c9d3c07db37">shaka::media::VP8Parser::IsKeyframe</a></div><div class="ttdeci">static bool IsKeyframe(const uint8_t *data, size_t data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d70/vp8__parser_8cc_source.html#l00179">vp8_parser.cc:179</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a7d349253d5cc8f9aa33f1ca2ea94677c"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a7d349253d5cc8f9aa33f1ca2ea94677c">shaka::media::BitReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00054">bit_reader.cc:54</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a1c1e1225c2780383e72996137bb7f86a"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a1c1e1225c2780383e72996137bb7f86a">shaka::media::BitReader::bits_available</a></div><div class="ttdeci">size_t bits_available() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00085">bit_reader.h:85</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a6b7456b84d6b463767127b57cd0dc898"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a6b7456b84d6b463767127b57cd0dc898">shaka::media::BitReader::bit_position</a></div><div class="ttdeci">size_t bit_position() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00090">bit_reader.h:90</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 26 2017 19:24:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 27 2017 19:44:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -102,19 +102,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a082c787f5cbed576e74a98f2e250b4bb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>ColorSpace</b> { <br/>
-&#160;&#160;<b>COLOR_SPACE_UNSPECIFIED</b> = 0, 
-<b>COLOR_SPACE_BT_601</b> = 1, 
-<b>COLOR_SPACE_BT_709</b> = 2, 
-<b>COLOR_SPACE_SMPTE_170</b> = 3, 
-<br/>
-&#160;&#160;<b>COLOR_SPACE_SMPTE_240</b> = 4, 
-<b>COLOR_SPACE_BT_2020_NON_CONSTANT_LUMINANCE</b> = 5, 
-<b>COLOR_SPACE_BT_2020_CONSTANT_LUMINANCE</b> = 6, 
-<b>COLOR_SPACE_SRGB</b> = 7
-<br/>
- }</td></tr>
-<tr class="separator:a082c787f5cbed576e74a98f2e250b4bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1828f2709a1cb819e593c7460a9f8f6f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>ChromaSubsampling</b> { <br/>
 &#160;&#160;<b>CHROMA_420_VERTICAL</b> = 0, 
 <b>CHROMA_420_COLLOCATED_WITH_LUMA</b> = 1, 
@@ -128,9 +115,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae2a6523562b6c8b71b577c18e2a72611"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2a6523562b6c8b71b577c18e2a72611"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VPCodecConfigurationRecord</b> (uint8_t profile, uint8_t level, uint8_t bit_depth, uint8_t color_space, uint8_t chroma_subsampling, uint8_t transfer_function, bool video_full_range_flag, const std::vector&lt; uint8_t &gt; &amp;codec_initialization_data)</td></tr>
-<tr class="separator:ae2a6523562b6c8b71b577c18e2a72611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2be4dff77c688a69d6b167f052b200d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2be4dff77c688a69d6b167f052b200d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VPCodecConfigurationRecord</b> (uint8_t profile, uint8_t level, uint8_t bit_depth, uint8_t chroma_subsampling, bool video_full_range_flag, uint8_t color_primaries, uint8_t transfer_characteristics, uint8_t matrix_coefficients, const std::vector&lt; uint8_t &gt; &amp;codec_initialization_data)</td></tr>
+<tr class="separator:ac2be4dff77c688a69d6b167f052b200d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac5eac6e0a62201dcb68fd3f084bb281"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#aac5eac6e0a62201dcb68fd3f084bb281">ParseMP4</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
 <tr class="separator:aac5eac6e0a62201dcb68fd3f084bb281"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c432f4e5a256ed5fb18112ead37df10"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a3c432f4e5a256ed5fb18112ead37df10">ParseWebM</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
@@ -153,18 +140,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_level</b> (uint8_
 <tr class="memitem:a563e289067b6f9bae02dacc094e27185"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a563e289067b6f9bae02dacc094e27185"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_bit_depth</b> (uint8_t bit_depth)</td></tr>
 <tr class="separator:a563e289067b6f9bae02dacc094e27185"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab097e65d22c36192f188bbf49b797464"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab097e65d22c36192f188bbf49b797464"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_color_space</b> (uint8_t color_space)</td></tr>
-<tr class="separator:ab097e65d22c36192f188bbf49b797464"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a010c5c8e53fe957bf4cccced10a1bdc1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a010c5c8e53fe957bf4cccced10a1bdc1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_chroma_subsampling</b> (uint8_t chroma_subsampling)</td></tr>
 <tr class="separator:a010c5c8e53fe957bf4cccced10a1bdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fadc91de73a2274bebf5be7eaa05db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fadc91de73a2274bebf5be7eaa05db5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_transfer_function</b> (uint8_t transfer_function)</td></tr>
-<tr class="separator:a2fadc91de73a2274bebf5be7eaa05db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3add15cd28bcda1df8e42b12f22348f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3add15cd28bcda1df8e42b12f22348f0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_video_full_range_flag</b> (bool video_full_range_flag)</td></tr>
 <tr class="separator:a3add15cd28bcda1df8e42b12f22348f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a467661622bd233039b7792162678ce46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a467661622bd233039b7792162678ce46"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_color_primaries</b> (uint8_t color_primaries)</td></tr>
+<tr class="separator:a467661622bd233039b7792162678ce46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a043f584c39de18e22b14f0288439f3b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a043f584c39de18e22b14f0288439f3b8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_transfer_characteristics</b> (uint8_t transfer_characteristics)</td></tr>
+<tr class="separator:a043f584c39de18e22b14f0288439f3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56e3fec7348c39e0a2da115cb9fbe0ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56e3fec7348c39e0a2da115cb9fbe0ad"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_matrix_coefficients</b> (uint8_t matrix_coefficients)</td></tr>
+<tr class="separator:a56e3fec7348c39e0a2da115cb9fbe0ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a134948ffe6777e672ab1c07fad765f96"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a134948ffe6777e672ab1c07fad765f96"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>profile</b> () const </td></tr>
 <tr class="separator:a134948ffe6777e672ab1c07fad765f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,23 +164,26 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>level</b> () const
 <tr class="memitem:af3de7461310e44f00ca9d081cff1c719"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af3de7461310e44f00ca9d081cff1c719"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>bit_depth</b> () const </td></tr>
 <tr class="separator:af3de7461310e44f00ca9d081cff1c719"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55b6180f99a25cff48d719c657710226"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55b6180f99a25cff48d719c657710226"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>color_space</b> () const </td></tr>
-<tr class="separator:a55b6180f99a25cff48d719c657710226"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afacb4caeb82f3342a6b09679728479fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afacb4caeb82f3342a6b09679728479fe"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_subsampling</b> () const </td></tr>
 <tr class="separator:afacb4caeb82f3342a6b09679728479fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e01b1ab8bef47d090d42c797b3f807d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7e01b1ab8bef47d090d42c797b3f807d"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>transfer_function</b> () const </td></tr>
-<tr class="separator:a7e01b1ab8bef47d090d42c797b3f807d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf27a01ac0b54ca33290b24d8e20db5a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf27a01ac0b54ca33290b24d8e20db5a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag</b> () const </td></tr>
 <tr class="separator:acf27a01ac0b54ca33290b24d8e20db5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31eb5ecdc688dfa99abc02aea5c888cc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31eb5ecdc688dfa99abc02aea5c888cc"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>color_primaries</b> () const </td></tr>
+<tr class="separator:a31eb5ecdc688dfa99abc02aea5c888cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a762afc6d5ed40719c36c3f5e41ac23fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a762afc6d5ed40719c36c3f5e41ac23fc"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>transfer_characteristics</b> () const </td></tr>
+<tr class="separator:a762afc6d5ed40719c36c3f5e41ac23fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b4fc00a2ef5992b84099aff2d130d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab7b4fc00a2ef5992b84099aff2d130d3"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>matrix_coefficients</b> () const </td></tr>
+<tr class="separator:ab7b4fc00a2ef5992b84099aff2d130d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class for parsing or writing VP codec configuration record. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d9b/vp__codec__configuration__record_8h_source.html#l00021">21</a> of file <a class="el" href="../../d5/d9b/vp__codec__configuration__record_8h_source.html">vp_codec_configuration_record.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d9b/vp__codec__configuration__record_8h_source.html#l00125">125</a> of file <a class="el" href="../../d5/d9b/vp__codec__configuration__record_8h_source.html">vp_codec_configuration_record.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a86b48fb506b476538a7440d9ccf9a533"></a>
 <div class="memitem">
@@ -207,7 +200,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00208">208</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00204">204</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -227,7 +220,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
 <p>Parses input (in MP4 format) to extract VP codec configuration record. </p>
 <dl class="section return"><dt>Returns</dt><dd>false if there is parsing errors. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00089">89</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00084">84</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -271,7 +264,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00155">155</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00156">156</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -295,7 +288,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00171">171</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00173">173</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -306,7 +299,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 26 2017 19:24:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 27 2017 19:44:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
