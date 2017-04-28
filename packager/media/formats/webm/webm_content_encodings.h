@@ -72,14 +72,15 @@ class ContentEncoding {
   void set_cipher_mode(CipherMode mode) { cipher_mode_ = mode; }
 
  private:
+  ContentEncoding(const ContentEncoding&) = delete;
+  ContentEncoding& operator=(const ContentEncoding&) = delete;
+
   int64_t order_;
   Scope scope_;
   Type type_;
   EncryptionAlgo encryption_algo_;
   std::string encryption_key_id_;
   CipherMode cipher_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentEncoding);
 };
 
 }  // namespace media

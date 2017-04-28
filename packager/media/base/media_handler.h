@@ -103,9 +103,6 @@ class MediaHandler {
   /// Validate if the stream at the specified index actually exists.
   virtual bool ValidateOutputStreamIndex(size_t stream_index) const;
 
-  bool initialized() { return initialized_; }
-  size_t num_input_streams() { return num_input_streams_; }
-
   /// Dispatch the stream data to downstream handlers. Note that
   /// stream_data.stream_index should be the output stream index.
   Status Dispatch(std::unique_ptr<StreamData> stream_data);
@@ -163,6 +160,7 @@ class MediaHandler {
   /// Flush the downstream connected at the specified output stream index.
   Status FlushDownstream(size_t output_stream_index);
 
+  bool initialized() { return initialized_; }
   size_t num_input_streams() const { return num_input_streams_; }
   size_t next_output_stream_index() const { return next_output_stream_index_; }
   const std::map<size_t, std::pair<std::shared_ptr<MediaHandler>, size_t>>&
