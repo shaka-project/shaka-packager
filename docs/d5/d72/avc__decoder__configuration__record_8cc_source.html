@@ -177,32 +177,35 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">   91</a></span>&#160;std::string <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">AVCDecoderConfigurationRecord::GetCodecString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">GetCodecString</a>(profile_indication_, profile_compatibility_,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                        avc_level_);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a120f0913aea1e336da1335e80564b106">   96</a></span>&#160;std::string <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">AVCDecoderConfigurationRecord::GetCodecString</a>(</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    uint8_t profile_indication,</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    uint8_t profile_compatibility,</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    uint8_t avc_level) {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keyword">const</span> uint8_t bytes[] = {profile_indication, profile_compatibility,</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                           avc_level};</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;avc1.&quot;</span> + base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1AVCDecoderConfigurationRecord_html_a52fbab2c863be9e771eafa20b34b89bc"><div class="ttname"><a href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">shaka::media::AVCDecoderConfigurationRecord::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html#l00091">avc_decoder_configuration_record.cc:91</a></div></div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a66b23ef2de8b851482628fefafafce17">   91</a></span>&#160;std::string <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a66b23ef2de8b851482628fefafafce17">AVCDecoderConfigurationRecord::GetCodecString</a>(</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    FourCC codec_fourcc)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a66b23ef2de8b851482628fefafafce17">GetCodecString</a>(codec_fourcc, profile_indication_,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                        profile_compatibility_, avc_level_);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno"><a class="line" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a30a6df8df89c670fd4c8894b8bacffa9">   97</a></span>&#160;std::string <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a66b23ef2de8b851482628fefafafce17">AVCDecoderConfigurationRecord::GetCodecString</a>(</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    FourCC codec_fourcc,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    uint8_t profile_indication,</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    uint8_t profile_compatibility,</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    uint8_t avc_level) {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keyword">const</span> uint8_t bytes[] = {profile_indication, profile_compatibility,</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                           avc_level};</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordflow">return</span> FourCCToString(codec_fourcc) + <span class="stringliteral">&quot;.&quot;</span> +</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;         base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_a6b2234ce5bdffaaaad217414df314598"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a6b2234ce5bdffaaaad217414df314598">shaka::media::DecoderConfigurationRecord::AddNalu</a></div><div class="ttdeci">void AddNalu(const Nalu &amp;nalu)</div><div class="ttdoc">Adds the given Nalu to the configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dec/decoder__configuration__record_8cc_source.html#l00022">decoder_configuration_record.cc:22</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_a20e0a9cb8002c943814853bd6ce488df"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a20e0a9cb8002c943814853bd6ce488df">shaka::media::DecoderConfigurationRecord::data</a></div><div class="ttdeci">const uint8_t * data() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00053">decoder_configuration_record.h:53</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_ab0c889c2382b6f41ad1993c136b03d07"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab0c889c2382b6f41ad1993c136b03d07">shaka::media::DecoderConfigurationRecord::set_nalu_length_size</a></div><div class="ttdeci">void set_nalu_length_size(uint8_t nalu_length_size)</div><div class="ttdoc">Sets the size of the NAL unit length field. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00059">decoder_configuration_record.h:59</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_ab016f1def77f35b4256e7e8ca990ed57"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab016f1def77f35b4256e7e8ca990ed57">shaka::media::DecoderConfigurationRecord::data_size</a></div><div class="ttdeci">size_t data_size() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00056">decoder_configuration_record.h:56</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AVCDecoderConfigurationRecord_html_a66b23ef2de8b851482628fefafafce17"><div class="ttname"><a href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a66b23ef2de8b851482628fefafafce17">shaka::media::AVCDecoderConfigurationRecord::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString(FourCC codec_fourcc) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html#l00091">avc_decoder_configuration_record.cc:91</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_a099efd795f849667ceb69636b1b50820"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a099efd795f849667ceb69636b1b50820">shaka::media::DecoderConfigurationRecord::nalu</a></div><div class="ttdeci">const Nalu &amp; nalu(size_t i) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00044">decoder_configuration_record.h:44</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 27 2017 19:44:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 28 2017 21:39:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

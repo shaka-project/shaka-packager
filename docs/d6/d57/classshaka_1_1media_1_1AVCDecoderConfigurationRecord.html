@@ -111,8 +111,8 @@ Inheritance diagram for shaka::media::AVCDecoderConfigurationRecord:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a52fbab2c863be9e771eafa20b34b89bc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">GetCodecString</a> () const </td></tr>
-<tr class="separator:a52fbab2c863be9e771eafa20b34b89bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66b23ef2de8b851482628fefafafce17"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a66b23ef2de8b851482628fefafafce17">GetCodecString</a> (FourCC codec_fourcc) const </td></tr>
+<tr class="separator:a66b23ef2de8b851482628fefafafce17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a279c72b7757bbb6a4615ef15f1d7e724"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a279c72b7757bbb6a4615ef15f1d7e724"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>version</b> () const </td></tr>
 <tr class="separator:a279c72b7757bbb6a4615ef15f1d7e724"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,8 +151,8 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>pixel_height</b> 
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a120f0913aea1e336da1335e80564b106"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a120f0913aea1e336da1335e80564b106">GetCodecString</a> (uint8_t profile_indication, uint8_t profile_compatibility, uint8_t avc_level)</td></tr>
-<tr class="separator:a120f0913aea1e336da1335e80564b106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30a6df8df89c670fd4c8894b8bacffa9"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a30a6df8df89c670fd4c8894b8bacffa9">GetCodecString</a> (FourCC codec_fourcc, uint8_t profile_indication, uint8_t profile_compatibility, uint8_t avc_level)</td></tr>
+<tr class="separator:a30a6df8df89c670fd4c8894b8bacffa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -173,16 +173,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class for parsing AVC decoder configuration record. </p>
 
-<p>Definition at line <a class="el" href="../../df/dc7/avc__decoder__configuration__record_8h_source.html#l00021">21</a> of file <a class="el" href="../../df/dc7/avc__decoder__configuration__record_8h_source.html">avc_decoder_configuration_record.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/dc7/avc__decoder__configuration__record_8h_source.html#l00022">22</a> of file <a class="el" href="../../df/dc7/avc__decoder__configuration__record_8h_source.html">avc_decoder_configuration_record.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a52fbab2c863be9e771eafa20b34b89bc"></a>
+<a class="anchor" id="a66b23ef2de8b851482628fefafafce17"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">std::string shaka::media::AVCDecoderConfigurationRecord::GetCodecString </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">FourCC&#160;</td>
+          <td class="paramname"><em>codec_fourcc</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -193,7 +194,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 </div>
 </div>
-<a class="anchor" id="a120f0913aea1e336da1335e80564b106"></a>
+<a class="anchor" id="a30a6df8df89c670fd4c8894b8bacffa9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -203,6 +204,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
         <tr>
           <td class="memname">std::string shaka::media::AVCDecoderConfigurationRecord::GetCodecString </td>
           <td>(</td>
+          <td class="paramtype">FourCC&#160;</td>
+          <td class="paramname"><em>codec_fourcc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>profile_indication</em>, </td>
         </tr>
@@ -233,7 +240,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <p>Static version of GetCodecString. </p>
 <dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html#l00096">96</a> of file <a class="el" href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html">avc_decoder_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html#l00097">97</a> of file <a class="el" href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html">avc_decoder_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -244,7 +251,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 27 2017 19:44:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 28 2017 21:39:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
