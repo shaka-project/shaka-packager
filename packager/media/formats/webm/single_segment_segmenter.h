@@ -35,6 +35,7 @@ class SingleSegmentSegmenter : public Segmenter {
                          bool is_subsegment) override;
   bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
+  std::vector<Range> GetSegmentRanges() override;
   /// @}
 
  protected:

@@ -10,7 +10,6 @@
 
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_util.h"
@@ -47,6 +46,22 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
   *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
   *size = vod_sidx_->ComputeSize();
   return true;
+}
+
+std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
+  std::vector<Range> ranges;
+  uint64_t next_offset =
+      ftyp()->ComputeSize() + moov()->ComputeSize() + vod_sidx_->ComputeSize() +
+      vod_sidx_->first_offset;
+  for (const SegmentReference& segment_reference : vod_sidx_->references) {
+    Range r;
+    r.start = next_offset;
+    // Ranges are inclusive, so -1 to the size.
+    r.end = r.start + segment_reference.referenced_size - 1;
+    next_offset = r.end + 1;
+    ranges.push_back(r);
+  }
+  return ranges;
 }
 
 Status SingleSegmentSegmenter::DoInitialize() {

@@ -313,7 +313,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
 // Make sure it doesn't crash.
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaEnd) {
   // None of these values matter, they are not used.
-  listener_.OnMediaEnd(false, 0, 0, false, 0, 0, 0, 0);
+  listener_.OnMediaEnd(MuxerListener::MediaRanges(), 0, 0);
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnNewSegment) {

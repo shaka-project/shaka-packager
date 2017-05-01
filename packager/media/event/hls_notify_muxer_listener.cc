@@ -110,12 +110,7 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
 
 void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
 
-void HlsNotifyMuxerListener::OnMediaEnd(bool has_init_range,
-                                        uint64_t init_range_start,
-                                        uint64_t init_range_end,
-                                        bool has_index_range,
-                                        uint64_t index_range_start,
-                                        uint64_t index_range_end,
+void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds,
                                         uint64_t file_size) {
   // TODO(kqyang): Should we just Flush here to avoid calling Flush explicitly?

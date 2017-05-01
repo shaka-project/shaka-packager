@@ -35,12 +35,7 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 
 /// @param[in,out] media_info points to the MediaInfo object to be filled.
 /// @return true on success, false otherwise.
-bool SetVodInformation(bool has_init_range,
-                       uint64_t init_range_start,
-                       uint64_t init_range_end,
-                       bool has_index_range,
-                       uint64_t index_range_start,
-                       uint64_t index_range_end,
+bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
                        float duration_seconds,
                        uint64_t file_size,
                        MediaInfo* media_info);

@@ -38,14 +38,19 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
 bool MultiSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
-  DLOG(INFO) << "MultiSegmentSegmenter outputs init segment: "
-             << options().output_file_name;
+  VLOG(1) << "MultiSegmentSegmenter outputs init segment: "
+          << options().output_file_name;
   return false;
 }
 
 bool MultiSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
-  DLOG(INFO) << "MultiSegmentSegmenter does not have index range.";
+  VLOG(1) << "MultiSegmentSegmenter does not have index range.";
   return false;
+}
+
+std::vector<Range> MultiSegmentSegmenter::GetSegmentRanges() {
+  VLOG(1) << "MultiSegmentSegmenter does not have media segment ranges.";
+  return std::vector<Range>();
 }
 
 Status MultiSegmentSegmenter::DoInitialize() {

@@ -52,6 +52,10 @@ bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
   return false;
 }
 
+std::vector<Range> MultiSegmentSegmenter::GetSegmentRanges() {
+  return std::vector<Range>();
+}
+
 Status MultiSegmentSegmenter::DoInitialize() {
   std::unique_ptr<MkvWriter> writer(new MkvWriter);
   Status status = writer->Open(options().output_file_name);

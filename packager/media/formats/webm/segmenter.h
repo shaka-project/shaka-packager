@@ -8,6 +8,9 @@
 #define MEDIA_FORMATS_WEBM_SEGMENTER_H_
 
 #include <memory>
+
+#include "packager/base/optional.h"
+#include "packager/media/base/range.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/seek_head.h"
 #include "packager/status.h"
@@ -63,6 +66,11 @@ class Segmenter {
   /// @return true if there is an index byte range, while setting @a start
   ///         and @a end; or false if index byte range does not apply.
   virtual bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) = 0;
+
+  // Returns an empty vector if there are no specific ranges for the segments,
+  // e.g. the media is in multiple files.
+  // Otherwise, a vector of ranges for the media segments are returned.
+  virtual std::vector<Range> GetSegmentRanges() = 0;
 
   /// @return The total length, in seconds, of segmented media files.
   float GetDurationInSeconds() const;

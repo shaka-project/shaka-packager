@@ -75,6 +75,7 @@
         'producer_consumer_queue.h',
         'protection_system_specific_info.cc',
         'protection_system_specific_info.h',
+        'range.h',
         'rcheck.h',
         'request_signer.cc',
         'request_signer.h',

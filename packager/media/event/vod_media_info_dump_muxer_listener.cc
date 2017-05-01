@@ -72,23 +72,11 @@ void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(
   }
 }
 
-void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
-                                               uint64_t init_range_start,
-                                               uint64_t init_range_end,
-                                               bool has_index_range,
-                                               uint64_t index_range_start,
-                                               uint64_t index_range_end,
+void VodMediaInfoDumpMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                                float duration_seconds,
                                                uint64_t file_size) {
   DCHECK(media_info_);
-  if (!internal::SetVodInformation(has_init_range,
-                                   init_range_start,
-                                   init_range_end,
-                                   has_index_range,
-                                   index_range_start,
-                                   index_range_end,
-                                   duration_seconds,
-                                   file_size,
+  if (!internal::SetVodInformation(media_ranges, duration_seconds, file_size,
                                    media_info_.get())) {
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;

@@ -83,13 +83,7 @@ class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
     // On success, this writes the result to |temp_file_path_|.
-    listener_->OnMediaEnd(params.has_init_range,
-                          params.init_range_start,
-                          params.init_range_end,
-                          params.has_index_range,
-                          params.index_range_start,
-                          params.index_range_end,
-                          params.duration_seconds,
+    listener_->OnMediaEnd(params.media_ranges, params.duration_seconds,
                           params.file_size);
   }
 

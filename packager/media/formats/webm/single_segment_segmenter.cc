@@ -36,8 +36,6 @@ Status SingleSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
 
 bool SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
                                                      uint64_t* end) {
-  // The init range is the header, from the start of the file to the size of
-  // the header.
   *start = 0;
   *end = init_end_;
   return true;
@@ -45,11 +43,31 @@ bool SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
 
 bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
                                                       uint64_t* end) {
-  // The index is the Cues element, which is always placed at the end of the
-  // file.
   *start = index_start_;
   *end = index_end_;
   return true;
+}
+
+std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
+  std::vector<Range> ranges;
+  if (cues()->cue_entries_size() == 0) {
+    return ranges;
+  }
+  for (int32_t i = 0; i < cues()->cue_entries_size() - 1; ++i) {
+    const mkvmuxer::CuePoint* cue_point = cues()->GetCueByIndex(i);
+    Range r;
+    r.start = cue_point->cluster_pos();
+    r.end = cues()->GetCueByIndex(i + 1)->cluster_pos() - 1;
+    ranges.push_back(r);
+  }
+
+  Range last_range;
+  const mkvmuxer::CuePoint* last_cue_point =
+      cues()->GetCueByIndex(cues()->cue_entries_size() - 1);
+  last_range.start = last_cue_point->cluster_pos();
+  last_range.end = last_range.start + cluster()->Size() - 1;
+  ranges.push_back(last_range);
+  return ranges;
 }
 
 Status SingleSegmentSegmenter::DoInitialize() {

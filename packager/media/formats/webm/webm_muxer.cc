@@ -95,15 +95,31 @@ void WebMMuxer::FireOnMediaEndEvent() {
   if (!muxer_listener())
     return;
 
+  MuxerListener::MediaRanges media_range;
+
   uint64_t init_range_start = 0;
   uint64_t init_range_end = 0;
   const bool has_init_range =
       segmenter_->GetInitRangeStartAndEnd(&init_range_start, &init_range_end);
+  if (has_init_range) {
+    Range r;
+    r.start = init_range_start;
+    r.end = init_range_end;
+    media_range.init_range = r;
+  }
 
   uint64_t index_range_start = 0;
   uint64_t index_range_end = 0;
   const bool has_index_range = segmenter_->GetIndexRangeStartAndEnd(
       &index_range_start, &index_range_end);
+  if (has_index_range) {
+    Range r;
+    r.start = index_range_start;
+    r.end = index_range_end;
+    media_range.index_range = r;
+  }
+
+  media_range.subsegment_ranges = segmenter_->GetSegmentRanges();
 
   const float duration_seconds = segmenter_->GetDurationInSeconds();
 
@@ -114,9 +130,7 @@ void WebMMuxer::FireOnMediaEndEvent() {
     return;
   }
 
-  muxer_listener()->OnMediaEnd(has_init_range, init_range_start, init_range_end,
-                               has_index_range, index_range_start,
-                               index_range_end, duration_seconds, file_size);
+  muxer_listener()->OnMediaEnd(media_range, duration_seconds, file_size);
 }
 
 }  // namespace webm

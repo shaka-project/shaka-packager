@@ -59,11 +59,9 @@ void TsMuxer::FireOnMediaEndEvent() {
     return;
 
   // For now, there is no single file TS segmenter. So all the values passed
-  // here are false and 0. Called just to notify the MuxerListener.
-  const bool kHasInitRange = true;
-  const bool kHasIndexRange = true;
-  muxer_listener()->OnMediaEnd(!kHasInitRange, 0, 0, !kHasIndexRange, 0, 0, 0,
-                               0);
+  // here are left empty.
+  MuxerListener::MediaRanges range;
+  muxer_listener()->OnMediaEnd(range, 0, 0);
 }
 
 }  // namespace mp2t

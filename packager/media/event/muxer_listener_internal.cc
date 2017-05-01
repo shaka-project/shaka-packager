@@ -36,28 +36,12 @@ uint32_t EstimateRequiredBandwidth(uint64_t file_size, float duration_seconds) {
   return static_cast<uint32_t>(ceil(bits_per_second));
 }
 
-void SetRange(uint64_t begin, uint64_t end, Range* range) {
+// TODO(rkuroiwa): There is shaka::Range in MediaInfo proto and
+// shaka::media::Range in media/base. Find better names.
+void SetRange(uint64_t begin, uint64_t end, shaka::Range* range) {
   DCHECK(range);
   range->set_begin(begin);
   range->set_end(end);
-}
-
-void SetMediaInfoRanges(bool has_init_range,
-                        uint64_t init_range_start,
-                        uint64_t init_range_end,
-                        bool has_index_range,
-                        uint64_t index_range_start,
-                        uint64_t index_range_end,
-                        MediaInfo* media_info) {
-  if (has_init_range) {
-    SetRange(
-        init_range_start, init_range_end, media_info->mutable_init_range());
-  }
-
-  if (has_index_range) {
-    SetRange(
-        index_range_start, index_range_end, media_info->mutable_index_range());
-  }
 }
 
 void SetMediaInfoContainerType(MuxerListener::ContainerType container_type,
@@ -205,12 +189,7 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
   return true;
 }
 
-bool SetVodInformation(bool has_init_range,
-                       uint64_t init_range_start,
-                       uint64_t init_range_end,
-                       bool has_index_range,
-                       uint64_t index_range_start,
-                       uint64_t index_range_end,
+bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
                        float duration_seconds,
                        uint64_t file_size,
                        MediaInfo* media_info) {
@@ -226,13 +205,16 @@ bool SetVodInformation(bool has_init_range,
     return false;
   }
 
-  SetMediaInfoRanges(has_init_range,
-                     init_range_start,
-                     init_range_end,
-                     has_index_range,
-                     index_range_start,
-                     index_range_end,
-                     media_info);
+
+  if (media_ranges.init_range) {
+    SetRange(media_ranges.init_range->start, media_ranges.init_range->end,
+             media_info->mutable_init_range());
+  }
+
+  if (media_ranges.index_range) {
+    SetRange(media_ranges.index_range->start, media_ranges.index_range->end,
+             media_info->mutable_index_range());
+  }
 
   media_info->set_media_duration_seconds(duration_seconds);
 

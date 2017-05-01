@@ -14,6 +14,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/event/muxer_listener.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
@@ -73,12 +74,7 @@ struct VideoStreamInfoParameters {
 
 // Note that this does not have vector of StreamInfo pointer.
 struct OnMediaEndParameters {
-  bool has_init_range;
-  uint64_t init_range_start;
-  uint64_t init_range_end;
-  bool has_index_range;
-  uint64_t index_range_start;
-  uint64_t index_range_end;
+  MuxerListener::MediaRanges media_ranges;
   float duration_seconds;
   uint64_t file_size;
 };

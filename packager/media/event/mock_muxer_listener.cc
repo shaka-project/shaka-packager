@@ -12,5 +12,25 @@ namespace media {
 MockMuxerListener::MockMuxerListener() {}
 MockMuxerListener::~MockMuxerListener() {}
 
+void MockMuxerListener::OnMediaEnd(const MediaRanges& range,
+                                   float duration_seconds,
+                                   uint64_t file_size) {
+  const bool has_init_range = static_cast<bool>(range.init_range);
+  Range init_range = {};
+  if (has_init_range) {
+    init_range = range.init_range.value();
+  }
+  const bool has_index_range = static_cast<bool>(range.index_range);
+  Range index_range = {};
+  if (has_index_range) {
+    index_range = range.index_range.value();
+  }
+
+  OnMediaEndMock(has_init_range, init_range.start, init_range.end,
+                 has_index_range, index_range.start, index_range.end,
+                 !range.subsegment_ranges.empty(), range.subsegment_ranges,
+                 duration_seconds, file_size);
+}
+
 }  // namespace media
 }  // namespace shaka

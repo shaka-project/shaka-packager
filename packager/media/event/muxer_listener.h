@@ -14,7 +14,9 @@
 #include <string>
 #include <vector>
 
+#include "packager/base/optional.h"
 #include "packager/media/base/fourccs.h"
+#include "packager/media/base/range.h"
 
 namespace shaka {
 namespace media {
@@ -34,6 +36,20 @@ class MuxerListener {
     kContainerMp4,
     kContainerMpeg2ts,
     kContainerWebM
+  };
+
+  /// Structure for specifying ranges within a media file. This is mainly for
+  /// VOD content where OnMediaEnd() is actually used for finalization e.g.
+  /// writing out manifests.
+  struct MediaRanges {
+    /// Range of the initialization section of a segment.
+    base::Optional<Range> init_range;
+    /// Range of the index section of a segment.
+    base::Optional<Range> index_range;
+    /// Ranges of the subsegments (e.g. fragments).
+    /// The vector is empty if ranges are not specified. For example it
+    /// may not be a single file.
+    std::vector<Range> subsegment_ranges;
   };
 
   virtual ~MuxerListener() {};
@@ -89,24 +105,10 @@ class MuxerListener {
   /// Called when all files are written out and the muxer object does not output
   /// any more files.
   /// Note: This event might not be very interesting to MPEG DASH Live profile.
-  /// @param has_init_range is true if @a init_range_start and @a init_range_end
-  ///        actually define an initialization range of a segment. The range is
-  ///        inclusive for both start and end.
-  /// @param init_range_start is the start of the initialization range.
-  /// @param init_range_end is the end of the initialization range.
-  /// @param has_index_range is true if @a index_range_start and @a
-  ///        index_range_end actually define an index range of a segment. The
-  ///        range is inclusive for both start and end.
-  /// @param index_range_start is the start of the index range.
-  /// @param index_range_end is the end of the index range.
+  /// @param media_ranges is the ranges of the media file.
   /// @param duration_seconds is the length of the media in seconds.
   /// @param file_size is the size of the file in bytes.
-  virtual void OnMediaEnd(bool has_init_range,
-                          uint64_t init_range_start,
-                          uint64_t init_range_end,
-                          bool has_index_range,
-                          uint64_t index_range_start,
-                          uint64_t index_range_end,
+  virtual void OnMediaEnd(const MediaRanges& media_ranges,
                           float duration_seconds,
                           uint64_t file_size) = 0;
 

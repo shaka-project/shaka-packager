@@ -32,12 +32,11 @@ namespace {
 // |start| and |end| are for byte-range-spec specified in RFC2616.
 void SetStartAndEndFromOffsetAndSize(size_t offset,
                                      size_t size,
-                                     uint32_t* start,
-                                     uint32_t* end) {
-  DCHECK(start && end);
-  *start = static_cast<uint32_t>(offset);
+                                     Range* range) {
+  DCHECK(range);
+  range->start = static_cast<uint32_t>(offset);
   // Note that ranges are inclusive. So we need - 1.
-  *end = *start + static_cast<uint32_t>(size) - 1;
+  range->end = range->start + static_cast<uint32_t>(size) - 1;
 }
 
 FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
@@ -419,30 +418,30 @@ void MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
                    << " handling not implemented yet.";
 }
 
-bool MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {
-  DCHECK(start && end);
+base::Optional<Range> MP4Muxer::GetInitRangeStartAndEnd() {
   size_t range_offset = 0;
   size_t range_size = 0;
   const bool has_range = segmenter_->GetInitRange(&range_offset, &range_size);
 
   if (!has_range)
-    return false;
+    return base::nullopt;
 
-  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);
-  return true;
+  Range range;
+  SetStartAndEndFromOffsetAndSize(range_offset, range_size, &range);
+  return range;
 }
 
-bool MP4Muxer::GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) {
-  DCHECK(start && end);
+base::Optional<Range> MP4Muxer::GetIndexRangeStartAndEnd() {
   size_t range_offset = 0;
   size_t range_size = 0;
   const bool has_range = segmenter_->GetIndexRange(&range_offset, &range_size);
 
   if (!has_range)
-    return false;
+    return base::nullopt;
 
-  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);
-  return true;
+  Range range;
+  SetStartAndEndFromOffsetAndSize(range_offset, range_size, &range);
+  return range;
 }
 
 void MP4Muxer::FireOnMediaStartEvent() {
@@ -464,15 +463,10 @@ void MP4Muxer::FireOnMediaEndEvent() {
   if (!muxer_listener())
     return;
 
-  uint32_t init_range_start = 0;
-  uint32_t init_range_end = 0;
-  const bool has_init_range =
-      GetInitRangeStartAndEnd(&init_range_start, &init_range_end);
-
-  uint32_t index_range_start = 0;
-  uint32_t index_range_end = 0;
-  const bool has_index_range =
-      GetIndexRangeStartAndEnd(&index_range_start, &index_range_end);
+  MuxerListener::MediaRanges media_range;
+  media_range.init_range = GetInitRangeStartAndEnd();
+  media_range.index_range = GetIndexRangeStartAndEnd();
+  media_range.subsegment_ranges = segmenter_->GetSegmentRanges();
 
   const float duration_seconds = static_cast<float>(segmenter_->GetDuration());
 
@@ -483,14 +477,7 @@ void MP4Muxer::FireOnMediaEndEvent() {
     return;
   }
 
-  muxer_listener()->OnMediaEnd(has_init_range,
-                               init_range_start,
-                               init_range_end,
-                               has_index_range,
-                               index_range_start,
-                               index_range_end,
-                               duration_seconds,
-                               file_size);
+  muxer_listener()->OnMediaEnd(media_range, duration_seconds, file_size);
 }
 
 uint64_t MP4Muxer::IsoTimeNow() {

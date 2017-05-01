@@ -11,7 +11,9 @@
 #include <memory>
 #include <vector>
 
+#include "packager/base/optional.h"
 #include "packager/media/base/fourccs.h"
+#include "packager/media/base/range.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/status.h"
 
@@ -73,6 +75,8 @@ class Segmenter {
   Status FinalizeSegment(size_t stream_id,
                          std::shared_ptr<SegmentInfo> segment_info);
 
+  // TODO(rkuroiwa): Change these Get*Range() methods to return
+  // base::Optional<Range> as well.
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.
   virtual bool GetInitRange(size_t* offset, size_t* size) = 0;
@@ -80,6 +84,11 @@ class Segmenter {
   /// @return true if there is an index byte range, while setting @a offset
   ///         and @a size; or false if index byte range does not apply.
   virtual bool GetIndexRange(size_t* offset, size_t* size) = 0;
+
+  // Returns an empty vector if there are no specific ranges for the segments,
+  // e.g. the media is in multiple files.
+  // Otherwise, a vector of ranges for the media segments are returned.
+  virtual std::vector<Range> GetSegmentRanges() = 0;
 
   uint32_t GetReferenceTimeScale() const;
 

@@ -5,6 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include "packager/media/event/muxer_listener_test_helper.h"
+#include "packager/media/event/muxer_listener.h"
 
 #include <gtest/gtest.h>
 
@@ -59,17 +60,23 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
 OnMediaEndParameters GetDefaultOnMediaEndParams() {
   // Values for {init, index} range {start, end} are arbitrary, but makes sure
   // that it is monotonically increasing and contiguous.
-  const bool kHasInitRange = true;
   const uint64_t kInitRangeStart = 0;
   const uint64_t kInitRangeEnd = kInitRangeStart + 120;
-  const uint64_t kHasIndexRange = true;
   const uint64_t kIndexRangeStart = kInitRangeEnd + 1;
   const uint64_t kIndexRangeEnd = kIndexRangeStart + 100;
   const float kMediaDuration = 10.5f;
   const uint64_t kFileSize = 10000;
-  OnMediaEndParameters param = {
-      kHasInitRange,    kInitRangeStart, kInitRangeEnd,  kHasIndexRange,
-      kIndexRangeStart, kIndexRangeEnd,  kMediaDuration, kFileSize};
+  MuxerListener::MediaRanges media_ranges;
+  Range init_range;
+  init_range.start = kInitRangeStart;
+  init_range.end = kInitRangeEnd;
+  media_ranges.init_range = init_range;
+  Range index_range;
+  index_range.start = kIndexRangeStart;
+  index_range.end = kIndexRangeEnd;
+  media_ranges.index_range =index_range;
+
+  OnMediaEndParameters param = {media_ranges, kMediaDuration, kFileSize};
   return param;
 }
 

@@ -39,6 +39,7 @@ class MultiSegmentSegmenter : public Segmenter {
   /// @{
   bool GetInitRange(size_t* offset, size_t* size) override;
   bool GetIndexRange(size_t* offset, size_t* size) override;
+  std::vector<Range> GetSegmentRanges() override;
   /// @}
 
  private:
