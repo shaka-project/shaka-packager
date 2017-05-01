@@ -71,7 +71,7 @@ class MediaPlaylist {
   ///        necessarily the same as @a file_name.
   /// @param group_id is the group ID for this playlist. This is the value of
   ///        GROUP-ID attribute for EXT-X-MEDIA.
-  MediaPlaylist(MediaPlaylistType type,
+  MediaPlaylist(MediaPlaylistType playlist_type,
                 double time_shift_buffer_depth,
                 const std::string& file_name,
                 const std::string& name,
@@ -100,10 +100,13 @@ class MediaPlaylist {
   /// @param file_name is the file name of the segment.
   /// @param start_time is in terms of the timescale of the media.
   /// @param duration is in terms of the timescale of the media.
+  /// @param start_byte_offset is the offset of where the subsegment starts.
+  ///        This must be 0 if the whole segment is a subsegment.
   /// @param size is size in bytes.
   virtual void AddSegment(const std::string& file_name,
                           uint64_t start_time,
                           uint64_t duration,
+                          uint64_t start_byte_offset,
                           uint64_t size);
 
   /// All segments added after calling this method must be decryptable with
@@ -167,7 +170,7 @@ class MediaPlaylist {
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
 
-  const MediaPlaylistType type_;
+  const MediaPlaylistType playlist_type_;
   const double time_shift_buffer_depth_;
   // Mainly for MasterPlaylist to use these values.
   const std::string file_name_;
@@ -185,6 +188,10 @@ class MediaPlaylist {
   uint32_t time_scale_ = 0;
 
   uint64_t max_bitrate_ = 0;
+
+  // Cache the previous calls AddSegment() end offset. This is used to construct
+  // SegmentInfoEntry.
+  uint64_t previous_segment_end_offset_ = 0;
 
   // See SetTargetDuration() comments.
   bool target_duration_set_ = false;

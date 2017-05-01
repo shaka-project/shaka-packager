@@ -94,6 +94,11 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                          next_key_system_infos_, &media_info);
   }
 
+  media_info_ = media_info;
+  if (!media_info_.has_segment_template()) {
+    return;
+  }
+
   const bool result = hls_notifier_->NotifyNewStream(
       media_info, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
       &stream_id_);
@@ -117,14 +122,73 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   // Don't flush the notifier here. Flushing here would write all the playlists
   // before all Media Playlists are read. Which could cause problems
   // setting the correct EXT-X-TARGETDURATION.
+  if (media_info_.has_segment_template()) {
+    return;
+  }
+  if (media_ranges.init_range) {
+    shaka::Range* init_range = media_info_.mutable_init_range();
+    init_range->set_begin(media_ranges.init_range.value().start);
+    init_range->set_end(media_ranges.init_range.value().end);
+  }
+  if (media_ranges.index_range) {
+    shaka::Range* index_range = media_info_.mutable_index_range();
+    index_range->set_begin(media_ranges.index_range.value().start);
+    index_range->set_end(media_ranges.index_range.value().end);
+  }
+
+  // TODO(rkuroiwa): Make this a method. This is the same as OnMediaStart().
+  const bool result = hls_notifier_->NotifyNewStream(
+      media_info_, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
+      &stream_id_);
+  if (!result) {
+    LOG(WARNING) << "Failed to notify new stream for VOD.";
+    return;
+  }
+
+  // TODO(rkuroiwa); Keep track of which (sub)segments are encrypted so that the
+  // notification is sent right before the enecrypted (sub)segments.
+  media_started_ = true;
+  if (must_notify_encryption_start_) {
+    OnEncryptionStart();
+  }
+
+  if (!media_ranges.subsegment_ranges.empty()) {
+    const std::vector<Range>& subsegment_ranges =
+        media_ranges.subsegment_ranges;
+    size_t num_subsegments = subsegment_ranges.size();
+    if (segment_infos_.size() != num_subsegments) {
+      LOG(WARNING) << "Number of subsegment ranges (" << num_subsegments
+                   << ") does not match the number of subsegments notified to "
+                      "OnNewSegment() ("
+                   << segment_infos_.size() << ").";
+      num_subsegments = std::min(segment_infos_.size(), num_subsegments);
+    }
+    for (size_t i = 0; i < num_subsegments; ++i) {
+      const Range& range = subsegment_ranges[i];
+      const SegmentInfo& subsegment_info = segment_infos_[i];
+      hls_notifier_->NotifyNewSegment(
+          stream_id_, media_info_.media_file_name(), subsegment_info.start_time,
+          subsegment_info.duration, range.start, range.end + 1 - range.start);
+    }
+  }
 }
 
 void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           uint64_t start_time,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
+  if (!media_info_.has_segment_template()) {
+    SegmentInfo info;
+    info.duration = duration;
+    info.start_time = start_time;
+    segment_infos_.push_back(info);
+    return;
+  }
+  // For multisegment, it always starts from the beginning of the file.
+  const size_t kStartingByteOffset = 0u;
   const bool result = hls_notifier_->NotifyNewSegment(
-      stream_id_, file_name, start_time, duration, segment_file_size);
+      stream_id_, file_name, start_time, duration, kStartingByteOffset,
+      segment_file_size);
   LOG_IF(WARNING, !result) << "Failed to add new segment.";
 }
 

@@ -11,6 +11,8 @@
 
 #include "packager/base/macros.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/segment_info.h"
 
 namespace shaka {
 
@@ -74,6 +76,11 @@ class HlsNotifyMuxerListener : public MuxerListener {
   std::vector<uint8_t> next_iv_;
   std::vector<ProtectionSystemSpecificInfo> next_key_system_infos_;
   FourCC protection_scheme_ = FOURCC_NULL;
+
+  // MediaInfo passed to Notifier::OnNewStream(). Mainly for single segment
+  // playlists.
+  MediaInfo media_info_;
+  std::vector<SegmentInfo> segment_infos_;
 
   DISALLOW_COPY_AND_ASSIGN(HlsNotifyMuxerListener);
 };

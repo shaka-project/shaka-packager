@@ -6,11 +6,14 @@
 
 #include "packager/hls/base/media_playlist.h"
 
+#include <inttypes.h>
+
 #include <algorithm>
 #include <cmath>
 #include <memory>
 
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/media/file/file.h"
@@ -32,11 +35,36 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
-std::string CreatePlaylistHeader(const std::string& init_segment_name,
-                                 uint32_t target_duration,
-                                 MediaPlaylist::MediaPlaylistType type,
-                                 int media_sequence_number,
-                                 int discontinuity_sequence_number) {
+std::string CreateExtXMap(const MediaInfo& media_info) {
+  std::string ext_x_map;
+  if (media_info.has_init_segment_name()) {
+    base::StringAppendF(&ext_x_map, "#EXT-X-MAP:URI=\"%s\"",
+                        media_info.init_segment_name().data());
+  } else if (media_info.has_media_file_name() && media_info.has_init_range()) {
+    // It only makes sense for single segment media to have EXT-X-MAP if
+    // there is init_range.
+    base::StringAppendF(&ext_x_map, "#EXT-X-MAP:URI=\"%s\"",
+                        media_info.media_file_name().data());
+  } else {
+    return "";
+  }
+  if (media_info.has_init_range()) {
+    const uint64_t begin = media_info.init_range().begin();
+    const uint64_t end = media_info.init_range().end();
+    const uint64_t length = end - begin + 1;
+    base::StringAppendF(&ext_x_map, ",BYTERANGE=%" PRIu64 "@%" PRIu64, length,
+                        begin);
+  }
+  ext_x_map += "\n";
+  return ext_x_map;
+}
+
+std::string CreatePlaylistHeader(
+    const MediaInfo& media_info,
+    uint32_t target_duration,
+    MediaPlaylist::MediaPlaylistType type,
+    int media_sequence_number,
+    int discontinuity_sequence_number) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
   if (!version.empty()) {
@@ -76,18 +104,24 @@ std::string CreatePlaylistHeader(const std::string& init_segment_name,
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
   // segment and key info.
-  if (!init_segment_name.empty()) {
-    header += "#EXT-X-MAP:URI=\"" + init_segment_name + "\"\n";
-  }
-
+  header += CreateExtXMap(media_info);
   return header;
 }
 
 class SegmentInfoEntry : public HlsEntry {
  public:
+  // If |use_byte_range| true then this will append EXT-X-BYTERANGE
+  // after EXTINF.
+  // It uses |previous_segment_end_offset| to determine if it has to also
+  // specify the start byte offset in the tag.
+  // |duration| is duration in seconds.
   SegmentInfoEntry(const std::string& file_name,
                    double start_time,
-                   double duration);
+                   double duration,
+                   bool use_byte_range,
+                   uint64_t start_byte_offset,
+                   uint64_t segment_file_size,
+                   uint64_t previous_segment_end_offset);
   ~SegmentInfoEntry() override;
 
   std::string ToString() override;
@@ -98,22 +132,42 @@ class SegmentInfoEntry : public HlsEntry {
   const std::string file_name_;
   const double start_time_;
   const double duration_;
+  const bool use_byte_range_;
+  const uint64_t start_byte_offset_;
+  const uint64_t segment_file_size_;
+  const uint64_t previous_segment_end_offset_;
 
   DISALLOW_COPY_AND_ASSIGN(SegmentInfoEntry);
 };
 
 SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
                                    double start_time,
-                                   double duration)
+                                   double duration,
+                                   bool use_byte_range,
+                                   uint64_t start_byte_offset,
+                                   uint64_t segment_file_size,
+                                   uint64_t previous_segment_end_offset)
     : HlsEntry(HlsEntry::EntryType::kExtInf),
       file_name_(file_name),
       start_time_(start_time),
-      duration_(duration) {}
+      duration_(duration),
+      use_byte_range_(use_byte_range),
+      start_byte_offset_(start_byte_offset),
+      segment_file_size_(segment_file_size),
+      previous_segment_end_offset_(previous_segment_end_offset) {}
 SegmentInfoEntry::~SegmentInfoEntry() {}
 
 std::string SegmentInfoEntry::ToString() {
-  return base::StringPrintf("#EXTINF:%.3f,\n%s\n", duration_,
-                            file_name_.c_str());
+  std::string result = base::StringPrintf("#EXTINF:%.3f,\n", duration_);
+  if (use_byte_range_) {
+    result += "#EXT-X-BYTERANGE:" + base::Uint64ToString(segment_file_size_);
+    if (previous_segment_end_offset_ + 1 != start_byte_offset_) {
+      result += "@" + base::Uint64ToString(start_byte_offset_);
+    }
+    result += "\n";
+  }
+  result += file_name_ + "\n";
+  return result;
 }
 
 class EncryptionInfoEntry : public HlsEntry {
@@ -224,12 +278,12 @@ double LatestSegmentStartTime(
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
 HlsEntry::~HlsEntry() {}
 
-MediaPlaylist::MediaPlaylist(MediaPlaylistType type,
+MediaPlaylist::MediaPlaylist(MediaPlaylistType playlist_type,
                              double time_shift_buffer_depth,
                              const std::string& file_name,
                              const std::string& name,
                              const std::string& group_id)
-    : type_(type),
+    : playlist_type_(playlist_type),
       time_shift_buffer_depth_(time_shift_buffer_depth),
       file_name_(file_name),
       name_(name),
@@ -272,12 +326,15 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 void MediaPlaylist::AddSegment(const std::string& file_name,
                                uint64_t start_time,
                                uint64_t duration,
+                               uint64_t start_byte_offset,
                                uint64_t size) {
   if (time_scale_ == 0) {
     LOG(WARNING) << "Timescale is not set and the duration for " << duration
                  << " cannot be calculated. The output will be wrong.";
 
-    entries_.emplace_back(new SegmentInfoEntry(file_name, 0.0, 0.0));
+    entries_.emplace_back(new SegmentInfoEntry(
+        file_name, 0.0, 0.0, !media_info_.has_segment_template(),
+        start_byte_offset, size, previous_segment_end_offset_));
     return;
   }
 
@@ -291,8 +348,11 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   const int kBitsInByte = 8;
   const uint64_t bitrate = kBitsInByte * size / segment_duration_seconds;
   max_bitrate_ = std::max(max_bitrate_, bitrate);
-  entries_.emplace_back(new SegmentInfoEntry(file_name, start_time_seconds,
-                                             segment_duration_seconds));
+  entries_.emplace_back(new SegmentInfoEntry(
+      file_name, start_time_seconds, segment_duration_seconds,
+      !media_info_.has_segment_template(), start_byte_offset, size,
+      previous_segment_end_offset_));
+  previous_segment_end_offset_ = start_byte_offset + size - 1;
   SlideWindow();
 }
 
@@ -319,7 +379,7 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
   }
 
   std::string header = CreatePlaylistHeader(
-      media_info_.init_segment_name(), target_duration_, type_,
+      media_info_, target_duration_, playlist_type_,
       media_sequence_number_, discontinuity_sequence_number_);
 
   std::string body;
@@ -328,7 +388,7 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
 
   std::string content = header + body;
 
-  if (type_ == MediaPlaylistType::kVod) {
+  if (playlist_type_ == MediaPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";
   }
 
@@ -388,8 +448,10 @@ bool MediaPlaylist::GetResolution(uint32_t* width, uint32_t* height) const {
 
 void MediaPlaylist::SlideWindow() {
   DCHECK(!entries_.empty());
-  if (time_shift_buffer_depth_ <= 0.0 || type_ != MediaPlaylistType::kLive)
+  if (time_shift_buffer_depth_ <= 0.0 ||
+      playlist_type_ != MediaPlaylistType::kLive) {
     return;
+  }
   DCHECK_GT(time_scale_, 0u);
 
   // The start time of the latest segment is considered the current_play_time,

@@ -47,16 +47,19 @@ class HlsNotifier {
                                const std::string& group_id,
                                uint32_t* stream_id) = 0;
 
-  // |stream_id| is the value set by NotifyNewStream().
-  // |segment_name| is the name of the new segment.
-  // |start_time| is the start time of the segment in terms of timescale passed
-  // in |media_info|.
-  // |duration| is also in terms of timescale.
-  // |size| is the size in bytes.
+  /// @param stream_id is the value set by NotifyNewStream().
+  /// @param segment_name is the name of the new segment.
+  /// @param start_time is the start time of the segment in timescale units
+  ///        passed in @a media_info.
+  /// @param duration is also in terms of timescale.
+  /// @param start_byte_offset is the offset of where the subsegment starts.
+  ///        This should be 0 if the whole segment is a subsegment.
+  /// @param size is the size in bytes.
   virtual bool NotifyNewSegment(uint32_t stream_id,
                                 const std::string& segment_name,
                                 uint64_t start_time,
                                 uint64_t duration,
+                                uint64_t start_byte_offset,
                                 uint64_t size) = 0;
 
   /// @param stream_id is the value set by NotifyNewStream().

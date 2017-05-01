@@ -67,6 +67,7 @@ class SimpleHlsNotifier : public HlsNotifier {
                         const std::string& segment_name,
                         uint64_t start_time,
                         uint64_t duration,
+                        uint64_t start_byte_offset,
                         uint64_t size) override;
   bool NotifyEncryptionUpdate(
       uint32_t stream_id,

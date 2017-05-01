@@ -299,6 +299,7 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          const std::string& segment_name,
                                          uint64_t start_time,
                                          uint64_t duration,
+                                         uint64_t start_byte_offset,
                                          uint64_t size) {
   base::AutoLock auto_lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);
@@ -311,7 +312,7 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
 
   auto& media_playlist = stream_iterator->second->media_playlist;
   media_playlist->AddSegment(prefix_ + relative_segment_name, start_time,
-                             duration, size);
+                             duration, start_byte_offset, size);
 
   // Update target duration.
   uint32_t longest_segment_duration =
