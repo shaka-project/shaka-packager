@@ -159,26 +159,27 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">void</span> set_cipher_mode(CipherMode mode) { cipher_mode_ = mode; }</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  int64_t order_;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  Scope scope_;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  Type type_;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  EncryptionAlgo encryption_algo_;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::string encryption_key_id_;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  CipherMode cipher_mode_;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  DISALLOW_COPY_AND_ASSIGN(ContentEncoding);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;};</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  ContentEncoding(<span class="keyword">const</span> ContentEncoding&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  ContentEncoding&amp; operator=(<span class="keyword">const</span> ContentEncoding&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  int64_t order_;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  Scope scope_;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  Type type_;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  EncryptionAlgo encryption_algo_;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  std::string encryption_key_id_;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  CipherMode cipher_mode_;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1ContentEncoding_html"><div class="ttname"><a href="../../dc/da6/classshaka_1_1media_1_1ContentEncoding.html">shaka::media::ContentEncoding</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d3b/webm__content__encodings_8h_source.html#l00015">webm_content_encodings.h:15</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ContentEncoding_html_a3ba32d5ca8b0688b2dc6b2ec8a5be6d2"><div class="ttname"><a href="../../dc/da6/classshaka_1_1media_1_1ContentEncoding.html#a3ba32d5ca8b0688b2dc6b2ec8a5be6d2">shaka::media::ContentEncoding::kOrderInvalid</a></div><div class="ttdeci">static const int kOrderInvalid</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d3b/webm__content__encodings_8h_source.html#l00020">webm_content_encodings.h:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 28 2017 21:39:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 2 2017 18:44:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
