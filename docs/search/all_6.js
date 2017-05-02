@@ -40,7 +40,8 @@ var searchData=
   ['getstreaminfostreamdata',['GetStreamInfoStreamData',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#ac697d026d8da483cbbfbf866b0540830',1,'shaka::media::MediaHandlerTestBase']]],
   ['gettotalsizeofsubsamples',['GetTotalSizeOfSubsamples',['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a338024925bc46a2f65a058906cdcb4a3',1,'shaka::media::DecryptConfig::GetTotalSizeOfSubsamples()'],['../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#a870ef304f376ec0822686e1d78765bf2',1,'shaka::media::mp4::SampleEncryptionEntry::GetTotalSizeOfSubsamples()']]],
   ['gettracktypefromstring',['GetTrackTypeFromString',['../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1',1,'shaka::media::KeySource']]],
-  ['getvideostreaminfo',['GetVideoStreamInfo',['../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#ae71e739feadfb8e9207b8ceb9689ca66',1,'shaka::media::WebMVideoClient']]],
+  ['getvideostreaminfo',['GetVideoStreamInfo',['../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a305b6679d9cd2457a3a3ba72319a3249',1,'shaka::media::WebMVideoClient']]],
   ['getvideostreaminfostreamdata',['GetVideoStreamInfoStreamData',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#a5638d5f1141920ebe7a189c6b6a18b48',1,'shaka::media::MediaHandlerTestBase']]],
+  ['getvpcodecconfig',['GetVpCodecConfig',['../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#aa553acba4e9c70e92af5612b03b4daf3',1,'shaka::media::WebMVideoClient']]],
   ['getxml',['GetXml',['../d8/d8e/classshaka_1_1AdaptationSet.html#af988e3a6d8b0d3ede66e3f3aea992d5e',1,'shaka::AdaptationSet::GetXml()'],['../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960',1,'shaka::Representation::GetXml()']]]
 ];

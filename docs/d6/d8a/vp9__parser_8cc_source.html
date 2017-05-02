@@ -358,7 +358,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      <span class="keywordflow">if</span> (chroma_subsampling ==</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;          VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA) {</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;4:2:0 color not supported in profile &quot;</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;                   &lt;&lt; codec_config-&gt;profile();</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;                   &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(codec_config-&gt;profile());</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      }</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;</div>
@@ -382,7 +382,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    }</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  }</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  codec_config-&gt;set_video_full_range_flag(yuv_full_range);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  codec_config-&gt;set_chroma_subsampling(chroma_subsampling);</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  codec_config-&gt;SetChromaSubsampling(chroma_subsampling);</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  VLOG(3) &lt;&lt; <span class="stringliteral">&quot;\n profile &quot;</span> &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(codec_config-&gt;profile())</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;\n bit depth &quot;</span> &lt;&lt; static_cast&lt;int&gt;(codec_config-&gt;bit_depth())</div>
@@ -600,7 +600,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;          <span class="comment">// specification of either the color format or color sub-sampling in</span></div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;          <span class="comment">// profile 0. VP9 specifies that the default color format should be</span></div>
 <div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;          <span class="comment">// YUV 4:2:0 in this case (normative).</span></div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;          writable_codec_config()-&gt;set_chroma_subsampling(</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;          writable_codec_config()-&gt;SetChromaSubsampling(</div>
 <div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;              VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);</div>
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;          writable_codec_config()-&gt;set_bit_depth(8);</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;        }</div>
@@ -686,7 +686,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html_ae40382c4ca4a57b3bb3531a337aebbe4"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4">shaka::media::BitReader::ReadBits</a></div><div class="ttdeci">bool ReadBits(size_t num_bits, T *out)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00035">bit_reader.h:35</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1VPCodecConfigurationRecord_html"><div class="ttname"><a href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html">shaka::media::VPCodecConfigurationRecord</a></div><div class="ttdoc">Class for parsing or writing VP codec configuration record. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d9b/vp__codec__configuration__record_8h_source.html#l00125">vp_codec_configuration_record.h:125</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VPCodecConfigurationRecord_html"><div class="ttname"><a href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html">shaka::media::VPCodecConfigurationRecord</a></div><div class="ttdoc">Class for parsing or writing VP codec configuration record. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d9b/vp__codec__configuration__record_8h_source.html#l00153">vp_codec_configuration_record.h:153</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VP9Parser_html_a52e6a17fa34c5676cd0cdc547cb355a5"><div class="ttname"><a href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html#a52e6a17fa34c5676cd0cdc547cb355a5">shaka::media::VP9Parser::IsKeyframe</a></div><div class="ttdeci">static bool IsKeyframe(const uint8_t *data, size_t data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d8a/vp9__parser_8cc_source.html#l00572">vp9_parser.cc:572</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BitReader_html"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">shaka::media::BitReader</a></div><div class="ttdoc">A class to read bit streams. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00017">bit_reader.h:17</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VP9Parser_html_ae915c36aa472d70b55e3d65b24612e57"><div class="ttname"><a href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html#ae915c36aa472d70b55e3d65b24612e57">shaka::media::VP9Parser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *data, size_t data_size, std::vector&lt; VPxFrameInfo &gt; *vpx_frames) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d8a/vp9__parser_8cc_source.html#l00455">vp9_parser.cc:455</a></div></div>
@@ -697,7 +697,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 2 2017 18:44:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 2 2017 21:09:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
