@@ -81,6 +81,7 @@ class StreamInfo {
   const std::vector<uint8_t>& codec_config() const { return codec_config_; }
   const std::string& language() const { return language_; }
   bool is_encrypted() const { return is_encrypted_; }
+  bool has_clear_lead() const { return has_clear_lead_; }
   const EncryptionConfig& encryption_config() const {
     return encryption_config_;
   }
@@ -93,6 +94,9 @@ class StreamInfo {
   }
   void set_language(const std::string& language) { language_ = language; }
   void set_is_encrypted(bool is_encrypted) { is_encrypted_ = is_encrypted; }
+  void set_has_clear_lead(bool has_clear_lead) {
+    has_clear_lead_ = has_clear_lead;
+  }
   void set_encryption_config(const EncryptionConfig& encryption_config) {
     encryption_config_ = encryption_config;
   }
@@ -112,6 +116,8 @@ class StreamInfo {
   // Note that in a potentially encrypted stream, individual buffers
   // can be encrypted or not encrypted.
   bool is_encrypted_;
+  // Whether the stream has clear lead.
+  bool has_clear_lead_ = false;
   EncryptionConfig encryption_config_;
   // Optional byte data required for some audio/video decoders such as Vorbis
   // codebooks.

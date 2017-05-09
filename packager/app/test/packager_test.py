@@ -270,6 +270,19 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
     self._VerifyDecryption(self.output[3], 'bear-640x360-v-trick-2-golden.mp4')
 
+  def testPackageWithEncryptionAndNoClearLead(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(encryption=True, clear_lead=0))
+    self._DiffGold(self.output[0],
+                   'bear-640x360-a-cenc-no-clear-lead-golden.mp4')
+    self._DiffGold(self.output[1],
+                   'bear-640x360-v-cenc-no-clear-lead-golden.mp4')
+    self._DiffGold(self.mpd_output,
+                   'bear-640x360-av-cenc-no-clear-lead-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
   def testPackageWithEncryptionAndNoPsshInStream(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
@@ -682,6 +695,7 @@ class PackagerAppTest(unittest.TestCase):
   def _GetFlags(self,
                 strip_parameter_set_nalus=True,
                 encryption=False,
+                clear_lead=1,
                 protection_scheme=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
@@ -710,7 +724,7 @@ class PackagerAppTest(unittest.TestCase):
     elif encryption:
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
-                '--clear_lead=1']
+                '--clear_lead={0}'.format(clear_lead)]
 
       if test_env.options.encryption_key:
         encryption_key = test_env.options.encryption_key

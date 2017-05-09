@@ -465,9 +465,11 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
   ASSERT_OK(Process(GetStreamInfoStreamData(kStreamIndex, codec_, kTimeScale)));
   EXPECT_THAT(GetOutputStreamDataVector(),
               ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale, kEncrypted)));
-  const EncryptionConfig& encryption_config =
-      GetOutputStreamDataVector().back()->stream_info->encryption_config();
-  EXPECT_THAT(encryption_config,
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+  ASSERT_TRUE(stream_info);
+  EXPECT_TRUE(stream_info->has_clear_lead());
+  EXPECT_THAT(stream_info->encryption_config(),
               MatchEncryptionConfig(
                   protection_scheme_, GetExpectedCryptByteBlock(),
                   GetExpectedSkipByteBlock(), GetExpectedPerSampleIvSize(),
@@ -512,8 +514,11 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   ASSERT_OK(Process(GetStreamInfoStreamData(kStreamIndex, codec_, kTimeScale)));
   EXPECT_THAT(GetOutputStreamDataVector(),
               ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale, kEncrypted)));
-  const EncryptionConfig& encryption_config =
-      GetOutputStreamDataVector().back()->stream_info->encryption_config();
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+  ASSERT_TRUE(stream_info);
+  EXPECT_TRUE(stream_info->has_clear_lead());
+  const EncryptionConfig& encryption_config = stream_info->encryption_config();
   EXPECT_EQ(protection_scheme_, encryption_config.protection_scheme);
   EXPECT_EQ(GetExpectedCryptByteBlock(), encryption_config.crypt_byte_block);
   EXPECT_EQ(GetExpectedSkipByteBlock(), encryption_config.skip_byte_block);
@@ -569,6 +574,10 @@ TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
   ASSERT_OK(Process(GetStreamInfoStreamData(kStreamIndex, codec_, kTimeScale)));
   EXPECT_THAT(GetOutputStreamDataVector(),
               ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale, kEncrypted)));
+  const StreamInfo* stream_info =
+      GetOutputStreamDataVector().back()->stream_info.get();
+  ASSERT_TRUE(stream_info);
+  EXPECT_FALSE(stream_info->has_clear_lead());
 
   InjectCodecParser();
 

@@ -194,6 +194,8 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
     return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
 
   stream_info->set_is_encrypted(true);
+  stream_info->set_has_clear_lead(encryption_options_.clear_lead_in_seconds >
+                                  0);
   stream_info->set_encryption_config(*encryption_config_);
   return Status::OK;
 }

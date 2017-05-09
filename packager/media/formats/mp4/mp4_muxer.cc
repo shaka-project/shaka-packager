@@ -288,8 +288,10 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   sample_description.video_entries.push_back(video);
 
   if (video_info->is_encrypted()) {
-    // Add a second entry for clear content.
-    sample_description.video_entries.push_back(video);
+    if (video_info->has_clear_lead()) {
+      // Add a second entry for clear content.
+      sample_description.video_entries.push_back(video);
+    }
     // Convert the first entry to an encrypted entry.
     VideoSampleEntry& entry = sample_description.video_entries[0];
     GenerateSinf(entry.format, video_info->encryption_config(), &entry.sinf);
@@ -350,8 +352,10 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   sample_description.audio_entries.push_back(audio);
 
   if (audio_info->is_encrypted()) {
-    // Add a second entry for clear content.
-    sample_description.audio_entries.push_back(audio);
+    if (audio_info->has_clear_lead()) {
+      // Add a second entry for clear content.
+      sample_description.audio_entries.push_back(audio);
+    }
     // Convert the first entry to an encrypted entry.
     AudioSampleEntry& entry = sample_description.audio_entries[0];
     GenerateSinf(entry.format, audio_info->encryption_config(), &entry.sinf);
