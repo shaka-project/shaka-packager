@@ -15,7 +15,6 @@ DECLARE_bool(generate_static_mpd);
 DECLARE_bool(output_media_info);
 DECLARE_string(mpd_output);
 DECLARE_string(base_urls);
-DECLARE_double(availability_time_offset);
 DECLARE_double(minimum_update_period);
 DECLARE_double(min_buffer_time);
 DECLARE_double(time_shift_buffer_depth);

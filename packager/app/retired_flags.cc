@@ -16,6 +16,10 @@ DEFINE_bool(single_segment, true, "This flag is deprecated. Do not use.");
 DEFINE_bool(webm_subsample_encryption,
             true,
             "This flag is deprecated. Use vp9_subsample_encryption instead.");
+DEFINE_double(availability_time_offset,
+              10.0,
+              "This flag is deprecated. Use suggested_presentation_delay "
+              "instead which can achieve similar effect.");
 
 // The current gflags library does not provide a way to check whether a flag is
 // set in command line. If a flag has a different value to its default value,
@@ -33,6 +37,13 @@ bool InformRetiredDefaultTrueFlag(const char* flagname, bool value) {
   return true;
 }
 
+bool InformRetiredDefaultDoubleFlag(const char* flagname, double value) {
+  if (value != 0)
+    fprintf(stderr, "WARNING: %s is deprecated and ignored.\n", flagname);
+  return true;
+}
+
 DEFINE_validator(profile, &InformRetiredStringFlag);
 DEFINE_validator(single_segment, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(webm_subsample_encryption, &InformRetiredDefaultTrueFlag);
+DEFINE_validator(availability_time_offset, &InformRetiredDefaultDoubleFlag);

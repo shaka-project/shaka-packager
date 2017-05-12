@@ -33,11 +33,6 @@ DEFINE_double(min_buffer_time,
               2.0,
               "Specifies, in seconds, a common duration used in the definition "
               "of the MPD Representation data rate.");
-DEFINE_double(availability_time_offset,
-              10.0,
-              "Offset with respect to the wall clock time for MPD "
-              "availabilityStartTime and availabilityEndTime values, in "
-              " seconds. This value is used for live profile only.");
 DEFINE_double(minimum_update_period,
               5.0,
               "Indicates to the player how often to refresh the media "

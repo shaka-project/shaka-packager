@@ -216,7 +216,6 @@ MpdOptions GetMpdOptions(bool on_demand_profile) {
   mpd_options.mpd_type = (on_demand_profile || FLAGS_generate_static_mpd)
                              ? MpdType::kStatic
                              : MpdType::kDynamic;
-  mpd_options.availability_time_offset = FLAGS_availability_time_offset;
   mpd_options.minimum_update_period = FLAGS_minimum_update_period;
   mpd_options.min_buffer_time = FLAGS_min_buffer_time;
   mpd_options.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;

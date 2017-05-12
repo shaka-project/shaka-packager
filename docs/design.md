@@ -81,10 +81,6 @@ mpd_options.min_buffer_time = 5.0;
 
 // The below options are for live profile only.
 
-// Offset with respect to the wall clock time for MPD availabilityStartTime
-// and availabilityEndTime values, in seconds.
-mpd_options.availability_time_offset = 10.0;
-
 // Indicates to the player how often to refresh the media presentations, in
 // seconds.
 mpd_options.minimum_update_period = 5.0;
@@ -93,7 +89,7 @@ mpd_options.minimum_update_period = 5.0;
 mpd_options.time_shift_buffer_depth = 1800.0;
 
 // Specifies a delay, in seconds, to be added to the media presentation time.
-mpd_options.suggested_presentation_delay = 0.0;
+mpd_options.suggested_presentation_delay = 10.0;
 ```
 
 Using MpdBuilder Instance

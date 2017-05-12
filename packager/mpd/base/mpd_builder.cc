@@ -575,10 +575,8 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   if (availability_start_time_.empty()) {
     double earliest_presentation_time;
     if (GetEarliestTimestamp(&earliest_presentation_time)) {
-      availability_start_time_ =
-          XmlDateTimeNowWithOffset(mpd_options_.availability_time_offset -
-                                       std::ceil(earliest_presentation_time),
-                                   clock_.get());
+      availability_start_time_ = XmlDateTimeNowWithOffset(
+          -std::ceil(earliest_presentation_time), clock_.get());
     } else {
       LOG(ERROR) << "Could not determine the earliest segment presentation "
                     "time for availabilityStartTime calculation.";

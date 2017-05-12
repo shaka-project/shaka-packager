@@ -23,7 +23,6 @@ enum class MpdType { kStatic, kDynamic };
 struct MpdOptions {
   DashProfile dash_profile = DashProfile::kOnDemand;
   MpdType mpd_type = MpdType::kStatic;
-  double availability_time_offset = 0;
   double minimum_update_period = 0;
   // TODO(tinskip): Set min_buffer_time in unit tests rather than here.
   double min_buffer_time = 2.0;
