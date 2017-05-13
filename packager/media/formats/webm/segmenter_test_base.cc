@@ -22,8 +22,7 @@ const uint8_t kTestMediaSampleSideData[] = {
     0x73, 0x69, 0x64, 0x65, 0x00};
 
 const int kTrackId = 1;
-const uint32_t kTimeScale = 1000;
-const uint64_t kDuration = 8000;
+const uint64_t kDurationInSeconds = 8;
 const Codec kCodec = kCodecVP8;
 const std::string kCodecString = "vp8";
 const std::string kLanguage = "en";
@@ -42,7 +41,7 @@ void SegmentTestBase::SetUp() {
   SetPackagerVersionForTesting("test");
 
   output_file_name_ = std::string(kMemoryFilePrefix) + "output-file.webm";
-  cur_time_timescale_ = 0;
+  cur_timestamp_ = 0;
 }
 
 void SegmentTestBase::TearDown() {
@@ -64,11 +63,11 @@ std::shared_ptr<MediaSample> SegmentTestBase::CreateSample(
     sample = MediaSample::CopyFrom(kTestMediaSampleData,
                                    sizeof(kTestMediaSampleData), is_key_frame);
   }
-  sample->set_dts(cur_time_timescale_);
-  sample->set_pts(cur_time_timescale_);
+  sample->set_dts(cur_timestamp_);
+  sample->set_pts(cur_timestamp_);
   sample->set_duration(duration);
 
-  cur_time_timescale_ += duration;
+  cur_timestamp_ += duration;
   return sample;
 }
 
@@ -81,24 +80,26 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
   return ret;
 }
 
-VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo() const {
+VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo(
+    uint32_t time_scale) const {
   return new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kCodec, H26xStreamFormat::kUnSpecified,
-      kCodecString, NULL, 0, kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, false);
+      kTrackId, time_scale, kDurationInSeconds * time_scale, kCodec,
+      H26xStreamFormat::kUnSpecified, kCodecString, NULL, 0, kWidth, kHeight,
+      kPixelWidth, kPixelHeight, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      false);
 }
 
 std::string SegmentTestBase::OutputFileName() const {
   return output_file_name_;
 }
 
-SegmentTestBase::ClusterParser::ClusterParser() : in_cluster_(false) {}
+SegmentTestBase::ClusterParser::ClusterParser() {}
 
 SegmentTestBase::ClusterParser::~ClusterParser() {}
 
 void SegmentTestBase::ClusterParser::PopulateFromCluster(
     const std::string& file_name) {
-  cluster_sizes_.clear();
+  frame_timecodes_.clear();
   std::string file_contents;
   ASSERT_TRUE(File::ReadFileToString(file_name.c_str(), &file_contents));
 
@@ -118,7 +119,7 @@ void SegmentTestBase::ClusterParser::PopulateFromCluster(
 
 void SegmentTestBase::ClusterParser::PopulateFromSegment(
         const std::string& file_name) {
-  cluster_sizes_.clear();
+  frame_timecodes_.clear();
   std::string file_contents;
   ASSERT_TRUE(File::ReadFileToString(file_name.c_str(), &file_contents));
 
@@ -133,13 +134,22 @@ void SegmentTestBase::ClusterParser::PopulateFromSegment(
       0, segment_parser.Parse(data + offset, static_cast<int>(size) - offset));
 }
 
-int SegmentTestBase::ClusterParser::GetFrameCountForCluster(size_t i) const {
-  DCHECK(i < cluster_sizes_.size());
-  return cluster_sizes_[i];
+size_t SegmentTestBase::ClusterParser::GetFrameCountForCluster(
+    size_t cluster_index) const {
+  DCHECK_LT(cluster_index, frame_timecodes_.size());
+  return frame_timecodes_[cluster_index].size();
+}
+
+int64_t SegmentTestBase::ClusterParser::GetFrameTimecode(
+    size_t cluster_index,
+    size_t frame_index) const {
+  DCHECK_LT(cluster_index, frame_timecodes_.size());
+  DCHECK_LT(frame_index, frame_timecodes_[cluster_index].size());
+  return frame_timecodes_[cluster_index][frame_index];
 }
 
 size_t SegmentTestBase::ClusterParser::cluster_count() const {
-  return cluster_sizes_.size();
+  return frame_timecodes_.size();
 }
 
 WebMParserClient* SegmentTestBase::ClusterParser::OnListStart(int id) {
@@ -147,7 +157,8 @@ WebMParserClient* SegmentTestBase::ClusterParser::OnListStart(int id) {
     if (in_cluster_)
       return NULL;
 
-    cluster_sizes_.push_back(0);
+    frame_timecodes_.emplace_back();
+    cluster_timecode_ = -1;
     in_cluster_ = true;
   }
 
@@ -165,6 +176,8 @@ bool SegmentTestBase::ClusterParser::OnListEnd(int id) {
 }
 
 bool SegmentTestBase::ClusterParser::OnUInt(int id, int64_t val) {
+  if (id == kWebMIdTimecode)
+    cluster_timecode_ = val;
   return true;
 }
 
@@ -173,10 +186,15 @@ bool SegmentTestBase::ClusterParser::OnFloat(int id, double val) {
 }
 
 bool SegmentTestBase::ClusterParser::OnBinary(int id,
-                                             const uint8_t* data,
-                                             int size) {
+                                              const uint8_t* data,
+                                              int size) {
   if (in_cluster_ && (id == kWebMIdSimpleBlock || id == kWebMIdBlock)) {
-    cluster_sizes_.back()++;
+    if (cluster_timecode_ == -1) {
+      LOG(WARNING) << "Cluster timecode not yet available";
+      return false;
+    }
+    int timecode = data[1] << 8 | data[2];
+    frame_timecodes_.back().push_back(cluster_timecode_ + timecode);
   }
 
   return true;

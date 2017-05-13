@@ -62,7 +62,7 @@ class SegmentTestBase : public ::testing::Test {
   /// Creates a Muxer options object for testing.
   MuxerOptions CreateMuxerOptions() const;
   /// Creates a video stream info object for testing.
-  VideoStreamInfo* CreateVideoStreamInfo() const;
+  VideoStreamInfo* CreateVideoStreamInfo(uint32_t time_scale) const;
 
   /// Gets the file name of the current output file.
   std::string OutputFileName() const;
@@ -81,7 +81,8 @@ class SegmentTestBase : public ::testing::Test {
     void PopulateFromCluster(const std::string& file_name);
     void PopulateFromSegment(const std::string& file_name);
 
-    int GetFrameCountForCluster(size_t i) const;
+    size_t GetFrameCountForCluster(size_t cluster_index) const;
+    int64_t GetFrameTimecode(size_t cluster_index, size_t frame_index) const;
 
     size_t cluster_count() const;
 
@@ -95,14 +96,18 @@ class SegmentTestBase : public ::testing::Test {
     bool OnString(int id, const std::string& str) override;
 
    private:
-    std::vector<int> cluster_sizes_;
-    bool in_cluster_;
+    int64_t cluster_timecode_ = -1;
+    // frame_timecodes_[cluster_index][frame_index].
+    std::vector<std::vector<int64_t>> frame_timecodes_;
+    bool in_cluster_ = false;
   };
 
  protected:
+  void set_cur_timestamp(uint64_t timestamp) { cur_timestamp_ = timestamp; }
+
   std::string output_file_name_;
   std::string segment_template_;
-  uint64_t cur_time_timescale_;
+  uint64_t cur_timestamp_;
   bool single_segment_;
 };
 

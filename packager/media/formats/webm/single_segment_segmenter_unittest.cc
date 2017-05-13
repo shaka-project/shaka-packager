@@ -12,7 +12,10 @@ namespace shaka {
 namespace media {
 namespace {
 
-const uint64_t kDuration = 1000;
+const uint32_t kTimeScale = 1000000;
+const uint32_t kTimecodeScale = 1000000;
+const int64_t kSecondsToNs = 1000000000L;
+const uint64_t kDuration = 1000000;
 const bool kSubsegment = true;
 
 const uint8_t kBasicSupportData[] = {
@@ -135,7 +138,7 @@ const uint8_t kBasicSupportData[] = {
 
 class SingleSegmentSegmenterTest : public SegmentTestBase {
  public:
-  SingleSegmentSegmenterTest() : info_(CreateVideoStreamInfo()) {}
+  SingleSegmentSegmenterTest() : info_(CreateVideoStreamInfo(kTimeScale)) {}
 
  protected:
   void InitializeSegmenter(const MuxerOptions& options) {
@@ -186,8 +189,8 @@ TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegment) {
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
   ASSERT_EQ(2u, parser.cluster_count());
-  EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
-  EXPECT_EQ(3, parser.GetFrameCountForCluster(1));
+  EXPECT_EQ(5u, parser.GetFrameCountForCluster(0));
+  EXPECT_EQ(3u, parser.GetFrameCountForCluster(1));
 }
 
 TEST_F(SingleSegmentSegmenterTest, IgnoresSubsegment) {
@@ -209,7 +212,79 @@ TEST_F(SingleSegmentSegmenterTest, IgnoresSubsegment) {
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
   ASSERT_EQ(1u, parser.cluster_count());
-  EXPECT_EQ(8, parser.GetFrameCountForCluster(0));
+  EXPECT_EQ(8u, parser.GetFrameCountForCluster(0));
+}
+
+TEST_F(SingleSegmentSegmenterTest, LargeTimestamp) {
+  MuxerOptions options = CreateMuxerOptions();
+  ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
+
+  // 3 hrs. It will overflow int64_t if multiplied by kSecondsToNs.
+  const int64_t kLargeTimestamp = 3ll * 3600 * kTimeScale;
+  set_cur_timestamp(kLargeTimestamp);
+
+  // Write the samples to the Segmenter.
+  for (int i = 0; i < 5; i++) {
+    const SideDataFlag side_data_flag =
+        i == 3 ? kGenerateSideData : kNoSideData;
+    std::shared_ptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, side_data_flag);
+    ASSERT_OK(segmenter_->AddSample(sample));
+  }
+  ASSERT_OK(segmenter_->FinalizeSegment(kLargeTimestamp, 5 * kDuration,
+                                        !kSubsegment));
+  ASSERT_OK(segmenter_->Finalize());
+
+  // Verify the resulting data.
+  ClusterParser parser;
+  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
+  ASSERT_EQ(1u, parser.cluster_count());
+  ASSERT_EQ(5u, parser.GetFrameCountForCluster(0));
+
+  const int64_t kClusterTimescode =
+      kLargeTimestamp / kTimeScale * kSecondsToNs / kTimecodeScale;
+  const int64_t kAdditionalTimecodePerSample =
+      kDuration / kTimeScale * kSecondsToNs / kTimecodeScale;
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(kClusterTimescode + kAdditionalTimecodePerSample * i,
+              parser.GetFrameTimecode(0, i));
+  }
+}
+
+TEST_F(SingleSegmentSegmenterTest, ReallyLargeTimestamp) {
+  MuxerOptions options = CreateMuxerOptions();
+  ASSERT_NO_FATAL_FAILURE(InitializeSegmenter(options));
+
+  // 10 years.
+  const int64_t kReallyLargeTimestamp = 10ll * 365 * 24 * 3600 * kTimeScale;
+  set_cur_timestamp(kReallyLargeTimestamp);
+
+  // Write the samples to the Segmenter.
+  for (int i = 0; i < 5; i++) {
+    const SideDataFlag side_data_flag =
+        i == 3 ? kGenerateSideData : kNoSideData;
+    std::shared_ptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, side_data_flag);
+    ASSERT_OK(segmenter_->AddSample(sample));
+  }
+  ASSERT_OK(segmenter_->FinalizeSegment(kReallyLargeTimestamp, 5 * kDuration,
+                                        !kSubsegment));
+  ASSERT_OK(segmenter_->Finalize());
+
+  // Verify the resulting data.
+  ClusterParser parser;
+  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromSegment(OutputFileName()));
+  ASSERT_EQ(1u, parser.cluster_count());
+  ASSERT_EQ(5u, parser.GetFrameCountForCluster(0));
+
+  const int64_t kClusterTimescode =
+      kReallyLargeTimestamp / kTimeScale * kSecondsToNs / kTimecodeScale;
+  const int64_t kAdditionalTimecodePerSample =
+      kDuration / kTimeScale * kSecondsToNs / kTimecodeScale;
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(kClusterTimescode + kAdditionalTimecodePerSample * i,
+              parser.GetFrameTimecode(0, i));
+  }
 }
 
 }  // namespace media

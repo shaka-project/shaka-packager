@@ -21,12 +21,12 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options)
 
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
-Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timescale,
-                                              uint64_t duration_timescale,
+Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
+                                              uint64_t duration_timestamp,
                                               bool is_subsegment) {
   CHECK(cluster());
-  Status status = Segmenter::FinalizeSegment(start_timescale,
-                                             duration_timescale, is_subsegment);
+  Status status = Segmenter::FinalizeSegment(start_timestamp,
+                                             duration_timestamp, is_subsegment);
   if (!status.ok())
     return status;
   if (!cluster()->Finalize())
@@ -35,7 +35,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timescale,
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
       muxer_listener()->OnNewSegment(writer_->file()->file_name(),
-                                     start_timescale, duration_timescale, size);
+                                     start_timestamp, duration_timestamp, size);
     }
     VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";
   }
@@ -65,12 +65,12 @@ Status MultiSegmentSegmenter::DoFinalize() {
   return writer_->Close();
 }
 
-Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale,
+Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
     // Create a new file for the new segment.
     std::string segment_name =
-        GetSegmentName(options().segment_template, start_timescale,
+        GetSegmentName(options().segment_template, start_timestamp,
                        num_segment_, options().bandwidth);
     writer_.reset(new MkvWriter);
     Status status = writer_->Open(segment_name);
@@ -79,8 +79,8 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale,
     num_segment_++;
   }
 
-  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);
-  return SetCluster(start_webm_timecode, 0, writer_.get());
+  const uint64_t start_timecode = FromBmffTimestamp(start_timestamp);
+  return SetCluster(start_timecode, 0, writer_.get());
 }
 
 }  // namespace webm

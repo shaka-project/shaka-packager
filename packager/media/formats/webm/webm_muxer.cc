@@ -105,7 +105,7 @@ void WebMMuxer::FireOnMediaEndEvent() {
   const bool has_index_range = segmenter_->GetIndexRangeStartAndEnd(
       &index_range_start, &index_range_end);
 
-  const float duration_seconds = segmenter_->GetDuration();
+  const float duration_seconds = segmenter_->GetDurationInSeconds();
 
   const int64_t file_size =
       File::GetFileSize(options().output_file_name.c_str());

@@ -30,8 +30,45 @@ namespace shaka {
 namespace media {
 namespace webm {
 namespace {
-int64_t kTimecodeScale = 1000000;
-int64_t kSecondsToNs = 1000000000L;
+const int64_t kTimecodeScale = 1000000;
+const int64_t kSecondsToNs = 1000000000L;
+
+// Round to closest integer.
+uint64_t Round(double value) {
+  return static_cast<uint64_t>(value + 0.5);
+}
+
+// There are three different kinds of timestamp here:
+//   (1) ISO-BMFF timestamp (seconds scaled by ISO-BMFF timescale)
+//       This is used in our MediaSample and StreamInfo structures.
+//   (2) WebM timecode (seconds scaled by kSecondsToNs / WebM timecode scale)
+//       This is used in most WebM structures.
+//   (3) Nanoseconds (seconds scaled by kSecondsToNs)
+//       This is used in some WebM structures, e.g. Frame.
+// We use Nanoseconds as intermediate format here for conversion, in
+// uint64_t/int64_t, which is sufficient to represent a time as large as 292
+// years.
+
+uint64_t BmffTimestampToNs(uint64_t timestamp, uint64_t time_scale) {
+  // Casting to double is needed otherwise kSecondsToNs * timestamp may overflow
+  // uint64_t/int64_t.
+  return Round(static_cast<double>(timestamp) / time_scale * kSecondsToNs);
+}
+
+uint64_t NsToBmffTimestamp(uint64_t ns, uint64_t time_scale) {
+  // Casting to double is needed otherwise ns * time_scale may overflow
+  // uint64_t/int64_t.
+  return Round(static_cast<double>(ns) / kSecondsToNs * time_scale);
+}
+
+uint64_t NsToWebMTimecode(uint64_t ns, uint64_t timecode_scale) {
+  return ns / timecode_scale;
+}
+
+uint64_t WebMTimecodeToNs(uint64_t timecode, uint64_t timecode_scale) {
+  return timecode * timecode_scale;
+}
+
 }  // namespace
 
 Segmenter::Segmenter(const MuxerOptions& options) : options_(options) {}
@@ -112,7 +149,7 @@ Status Segmenter::Initialize(StreamInfo* info,
 Status Segmenter::Finalize() {
   uint64_t duration =
       prev_sample_->pts() - first_timestamp_ + prev_sample_->duration();
-  segment_info_.set_duration(FromBMFFTimescale(duration));
+  segment_info_.set_duration(FromBmffTimestamp(duration));
   return DoFinalize();
 }
 
@@ -150,8 +187,8 @@ Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   return Status::OK;
 }
 
-Status Segmenter::FinalizeSegment(uint64_t start_timescale,
-                                  uint64_t duration_timescale,
+Status Segmenter::FinalizeSegment(uint64_t start_timestamp,
+                                  uint64_t duration_timestamp,
                                   bool is_subsegment) {
   if (is_subsegment)
     new_subsegment_ = true;
@@ -160,22 +197,22 @@ Status Segmenter::FinalizeSegment(uint64_t start_timescale,
   return WriteFrame(true /* write duration */);
 }
 
-float Segmenter::GetDuration() const {
-  return static_cast<float>(segment_info_.duration()) *
-         segment_info_.timecode_scale() / kSecondsToNs;
+float Segmenter::GetDurationInSeconds() const {
+  return WebMTimecodeToNs(segment_info_.duration(),
+                          segment_info_.timecode_scale()) /
+         static_cast<double>(kSecondsToNs);
 }
 
-uint64_t Segmenter::FromBMFFTimescale(uint64_t time_timescale) {
-  // Convert the time from BMFF time_code to WebM timecode scale.
-  const int64_t time_ns =
-      kSecondsToNs * time_timescale / info_->time_scale();
-  return time_ns / segment_info_.timecode_scale();
+uint64_t Segmenter::FromBmffTimestamp(uint64_t bmff_timestamp) {
+  return NsToWebMTimecode(
+      BmffTimestampToNs(bmff_timestamp, info_->time_scale()),
+      segment_info_.timecode_scale());
 }
 
-uint64_t Segmenter::FromWebMTimecode(uint64_t time_webm_timecode) {
-  // Convert the time to BMFF time_code from WebM timecode scale.
-  const int64_t time_ns = time_webm_timecode * segment_info_.timecode_scale();
-  return time_ns * info_->time_scale() / kSecondsToNs;
+uint64_t Segmenter::FromWebMTimecode(uint64_t webm_timecode) {
+  return NsToBmffTimestamp(
+      WebMTimecodeToNs(webm_timecode, segment_info_.timecode_scale()),
+      info_->time_scale());
 }
 
 Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {
@@ -334,12 +371,12 @@ Status Segmenter::WriteFrame(bool write_duration) {
   }
 
   if (write_duration) {
-    const uint64_t duration_ns =
-        prev_sample_->duration() * kSecondsToNs / info_->time_scale();
-    frame.set_duration(duration_ns);
+    frame.set_duration(
+        BmffTimestampToNs(prev_sample_->duration(), info_->time_scale()));
   }
   frame.set_is_key(prev_sample_->is_key_frame());
-  frame.set_timestamp(prev_sample_->pts() * kSecondsToNs / info_->time_scale());
+  frame.set_timestamp(
+      BmffTimestampToNs(prev_sample_->pts(), info_->time_scale()));
   frame.set_track_number(track_id_);
 
   if (prev_sample_->side_data_size() > 0) {
@@ -359,15 +396,14 @@ Status Segmenter::WriteFrame(bool write_duration) {
   }
 
   if (!prev_sample_->is_key_frame() && !frame.CanBeSimpleBlock()) {
-    const int64_t timestamp_ns =
-        reference_frame_timestamp_ * kSecondsToNs / info_->time_scale();
-    frame.set_reference_block_timestamp(timestamp_ns);
+    frame.set_reference_block_timestamp(
+        BmffTimestampToNs(reference_frame_timestamp_, info_->time_scale()));
   }
 
   // GetRelativeTimecode will return -1 if the relative timecode is too large
   // to fit in the frame.
-  if (cluster_->GetRelativeTimecode(frame.timestamp() /
-                                    cluster_->timecode_scale()) < 0) {
+  if (cluster_->GetRelativeTimecode(NsToWebMTimecode(
+          frame.timestamp(), cluster_->timecode_scale())) < 0) {
     const double segment_duration =
         static_cast<double>(frame.timestamp()) / kSecondsToNs;
     LOG(ERROR) << "Error adding sample to segment: segment too large, "

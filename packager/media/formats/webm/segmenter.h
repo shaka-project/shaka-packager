@@ -52,8 +52,8 @@ class Segmenter {
   Status AddSample(std::shared_ptr<MediaSample> sample);
 
   /// Finalize the (sub)segment.
-  virtual Status FinalizeSegment(uint64_t start_timescale,
-                                 uint64_t duration_timescale,
+  virtual Status FinalizeSegment(uint64_t start_timestamp,
+                                 uint64_t duration_timestamp,
                                  bool is_subsegment) = 0;
 
   /// @return true if there is an initialization range, while setting @a start
@@ -65,14 +65,13 @@ class Segmenter {
   virtual bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) = 0;
 
   /// @return The total length, in seconds, of segmented media files.
-  float GetDuration() const;
+  float GetDurationInSeconds() const;
 
  protected:
-  /// Converts the given time in ISO BMFF timescale to the current WebM
-  /// timecode.
-  uint64_t FromBMFFTimescale(uint64_t time_timescale);
-  /// Converts the given time in WebM timecode to ISO BMFF timescale.
-  uint64_t FromWebMTimecode(uint64_t time_webm_timecode);
+  /// Converts the given time in ISO BMFF timestamp to WebM timecode.
+  uint64_t FromBmffTimestamp(uint64_t bmff_timestamp);
+  /// Converts the given time in WebM timecode to ISO BMFF timestamp.
+  uint64_t FromWebMTimecode(uint64_t webm_timecode);
   /// Writes the Segment header to @a writer.
   Status WriteSegmentHeader(uint64_t file_size, MkvWriter* writer);
   /// Creates a Cluster object with the given parameters.
@@ -110,7 +109,7 @@ class Segmenter {
   // In single-segment mode, a Cluster is a segment and there is no subsegment.
   // In multi-segment mode, a new file is a segment and the clusters in the file
   // are subsegments.
-  virtual Status NewSegment(uint64_t start_timescale, bool is_subsegment) = 0;
+  virtual Status NewSegment(uint64_t start_timestamp, bool is_subsegment) = 0;
 
   // Store the previous sample so we know which one is the last frame.
   std::shared_ptr<MediaSample> prev_sample_;

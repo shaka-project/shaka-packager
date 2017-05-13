@@ -13,7 +13,8 @@ namespace shaka {
 namespace media {
 namespace {
 
-const uint64_t kDuration = 1000;
+const uint32_t kTimeScale = 1000000u;
+const uint64_t kDuration = 1000000u;
 const bool kSubsegment = true;
 
 const uint8_t kBasicSupportDataInit[] = {
@@ -94,7 +95,7 @@ const uint8_t kBasicSupportDataSegment[] = {
 class MultiSegmentSegmenterTest : public SegmentTestBase {
  public:
   MultiSegmentSegmenterTest()
-      : info_(CreateVideoStreamInfo()),
+      : info_(CreateVideoStreamInfo(kTimeScale)),
         segment_template_(std::string(kMemoryFilePrefix) +
                           "output-template-$Number$.webm") {}
 
@@ -157,11 +158,11 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegment) {
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
   ASSERT_EQ(1u, parser.cluster_count());
-  EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
+  EXPECT_EQ(5u, parser.GetFrameCountForCluster(0));
 
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(1)));
   ASSERT_EQ(1u, parser.cluster_count());
-  EXPECT_EQ(3, parser.GetFrameCountForCluster(0));
+  EXPECT_EQ(3u, parser.GetFrameCountForCluster(0));
 
   EXPECT_FALSE(File::Open(TemplateFileName(2).c_str(), "r"));
 }
@@ -186,8 +187,8 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnSubsegment) {
   ClusterParser parser;
   ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
   ASSERT_EQ(2u, parser.cluster_count());
-  EXPECT_EQ(5, parser.GetFrameCountForCluster(0));
-  EXPECT_EQ(3, parser.GetFrameCountForCluster(1));
+  EXPECT_EQ(5u, parser.GetFrameCountForCluster(0));
+  EXPECT_EQ(3u, parser.GetFrameCountForCluster(1));
 
   EXPECT_FALSE(File::Open(TemplateFileName(1).c_str(), "r"));
 }

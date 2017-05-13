@@ -18,11 +18,11 @@ SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options)
 
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
 
-Status SingleSegmentSegmenter::FinalizeSegment(uint64_t start_timescale,
-                                               uint64_t duration_timescale,
+Status SingleSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
+                                               uint64_t duration_timestamp,
                                                bool is_subsegment) {
-  Status status = Segmenter::FinalizeSegment(start_timescale,
-                                             duration_timescale, is_subsegment);
+  Status status = Segmenter::FinalizeSegment(start_timestamp,
+                                             duration_timestamp, is_subsegment);
   if (!status.ok())
     return status;
   // No-op for subsegment in single segment mode.
@@ -83,23 +83,23 @@ Status SingleSegmentSegmenter::DoFinalize() {
   return status;
 }
 
-Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale,
+Status SingleSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                           bool is_subsegment) {
   // No-op for subsegment in single segment mode.
   if (is_subsegment)
     return Status::OK;
   // Create a new Cue point.
   uint64_t position = writer_->Position();
-  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);
+  uint64_t start_timecode = FromBmffTimestamp(start_timestamp);
 
   mkvmuxer::CuePoint* cue_point = new mkvmuxer::CuePoint;
-  cue_point->set_time(start_webm_timecode);
+  cue_point->set_time(start_timecode);
   cue_point->set_track(track_id());
   cue_point->set_cluster_pos(position - segment_payload_pos());
   if (!cues()->AddCue(cue_point))
     return Status(error::INTERNAL_ERROR, "Error adding CuePoint.");
 
-  return SetCluster(start_webm_timecode, position, writer_.get());
+  return SetCluster(start_timecode, position, writer_.get());
 }
 
 }  // namespace webm

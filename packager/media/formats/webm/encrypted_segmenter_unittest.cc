@@ -12,7 +12,8 @@ namespace shaka {
 namespace media {
 namespace {
 
-const uint64_t kDuration = 1000u;
+const uint32_t kTimeScale = 1000000u;
+const uint64_t kDuration = 1000000u;
 const bool kSubsegment = true;
 const uint8_t kPerSampleIvSize = 8u;
 const uint8_t kKeyId[] = {
@@ -196,7 +197,7 @@ const uint8_t kBasicSupportData[] = {
 
 class EncryptedSegmenterTest : public SegmentTestBase {
  public:
-  EncryptedSegmenterTest() : info_(CreateVideoStreamInfo()) {
+  EncryptedSegmenterTest() : info_(CreateVideoStreamInfo(kTimeScale)) {
     EncryptionConfig encryption_config;
     encryption_config.per_sample_iv_size = kPerSampleIvSize;
     encryption_config.key_id.assign(kKeyId, kKeyId + sizeof(kKeyId));
