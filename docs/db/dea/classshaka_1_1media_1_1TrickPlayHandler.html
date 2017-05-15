@@ -108,9 +108,12 @@ Inheritance diagram for shaka::media::TrickPlayHandler:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:add689bee6a0969579fefa497593d12ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add689bee6a0969579fefa497593d12ab"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TrickPlayHandler</b> (const <a class="el" href="../../d5/d72/structshaka_1_1media_1_1TrickPlayOptions.html">TrickPlayOptions</a> &amp;trick_play_options)</td></tr>
-<tr class="separator:add689bee6a0969579fefa497593d12ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a11060bbcc8727542e73c399bffdd70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a11060bbcc8727542e73c399bffdd70"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetHandlerForMainStream</b> (std::shared_ptr&lt; <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> &gt; handler)</td></tr>
+<tr class="separator:a0a11060bbcc8727542e73c399bffdd70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a868e0549aaadeee4cb6ebebb7a598db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a868e0549aaadeee4cb6ebebb7a598db5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetHandlerForTrickPlay</b> (uint32_t trick_play_rate, std::shared_ptr&lt; <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> &gt; handler)</td></tr>
+<tr class="separator:a868e0549aaadeee4cb6ebebb7a598db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classshaka_1_1media_1_1MediaHandler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1MediaHandler')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">shaka::media::MediaHandler</a></td></tr>
 <tr class="memitem:a0fac1fe2d593e78d47244acdfa21759d inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0fac1fe2d593e78d47244acdfa21759d"></a>
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0fac1fe2d593e78d47244acdfa21759d">SetHandler</a> (size_t output_stream_index, std::shared_ptr&lt; <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> &gt; handler)</td></tr>
@@ -122,6 +125,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afc48a2450ce50162de18071aef516b6c inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed0da512bbd998ec9d0a5c019ad17acb inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aed0da512bbd998ec9d0a5c019ad17acb">Initialize</a> ()</td></tr>
 <tr class="separator:aed0da512bbd998ec9d0a5c019ad17acb inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e169e81344ce4ccfed3194ec5f4a3a1 inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e169e81344ce4ccfed3194ec5f4a3a1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0e169e81344ce4ccfed3194ec5f4a3a1">IsConnected</a> ()</td></tr>
+<tr class="memdesc:a0e169e81344ce4ccfed3194ec5f4a3a1 inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate if the handler is connected to its upstream handler. <br/></td></tr>
+<tr class="separator:a0e169e81344ce4ccfed3194ec5f4a3a1 inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -165,6 +172,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ad5001bf12073101a949b062943769f5b">FlushDownstream</a> (size_t output_stream_index)</td></tr>
 <tr class="memdesc:ad5001bf12073101a949b062943769f5b inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush the downstream connected at the specified output stream index. <br/></td></tr>
 <tr class="separator:ad5001bf12073101a949b062943769f5b inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab644ca7b0a0dbcbc42936f2dfb979ca5 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab644ca7b0a0dbcbc42936f2dfb979ca5"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ab644ca7b0a0dbcbc42936f2dfb979ca5">FlushAllDownstreams</a> ()</td></tr>
+<tr class="memdesc:ab644ca7b0a0dbcbc42936f2dfb979ca5 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush all connected downstreams. <br/></td></tr>
+<tr class="separator:ab644ca7b0a0dbcbc42936f2dfb979ca5 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb64985e305009df53bd60a5b4ff3122 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb64985e305009df53bd60a5b4ff3122"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>initialized</b> ()</td></tr>
 <tr class="separator:aeb64985e305009df53bd60a5b4ff3122 inherit pro_methods_classshaka_1_1media_1_1MediaHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,7 +200,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>TrickPlayHandlerTest
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a> is a single-input-multiple-output media handler. It creates trick play streams from the input. </p>
 
-<p>Definition at line <a class="el" href="../../dd/ddc/trick__play__handler_8h_source.html#l00034">34</a> of file <a class="el" href="../../dd/ddc/trick__play__handler_8h_source.html">trick_play_handler.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/ddc/trick__play__handler_8h_source.html#l00023">23</a> of file <a class="el" href="../../dd/ddc/trick__play__handler_8h_source.html">trick_play_handler.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a3fd2fae199e0a9607e83e02724896c10"></a>
 <div class="memitem">
@@ -215,7 +226,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>TrickPlayHandlerTest
 
 <p>Implements <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0e05325d62bfb66318301c1ed790a46e">shaka::media::MediaHandler</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html#l00025">25</a> of file <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html">trick_play_handler.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html">trick_play_handler.cc</a>.</p>
 
 </div>
 </div>
@@ -244,7 +255,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>TrickPlayHandlerTest
 
 <p>Implements <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#acb614e9f43e1eb6f837801b15b78c0b4">shaka::media::MediaHandler</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html#l00029">29</a> of file <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html">trick_play_handler.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d3/d87/trick__play__handler_8cc_source.html">trick_play_handler.cc</a>.</p>
 
 </div>
 </div>
@@ -255,7 +266,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>TrickPlayHandlerTest
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 2 2017 21:09:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 15 2017 16:24:31 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
