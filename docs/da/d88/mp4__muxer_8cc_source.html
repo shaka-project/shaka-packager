@@ -377,217 +377,221 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  sample_description.video_entries.push_back(video);</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;</div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keywordflow">if</span> (video_info-&gt;is_encrypted()) {</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="comment">// Add a second entry for clear content.</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    sample_description.video_entries.push_back(video);</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="comment">// Convert the first entry to an encrypted entry.</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    VideoSampleEntry&amp; entry = sample_description.video_entries[0];</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    GenerateSinf(entry.format, video_info-&gt;encryption_config(), &amp;entry.sinf);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    entry.format = FOURCC_encv;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  }</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;}</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="keywordtype">void</span> MP4Muxer::GenerateAudioTrak(<span class="keyword">const</span> AudioStreamInfo* audio_info,</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                                 Track* trak,</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                                 uint32_t track_id) {</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  InitializeTrak(audio_info, trak);</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  trak-&gt;header.volume = 0x100;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordflow">if</span> (video_info-&gt;has_clear_lead()) {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      <span class="comment">// Add a second entry for clear content.</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      sample_description.video_entries.push_back(video);</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    }</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="comment">// Convert the first entry to an encrypted entry.</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    VideoSampleEntry&amp; entry = sample_description.video_entries[0];</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    GenerateSinf(entry.format, video_info-&gt;encryption_config(), &amp;entry.sinf);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    entry.format = FOURCC_encv;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  }</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;}</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="keywordtype">void</span> MP4Muxer::GenerateAudioTrak(<span class="keyword">const</span> AudioStreamInfo* audio_info,</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                                 Track* trak,</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;                                 uint32_t track_id) {</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  InitializeTrak(audio_info, trak);</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  AudioSampleEntry audio;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  audio.format =</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;      CodecToFourCC(audio_info-&gt;codec(), H26xStreamFormat::kUnSpecified);</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordflow">switch</span>(audio_info-&gt;codec()){</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="keywordflow">case</span> kCodecAAC:</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;      audio.esds.es_descriptor.set_object_type(kISO_14496_3);  <span class="comment">// MPEG4 AAC.</span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;      audio.esds.es_descriptor.set_esid(track_id);</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;      audio.esds.es_descriptor.set_decoder_specific_info(</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;          audio_info-&gt;codec_config());</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;      audio.esds.es_descriptor.set_max_bitrate(audio_info-&gt;max_bitrate());</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;      audio.esds.es_descriptor.set_avg_bitrate(audio_info-&gt;avg_bitrate());</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordflow">case</span> kCodecDTSC:</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">case</span> kCodecDTSH:</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">case</span> kCodecDTSL:</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordflow">case</span> kCodecDTSE:</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">case</span> kCodecDTSM:</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;      audio.ddts.extra_data = audio_info-&gt;codec_config();</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;      audio.ddts.max_bitrate = audio_info-&gt;max_bitrate();</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      audio.ddts.avg_bitrate = audio_info-&gt;avg_bitrate();</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;      audio.ddts.sampling_frequency = audio_info-&gt;sampling_frequency();</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;      audio.ddts.pcm_sample_depth = audio_info-&gt;sample_bits();</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">case</span> kCodecAC3:</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      audio.dac3.data = audio_info-&gt;codec_config();</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="keywordflow">case</span> kCodecEAC3:</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      audio.dec3.data = audio_info-&gt;codec_config();</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keywordflow">case</span> kCodecOpus:</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      audio.dops.opus_identification_header = audio_info-&gt;codec_config();</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      NOTIMPLEMENTED();</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  audio.channelcount = audio_info-&gt;num_channels();</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  audio.samplesize = audio_info-&gt;sample_bits();</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  audio.samplerate = audio_info-&gt;sampling_frequency();</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  SampleTable&amp; sample_table = trak-&gt;media.information.sample_table;</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  SampleDescription&amp; sample_description = sample_table.description;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  sample_description.type = kAudio;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  sample_description.audio_entries.push_back(audio);</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="keywordflow">if</span> (audio_info-&gt;is_encrypted()) {</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="comment">// Add a second entry for clear content.</span></div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    sample_description.audio_entries.push_back(audio);</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="comment">// Convert the first entry to an encrypted entry.</span></div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    AudioSampleEntry&amp; entry = sample_description.audio_entries[0];</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    GenerateSinf(entry.format, audio_info-&gt;encryption_config(), &amp;entry.sinf);</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    entry.format = FOURCC_enca;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  }</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="comment">// Opus requires at least one sample group description box and at least one</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  <span class="comment">// sample to group box with grouping type &#39;roll&#39; within sample table box.</span></div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  <span class="keywordflow">if</span> (audio_info-&gt;codec() == kCodecOpus) {</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    sample_table.sample_group_descriptions.resize(1);</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    SampleGroupDescription&amp; sample_group_description =</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        sample_table.sample_group_descriptions.back();</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    sample_group_description.grouping_type = FOURCC_roll;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    sample_group_description.audio_roll_recovery_entries.resize(1);</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="comment">// The roll distance is expressed in sample units and always takes negative</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    <span class="comment">// values.</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keyword">const</span> uint64_t kNanosecondsPerSecond = 1000000000ull;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    sample_group_description.audio_roll_recovery_entries[0].roll_distance =</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        (0 - (audio_info-&gt;seek_preroll_ns() * audio.samplerate +</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;              kNanosecondsPerSecond / 2)) /</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        kNanosecondsPerSecond;</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    sample_table.sample_to_groups.resize(1);</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    SampleToGroup&amp; sample_to_group = sample_table.sample_to_groups.back();</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    sample_to_group.grouping_type = FOURCC_roll;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  trak-&gt;header.volume = 0x100;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  AudioSampleEntry audio;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  audio.format =</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;      CodecToFourCC(audio_info-&gt;codec(), H26xStreamFormat::kUnSpecified);</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  <span class="keywordflow">switch</span>(audio_info-&gt;codec()){</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="keywordflow">case</span> kCodecAAC:</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;      audio.esds.es_descriptor.set_object_type(kISO_14496_3);  <span class="comment">// MPEG4 AAC.</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;      audio.esds.es_descriptor.set_esid(track_id);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;      audio.esds.es_descriptor.set_decoder_specific_info(</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;          audio_info-&gt;codec_config());</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      audio.esds.es_descriptor.set_max_bitrate(audio_info-&gt;max_bitrate());</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      audio.esds.es_descriptor.set_avg_bitrate(audio_info-&gt;avg_bitrate());</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">case</span> kCodecDTSC:</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="keywordflow">case</span> kCodecDTSH:</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">case</span> kCodecDTSL:</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keywordflow">case</span> kCodecDTSE:</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">case</span> kCodecDTSM:</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      audio.ddts.extra_data = audio_info-&gt;codec_config();</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;      audio.ddts.max_bitrate = audio_info-&gt;max_bitrate();</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;      audio.ddts.avg_bitrate = audio_info-&gt;avg_bitrate();</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;      audio.ddts.sampling_frequency = audio_info-&gt;sampling_frequency();</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;      audio.ddts.pcm_sample_depth = audio_info-&gt;sample_bits();</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="keywordflow">case</span> kCodecAC3:</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      audio.dac3.data = audio_info-&gt;codec_config();</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordflow">case</span> kCodecEAC3:</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      audio.dec3.data = audio_info-&gt;codec_config();</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordflow">case</span> kCodecOpus:</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      audio.dops.opus_identification_header = audio_info-&gt;codec_config();</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      NOTIMPLEMENTED();</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  }</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  audio.channelcount = audio_info-&gt;num_channels();</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  audio.samplesize = audio_info-&gt;sample_bits();</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  audio.samplerate = audio_info-&gt;sampling_frequency();</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  SampleTable&amp; sample_table = trak-&gt;media.information.sample_table;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  SampleDescription&amp; sample_description = sample_table.description;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  sample_description.type = kAudio;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  sample_description.audio_entries.push_back(audio);</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  <span class="keywordflow">if</span> (audio_info-&gt;is_encrypted()) {</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keywordflow">if</span> (audio_info-&gt;has_clear_lead()) {</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;      <span class="comment">// Add a second entry for clear content.</span></div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;      sample_description.audio_entries.push_back(audio);</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    }</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    <span class="comment">// Convert the first entry to an encrypted entry.</span></div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    AudioSampleEntry&amp; entry = sample_description.audio_entries[0];</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    GenerateSinf(entry.format, audio_info-&gt;encryption_config(), &amp;entry.sinf);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    entry.format = FOURCC_enca;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  }</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="comment">// Opus requires at least one sample group description box and at least one</span></div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  <span class="comment">// sample to group box with grouping type &#39;roll&#39; within sample table box.</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="keywordflow">if</span> (audio_info-&gt;codec() == kCodecOpus) {</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    sample_table.sample_group_descriptions.resize(1);</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    SampleGroupDescription&amp; sample_group_description =</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;        sample_table.sample_group_descriptions.back();</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    sample_group_description.grouping_type = FOURCC_roll;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    sample_group_description.audio_roll_recovery_entries.resize(1);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    <span class="comment">// The roll distance is expressed in sample units and always takes negative</span></div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="comment">// values.</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    <span class="keyword">const</span> uint64_t kNanosecondsPerSecond = 1000000000ull;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    sample_group_description.audio_roll_recovery_entries[0].roll_distance =</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        (0 - (audio_info-&gt;seek_preroll_ns() * audio.samplerate +</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;              kNanosecondsPerSecond / 2)) /</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        kNanosecondsPerSecond;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    sample_to_group.entries.resize(1);</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    SampleToGroupEntry&amp; sample_to_group_entry = sample_to_group.entries.back();</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    <span class="comment">// All samples are in track fragments.</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    sample_to_group_entry.sample_count = 0;</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    sample_to_group_entry.group_description_index =</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (audio_info-&gt;seek_preroll_ns() != 0) {</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unexpected seek preroll for codec &quot;</span> &lt;&lt; audio_info-&gt;codec();</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  }</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;}</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="keywordtype">void</span> MP4Muxer::GenerateTextTrak(<span class="keyword">const</span> TextStreamInfo* text_info,</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;                                Track* trak,</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;                                uint32_t track_id) {</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  InitializeTrak(text_info, trak);</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  <span class="keywordflow">if</span> (text_info-&gt;codec_string() == <span class="stringliteral">&quot;wvtt&quot;</span>) {</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    <span class="comment">// Handle WebVTT.</span></div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    TextSampleEntry webvtt;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    webvtt.format = FOURCC_wvtt;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    webvtt.config.config.assign(text_info-&gt;codec_config().begin(),</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;                                text_info-&gt;codec_config().end());</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    <span class="comment">// TODO(rkuroiwa): This should be the source file URI(s). Putting bogus</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    <span class="comment">// string for now so that the box will be there for samples with overlapping</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="comment">// cues.</span></div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    webvtt.label.source_label = <span class="stringliteral">&quot;source_label&quot;</span>;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    SampleDescription&amp; sample_description =</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        trak-&gt;media.information.sample_table.description;</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    sample_description.type = kText;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    sample_description.text_entries.push_back(webvtt);</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  }</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  NOTIMPLEMENTED() &lt;&lt; text_info-&gt;codec_string()</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot; handling not implemented yet.&quot;</span>;</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;}</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;<span class="keywordtype">bool</span> MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  DCHECK(start &amp;&amp; end);</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  <span class="keywordtype">size_t</span> range_offset = 0;</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordtype">size_t</span> range_size = 0;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_range = segmenter_-&gt;GetInitRange(&amp;range_offset, &amp;range_size);</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordflow">if</span> (!has_range)</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    sample_table.sample_to_groups.resize(1);</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    SampleToGroup&amp; sample_to_group = sample_table.sample_to_groups.back();</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    sample_to_group.grouping_type = FOURCC_roll;</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    sample_to_group.entries.resize(1);</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    SampleToGroupEntry&amp; sample_to_group_entry = sample_to_group.entries.back();</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    <span class="comment">// All samples are in track fragments.</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    sample_to_group_entry.sample_count = 0;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    sample_to_group_entry.group_description_index =</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;        SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (audio_info-&gt;seek_preroll_ns() != 0) {</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unexpected seek preroll for codec &quot;</span> &lt;&lt; audio_info-&gt;codec();</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  }</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;}</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;<span class="keywordtype">void</span> MP4Muxer::GenerateTextTrak(<span class="keyword">const</span> TextStreamInfo* text_info,</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;                                Track* trak,</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;                                uint32_t track_id) {</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  InitializeTrak(text_info, trak);</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  <span class="keywordflow">if</span> (text_info-&gt;codec_string() == <span class="stringliteral">&quot;wvtt&quot;</span>) {</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="comment">// Handle WebVTT.</span></div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    TextSampleEntry webvtt;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    webvtt.format = FOURCC_wvtt;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    webvtt.config.config.assign(text_info-&gt;codec_config().begin(),</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;                                text_info-&gt;codec_config().end());</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    <span class="comment">// TODO(rkuroiwa): This should be the source file URI(s). Putting bogus</span></div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    <span class="comment">// string for now so that the box will be there for samples with overlapping</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    <span class="comment">// cues.</span></div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    webvtt.label.source_label = <span class="stringliteral">&quot;source_label&quot;</span>;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    SampleDescription&amp; sample_description =</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        trak-&gt;media.information.sample_table.description;</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    sample_description.type = kText;</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    sample_description.text_entries.push_back(webvtt);</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;  }</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  NOTIMPLEMENTED() &lt;&lt; text_info-&gt;codec_string()</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;                   &lt;&lt; <span class="stringliteral">&quot; handling not implemented yet.&quot;</span>;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;}</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;<span class="keywordtype">bool</span> MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  DCHECK(start &amp;&amp; end);</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordtype">size_t</span> range_offset = 0;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keywordtype">size_t</span> range_size = 0;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_range = segmenter_-&gt;GetInitRange(&amp;range_offset, &amp;range_size);</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  <span class="keywordflow">if</span> (!has_range)</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;<span class="keywordtype">bool</span> MP4Muxer::GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) {</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  DCHECK(start &amp;&amp; end);</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  <span class="keywordtype">size_t</span> range_offset = 0;</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  <span class="keywordtype">size_t</span> range_size = 0;</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_range = segmenter_-&gt;GetIndexRange(&amp;range_offset, &amp;range_size);</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;  <span class="keywordflow">if</span> (!has_range)</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;}</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;<span class="keywordtype">bool</span> MP4Muxer::GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) {</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;  DCHECK(start &amp;&amp; end);</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;  <span class="keywordtype">size_t</span> range_offset = 0;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  <span class="keywordtype">size_t</span> range_size = 0;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_range = segmenter_-&gt;GetIndexRange(&amp;range_offset, &amp;range_size);</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  <span class="keywordflow">if</span> (!has_range)</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;<span class="keywordtype">void</span> MP4Muxer::FireOnMediaStartEvent() {</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;}</div>
 <div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  <span class="keywordflow">if</span> (streams().size() &gt; 1) {</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MuxerListener cannot take more than 1 stream.&quot;</span>;</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;<span class="keywordtype">void</span> MP4Muxer::FireOnMediaStartEvent() {</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  }</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  DCHECK(!streams().empty()) &lt;&lt; <span class="stringliteral">&quot;Media started without a stream.&quot;</span>;</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  <span class="keyword">const</span> uint32_t timescale = segmenter_-&gt;GetReferenceTimeScale();</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">OnMediaStart</a>(options(), *streams().front(), timescale,</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;                                 MuxerListener::kContainerMp4);</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;}</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;<span class="keywordtype">void</span> MP4Muxer::FireOnMediaEndEvent() {</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  <span class="keywordflow">if</span> (streams().size() &gt; 1) {</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MuxerListener cannot take more than 1 stream.&quot;</span>;</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  }</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  DCHECK(!streams().empty()) &lt;&lt; <span class="stringliteral">&quot;Media started without a stream.&quot;</span>;</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;  <span class="keyword">const</span> uint32_t timescale = segmenter_-&gt;GetReferenceTimeScale();</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">OnMediaStart</a>(options(), *streams().front(), timescale,</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;                                 MuxerListener::kContainerMp4);</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;}</div>
 <div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  uint32_t init_range_start = 0;</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  uint32_t init_range_end = 0;</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_init_range =</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;      GetInitRangeStartAndEnd(&amp;init_range_start, &amp;init_range_end);</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  uint32_t index_range_start = 0;</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  uint32_t index_range_end = 0;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_index_range =</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;      GetIndexRangeStartAndEnd(&amp;index_range_start, &amp;index_range_end);</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">float</span> duration_seconds = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(segmenter_-&gt;GetDuration());</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  <span class="keyword">const</span> int64_t file_size =</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">File::GetFileSize</a>(options().output_file_name.c_str());</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="keywordflow">if</span> (file_size &lt;= 0) {</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid file size: &quot;</span> &lt;&lt; file_size;</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  }</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">OnMediaEnd</a>(has_init_range,</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;                               init_range_start,</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;                               init_range_end,</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;                               has_index_range,</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;                               index_range_start,</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;                               index_range_end,</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;                               duration_seconds,</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;                               file_size);</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;}</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;uint64_t MP4Muxer::IsoTimeNow() {</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;  <span class="comment">// Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.</span></div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  <span class="keyword">const</span> uint64_t kIsomTimeOffset = 2082844800l;</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  <span class="keywordflow">return</span> kIsomTimeOffset +</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;         (clock() ? clock()-&gt;Now() : base::Time::Now()).ToDoubleT();</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;}</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;<span class="keywordtype">void</span> MP4Muxer::FireOnMediaEndEvent() {</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;  uint32_t init_range_start = 0;</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  uint32_t init_range_end = 0;</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_init_range =</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;      GetInitRangeStartAndEnd(&amp;init_range_start, &amp;init_range_end);</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  uint32_t index_range_start = 0;</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  uint32_t index_range_end = 0;</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_index_range =</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;      GetIndexRangeStartAndEnd(&amp;index_range_start, &amp;index_range_end);</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">float</span> duration_seconds = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(segmenter_-&gt;GetDuration());</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  <span class="keyword">const</span> int64_t file_size =</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">File::GetFileSize</a>(options().output_file_name.c_str());</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  <span class="keywordflow">if</span> (file_size &lt;= 0) {</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid file size: &quot;</span> &lt;&lt; file_size;</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  }</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">OnMediaEnd</a>(has_init_range,</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;                               init_range_start,</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;                               init_range_end,</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;                               has_index_range,</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;                               index_range_start,</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;                               index_range_end,</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;                               duration_seconds,</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;                               file_size);</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;}</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;uint64_t MP4Muxer::IsoTimeNow() {</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;  <span class="comment">// Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.</span></div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;  <span class="keyword">const</span> uint64_t kIsomTimeOffset = 2082844800l;</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;  <span class="keywordflow">return</span> kIsomTimeOffset +</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;         (clock() ? clock()-&gt;Now() : base::Time::Now()).ToDoubleT();</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;}</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ac89a028372db9abbccf569819d9b2b35"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size)=0</div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00039">muxer_options.h:39</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4Muxer_html_a5b6a878865250e3e17268c011a361497"><div class="ttname"><a href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497">shaka::media::mp4::MP4Muxer::MP4Muxer</a></div><div class="ttdeci">MP4Muxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a MP4Muxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d88/mp4__muxer_8cc_source.html#l00109">mp4_muxer.cc:109</a></div></div>
@@ -599,7 +603,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 15 2017 16:24:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 15 2017 22:39:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
