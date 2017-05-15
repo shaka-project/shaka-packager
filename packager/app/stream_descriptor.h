@@ -33,7 +33,7 @@ struct StreamDescriptor {
   std::string hls_name;
   std::string hls_group_id;
   std::string hls_playlist_name;
-  uint32_t trick_play_rate = 0;
+  uint32_t trick_play_factor = 0;
 };
 
 class StreamDescriptorCompareFn {
@@ -41,8 +41,8 @@ class StreamDescriptorCompareFn {
   bool operator()(const StreamDescriptor& a, const StreamDescriptor& b) {
     if (a.input == b.input) {
       if (a.stream_selector == b.stream_selector)
-        // Stream with high trick_play_rate is at the beginning.
-        return a.trick_play_rate > b.trick_play_rate;
+        // Stream with high trick_play_factor is at the beginning.
+        return a.trick_play_factor > b.trick_play_factor;
       else
         return a.stream_selector < b.stream_selector;
     }

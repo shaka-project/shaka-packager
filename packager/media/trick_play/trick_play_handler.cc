@@ -26,11 +26,11 @@ void TrickPlayHandler::SetHandlerForMainStream(
 }
 
 void TrickPlayHandler::SetHandlerForTrickPlay(
-    uint32_t trick_play_rate,
+    uint32_t trick_play_factor,
     std::shared_ptr<MediaHandler> handler) {
-  trick_play_rates_.push_back(trick_play_rate);
+  trick_play_factors_.push_back(trick_play_factor);
   // Trick play streams start from index 1.
-  SetHandler(trick_play_rates_.size(), std::move(handler));
+  SetHandler(trick_play_factors_.size(), std::move(handler));
 }
 
 Status TrickPlayHandler::InitializeInternal() {
@@ -38,13 +38,13 @@ Status TrickPlayHandler::InitializeInternal() {
     return Status(error::TRICK_PLAY_ERROR,
                   "Trick play does not have main stream");
   }
-  if (trick_play_rates_.empty()) {
+  if (trick_play_factors_.empty()) {
     return Status(error::TRICK_PLAY_ERROR,
-                  "Trick play rates are not specified.");
+                  "Trick play factors are not specified.");
   }
-  size_t num_trick_play_rates = trick_play_rates_.size();
-  cached_stream_data_.resize(num_trick_play_rates);
-  playback_rates_.resize(num_trick_play_rates, 0);
+  size_t num_trick_play_factors = trick_play_factors_.size();
+  cached_stream_data_.resize(num_trick_play_factors);
+  playback_rates_.resize(num_trick_play_factors, 0);
 
   return Status::OK;
 }
@@ -70,7 +70,7 @@ Status TrickPlayHandler::Process(
     }
     const VideoStreamInfo& video_stream_info =
         static_cast<const VideoStreamInfo&>(*stream_data->stream_info);
-    if (video_stream_info.trick_play_rate() > 0) {
+    if (video_stream_info.trick_play_factor() > 0) {
       status.SetError(error::TRICK_PLAY_ERROR,
                       "This stream is alreay a trick play stream.");
       return status;
@@ -101,10 +101,10 @@ Status TrickPlayHandler::Process(
   if (stream_data->media_sample->is_key_frame()) {
     // For a new key frame, some of the trick play streams may include it.
     // The cached data in those trick play streams will be processed.
-    DCHECK_EQ(trick_play_rates_.size(), cached_stream_data_.size());
+    DCHECK_EQ(trick_play_factors_.size(), cached_stream_data_.size());
     for (size_t i = 0; i < cached_stream_data_.size(); ++i) {
-      uint32_t rate = trick_play_rates_[i];
-      if (total_key_frames_ % rate == 0) {
+      uint32_t factor = trick_play_factors_[i];
+      if (total_key_frames_ % factor == 0) {
         // Delay processing cached stream data until receiving the second key
         // frame so that the GOP size could be derived.
         if (!cached_stream_data_[i].empty() && total_key_frames_ > 0) {
@@ -135,7 +135,7 @@ Status TrickPlayHandler::Process(
 bool TrickPlayHandler::ValidateOutputStreamIndex(size_t stream_index) const {
   // Output stream index should be less than the number of trick play
   // streams + one original stream.
-  return stream_index <= trick_play_rates_.size();
+  return stream_index <= trick_play_factors_.size();
 };
 
 Status TrickPlayHandler::OnFlushRequest(size_t input_stream_index) {
@@ -143,7 +143,7 @@ Status TrickPlayHandler::OnFlushRequest(size_t input_stream_index) {
       << "Trick Play Handler should only have single input.";
   for (size_t i = 0; i < cached_stream_data_.size(); ++i) {
     LOG_IF(WARNING, playback_rates_[i] == 0)
-        << "Max playout rate for trick play rate " << trick_play_rates_[i]
+        << "Max playout rate for trick play factor " << trick_play_factors_[i]
         << " is not determined. "
         << "Specify it as total number of frames: " << total_frames_ << ".";
     playback_rates_[i] = total_frames_;
@@ -179,16 +179,16 @@ Status TrickPlayHandler::ProcessOneStreamData(
     size_t output_stream_index,
     const std::shared_ptr<StreamData>& stream_data) {
   size_t trick_play_index = output_stream_index - 1;
-  uint32_t trick_play_rate = trick_play_rates_[trick_play_index];
+  uint32_t trick_play_factor = trick_play_factors_[trick_play_index];
   Status status;
   switch (stream_data->stream_data_type) {
-    // trick_play_rate in StreamInfo should be modified.
+    // trick_play_factor in StreamInfo should be modified.
     case StreamDataType::kStreamInfo: {
       const VideoStreamInfo& video_stream_info =
           static_cast<const VideoStreamInfo&>(*stream_data->stream_info);
       std::shared_ptr<VideoStreamInfo> trick_play_video_stream_info(
           new VideoStreamInfo(video_stream_info));
-      trick_play_video_stream_info->set_trick_play_rate(trick_play_rate);
+      trick_play_video_stream_info->set_trick_play_factor(trick_play_factor);
       DCHECK_GT(playback_rates_[trick_play_index], 0u);
       trick_play_video_stream_info->set_playback_rate(
           playback_rates_[trick_play_index]);

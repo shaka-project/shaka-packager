@@ -31,7 +31,7 @@ const uint16_t kWidth = 100;
 const uint16_t kHeight = 100;
 const uint16_t kPixelWidth = 100;
 const uint16_t kPixelHeight = 100;
-const int16_t kTrickPlayRate = 1;
+const int16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 0;
 
 }  // namespace
@@ -82,10 +82,10 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
 }
 
 VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo() const {
-  return new VideoStreamInfo(kTrackId, kTimeScale, kDuration, kCodec,
-                             H26xStreamFormat::kUnSpecified, kCodecString, NULL,
-                             0, kWidth, kHeight, kPixelWidth, kPixelHeight,
-                             kTrickPlayRate, kNaluLengthSize, kLanguage, false);
+  return new VideoStreamInfo(
+      kTrackId, kTimeScale, kDuration, kCodec, H26xStreamFormat::kUnSpecified,
+      kCodecString, NULL, 0, kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, false);
 }
 
 std::string SegmentTestBase::OutputFileName() const {

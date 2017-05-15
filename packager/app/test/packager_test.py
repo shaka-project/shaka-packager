@@ -64,7 +64,7 @@ class PackagerAppTest(unittest.TestCase):
                             ' width: 640\n'
                             ' height: 360\n'
                             ' pixel_aspect_ratio: 1:1\n'
-                            ' trick_play_rate: 0\n'
+                            ' trick_play_factor: 0\n'
                             ' nalu_length_size: 4\n\n'
                             'Stream [1] type: Audio\n'
                             ' codec_string: mp4a.40.2\n'
@@ -103,7 +103,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageAudioVideoWithTrickPlay(self):
     self.packager.Package(
-        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1']),
+        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1']),
         self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
@@ -112,8 +112,8 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageAudioVideoWithTwoTrickPlay(self):
     self.packager.Package(
-        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1',
-                          'video,trick_play_rate=2']),
+        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1',
+                          'video,trick_play_factor=2']),
         self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
@@ -124,15 +124,15 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageAudioVideoWithTwoTrickPlayDecreasingRate(self):
     self.packager.Package(
-        self._GetStreams(['audio', 'video', 'video,trick_play_rate=2',
-                          'video,trick_play_rate=1']),
+        self._GetStreams(['audio', 'video', 'video,trick_play_factor=2',
+                          'video,trick_play_factor=1']),
         self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.output[2], 'bear-640x360-v-trick-2-golden.mp4')
     self._DiffGold(self.output[3], 'bear-640x360-v-trick-1-golden.mp4')
     # Since the stream descriptors are sorted in packager app, a different
-    # order of trick play rates gets the same mpd.
+    # order of trick play factors gets the same mpd.
     self._DiffGold(self.mpd_output,
                    'bear-640x360-av-trick-1-trick-2-golden.mpd')
 
@@ -242,7 +242,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithEncryptionAndTrickPlay(self):
     self.packager.Package(
-        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1']),
+        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1']),
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
@@ -256,8 +256,8 @@ class PackagerAppTest(unittest.TestCase):
   # play stream.
   def testPackageWithEncryptionAndTwoTrickPlays(self):
     self.packager.Package(
-        self._GetStreams(['audio', 'video', 'video,trick_play_rate=1',
-                          'video,trick_play_rate=2']),
+        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1',
+                          'video,trick_play_factor=2']),
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')

@@ -137,9 +137,9 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info) {
   key.append(GetLanguage(media_info));
 
   // Trick play streams of the same original stream, but possibly with
-  // different trick_play_rates, belong to the same trick play AdaptationSet.
+  // different trick_play_factors, belong to the same trick play AdaptationSet.
   if (media_info.has_video_info() &&
-      media_info.video_info().trick_play_rate() > 0) {
+      media_info.video_info().trick_play_factor() > 0) {
     key.append(":trick_play");
   }
 

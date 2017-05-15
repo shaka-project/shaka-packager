@@ -91,7 +91,7 @@ const uint16_t kWidth = 320u;
 const uint16_t kHeight = 180u;
 const uint32_t kPixelWidth = 1u;
 const uint32_t kPixelHeight = 1u;
-const int16_t kTrickPlayRate = 0u;
+const int16_t kTrickPlayFactor = 0u;
 const uint8_t kNaluLengthSize = 0u;
 
 // Test duration defaults must differ from parser estimation defaults to know
@@ -350,7 +350,7 @@ class WebMClusterParserTest : public testing::Test {
                                                kHeight,
                                                kPixelWidth,
                                                kPixelHeight,
-                                               kTrickPlayRate,
+                                               kTrickPlayFactor,
                                                kNaluLengthSize,
                                                kLanguage,
                                                !kEncrypted)),

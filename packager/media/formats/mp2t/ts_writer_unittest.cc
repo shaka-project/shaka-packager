@@ -39,7 +39,7 @@ const uint32_t kWidth = 1280;
 const uint32_t kHeight = 720;
 const uint32_t kPixelWidth = 1;
 const uint32_t kPixelHeight = 1;
-const uint16_t kTrickPlayRate = 1;
+const uint16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 1;
 const bool kIsEncrypted = false;
 
@@ -161,7 +161,7 @@ TEST_F(TsWriterTest, InitializeVideoH264) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 }
 
@@ -170,7 +170,7 @@ TEST_F(TsWriterTest, InitializeVideoNonH264) {
       kTrackId, kTimeScale, kDuration, Codec::kCodecVP9,
       H26xStreamFormat::kUnSpecified, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_FALSE(ts_writer_.Initialize(*stream_info));
 }
 
@@ -204,7 +204,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
@@ -287,7 +287,7 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
@@ -317,7 +317,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
@@ -406,7 +406,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
@@ -472,7 +472,7 @@ TEST_F(TsWriterTest, BigPesPacket) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
@@ -509,7 +509,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
@@ -570,7 +570,7 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 

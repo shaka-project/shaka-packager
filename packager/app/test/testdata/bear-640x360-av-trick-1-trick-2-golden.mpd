@@ -13,13 +13,13 @@
     <AdaptationSet id="1" contentType="video" width="640" height="360" maxFrameRate="30000/30030" par="16:9">
       <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="0"/>
       <Representation id="1" bandwidth="103866" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/60060" maxPlayoutRate="60" codingDependency="false">
-        <BaseURL>output_video_trick_play_rate_2.mp4</BaseURL>
+        <BaseURL>output_video_trick_play_factor_2.mp4</BaseURL>
         <SegmentBase indexRange="823-878" timescale="30000">
           <Initialization range="0-822"/>
         </SegmentBase>
       </Representation>
       <Representation id="2" bandwidth="156160" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" frameRate="30000/30030" maxPlayoutRate="30" codingDependency="false">
-        <BaseURL>output_video_trick_play_rate_1.mp4</BaseURL>
+        <BaseURL>output_video_trick_play_factor_1.mp4</BaseURL>
         <SegmentBase indexRange="823-890" timescale="30000">
           <Initialization range="0-822"/>
         </SegmentBase>

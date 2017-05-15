@@ -27,7 +27,7 @@ const uint16_t kWidth = 10u;
 const uint16_t kHeight = 20u;
 const uint32_t kPixelWidth = 2u;
 const uint32_t kPixelHeight = 3u;
-const int16_t kTrickPlayRate = 0;
+const int16_t kTrickPlayFactor = 0;
 const uint8_t kNaluLengthSize = 1u;
 const bool kEncrypted = true;
 
@@ -156,7 +156,7 @@ std::shared_ptr<StreamInfo> MediaHandlerTestBase::GetMockStreamInfo(
     return std::shared_ptr<StreamInfo>(new VideoStreamInfo(
         kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
         kCodecString, kCodecConfig, sizeof(kCodecConfig), kWidth, kHeight,
-        kPixelWidth, kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage,
+        kPixelWidth, kPixelHeight, kTrickPlayFactor, kNaluLengthSize, kLanguage,
         !kEncrypted));
   }
   return nullptr;

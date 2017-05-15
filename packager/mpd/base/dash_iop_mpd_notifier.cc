@@ -276,7 +276,7 @@ AdaptationSet* DashIopMpdNotifier::NewAdaptationSet(
       new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
     }
 
-    if (media_info.video_info().trick_play_rate() > 0) {
+    if (media_info.video_info().trick_play_factor() > 0) {
       uint32_t trick_play_reference_id = 0;
       if (!FindOriginalAdaptationSetForTrickPlay(media_info,
                                                  &trick_play_reference_id)) {
@@ -294,7 +294,7 @@ bool DashIopMpdNotifier::FindOriginalAdaptationSetForTrickPlay(
     const MediaInfo& media_info,
     uint32_t* main_adaptation_set_id) {
   MediaInfo media_info_no_trickplay = media_info;
-  media_info_no_trickplay.mutable_video_info()->clear_trick_play_rate();
+  media_info_no_trickplay.mutable_video_info()->clear_trick_play_factor();
   std::string key = GetAdaptationSetKey(media_info_no_trickplay);
   const std::list<AdaptationSet*>& adaptation_sets =
       adaptation_set_list_map_[key];

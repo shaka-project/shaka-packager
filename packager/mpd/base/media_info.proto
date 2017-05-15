@@ -41,9 +41,9 @@ message MediaInfo {
     optional uint32 pixel_width = 7;
     optional uint32 pixel_height = 8;
 
-    // trick_play_rate: sample rate of the key frame from the original stream.
+    // trick_play_factor: sample rate of the key frame from the original stream.
     // e.g., 1 means every key frame, 2 means every two key frames.
-    optional uint32 trick_play_rate = 9;
+    optional uint32 trick_play_factor = 9;
     // playback_rate: the playout capability (e.g., 4x, 8x, 16x fast foward) of
     // the trick play stream.
     optional uint32 playback_rate = 10;

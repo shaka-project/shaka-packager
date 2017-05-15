@@ -30,7 +30,7 @@ enum FieldType {
   kHlsNameField,
   kHlsGroupIdField,
   kHlsPlaylistNameField,
-  kTrickPlayRateField,
+  kTrickPlayFactorField,
 };
 
 struct FieldNameToTypeMapping {
@@ -58,7 +58,8 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"hls_name", kHlsNameField},
     {"hls_group_id", kHlsGroupIdField},
     {"playlist_name", kHlsPlaylistNameField},
-    {"trick_play_rate", kTrickPlayRateField},
+    {"trick_play_factor", kTrickPlayFactorField},
+    {"tpf", kTrickPlayFactorField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -143,18 +144,18 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         descriptor.hls_playlist_name = iter->second;
         break;
       }
-      case kTrickPlayRateField: {
-        unsigned rate;
-        if (!base::StringToUint(iter->second, &rate)) {
-          LOG(ERROR) << "Non-numeric trick play rate " << iter->second
+      case kTrickPlayFactorField: {
+        unsigned factor;
+        if (!base::StringToUint(iter->second, &factor)) {
+          LOG(ERROR) << "Non-numeric trick play factor " << iter->second
                      << " specified.";
           return false;
         }
-        if (rate == 0) {
-          LOG(ERROR) << "Stream trick_play_rate should be > 0.";
+        if (factor == 0) {
+          LOG(ERROR) << "Stream trick_play_factor should be > 0.";
           return false;
         }
-        descriptor.trick_play_rate = rate;
+        descriptor.trick_play_factor = factor;
         break;
       }
       default:

@@ -69,7 +69,7 @@ class WvmMediaParser : public MediaParser {
     TrackSize = 2,
     TrackDuration = 3,
     TrackBitRate = 4,
-    TrackTrickPlayRate = 5,
+    TrackTrickPlayFactor = 5,
     TrackAdaptationInterval = 6,
     TrackFlags = 7,
     VideoType = 8,

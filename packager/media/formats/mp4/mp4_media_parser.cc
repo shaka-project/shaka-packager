@@ -590,7 +590,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           entry.codec_configuration.data.data(),
           entry.codec_configuration.data.size(), coded_width, coded_height,
           pixel_width, pixel_height,
-          0,  // trick_play_rate
+          0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
 
       // Set pssh raw data if it has.

@@ -358,11 +358,11 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     // Create a new trick_play_handler. Note that the stream_decriptors
     // are sorted so that for the same input and stream_selector, the main
     // stream is always the last one following the trick play streams.
-    if (stream_iter->trick_play_rate > 0) {
+    if (stream_iter->trick_play_factor > 0) {
       if (!trick_play_handler) {
         trick_play_handler.reset(new TrickPlayHandler());
       }
-      trick_play_handler->SetHandlerForTrickPlay(stream_iter->trick_play_rate,
+      trick_play_handler->SetHandlerForTrickPlay(stream_iter->trick_play_factor,
                                                  std::move(muxer));
       if (trick_play_handler->IsConnected())
         continue;

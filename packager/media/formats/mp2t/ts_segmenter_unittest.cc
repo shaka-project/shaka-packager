@@ -41,7 +41,7 @@ const uint32_t kWidth = 1280;
 const uint32_t kHeight = 720;
 const uint32_t kPixelWidth = 1;
 const uint32_t kPixelHeight = 1;
-const uint16_t kTrickPlayRate = 1;
+const uint16_t kTrickPlayFactor = 1;
 const uint8_t kNaluLengthSize = 1;
 const bool kIsEncrypted = false;
 
@@ -100,7 +100,7 @@ TEST_F(TsSegmenterTest, Initialize) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -121,7 +121,7 @@ TEST_F(TsSegmenterTest, AddSample) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -173,7 +173,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       kTrackId, kInputTimescale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
 
@@ -268,7 +268,7 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -297,7 +297,7 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
@@ -325,7 +325,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       kTrackId, kTimeScale, kDuration, kH264Codec,
       H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
       arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
   MuxerOptions options;
 
   options.segment_template = "file$Number$.ts";

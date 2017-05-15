@@ -48,7 +48,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  uint16_t height,
                                  uint32_t pixel_width,
                                  uint32_t pixel_height,
-                                 uint32_t trick_play_rate,
+                                 uint32_t trick_play_factor,
                                  uint8_t nalu_length_size,
                                  const std::string& language,
                                  bool is_encrypted)
@@ -67,7 +67,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       height_(height),
       pixel_width_(pixel_width),
       pixel_height_(pixel_height),
-      trick_play_rate_(trick_play_rate),
+      trick_play_factor_(trick_play_factor),
       nalu_length_size_(nalu_length_size) {}
 
 VideoStreamInfo::~VideoStreamInfo() {}
@@ -82,9 +82,9 @@ bool VideoStreamInfo::IsValidConfig() const {
 std::string VideoStreamInfo::ToString() const {
   return base::StringPrintf(
       "%s codec: %s\n width: %d\n height: %d\n pixel_aspect_ratio: %d:%d\n "
-      "trick_play_rate: %d\n nalu_length_size: %d\n",
+      "trick_play_factor: %d\n nalu_length_size: %d\n",
       StreamInfo::ToString().c_str(), VideoCodecToString(codec()).c_str(),
-      width_, height_, pixel_width_, pixel_height_, trick_play_rate_,
+      width_, height_, pixel_width_, pixel_height_, trick_play_factor_,
       nalu_length_size_);
 }
 

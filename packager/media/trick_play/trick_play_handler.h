@@ -15,7 +15,7 @@ namespace media {
 /// TrickPlayHandler is a single-input-multiple-output media handler. It creates
 /// trick play streams from the input.
 // The stream data in trick play stream is not a simple duplicate. Some
-// information need to be updated, including trick_play_rate in
+// information need to be updated, including trick_play_factor in
 // VideoStreamInfo, the duration in MediaSample (which makes sure there is no
 // gap between the media sample dts). Since the duration information can be
 // determined after getting the next media sample, a queue is used to cache the
@@ -26,7 +26,7 @@ class TrickPlayHandler : public MediaHandler {
   ~TrickPlayHandler() override;
 
   void SetHandlerForMainStream(std::shared_ptr<MediaHandler> handler);
-  void SetHandlerForTrickPlay(uint32_t trick_play_rate,
+  void SetHandlerForTrickPlay(uint32_t trick_play_factor,
                               std::shared_ptr<MediaHandler> handler);
 
  protected:
@@ -59,14 +59,14 @@ class TrickPlayHandler : public MediaHandler {
   Status ProcessOneStreamData(size_t output_stream_index,
                               const std::shared_ptr<StreamData>& stream_data);
 
-  // Trick play rates. Note that there can be multiple trick play rates,
+  // Trick play factors. Note that there can be multiple trick play factors,
   // e.g., 2, 4 and 8. That means, one input video stream will generate 3
   // output trick play streams and original stream. Three trick play streams
   // are:
   // [key_frame_0, key_frame_2, key_frame_4, ...]
   // [key_frame_0, key_frame_4, key_frame_8,...]
   // [key_frame_0, key_frame_8, key_frame_16, ...].
-  std::vector<uint32_t> trick_play_rates_;
+  std::vector<uint32_t> trick_play_factors_;
 
   TrickPlayHandler(const TrickPlayHandler&) = delete;
   TrickPlayHandler& operator=(const TrickPlayHandler&) = delete;

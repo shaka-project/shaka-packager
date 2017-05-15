@@ -574,7 +574,7 @@ bool WvmMediaParser::ParseIndexEntry() {
     }
 
     uint64_t track_duration = 0;
-    uint32_t trick_play_rate = 0;
+    uint32_t trick_play_factor = 0;
     uint32_t sampling_frequency = kDefaultSamplingFrequency;
     uint32_t time_scale = kMpeg2ClockRate;
     uint16_t video_width = 0;
@@ -680,8 +680,8 @@ bool WvmMediaParser::ParseIndexEntry() {
         case TrackDuration:
           track_duration = value;
           break;
-        case TrackTrickPlayRate:
-          trick_play_rate = value;
+        case TrackTrickPlayFactor:
+          trick_play_factor = value;
           break;
         case VideoStreamId:
           video_pes_stream_id = value;
@@ -743,7 +743,7 @@ bool WvmMediaParser::ParseIndexEntry() {
           stream_id_count_, time_scale, track_duration, kCodecH264,
           byte_to_unit_stream_converter_.stream_format(), std::string(),
           video_codec_config.data(), video_codec_config.size(), video_width,
-          video_height, pixel_width, pixel_height, trick_play_rate,
+          video_height, pixel_width, pixel_height, trick_play_factor,
           nalu_length_size, std::string(),
           decryption_key_source_ ? false : true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
