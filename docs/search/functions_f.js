@@ -14,6 +14,7 @@ var searchData=
   ['set_5fdts',['set_dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a9917d625989f0eaac93fec12fec8dca0',1,'shaka::media::mp2t::PesPacket']]],
   ['set_5fkey_5ffetcher',['set_key_fetcher',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a97c0565df9381e178ebb50c193cebd04',1,'shaka::media::WidevineKeySource']]],
   ['set_5fnalu_5flength_5fsize',['set_nalu_length_size',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab0c889c2382b6f41ad1993c136b03d07',1,'shaka::media::DecoderConfigurationRecord']]],
+  ['set_5fprotection_5fscheme',['set_protection_scheme',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a1a80dce958737dd984f3dfd3722a570e',1,'shaka::media::WidevineKeySource']]],
   ['set_5fpts',['set_pts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a02ffa1c0ad370f047e6f09b6bbc8b3b8',1,'shaka::media::mp2t::PesPacket']]],
   ['set_5fsbr_5fpresent',['set_sbr_present',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a9271c9f0d8ef8029da8bd48baa7a757b',1,'shaka::media::AACAudioSpecificConfig']]],
   ['set_5fsigner',['set_signer',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a48d182da15ecc85e2ae7fd164ba0a526',1,'shaka::media::WidevineKeySource']]],

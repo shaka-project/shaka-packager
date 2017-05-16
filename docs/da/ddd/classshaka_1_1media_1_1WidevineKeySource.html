@@ -88,7 +88,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="../../d2/d35/classshaka_1_1media_1_1WidevineKeySource-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::WidevineKeySource Class Reference</div>  </div>
@@ -112,6 +111,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a93480a98e423d0456482844ac629bd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fb9680be887d3b9367e015029f909f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a6fb9680be887d3b9367e015029f909f2">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</td></tr>
 <tr class="separator:a6fb9680be887d3b9367e015029f909f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a80dce958737dd984f3dfd3722a570e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1a80dce958737dd984f3dfd3722a570e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a1a80dce958737dd984f3dfd3722a570e">set_protection_scheme</a> (FourCC protection_scheme)</td></tr>
+<tr class="memdesc:a1a80dce958737dd984f3dfd3722a570e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the protection scheme for the key source. <br/></td></tr>
+<tr class="separator:a1a80dce958737dd984f3dfd3722a570e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48d182da15ecc85e2ae7fd164ba0a526"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a48d182da15ecc85e2ae7fd164ba0a526">set_signer</a> (std::unique_ptr&lt; <a class="el" href="../../df/d3c/classshaka_1_1media_1_1RequestSigner.html">RequestSigner</a> &gt; signer)</td></tr>
 <tr class="separator:a48d182da15ecc85e2ae7fd164ba0a526"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97c0565df9381e178ebb50c193cebd04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a97c0565df9381e178ebb50c193cebd04">set_key_fetcher</a> (std::unique_ptr&lt; <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html">KeyFetcher</a> &gt; key_fetcher)</td></tr>
@@ -125,12 +128,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a59699cd998290adae74e6596ba44fdc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab56a71e9f9f9e545f96e667279c05bb1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ab56a71e9f9f9e545f96e667279c05bb1">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:ab56a71e9f9f9e545f96e667279c05bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:a9b622cdc7dd9b9a72ef6615329d20dcc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b622cdc7dd9b9a72ef6615329d20dcc"></a>
-<a class="el" href="../../dc/df0/classshaka_1_1media_1_1ClosureThread.html">ClosureThread</a>&#160;</td><td class="memItemRight" valign="bottom"><b>key_production_thread_</b></td></tr>
-<tr class="separator:a9b622cdc7dd9b9a72ef6615329d20dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -161,7 +158,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html">WidevineKeySource</a> talks to the Widevine encryption service to acquire the encryption keys. </p>
 
-<p>Definition at line <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html#l00030">30</a> of file <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html">widevine_key_source.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html#l00031">31</a> of file <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html">widevine_key_source.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a93480a98e423d0456482844ac629bd2e"></a>
 <div class="memitem">
@@ -193,7 +190,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00125">125</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00130">130</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -241,7 +238,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00163">163</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00181">181</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -278,7 +275,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00152">152</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00158">158</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -332,7 +329,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00245">245</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00263">263</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -379,7 +376,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00222">222</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00240">240</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -426,7 +423,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00232">232</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00250">250</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -451,7 +448,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00271">271</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00289">289</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -476,7 +473,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00267">267</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00285">285</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -487,7 +484,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 15 2017 22:39:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 16 2017 22:54:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
