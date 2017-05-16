@@ -167,7 +167,6 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewContainerForTrickPlay) {
       "  frame_duration: 100\n"
       "  pixel_width: 1\n"
       "  pixel_height: 1\n"
-      "  trick_play_factor: 2\n"
       "  playback_rate: 10\n"
       "}\n"
       "container_type: 1\n";

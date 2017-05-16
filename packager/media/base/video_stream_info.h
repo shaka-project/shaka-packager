@@ -102,7 +102,8 @@ class VideoStreamInfo : public StreamInfo {
   // example, if the video stream has GOP size of 10 and the trick play factor
   // is 3, the key frames are in this trick play stream are [frame_0, frame_30,
   // frame_60, ...]. Then the playback_rate is 30.
-  uint32_t playback_rate_;
+  // Non-zero for trick-play streams.
+  uint32_t playback_rate_ = 0;
 
   // Specifies the size of the NAL unit length field. Can be 1, 2 or 4 bytes, or
   // 0 if the stream is not a NAL structured video stream or if it is an AnnexB
