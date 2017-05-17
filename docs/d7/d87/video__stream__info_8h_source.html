@@ -124,7 +124,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                  uint16_t height,</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                  uint32_t <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#af5f655f36865a3af28bd0c7328e9a91e">pixel_width</a>,</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                  uint32_t <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#ae420a97a606ef54be16beb49e42cd135">pixel_height</a>,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                  uint32_t trick_play_rate,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                  uint32_t trick_play_factor,</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                  uint8_t nalu_length_size,</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                  <span class="keyword">const</span> std::string&amp; language,</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                  <span class="keywordtype">bool</span> is_encrypted);</div>
@@ -140,7 +140,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#af5f655f36865a3af28bd0c7328e9a91e">   60</a></span>&#160;  uint32_t <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#af5f655f36865a3af28bd0c7328e9a91e">pixel_width</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pixel_width_; }</div>
 <div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#ae420a97a606ef54be16beb49e42cd135">   63</a></span>&#160;  uint32_t <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#ae420a97a606ef54be16beb49e42cd135">pixel_height</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pixel_height_; }</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  uint8_t nalu_length_size()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nalu_length_size_; }</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  uint32_t trick_play_rate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> trick_play_rate_; }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  uint32_t trick_play_factor()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> trick_play_factor_; }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  uint32_t playback_rate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> playback_rate_; }</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; eme_init_data()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> eme_init_data_; }</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
@@ -148,8 +148,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> set_height(uint32_t height) { height_ = height; }</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">void</span> set_pixel_width(uint32_t pixel_width) { pixel_width_ = <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#af5f655f36865a3af28bd0c7328e9a91e">pixel_width</a>; }</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">void</span> set_pixel_height(uint32_t pixel_height) { pixel_height_ = <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#ae420a97a606ef54be16beb49e42cd135">pixel_height</a>; }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">void</span> set_trick_play_rate(uint32_t trick_play_rate) {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    trick_play_rate_ = trick_play_rate;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">void</span> set_trick_play_factor(uint32_t trick_play_factor) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    trick_play_factor_ = trick_play_factor;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  }</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordtype">void</span> set_playback_rate(uint32_t playback_rate) {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    playback_rate_ = playback_rate;</div>
@@ -168,7 +168,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// 0 means unknown.</span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  uint32_t pixel_width_;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  uint32_t pixel_height_;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  uint32_t trick_play_rate_ = 0;  <span class="comment">// Non-zero for trick-play streams.</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  uint32_t trick_play_factor_ = 0;  <span class="comment">// Non-zero for trick-play streams.</span></div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// Playback rate is the attribute for trick play stream, which signals the</span></div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// playout capabilities</span></div>
@@ -177,8 +177,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="comment">// frame rate. If the time scale and frame duration are not modified after</span></div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="comment">// trick play handler processing, the playback_rate equals to the number of</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// frames between consecutive key frames selected for trick play stream. For</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// example, if the video stream has GOP size of 10 and the trick play rate is</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// 3, the key frames are in this trick play stream are [frame_0, frame_30,</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// example, if the video stream has GOP size of 10 and the trick play factor</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// is 3, the key frames are in this trick play stream are [frame_0, frame_30,</span></div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// frame_60, ...]. Then the playback_rate is 30.</span></div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  uint32_t playback_rate_;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
@@ -209,7 +209,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -120,7 +120,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">const</span> uint16_t kHeight = 100;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">const</span> uint16_t kPixelWidth = 100;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">const</span> uint16_t kPixelHeight = 100;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">const</span> int16_t kTrickPlayRate = 1;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">const</span> int16_t kTrickPlayFactor = 1;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">const</span> uint8_t kNaluLengthSize = 0;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}  <span class="comment">// namespace</span></div>
@@ -171,10 +171,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
 <div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a7e34fd92e43914bd2f032835cdc9b8a7">   84</a></span>&#160;<a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>* <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a7e34fd92e43914bd2f032835cdc9b8a7">SegmentTestBase::CreateVideoStreamInfo</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>(kTrackId, kTimeScale, kDuration, kCodec,</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                             H26xStreamFormat::kUnSpecified, kCodecString, NULL,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                             0, kWidth, kHeight, kPixelWidth, kPixelHeight,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                             kTrickPlayRate, kNaluLengthSize, kLanguage, <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>(</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      kTrackId, kTimeScale, kDuration, kCodec, H26xStreamFormat::kUnSpecified,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      kCodecString, NULL, 0, kWidth, kHeight, kPixelWidth, kPixelHeight,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      kTrickPlayFactor, kNaluLengthSize, kLanguage, <span class="keyword">false</span>);</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ace8082bd6dcd3aa07177c648f6ad7ecf">   91</a></span>&#160;std::string <a class="code" href="../../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ace8082bd6dcd3aa07177c648f6ad7ecf">SegmentTestBase::OutputFileName</a>()<span class="keyword"> const </span>{</div>
@@ -291,7 +291,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

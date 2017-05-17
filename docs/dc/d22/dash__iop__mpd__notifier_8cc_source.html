@@ -365,7 +365,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      new_adaptation_set-&gt;AddRole(AdaptationSet::kRoleMain);</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    }</div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keywordflow">if</span> (media_info.video_info().trick_play_rate() &gt; 0) {</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keywordflow">if</span> (media_info.video_info().trick_play_factor() &gt; 0) {</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;      uint32_t trick_play_reference_id = 0;</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;      <span class="keywordflow">if</span> (!FindOriginalAdaptationSetForTrickPlay(media_info,</div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;                                                 &amp;trick_play_reference_id)) {</div>
@@ -383,7 +383,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keyword">const</span> MediaInfo&amp; media_info,</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    uint32_t* main_adaptation_set_id) {</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  MediaInfo media_info_no_trickplay = media_info;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  media_info_no_trickplay.mutable_video_info()-&gt;clear_trick_play_rate();</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  media_info_no_trickplay.mutable_video_info()-&gt;clear_trick_play_factor();</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  std::string key = GetAdaptationSetKey(media_info_no_trickplay);</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <span class="keyword">const</span> std::list&lt;AdaptationSet*&gt;&amp; adaptation_sets =</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      adaptation_set_list_map_[key];</div>
@@ -425,7 +425,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

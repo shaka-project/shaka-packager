@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">// The stream data in trick play stream is not a simple duplicate. Some</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// information need to be updated, including trick_play_rate in</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// information need to be updated, including trick_play_factor in</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// VideoStreamInfo, the duration in MediaSample (which makes sure there is no</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// gap between the media sample dts). Since the duration information can be</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// determined after getting the next media sample, a queue is used to cache the</span></div>
@@ -113,7 +113,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  ~<a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordtype">void</span> SetHandlerForMainStream(std::shared_ptr&lt;MediaHandler&gt; handler);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">void</span> SetHandlerForTrickPlay(uint32_t trick_play_rate,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">void</span> SetHandlerForTrickPlay(uint32_t trick_play_factor,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                              std::shared_ptr&lt;MediaHandler&gt; handler);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; <span class="keyword">protected</span>:</div>
@@ -143,14 +143,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ProcessOneStreamData(<span class="keywordtype">size_t</span> output_stream_index,</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                              <span class="keyword">const</span> std::shared_ptr&lt;StreamData&gt;&amp; stream_data);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// Trick play rates. Note that there can be multiple trick play rates,</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// Trick play factors. Note that there can be multiple trick play factors,</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">// e.g., 2, 4 and 8. That means, one input video stream will generate 3</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// output trick play streams and original stream. Three trick play streams</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// are:</span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// [key_frame_0, key_frame_2, key_frame_4, ...]</span></div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// [key_frame_0, key_frame_4, key_frame_8,...]</span></div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="comment">// [key_frame_0, key_frame_8, key_frame_16, ...].</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::vector&lt;uint32_t&gt; trick_play_rates_;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::vector&lt;uint32_t&gt; trick_play_factors_;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>(<span class="keyword">const</span> <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html">TrickPlayHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
@@ -192,7 +192,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -125,7 +125,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a64279d1f657944b1f97503674f507cc6">   39</a></span>&#160;VideoStreamInfo::VideoStreamInfo(<span class="keywordtype">int</span> track_id,</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a3ab048a7c4fc85734915300dbe6298a5">   39</a></span>&#160;VideoStreamInfo::VideoStreamInfo(<span class="keywordtype">int</span> track_id,</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                 uint32_t time_scale,</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                 uint64_t duration,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                 Codec codec,</div>
@@ -137,7 +137,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                 uint16_t height,</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                 uint32_t pixel_width,</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                 uint32_t pixel_height,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                 uint32_t trick_play_rate,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                 uint32_t trick_play_factor,</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                 uint8_t nalu_length_size,</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                 <span class="keyword">const</span> std::string&amp; language,</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                 <span class="keywordtype">bool</span> is_encrypted)</div>
@@ -156,7 +156,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      height_(height),</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      pixel_width_(pixel_width),</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      pixel_height_(pixel_height),</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      trick_play_rate_(trick_play_rate),</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      trick_play_factor_(trick_play_factor),</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      nalu_length_size_(nalu_length_size) {}</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;VideoStreamInfo::~VideoStreamInfo() {}</div>
@@ -171,9 +171,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a9cac8e75d76f1192a48d1dcf61435537">   82</a></span>&#160;std::string <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a9cac8e75d76f1192a48d1dcf61435537">VideoStreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="stringliteral">&quot;%s codec: %s\n width: %d\n height: %d\n pixel_aspect_ratio: %d:%d\n &quot;</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="stringliteral">&quot;trick_play_rate: %d\n nalu_length_size: %d\n&quot;</span>,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="stringliteral">&quot;trick_play_factor: %d\n nalu_length_size: %d\n&quot;</span>,</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">StreamInfo::ToString</a>().c_str(), VideoCodecToString(codec()).c_str(),</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      width_, height_, pixel_width_, pixel_height_, trick_play_rate_,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      width_, height_, pixel_width_, pixel_height_, trick_play_factor_,</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      nalu_length_size_);</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
@@ -186,7 +186,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

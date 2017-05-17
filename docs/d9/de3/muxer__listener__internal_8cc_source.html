@@ -191,8 +191,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    video_info-&gt;set_decoder_config(&amp;codec_config[0], codec_config.size());</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  }</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">if</span> (video_stream_info-&gt;trick_play_rate() &gt; 0) {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    video_info-&gt;set_trick_play_rate(video_stream_info-&gt;trick_play_rate());</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">if</span> (video_stream_info-&gt;trick_play_factor() &gt; 0) {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    video_info-&gt;set_trick_play_factor(video_stream_info-&gt;trick_play_factor());</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    CHECK_GT(video_stream_info-&gt;playback_rate(), 0u)</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Max playout rate should be &gt; 0 for trick play streams.&quot;</span>;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    video_info-&gt;set_playback_rate(video_stream_info-&gt;playback_rate());</div>
@@ -378,7 +378,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

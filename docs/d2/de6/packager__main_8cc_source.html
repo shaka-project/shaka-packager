@@ -447,11 +447,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <span class="comment">// Create a new trick_play_handler. Note that the stream_decriptors</span></div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    <span class="comment">// are sorted so that for the same input and stream_selector, the main</span></div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    <span class="comment">// stream is always the last one following the trick play streams.</span></div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordflow">if</span> (stream_iter-&gt;trick_play_rate &gt; 0) {</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordflow">if</span> (stream_iter-&gt;trick_play_factor &gt; 0) {</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      <span class="keywordflow">if</span> (!trick_play_handler) {</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        trick_play_handler.reset(<span class="keyword">new</span> TrickPlayHandler());</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      }</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      trick_play_handler-&gt;SetHandlerForTrickPlay(stream_iter-&gt;trick_play_rate,</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      trick_play_handler-&gt;SetHandlerForTrickPlay(stream_iter-&gt;trick_play_factor,</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;                                                 std::move(muxer));</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      <span class="keywordflow">if</span> (trick_play_handler-&gt;IsConnected())</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;        <span class="keywordflow">continue</span>;</div>
@@ -722,7 +722,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 16 2017 22:54:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 21:54:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
