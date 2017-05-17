@@ -180,26 +180,27 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// example, if the video stream has GOP size of 10 and the trick play factor</span></div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// is 3, the key frames are in this trick play stream are [frame_0, frame_30,</span></div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// frame_60, ...]. Then the playback_rate is 30.</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  uint32_t playback_rate_;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Specifies the size of the NAL unit length field. Can be 1, 2 or 4 bytes, or</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// 0 if the stream is not a NAL structured video stream or if it is an AnnexB</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// byte stream.</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  uint8_t nalu_length_size_;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="comment">// Container-specific data used by CDM to generate a license request:</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// https://w3c.github.io/encrypted-media/#initialization-data.</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  std::vector&lt;uint8_t&gt; eme_init_data_;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// typically small, the performance impact is minimal.</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;};</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_VIDEO_STREAM_INFO_H_</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// Non-zero for trick-play streams.</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  uint32_t playback_rate_ = 0;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// Specifies the size of the NAL unit length field. Can be 1, 2 or 4 bytes, or</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// 0 if the stream is not a NAL structured video stream or if it is an AnnexB</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// byte stream.</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  uint8_t nalu_length_size_;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// Container-specific data used by CDM to generate a license request:</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="comment">// https://w3c.github.io/encrypted-media/#initialization-data.</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  std::vector&lt;uint8_t&gt; eme_init_data_;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// typically small, the performance impact is minimal.</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;};</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_VIDEO_STREAM_INFO_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00057">stream_info.h:57</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VideoStreamInfo_html_a8978ca2bc2dd63c2e25e77cdcf676162"><div class="ttname"><a href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a8978ca2bc2dd63c2e25e77cdcf676162">shaka::media::VideoStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00075">video_stream_info.cc:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VideoStreamInfo_html_ae420a97a606ef54be16beb49e42cd135"><div class="ttname"><a href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#ae420a97a606ef54be16beb49e42cd135">shaka::media::VideoStreamInfo::pixel_height</a></div><div class="ttdeci">uint32_t pixel_height() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d87/video__stream__info_8h_source.html#l00063">video_stream_info.h:63</a></div></div>
@@ -209,7 +210,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 17 2017 21:54:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 22:14:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

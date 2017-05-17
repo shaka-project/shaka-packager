@@ -227,243 +227,242 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="comment">// Trick play streams of the same original stream, but possibly with</span></div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="comment">// different trick_play_factors, belong to the same trick play AdaptationSet.</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="keywordflow">if</span> (media_info.has_video_info() &amp;&amp;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;      media_info.video_info().trick_play_factor() &gt; 0) {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    key.append(<span class="stringliteral">&quot;:trick_play&quot;</span>);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  }</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="keywordflow">return</span> key;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;}</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;std::string SecondsToXmlDuration(<span class="keywordtype">double</span> seconds) {</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;PT&quot;</span> + <a class="code" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">DoubleToString</a>(seconds) + <span class="stringliteral">&quot;S&quot;</span>;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;}</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="keywordtype">bool</span> GetDurationAttribute(xmlNodePtr node, <span class="keywordtype">float</span>* duration) {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  DCHECK(node);</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  DCHECK(duration);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kDuration[] = <span class="stringliteral">&quot;duration&quot;</span>;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  xml::scoped_xml_ptr&lt;xmlChar&gt; duration_value(</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      xmlGetProp(node, BAD_CAST kDuration));</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="keywordflow">if</span> (!duration_value)</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordtype">double</span> duration_double_precision = 0.0;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">if</span> (!base::StringToDouble(reinterpret_cast&lt;const char*&gt;(duration_value.get()),</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                            &amp;duration_double_precision)) {</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  }</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  *duration = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(duration_double_precision);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="keywordtype">bool</span> MoreThanOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3) {</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keywordflow">return</span> (b1 &amp;&amp; b2) || (b2 &amp;&amp; b3) || (b3 &amp;&amp; b1);</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;}</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="keywordtype">bool</span> AtLeastOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3) { <span class="keywordflow">return</span> b1 || b2 || b3; }</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="keywordtype">bool</span> OnlyOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3) {</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="keywordflow">return</span> !MoreThanOneTrue(b1, b2, b3) &amp;&amp; AtLeastOneTrue(b1, b2, b3);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;}</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">// Implement our own DoubleToString as base::DoubleToString uses third_party</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">// library dmg_fp.</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">  185</a></span>&#160;std::string <a class="code" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">DoubleToString</a>(<span class="keywordtype">double</span> value) {</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  std::ostringstream stringstream;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  stringstream &lt;&lt; value;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keywordflow">return</span> stringstream.str();</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="comment">// Coverts binary data into human readable UUID format.</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">  192</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format) {</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  DCHECK(uuid_format);</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kExpectedUUIDSize = 16;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">if</span> (data.size() != kExpectedUUIDSize) {</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;UUID size is expected to be &quot;</span> &lt;&lt; kExpectedUUIDSize</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; but is &quot;</span> &lt;&lt; data.size() &lt;&lt; <span class="stringliteral">&quot; and the data in hex is &quot;</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;               &lt;&lt; base::HexEncode(data.data(), data.size());</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  }</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keyword">const</span> std::string hex_encoded =</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      base::ToLowerASCII(base::HexEncode(data.data(), data.size()));</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  DCHECK_EQ(hex_encoded.size(), kExpectedUUIDSize * 2);</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  base::StringPiece all(hex_encoded);</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="comment">// Note UUID has 5 parts separated with dashes.</span></div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="comment">// e.g. 123e4567-e89b-12d3-a456-426655440000</span></div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <span class="comment">// These StringPieces have each part.</span></div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  base::StringPiece first = all.substr(0, 8);</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  base::StringPiece second = all.substr(8, 4);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  base::StringPiece third = all.substr(12, 4);</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  base::StringPiece fourth = all.substr(16, 4);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  base::StringPiece fifth = all.substr(20, 12);</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="comment">// 32 hexadecimal characters with 4 hyphens.</span></div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kHumanReadableUUIDSize = 36;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  uuid_format-&gt;reserve(kHumanReadableUUIDSize);</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  first.CopyToString(uuid_format);</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  second.AppendToString(uuid_format);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  third.AppendToString(uuid_format);</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  fourth.AppendToString(uuid_format);</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  fifth.AppendToString(uuid_format);</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;}</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="keywordtype">void</span> UpdateContentProtectionPsshHelper(</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements) {</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="keyword">const</span> std::string drm_uuid_schemd_id_uri_form = <span class="stringliteral">&quot;urn:uuid:&quot;</span> + drm_uuid;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  <span class="keywordflow">for</span> (std::list&lt;ContentProtectionElement&gt;::iterator protection =</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;           content_protection_elements-&gt;begin();</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;       protection != content_protection_elements-&gt;end(); ++protection) {</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="keywordflow">if</span> (protection-&gt;scheme_id_uri != drm_uuid_schemd_id_uri_form) {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    }</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="keywordflow">for</span> (std::vector&lt;Element&gt;::iterator subelement =</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;             protection-&gt;subelements.begin();</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;         subelement != protection-&gt;subelements.end(); ++subelement) {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;      <span class="keywordflow">if</span> (subelement-&gt;name == kPsshElementName) {</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="comment">// For now, we want to remove the PSSH element because some players do</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <span class="comment">// not support updating pssh.</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        protection-&gt;subelements.erase(subelement);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="comment">// TODO(rkuroiwa): Uncomment this and remove the line above when</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="comment">// shaka-player supports updating PSSH.</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="comment">// subelement-&gt;content = pssh;</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;      }</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    }</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="comment">// Reaching here means &lt;cenc:pssh&gt; does not exist under the</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="comment">// ContentProtection element. Add it.</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="comment">// TODO(rkuroiwa): Uncomment this when shaka-player supports updating PSSH.</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="comment">// Element cenc_pssh;</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="comment">// cenc_pssh.name = kPsshElementName;</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="comment">// cenc_pssh.content = pssh;</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="comment">// protection-&gt;subelements.push_back(cenc_pssh);</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  }</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// Reaching here means that ContentProtection for the DRM does not exist.</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="comment">// Add it.</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  ContentProtectionElement content_protection;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  content_protection.scheme_id_uri = drm_uuid_schemd_id_uri_form;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="comment">// TODO(rkuroiwa): Uncomment this when shaka-player supports updating PSSH.</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// Element cenc_pssh;</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="comment">// cenc_pssh.name = kPsshElementName;</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="comment">// cenc_pssh.content = pssh;</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="comment">// content_protection.subelements.push_back(cenc_pssh);</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  content_protection_elements-&gt;push_back(content_protection);</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="keyword">namespace </span>{</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment">// Helper function. This works because Representation and AdaptationSet both</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="comment">// have AddContentProtectionElement().</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContentProtectionParent&gt;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="keywordtype">void</span> AddContentProtectionElementsHelperTemplated(</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    ContentProtectionParent* parent) {</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  DCHECK(parent);</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keywordflow">if</span> (!media_info.has_protected_content())</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keyword">const</span> MediaInfo::ProtectedContent&amp; protected_content =</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      media_info.protected_content();</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="comment">// DASH MPD spec specifies a default ContentProtection element for ISO BMFF</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="comment">// (MP4) files.</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> is_mp4_container =</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      media_info.container_type() == MediaInfo::CONTAINER_MP4;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  std::string key_id_uuid_format;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <span class="keywordflow">if</span> (protected_content.has_default_key_id()) {</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(protected_content.default_key_id(), &amp;key_id_uuid_format)) {</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to convert default key ID into UUID format.&quot;</span>;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    }</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <span class="keywordflow">if</span> (is_mp4_container) {</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    ContentProtectionElement mp4_content_protection;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    mp4_content_protection.value = protected_content.protection_scheme();</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty()) {</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;      mp4_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;          key_id_uuid_format;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    }</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    parent-&gt;AddContentProtectionElement(mp4_content_protection);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  }</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; protected_content.content_protection_entry().size();</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;       ++i) {</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keyword">const</span> MediaInfo::ProtectedContent::ContentProtectionEntry&amp; entry =</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        protected_content.content_protection_entry(i);</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">if</span> (!entry.has_uuid()) {</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      LOG(WARNING)</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;ContentProtectionEntry was specified but no UUID is set for &quot;</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          &lt;&lt; entry.name_version() &lt;&lt; <span class="stringliteral">&quot;, skipping.&quot;</span>;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    }</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    ContentProtectionElement drm_content_protection;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    drm_content_protection.scheme_id_uri = <span class="stringliteral">&quot;urn:uuid:&quot;</span> + entry.uuid();</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">if</span> (entry.has_name_version())</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      drm_content_protection.value = entry.name_version();</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="keywordflow">if</span> (entry.has_pssh()) {</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      std::string base64_encoded_pssh;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;      base::Base64Encode(</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;          base::StringPiece(entry.pssh().data(), entry.pssh().size()),</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;          &amp;base64_encoded_pssh);</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      Element cenc_pssh;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      cenc_pssh.name = kPsshElementName;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      cenc_pssh.content = base64_encoded_pssh;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      drm_content_protection.subelements.push_back(cenc_pssh);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty() &amp;&amp; !is_mp4_container) {</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      drm_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;          key_id_uuid_format;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    }</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    parent-&gt;AddContentProtectionElement(drm_content_protection);</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;The media is encrypted but no content protection specified.&quot;</span>;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;}</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
-<div class="line"><a name="l00357"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">  357</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                                  <a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>* parent) {</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;}</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;</div>
-<div class="line"><a name="l00362"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#ac917945d578a03ce53b902f6c1bc4e33">  362</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                                  <a class="code" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>* parent) {</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;}</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="keywordflow">if</span> (media_info.video_info().has_playback_rate()) {</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    key.append(<span class="stringliteral">&quot;:trick_play&quot;</span>);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  }</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">return</span> key;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;}</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;std::string SecondsToXmlDuration(<span class="keywordtype">double</span> seconds) {</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;PT&quot;</span> + <a class="code" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">DoubleToString</a>(seconds) + <span class="stringliteral">&quot;S&quot;</span>;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;}</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keywordtype">bool</span> GetDurationAttribute(xmlNodePtr node, <span class="keywordtype">float</span>* duration) {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  DCHECK(node);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  DCHECK(duration);</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kDuration[] = <span class="stringliteral">&quot;duration&quot;</span>;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  xml::scoped_xml_ptr&lt;xmlChar&gt; duration_value(</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      xmlGetProp(node, BAD_CAST kDuration));</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="keywordflow">if</span> (!duration_value)</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="keywordtype">double</span> duration_double_precision = 0.0;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">if</span> (!base::StringToDouble(reinterpret_cast&lt;const char*&gt;(duration_value.get()),</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;                            &amp;duration_double_precision)) {</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  }</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  *duration = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(duration_double_precision);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="keywordtype">bool</span> MoreThanOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3) {</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keywordflow">return</span> (b1 &amp;&amp; b2) || (b2 &amp;&amp; b3) || (b3 &amp;&amp; b1);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;}</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="keywordtype">bool</span> AtLeastOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3) { <span class="keywordflow">return</span> b1 || b2 || b3; }</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="keywordtype">bool</span> OnlyOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3) {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordflow">return</span> !MoreThanOneTrue(b1, b2, b3) &amp;&amp; AtLeastOneTrue(b1, b2, b3);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;}</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">// Implement our own DoubleToString as base::DoubleToString uses third_party</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">// library dmg_fp.</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">  184</a></span>&#160;std::string <a class="code" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">DoubleToString</a>(<span class="keywordtype">double</span> value) {</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  std::ostringstream stringstream;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  stringstream &lt;&lt; value;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordflow">return</span> stringstream.str();</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="comment">// Coverts binary data into human readable UUID format.</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">  191</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format) {</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  DCHECK(uuid_format);</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kExpectedUUIDSize = 16;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">if</span> (data.size() != kExpectedUUIDSize) {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;UUID size is expected to be &quot;</span> &lt;&lt; kExpectedUUIDSize</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; but is &quot;</span> &lt;&lt; data.size() &lt;&lt; <span class="stringliteral">&quot; and the data in hex is &quot;</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;               &lt;&lt; base::HexEncode(data.data(), data.size());</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  }</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  <span class="keyword">const</span> std::string hex_encoded =</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      base::ToLowerASCII(base::HexEncode(data.data(), data.size()));</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  DCHECK_EQ(hex_encoded.size(), kExpectedUUIDSize * 2);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  base::StringPiece all(hex_encoded);</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="comment">// Note UUID has 5 parts separated with dashes.</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  <span class="comment">// e.g. 123e4567-e89b-12d3-a456-426655440000</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="comment">// These StringPieces have each part.</span></div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  base::StringPiece first = all.substr(0, 8);</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  base::StringPiece second = all.substr(8, 4);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  base::StringPiece third = all.substr(12, 4);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  base::StringPiece fourth = all.substr(16, 4);</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  base::StringPiece fifth = all.substr(20, 12);</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="comment">// 32 hexadecimal characters with 4 hyphens.</span></div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kHumanReadableUUIDSize = 36;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  uuid_format-&gt;reserve(kHumanReadableUUIDSize);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  first.CopyToString(uuid_format);</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  second.AppendToString(uuid_format);</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  third.AppendToString(uuid_format);</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  fourth.AppendToString(uuid_format);</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  uuid_format-&gt;append(<span class="stringliteral">&quot;-&quot;</span>);</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  fifth.AppendToString(uuid_format);</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;}</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="keywordtype">void</span> UpdateContentProtectionPsshHelper(</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements) {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keyword">const</span> std::string drm_uuid_schemd_id_uri_form = <span class="stringliteral">&quot;urn:uuid:&quot;</span> + drm_uuid;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="keywordflow">for</span> (std::list&lt;ContentProtectionElement&gt;::iterator protection =</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;           content_protection_elements-&gt;begin();</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;       protection != content_protection_elements-&gt;end(); ++protection) {</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <span class="keywordflow">if</span> (protection-&gt;scheme_id_uri != drm_uuid_schemd_id_uri_form) {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    }</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keywordflow">for</span> (std::vector&lt;Element&gt;::iterator subelement =</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;             protection-&gt;subelements.begin();</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;         subelement != protection-&gt;subelements.end(); ++subelement) {</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;      <span class="keywordflow">if</span> (subelement-&gt;name == kPsshElementName) {</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        <span class="comment">// For now, we want to remove the PSSH element because some players do</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="comment">// not support updating pssh.</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        protection-&gt;subelements.erase(subelement);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        <span class="comment">// TODO(rkuroiwa): Uncomment this and remove the line above when</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="comment">// shaka-player supports updating PSSH.</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="comment">// subelement-&gt;content = pssh;</span></div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;      }</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    }</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="comment">// Reaching here means &lt;cenc:pssh&gt; does not exist under the</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    <span class="comment">// ContentProtection element. Add it.</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="comment">// TODO(rkuroiwa): Uncomment this when shaka-player supports updating PSSH.</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="comment">// Element cenc_pssh;</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="comment">// cenc_pssh.name = kPsshElementName;</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="comment">// cenc_pssh.content = pssh;</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="comment">// protection-&gt;subelements.push_back(cenc_pssh);</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  }</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="comment">// Reaching here means that ContentProtection for the DRM does not exist.</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// Add it.</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  ContentProtectionElement content_protection;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  content_protection.scheme_id_uri = drm_uuid_schemd_id_uri_form;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <span class="comment">// TODO(rkuroiwa): Uncomment this when shaka-player supports updating PSSH.</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="comment">// Element cenc_pssh;</span></div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// cenc_pssh.name = kPsshElementName;</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="comment">// cenc_pssh.content = pssh;</span></div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="comment">// content_protection.subelements.push_back(cenc_pssh);</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  content_protection_elements-&gt;push_back(content_protection);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;}</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="keyword">namespace </span>{</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="comment">// Helper function. This works because Representation and AdaptationSet both</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment">// have AddContentProtectionElement().</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContentProtectionParent&gt;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keywordtype">void</span> AddContentProtectionElementsHelperTemplated(</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    ContentProtectionParent* parent) {</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  DCHECK(parent);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="keywordflow">if</span> (!media_info.has_protected_content())</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keyword">const</span> MediaInfo::ProtectedContent&amp; protected_content =</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;      media_info.protected_content();</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="comment">// DASH MPD spec specifies a default ContentProtection element for ISO BMFF</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="comment">// (MP4) files.</span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> is_mp4_container =</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;      media_info.container_type() == MediaInfo::CONTAINER_MP4;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  std::string key_id_uuid_format;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  <span class="keywordflow">if</span> (protected_content.has_default_key_id()) {</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(protected_content.default_key_id(), &amp;key_id_uuid_format)) {</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to convert default key ID into UUID format.&quot;</span>;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    }</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  }</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">if</span> (is_mp4_container) {</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    ContentProtectionElement mp4_content_protection;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    mp4_content_protection.value = protected_content.protection_scheme();</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty()) {</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;      mp4_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;          key_id_uuid_format;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    }</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    parent-&gt;AddContentProtectionElement(mp4_content_protection);</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  }</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; protected_content.content_protection_entry().size();</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;       ++i) {</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keyword">const</span> MediaInfo::ProtectedContent::ContentProtectionEntry&amp; entry =</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        protected_content.content_protection_entry(i);</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">if</span> (!entry.has_uuid()) {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      LOG(WARNING)</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;ContentProtectionEntry was specified but no UUID is set for &quot;</span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          &lt;&lt; entry.name_version() &lt;&lt; <span class="stringliteral">&quot;, skipping.&quot;</span>;</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    }</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    ContentProtectionElement drm_content_protection;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    drm_content_protection.scheme_id_uri = <span class="stringliteral">&quot;urn:uuid:&quot;</span> + entry.uuid();</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">if</span> (entry.has_name_version())</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;      drm_content_protection.value = entry.name_version();</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="keywordflow">if</span> (entry.has_pssh()) {</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      std::string base64_encoded_pssh;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      base::Base64Encode(</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;          base::StringPiece(entry.pssh().data(), entry.pssh().size()),</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;          &amp;base64_encoded_pssh);</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      Element cenc_pssh;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      cenc_pssh.name = kPsshElementName;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      cenc_pssh.content = base64_encoded_pssh;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      drm_content_protection.subelements.push_back(cenc_pssh);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    }</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty() &amp;&amp; !is_mp4_container) {</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;      drm_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;          key_id_uuid_format;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    }</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    parent-&gt;AddContentProtectionElement(drm_content_protection);</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  }</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;The media is encrypted but no content protection specified.&quot;</span>;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;}</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
+<div class="line"><a name="l00356"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">  356</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;                                  <a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>* parent) {</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;}</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
+<div class="line"><a name="l00361"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#ac917945d578a03ce53b902f6c1bc4e33">  361</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;                                  <a class="code" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>* parent) {</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;}</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html">shaka::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00157">mpd_builder.h:157</a></div></div>
-<div class="ttc" id="namespaceshaka_html_abfd977a0dfb051a942d1694442692814"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">shaka::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00357">mpd_utils.cc:357</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a4c2ea2c3e7055657ca68a6b8e285d4d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">shaka::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00192">mpd_utils.cc:192</a></div></div>
-<div class="ttc" id="namespaceshaka_html_adac592409e758489bad365323d070f31"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">shaka::DoubleToString</a></div><div class="ttdeci">std::string DoubleToString(double value)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00185">mpd_utils.cc:185</a></div></div>
+<div class="ttc" id="namespaceshaka_html_abfd977a0dfb051a942d1694442692814"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">shaka::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00356">mpd_utils.cc:356</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a4c2ea2c3e7055657ca68a6b8e285d4d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">shaka::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00191">mpd_utils.cc:191</a></div></div>
+<div class="ttc" id="namespaceshaka_html_adac592409e758489bad365323d070f31"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">shaka::DoubleToString</a></div><div class="ttdeci">std::string DoubleToString(double value)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00184">mpd_utils.cc:184</a></div></div>
 <div class="ttc" id="classshaka_1_1Representation_html"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html">shaka::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00423">mpd_builder.h:423</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 17 2017 21:54:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 17 2017 22:14:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
