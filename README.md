@@ -361,3 +361,13 @@ packager \
   --hls_master_playlist_output="master_playlist.m3u8" \
   --hls_base_url="http://localhost:10000/"
 ```
+
+Create DASH trick play, a.k.a. trick mode, stream. The `trick_play_factor` in
+the stream descriptor specifies the sampling rate among the key frames in the
+video. For example, 1 means every key frame and 2 means every other key frame.
+```Shell
+packager \
+  'input=bear-1280x720.mp4,stream=video,output=bear-1280x720_video.mp4' \
+  'input=bear-1280x720.mp4,stream=video,output=bear-1280x720_video_trick_play.mp4,trick_play_factor=1' \
+  --mpd_output bear_trick_play.mpd
+```
