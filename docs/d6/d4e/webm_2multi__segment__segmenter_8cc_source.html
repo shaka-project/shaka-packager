@@ -110,12 +110,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;MultiSegmentSegmenter::~MultiSegmentSegmenter() {}</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a5d7029844e7c14bf88c70d3b34d96adf">   24</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#af08c0f2dcab2f2c87e94f890cba71a70">MultiSegmentSegmenter::FinalizeSegment</a>(uint64_t start_timescale,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                              uint64_t duration_timescale,</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#acadda71dd534ab0f6889ab653fbffe42">   24</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#af08c0f2dcab2f2c87e94f890cba71a70">MultiSegmentSegmenter::FinalizeSegment</a>(uint64_t start_timestamp,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                              uint64_t duration_timestamp,</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                              <span class="keywordtype">bool</span> is_subsegment) {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  CHECK(cluster());</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#af08c0f2dcab2f2c87e94f890cba71a70">Segmenter::FinalizeSegment</a>(start_timescale,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                             duration_timescale, is_subsegment);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#af08c0f2dcab2f2c87e94f890cba71a70">Segmenter::FinalizeSegment</a>(start_timestamp,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                             duration_timestamp, is_subsegment);</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">if</span> (!cluster()-&gt;Finalize())</div>
@@ -124,7 +124,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">if</span> (muxer_listener()) {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keyword">const</span> uint64_t size = cluster()-&gt;Size();</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a>(writer_-&gt;file()-&gt;file_name(),</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                     start_timescale, duration_timescale, size);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                     start_timestamp, duration_timestamp, size);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    VLOG(1) &lt;&lt; <span class="stringliteral">&quot;WEBM file &#39;&quot;</span> &lt;&lt; writer_-&gt;file()-&gt;file_name() &lt;&lt; <span class="stringliteral">&quot;&#39; finalized.&quot;</span>;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  }</div>
@@ -154,12 +154,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> writer_-&gt;Close();</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                         <span class="keywordtype">bool</span> is_subsegment) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span> (!is_subsegment) {</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="comment">// Create a new file for the new segment.</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    std::string segment_name =</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        GetSegmentName(options().segment_template, start_timescale,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        GetSegmentName(options().segment_template, start_timestamp,</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                       num_segment_, options().bandwidth);</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    writer_.reset(<span class="keyword">new</span> MkvWriter);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    Status status = writer_-&gt;Open(segment_name);</div>
@@ -168,8 +168,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    num_segment_++;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  }</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">const</span> uint64_t start_timecode = FromBmffTimestamp(start_timestamp);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_timecode, 0, writer_.get());</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace webm</span></div>
@@ -182,7 +182,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 17 2017 22:14:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 18 2017 01:49:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

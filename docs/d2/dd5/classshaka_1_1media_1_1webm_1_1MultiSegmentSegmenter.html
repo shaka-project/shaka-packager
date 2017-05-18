@@ -112,10 +112,10 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MultiSegmentSegmenter</b> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:a063f495c041f1d7fc01865a3dabf79b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Segmenter implementation overrides.</div></td></tr>
-<tr class="memitem:a5d7029844e7c14bf88c70d3b34d96adf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d7029844e7c14bf88c70d3b34d96adf"></a>
-<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a5d7029844e7c14bf88c70d3b34d96adf">FinalizeSegment</a> (uint64_t start_timescale, uint64_t duration_timescale, bool is_subsegment) override</td></tr>
-<tr class="memdesc:a5d7029844e7c14bf88c70d3b34d96adf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize the (sub)segment. <br/></td></tr>
-<tr class="separator:a5d7029844e7c14bf88c70d3b34d96adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acadda71dd534ab0f6889ab653fbffe42"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acadda71dd534ab0f6889ab653fbffe42"></a>
+<a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#acadda71dd534ab0f6889ab653fbffe42">FinalizeSegment</a> (uint64_t start_timestamp, uint64_t duration_timestamp, bool is_subsegment) override</td></tr>
+<tr class="memdesc:acadda71dd534ab0f6889ab653fbffe42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalize the (sub)segment. <br/></td></tr>
+<tr class="separator:acadda71dd534ab0f6889ab653fbffe42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae88bf7cfee4a1ad12c6060310b8f464e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#ae88bf7cfee4a1ad12c6060310b8f464e">GetInitRangeStartAndEnd</a> (uint64_t *start, uint64_t *end) override</td></tr>
 <tr class="separator:ae88bf7cfee4a1ad12c6060310b8f464e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75b572a055a0de68bf2809f61b319526"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a75b572a055a0de68bf2809f61b319526">GetIndexRangeStartAndEnd</a> (uint64_t *start, uint64_t *end) override</td></tr>
@@ -130,8 +130,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa84782877f1afaf9519a552ac3d5d417 inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad137d0ae95d3e47a32725276970e324 inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aad137d0ae95d3e47a32725276970e324">AddSample</a> (std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:aad137d0ae95d3e47a32725276970e324 inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a277aeb59ed41fc484a86101d565017ae inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a277aeb59ed41fc484a86101d565017ae">GetDuration</a> () const </td></tr>
-<tr class="separator:a277aeb59ed41fc484a86101d565017ae inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a2b5d9e2218abcace63e7aeee3da34f inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a6a2b5d9e2218abcace63e7aeee3da34f">GetDurationInSeconds</a> () const </td></tr>
+<tr class="separator:a6a2b5d9e2218abcace63e7aeee3da34f inherit pub_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -142,12 +142,14 @@ Protected Member Functions</h2></td></tr>
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>DoFinalize</b> () override</td></tr>
 <tr class="separator:acae113e5a7e382042804f40c07bcc962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter')"><img src="../../closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html">shaka::media::webm::Segmenter</a></td></tr>
-<tr class="memitem:a66c49dfab5316bea5b7b318871aef129 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a66c49dfab5316bea5b7b318871aef129">FromBMFFTimescale</a> (uint64_t time_timescale)</td></tr>
-<tr class="separator:a66c49dfab5316bea5b7b318871aef129 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8de27c5b6480f968cbef9eafec3731d7 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8de27c5b6480f968cbef9eafec3731d7"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a8de27c5b6480f968cbef9eafec3731d7">FromWebMTimecode</a> (uint64_t time_webm_timecode)</td></tr>
-<tr class="memdesc:a8de27c5b6480f968cbef9eafec3731d7 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the given time in WebM timecode to ISO BMFF timescale. <br/></td></tr>
-<tr class="separator:a8de27c5b6480f968cbef9eafec3731d7 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa34bab8904436eb3e67f392eaa0b549 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa34bab8904436eb3e67f392eaa0b549"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aaa34bab8904436eb3e67f392eaa0b549">FromBmffTimestamp</a> (uint64_t bmff_timestamp)</td></tr>
+<tr class="memdesc:aaa34bab8904436eb3e67f392eaa0b549 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the given time in ISO BMFF timestamp to WebM timecode. <br/></td></tr>
+<tr class="separator:aaa34bab8904436eb3e67f392eaa0b549 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab85d8456bc9e4990b1c5e5d9738a2d1b inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab85d8456bc9e4990b1c5e5d9738a2d1b"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#ab85d8456bc9e4990b1c5e5d9738a2d1b">FromWebMTimecode</a> (uint64_t webm_timecode)</td></tr>
+<tr class="memdesc:ab85d8456bc9e4990b1c5e5d9738a2d1b inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the given time in WebM timecode to ISO BMFF timestamp. <br/></td></tr>
+<tr class="separator:ab85d8456bc9e4990b1c5e5d9738a2d1b inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebcf73c5a1c3ae0f2608032d2a6ee445 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aebcf73c5a1c3ae0f2608032d2a6ee445"></a>
 <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aebcf73c5a1c3ae0f2608032d2a6ee445">WriteSegmentHeader</a> (uint64_t file_size, <a class="el" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html">MkvWriter</a> *writer)</td></tr>
 <tr class="memdesc:aebcf73c5a1c3ae0f2608032d2a6ee445 inherit pro_methods_classshaka_1_1media_1_1webm_1_1Segmenter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the Segment header to <em>writer</em>. <br/></td></tr>
@@ -278,7 +280,7 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>segment_payload_p
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 17 2017 22:14:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 18 2017 01:49:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

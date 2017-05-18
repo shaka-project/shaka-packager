@@ -32,7 +32,7 @@ var searchData=
   ['createmuxeroptions',['CreateMuxerOptions',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a89d5ae5a78134e108a4fe4adb6f79e4e',1,'shaka::media::SegmentTestBase']]],
   ['createsample',['CreateSample',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afd8845d029698f556ca09436da0c62ef',1,'shaka::media::SegmentTestBase']]],
   ['createsigner',['CreateSigner',['../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a43f4cc9fad9901fa905805be81f7d58c',1,'shaka::media::AesRequestSigner::CreateSigner()'],['../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c',1,'shaka::media::RsaRequestSigner::CreateSigner()']]],
-  ['createvideostreaminfo',['CreateVideoStreamInfo',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#a7e34fd92e43914bd2f032835cdc9b8a7',1,'shaka::media::SegmentTestBase']]],
+  ['createvideostreaminfo',['CreateVideoStreamInfo',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ae621089e670346f27f2b93d9b55bb30b',1,'shaka::media::SegmentTestBase']]],
   ['crypt',['Crypt',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#ac5fc6e563807e6fce36c2dd43c928b3e',1,'shaka::media::AesCryptor']]],
   ['current_5fchunk',['current_chunk',['../d9/d57/classshaka_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a2aca13bde547807982f1e8c6ff7e80e3',1,'shaka::media::mp4::ChunkInfoIterator']]]
 ];
