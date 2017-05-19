@@ -12,6 +12,7 @@
 
 #include "packager/base/compiler_specific.h"
 #include "packager/base/macros.h"
+#include "packager/media/base/decrypt_config.h"
 
 namespace shaka {
 namespace media {
@@ -160,6 +161,22 @@ class NaluReader {
              uint8_t nal_length_size,
              const uint8_t* stream,
              uint64_t stream_size);
+
+  /// @param type is the codec type of the NALU unit.
+  /// @param nalu_length_size should be set to 0 for AnnexB byte streams;
+  ///        otherwise, it indicates the size of NAL unit length for the NAL
+  ///        unit stream.
+  /// @param stream is the input stream.
+  /// @param stream_size is the size of @a stream.
+  /// @param subsamples specifies the clear and encrypted sections of the
+  ///        @a stream starting from the beginning of the @a stream. If
+  ///        @a subsamples doesn't cover the entire stream, then the rest is
+  ///        assumed to be in the clear.
+  NaluReader(Nalu::CodecType type,
+             uint8_t nal_length_size,
+             const uint8_t* stream,
+             uint64_t stream_size,
+             const std::vector<SubsampleEntry>& subsamples);
   ~NaluReader();
 
   // Find offset from start of data to next NALU start code
@@ -175,6 +192,21 @@ class NaluReader {
                             uint64_t data_size,
                             uint64_t* offset,
                             uint8_t* start_code_size);
+
+  /// Same as FindStartCode() but also specify the subsamples. This searches for
+  /// start codes in the clear section and will not scan for start codes in the
+  /// encrypted section. Even if there is a real NALU start code in the
+  /// encrypted section, this will skip them.
+  /// @param subsamples starting from the start of @a data. If @a subsamples
+  ///        does not cover the whole @a data, the rest is assumed to be in the
+  ///        clear.
+  /// @return true if it finds a NALU. false otherwise.
+  static bool FindStartCodeInClearRange(
+      const uint8_t* data,
+      uint64_t data_size,
+      uint64_t* offset,
+      uint8_t* start_code_size,
+      const std::vector<SubsampleEntry>& subsamples);
 
   /// Reads a NALU from the stream into |*nalu|, if one exists, and then
   /// advances to the next NALU.
@@ -212,6 +244,9 @@ class NaluReader {
   uint8_t nalu_length_size_;
   // The format of the stream.
   Format format_;
+
+  // subsamples left in stream_.
+  std::vector<SubsampleEntry> subsamples_;
 
   DISALLOW_COPY_AND_ASSIGN(NaluReader);
 };
