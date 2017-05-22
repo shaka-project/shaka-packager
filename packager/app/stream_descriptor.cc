@@ -31,6 +31,7 @@ enum FieldType {
   kHlsGroupIdField,
   kHlsPlaylistNameField,
   kTrickPlayFactorField,
+  kSkipEncryptionField,
 };
 
 struct FieldNameToTypeMapping {
@@ -60,6 +61,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"playlist_name", kHlsPlaylistNameField},
     {"trick_play_factor", kTrickPlayFactorField},
     {"tpf", kTrickPlayFactorField},
+    {"skip_encryption", kSkipEncryptionField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -156,6 +158,21 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
           return false;
         }
         descriptor.trick_play_factor = factor;
+        break;
+      }
+      case kSkipEncryptionField: {
+        unsigned skip_encryption_value;
+        if (!base::StringToUint(iter->second, &skip_encryption_value)) {
+          LOG(ERROR) << "Non-numeric option for skip encryption field "
+                        "specified (" << iter->second << ").";
+          return false;
+        }
+        if (skip_encryption_value > 1) {
+          LOG(ERROR) << "skip_encryption should be either 0 or 1.";
+          return false;
+        }
+
+        descriptor.skip_encryption = skip_encryption_value > 0;
         break;
       }
       default:
