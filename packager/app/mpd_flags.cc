@@ -8,6 +8,7 @@
 
 #include "packager/app/mpd_flags.h"
 
+// TODO(kqyang): Rename to generate_static_live_mpd.
 DEFINE_bool(generate_static_mpd,
             false,
             "Set to true to generate static mpd. If segment_template is "
@@ -37,7 +38,7 @@ DEFINE_double(minimum_update_period,
               5.0,
               "Indicates to the player how often to refresh the media "
               "presentation description in seconds. This value is used for "
-              "live profile only.");
+              "dynamic MPD only.");
 DEFINE_double(time_shift_buffer_depth,
               1800.0,
               "Guaranteed duration of the time shifting buffer for dynamic "
@@ -45,7 +46,7 @@ DEFINE_double(time_shift_buffer_depth,
 DEFINE_double(suggested_presentation_delay,
               0.0,
               "Specifies a delay, in seconds, to be added to the media "
-              "presentation time. This value is used for live profile only.");
+              "presentation time. This value is used for dynamic MPD only.");
 DEFINE_string(default_language,
               "",
               "Any tracks tagged with this language will have "
@@ -53,5 +54,5 @@ DEFINE_string(default_language,
               "player to choose the correct default language for the content.");
 DEFINE_bool(generate_dash_if_iop_compliant_mpd,
             true,
-            "Try to generate DASH-IF IOPv3 compliant MPD. This is best effort "
+            "Try to generate DASH-IF IOP compliant MPD. This is best effort "
             "and does not guarantee compliance.");

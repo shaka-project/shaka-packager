@@ -19,5 +19,6 @@ DECLARE_bool(fragment_sap_aligned);
 DECLARE_int32(num_subsegments_per_sidx);
 DECLARE_string(temp_dir);
 DECLARE_bool(mp4_include_pssh_in_stream);
+DECLARE_bool(mp4_use_decoding_timestamp_in_timeline);
 
 #endif  // APP_MUXER_FLAGS_H_

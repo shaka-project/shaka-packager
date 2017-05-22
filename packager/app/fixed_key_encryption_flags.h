@@ -11,6 +11,7 @@
 
 #include <gflags/gflags.h>
 
+// TODO(kqyang): s/fixed/raw/.
 DECLARE_bool(enable_fixed_key_encryption);
 DECLARE_bool(enable_fixed_key_decryption);
 DECLARE_string(key_id);

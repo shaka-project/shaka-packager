@@ -33,6 +33,9 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
+const char kAudioStreamLabel[] = "AUDIO";
+const char kSdVideoStreamLabel[] = "SD";
+
 const uint8_t kKeyId[]{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15,
@@ -82,8 +85,21 @@ class EncryptionHandlerTest : public MediaHandlerTestBase {
   void SetUp() override { SetUpEncryptionHandler(EncryptionOptions()); }
 
   void SetUpEncryptionHandler(const EncryptionOptions& encryption_options) {
+    EncryptionOptions new_encryption_options = encryption_options;
+    if (!encryption_options.stream_label_func) {
+      // Setup default stream label function.
+      new_encryption_options.stream_label_func =
+          [](const EncryptionParams::EncryptedStreamAttributes&
+                 stream_attributes) {
+            if (stream_attributes.stream_type ==
+                EncryptionParams::EncryptedStreamAttributes::kAudio) {
+              return kAudioStreamLabel;
+            }
+            return kSdVideoStreamLabel;
+          };
+    }
     encryption_handler_.reset(
-        new EncryptionHandler(encryption_options, &mock_key_source_));
+        new EncryptionHandler(new_encryption_options, &mock_key_source_));
     SetUpGraph(1 /* one input */, 1 /* one output */, encryption_handler_);
   }
 
@@ -624,74 +640,59 @@ INSTANTIATE_TEST_CASE_P(AppleSampleAes,
                                 Values(kCodecAAC, kCodecH264),
                                 Values(kVp9SubsampleEncryption)));
 
-namespace {
-
-const uint32_t kMaxSdPixels = 100u;
-const uint32_t kMaxHdPixels = 200u;
-const uint32_t kMaxUhd1Pixels = 300u;
-
-struct TrackTypeTestCase {
-  uint16_t width;
-  uint16_t height;
-  KeySource::TrackType track_type;
-};
-
-const TrackTypeTestCase kTrackTypeTestCases[] = {
-    TrackTypeTestCase{10, 10, KeySource::TRACK_TYPE_SD},
-    TrackTypeTestCase{11, 9, KeySource::TRACK_TYPE_SD},
-    TrackTypeTestCase{11, 10, KeySource::TRACK_TYPE_HD},
-    TrackTypeTestCase{20, 10, KeySource::TRACK_TYPE_HD},
-    TrackTypeTestCase{10, 20, KeySource::TRACK_TYPE_HD},
-    TrackTypeTestCase{19, 10, KeySource::TRACK_TYPE_HD},
-    TrackTypeTestCase{21, 10, KeySource::TRACK_TYPE_UHD1},
-    TrackTypeTestCase{29, 10, KeySource::TRACK_TYPE_UHD1},
-    TrackTypeTestCase{30, 10, KeySource::TRACK_TYPE_UHD1},
-    TrackTypeTestCase{20, 15, KeySource::TRACK_TYPE_UHD1},
-    TrackTypeTestCase{20, 16, KeySource::TRACK_TYPE_UHD2},
-    TrackTypeTestCase{1000, 1000, KeySource::TRACK_TYPE_UHD2},
-};
-
-}  // namespace
-
-class EncryptionHandlerTrackTypeTest
-    : public EncryptionHandlerTest,
-      public WithParamInterface<TrackTypeTestCase> {
+class EncryptionHandlerTrackTypeTest : public EncryptionHandlerTest {
  public:
   void SetUp() override {
-    EncryptionOptions encryption_options;
-    encryption_options.max_sd_pixels = kMaxSdPixels;
-    encryption_options.max_hd_pixels = kMaxHdPixels;
-    encryption_options.max_uhd1_pixels = kMaxUhd1Pixels;
-    SetUpEncryptionHandler(encryption_options);
   }
 };
 
 TEST_F(EncryptionHandlerTrackTypeTest, AudioTrackType) {
+  EncryptionParams::EncryptedStreamAttributes captured_stream_attributes;
   EncryptionOptions encryption_options;
+  encryption_options.stream_label_func =
+      [&captured_stream_attributes](
+          const EncryptionParams::EncryptedStreamAttributes&
+              stream_attributes) {
+        captured_stream_attributes = stream_attributes;
+        return kAudioStreamLabel;
+      };
   SetUpEncryptionHandler(encryption_options);
   EXPECT_CALL(mock_key_source_, GetKey(KeySource::TRACK_TYPE_AUDIO, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
   ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex, kTimeScale)));
+  EXPECT_EQ(EncryptionParams::EncryptedStreamAttributes::kAudio,
+            captured_stream_attributes.stream_type);
 }
 
-TEST_P(EncryptionHandlerTrackTypeTest, VideoTrackType) {
-  TrackTypeTestCase test_case = GetParam();
-  EXPECT_CALL(mock_key_source_, GetKey(test_case.track_type, _))
+TEST_F(EncryptionHandlerTrackTypeTest, VideoTrackType) {
+  EncryptionParams::EncryptedStreamAttributes captured_stream_attributes;
+  EncryptionOptions encryption_options;
+  encryption_options.stream_label_func =
+      [&captured_stream_attributes](
+          const EncryptionParams::EncryptedStreamAttributes&
+              stream_attributes) {
+        captured_stream_attributes = stream_attributes;
+        return kSdVideoStreamLabel;
+      };
+  SetUpEncryptionHandler(encryption_options);
+  EXPECT_CALL(mock_key_source_, GetKey(KeySource::TRACK_TYPE_SD, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
   std::unique_ptr<StreamData> stream_data =
       GetVideoStreamInfoStreamData(kStreamIndex, kTimeScale);
   VideoStreamInfo* video_stream_info =
       reinterpret_cast<VideoStreamInfo*>(stream_data->stream_info.get());
-  video_stream_info->set_width(test_case.width);
-  video_stream_info->set_height(test_case.height);
+  video_stream_info->set_width(12);
+  video_stream_info->set_height(34);
   ASSERT_OK(Process(std::move(stream_data)));
+  EXPECT_EQ(EncryptionParams::EncryptedStreamAttributes::kVideo,
+            captured_stream_attributes.stream_type);
+  EXPECT_EQ(video_stream_info->width(),
+            captured_stream_attributes.oneof.video.width);
+  EXPECT_EQ(video_stream_info->height(),
+            captured_stream_attributes.oneof.video.height);
 }
-
-INSTANTIATE_TEST_CASE_P(VideoResolutions,
-                        EncryptionHandlerTrackTypeTest,
-                        ValuesIn(kTrackTypeTestCases));
 
 }  // namespace media
 }  // namespace shaka

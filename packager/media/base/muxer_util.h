@@ -39,18 +39,6 @@ std::string GetSegmentName(const std::string& segment_template,
                            uint32_t segment_index,
                            uint32_t bandwidth);
 
-/// Determine the track type for encryption from input.
-/// @param stream_info is the info of the stream.
-/// @param max_sd_pixels is the maximum number of pixels to be considered SD.
-/// @param max_hd_pixels is the maximum number of pixels to be considered HD.
-/// @param max_uhd1_pixels is the maximum number of pixels to be considered UHD1.
-///        Anything above is UHD2.
-/// @return track type for encryption.
-KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
-                                               uint32_t max_sd_pixels,
-                                               uint32_t max_hd_pixels,
-                                               uint32_t max_uhd1_pixels);
-
 }  // namespace media
 }  // namespace shaka
 

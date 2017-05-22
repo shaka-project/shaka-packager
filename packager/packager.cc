@@ -549,9 +549,9 @@ std::string EncryptionParams::DefaultStreamLabelFunction(
     int max_hd_pixels,
     int max_uhd1_pixels,
     const EncryptedStreamAttributes& stream_attributes) {
-  if (stream_info.stream_type == EncryptedStreamAttributes::kAudio)
+  if (stream_attributes.stream_type == EncryptedStreamAttributes::kAudio)
     return "AUDIO";
-  if (stream_info.stream_type == EncryptedStreamAttributes::kVideo) {
+  if (stream_attributes.stream_type == EncryptedStreamAttributes::kVideo) {
     const int pixels = stream_attributes.oneof.video.width *
                        stream_attributes.oneof.video.height;
     if (pixels <= max_sd_pixels) return "SD";

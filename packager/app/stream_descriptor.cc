@@ -6,15 +6,12 @@
 
 #include "packager/app/stream_descriptor.h"
 
-#include "packager/app/packager_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
-#include "packager/media/base/container_names.h"
 #include "packager/media/base/language_utils.h"
 
 namespace shaka {
-namespace media {
 
 namespace {
 
@@ -74,22 +71,16 @@ FieldType GetFieldType(const std::string& field_name) {
 
 }  // anonymous namespace
 
-StreamDescriptor::StreamDescriptor() {}
-
-StreamDescriptor::~StreamDescriptor() {}
-
-bool InsertStreamDescriptor(const std::string& descriptor_string,
-                            StreamDescriptorList* descriptor_list) {
+base::Optional<StreamDescriptor> ParseStreamDescriptor(
+    const std::string& descriptor_string) {
   StreamDescriptor descriptor;
 
   // Split descriptor string into name/value pairs.
   base::StringPairs pairs;
-  if (!base::SplitStringIntoKeyValuePairs(descriptor_string,
-                                          '=',
-                                          ',',
+  if (!base::SplitStringIntoKeyValuePairs(descriptor_string, '=', ',',
                                           &pairs)) {
     LOG(ERROR) << "Invalid stream descriptors name/value pairs.";
-    return false;
+    return base::nullopt;
   }
   for (base::StringPairs::const_iterator iter = pairs.begin();
        iter != pairs.end(); ++iter) {
@@ -110,28 +101,23 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         unsigned bw;
         if (!base::StringToUint(iter->second, &bw)) {
           LOG(ERROR) << "Non-numeric bandwidth specified.";
-          return false;
+          return base::nullopt;
         }
         descriptor.bandwidth = bw;
         break;
       }
       case kLanguageField: {
+        // TODO(kqyang): Move to packager.cc.
         std::string language = LanguageToISO_639_2(iter->second);
         if (language == "und") {
           LOG(ERROR) << "Unknown/invalid language specified: " << iter->second;
-          return false;
+          return base::nullopt;
         }
         descriptor.language = language;
         break;
       }
       case kOutputFormatField: {
-        MediaContainerName output_format =
-            DetermineContainerFromFormatName(iter->second);
-        if (output_format == CONTAINER_UNKNOWN) {
-          LOG(ERROR) << "Unrecognized output format " << iter->second;
-          return false;
-        }
-        descriptor.output_format = output_format;
+        descriptor.output_format = iter->second;
         break;
       }
       case kHlsNameField: {
@@ -151,11 +137,11 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         if (!base::StringToUint(iter->second, &factor)) {
           LOG(ERROR) << "Non-numeric trick play factor " << iter->second
                      << " specified.";
-          return false;
+          return base::nullopt;
         }
         if (factor == 0) {
           LOG(ERROR) << "Stream trick_play_factor should be > 0.";
-          return false;
+          return base::nullopt;
         }
         descriptor.trick_play_factor = factor;
         break;
@@ -165,11 +151,11 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         if (!base::StringToUint(iter->second, &skip_encryption_value)) {
           LOG(ERROR) << "Non-numeric option for skip encryption field "
                         "specified (" << iter->second << ").";
-          return false;
+          return base::nullopt;
         }
         if (skip_encryption_value > 1) {
           LOG(ERROR) << "skip_encryption should be either 0 or 1.";
-          return false;
+          return base::nullopt;
         }
 
         descriptor.skip_encryption = skip_encryption_value > 0;
@@ -178,61 +164,10 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
                    << "\").";
-        return false;
+        return base::nullopt;
     }
   }
-  // Validate and insert the descriptor
-  if (descriptor.input.empty()) {
-    LOG(ERROR) << "Stream input not specified.";
-    return false;
-  }
-  if (!FLAGS_dump_stream_info && descriptor.stream_selector.empty()) {
-    LOG(ERROR) << "Stream stream_selector not specified.";
-    return false;
-  }
-
-  if (descriptor.output_format == CONTAINER_UNKNOWN) {
-    const std::string& output_name = descriptor.output.empty()
-                                         ? descriptor.segment_template
-                                         : descriptor.output;
-    if (!output_name.empty()) {
-      descriptor.output_format = DetermineContainerFromFileName(output_name);
-      if (descriptor.output_format == CONTAINER_UNKNOWN) {
-        LOG(ERROR) << "Unable to determine output format for file "
-                   << output_name;
-        return false;
-      }
-    }
-  }
-
-  if (descriptor.output_format == MediaContainerName::CONTAINER_MPEG2TS) {
-    if (descriptor.segment_template.empty()) {
-      LOG(ERROR) << "Please specify segment_template. Single file TS output is "
-                    "not supported.";
-      return false;
-    }
-    // Note that MPEG2 TS doesn't need a separate initialization segment, so
-    // output field is not needed.
-    if (!descriptor.output.empty()) {
-      LOG(WARNING) << "TS output '" << descriptor.output
-                   << "' ignored. TS muxer does not support initialization "
-                      "segment generation.";
-    }
-  }
-
-  // For TS output, segment template is sufficient, and does not require an
-  // output entry.
-  const bool output_specified =
-      !descriptor.output.empty() ||
-      (descriptor.output_format == CONTAINER_MPEG2TS &&
-       !descriptor.segment_template.empty());
-  if (!FLAGS_dump_stream_info && !output_specified) {
-    LOG(ERROR) << "Stream output not specified.";
-    return false;
-  }
-  descriptor_list->insert(descriptor);
-  return true;
+  return descriptor;
 }
 
-}  // namespace media
 }  // namespace shaka

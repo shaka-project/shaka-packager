@@ -7,54 +7,12 @@
 #ifndef APP_STREAM_DESCRIPTOR_H_
 #define APP_STREAM_DESCRIPTOR_H_
 
-#include <stdint.h>
-
-#include <set>
 #include <string>
 
-#include "packager/media/base/container_names.h"
+#include "packager/base/optional.h"
+#include "packager/packager.h"
 
 namespace shaka {
-namespace media {
-
-/// Defines a single input/output stream, it's input source, output destination,
-/// stream selector, and optional segment template and user-specified bandwidth.
-struct StreamDescriptor {
-  StreamDescriptor();
-  ~StreamDescriptor();
-
-  std::string stream_selector;
-  std::string input;
-  std::string output;
-  std::string segment_template;
-  uint32_t bandwidth = 0;
-  std::string language;
-  MediaContainerName output_format = CONTAINER_UNKNOWN;
-  std::string hls_name;
-  std::string hls_group_id;
-  std::string hls_playlist_name;
-  uint32_t trick_play_factor = 0;
-  bool skip_encryption = false;
-};
-
-class StreamDescriptorCompareFn {
- public:
-  bool operator()(const StreamDescriptor& a, const StreamDescriptor& b) {
-    if (a.input == b.input) {
-      if (a.stream_selector == b.stream_selector)
-        // Stream with high trick_play_factor is at the beginning.
-        return a.trick_play_factor > b.trick_play_factor;
-      else
-        return a.stream_selector < b.stream_selector;
-    }
-
-    return a.input < b.input;
-  }
-};
-
-/// Sorted list of StreamDescriptor.
-typedef std::multiset<StreamDescriptor, StreamDescriptorCompareFn>
-    StreamDescriptorList;
 
 /// Parses a descriptor string, and inserts into sorted list of stream
 /// descriptors.
@@ -63,10 +21,9 @@ typedef std::multiset<StreamDescriptor, StreamDescriptorCompareFn>
 /// @param descriptor_list is a pointer to the sorted descriptor list into
 ///        which the new descriptor should be inserted.
 /// @return true if successful, false otherwise. May print error messages.
-bool InsertStreamDescriptor(const std::string& descriptor_string,
-                            StreamDescriptorList* descriptor_list);
+base::Optional<StreamDescriptor> ParseStreamDescriptor(
+    const std::string& descriptor_string);
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // APP_STREAM_DESCRIPTOR_H_

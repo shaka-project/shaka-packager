@@ -8,6 +8,7 @@
 #define PACKAGER_PACKAGER_H_
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>

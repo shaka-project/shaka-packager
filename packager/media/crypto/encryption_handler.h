@@ -9,6 +9,7 @@
 
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_handler.h"
+#include "packager/packager.h"
 
 namespace shaka {
 namespace media {
@@ -25,24 +26,16 @@ struct EncryptionOptions {
   double clear_lead_in_seconds = 0;
   /// The protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'.
   FourCC protection_scheme = FOURCC_cenc;
-  /// The threshold to determine whether a video track should be considered as
-  /// SD. If the max pixels per frame is no higher than max_sd_pixels, i.e.
-  /// [0, max_sd_pixels], it is SD.
-  uint32_t max_sd_pixels = 0;
-  /// The threshold to determine whether a video track should be considered as
-  /// HD. If the max pixels per frame is higher than max_sd_pixels, but no
-  /// higher than max_hd_pixels, i.e. (max_sd_pixels, max_hd_pixels], it is HD.
-  uint32_t max_hd_pixels = 0;
-  /// The threshold to determine whether a video track should be considered as
-  /// UHD1. If the max pixels per frame is higher than max_hd_pixels, but no
-  /// higher than max_uhd1_pixels, i.e. (max_hd_pixels, max_uhd1_pixels], it is
-  /// UHD1. Otherwise it is UHD2.
-  uint32_t max_uhd1_pixels = 0;
   /// Crypto period duration in seconds. A positive value means key rotation is
   /// enabled, the key source must support key rotation in this case.
   double crypto_period_duration_in_seconds = 0;
-  // Enable/disable subsample encryption for VP9.
+  /// Enable/disable subsample encryption for VP9.
   bool vp9_subsample_encryption = true;
+  /// Stream label function used to get the label of the encrypted stream. Must
+  /// be set.
+  std::function<std::string(
+      const EncryptionParams::EncryptedStreamAttributes& stream_attributes)>
+      stream_label_func;
 };
 
 class EncryptionHandler : public MediaHandler {

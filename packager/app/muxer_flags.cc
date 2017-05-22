@@ -44,3 +44,9 @@ DEFINE_string(temp_dir,
 DEFINE_bool(mp4_include_pssh_in_stream,
             true,
             "MP4 only: include pssh in the encrypted stream.");
+DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
+            false,
+            "If set, decoding timestamp instead of presentation timestamp will "
+            "be used when generating media timeline, e.g. timestamps in sidx "
+            "and mpd. This is to workaround a Chromium bug that decoding "
+            "timestamp is used in buffered range, https://crbug.com/398130.");

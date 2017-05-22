@@ -13,5 +13,5 @@ DEFINE_string(hls_master_playlist_output,
 
 DEFINE_string(hls_base_url,
               "",
-              "The base URL for the Media Playlists and TS files listed in the "
-              "playlists. This is the prefix for the files.");
+              "The base URL for the Media Playlists and media files listed in "
+              "the playlists. This is the prefix for the files.");

@@ -9,7 +9,6 @@
 #include <openssl/thread.h>
 
 #include <memory>
-#include <vector>
 
 #include "packager/base/logging.h"
 #include "packager/base/synchronization/lock.h"

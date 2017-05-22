@@ -13,13 +13,21 @@
 
 #include <memory>
 
+#include "packager/base/optional.h"
 #include "packager/media/base/fourccs.h"
+#include "packager/packager.h"
 
 DECLARE_bool(dump_stream_info);
 
 namespace shaka {
 
+// TODO(kqyang): Should we consolidate XxxParams and XxxOptions?
+struct ChunkingParams;
+struct DecryptionParams;
+struct EncryptionParams;
+struct Mp4OutputParams;
 struct MpdOptions;
+struct MpdParams;
 
 namespace media {
 
@@ -36,25 +44,30 @@ struct MuxerOptions;
 ///        encryption.
 /// @return A std::unique_ptr containing a new KeySource, or nullptr if
 ///         encryption is not required.
-std::unique_ptr<KeySource> CreateEncryptionKeySource(FourCC protection_scheme);
+std::unique_ptr<KeySource> CreateEncryptionKeySource(
+    FourCC protection_scheme,
+    const EncryptionParams& encryption_params);
 
 /// Create KeySource based on provided command line options for content
 /// decryption. Does not fetch keys.
 /// @return A std::unique_ptr containing a new KeySource, or nullptr if
 ///         decryption is not required.
-std::unique_ptr<KeySource> CreateDecryptionKeySource();
+std::unique_ptr<KeySource> CreateDecryptionKeySource(
+    const DecryptionParams& decryption_params);
 
 /// @return ChunkingOptions from provided command line options.
-ChunkingOptions GetChunkingOptions();
+ChunkingOptions GetChunkingOptions(const ChunkingParams& chunking_params);
 
 /// @return EncryptionOptions from provided command line options.
-EncryptionOptions GetEncryptionOptions();
+EncryptionOptions GetEncryptionOptions(
+    const EncryptionParams& encryption_params);
 
 /// @return MuxerOptions from provided command line options.
-MuxerOptions GetMuxerOptions();
+MuxerOptions GetMuxerOptions(const std::string& temp_dir,
+                             const Mp4OutputParams& mp4_params);
 
 /// @return MpdOptions from provided command line options.
-MpdOptions GetMpdOptions(bool on_demand_profile);
+MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params);
 
 /// Connect handlers in the vector.
 /// @param handlers A vector of media handlers to be conncected. the handlers
