@@ -27,7 +27,7 @@ DEFINE_bool(include_common_pssh,
             false,
             "When using Widevine encryption, include an additional v1 PSSH box "
             "for the common system ID that includes the key IDs. See: "
-            "https://goo.gl/507mKp");
+            "https://goo.gl/s8RIhr");
 DEFINE_string(key_server_url, "", "Key server url. Required for encryption and "
               "decryption");
 DEFINE_string(content_id, "", "Content Id (hex).");

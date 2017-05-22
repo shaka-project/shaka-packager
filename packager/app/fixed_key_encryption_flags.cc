@@ -25,8 +25,8 @@ DEFINE_string(iv,
 DEFINE_string(pssh,
               "",
               "One or more PSSH boxes in hex string format.  If not specified, "
-              "will generate a v1 common PSSH box according to "
-              "https://goo.gl/507mKp.");
+              "will generate a v1 common PSSH box as specified in "
+              "https://goo.gl/s8RIhr.");
 
 namespace shaka {
 
