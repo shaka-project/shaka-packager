@@ -31,8 +31,9 @@ class TextSample {
   void AppendPayload(const std::string& payload);
 
  private:
-  TextSample(const TextSample&) = delete;
-  TextSample& operator=(const TextSample&) = delete;
+  // Allow the compiler generated copy constructor and assignment operator
+  // intentionally. Since the text data is typically small, the performance
+  // impact is minimal.
 
   std::string id_;
   uint64_t start_time_ = 0;

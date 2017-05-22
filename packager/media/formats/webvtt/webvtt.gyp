@@ -19,6 +19,8 @@
         'text_readers.h',
         'webvtt_media_parser.cc',
         'webvtt_media_parser.h',
+        'webvtt_output_handler.cc',
+        'webvtt_output_handler.h',
         'webvtt_parser.cc',
         'webvtt_parser.h',
         'webvtt_sample_converter.cc',
@@ -43,6 +45,7 @@
       'sources': [
         'text_readers_unittest.cc',
         'webvtt_media_parser_unittest.cc',
+        'webvtt_output_handler_unittest.cc',
         'webvtt_parser_unittest.cc',
         'webvtt_sample_converter_unittest.cc',
         'webvtt_segmenter_unittest.cc',

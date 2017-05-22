@@ -60,6 +60,9 @@ void SetMediaInfoContainerType(MuxerListener::ContainerType container_type,
     case MuxerListener::kContainerWebM:
       media_info->set_container_type(MediaInfo::CONTAINER_WEBM);
       break;
+    case MuxerListener::kContainerText:
+      media_info->set_container_type(MediaInfo::CONTAINER_TEXT);
+      break;
     default:
       NOTREACHED() << "Unknown container type " << container_type;
   }
