@@ -9,15 +9,11 @@
 #ifndef PACKAGER_APP_PACKAGER_UTIL_H_
 #define PACKAGER_APP_PACKAGER_UTIL_H_
 
-#include <gflags/gflags.h>
-
 #include <memory>
 
 #include "packager/base/optional.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/packager.h"
-
-DECLARE_bool(dump_stream_info);
 
 namespace shaka {
 

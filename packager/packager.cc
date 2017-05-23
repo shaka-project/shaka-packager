@@ -6,12 +6,10 @@
 
 #include "packager/packager.h"
 
-#include <gflags/gflags.h>
-#include <iostream>
-
 #include "packager/app/libcrypto_threading.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/stream_descriptor.h"
+#include "packager/base/at_exit.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/path_service.h"
@@ -40,13 +38,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
-
-DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
-DEFINE_bool(use_fake_clock_for_muxer,
-            false,
-            "Set to true to use a fake clock for muxer. With this flag set, "
-            "creation time and modification time in outputs are set to 0. "
-            "Should only be used for testing.");
+#include "packager/version/version.h"
 
 namespace shaka {
 
@@ -124,7 +116,7 @@ bool ValidateStreamDescriptor(bool dump_stream_info,
   const bool output_specified =
       !descriptor.output.empty() || !descriptor.segment_template.empty();
   if (!output_specified) {
-    if (!FLAGS_dump_stream_info) {
+    if (!dump_stream_info) {
       LOG(ERROR) << "Stream output not specified.";
       return false;
     }
@@ -201,7 +193,8 @@ bool ValidateParams(const PackagingParams& packaging_params,
                     "stream descriptors.";
       return false;
     }
-    if (!ValidateStreamDescriptor(FLAGS_dump_stream_info, descriptor))
+    if (!ValidateStreamDescriptor(packaging_params.test_params.dump_stream_info,
+                                  descriptor))
       return false;
   }
   if (packaging_params.output_media_info && !on_demand_dash_profile) {
@@ -380,7 +373,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
       std::unique_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
-      demuxer->set_dump_stream_info(FLAGS_dump_stream_info);
+      demuxer->set_dump_stream_info(
+          packaging_params.test_params.dump_stream_info);
       if (packaging_params.decryption_params.key_provider !=
           KeyProvider::kNone) {
         std::unique_ptr<KeySource> decryption_key_source(
@@ -409,7 +403,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     std::shared_ptr<Muxer> muxer(
         CreateOutputMuxer(stream_muxer_options, output_format));
-    if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
+    if (packaging_params.test_params.inject_fake_clock)
+      muxer->set_clock(fake_clock);
 
     std::unique_ptr<MuxerListener> muxer_listener;
     DCHECK(!(packaging_params.output_media_info && mpd_notifier));
@@ -577,7 +572,8 @@ ShakaPackager::~ShakaPackager() {}
 Status ShakaPackager::Initialize(
     const PackagingParams& packaging_params,
     const std::vector<StreamDescriptor>& stream_descriptors) {
-
+  // Needed by base::WorkedPool used in ThreadedIoFile.
+  static base::AtExitManager exit;
   static media::LibcryptoThreading libcrypto_threading;
 
   if (internal_)
@@ -585,6 +581,11 @@ Status ShakaPackager::Initialize(
 
   if (!media::ValidateParams(packaging_params, stream_descriptors))
     return Status(error::INVALID_ARGUMENT, "Invalid packaging params.");
+
+  if (!packaging_params.test_params.injected_library_version.empty()) {
+    SetPackagerVersionForTesting(
+        packaging_params.test_params.injected_library_version);
+  }
 
   std::unique_ptr<PackagerInternal> internal(new PackagerInternal);
 
@@ -678,6 +679,10 @@ void ShakaPackager::Cancel() {
   }
   for (const std::unique_ptr<media::RemuxJob>& job : internal_->remux_jobs)
     job->demuxer()->Cancel();
+}
+
+std::string ShakaPackager::GetLibraryVersion() {
+  return GetPackagerVersion();
 }
 
 }  // namespace shaka

@@ -6,8 +6,9 @@
 
 #include "packager/version/version.h"
 
-#include "packager/base/lazy_instance.h"
+#include "packager/base/synchronization/read_write_lock.h"
 
+namespace shaka {
 namespace {
 
 #if defined(PACKAGER_VERSION)
@@ -29,29 +30,37 @@ class Version {
   Version() : version_(kPackagerVersion) {}
   ~Version() {}
 
-  const std::string& version() { return version_; }
-  void set_version(const std::string& version) { version_ = version; }
+  const std::string& GetVersion() {
+    base::subtle::AutoReadLock read_lock(lock_);
+    return version_;
+  }
+  void SetVersion(const std::string& version) {
+    base::subtle::AutoWriteLock write_lock(lock_);
+    version_ = version;
+  }
 
  private:
+  Version(const Version&) = delete;
+  Version& operator=(const Version&) = delete;
+
+  base::subtle::ReadWriteLock lock_;
   std::string version_;
 };
 
 }  // namespace
 
-namespace shaka {
-
-base::LazyInstance<Version> g_packager_version;
+static Version g_packager_version;
 
 std::string GetPackagerProjectUrl(){
   return kPackagerGithubUrl;
 }
 
 std::string GetPackagerVersion() {
-  return g_packager_version.Get().version();
+  return g_packager_version.GetVersion();
 }
 
 void SetPackagerVersionForTesting(const std::string& version) {
-  g_packager_version.Get().set_version(version);
+  g_packager_version.SetVersion(version);
 }
 
 }  // namespace shaka

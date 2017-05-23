@@ -21,13 +21,7 @@
         'proto_in_dir': 'base',
         'proto_out_dir': 'packager/mpd/base',
       },
-      'includes': ['../build/protoc.gypi'],
-      'dependencies': [
-        # This target needs to depend on 'protobuf_full_do_not_use' to generate
-        # non-LITE (full) protobuf. We need full protobuf to serialize and
-        # deserialize human readable protobuf messages.
-        '../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
-      ],
+      'includes': ['../protoc.gypi'],
     },
     {
       'target_name': 'mpd_builder',

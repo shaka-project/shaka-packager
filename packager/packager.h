@@ -17,6 +17,29 @@
 // TODO(kqyang): Refactor status.h and move it under packager/.
 #include "packager/media/base/status.h"
 
+#if defined(SHARED_LIBRARY_BUILD)
+#if defined(OS_WIN)
+
+#if defined(SHAKA_IMPLEMENTATION)
+#define SHAKA_EXPORT __declspec(dllexport)
+#else
+#define SHAKA_EXPORT __declspec(dllimport)
+#endif  // defined(SHAKA_IMPLEMENTATION)
+
+#else  // defined(OS_WIN)
+
+#if defined(SHAKA_IMPLEMENTATION)
+#define SHAKA_EXPORT __attribute__((visibility("default")))
+#else
+#define SHAKA_EXPORT
+#endif
+
+#endif  // defined(OS_WIN)
+
+#else  // defined(SHARED_LIBRARY_BUILD)
+#define SHAKA_EXPORT
+#endif  // defined(SHARED_LIBRARY_BUILD)
+
 namespace shaka {
 
 /// MP4 (ISO-BMFF) output related parameters.
@@ -268,7 +291,7 @@ struct EncryptionParams {
   /// @param stream_info Encrypted stream info.
   /// @return the stream label associated with `stream_info`. Can be "AUDIO",
   ///         "SD", "HD", "UHD1" or "UHD2".
-  static std::string DefaultStreamLabelFunction(
+  static SHAKA_EXPORT std::string DefaultStreamLabelFunction(
       int max_sd_pixels,
       int max_hd_pixels,
       int max_uhd1_pixels,
@@ -321,6 +344,18 @@ struct DecryptionParams {
   RawKeyDecryptionParams raw_key;
 };
 
+/// Parameters used for testing.
+struct TestParams {
+  /// Whether to dump input stream info.
+  bool dump_stream_info = false;
+  /// Inject a fake clock which always returns 0. This allows deterministic
+  /// output from packaging.
+  bool inject_fake_clock = false;
+  /// Inject and replace the library version string if specified, which is used
+  /// to populate the version string in the manifests / media files.
+  std::string injected_library_version;
+};
+
 /// Packaging parameters.
 struct PackagingParams {
   /// Specify temporary directory for intermediate temporary files.
@@ -343,6 +378,9 @@ struct PackagingParams {
   /// Encryption and Decryption Parameters.
   EncryptionParams encryption_params;
   DecryptionParams decryption_params;
+
+  // Parameters for testing. Do not use in production.
+  TestParams test_params;
 };
 
 /// Defines a single input/output stream.
@@ -394,7 +432,7 @@ struct StreamDescriptor {
   std::string hls_playlist_name;
 };
 
-class ShakaPackager {
+class SHAKA_EXPORT ShakaPackager {
  public:
   ShakaPackager();
   ~ShakaPackager();
@@ -414,6 +452,9 @@ class ShakaPackager {
 
   /// Cancel packaging. Note that it has to be called from another thread.
   void Cancel();
+
+  /// @return The version of the library.
+  static std::string GetLibraryVersion();
 
  private:
   ShakaPackager(const ShakaPackager&) = delete;

@@ -17,7 +17,6 @@
 #include "packager/app/stream_descriptor.h"
 #include "packager/app/vlog_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
-#include "packager/base/at_exit.h"
 #include "packager/base/command_line.h"
 #include "packager/base/logging.h"
 #include "packager/base/optional.h"
@@ -26,7 +25,6 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/file/file.h"
 #include "packager/packager.h"
-#include "packager/version/version.h"
 
 #if defined(OS_WIN)
 #include <codecvt>
@@ -34,6 +32,12 @@
 #include <locale>
 #endif  // defined(OS_WIN)
 
+DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
+DEFINE_bool(use_fake_clock_for_muxer,
+            false,
+            "Set to true to use a fake clock for muxer. With this flag set, "
+            "creation time and modification time in outputs are set to 0. "
+            "Should only be used for testing.");
 DEFINE_bool(override_version,
             false,
             "Override packager version in the generated outputs with "
@@ -286,11 +290,16 @@ base::Optional<PackagingParams> GetPackagingParams() {
   hls_params.master_playlist_output = FLAGS_hls_master_playlist_output;
   hls_params.base_url = FLAGS_hls_base_url;
 
+  TestParams& test_params = packaging_params.test_params;
+  test_params.dump_stream_info = FLAGS_dump_stream_info;
+  test_params.inject_fake_clock = FLAGS_use_fake_clock_for_muxer;
+  if (FLAGS_override_version)
+    test_params.injected_library_version = FLAGS_test_version;
+
   return packaging_params;
 }
 
 int PackagerMain(int argc, char** argv) {
-  base::AtExitManager exit;
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
   base::CommandLine::Init(argc, argv);
 
@@ -299,7 +308,7 @@ int PackagerMain(int argc, char** argv) {
   log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   CHECK(logging::InitLogging(log_settings));
 
-  google::SetVersionString(GetPackagerVersion());
+  google::SetVersionString(shaka::ShakaPackager::GetLibraryVersion());
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
@@ -311,9 +320,6 @@ int PackagerMain(int argc, char** argv) {
       !ValidatePRCryptoFlags()) {
     return kArgumentValidationFailed;
   }
-
-  if (FLAGS_override_version)
-    SetPackagerVersionForTesting(FLAGS_test_version);
 
   base::Optional<PackagingParams> packaging_params = GetPackagingParams();
   if (!packaging_params)

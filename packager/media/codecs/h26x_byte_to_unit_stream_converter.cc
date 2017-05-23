@@ -9,7 +9,9 @@
 #include <gflags/gflags.h>
 #include <limits>
 
+#include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/buffer_writer.h"
 
 // TODO(kqyang): Move byte to unit stream convertion to muxer and make it a
 // muxer option.
@@ -20,9 +22,6 @@ DEFINE_bool(strip_parameter_set_nalus,
             "units, i.e. SPS/PPS for H264 and SPS/PPS/VPS for H265, from the "
             "frames. Note that avc1/hvc1 is generated if this flag is enabled; "
             "otherwise avc3/hev1 is generated.");
-
-#include "packager/base/logging.h"
-#include "packager/media/base/buffer_writer.h"
 
 namespace shaka {
 namespace media {

@@ -11,7 +11,7 @@
   'targets': [
     {
       'target_name': 'libpackager',
-      'type': 'static_library',
+      'type': '<(libpackager_type)',
       'sources': [
         'packager.cc',
         'packager.h',
@@ -37,7 +37,15 @@
         'media/trick_play/trick_play.gyp:trick_play',
         'mpd/mpd.gyp:mpd_builder',
         'third_party/boringssl/boringssl.gyp:boringssl',
-        'third_party/gflags/gflags.gyp:gflags',
+        'version/version.gyp:version',
+      ],
+      'conditions': [
+        ['libpackager_type=="shared_library"', {
+          'defines': [
+            'SHARED_LIBRARY_BUILD',
+            'SHAKA_IMPLEMENTATION',
+          ],
+        }],
       ],
     },
     {
@@ -69,7 +77,9 @@
         'app/widevine_encryption_flags.h',
       ],
       'dependencies': [
+        'base/base.gyp:base',
         'libpackager',
+        'media/file/file.gyp:file',
         'third_party/gflags/gflags.gyp:gflags',
       ],
       'conditions': [
@@ -102,9 +112,10 @@
         'packager_test.cc',
       ],
       'dependencies': [
+        'base/base.gyp:base',
         'libpackager',
-        'media/test/media_test.gyp:media_test_support',
         'testing/gtest.gyp:gtest',
+        'testing/gtest.gyp:gtest_main',
       ],
     },
     {

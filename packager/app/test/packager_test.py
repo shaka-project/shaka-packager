@@ -454,6 +454,13 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[3], 'bear-640x360-a-wvm-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-wvm-golden.mpd')
 
+  # TODO(kqyang): Fix shared_library not supporting strip_parameter_set_nalus
+  # problem.
+  @unittest.skipUnless(
+      test_env.options.static_libpackager,
+      'libpackager shared_library does not support '
+      '--strip_parameter_set_nalus flag.'
+  )
   def testPackageWvmInputWithoutStrippingParameterSetNalus(self):
     self.packager.Package(
         self._GetStreams(

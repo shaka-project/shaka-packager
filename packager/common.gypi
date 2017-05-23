@@ -10,6 +10,7 @@
   'variables': {
     # Compile as Chromium code to enable warnings and warnings-as-errors.
     'chromium_code': 1,
+    'libpackager_type%': 'static_library',
   },
   'target_defaults': {
     'include_dirs': [

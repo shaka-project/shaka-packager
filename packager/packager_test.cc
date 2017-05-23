@@ -7,8 +7,8 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/files/file_util.h"
-#include "packager/media/base/test/status_test_util.h"
-#include "packager/media/test/test_data_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/path_service.h"
 #include "packager/packager.h"
 
 namespace shaka {
@@ -25,6 +25,18 @@ const double kSegmentDurationInSeconds = 1.0;
 const char kKeyIdHex[] = "e5007e6e9dcd5ac095202ed3758382cd";
 const char kKeyHex[] = "6fc96fe628a265b13aeddec0bc421f4d";
 const double kClearLeadInSeconds = 1.0;
+
+std::string GetTestDataFilePath(const std::string& name) {
+  base::FilePath file_path;
+  CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+
+  file_path = file_path.Append(FILE_PATH_LITERAL("packager"))
+                  .Append(FILE_PATH_LITERAL("media"))
+                  .Append(FILE_PATH_LITERAL("test"))
+                  .Append(FILE_PATH_LITERAL("data"))
+                  .AppendASCII(name);
+  return file_path.AsUTF8Unsafe();
+}
 
 }  // namespace
 
@@ -64,14 +76,12 @@ class PackagerTest : public ::testing::Test {
     std::vector<StreamDescriptor> stream_descriptors;
     StreamDescriptor stream_descriptor;
 
-    stream_descriptor.input =
-        media::GetTestDataFilePath(kTestFile).AsUTF8Unsafe();
+    stream_descriptor.input = GetTestDataFilePath(kTestFile);
     stream_descriptor.stream_selector = "video";
     stream_descriptor.output = GetFullPath(kOutputVideo);
     stream_descriptors.push_back(stream_descriptor);
 
-    stream_descriptor.input =
-        media::GetTestDataFilePath(kTestFile).AsUTF8Unsafe();
+    stream_descriptor.input = GetTestDataFilePath(kTestFile);
     stream_descriptor.stream_selector = "audio";
     stream_descriptor.output = GetFullPath(kOutputAudio);
     stream_descriptors.push_back(stream_descriptor);
@@ -83,11 +93,16 @@ class PackagerTest : public ::testing::Test {
   base::FilePath test_directory_;
 };
 
+TEST_F(PackagerTest, Version) {
+  EXPECT_FALSE(ShakaPackager::GetLibraryVersion().empty());
+}
+
 TEST_F(PackagerTest, Success) {
   ShakaPackager packager;
-  ASSERT_OK(
-      packager.Initialize(SetupPackagingParams(), SetupStreamDescriptors()));
-  ASSERT_OK(packager.Run());
+  ASSERT_TRUE(
+      packager.Initialize(SetupPackagingParams(), SetupStreamDescriptors())
+          .ok());
+  ASSERT_TRUE(packager.Run().ok());
 }
 
 TEST_F(PackagerTest, MissingStreamDescriptors) {
@@ -101,15 +116,13 @@ TEST_F(PackagerTest, MixingSegmentTemplateAndSingleSegment) {
   std::vector<StreamDescriptor> stream_descriptors;
   StreamDescriptor stream_descriptor;
 
-  stream_descriptor.input =
-      media::GetTestDataFilePath(kTestFile).AsUTF8Unsafe();
+  stream_descriptor.input = GetTestDataFilePath(kTestFile);
   stream_descriptor.stream_selector = "video";
   stream_descriptor.output = GetFullPath(kOutputVideo);
   stream_descriptor.segment_template = GetFullPath(kOutputVideoTemplate);
   stream_descriptors.push_back(stream_descriptor);
 
-  stream_descriptor.input =
-      media::GetTestDataFilePath(kTestFile).AsUTF8Unsafe();
+  stream_descriptor.input = GetTestDataFilePath(kTestFile);
   stream_descriptor.stream_selector = "audio";
   stream_descriptor.output = GetFullPath(kOutputAudio);
   stream_descriptor.segment_template.clear();
@@ -125,8 +138,9 @@ TEST_F(PackagerTest, SegmentAlignedAndSubsegmentNotAligned) {
   packaging_params.chunking_params.segment_sap_aligned = true;
   packaging_params.chunking_params.subsegment_sap_aligned = false;
   ShakaPackager packager;
-  ASSERT_OK(packager.Initialize(packaging_params, SetupStreamDescriptors()));
-  ASSERT_OK(packager.Run());
+  ASSERT_TRUE(
+      packager.Initialize(packaging_params, SetupStreamDescriptors()).ok());
+  ASSERT_TRUE(packager.Run().ok());
 }
 
 TEST_F(PackagerTest, SegmentNotAlignedButSubsegmentAligned) {
