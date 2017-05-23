@@ -305,26 +305,25 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  mpd_options.mpd_type = (on_demand_profile || FLAGS_generate_static_mpd)</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                             ? MpdType::kStatic</div>
 <div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                             : MpdType::kDynamic;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  mpd_options.availability_time_offset = FLAGS_availability_time_offset;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  mpd_options.minimum_update_period = FLAGS_minimum_update_period;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  mpd_options.min_buffer_time = FLAGS_min_buffer_time;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  mpd_options.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  mpd_options.suggested_presentation_delay = FLAGS_suggested_presentation_delay;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  mpd_options.default_language = FLAGS_default_language;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordflow">return</span> mpd_options;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;}</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;Status ConnectHandlers(std::vector&lt;std::shared_ptr&lt;MediaHandler&gt;&gt;&amp; handlers) {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keywordtype">size_t</span> num_handlers = handlers.size();</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  Status status;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_handlers; ++i) {</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    status.<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4">Update</a>(handlers[i - 1]-&gt;AddHandler(handlers[i]));</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  }</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;}</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  mpd_options.minimum_update_period = FLAGS_minimum_update_period;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  mpd_options.min_buffer_time = FLAGS_min_buffer_time;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  mpd_options.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  mpd_options.suggested_presentation_delay = FLAGS_suggested_presentation_delay;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  mpd_options.default_language = FLAGS_default_language;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordflow">return</span> mpd_options;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;Status ConnectHandlers(std::vector&lt;std::shared_ptr&lt;MediaHandler&gt;&gt;&amp; handlers) {</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordtype">size_t</span> num_handlers = handlers.size();</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  Status status;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_handlers; ++i) {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    status.<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4">Update</a>(handlers[i - 1]-&gt;AddHandler(handlers[i]));</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  }</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;}</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1RsaRequestSigner_html_af6af635a7c0a01bb638befb71b88386c"><div class="ttname"><a href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">shaka::media::RsaRequestSigner::CreateSigner</a></div><div class="ttdeci">static RsaRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;pkcs1_rsa_key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00064">request_signer.cc:64</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesRequestSigner_html_a43f4cc9fad9901fa905805be81f7d58c"><div class="ttname"><a href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a43f4cc9fad9901fa905805be81f7d58c">shaka::media::AesRequestSigner::CreateSigner</a></div><div class="ttdeci">static AesRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;aes_key_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00029">request_signer.cc:29</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html_a74d29f349b4673d2eef69a47f5152fe4"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4">shaka::media::Status::Update</a></div><div class="ttdeci">void Update(const Status &amp;new_status)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00130">status.h:130</a></div></div>
@@ -338,7 +337,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 22 2017 17:24:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 23 2017 17:39:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
