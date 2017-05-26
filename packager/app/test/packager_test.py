@@ -793,10 +793,7 @@ class PackagerAppTest(unittest.TestCase):
     else:
       match = filecmp.cmp(test_output, golden_file)
       if not match:
-        git = 'git'
-        if platform.system() == 'Windows':
-          git += '.bat'
-        p = subprocess.Popen([git, '--no-pager', 'diff', '--color=auto',
+        p = subprocess.Popen(['git', '--no-pager', 'diff', '--color=auto',
                               '--no-ext-diff', '--no-index', golden_file,
                               test_output],
                              stdout=subprocess.PIPE,

@@ -7,7 +7,6 @@
 # https://developers.google.com/open-source/licenses/bsd
 """This script is used to generate version string for packager."""
 
-import platform
 import subprocess
 
 # To support python version before 2.7, which does not have
@@ -31,13 +30,9 @@ if 'check_output' not in dir(subprocess):
   subprocess.check_output = check_output_implementation
 
 if __name__ == '__main__':
-  git = 'git'
-  if platform.system() == 'Windows':
-    git += '.bat'
-
   try:
     version_tag = subprocess.check_output(
-        [git, 'tag', '--points-at', 'HEAD'],
+        ['git', 'tag', '--points-at', 'HEAD'],
         stderr=subprocess.STDOUT).rstrip()
   except subprocess.CalledProcessError as e:
     # git tag --points-at is not supported in old versions of git. Just ignore
@@ -46,7 +41,7 @@ if __name__ == '__main__':
 
   try:
     version_hash = subprocess.check_output(
-        [git, 'rev-parse', '--short', 'HEAD'],
+        ['git', 'rev-parse', '--short', 'HEAD'],
         stderr=subprocess.STDOUT).rstrip()
   except subprocess.CalledProcessError as e:
     version_hash = 'unknown-version'
