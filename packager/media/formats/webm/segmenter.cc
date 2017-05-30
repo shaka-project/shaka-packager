@@ -314,9 +314,9 @@ Status Segmenter::InitializeVideoTrack(const VideoStreamInfo* info,
                     "Private codec data required for VPx streams");
     }
   } else {
-    LOG(ERROR) << "Only VP8 and VP9 video codecs are supported.";
+    LOG(ERROR) << "Only VP8 and VP9 video codecs are supported in WebM.";
     return Status(error::UNIMPLEMENTED,
-                  "Only VP8 and VP9 video codecs are supported.");
+                  "Only VP8 and VP9 video codecs are supported in WebM.");
   }
 
   track->set_uid(info->track_id());
@@ -338,9 +338,9 @@ Status Segmenter::InitializeAudioTrack(const AudioStreamInfo* info,
   } else if (info->codec() == kCodecVorbis) {
     track->set_codec_id(mkvmuxer::Tracks::kVorbisCodecId);
   } else {
-    LOG(ERROR) << "Only Vorbis and Opus audio codec is supported.";
+    LOG(ERROR) << "Only Vorbis and Opus audio codec are supported in WebM.";
     return Status(error::UNIMPLEMENTED,
-                  "Only Vorbis and Opus audio codecs are supported.");
+                  "Only Vorbis and Opus audio codecs are supported in WebM.");
   }
   if (!track->SetCodecPrivate(info->codec_config().data(),
                               info->codec_config().size())) {
