@@ -140,6 +140,7 @@ class Demuxer : public MediaHandler {
   bool cancelled_ = false;
   // Whether to dump stream info when it is received.
   bool dump_stream_info_ = false;
+  Status init_event_status_;
 };
 
 }  // namespace media

@@ -17,6 +17,9 @@ namespace media {
 // Returns a file path for a file in the media/test/data directory.
 base::FilePath GetTestDataFilePath(const std::string& name);
 
+// Returns a file path for a file in the media/app/test/testdata directory.
+base::FilePath GetAppTestDataFilePath(const std::string& name);
+
 // Reads a test file from media/test/data directory and returns its content.
 std::vector<uint8_t> ReadTestDataFile(const std::string& name);
 

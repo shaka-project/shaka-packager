@@ -33,7 +33,9 @@
         'demuxer_unittest.cc',
       ],
       'dependencies': [
+        '../../testing/gmock.gyp:gmock',
         '../../testing/gtest.gyp:gtest',
+        '../base/media_base.gyp:media_handler_test_base',
         '../test/media_test.gyp:media_test_support',
         'demuxer',
       ]

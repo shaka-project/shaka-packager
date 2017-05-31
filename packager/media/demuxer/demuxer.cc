@@ -95,6 +95,8 @@ Status Demuxer::Run() {
   // info.
   if (all_streams_ready_ && output_handlers().empty())
     return Status::OK;
+  if (!init_event_status_.ok())
+    return init_event_status_;
   if (!status.ok())
     return status;
   // Check if all specified outputs exists.
@@ -258,7 +260,14 @@ void Demuxer::ParserInitEvent(
           stream_info->stream_type() != kStreamVideo) {
         stream_info->set_language(iter->second);
       }
-      DispatchStreamInfo(stream_index, stream_info);
+      if (stream_info->is_encrypted()) {
+        init_event_status_.SetError(
+            error::INVALID_ARGUMENT,
+            "A decryption key source is not provided for an encrypted stream.");
+      } else {
+        init_event_status_.Update(
+            DispatchStreamInfo(stream_index, stream_info));
+      }
     } else {
       track_id_to_stream_index_map_[stream_info->track_id()] =
           kInvalidStreamIndex;
@@ -277,6 +286,9 @@ bool Demuxer::NewSampleEvent(uint32_t track_id,
     }
     queued_samples_.push_back(QueuedSample(track_id, sample));
     return true;
+  }
+  if (!init_event_status_.ok()) {
+    return false;
   }
   while (!queued_samples_.empty()) {
     if (!PushSample(queued_samples_.front().track_id,

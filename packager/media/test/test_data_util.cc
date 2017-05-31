@@ -23,6 +23,18 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   return file_path;
 }
 
+base::FilePath GetAppTestDataFilePath(const std::string& name) {
+  base::FilePath file_path;
+  CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+
+  file_path = file_path.Append(FILE_PATH_LITERAL("packager"))
+                  .Append(FILE_PATH_LITERAL("app"))
+                  .Append(FILE_PATH_LITERAL("test"))
+                  .Append(FILE_PATH_LITERAL("testdata"))
+                  .AppendASCII(name);
+  return file_path;
+}
+
 std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
   std::string buffer;
   CHECK(base::ReadFileToString(GetTestDataFilePath(name), &buffer));
