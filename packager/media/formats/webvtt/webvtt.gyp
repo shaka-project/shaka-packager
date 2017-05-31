@@ -27,6 +27,8 @@
         'webvtt_segmenter.h',
         'webvtt_timestamp.cc',
         'webvtt_timestamp.h',
+        'webvtt_to_mp4_handler.cc',
+        'webvtt_to_mp4_handler.h',
       ],
       'dependencies': [
         '../../../base/base.gyp:base',
@@ -45,6 +47,8 @@
         'webvtt_sample_converter_unittest.cc',
         'webvtt_segmenter_unittest.cc',
         'webvtt_timestamp_unittest.cc',
+        'webvtt_timestamp_unittest.cc',
+        'webvtt_to_mp4_handler_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gmock.gyp:gmock',
