@@ -16,6 +16,7 @@
 #include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/text_stream_info.h"
+#include "packager/media/formats/webvtt/webvtt_timestamp.h"
 
 namespace shaka {
 namespace media {
@@ -68,82 +69,6 @@ bool ReadLine(std::string* data, std::string* line) {
   return true;
 }
 
-bool TimestampToMilliseconds(const std::string& original_str,
-                             uint64_t* time_ms) {
-  const size_t kMinimalHoursLength = 2;
-  const size_t kMinutesLength = 2;
-  const size_t kSecondsLength = 2;
-  const size_t kMillisecondsLength = 3;
-
-  // +2 for a colon and a dot for splitting minutes and seconds AND seconds and
-  // milliseconds, respectively.
-  const size_t kMinimalLength =
-      kMinutesLength + kSecondsLength + kMillisecondsLength + 2;
-
-  base::StringPiece str(original_str);
-  if (str.size() < kMinimalLength)
-    return false;
-
-  int hours = 0;
-  int minutes = 0;
-  int seconds = 0;
-  int milliseconds = 0;
-
-  size_t str_index = 0;
-  if (str.size() > kMinimalLength) {
-    // Check if hours is in the right format, if so get the number.
-    // -1 for excluding colon for splitting hours and minutes.
-    const size_t hours_length = str.size() - kMinimalLength - 1;
-    if (hours_length < kMinimalHoursLength)
-      return false;
-    if (!base::StringToInt(str.substr(0, hours_length), &hours))
-      return false;
-    str_index += hours_length;
-
-    if (str[str_index] != ':')
-      return false;
-    ++str_index;
-  }
-
-  DCHECK_EQ(str.size() - str_index, kMinimalLength);
-
-  if (!base::StringToInt(str.substr(str_index, kMinutesLength), &minutes))
-    return false;
-  if (minutes < 0 || minutes > 60)
-    return false;
-
-  str_index += kMinutesLength;
-  if (str[str_index] != ':')
-    return false;
-  ++str_index;
-
-  if (!base::StringToInt(str.substr(str_index, kSecondsLength), &seconds))
-    return false;
-  if (seconds < 0 || seconds > 60)
-    return false;
-
-  str_index += kSecondsLength;
-  if (str[str_index] != '.')
-    return false;
-  ++str_index;
-
-  if (!base::StringToInt(str.substr(str_index, kMillisecondsLength),
-                         &milliseconds)) {
-    return false;
-  }
-  str_index += kMillisecondsLength;
-
-  if (milliseconds < 0 || milliseconds > 999)
-    return false;
-
-  DCHECK_EQ(str.size(), str_index);
-  *time_ms = milliseconds +
-             seconds * 1000 +
-             minutes * 60 * 1000 +
-             hours * 60 * 60 * 1000;
-  return true;
-}
-
 // Clears |settings| and 0s |start_time| and |duration| regardless of the
 // parsing result.
 bool ParseTimingAndSettingsLine(const std::string& line,
@@ -168,14 +93,14 @@ bool ParseTimingAndSettingsLine(const std::string& line,
   }
 
   const std::string& start_time_str = entries[0];
-  if (!TimestampToMilliseconds(start_time_str, start_time)) {
+  if (!WebVttTimestampParse(start_time_str, start_time)) {
     LOG(ERROR) << "Failed to parse " << start_time_str << " in " << line;
     return false;
   }
 
   const std::string& end_time_str = entries[2];
   uint64_t end_time = 0;
-  if (!TimestampToMilliseconds(end_time_str, &end_time)) {
+  if (!WebVttTimestampParse(end_time_str, &end_time)) {
     LOG(ERROR) << "Failed to parse " << end_time_str << " in " << line;
     return false;
   }

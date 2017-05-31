@@ -19,6 +19,8 @@
         'webvtt_media_parser.h',
         'webvtt_sample_converter.cc',
         'webvtt_sample_converter.h',
+        'webvtt_timestamp.cc',
+        'webvtt_timestamp.h',
       ],
       'dependencies': [
         '../../../base/base.gyp:base',
@@ -32,6 +34,7 @@
       'sources': [
         'webvtt_media_parser_unittest.cc',
         'webvtt_sample_converter_unittest.cc',
+        'webvtt_timestamp_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gmock.gyp:gmock',
