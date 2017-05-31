@@ -403,9 +403,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                    <span class="stringliteral">&quot;Private codec data required for VPx streams&quot;</span>);</div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    }</div>
 <div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Only VP8 and VP9 video codecs are supported.&quot;</span>;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Only VP8 and VP9 video codecs are supported in WebM.&quot;</span>;</div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keywordflow">return</span> Status(error::UNIMPLEMENTED,</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                  <span class="stringliteral">&quot;Only VP8 and VP9 video codecs are supported.&quot;</span>);</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                  <span class="stringliteral">&quot;Only VP8 and VP9 video codecs are supported in WebM.&quot;</span>);</div>
 <div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  }</div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;</div>
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  track-&gt;set_uid(info-&gt;track_id());</div>
@@ -427,9 +427,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (info-&gt;codec() == kCodecVorbis) {</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    track-&gt;set_codec_id(mkvmuxer::Tracks::kVorbisCodecId);</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Only Vorbis and Opus audio codec is supported.&quot;</span>;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Only Vorbis and Opus audio codec are supported in WebM.&quot;</span>;</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordflow">return</span> Status(error::UNIMPLEMENTED,</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                  <span class="stringliteral">&quot;Only Vorbis and Opus audio codecs are supported.&quot;</span>);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                  <span class="stringliteral">&quot;Only Vorbis and Opus audio codecs are supported in WebM.&quot;</span>);</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  }</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <span class="keywordflow">if</span> (!track-&gt;SetCodecPrivate(info-&gt;codec_config().data(),</div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                              info-&gt;codec_config().size())) {</div>
@@ -538,7 +538,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri May 26 2017 22:44:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 31 2017 23:49:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
