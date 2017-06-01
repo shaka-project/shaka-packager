@@ -14,5 +14,5 @@ What is the expected result?
 
 What happens instead?
 
-<Please attach the input files.>
+<Please attach the input files or email to shaka-packager-issues@google.com.>
 <Please provide any additional information below.>
