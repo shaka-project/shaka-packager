@@ -17,7 +17,7 @@ DEFINE_bool(webm_subsample_encryption,
             true,
             "This flag is deprecated. Use vp9_subsample_encryption instead.");
 DEFINE_double(availability_time_offset,
-              10.0,
+              0,
               "This flag is deprecated. Use suggested_presentation_delay "
               "instead which can achieve similar effect.");
 
