@@ -25,8 +25,9 @@ class MockMediaPlaylist : public MediaPlaylist {
   ~MockMediaPlaylist() override;
 
   MOCK_METHOD1(SetMediaInfo, bool(const MediaInfo& media_info));
-  MOCK_METHOD3(AddSegment,
+  MOCK_METHOD4(AddSegment,
                void(const std::string& file_name,
+                    uint64_t start_time,
                     uint64_t duration,
                     uint64_t size));
   MOCK_METHOD0(RemoveOldestSegment, void());
@@ -37,10 +38,10 @@ class MockMediaPlaylist : public MediaPlaylist {
                     const std::string& iv,
                     const std::string& key_format,
                     const std::string& key_format_versions));
-  MOCK_METHOD1(WriteToFile, bool(media::File* file));
+  MOCK_METHOD1(WriteToFile, bool(const std::string& file_path));
   MOCK_CONST_METHOD0(Bitrate, uint64_t());
   MOCK_CONST_METHOD0(GetLongestSegmentDuration, double());
-  MOCK_METHOD1(SetTargetDuration, bool(uint32_t target_duration));
+  MOCK_METHOD1(SetTargetDuration, void(uint32_t target_duration));
   MOCK_CONST_METHOD0(GetLanguage, std::string());
   MOCK_CONST_METHOD2(GetResolution, bool(uint32_t* width, uint32_t* height));
 };

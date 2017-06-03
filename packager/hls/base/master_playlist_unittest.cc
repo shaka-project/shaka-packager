@@ -23,6 +23,7 @@ using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SetArgPointee;
+using ::testing::StrEq;
 using ::testing::_;
 using base::FilePath;
 
@@ -58,8 +59,7 @@ class MasterPlaylistTest : public ::testing::Test {
     ASSERT_TRUE(temp_dir_.IsValid());
     *temp_dir_path = temp_dir_.path();
     // TODO(rkuroiwa): Use memory file sys once prefix is exposed.
-    *output_dir = media::kLocalFilePrefix + temp_dir_.path().AsUTF8Unsafe()
-      + "/";
+    *output_dir = temp_dir_.path().AsUTF8Unsafe() + "/";
   }
 
   base::ScopedTempDir temp_dir_;
@@ -276,45 +276,5 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   ASSERT_EQ(expected, actual);
 }
 
-MATCHER_P(FileNameMatches, expected_file_name, "") {
-  const std::string& actual_filename = arg->file_name();
-  *result_listener << "which is " << actual_filename;
-  return expected_file_name == actual_filename;
-}
-
-// This test basically is WriteMasterPlaylist() and also make sure that
-// the target duration is set for MediaPlaylist and
-// MediaPlaylist::WriteToFile() is called.
-TEST_F(MasterPlaylistTest, WriteAllPlaylists) {
-  std::string codec = "avc1";
-  MockMediaPlaylist mock_playlist(kVodPlaylist, "media1.m3u8", "somename",
-                                  "somegroupid");
-  mock_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
-  mock_playlist.SetCodecForTesting(codec);
-  ON_CALL(mock_playlist, Bitrate()).WillByDefault(Return(435889));
-  ON_CALL(mock_playlist, GetResolution(NotNull(), NotNull())).WillByDefault(
-      DoAll(SetArgPointee<0>(kWidth),
-            SetArgPointee<1>(kHeight),
-            Return(true)));
-
-  EXPECT_CALL(mock_playlist, GetLongestSegmentDuration()).WillOnce(Return(10));
-  EXPECT_CALL(mock_playlist, SetTargetDuration(10)).WillOnce(Return(true));
-  master_playlist_.AddMediaPlaylist(&mock_playlist);
-
-  EXPECT_CALL(
-      mock_playlist,
-      WriteToFile(FileNameMatches(
-          test_output_dir_path_.Append(FilePath::FromUTF8Unsafe("media1.m3u8"))
-              .AsUTF8Unsafe())))
-      .WillOnce(Return(true));
-
-  const char kBaseUrl[] = "http://domain.com/";
-  EXPECT_TRUE(master_playlist_.WriteAllPlaylists(kBaseUrl, test_output_dir_));
-  FilePath master_playlist_path = test_output_dir_path_.Append(
-      FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName));
-  ASSERT_TRUE(base::PathExists(master_playlist_path))
-      << "Cannot find master playlist at " << master_playlist_path.value();
-}
 }  // namespace hls
 }  // namespace shaka

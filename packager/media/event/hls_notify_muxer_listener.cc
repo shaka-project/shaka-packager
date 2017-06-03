@@ -121,6 +121,7 @@ void HlsNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t index_range_end,
                                         float duration_seconds,
                                         uint64_t file_size) {
+  // TODO(kqyang): Should we just Flush here to avoid calling Flush explicitly?
   // Don't flush the notifier here. Flushing here would write all the playlists
   // before all Media Playlists are read. Which could cause problems
   // setting the correct EXT-X-TARGETDURATION.

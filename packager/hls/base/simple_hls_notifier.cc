@@ -6,6 +6,8 @@
 
 #include "packager/hls/base/simple_hls_notifier.h"
 
+#include <cmath>
+
 #include "packager/base/base64.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/json/json_writer.h"
@@ -191,24 +193,40 @@ bool HandleWidevineKeyFormats(
   return true;
 }
 
+bool WriteMediaPlaylist(const std::string& output_dir,
+                        MediaPlaylist* playlist) {
+  std::string file_path =
+      base::FilePath::FromUTF8Unsafe(output_dir)
+          .Append(base::FilePath::FromUTF8Unsafe(playlist->file_name()))
+          .AsUTF8Unsafe();
+  if (!playlist->WriteToFile(file_path)) {
+    LOG(ERROR) << "Failed to write playlist " << file_path;
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 MediaPlaylistFactory::~MediaPlaylistFactory() {}
 
 std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
     MediaPlaylist::MediaPlaylistType type,
+    double time_shift_buffer_depth,
     const std::string& file_name,
     const std::string& name,
     const std::string& group_id) {
-  return std::unique_ptr<MediaPlaylist>(
-      new MediaPlaylist(type, file_name, name, group_id));
+  return std::unique_ptr<MediaPlaylist>(new MediaPlaylist(
+      type, time_shift_buffer_depth, file_name, name, group_id));
 }
 
 SimpleHlsNotifier::SimpleHlsNotifier(HlsProfile profile,
+                                     double time_shift_buffer_depth,
                                      const std::string& prefix,
                                      const std::string& output_dir,
                                      const std::string& master_playlist_name)
     : HlsNotifier(profile),
+      time_shift_buffer_depth_(time_shift_buffer_depth),
       prefix_(prefix),
       output_dir_(output_dir),
       media_playlist_factory_(new MediaPlaylistFactory()),
@@ -235,6 +253,9 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     case HlsProfile::kOnDemandProfile:
       type = MediaPlaylist::MediaPlaylistType::kVod;
       break;
+    case HlsProfile::kEventProfile:
+      type = MediaPlaylist::MediaPlaylistType::kEvent;
+      break;
     default:
       NOTREACHED();
       return false;
@@ -244,7 +265,8 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   MakePathsRelativeToOutputDirectory(output_dir_, &adjusted_media_info);
 
   std::unique_ptr<MediaPlaylist> media_playlist =
-      media_playlist_factory_->Create(type, playlist_name, name, group_id);
+      media_playlist_factory_->Create(type, time_shift_buffer_depth_,
+                                      playlist_name, name, group_id);
   if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
@@ -288,7 +310,37 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
       MakePathRelative(segment_name, output_dir_);
 
   auto& media_playlist = stream_iterator->second->media_playlist;
-  media_playlist->AddSegment(prefix_ + relative_segment_name, duration, size);
+  media_playlist->AddSegment(prefix_ + relative_segment_name, start_time,
+                             duration, size);
+
+  // Update target duration.
+  uint32_t longest_segment_duration =
+      static_cast<uint32_t>(ceil(media_playlist->GetLongestSegmentDuration()));
+  bool target_duration_updated = false;
+  if (longest_segment_duration > target_duration_) {
+    target_duration_ = longest_segment_duration;
+    target_duration_updated = true;
+  }
+
+  // Update the playlists when there is new segments in live mode.
+  if (profile() == HlsProfile::kLiveProfile ||
+      profile() == HlsProfile::kEventProfile) {
+    if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_)) {
+      LOG(ERROR) << "Failed to write master playlist.";
+      return false;
+    }
+    // Update all playlists if target duration is updated.
+    if (target_duration_updated) {
+      for (auto& streams : stream_map_) {
+        MediaPlaylist* playlist = streams.second->media_playlist.get();
+        playlist->SetTargetDuration(target_duration_);
+        if (!WriteMediaPlaylist(output_dir_, playlist))
+          return false;
+      }
+    } else {
+      return WriteMediaPlaylist(output_dir_, media_playlist.get());
+    }
+  }
   return true;
 }
 
@@ -333,7 +385,17 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
 
 bool SimpleHlsNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
-  return master_playlist_->WriteAllPlaylists(prefix_, output_dir_);
+  if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_)) {
+    LOG(ERROR) << "Failed to write master playlist.";
+    return false;
+  }
+  for (auto& streams : stream_map_) {
+    MediaPlaylist* playlist = streams.second->media_playlist.get();
+    playlist->SetTargetDuration(target_duration_);
+    if (!WriteMediaPlaylist(output_dir_, playlist))
+      return false;
+  }
+  return true;
 }
 
 }  // namespace hls

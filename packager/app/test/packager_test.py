@@ -132,6 +132,8 @@ class PackagerAppTest(unittest.TestCase):
                 dash_if_iop=True,
                 output_media_info=False,
                 output_hls=False,
+                hls_playlist_type=None,
+                time_shift_buffer_depth=0.0,
                 generate_static_mpd=False,
                 use_fake_clock=True):
     flags = []
@@ -177,6 +179,12 @@ class PackagerAppTest(unittest.TestCase):
       flags.append('--output_media_info')
     elif output_hls:
       flags += ['--hls_master_playlist_output', self.hls_master_playlist_output]
+      if hls_playlist_type:
+        flags += ['--hls_playlist_type', hls_playlist_type]
+      if time_shift_buffer_depth != 0.0:
+        flags += [
+            '--time_shift_buffer_depth={0}'.format(time_shift_buffer_depth)
+        ]
     else:
       flags += ['--mpd_output', self.mpd_output]
 
@@ -426,6 +434,58 @@ class PackagerFunctionalTest(PackagerAppTest):
         os.path.join(self.tmp_dir, 'audio.m3u8'), 'bear-640x360-a-golden.m3u8')
     self._DiffGold(
         os.path.join(self.tmp_dir, 'video.m3u8'), 'bear-640x360-v-golden.m3u8')
+
+  def testPackageAvcTsLivePlaylist(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            output_hls=True,
+            hls_playlist_type='LIVE',
+            time_shift_buffer_depth=0.5))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-a-live-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-live-golden.m3u8')
+
+  def testPackageAvcTsEventPlaylist(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            output_hls=True,
+            hls_playlist_type='EVENT',
+            time_shift_buffer_depth=0.5))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-a-event-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-event-golden.m3u8')
 
   def testPackageVp8Webm(self):
     self.assertPackageSuccess(

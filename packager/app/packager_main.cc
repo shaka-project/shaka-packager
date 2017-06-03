@@ -259,8 +259,19 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.default_language = FLAGS_default_language;
 
   HlsParams& hls_params = packaging_params.hls_params;
+  if (FLAGS_hls_playlist_type == "VOD") {
+    hls_params.playlist_type = HlsPlaylistType::kVod;
+  } else if (FLAGS_hls_playlist_type == "LIVE") {
+    hls_params.playlist_type = HlsPlaylistType::kLive;
+  } else if (FLAGS_hls_playlist_type == "EVENT") {
+    hls_params.playlist_type = HlsPlaylistType::kEvent;
+  } else {
+    LOG(ERROR) << "Unrecognized playlist type " << FLAGS_hls_playlist_type;
+    return base::nullopt;
+  }
   hls_params.master_playlist_output = FLAGS_hls_master_playlist_output;
   hls_params.base_url = FLAGS_hls_base_url;
+  hls_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = FLAGS_dump_stream_info;

@@ -24,8 +24,7 @@ namespace {
 
 class MockHlsNotifier : public hls::HlsNotifier {
  public:
-  MockHlsNotifier()
-      : HlsNotifier(hls::HlsNotifier::HlsProfile::kOnDemandProfile) {}
+  MockHlsNotifier() : HlsNotifier(hls::HlsProfile::kOnDemandProfile) {}
 
   MOCK_METHOD0(Init, bool());
   MOCK_METHOD5(NotifyNewStream,

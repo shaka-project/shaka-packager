@@ -529,8 +529,7 @@ class Representation {
                     uint64_t duration,
                     uint64_t size) const;
 
-  // Remove elements from |segment_infos_| if
-  // mpd_options_.time_shift_buffer_depth is specified. Increments
+  // Remove elements from |segment_infos_| for dynamic live profile. Increments
   // |start_number_| by the number of segments removed.
   void SlideWindow();
 

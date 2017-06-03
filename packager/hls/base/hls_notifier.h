@@ -15,14 +15,16 @@
 namespace shaka {
 namespace hls {
 
+// TODO(kqyang): Combine with MediaPlaylistType in media_playlist.h.
+enum class HlsProfile {
+  kOnDemandProfile,
+  kEventProfile,
+  kLiveProfile,
+};
+
 // TODO(rkuroiwa): Consider merging this with MpdNotifier.
 class HlsNotifier {
  public:
-  enum class HlsProfile {
-    kOnDemandProfile,
-    kLiveProfile,
-  };
-
   explicit HlsNotifier(HlsProfile profile) : profile_(profile) {}
   virtual ~HlsNotifier() {}
 
@@ -76,7 +78,7 @@ class HlsNotifier {
   /// @return true on success, false otherwise.
   virtual bool Flush() = 0;
 
- protected:
+  /// @return the profile.
   HlsProfile profile() const { return profile_; }
 
  private:

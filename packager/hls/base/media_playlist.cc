@@ -14,6 +14,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/media/file/file.h"
+#include "packager/media/file/file_closer.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -32,10 +33,11 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
-std::string CreatePlaylistHeader(
-    const std::string& init_segment_name,
-    uint32_t target_duration,
-    MediaPlaylist::MediaPlaylistType type) {
+std::string CreatePlaylistHeader(const std::string& init_segment_name,
+                                 uint32_t target_duration,
+                                 MediaPlaylist::MediaPlaylistType type,
+                                 int sequence_number,
+                                 int discontinuity_sequence_number) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
   if (!version.empty()) {
@@ -52,8 +54,25 @@ std::string CreatePlaylistHeader(
       "#EXT-X-TARGETDURATION:%d\n",
       version_line.c_str(), target_duration);
 
-  if (type == MediaPlaylist::MediaPlaylistType::kVod) {
-    header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
+  switch (type) {
+    case MediaPlaylist::MediaPlaylistType::kVod:
+      header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
+      break;
+    case MediaPlaylist::MediaPlaylistType::kEvent:
+      header += "#EXT-X-PLAYLIST-TYPE:EVENT\n";
+      break;
+    case MediaPlaylist::MediaPlaylistType::kLive:
+      if (sequence_number > 0) {
+        base::StringAppendF(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
+                            sequence_number);
+      }
+      if (discontinuity_sequence_number > 0) {
+        base::StringAppendF(&header, "#EXT-X-DISCONTINUITY-SEQUENCE:%d\n",
+                            discontinuity_sequence_number);
+      }
+      break;
+    default:
+      NOTREACHED() << "Unexpected MediaPlaylistType " << static_cast<int>(type);
   }
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
@@ -67,22 +86,29 @@ std::string CreatePlaylistHeader(
 
 class SegmentInfoEntry : public HlsEntry {
  public:
-  SegmentInfoEntry(const std::string& file_name, double duration);
+  SegmentInfoEntry(const std::string& file_name,
+                   double start_time,
+                   double duration);
   ~SegmentInfoEntry() override;
 
   std::string ToString() override;
+  double start_time() const { return start_time_; }
+  double duration() const { return duration_; }
 
  private:
   const std::string file_name_;
+  const double start_time_;
   const double duration_;
 
   DISALLOW_COPY_AND_ASSIGN(SegmentInfoEntry);
 };
 
 SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
+                                   double start_time,
                                    double duration)
     : HlsEntry(HlsEntry::EntryType::kExtInf),
       file_name_(file_name),
+      start_time_(start_time),
       duration_(duration) {}
 SegmentInfoEntry::~SegmentInfoEntry() {}
 
@@ -160,19 +186,34 @@ std::string EncryptionInfoEntry::ToString() {
   return ext_key + ",KEYFORMAT=\"" + key_format_ + "\"\n";
 }
 
+double LatestSegmentStartTime(
+    const std::list<std::unique_ptr<HlsEntry>>& entries) {
+  DCHECK(!entries.empty());
+  for (auto iter = entries.rbegin(); iter != entries.rend(); ++iter) {
+    if (iter->get()->type() == HlsEntry::EntryType::kExtInf) {
+      const SegmentInfoEntry* segment_info =
+          reinterpret_cast<SegmentInfoEntry*>(iter->get());
+      return segment_info->start_time();
+    }
+  }
+  return 0.0;
+}
+
 }  // namespace
 
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
 HlsEntry::~HlsEntry() {}
 
 MediaPlaylist::MediaPlaylist(MediaPlaylistType type,
+                             double time_shift_buffer_depth,
                              const std::string& file_name,
                              const std::string& name,
                              const std::string& group_id)
-    : file_name_(file_name), name_(name), group_id_(group_id), type_(type) {
-  LOG_IF(WARNING, type != MediaPlaylistType::kVod)
-      << "Non VOD Media Playlist is not supported.";
-}
+    : type_(type),
+      time_shift_buffer_depth_(time_shift_buffer_depth),
+      file_name_(file_name),
+      name_(name),
+      group_id_(group_id) {}
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -209,16 +250,19 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 }
 
 void MediaPlaylist::AddSegment(const std::string& file_name,
+                               uint64_t start_time,
                                uint64_t duration,
                                uint64_t size) {
   if (time_scale_ == 0) {
     LOG(WARNING) << "Timescale is not set and the duration for " << duration
                  << " cannot be calculated. The output will be wrong.";
 
-    entries_.emplace_back(new SegmentInfoEntry(file_name, 0.0));
+    entries_.emplace_back(new SegmentInfoEntry(file_name, 0.0, 0.0));
     return;
   }
 
+  const double start_time_seconds =
+      static_cast<double>(start_time) / time_scale_;
   const double segment_duration_seconds =
       static_cast<double>(duration) / time_scale_;
   if (segment_duration_seconds > longest_segment_duration_)
@@ -227,8 +271,9 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   const int kBitsInByte = 8;
   const uint64_t bitrate = kBitsInByte * size / segment_duration_seconds;
   max_bitrate_ = std::max(max_bitrate_, bitrate);
-  entries_.emplace_back(
-      new SegmentInfoEntry(file_name, segment_duration_seconds));
+  entries_.emplace_back(new SegmentInfoEntry(file_name, start_time_seconds,
+                                             segment_duration_seconds));
+  SlideWindow();
 }
 
 // TODO(rkuroiwa): This works for single key format but won't work for multiple
@@ -298,13 +343,14 @@ void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
       method, url, key_id, iv, key_format, key_format_versions));
 }
 
-bool MediaPlaylist::WriteToFile(media::File* file) {
+bool MediaPlaylist::WriteToFile(const std::string& file_path) {
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
-  std::string header = CreatePlaylistHeader(media_info_.init_segment_name(),
-                                            target_duration_, type_);
+  std::string header = CreatePlaylistHeader(
+      media_info_.init_segment_name(), target_duration_, type_,
+      sequence_number_, discontinuity_sequence_number_);
 
   std::string body;
   if (!entries_.empty()) {
@@ -327,6 +373,12 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
     content += "#EXT-X-ENDLIST\n";
   }
 
+  std::unique_ptr<media::File, media::FileCloser> file(
+      media::File::Open(file_path.c_str(), "w"));
+  if (!file) {
+    LOG(ERROR) << "Failed to open file " << file_path;
+    return false;
+  }
   int64_t bytes_written = file->Write(content.data(), content.size());
   if (bytes_written < 0) {
     LOG(ERROR) << "Error while writing playlist to file.";
@@ -355,15 +407,15 @@ double MediaPlaylist::GetLongestSegmentDuration() const {
   return longest_segment_duration_;
 }
 
-bool MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
+void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
   if (target_duration_set_) {
-    LOG(WARNING) << "Cannot set target duration to " << target_duration
-                 << ". Target duration already set to " << target_duration_;
-    return false;
+    if (target_duration_ == target_duration)
+      return;
+    VLOG(1) << "Updating target duration from " << target_duration << " to "
+            << target_duration_;
   }
   target_duration_ = target_duration;
   target_duration_set_ = true;
-  return true;
 }
 
 // Duplicated from MpdUtils because:
@@ -390,6 +442,68 @@ bool MediaPlaylist::GetResolution(uint32_t* width, uint32_t* height) const {
     return true;
   }
   return false;
+}
+
+void MediaPlaylist::SlideWindow() {
+  DCHECK(!entries_.empty());
+  if (time_shift_buffer_depth_ <= 0.0 || type_ != MediaPlaylistType::kLive)
+    return;
+  DCHECK_GT(time_scale_, 0u);
+
+  // The start time of the latest segment is considered the current_play_time,
+  // and this should guarantee that the latest segment will stay in the list.
+  const double current_play_time = LatestSegmentStartTime(entries_);
+  if (current_play_time <= time_shift_buffer_depth_)
+    return;
+
+  const double timeshift_limit = current_play_time - time_shift_buffer_depth_;
+
+  // Temporary list to hold the EXT-X-KEYs. For example, this allows us to
+  // remove <3> without removing <1> and <2> below (<1> and <2> are moved to the
+  // temporary list and added back later).
+  //    #EXT-X-KEY   <1>
+  //    #EXT-X-KEY   <2>
+  //    #EXTINF      <3>
+  //    #EXTINF      <4>
+  std::list<std::unique_ptr<HlsEntry>> ext_x_keys;
+  // Consecutive key entries are either fully removed or not removed at all.
+  // Keep track of entry types so we know if it is consecutive key entries.
+  HlsEntry::EntryType prev_entry_type = HlsEntry::EntryType::kExtInf;
+
+  std::list<std::unique_ptr<HlsEntry>>::iterator last = entries_.begin();
+  size_t num_segments_removed = 0;
+  for (; last != entries_.end(); ++last) {
+    HlsEntry::EntryType entry_type = last->get()->type();
+    if (entry_type == HlsEntry::EntryType::kExtKey) {
+      if (prev_entry_type != HlsEntry::EntryType::kExtKey) {
+        if (!ext_x_keys.empty()) {
+          // Increase discontinuity sequence every time key changes. Note that
+          // it is inconsistent to how we insert EXT-X-DISCONTINUITY tag
+          // currently as we only insert the tag for the first EXT-X-KEY.
+          // TODO(kqyang): Find out if it is necessary to insert the
+          // EXT-X-DISCONTINUITY tag when key changes.
+          ++discontinuity_sequence_number_;
+          ext_x_keys.clear();
+        }
+      }
+      ext_x_keys.push_back(std::move(*last));
+    } else {
+      DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
+      const SegmentInfoEntry* segment_info =
+          reinterpret_cast<SegmentInfoEntry*>(last->get());
+      const double last_segment_end_time =
+          segment_info->start_time() + segment_info->duration();
+      if (timeshift_limit < last_segment_end_time)
+        break;
+      ++num_segments_removed;
+    }
+    prev_entry_type = entry_type;
+  }
+  entries_.erase(entries_.begin(), last);
+  // Add key entries back.
+  entries_.insert(entries_.begin(), std::make_move_iterator(ext_x_keys.begin()),
+                  std::make_move_iterator(ext_x_keys.end()));
+  sequence_number_ += num_segments_removed;
 }
 
 }  // namespace hls

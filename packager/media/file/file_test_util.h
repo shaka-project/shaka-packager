@@ -17,18 +17,25 @@
 namespace shaka {
 namespace media {
 
-#define ASSERT_FILE_EQ(file_name, array)                                \
-  do {                                                                  \
-    std::string temp_data;                                              \
-    ASSERT_TRUE(File::ReadFileToString((file_name), &temp_data));       \
-    const char* array_ptr = reinterpret_cast<const char*>(array);       \
-    ASSERT_EQ(std::string(array_ptr, arraysize(array)), temp_data);     \
+#define ASSERT_FILE_EQ(file_name, array)                                 \
+  do {                                                                   \
+    std::string temp_data;                                               \
+    ASSERT_TRUE(media::File::ReadFileToString((file_name), &temp_data)); \
+    const char* array_ptr = reinterpret_cast<const char*>(array);        \
+    ASSERT_EQ(std::string(array_ptr, arraysize(array)), temp_data);      \
+  } while (false)
+
+#define ASSERT_FILE_STREQ(file_name, str)                                \
+  do {                                                                   \
+    std::string temp_data;                                               \
+    ASSERT_TRUE(media::File::ReadFileToString((file_name), &temp_data)); \
+    ASSERT_EQ(str, temp_data);                                           \
   } while (false)
 
 #define ASSERT_FILE_ENDS_WITH(file_name, array)                             \
   do {                                                                      \
     std::string temp_data;                                                  \
-    ASSERT_TRUE(File::ReadFileToString((file_name), &temp_data));           \
+    ASSERT_TRUE(media::File::ReadFileToString((file_name), &temp_data));    \
     EXPECT_THAT(temp_data,                                                  \
                 ::testing::EndsWith(std::string(                            \
                     reinterpret_cast<const char*>(array), sizeof(array)))); \

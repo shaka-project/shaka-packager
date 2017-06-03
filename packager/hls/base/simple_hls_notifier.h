@@ -29,6 +29,7 @@ class MediaPlaylistFactory {
   virtual ~MediaPlaylistFactory();
   virtual std::unique_ptr<MediaPlaylist> Create(
       MediaPlaylist::MediaPlaylistType type,
+      double time_shift_buffer_depth,
       const std::string& file_name,
       const std::string& name,
       const std::string& group_id);
@@ -40,12 +41,15 @@ class SimpleHlsNotifier : public HlsNotifier {
   /// @a prefix is used as hte prefix for all the URIs for Media Playlist. This
   /// includes the segment URIs in the Media Playlists.
   /// @param profile is the profile of the playlists.
+  /// @param time_shift_buffer_depth determines the duration of the time
+  ///        shifting buffer, only for live HLS.
   /// @param prefix is the used as the prefix for MediaPlaylist URIs. May be
   ///        empty for relative URI from the playlist.
   /// @param output_dir is the output directory of the playlists. May be empty
   ///        to write to current directory.
   /// @param master_playlist_name is the name of the master playlist.
   SimpleHlsNotifier(HlsProfile profile,
+                    double time_shift_buffer_depth,
                     const std::string& prefix,
                     const std::string& output_dir,
                     const std::string& master_playlist_name);
@@ -81,8 +85,10 @@ class SimpleHlsNotifier : public HlsNotifier {
     MediaPlaylist::EncryptionMethod encryption_method;
   };
 
+  const double time_shift_buffer_depth_ = 0;
   const std::string prefix_;
   const std::string output_dir_;
+  uint32_t target_duration_ = 0;
 
   std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;
   std::unique_ptr<MasterPlaylist> master_playlist_;

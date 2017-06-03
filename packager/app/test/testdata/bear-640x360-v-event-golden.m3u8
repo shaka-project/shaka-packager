@@ -1,0 +1,11 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:EVENT
+#EXTINF:1.001,
+output_video-1.ts
+#EXTINF:1.001,
+output_video-2.ts
+#EXTINF:0.734,
+output_video-3.ts

@@ -31,18 +31,6 @@ class MasterPlaylist {
   /// @return true on success, false otherwise.
   virtual void AddMediaPlaylist(MediaPlaylist* media_playlist);
 
-  /// Write out Master Playlist and all the added MediaPlaylists to
-  /// base_url + <name of playlist>.
-  /// This assumes that @a base_url is used as the prefix for Media Playlists.
-  /// @param base_url is the prefix for the playlist files. This should be in
-  ///        URI form such that prefix_+file_name is a valid HLS URI.
-  /// @param output_dir is where the playlist files are written. This is not
-  ///        necessarily the same as base_url. It must be in a form that File
-  ///        interface can open.
-  /// @return true on success, false otherwise.
-  virtual bool WriteAllPlaylists(const std::string& base_url,
-                                 const std::string& output_dir);
-
   /// Writes Master Playlist to output_dir + <name of playlist>.
   /// This assumes that @a base_url is used as the prefix for Media Playlists.
   /// @param base_url is the prefix for the Media Playlist files. This should be
@@ -50,18 +38,18 @@ class MasterPlaylist {
   /// @param output_dir is where the playlist files are written. This is not
   ///        necessarily the same as base_url. It must be in a form that File
   ///        interface can open.
-  /// @return true on success, false otherwise.
+  /// @return true if the playlist is updated successfully or there is no
+  ///         difference since the last write, false otherwise.
   virtual bool WriteMasterPlaylist(const std::string& base_url,
                                    const std::string& output_dir);
 
  private:
+  std::string written_playlist_;
   const std::string file_name_;
   std::list<MediaPlaylist*> all_playlists_;
   std::list<const MediaPlaylist*> video_playlists_;
   // The key is the audio group name.
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups_;
-
-  bool has_set_playlist_target_duration_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MasterPlaylist);
 };

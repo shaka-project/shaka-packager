@@ -8,9 +8,6 @@
 
 #include <inttypes.h>
 
-#include <cmath>
-#include <set>
-
 #include "packager/base/files/file_path.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
@@ -73,65 +70,8 @@ void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
   all_playlists_.push_back(media_playlist);
 }
 
-bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
-                                       const std::string& output_dir) {
-  if (!WriteMasterPlaylist(base_url, output_dir)) {
-    LOG(ERROR) << "Failed to write master playlist.";
-    return false;
-  }
-
-  double longest_segment_duration = 0.0;
-  if (!has_set_playlist_target_duration_) {
-    for (const MediaPlaylist* playlist : all_playlists_) {
-      const double playlist_longest_segment =
-          playlist->GetLongestSegmentDuration();
-      if (longest_segment_duration < playlist_longest_segment)
-        longest_segment_duration = playlist_longest_segment;
-    }
-  }
-
-  base::FilePath output_path = base::FilePath::FromUTF8Unsafe(output_dir);
-  for (MediaPlaylist* playlist : all_playlists_) {
-    std::string file_path =
-        output_path
-            .Append(base::FilePath::FromUTF8Unsafe(playlist->file_name()))
-            .AsUTF8Unsafe();
-    if (!has_set_playlist_target_duration_) {
-      const bool set_target_duration = playlist->SetTargetDuration(
-          static_cast<uint32_t>(ceil(longest_segment_duration)));
-      LOG_IF(WARNING, !set_target_duration)
-          << "Target duration was already set for " << file_path;
-    }
-
-    std::unique_ptr<media::File, media::FileCloser> file(
-        media::File::Open(file_path.c_str(), "w"));
-    if (!file) {
-      LOG(ERROR) << "Failed to open file " << file_path;
-      return false;
-    }
-    if (!playlist->WriteToFile(file.get())) {
-      LOG(ERROR) << "Failed to write playlist " << file_path;
-      return false;
-    }
-  }
-
-  has_set_playlist_target_duration_ = true;
-  return true;
-}
-
 bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
                                          const std::string& output_dir) {
-  std::string file_path =
-      base::FilePath::FromUTF8Unsafe(output_dir)
-          .Append(base::FilePath::FromUTF8Unsafe(file_name_))
-          .AsUTF8Unsafe();
-  std::unique_ptr<media::File, media::FileCloser> file(
-      media::File::Open(file_path.c_str(), "w"));
-  if (!file) {
-    LOG(ERROR) << "Failed to open file " << file_path;
-    return false;
-  }
-
   // TODO(rkuroiwa): Handle audio only.
   std::string audio_output;
   std::string video_output;
@@ -213,6 +153,22 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
 
   std::string content =
       "#EXTM3U\n" + version_line + audio_output + video_output;
+
+  // Skip if the playlist is already written.
+  if (content == written_playlist_)
+    return true;
+
+  std::string file_path =
+      base::FilePath::FromUTF8Unsafe(output_dir)
+          .Append(base::FilePath::FromUTF8Unsafe(file_name_))
+          .AsUTF8Unsafe();
+  std::unique_ptr<media::File, media::FileCloser> file(
+      media::File::Open(file_path.c_str(), "w"));
+  if (!file) {
+    LOG(ERROR) << "Failed to open file " << file_path;
+    return false;
+  }
+
   int64_t bytes_written = file->Write(content.data(), content.size());
   if (bytes_written < 0) {
     LOG(ERROR) << "Error while writing master playlist " << file_path;
@@ -223,6 +179,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
                << content.size() << " " << file_path;
     return false;
   }
+  written_playlist_ = content;
 
   return true;
 }
