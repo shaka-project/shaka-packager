@@ -228,9 +228,6 @@ bool HasRequiredVideoFields(const MediaInfo_VideoInfo& video_info) {
   LOG_IF(WARNING, !video_info.has_time_scale())
       << "Video info does not contain timescale required for "
          "calculating framerate. @frameRate is required for DASH IOP.";
-  LOG_IF(WARNING, !video_info.has_frame_duration())
-      << "Video info does not contain frame duration required "
-         "for calculating framerate. @frameRate is required for DASH IOP.";
   LOG_IF(WARNING, !video_info.has_pixel_width())
       << "Video info does not contain pixel_width to calculate the sample "
          "aspect ratio required for DASH IOP.";
