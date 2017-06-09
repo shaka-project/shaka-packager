@@ -84,6 +84,8 @@
         'status.h',
         'stream_info.cc',
         'stream_info.h',
+        'text_sample.cc',
+        'text_sample.h',
         'text_stream_info.cc',
         'text_stream_info.h',
         'text_track.h',

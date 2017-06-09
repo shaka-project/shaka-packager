@@ -14,6 +14,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/base/text_sample.h"
 
 namespace shaka {
 namespace media {
@@ -23,6 +24,7 @@ enum class StreamDataType {
   kPeriodInfo,
   kStreamInfo,
   kMediaSample,
+  kTextSample,
   kMediaEvent,
   kSegmentInfo,
 };
@@ -49,6 +51,7 @@ struct StreamData {
   std::shared_ptr<PeriodInfo> period_info;
   std::shared_ptr<StreamInfo> stream_info;
   std::shared_ptr<MediaSample> media_sample;
+  std::shared_ptr<TextSample> text_sample;
   std::shared_ptr<MediaEvent> media_event;
   std::shared_ptr<SegmentInfo> segment_info;
 };
@@ -137,6 +140,17 @@ class MediaHandler {
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kMediaSample;
     stream_data->media_sample = std::move(media_sample);
+    return Dispatch(std::move(stream_data));
+  }
+
+  /// Dispatch the text sample to downsream handlers.
+  // DispatchTextSample should only be override for testing.
+  Status DispatchTextSample(size_t stream_index,
+                            std::shared_ptr<TextSample> text_sample) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kTextSample;
+    stream_data->text_sample = std::move(text_sample);
     return Dispatch(std::move(stream_data));
   }
 
