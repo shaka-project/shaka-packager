@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['textsample',['TextSample',['../db/d1f/classshaka_1_1media_1_1TextSample.html',1,'shaka::media']]],
   ['textsampleentry',['TextSampleEntry',['../d7/dc3/structshaka_1_1media_1_1mp4_1_1TextSampleEntry.html',1,'shaka::media::mp4']]],
   ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html',1,'shaka::media']]],
   ['texttrack',['TextTrack',['../d4/d0b/classshaka_1_1media_1_1TextTrack.html',1,'shaka::media']]],

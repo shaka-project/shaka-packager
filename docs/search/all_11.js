@@ -6,6 +6,7 @@ var searchData=
   ['temp_5fdir',['temp_dir',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a872d1150a71d9f0fb5db0ab81334d614',1,'shaka::media::MuxerOptions']]],
   ['tempfilepath',['TempFilePath',['../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62',1,'shaka']]],
   ['templatefilename',['TemplateFileName',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#afa2cdde90c04bf69301a9589faa7efd9',1,'shaka::media::SegmentTestBase']]],
+  ['textsample',['TextSample',['../db/d1f/classshaka_1_1media_1_1TextSample.html',1,'shaka::media']]],
   ['textsampleentry',['TextSampleEntry',['../d7/dc3/structshaka_1_1media_1_1mp4_1_1TextSampleEntry.html',1,'shaka::media::mp4']]],
   ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3e759066195689154ef2a8cf2825ea4b',1,'shaka::media::TextStreamInfo']]],
   ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html',1,'shaka::media']]],

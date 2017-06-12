@@ -15,6 +15,7 @@ var searchData=
   ['dispatchperiodinfo',['DispatchPeriodInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ac5c28b9b8e5aa8471186b35f005986a1',1,'shaka::media::MediaHandler']]],
   ['dispatchsegmentinfo',['DispatchSegmentInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a505c70d5e911e45ebcabcce09e2658f9',1,'shaka::media::MediaHandler']]],
   ['dispatchstreaminfo',['DispatchStreamInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a855263bdfc4c0e24d94277dc4a1b415f',1,'shaka::media::MediaHandler']]],
+  ['dispatchtextsample',['DispatchTextSample',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aa32bfd69f26d5f81a874d6442584691b',1,'shaka::media::MediaHandler']]],
   ['doubletostring',['DoubleToString',['../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31',1,'shaka']]],
   ['dts',['dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a88111c4190e74c24c10f0a694e723cb8',1,'shaka::media::mp2t::PesPacket']]],
   ['duration',['Duration',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a9527abde0a2131605d06fdfa2859dc47',1,'shaka::media::mp4::DecodingTimeIterator']]]
