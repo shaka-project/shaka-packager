@@ -237,13 +237,14 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
   return FetchKeysInternal(!kEnableKeyRotation, 0, widevine_classic);
 }
 
-Status WidevineKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
+Status WidevineKeySource::GetKey(const std::string& stream_label,
+                                 EncryptionKey* key) {
   DCHECK(key);
-  if (encryption_key_map_.find(track_type) == encryption_key_map_.end()) {
+  if (encryption_key_map_.find(stream_label) == encryption_key_map_.end()) {
     return Status(error::INTERNAL_ERROR,
-                  "Cannot find key of type " + TrackTypeToString(track_type));
+                  "Cannot find key for '" + stream_label + "'.");
   }
-  *key = *encryption_key_map_[track_type];
+  *key = *encryption_key_map_[stream_label];
   return Status::OK;
 }
 
@@ -261,7 +262,7 @@ Status WidevineKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                             TrackType track_type,
+                                             const std::string& stream_label,
                                              EncryptionKey* key) {
   DCHECK(key_production_thread_.HasBeenStarted());
   // TODO(kqyang): This is not elegant. Consider refactoring later.
@@ -279,7 +280,7 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
       key_production_started_ = true;
     }
   }
-  return GetKeyInternal(crypto_period_index, track_type, key);
+  return GetKeyInternal(crypto_period_index, stream_label, key);
 }
 
 void WidevineKeySource::set_signer(std::unique_ptr<RequestSigner> signer) {
@@ -292,12 +293,10 @@ void WidevineKeySource::set_key_fetcher(
 }
 
 Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
-                                         TrackType track_type,
+                                         const std::string& stream_label,
                                          EncryptionKey* key) {
   DCHECK(key_pool_);
   DCHECK(key);
-  DCHECK_LE(track_type, NUM_VALID_TRACK_TYPES);
-  DCHECK_NE(track_type, TRACK_TYPE_UNKNOWN);
 
   std::shared_ptr<EncryptionKeyMap> encryption_key_map;
   Status status = key_pool_->Peek(crypto_period_index, &encryption_key_map,
@@ -310,11 +309,11 @@ Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
     return status;
   }
 
-  if (encryption_key_map->find(track_type) == encryption_key_map->end()) {
+  if (encryption_key_map->find(stream_label) == encryption_key_map->end()) {
     return Status(error::INTERNAL_ERROR,
-                  "Cannot find key of type " + TrackTypeToString(track_type));
+                  "Cannot find key for '" + stream_label + "'.");
   }
-  *key = *encryption_key_map->at(track_type);
+  *key = *encryption_key_map->at(stream_label);
   return Status::OK;
 }
 
@@ -545,11 +544,9 @@ bool WidevineKeySource::ExtractEncryptionKey(
       }
     }
 
-    std::string track_type_str;
-    RCHECK(track_dict->GetString("type", &track_type_str));
-    TrackType track_type = GetTrackTypeFromString(track_type_str);
-    DCHECK_NE(TRACK_TYPE_UNKNOWN, track_type);
-    RCHECK(encryption_key_map.find(track_type) == encryption_key_map.end());
+    std::string stream_label;
+    RCHECK(track_dict->GetString("type", &stream_label));
+    RCHECK(encryption_key_map.find(stream_label) == encryption_key_map.end());
 
     std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
 
@@ -573,7 +570,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
       encryption_key->key_system_info.push_back(info);
     }
-    encryption_key_map[track_type] = std::move(encryption_key);
+    encryption_key_map[stream_label] = std::move(encryption_key);
   }
 
   // If the flag exists, create a common system ID PSSH box that contains the

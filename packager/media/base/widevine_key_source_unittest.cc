@@ -197,17 +197,14 @@ class WidevineKeySourceTest : public Test {
 
   void VerifyKeys(bool classic) {
     EncryptionKey encryption_key;
-    const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
-    for (size_t i = 0; i < arraysize(kTrackTypes); ++i) {
-      ASSERT_OK(widevine_key_source_->GetKey(
-          KeySource::GetTrackTypeFromString(kTrackTypes[i]),
-          &encryption_key));
-      EXPECT_EQ(GetMockKey(kTrackTypes[i]), ToString(encryption_key.key));
+    const std::string kStreamLabels[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
+    for (const std::string& stream_label : kStreamLabels) {
+      ASSERT_OK(widevine_key_source_->GetKey(stream_label, &encryption_key));
+      EXPECT_EQ(GetMockKey(stream_label), ToString(encryption_key.key));
       if (!classic) {
         ASSERT_EQ(add_common_pssh_ ? 2u : 1u,
                   encryption_key.key_system_info.size());
-        EXPECT_EQ(GetMockKeyId(kTrackTypes[i]),
-                  ToString(encryption_key.key_id));
+        EXPECT_EQ(GetMockKeyId(stream_label), ToString(encryption_key.key_id));
         EXPECT_EQ(GetMockPsshData(),
                   ToString(encryption_key.key_system_info[0].pssh_data()));
 
@@ -220,10 +217,10 @@ class WidevineKeySourceTest : public Test {
 
           const std::vector<std::vector<uint8_t>>& key_ids =
               encryption_key.key_system_info[1].key_ids();
-          ASSERT_EQ(arraysize(kTrackTypes), key_ids.size());
-          for (size_t j = 0; j < arraysize(kTrackTypes); ++j) {
+          ASSERT_EQ(arraysize(kStreamLabels), key_ids.size());
+          for (const std::string& stream_label : kStreamLabels) {
             // Because they are stored in a std::set, the order may change.
-            const std::string key_id_str = GetMockKeyId(kTrackTypes[j]);
+            const std::string key_id_str = GetMockKeyId(stream_label);
             const std::vector<uint8_t> key_id(key_id_str.begin(),
                                               key_id_str.end());
             EXPECT_THAT(key_ids, testing::Contains(key_id));
@@ -242,21 +239,6 @@ class WidevineKeySourceTest : public Test {
  private:
   DISALLOW_COPY_AND_ASSIGN(WidevineKeySourceTest);
 };
-
-TEST_F(WidevineKeySourceTest, GetTrackTypeFromString) {
-  EXPECT_EQ(KeySource::TRACK_TYPE_SD,
-            KeySource::GetTrackTypeFromString("SD"));
-  EXPECT_EQ(KeySource::TRACK_TYPE_HD,
-            KeySource::GetTrackTypeFromString("HD"));
-  EXPECT_EQ(KeySource::TRACK_TYPE_UHD1,
-            KeySource::GetTrackTypeFromString("UHD1"));
-  EXPECT_EQ(KeySource::TRACK_TYPE_UHD2,
-            KeySource::GetTrackTypeFromString("UHD2"));
-  EXPECT_EQ(KeySource::TRACK_TYPE_AUDIO,
-            KeySource::GetTrackTypeFromString("AUDIO"));
-  EXPECT_EQ(KeySource::TRACK_TYPE_UNKNOWN,
-            KeySource::GetTrackTypeFromString("FOO"));
-}
 
 TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
@@ -531,23 +513,19 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
 
   EncryptionKey encryption_key;
+  const std::string kStreamLabels[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
   for (size_t i = 0; i < arraysize(kCryptoPeriodIndexes); ++i) {
-    const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
-    for (size_t j = 0; j < 5; ++j) {
+    for (const std::string& stream_label : kStreamLabels) {
       ASSERT_OK(widevine_key_source_->GetCryptoPeriodKey(
-          kCryptoPeriodIndexes[i],
-          KeySource::GetTrackTypeFromString(kTrackTypes[j]),
-          &encryption_key));
-      EXPECT_EQ(GetMockKey(kTrackTypes[j], kCryptoPeriodIndexes[i]),
+          kCryptoPeriodIndexes[i], stream_label, &encryption_key));
+      EXPECT_EQ(GetMockKey(stream_label, kCryptoPeriodIndexes[i]),
                 ToString(encryption_key.key));
     }
   }
 
   // The old crypto period indexes should have been garbage collected.
   Status status = widevine_key_source_->GetCryptoPeriodKey(
-      kFirstCryptoPeriodIndex,
-      KeySource::TRACK_TYPE_SD,
-      &encryption_key);
+      kFirstCryptoPeriodIndex, kStreamLabels[0], &encryption_key);
   EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 

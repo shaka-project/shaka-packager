@@ -44,17 +44,6 @@ struct EncryptionKey {
 /// KeySource is responsible for encryption key acquisition.
 class KeySource {
  public:
-  enum TrackType {
-    TRACK_TYPE_UNKNOWN = 0,
-    TRACK_TYPE_SD = 1,
-    TRACK_TYPE_HD = 2,
-    TRACK_TYPE_UHD1 = 3,
-    TRACK_TYPE_UHD2 = 4,
-    TRACK_TYPE_AUDIO = 5,
-    TRACK_TYPE_UNSPECIFIED = 6,
-    NUM_VALID_TRACK_TYPES = 6
-  };
-
   KeySource();
   virtual ~KeySource();
 
@@ -65,12 +54,13 @@ class KeySource {
   virtual Status FetchKeys(EmeInitDataType init_data_type,
                            const std::vector<uint8_t>& init_data) = 0;
 
-  /// Get encryption key of the specified track type.
-  /// @param track_type is the type of track for which retrieving the key.
+  /// Get encryption key of the specified stream label.
+  /// @param stream_label is the label of stream for which retrieving the key.
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, an error status otherwise.
-  virtual Status GetKey(TrackType track_type, EncryptionKey* key) = 0;
+  virtual Status GetKey(const std::string& stream_label,
+                        EncryptionKey* key) = 0;
 
   /// Get the encryption key specified by the CENC key ID.
   /// @param key_id is the unique identifier for the key being retreived.
@@ -83,19 +73,13 @@ class KeySource {
   /// Get encryption key of the specified track type at the specified index.
   /// @param crypto_period_index is the sequence number of the key rotation
   ///        period for which the key is being retrieved.
-  /// @param track_type is the type of track for which retrieving the key.
+  /// @param stream_label is the label of stream for which retrieving the key.
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, an error status otherwise.
   virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                    TrackType track_type,
+                                    const std::string& stream_label,
                                     EncryptionKey* key) = 0;
-
-  /// Convert string representation of track type to enum representation.
-  static TrackType GetTrackTypeFromString(const std::string& track_type_string);
-
-  /// Convert TrackType to string.
-  static std::string TrackTypeToString(TrackType track_type);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(KeySource);

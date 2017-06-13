@@ -78,7 +78,7 @@ class EncryptionHandler : public MediaHandler {
 
   const EncryptionOptions encryption_options_;
   KeySource* key_source_ = nullptr;
-  KeySource::TrackType track_type_ = KeySource::TRACK_TYPE_UNKNOWN;
+  std::string stream_label_;
   // Current encryption config and encryptor.
   std::shared_ptr<EncryptionConfig> encryption_config_;
   std::unique_ptr<AesCryptor> encryptor_;

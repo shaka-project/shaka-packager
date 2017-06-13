@@ -56,18 +56,7 @@ uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
   return video_stream_info.nalu_length_size();
 }
 
-// TODO(kqyang): Update KeySource to accept string base stream label.
-KeySource::TrackType ToTrackType(const std::string& track_type) {
-  if (track_type == "SD")
-    return KeySource::TRACK_TYPE_SD;
-  if (track_type == "HD")
-    return KeySource::TRACK_TYPE_HD;
-  if (track_type == "AUDIO")
-    return KeySource::TRACK_TYPE_AUDIO;
-  return KeySource::TRACK_TYPE_SD;
-}
-
-KeySource::TrackType GetTrackTypeForEncryption(
+std::string GetStreamLabelForEncryption(
     const StreamInfo& stream_info,
     const std::function<std::string(
         const EncryptionParams::EncryptedStreamAttributes& stream_attributes)>&
@@ -84,7 +73,7 @@ KeySource::TrackType GetTrackTypeForEncryption(
     stream_attributes.oneof.video.width = video_stream_info.width();
     stream_attributes.oneof.video.height = video_stream_info.height();
   }
-  return ToTrackType(stream_label_func(stream_attributes));
+  return stream_label_func(stream_attributes);
 }
 }  // namespace
 
@@ -151,7 +140,7 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
       stream_info->time_scale();
   codec_ = stream_info->codec();
   nalu_length_size_ = GetNaluLengthSize(*stream_info);
-  track_type_ = GetTrackTypeForEncryption(
+  stream_label_ = GetStreamLabelForEncryption(
       *stream_info, encryption_options_.stream_label_func);
   switch (codec_) {
     case kCodecVP9:
@@ -195,7 +184,7 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
     // convenience.
     encryption_key.key = encryption_key.key_id;
   } else {
-    status = key_source_->GetKey(track_type_, &encryption_key);
+    status = key_source_->GetKey(stream_label_, &encryption_key);
     if (!status.ok())
       return status;
   }
@@ -228,7 +217,7 @@ Status EncryptionHandler::ProcessMediaSample(MediaSample* sample) {
     if (current_crypto_period_index != prev_crypto_period_index_) {
       EncryptionKey encryption_key;
       Status status = key_source_->GetCryptoPeriodKey(
-          current_crypto_period_index, track_type_, &encryption_key);
+          current_crypto_period_index, stream_label_, &encryption_key);
       if (!status.ok())
         return status;
       if (!CreateEncryptor(encryption_key))

@@ -316,9 +316,10 @@ Status PlayReadyKeySource::FetchKeys(EmeInitDataType init_data_type,
   return Status::OK;
 }
 
-Status PlayReadyKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
+Status PlayReadyKeySource::GetKey(const std::string& stream_label,
+                                  EncryptionKey* key) {
   // TODO(robinconnell): Currently all tracks are encrypted using the same
-  // key_id and key.  Add the ability to encrypt each track_type using a
+  // key_id and key.  Add the ability to encrypt each stream_label using a
   // different key_id and key.
   DCHECK(key);
   DCHECK(encryption_key_);
@@ -337,7 +338,7 @@ Status PlayReadyKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status PlayReadyKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                              TrackType track_type,
+                                              const std::string& stream_label,
                                               EncryptionKey* key) {
   // TODO(robinconnell): Implement key rotation.
   *key = *encryption_key_;

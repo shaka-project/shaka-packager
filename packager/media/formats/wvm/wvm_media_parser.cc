@@ -1076,8 +1076,8 @@ bool WvmMediaParser::GetAssetKey(const uint8_t* asset_id,
     return false;
   }
 
-  status = decryption_key_source_->GetKey(KeySource::TRACK_TYPE_HD,
-                                          encryption_key);
+  const char kHdStreamLabel[] = "HD";
+  status = decryption_key_source_->GetKey(kHdStreamLabel, encryption_key);
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = "
                << ntohlFromBuffer(asset_id) << ", error = " << status;

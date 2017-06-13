@@ -39,11 +39,11 @@ class WidevineKeySource : public KeySource {
   /// @{
   Status FetchKeys(EmeInitDataType init_data_type,
                    const std::vector<uint8_t>& init_data) override;
-  Status GetKey(TrackType track_type, EncryptionKey* key) override;
+  Status GetKey(const std::string& stream_label, EncryptionKey* key) override;
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                            TrackType track_type,
+                            const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}
 
@@ -68,13 +68,14 @@ class WidevineKeySource : public KeySource {
   void set_key_fetcher(std::unique_ptr<KeyFetcher> key_fetcher);
 
  private:
-  typedef std::map<TrackType, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
+  typedef std::map<std::string, std::unique_ptr<EncryptionKey>>
+      EncryptionKeyMap;
   typedef ProducerConsumerQueue<std::shared_ptr<EncryptionKeyMap>>
       EncryptionKeyQueue;
 
   // Internal routine for getting keys.
   Status GetKeyInternal(uint32_t crypto_period_index,
-                        TrackType track_type,
+                        const std::string& stream_label,
                         EncryptionKey* key);
 
   // The closure task to fetch keys repeatedly.

@@ -55,8 +55,8 @@ class MockKeySource : public FixedKeySource {
   MOCK_METHOD2(FetchKeys,
                Status(EmeInitDataType init_data_type,
                       const std::vector<uint8_t>& init_data));
-  MOCK_METHOD2(GetKey, Status(TrackType track_type,
-                              EncryptionKey* key));
+  MOCK_METHOD2(GetKey,
+               Status(const std::string& stream_label, EncryptionKey* key));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockKeySource);

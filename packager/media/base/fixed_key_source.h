@@ -32,11 +32,11 @@ class FixedKeySource : public KeySource {
   /// @{
   Status FetchKeys(EmeInitDataType init_data_type,
                    const std::vector<uint8_t>& init_data) override;
-  Status GetKey(TrackType track_type, EncryptionKey* key) override;
+  Status GetKey(const std::string& stream_label, EncryptionKey* key) override;
   Status GetKey(const std::vector<uint8_t>& key_id,
                 EncryptionKey* key) override;
   Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                            TrackType track_type,
+                            const std::string& stream_label,
                             EncryptionKey* key) override;
   /// @}
 

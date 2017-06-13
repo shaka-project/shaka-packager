@@ -56,10 +56,11 @@ const uint8_t kKeyRotationDefaultKeyId[] = {
 
 class MockKeySource : public FixedKeySource {
  public:
-  MOCK_METHOD2(GetKey, Status(TrackType track_type, EncryptionKey* key));
+  MOCK_METHOD2(GetKey,
+               Status(const std::string& stream_label, EncryptionKey* key));
   MOCK_METHOD3(GetCryptoPeriodKey,
                Status(uint32_t crypto_period_index,
-                      TrackType track_type,
+                      const std::string& stream_label,
                       EncryptionKey* key));
 };
 
@@ -657,7 +658,7 @@ TEST_F(EncryptionHandlerTrackTypeTest, AudioTrackType) {
         return kAudioStreamLabel;
       };
   SetUpEncryptionHandler(encryption_options);
-  EXPECT_CALL(mock_key_source_, GetKey(KeySource::TRACK_TYPE_AUDIO, _))
+  EXPECT_CALL(mock_key_source_, GetKey(kAudioStreamLabel, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
   ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex, kTimeScale)));
@@ -676,7 +677,7 @@ TEST_F(EncryptionHandlerTrackTypeTest, VideoTrackType) {
         return kSdVideoStreamLabel;
       };
   SetUpEncryptionHandler(encryption_options);
-  EXPECT_CALL(mock_key_source_, GetKey(KeySource::TRACK_TYPE_SD, _))
+  EXPECT_CALL(mock_key_source_, GetKey(kSdVideoStreamLabel, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
   std::unique_ptr<StreamData> stream_data =

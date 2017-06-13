@@ -21,7 +21,8 @@ Status FixedKeySource::FetchKeys(EmeInitDataType init_data_type,
   return Status::OK;
 }
 
-Status FixedKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
+Status FixedKeySource::GetKey(const std::string& stream_label,
+                              EncryptionKey* key) {
   DCHECK(key);
   DCHECK(encryption_key_);
   *key = *encryption_key_;
@@ -43,7 +44,7 @@ Status FixedKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                          TrackType track_type,
+                                          const std::string& stream_label,
                                           EncryptionKey* key) {
   // Create a copy of the key.
   *key = *encryption_key_;

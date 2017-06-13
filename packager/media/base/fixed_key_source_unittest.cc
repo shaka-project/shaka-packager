@@ -53,7 +53,7 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_Succes) {
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
-  ASSERT_OK(key_source->GetKey(KeySource::TRACK_TYPE_SD, &key));
+  ASSERT_OK(key_source->GetKey("SomeStreamLabel", &key));
 
   EXPECT_HEX_EQ(kKeyIdHex, key.key_id);
   EXPECT_HEX_EQ(kKeyHex, key.key);
@@ -70,7 +70,7 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_EmptyPssh) {
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
-  ASSERT_OK(key_source->GetKey(KeySource::TRACK_TYPE_SD, &key));
+  ASSERT_OK(key_source->GetKey("SomeStreamLabel", &key));
 
   EXPECT_HEX_EQ(kKeyIdHex, key.key_id);
   EXPECT_HEX_EQ(kKeyHex, key.key);
