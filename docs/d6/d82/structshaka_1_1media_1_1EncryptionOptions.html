@@ -109,22 +109,21 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="..
 FourCC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">protection_scheme</a> = FOURCC_cenc</td></tr>
 <tr class="memdesc:ac858b4c03e49e871e07e38fc35893088"><td class="mdescLeft">&#160;</td><td class="mdescRight">The protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. <br/></td></tr>
 <tr class="separator:ac858b4c03e49e871e07e38fc35893088"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2709a421f1d96bffc888fcd493c8e0a3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a2709a421f1d96bffc888fcd493c8e0a3">max_sd_pixels</a> = 0</td></tr>
-<tr class="separator:a2709a421f1d96bffc888fcd493c8e0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fc40dd8a1e5f6a62c948ee851650d9b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a0fc40dd8a1e5f6a62c948ee851650d9b">max_hd_pixels</a> = 0</td></tr>
-<tr class="separator:a0fc40dd8a1e5f6a62c948ee851650d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e6825654b6047b410955818bcfa1014"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a8e6825654b6047b410955818bcfa1014">max_uhd1_pixels</a> = 0</td></tr>
-<tr class="separator:a8e6825654b6047b410955818bcfa1014"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20acea0141ca7c8dd57d0129c53a6d13"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a20acea0141ca7c8dd57d0129c53a6d13">crypto_period_duration_in_seconds</a> = 0</td></tr>
 <tr class="separator:a20acea0141ca7c8dd57d0129c53a6d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f971f63a7525a777d5578d87ef0c99f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f971f63a7525a777d5578d87ef0c99f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>vp9_subsample_encryption</b> = true</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a2f971f63a7525a777d5578d87ef0c99f">vp9_subsample_encryption</a> = true</td></tr>
+<tr class="memdesc:a2f971f63a7525a777d5578d87ef0c99f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable subsample encryption for VP9. <br/></td></tr>
 <tr class="separator:a2f971f63a7525a777d5578d87ef0c99f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a586017f7bf6490e06a61c1f6eaf7970c"><td class="memItemLeft" align="right" valign="top">std::function&lt; std::string(const <br class="typebreak"/>
+EncryptionParams::EncryptedStreamAttributes <br class="typebreak"/>
+&amp;stream_attributes)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a586017f7bf6490e06a61c1f6eaf7970c">stream_label_func</a></td></tr>
+<tr class="separator:a586017f7bf6490e06a61c1f6eaf7970c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This structure defines encryption options. </p>
 
-<p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00023">23</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00024">24</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a20acea0141ca7c8dd57d0129c53a6d13"></a>
 <div class="memitem">
@@ -137,52 +136,22 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>vp9_subsample_encrypt
 </div><div class="memdoc">
 <p>Crypto period duration in seconds. A positive value means key rotation is enabled, the key source must support key rotation in this case. </p>
 
-<p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00043">43</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a0fc40dd8a1e5f6a62c948ee851650d9b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t shaka::media::EncryptionOptions::max_hd_pixels = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The threshold to determine whether a video track should be considered as HD. If the max pixels per frame is higher than max_sd_pixels, but no higher than max_hd_pixels, i.e. (max_sd_pixels, max_hd_pixels], it is HD. </p>
-
-<p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00035">35</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a2709a421f1d96bffc888fcd493c8e0a3"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t shaka::media::EncryptionOptions::max_sd_pixels = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The threshold to determine whether a video track should be considered as SD. If the max pixels per frame is no higher than max_sd_pixels, i.e. [0, max_sd_pixels], it is SD. </p>
-
 <p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00031">31</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a8e6825654b6047b410955818bcfa1014"></a>
+<a class="anchor" id="a586017f7bf6490e06a61c1f6eaf7970c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t shaka::media::EncryptionOptions::max_uhd1_pixels = 0</td>
+          <td class="memname">std::function&lt;std::string( const EncryptionParams::EncryptedStreamAttributes&amp; stream_attributes)&gt; shaka::media::EncryptionOptions::stream_label_func</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The threshold to determine whether a video track should be considered as UHD1. If the max pixels per frame is higher than max_hd_pixels, but no higher than max_uhd1_pixels, i.e. (max_hd_pixels, max_uhd1_pixels], it is UHD1. Otherwise it is UHD2. </p>
+<p>Stream label function used to get the label of the encrypted stream. Must be set. </p>
 
-<p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00040">40</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html#l00038">38</a> of file <a class="el" href="../../dd/dbc/encryption__handler_8h_source.html">encryption_handler.h</a>.</p>
 
 </div>
 </div>
@@ -192,7 +161,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>vp9_subsample_encrypt
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 20:29:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 13 2017 22:09:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -163,6 +163,8 @@ Functions</h2></td></tr>
 <tr class="separator:abc3f498491fb895860ebdee359935d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b6212ccc4b98e5fdb72f84acf252c6b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">ValidatePRCryptoFlags</a> ()</td></tr>
 <tr class="separator:a8b6212ccc4b98e5fdb72f84acf252c6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d03e8120932485c8fa0c686e1e32dac"><td class="memItemLeft" align="right" valign="top">base::Optional&lt; StreamDescriptor &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">ParseStreamDescriptor</a> (const std::string &amp;descriptor_string)</td></tr>
+<tr class="separator:a8d03e8120932485c8fa0c686e1e32dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9eab59c66195b54a0f4f2ff67630c2cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a9eab59c66195b54a0f4f2ff67630c2cd">ValidateFlag</a> (const char *flag_name, const std::string &amp;flag_value, bool condition, bool optional, const char *label)</td></tr>
 <tr class="separator:a9eab59c66195b54a0f4f2ff67630c2cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54fadd9c7ef14b39cd0355a5c269c772"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a> (const std::string &amp;error_message)</td></tr>
@@ -443,6 +445,33 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 
 </div>
 </div>
+<a class="anchor" id="a8d03e8120932485c8fa0c686e1e32dac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::Optional&lt; StreamDescriptor &gt; shaka::ParseStreamDescriptor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>descriptor_string</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parses a descriptor string, and inserts into sorted list of stream descriptors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">descriptor_string</td><td>contains comma separate name-value pairs describing the stream. </td></tr>
+    <tr><td class="paramname">descriptor_list</td><td>is a pointer to the sorted descriptor list into which the new descriptor should be inserted. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. May print error messages. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d0/da6/stream__descriptor_8cc_source.html#l00074">74</a> of file <a class="el" href="../../d0/da6/stream__descriptor_8cc_source.html">stream_descriptor.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a54fadd9c7ef14b39cd0355a5c269c772"></a>
 <div class="memitem">
 <div class="memproto">
@@ -658,7 +687,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 20:29:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 13 2017 22:09:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

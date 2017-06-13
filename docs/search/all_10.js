@@ -79,14 +79,13 @@ var searchData=
   ['soundmediaheader',['SoundMediaHeader',['../d7/d07/structshaka_1_1media_1_1mp4_1_1SoundMediaHeader.html',1,'shaka::media::mp4']]],
   ['startbox',['StartBox',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2',1,'shaka::media::mp4::BoxReader']]],
   ['startswithstartcode',['StartsWithStartCode',['../db/d86/classshaka_1_1media_1_1NaluReader.html#a9ed9d56a06f43717cdb7035f86075975',1,'shaka::media::NaluReader']]],
-  ['status',['Status',['../d0/d93/classshaka_1_1media_1_1Status.html',1,'shaka::media']]],
   ['status',['Status',['../d0/d93/classshaka_1_1media_1_1Status.html#abb1d7be8e22d23adff199fdf1a5c8639',1,'shaka::media::Status::Status()'],['../d0/d93/classshaka_1_1media_1_1Status.html#a676879d7464117a9d29281f7fa25b005',1,'shaka::media::Status::Status(error::Code error_code, const std::string &amp;error_message)']]],
+  ['status',['Status',['../d0/d93/classshaka_1_1media_1_1Status.html',1,'shaka::media']]],
   ['stop',['Stop',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#ac600977b708381facf07f87e36b43d79',1,'shaka::media::ProducerConsumerQueue']]],
   ['stopped',['Stopped',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#a3d88bdebfa412f2847f1d96fd804bba1',1,'shaka::media::ProducerConsumerQueue']]],
   ['stream_5fid',['stream_id',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#aa023c7fafbced88ca40e98362a7e4c69',1,'shaka::media::mp2t::PesPacket']]],
+  ['stream_5flabel_5ffunc',['stream_label_func',['../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a586017f7bf6490e06a61c1f6eaf7970c',1,'shaka::media::EncryptionOptions']]],
   ['streamdata',['StreamData',['../d0/d4c/structshaka_1_1media_1_1StreamData.html',1,'shaka::media']]],
-  ['streamdescriptor',['StreamDescriptor',['../d2/d95/structshaka_1_1media_1_1StreamDescriptor.html',1,'shaka::media']]],
-  ['streamdescriptorcomparefn',['StreamDescriptorCompareFn',['../d8/d3e/classshaka_1_1media_1_1StreamDescriptorCompareFn.html',1,'shaka::media']]],
   ['streaminfo',['StreamInfo',['../d5/db1/classshaka_1_1media_1_1StreamInfo.html',1,'shaka::media']]],
   ['subsampleentry',['SubsampleEntry',['../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html',1,'shaka::media']]],
   ['subsegment_5fduration_5fin_5fseconds',['subsegment_duration_in_seconds',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#ac9368f6edb53d9dd90bc128b664a12e5',1,'shaka::media::ChunkingOptions']]],
@@ -94,6 +93,6 @@ var searchData=
   ['subtitlemediaheader',['SubtitleMediaHeader',['../db/d21/structshaka_1_1media_1_1mp4_1_1SubtitleMediaHeader.html',1,'shaka::media::mp4']]],
   ['suppressonce',['SuppressOnce',['../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed',1,'shaka::Representation']]],
   ['syncsample',['SyncSample',['../dd/d3f/structshaka_1_1media_1_1mp4_1_1SyncSample.html',1,'shaka::media::mp4']]],
-  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html#af8bc2d5d153bfdd168f145213c47d3fe',1,'shaka::media::mp4::SyncSampleIterator']]],
-  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html',1,'shaka::media::mp4']]]
+  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html',1,'shaka::media::mp4']]],
+  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html#af8bc2d5d153bfdd168f145213c47d3fe',1,'shaka::media::mp4::SyncSampleIterator']]]
 ];
