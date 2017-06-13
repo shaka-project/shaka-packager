@@ -308,7 +308,7 @@ int PackagerMain(int argc, char** argv) {
   log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   CHECK(logging::InitLogging(log_settings));
 
-  google::SetVersionString(shaka::ShakaPackager::GetLibraryVersion());
+  google::SetVersionString(shaka::Packager::GetLibraryVersion());
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
@@ -333,7 +333,7 @@ int PackagerMain(int argc, char** argv) {
       return kArgumentValidationFailed;
     stream_descriptors.push_back(stream_descriptor.value());
   }
-  ShakaPackager packager;
+  Packager packager;
   media::Status status =
       packager.Initialize(packaging_params.value(), stream_descriptors);
   if (!status.ok()) {

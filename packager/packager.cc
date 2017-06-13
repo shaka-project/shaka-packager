@@ -557,7 +557,7 @@ std::string EncryptionParams::DefaultStreamLabelFunction(
   return "";
 }
 
-struct ShakaPackager::PackagerInternal {
+struct Packager::PackagerInternal {
   media::FakeClock fake_clock;
   std::unique_ptr<KeySource> encryption_key_source;
   std::unique_ptr<MpdNotifier> mpd_notifier;
@@ -565,11 +565,11 @@ struct ShakaPackager::PackagerInternal {
   std::vector<std::unique_ptr<media::RemuxJob>> remux_jobs;
 };
 
-ShakaPackager::ShakaPackager() {}
+Packager::Packager() {}
 
-ShakaPackager::~ShakaPackager() {}
+Packager::~Packager() {}
 
-Status ShakaPackager::Initialize(
+Status Packager::Initialize(
     const PackagingParams& packaging_params,
     const std::vector<StreamDescriptor>& stream_descriptors) {
   // Needed by base::WorkedPool used in ThreadedIoFile.
@@ -654,7 +654,7 @@ Status ShakaPackager::Initialize(
   return Status::OK;
 }
 
-Status ShakaPackager::Run() {
+Status Packager::Run() {
   if (!internal_)
     return Status(error::INVALID_ARGUMENT, "Not yet initialized.");
   Status status = media::RunRemuxJobs(internal_->remux_jobs);
@@ -672,7 +672,7 @@ Status ShakaPackager::Run() {
   return Status::OK;
 }
 
-void ShakaPackager::Cancel() {
+void Packager::Cancel() {
   if (!internal_) {
     LOG(INFO) << "Not yet initialized. Return directly.";
     return;
@@ -681,7 +681,7 @@ void ShakaPackager::Cancel() {
     job->demuxer()->Cancel();
 }
 
-std::string ShakaPackager::GetLibraryVersion() {
+std::string Packager::GetLibraryVersion() {
   return GetPackagerVersion();
 }
 

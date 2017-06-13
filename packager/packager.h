@@ -432,10 +432,10 @@ struct StreamDescriptor {
   std::string hls_playlist_name;
 };
 
-class SHAKA_EXPORT ShakaPackager {
+class SHAKA_EXPORT Packager {
  public:
-  ShakaPackager();
-  ~ShakaPackager();
+  Packager();
+  ~Packager();
 
   /// Initialize packaging pipeline.
   /// @param packaging_params contains the packaging parameters.
@@ -457,8 +457,8 @@ class SHAKA_EXPORT ShakaPackager {
   static std::string GetLibraryVersion();
 
  private:
-  ShakaPackager(const ShakaPackager&) = delete;
-  ShakaPackager& operator=(const ShakaPackager&) = delete;
+  Packager(const Packager&) = delete;
+  Packager& operator=(const Packager&) = delete;
 
   struct PackagerInternal;
   std::unique_ptr<PackagerInternal> internal_;
