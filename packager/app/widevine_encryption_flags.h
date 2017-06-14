@@ -11,18 +11,20 @@
 
 #include <gflags/gflags.h>
 
+#include "packager/app/gflags_hex_bytes.h"
+
 DECLARE_bool(enable_widevine_encryption);
 DECLARE_bool(enable_widevine_decryption);
 DECLARE_bool(include_common_pssh);
 DECLARE_string(key_server_url);
-DECLARE_string(content_id);
+DECLARE_hex_bytes(content_id);
 DECLARE_string(policy);
 DECLARE_int32(max_sd_pixels);
 DECLARE_int32(max_hd_pixels);
 DECLARE_int32(max_uhd1_pixels);
 DECLARE_string(signer);
-DECLARE_string(aes_signing_key);
-DECLARE_string(aes_signing_iv);
+DECLARE_hex_bytes(aes_signing_key);
+DECLARE_hex_bytes(aes_signing_iv);
 DECLARE_string(rsa_signing_key_path);
 DECLARE_int32(crypto_period_duration);
 

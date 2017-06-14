@@ -9,6 +9,7 @@
 #include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/path_service.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/packager.h"
 
 namespace shaka {
@@ -67,8 +68,11 @@ class PackagerTest : public ::testing::Test {
     packaging_params.encryption_params.clear_lead_in_seconds =
         kClearLeadInSeconds;
     packaging_params.encryption_params.key_provider = KeyProvider::kRawKey;
-    packaging_params.encryption_params.raw_key.key_map[""].key_id = kKeyIdHex;
-    packaging_params.encryption_params.raw_key.key_map[""].key = kKeyHex;
+    CHECK(base::HexStringToBytes(
+        kKeyIdHex,
+        &packaging_params.encryption_params.raw_key.key_map[""].key_id));
+    CHECK(base::HexStringToBytes(
+        kKeyHex, &packaging_params.encryption_params.raw_key.key_map[""].key));
     return packaging_params;
   }
 

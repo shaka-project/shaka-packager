@@ -8,13 +8,9 @@
 
 #include <memory>
 
-#include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/status.h"
-#include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener.h"
-#include "packager/media/event/progress_listener.h"
 
 namespace shaka {
 namespace media {

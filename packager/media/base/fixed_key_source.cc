@@ -75,45 +75,27 @@ Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return Status::OK;
 }
 
-std::unique_ptr<FixedKeySource> FixedKeySource::CreateFromHexStrings(
-    const std::string& key_id_hex,
-    const std::string& key_hex,
-    const std::string& pssh_boxes_hex,
-    const std::string& iv_hex) {
+std::unique_ptr<FixedKeySource> FixedKeySource::Create(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& key,
+    const std::vector<uint8_t>& pssh_boxes,
+    const std::vector<uint8_t>& iv) {
   std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
 
-  if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
-    LOG(ERROR) << "Cannot parse key_id_hex " << key_id_hex;
-    return std::unique_ptr<FixedKeySource>();
-  } else if (encryption_key->key_id.size() != 16) {
-    LOG(ERROR) << "Invalid key ID size '" << encryption_key->key_id.size()
+  if (key_id.size() != 16) {
+    LOG(ERROR) << "Invalid key ID size '" << key_id.size()
                << "', must be 16 bytes.";
     return std::unique_ptr<FixedKeySource>();
   }
-
-  if (!base::HexStringToBytes(key_hex, &encryption_key->key)) {
-    LOG(ERROR) << "Cannot parse key_hex " << key_hex;
-    return std::unique_ptr<FixedKeySource>();
-  } else if (encryption_key->key.size() != 16) {
+  if (key.size() != 16) {
     // CENC only supports AES-128, i.e. 16 bytes.
-    LOG(ERROR) << "Invalid key size '" << encryption_key->key.size()
-               << "', must be 16 bytes.";
+    LOG(ERROR) << "Invalid key size '" << key.size() << "', must be 16 bytes.";
     return std::unique_ptr<FixedKeySource>();
   }
 
-  std::vector<uint8_t> pssh_boxes;
-  if (!pssh_boxes_hex.empty() &&
-      !base::HexStringToBytes(pssh_boxes_hex, &pssh_boxes)) {
-    LOG(ERROR) << "Cannot parse pssh_hex " << pssh_boxes_hex;
-    return std::unique_ptr<FixedKeySource>();
-  }
-
-  if (!iv_hex.empty()) {
-    if (!base::HexStringToBytes(iv_hex, &encryption_key->iv)) {
-      LOG(ERROR) << "Cannot parse iv_hex " << iv_hex;
-      return std::unique_ptr<FixedKeySource>();
-    }
-  }
+  encryption_key->key_id = key_id;
+  encryption_key->key = key;
+  encryption_key->iv = iv;
 
   if (!ProtectionSystemSpecificInfo::ParseBoxes(
           pssh_boxes.data(), pssh_boxes.size(),

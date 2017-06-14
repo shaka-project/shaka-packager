@@ -43,13 +43,19 @@ const char kDefaultPsshBoxHex[] =
   "00000001"
   "0101020305080d1522375990e9000000"
   "00000000";
+
+std::vector<uint8_t> HexStringToVector(const std::string& str) {
+  std::vector<uint8_t> vec;
+  CHECK(base::HexStringToBytes(str, &vec));
+  return vec;
+}
 }
 
-TEST(FixedKeySourceTest, CreateFromHexStrings_Succes) {
+TEST(FixedKeySourceTest, Success) {
   std::string pssh_boxes = std::string(kPsshBox1Hex) + kPsshBox2Hex;
-  std::unique_ptr<FixedKeySource> key_source =
-      FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, pssh_boxes,
-                                           kIvHex);
+  std::unique_ptr<FixedKeySource> key_source = FixedKeySource::Create(
+      HexStringToVector(kKeyIdHex), HexStringToVector(kKeyHex),
+      HexStringToVector(pssh_boxes), HexStringToVector(kIvHex));
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
@@ -64,9 +70,10 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_Succes) {
   EXPECT_HEX_EQ(kPsshBox2Hex, key.key_system_info[1].CreateBox());
 }
 
-TEST(FixedKeySourceTest, CreateFromHexStrings_EmptyPssh) {
-  std::unique_ptr<FixedKeySource> key_source =
-      FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", kIvHex);
+TEST(FixedKeySourceTest, EmptyPssh) {
+  std::unique_ptr<FixedKeySource> key_source = FixedKeySource::Create(
+      HexStringToVector(kKeyIdHex), HexStringToVector(kKeyHex),
+      std::vector<uint8_t>(), HexStringToVector(kIvHex));
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
@@ -80,20 +87,17 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_EmptyPssh) {
   EXPECT_HEX_EQ(kDefaultPsshBoxHex, key.key_system_info[0].CreateBox());
 }
 
-TEST(FixedKeySourceTest, CreateFromHexStrings_Failure) {
-  std::unique_ptr<FixedKeySource> key_source =
-      FixedKeySource::CreateFromHexStrings(kKeyIdHex, "invalid_hex_value",
-                                           kPsshBox1Hex, kIvHex);
-  EXPECT_EQ(nullptr, key_source);
-
+TEST(FixedKeySourceTest, Failure) {
   // Invalid key id size.
-  key_source = FixedKeySource::CreateFromHexStrings("000102030405", kKeyHex,
-                                                    kPsshBox1Hex, kIvHex);
+  std::unique_ptr<FixedKeySource> key_source = FixedKeySource::Create(
+      HexStringToVector("000102030405"), HexStringToVector(kKeyHex),
+      HexStringToVector(kPsshBox1Hex), HexStringToVector(kIvHex));
   EXPECT_EQ(nullptr, key_source);
 
   // Invalid pssh box.
-  key_source = FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex,
-                                                    "000102030405", kIvHex);
+  key_source = FixedKeySource::Create(
+      HexStringToVector(kKeyIdHex), HexStringToVector(kKeyHex),
+      HexStringToVector("000102030405"), HexStringToVector(kIvHex));
   EXPECT_EQ(nullptr, key_source);
 }
 

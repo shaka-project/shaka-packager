@@ -103,7 +103,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       const RawKeyEncryptionParams& raw_key = encryption_params.raw_key;
       const std::string kDefaultTrackType;
       // TODO(kqyang): Refactor FixedKeySource.
-      encryption_key_source = FixedKeySource::CreateFromHexStrings(
+      encryption_key_source = FixedKeySource::Create(
           raw_key.key_map.find("")->second.key_id,
           raw_key.key_map.find("")->second.key, raw_key.pssh, raw_key.iv);
       break;
@@ -171,9 +171,9 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
     }
     case KeyProvider::kRawKey: {
       const RawKeyDecryptionParams& raw_key = decryption_params.raw_key;
-      const char kNoPssh[] = "";
-      const char kNoIv[] = "";
-      decryption_key_source = FixedKeySource::CreateFromHexStrings(
+      const std::vector<uint8_t> kNoPssh;
+      const std::vector<uint8_t> kNoIv;
+      decryption_key_source = FixedKeySource::Create(
           raw_key.key_map.find("")->second.key_id,
           raw_key.key_map.find("")->second.key, kNoPssh, kNoIv);
       break;

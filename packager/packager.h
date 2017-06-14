@@ -150,9 +150,9 @@ struct WidevineSigner {
   SigningKeyType signing_key_type = SigningKeyType::kNone;
   struct {
     /// AES signing key.
-    std::string key;
+    std::vector<uint8_t> key;
     /// AES signing IV.
-    std::string iv;
+    std::vector<uint8_t> iv;
   } aes;
   struct {
     /// RSA signing private key.
@@ -201,24 +201,24 @@ struct PlayreadyEncryptionParams {
 
   // TODO(kqyang): move raw playready key generation to RawKey.
   /// Provides a raw Playready KeyId.
-  std::string key_id;
+  std::vector<uint8_t> key_id;
   /// Provides a raw Playready Key.
-  std::string key;
+  std::vector<uint8_t> key;
 };
 
 /// Raw key encryption parameters, i.e. with key parameters provided.
 struct RawKeyEncryptionParams {
   /// An optional initialization vector. If not provided, a random `iv` will be
   /// generated. Note that this parameter should only be used during testing.
-  std::string iv;
+  std::vector<uint8_t> iv;
   /// Inject a custom `pssh` or multiple concatenated `psshs`. If not provided,
   /// a common system pssh will be generated.
-  std::string pssh;
+  std::vector<uint8_t> pssh;
 
   using StreamLabel = std::string;
   struct KeyPair {
-    std::string key_id;
-    std::string key;
+    std::vector<uint8_t> key_id;
+    std::vector<uint8_t> key;
   };
   /// Defines the KeyPair for the streams. An empty `StreamLabel` indicates the
   /// default `KeyPair`, which applies to all the `StreamLabels` not present in
@@ -324,8 +324,8 @@ struct WidevineDecryptionParams {
 struct RawKeyDecryptionParams {
   using StreamLabel = std::string;
   struct KeyPair {
-    std::string key_id;
-    std::string key;
+    std::vector<uint8_t> key_id;
+    std::vector<uint8_t> key;
   };
   /// Defines the KeyPair for the streams. An empty `StreamLabel` indicates the
   /// default `KeyPair`, which applies to all the `StreamLabels` not present in

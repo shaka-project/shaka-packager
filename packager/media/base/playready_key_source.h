@@ -51,14 +51,13 @@ class PlayReadyKeySource : public KeySource {
   /// @}
   virtual Status FetchKeysWithProgramIdentifier(const std::string& program_identifier);
 
-  /// Creates a new PlayReadyKeySource from the hex string information.
+  /// Creates a new PlayReadyKeySource from the given data.
   /// Returns null if the strings are invalid.
-  /// @param key_id_hex is the key id in hex string.
-  /// @param key_hex is the key in hex string.
   /// Note: GetKey on the created key source will always return the same key
   ///       for all track types.
   static std::unique_ptr<PlayReadyKeySource> CreateFromKeyAndKeyId(
-      const std::string& key_id_hex, const std::string& key_hex);
+      const std::vector<uint8_t>& key_id,
+      const std::vector<uint8_t>& key);
   /// Sets the Certificate Authority file for validating self-signed certificates.
   void SetCaFile(const std::string& ca_file) {
     ca_file_ = ca_file;

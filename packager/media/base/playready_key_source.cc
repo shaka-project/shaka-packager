@@ -182,17 +182,11 @@ PlayReadyKeySource::PlayReadyKeySource(
 PlayReadyKeySource::~PlayReadyKeySource() {}
 
 std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromKeyAndKeyId(
-    const std::string& key_id_hex, const std::string& key_hex) {
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& key) {
   std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
-  if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
-    LOG(ERROR) << "Cannot parse key_id_hex " << key_id_hex;
-    return std::unique_ptr<PlayReadyKeySource>();
-  }
-  std::vector<uint8_t> key;
-  if (!base::HexStringToBytes(key_hex, &encryption_key->key)) {
-    LOG(ERROR) << "Cannot parse key_hex " << key_hex;
-    return std::unique_ptr<PlayReadyKeySource>();
-  }
+  encryption_key->key_id = key_id;
+  encryption_key->key = key;
   std::vector<uint8_t> pssh_data;
   Status status = GeneratePlayReadyPsshData(
       encryption_key->key_id, encryption_key->key, &pssh_data);

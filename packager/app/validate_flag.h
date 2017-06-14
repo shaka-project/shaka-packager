@@ -11,7 +11,13 @@
 
 #include <string>
 
+#include "packager/base/strings/stringprintf.h"
+
 namespace shaka {
+
+/// Format and print error message.
+/// @param error_message specifies the error message.
+void PrintError(const std::string& error_message);
 
 /// Validate a flag against the given condition.
 /// @param flag_name is the name of the flag.
@@ -23,15 +29,25 @@ namespace shaka {
 /// @param label specifies the label associated with the condition. It is used
 ///        to generate the error message on validation failure.
 /// @return true on success, false otherwise.
+template <class FlagType>
 bool ValidateFlag(const char* flag_name,
-                  const std::string& flag_value,
+                  const FlagType& flag_value,
                   bool condition,
                   bool optional,
-                  const char* label);
-
-/// Format and print error message.
-/// @param error_message specifies the error message.
-void PrintError(const std::string& error_message);
+                  const char* label) {
+  if (flag_value.empty()) {
+    if (!optional && condition) {
+      PrintError(
+          base::StringPrintf("--%s is required if %s.", flag_name, label));
+      return false;
+    }
+  } else if (!condition) {
+    PrintError(base::StringPrintf(
+        "--%s should be specified only if %s.", flag_name, label));
+    return false;
+  }
+  return true;
+}
 
 }  // namespace shaka
 

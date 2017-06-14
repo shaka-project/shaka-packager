@@ -30,7 +30,7 @@ DEFINE_bool(include_common_pssh,
             "https://goo.gl/s8RIhr");
 DEFINE_string(key_server_url, "", "Key server url. Required for encryption and "
               "decryption");
-DEFINE_string(content_id, "", "Content Id (hex).");
+DEFINE_hex_bytes(content_id, "", "Content Id (hex).");
 DEFINE_string(policy,
               "",
               "The name of a stored policy, which specifies DRM content "
@@ -50,13 +50,11 @@ DEFINE_int32(max_uhd1_pixels,
              "is higher than max_hd_pixels, but no higher than max_uhd1_pixels."
              " Otherwise it is UHD2. Default: 8847360 (4096 x 2160).");
 DEFINE_string(signer, "", "The name of the signer.");
-DEFINE_string(aes_signing_key,
-              "",
-              "AES signing key in hex string. --aes_signing_iv is required. "
-              "Exclusive with --rsa_signing_key_path.");
-DEFINE_string(aes_signing_iv,
-              "",
-              "AES signing iv in hex string.");
+DEFINE_hex_bytes(aes_signing_key,
+                 "",
+                 "AES signing key in hex string. --aes_signing_iv is required. "
+                 "Exclusive with --rsa_signing_key_path.");
+DEFINE_hex_bytes(aes_signing_iv, "", "AES signing iv in hex string.");
 DEFINE_string(rsa_signing_key_path,
               "",
               "Stores PKCS#1 RSA private key for request signing. Exclusive "
@@ -67,6 +65,9 @@ DEFINE_int32(crypto_period_duration,
              "rotation is enabled.");
 
 namespace shaka {
+namespace {
+const bool kOptional = true;
+}  // namespace
 
 bool ValidateWidevineCryptoFlags() {
   bool success = true;
@@ -80,14 +81,14 @@ bool ValidateWidevineCryptoFlags() {
   if (!ValidateFlag("key_server_url",
                     FLAGS_key_server_url,
                     widevine_crypto,
-                    false,
+                    !kOptional,
                     widevine_crypto_label)) {
     success = false;
   }
   if (!ValidateFlag("signer",
                     FLAGS_signer,
                     widevine_crypto,
-                    true,
+                    kOptional,
                     widevine_crypto_label)) {
     success = false;
   }
@@ -102,16 +103,16 @@ bool ValidateWidevineCryptoFlags() {
   // content_id and policy (optional) are associated with
   // enable_widevine_encryption.
   if (!ValidateFlag("content_id",
-                    FLAGS_content_id,
+                    FLAGS_content_id_bytes,
                     FLAGS_enable_widevine_encryption,
-                    false,
+                    !kOptional,
                     widevine_encryption_label)) {
     success = false;
   }
   if (!ValidateFlag("policy",
                     FLAGS_policy,
                     FLAGS_enable_widevine_encryption,
-                    true,
+                    kOptional,
                     widevine_encryption_label)) {
     success = false;
   }
@@ -142,38 +143,30 @@ bool ValidateWidevineCryptoFlags() {
     success = false;
   }
 
-  const bool aes = !FLAGS_signer.empty() && FLAGS_rsa_signing_key_path.empty();
-  const char aes_label[] =
-      "--signer is specified and exclusive with --rsa_signing_key_path";
-  // aes_signer_key and aes_signing_iv are associated with aes signing.
-  if (!ValidateFlag(
-          "aes_signing_key", FLAGS_aes_signing_key, aes, true, aes_label)) {
-    success = false;
-  }
-  if (!ValidateFlag(
-          "aes_signing_iv", FLAGS_aes_signing_iv, aes, true, aes_label)) {
+  const bool aes = !FLAGS_aes_signing_key_bytes.empty() ||
+                   !FLAGS_aes_signing_iv_bytes.empty();
+  if (aes && (FLAGS_aes_signing_key_bytes.empty() ||
+              FLAGS_aes_signing_iv_bytes.empty())) {
+    PrintError("--aes_signing_key/iv is required if using aes signing.");
     success = false;
   }
 
-  const bool rsa = !FLAGS_signer.empty() && FLAGS_aes_signing_key.empty() &&
-                   FLAGS_aes_signing_iv.empty();
-  const char rsa_label[] =
-      "--signer is specified and exclusive with --aes_signing_key/iv";
-  // rsa_signing_key_path is associated with rsa_signing.
-  if (!ValidateFlag("rsa_signing_key_path",
-                    FLAGS_rsa_signing_key_path,
-                    rsa,
-                    true,
-                    rsa_label)) {
+  const bool rsa = !FLAGS_rsa_signing_key_path.empty();
+
+  if (FLAGS_signer.empty() && (aes || rsa)) {
+    PrintError("--signer is required if using aes/rsa signing.");
     success = false;
   }
-
-  if (!FLAGS_signer.empty() &&
-      (FLAGS_aes_signing_key.empty() || FLAGS_aes_signing_iv.empty()) &&
-      FLAGS_rsa_signing_key_path.empty()) {
+  if (!FLAGS_signer.empty() && !aes && !rsa) {
     PrintError(
         "--aes_signing_key/iv or --rsa_signing_key_path is required with "
         "--signer.");
+    success = false;
+  }
+  if (aes && rsa) {
+    PrintError(
+        "Only one of --aes_signing_key/iv and --rsa_signing_key_path should be "
+        "specified.");
     success = false;
   }
 

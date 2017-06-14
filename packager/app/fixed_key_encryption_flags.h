@@ -11,13 +11,15 @@
 
 #include <gflags/gflags.h>
 
+#include "packager/app/gflags_hex_bytes.h"
+
 // TODO(kqyang): s/fixed/raw/.
 DECLARE_bool(enable_fixed_key_encryption);
 DECLARE_bool(enable_fixed_key_decryption);
-DECLARE_string(key_id);
-DECLARE_string(key);
-DECLARE_string(iv);
-DECLARE_string(pssh);
+DECLARE_hex_bytes(key_id);
+DECLARE_hex_bytes(key);
+DECLARE_hex_bytes(iv);
+DECLARE_hex_bytes(pssh);
 
 namespace shaka {
 

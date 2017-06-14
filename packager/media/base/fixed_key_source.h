@@ -40,20 +40,20 @@ class FixedKeySource : public KeySource {
                             EncryptionKey* key) override;
   /// @}
 
-  /// Creates a new FixedKeySource from the given hex strings.  Returns null
+  /// Creates a new FixedKeySource from the given data.  Returns null
   /// if the strings are invalid.
-  /// @param key_id_hex is the key id in hex string.
-  /// @param key_hex is the key in hex string.
-  /// @param pssh_boxes_hex is the pssh_boxes in hex string.
-  /// @param iv_hex is the IV in hex string. If not specified, a randomly
+  /// @param key_id is the key identifier. Must be 16 bytes.
+  /// @param key is the encryption / decryption key. Must be 16 bytes.
+  /// @param pssh_boxes is the concatenated pssh boxes.
+  /// @param iv is the initialization vector. If not specified, a randomly
   ///        generated IV with the default length will be used.
-  /// Note: GetKey on the created key source will always return the same key
-  ///       for all track types.
-  static std::unique_ptr<FixedKeySource> CreateFromHexStrings(
-      const std::string& key_id_hex,
-      const std::string& key_hex,
-      const std::string& pssh_boxes_hex,
-      const std::string& iv_hex);
+  /// Note: GetKey on the created key source will always return the same key for
+  /// all track types.
+  static std::unique_ptr<FixedKeySource> Create(
+      const std::vector<uint8_t>& key_id,
+      const std::vector<uint8_t>& key,
+      const std::vector<uint8_t>& pssh_boxes,
+      const std::vector<uint8_t>& iv);
 
  protected:
   // Allow default constructor for mock key sources.

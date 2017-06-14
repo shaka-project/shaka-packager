@@ -97,6 +97,24 @@ enum ExitStatus {
   kInternalError,
 };
 
+bool GetWidevineSigner(WidevineSigner* signer) {
+  signer->signer_name = FLAGS_signer;
+  if (!FLAGS_aes_signing_key_bytes.empty()) {
+    signer->signing_key_type = WidevineSigner::SigningKeyType::kAes;
+    signer->aes.key = FLAGS_aes_signing_key_bytes;
+    signer->aes.iv = FLAGS_aes_signing_iv_bytes;
+  } else if (!FLAGS_rsa_signing_key_path.empty()) {
+    signer->signing_key_type = WidevineSigner::SigningKeyType::kRsa;
+    if (!media::File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
+                                       &signer->rsa.key)) {
+      LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
+                 << "'.";
+      return false;
+    }
+  }
+  return true;
+}
+
 base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
@@ -143,33 +161,10 @@ base::Optional<PackagingParams> GetPackagingParams() {
       widevine.key_server_url = FLAGS_key_server_url;
       widevine.include_common_pssh = FLAGS_include_common_pssh;
 
-      if (!base::HexStringToBytes(FLAGS_content_id, &widevine.content_id)) {
-        LOG(ERROR) << "Invalid content_id hex string specified.";
-        return base::nullopt;
-      }
+      widevine.content_id = FLAGS_content_id_bytes;
       widevine.policy = FLAGS_policy;
-      widevine.signer.signer_name = FLAGS_signer;
-      if (!FLAGS_aes_signing_key.empty() && !FLAGS_rsa_signing_key_path.empty()) {
-        LOG(ERROR) << "Only one of --aes_signing_key and "
-                      "--rsa_signing_key_path is needed.";
+      if (!GetWidevineSigner(&widevine.signer))
         return base::nullopt;
-      }
-      WidevineSigner& signer = widevine.signer;
-      if (!FLAGS_aes_signing_key.empty()) {
-      // TODO(kqyang): Take care of hex conversion and file read here.
-        signer.signing_key_type = WidevineSigner::SigningKeyType::kAes;
-        signer.aes.key = FLAGS_aes_signing_key;
-        signer.aes.iv = FLAGS_aes_signing_iv;
-      }
-      if (!FLAGS_rsa_signing_key_path.empty()) {
-        signer.signing_key_type = WidevineSigner::SigningKeyType::kRsa;
-        if (!media::File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
-                                           &signer.rsa.key)) {
-          LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
-                     << "'.";
-          return base::nullopt;
-        }
-      }
       break;
     }
     case KeyProvider::kPlayready: {
@@ -182,19 +177,18 @@ base::Optional<PackagingParams> GetPackagingParams() {
           FLAGS_client_cert_private_key_file;
       playready.client_cert_private_key_password =
           FLAGS_client_cert_private_key_password;
-      playready.key_id = FLAGS_playready_key_id;
-      playready.key = FLAGS_playready_key;
+      playready.key_id = FLAGS_playready_key_id_bytes;
+      playready.key = FLAGS_playready_key_bytes;
       break;
     }
     case KeyProvider::kRawKey: {
       RawKeyEncryptionParams& raw_key = encryption_params.raw_key;
-      raw_key.iv = FLAGS_iv;
-      raw_key.pssh = FLAGS_pssh;
-      // An empty TrackType specifies the default KeyPair.
+      raw_key.iv = FLAGS_iv_bytes;
+      raw_key.pssh = FLAGS_pssh_bytes;
+      // An empty StreamLabel specifies the default KeyPair.
       RawKeyEncryptionParams::KeyPair& key_pair = raw_key.key_map[""];
-      // TODO(kqyang): Take care of hex conversion here.
-      key_pair.key_id = FLAGS_key_id;
-      key_pair.key = FLAGS_key;
+      key_pair.key_id = FLAGS_key_id_bytes;
+      key_pair.key = FLAGS_key_bytes;
       break;
     }
     case KeyProvider::kNone:
@@ -220,42 +214,20 @@ base::Optional<PackagingParams> GetPackagingParams() {
     case KeyProvider::kWidevine: {
       WidevineDecryptionParams& widevine = decryption_params.widevine;
       widevine.key_server_url = FLAGS_key_server_url;
-
-      widevine.signer.signer_name = FLAGS_signer;
-      if (!FLAGS_aes_signing_key.empty() && !FLAGS_rsa_signing_key_path.empty()) {
-        LOG(ERROR) << "Only one of --aes_signing_key and "
-                      "--rsa_signing_key_path is needed.";
+      if (!GetWidevineSigner(&widevine.signer))
         return base::nullopt;
-      }
-      WidevineSigner& signer = widevine.signer;
-      if (!FLAGS_aes_signing_key.empty()) {
-      // TODO(kqyang): Take care of hex conversion and file read here.
-        signer.signing_key_type = WidevineSigner::SigningKeyType::kAes;
-        signer.aes.key = FLAGS_aes_signing_key;
-        signer.aes.iv = FLAGS_aes_signing_iv;
-      }
-      if (!FLAGS_rsa_signing_key_path.empty()) {
-        signer.signing_key_type = WidevineSigner::SigningKeyType::kRsa;
-        if (!media::File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
-                                           &signer.rsa.key)) {
-          LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
-                     << "'.";
-          return base::nullopt;
-        }
-      }
       break;
     }
     case KeyProvider::kRawKey: {
       RawKeyDecryptionParams& raw_key = decryption_params.raw_key;
-      // An empty TrackType specifies the default KeyPair.
+      // An empty StreamLabel specifies the default KeyPair.
       RawKeyDecryptionParams::KeyPair& key_pair = raw_key.key_map[""];
-      // TODO(kqyang): Take care of hex conversion here.
-      key_pair.key_id = FLAGS_key_id;
-      key_pair.key = FLAGS_key;
+      key_pair.key_id = FLAGS_key_id_bytes;
+      key_pair.key = FLAGS_key_bytes;
       break;
     }
-    case KeyProvider::kNone:
     case KeyProvider::kPlayready:
+    case KeyProvider::kNone:
       break;
   }
 
