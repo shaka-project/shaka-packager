@@ -156,6 +156,10 @@ class MediaPlaylist {
   ///         form.  May be an empty string for video.
   virtual std::string GetLanguage() const;
 
+  /// @return true if |width| and |height| have been set with a valid
+  ///         resolution values.
+  virtual bool GetResolution(uint32_t* width, uint32_t* height) const;
+
  private:
   // Mainly for MasterPlaylist to use these values.
   const std::string file_name_;

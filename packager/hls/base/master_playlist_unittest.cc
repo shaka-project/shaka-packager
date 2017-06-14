@@ -19,13 +19,17 @@ namespace shaka {
 namespace hls {
 
 using ::testing::AtLeast;
+using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::SetArgPointee;
 using ::testing::_;
 using base::FilePath;
 
 namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
+const uint32_t kWidth = 800;
+const uint32_t kHeight = 600;
 const MediaPlaylist::MediaPlaylistType kVodPlaylist =
     MediaPlaylist::MediaPlaylistType::kVod;
 }  // namespace
@@ -75,6 +79,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
   mock_playlist.SetCodecForTesting(codec);
   EXPECT_CALL(mock_playlist, Bitrate()).WillOnce(Return(435889));
+  EXPECT_CALL(mock_playlist, GetResolution(NotNull(), NotNull()))
+      .WillOnce(DoAll(SetArgPointee<0>(kWidth),
+                      SetArgPointee<1>(kHeight),
+                      Return(true)));
   master_playlist_.AddMediaPlaylist(&mock_playlist);
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
@@ -93,7 +101,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       "#EXTM3U\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
-      "#EXT-X-STREAM-INF:CODECS=\"avc1\",BANDWIDTH=435889\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=435889,CODECS=\"avc1\",RESOLUTION=800x600\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -110,6 +118,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(sd_video_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(300000));
+  EXPECT_CALL(sd_video_playlist, GetResolution(NotNull(), NotNull()))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
+                            SetArgPointee<1>(kHeight),
+                            Return(true)));
   master_playlist_.AddMediaPlaylist(&sd_video_playlist);
 
   // Second video, hd.m3u8.
@@ -122,6 +134,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(hd_video_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(700000));
+  EXPECT_CALL(hd_video_playlist, GetResolution(NotNull(), NotNull()))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
+                            SetArgPointee<1>(kHeight),
+                            Return(true)));
   master_playlist_.AddMediaPlaylist(&hd_video_playlist);
 
   // First audio, english.m3u8.
@@ -137,6 +153,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(english_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(50000));
+  EXPECT_CALL(english_playlist, GetResolution(NotNull(), NotNull()))
+      .Times(0);
   master_playlist_.AddMediaPlaylist(&english_playlist);
 
   // Second audio, spanish.m3u8.
@@ -149,6 +167,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(spanish_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(60000));
+  EXPECT_CALL(spanish_playlist, GetResolution(NotNull(), NotNull()))
+      .Times(0);
   master_playlist_.AddMediaPlaylist(&spanish_playlist);
 
   const char kBaseUrl[] = "http://playlists.org/";
@@ -171,13 +191,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "LANGUAGE=\"en\",URI=\"http://playlists.org/eng.m3u8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audiogroup\",NAME=\"espanol\","
       "LANGUAGE=\"es\",URI=\"http://playlists.org/spa.m3u8\"\n"
-      "#EXT-X-STREAM-INF:AUDIO=\"audiogroup\","
-      "CODECS=\"sdvideocodec,audiocodec\","
-      "BANDWIDTH=360000\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=360000,CODECS=\"sdvideocodec,audiocodec\""
+      ",RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
       "http://playlists.org/sd.m3u8\n"
-      "#EXT-X-STREAM-INF:AUDIO=\"audiogroup\","
-      "CODECS=\"hdvideocodec,audiocodec\","
-      "BANDWIDTH=760000\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=760000,CODECS=\"hdvideocodec,audiocodec\""
+      ",RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
       "http://playlists.org/hd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -194,6 +212,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(video_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(300000));
+  EXPECT_CALL(video_playlist, GetResolution(NotNull(), NotNull()))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
+                            SetArgPointee<1>(kHeight),
+                            Return(true)));
   master_playlist_.AddMediaPlaylist(&video_playlist);
 
   // First audio, eng_lo.m3u8.
@@ -207,6 +229,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(eng_lo_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(50000));
+  EXPECT_CALL(eng_lo_playlist, GetResolution(NotNull(), NotNull()))
+      .Times(0);
   master_playlist_.AddMediaPlaylist(&eng_lo_playlist);
 
   std::string audio_codec_hi = "audiocodec_hi";
@@ -219,6 +243,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(eng_hi_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(100000));
+  EXPECT_CALL(eng_hi_playlist, GetResolution(NotNull(), NotNull()))
+      .Times(0);
   master_playlist_.AddMediaPlaylist(&eng_hi_playlist);
 
   const char kBaseUrl[] = "http://anydomain.com/";
@@ -240,13 +266,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       "LANGUAGE=\"en\",URI=\"http://anydomain.com/eng_hi.m3u8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_lo\",NAME=\"english_lo\","
       "LANGUAGE=\"en\",URI=\"http://anydomain.com/eng_lo.m3u8\"\n"
-      "#EXT-X-STREAM-INF:AUDIO=\"audio_hi\","
-      "CODECS=\"videocodec,audiocodec_hi\","
-      "BANDWIDTH=400000\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=400000,CODECS=\"videocodec,audiocodec_hi\""
+      ",RESOLUTION=800x600,AUDIO=\"audio_hi\"\n"
       "http://anydomain.com/video.m3u8\n"
-      "#EXT-X-STREAM-INF:AUDIO=\"audio_lo\","
-      "CODECS=\"videocodec,audiocodec_lo\","
-      "BANDWIDTH=350000\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"videocodec,audiocodec_lo\""
+      ",RESOLUTION=800x600,AUDIO=\"audio_lo\"\n"
       "http://anydomain.com/video.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -269,6 +293,10 @@ TEST_F(MasterPlaylistTest, WriteAllPlaylists) {
       MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
   mock_playlist.SetCodecForTesting(codec);
   ON_CALL(mock_playlist, Bitrate()).WillByDefault(Return(435889));
+  ON_CALL(mock_playlist, GetResolution(NotNull(), NotNull())).WillByDefault(
+      DoAll(SetArgPointee<0>(kWidth),
+            SetArgPointee<1>(kHeight),
+            Return(true)));
 
   EXPECT_CALL(mock_playlist, GetLongestSegmentDuration()).WillOnce(Return(10));
   EXPECT_CALL(mock_playlist, SetTargetDuration(10)).WillOnce(Return(true));
@@ -288,6 +316,5 @@ TEST_F(MasterPlaylistTest, WriteAllPlaylists) {
   ASSERT_TRUE(base::PathExists(master_playlist_path))
       << "Cannot find master playlist at " << master_playlist_path.value();
 }
-
 }  // namespace hls
 }  // namespace shaka

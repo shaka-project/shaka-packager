@@ -1,4 +1,4 @@
 #EXTM3U
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
-#EXT-X-STREAM-INF:CODECS="avc1.64001f",BANDWIDTH=1183948
+#EXT-X-STREAM-INF:BANDWIDTH=1183948,CODECS="avc1.64001f",RESOLUTION=1024x436
 video.m3u8

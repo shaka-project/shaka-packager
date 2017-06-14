@@ -24,6 +24,30 @@
 namespace shaka {
 namespace hls {
 
+namespace {
+
+void AppendStreamInfoTag(uint64_t bitrate,
+                         const std::string& codecs,
+                         uint32_t width,
+                         uint32_t height,
+                         const std::string* audio_group_id,
+                         const std::string& base_url,
+                         const std::string& file_name,
+                         std::string* out) {
+  DCHECK(out);
+  base::StringAppendF(out, "#EXT-X-STREAM-INF:");
+  base::StringAppendF(out, "BANDWIDTH=%" PRIu64, bitrate);
+  base::StringAppendF(out, ",CODECS=\"%s\"", codecs.c_str());
+  base::StringAppendF(out, ",RESOLUTION=%" PRIu32 "x%" PRIu32, width, height);
+
+  if (audio_group_id) {
+    base::StringAppendF(out, ",AUDIO=\"%s\"", audio_group_id->c_str());
+  }
+
+  base::StringAppendF(out, "\n%s%s\n", base_url.c_str(), file_name.c_str());
+}
+}  // namespace
+
 MasterPlaylist::MasterPlaylist(const std::string& file_name)
     : file_name_(file_name) {}
 MasterPlaylist::~MasterPlaylist() {}
@@ -144,13 +168,19 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
 
       // Assume all codecs are the same for same group ID.
       const std::string& audio_codec = audio_playlists.front()->codec();
-      base::StringAppendF(
-          &video_output,
-          "#EXT-X-STREAM-INF:AUDIO=\"%s\",CODECS=\"%s\",BANDWIDTH=%" PRIu64 "\n"
-          "%s\n",
-          group_id.c_str(), (video_codec + "," + audio_codec).c_str(),
-          video_bitrate + max_audio_bitrate,
-          (base_url + video_playlist->file_name()).c_str());
+
+      uint32_t video_width;
+      uint32_t video_height;
+      CHECK(video_playlist->GetResolution(&video_width, &video_height));
+
+      AppendStreamInfoTag(video_bitrate + max_audio_bitrate,
+                          video_codec + "," + audio_codec,
+                          video_width,
+                          video_height,
+                          &group_id,
+                          base_url,
+                          video_playlist->file_name(),
+                          &video_output);
     }
   }
 
@@ -158,11 +188,19 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     for (const MediaPlaylist* video_playlist : video_playlists) {
       const std::string& video_codec = video_playlist->codec();
       const uint64_t video_bitrate = video_playlist->Bitrate();
-      base::StringAppendF(&video_output,
-                          "#EXT-X-STREAM-INF:CODECS=\"%s\",BANDWIDTH=%" PRIu64
-                          "\n%s\n",
-                          video_codec.c_str(), video_bitrate,
-                          (base_url + video_playlist->file_name()).c_str());
+
+      uint32_t video_width;
+      uint32_t video_height;
+      CHECK(video_playlist->GetResolution(&video_width, &video_height));
+
+      AppendStreamInfoTag(video_bitrate,
+                          video_codec,
+                          video_width,
+                          video_height,
+                          nullptr,
+                          base_url,
+                          video_playlist->file_name(),
+                          &video_output);
     }
   }
 

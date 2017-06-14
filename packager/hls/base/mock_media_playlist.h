@@ -42,6 +42,7 @@ class MockMediaPlaylist : public MediaPlaylist {
   MOCK_CONST_METHOD0(GetLongestSegmentDuration, double());
   MOCK_METHOD1(SetTargetDuration, bool(uint32_t target_duration));
   MOCK_CONST_METHOD0(GetLanguage, std::string());
+  MOCK_CONST_METHOD2(GetResolution, bool(uint32_t* width, uint32_t* height));
 };
 
 }  // namespace hls

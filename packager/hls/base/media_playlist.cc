@@ -381,5 +381,16 @@ std::string MediaPlaylist::GetLanguage() const {
   return LanguageToShortestForm(lang);
 }
 
+bool MediaPlaylist::GetResolution(uint32_t* width, uint32_t* height) const {
+  DCHECK(width);
+  DCHECK(height);
+  if (media_info_.has_video_info()) {
+    *width = media_info_.video_info().width();
+    *height = media_info_.video_info().height();
+    return true;
+  }
+  return false;
+}
+
 }  // namespace hls
 }  // namespace shaka
