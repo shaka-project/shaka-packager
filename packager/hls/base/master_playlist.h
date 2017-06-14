@@ -8,6 +8,7 @@
 #define PACKAGER_HLS_BASE_MASTER_PLAYLIST_H_
 
 #include <list>
+#include <map>
 #include <string>
 
 #include "packager/base/macros.h"
@@ -55,7 +56,10 @@ class MasterPlaylist {
 
  private:
   const std::string file_name_;
-  std::list<MediaPlaylist*> media_playlists_;
+  std::list<MediaPlaylist*> all_playlists_;
+  std::list<const MediaPlaylist*> video_playlists_;
+  // The key is the audio group name.
+  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups_;
 
   bool has_set_playlist_target_duration_ = false;
 

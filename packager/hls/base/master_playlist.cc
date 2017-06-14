@@ -9,8 +9,6 @@
 #include <inttypes.h>
 
 #include <cmath>
-#include <list>
-#include <map>
 #include <set>
 
 #include "packager/base/files/file_path.h"
@@ -53,7 +51,26 @@ MasterPlaylist::MasterPlaylist(const std::string& file_name)
 MasterPlaylist::~MasterPlaylist() {}
 
 void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
-  media_playlists_.push_back(media_playlist);
+  DCHECK(media_playlist);
+  switch (media_playlist->stream_type()) {
+    case MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio: {
+      const std::string& group_id = media_playlist->group_id();
+      audio_playlist_groups_[group_id].push_back(media_playlist);
+      break;
+    }
+    case MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo: {
+      video_playlists_.push_back(media_playlist);
+      break;
+    }
+    default: {
+      NOTIMPLEMENTED() << static_cast<int>(media_playlist->stream_type())
+                       << " not handled.";
+      break;
+    }
+  }
+  // Sometimes we need to iterate over all playlists, so keep a collection
+  // of all playlists to make iterating easier.
+  all_playlists_.push_back(media_playlist);
 }
 
 bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
@@ -65,7 +82,7 @@ bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
 
   double longest_segment_duration = 0.0;
   if (!has_set_playlist_target_duration_) {
-    for (const MediaPlaylist* playlist : media_playlists_) {
+    for (const MediaPlaylist* playlist : all_playlists_) {
       const double playlist_longest_segment =
           playlist->GetLongestSegmentDuration();
       if (longest_segment_duration < playlist_longest_segment)
@@ -74,7 +91,7 @@ bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
   }
 
   base::FilePath output_path = base::FilePath::FromUTF8Unsafe(output_dir);
-  for (MediaPlaylist* playlist : media_playlists_) {
+  for (MediaPlaylist* playlist : all_playlists_) {
     std::string file_path =
         output_path
             .Append(base::FilePath::FromUTF8Unsafe(playlist->file_name()))
@@ -115,28 +132,10 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     return false;
   }
 
-  // TODO(rkuroiwa): This can be done in AddMediaPlaylist(), no need to create
-  // map and list on the fly.
-  std::map<std::string, std::list<const MediaPlaylist*>> audio_group_map;
-  std::list<const MediaPlaylist*> video_playlists;
-  for (const MediaPlaylist* media_playlist : media_playlists_) {
-    MediaPlaylist::MediaPlaylistStreamType stream_type =
-        media_playlist->stream_type();
-    if (stream_type == MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio) {
-      auto& audio_playlists = audio_group_map[media_playlist->group_id()];
-      audio_playlists.push_back(media_playlist);
-    } else if (stream_type ==
-               MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo) {
-      video_playlists.push_back(media_playlist);
-    } else {
-      NOTIMPLEMENTED() << static_cast<int>(stream_type) << " not handled.";
-    }
-  }
-
   // TODO(rkuroiwa): Handle audio only.
   std::string audio_output;
   std::string video_output;
-  for (auto& group_id_audio_playlists : audio_group_map) {
+  for (const auto& group_id_audio_playlists : audio_playlist_groups_) {
     const std::string& group_id = group_id_audio_playlists.first;
     const std::list<const MediaPlaylist*>& audio_playlists =
         group_id_audio_playlists.second;
@@ -162,7 +161,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
       if (audio_bitrate > max_audio_bitrate)
         max_audio_bitrate = audio_bitrate;
     }
-    for (const MediaPlaylist* video_playlist : video_playlists) {
+    for (const MediaPlaylist* video_playlist : video_playlists_) {
       const std::string& video_codec = video_playlist->codec();
       const uint64_t video_bitrate = video_playlist->Bitrate();
 
@@ -184,8 +183,8 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     }
   }
 
-  if (audio_group_map.empty()) {
-    for (const MediaPlaylist* video_playlist : video_playlists) {
+  if (audio_playlist_groups_.empty()) {
+    for (const MediaPlaylist* video_playlist : video_playlists_) {
       const std::string& video_codec = video_playlist->codec();
       const uint64_t video_bitrate = video_playlist->Bitrate();
 
