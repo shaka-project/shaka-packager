@@ -87,9 +87,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="../../d2/d5b/classshaka_1_1media_1_1KeySource-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::KeySource Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -112,43 +110,16 @@ Inheritance diagram for shaka::media::KeySource:</div>
 </map>
  </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a2bb2755c69385800fa57172e262befdd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>TrackType</b> { <br/>
-&#160;&#160;<b>TRACK_TYPE_UNKNOWN</b> = 0, 
-<b>TRACK_TYPE_SD</b> = 1, 
-<b>TRACK_TYPE_HD</b> = 2, 
-<b>TRACK_TYPE_UHD1</b> = 3, 
-<br/>
-&#160;&#160;<b>TRACK_TYPE_UHD2</b> = 4, 
-<b>TRACK_TYPE_AUDIO</b> = 5, 
-<b>TRACK_TYPE_UNSPECIFIED</b> = 6, 
-<b>NUM_VALID_TRACK_TYPES</b> = 6
-<br/>
- }</td></tr>
-<tr class="separator:a2bb2755c69385800fa57172e262befdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td></tr>
 <tr class="separator:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a994eb66cf09d8b08fd1c964f6afd3ab3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a> (TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
-<tr class="separator:a994eb66cf09d8b08fd1c964f6afd3ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af56c833453d65297c4dc96c9d2f83e1a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a> (const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="separator:af56c833453d65297c4dc96c9d2f83e1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18806b962c858e35ed07753687605b16"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
-<tr class="separator:a18806b962c858e35ed07753687605b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a0963412e7ee33d0e34893ebdf38d96c1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0963412e7ee33d0e34893ebdf38d96c1"></a>
-static TrackType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1">GetTrackTypeFromString</a> (const std::string &amp;track_type_string)</td></tr>
-<tr class="memdesc:a0963412e7ee33d0e34893ebdf38d96c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert string representation of track type to enum representation. <br/></td></tr>
-<tr class="separator:a0963412e7ee33d0e34893ebdf38d96c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f9cede7a8c1678e1fac93c8fe12aa75"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f9cede7a8c1678e1fac93c8fe12aa75"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">TrackTypeToString</a> (TrackType track_type)</td></tr>
-<tr class="memdesc:a4f9cede7a8c1678e1fac93c8fe12aa75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert TrackType to string. <br/></td></tr>
-<tr class="separator:a4f9cede7a8c1678e1fac93c8fe12aa75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34340247a575bc693d14c3bef9102258"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="separator:a34340247a575bc693d14c3bef9102258"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> is responsible for encryption key acquisition. </p>
@@ -200,7 +171,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 </div>
 </div>
-<a class="anchor" id="a18806b962c858e35ed07753687605b16"></a>
+<a class="anchor" id="a34340247a575bc693d14c3bef9102258"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -216,8 +187,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">TrackType&#160;</td>
-          <td class="paramname"><em>track_type</em>, </td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stream_label</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -241,18 +212,18 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_period_index</td><td>is the sequence number of the key rotation period for which the key is being retrieved. </td></tr>
-    <tr><td class="paramname">track_type</td><td>is the type of track for which retrieving the key. </td></tr>
+    <tr><td class="paramname">stream_label</td><td>is the label of stream for which retrieving the key. </td></tr>
     <tr><td class="paramname">key</td><td>is a pointer to the <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> which will hold the retrieved key. Owner retains ownership, and may not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a4005a0a96024a6918fb9f81a281ca131">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ab56a71e9f9f9e545f96e667279c05bb1">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#afa9abf3a9104cbcb4711eac65c8a5bdf">shaka::media::FixedKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a783cd4a9bf35fe2a7a610806bfda8e62">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a1161732d3310177256ff0eed1f877e38">shaka::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a994eb66cf09d8b08fd1c964f6afd3ab3"></a>
+<a class="anchor" id="af56c833453d65297c4dc96c9d2f83e1a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -262,8 +233,8 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
         <tr>
           <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::GetKey </td>
           <td>(</td>
-          <td class="paramtype">TrackType&#160;</td>
-          <td class="paramname"><em>track_type</em>, </td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stream_label</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -283,17 +254,17 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get encryption key of the specified track type. </p>
+<p>Get encryption key of the specified stream label. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">track_type</td><td>is the type of track for which retrieving the key. </td></tr>
+    <tr><td class="paramname">stream_label</td><td>is the label of stream for which retrieving the key. </td></tr>
     <tr><td class="paramname">key</td><td>is a pointer to the <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> which will hold the retrieved key. Owner retains ownership, and may not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a425495104b43f26b94ae38794c608e96">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a59a16d61c6a6d05745e8b49fd3618deb">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a267d1f36d1c015fd5e8c20b93f270d0a">shaka::media::FixedKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ae7fa01a2f2f91e26e45b54146c929580">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a3ebb4d8fdafa7c3e241038f1f8c0ed7b">shaka::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
@@ -349,7 +320,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 22:14:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 15 2017 18:19:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -1165,8 +1165,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01076"></a><span class="lineno"> 1076</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l01077"></a><span class="lineno"> 1077</span>&#160;  }</div>
 <div class="line"><a name="l01078"></a><span class="lineno"> 1078</span>&#160;</div>
-<div class="line"><a name="l01079"></a><span class="lineno"> 1079</span>&#160;  status = decryption_key_source_-&gt;GetKey(KeySource::TRACK_TYPE_HD,</div>
-<div class="line"><a name="l01080"></a><span class="lineno"> 1080</span>&#160;                                          encryption_key);</div>
+<div class="line"><a name="l01079"></a><span class="lineno"> 1079</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> kHdStreamLabel[] = <span class="stringliteral">&quot;HD&quot;</span>;</div>
+<div class="line"><a name="l01080"></a><span class="lineno"> 1080</span>&#160;  status = decryption_key_source_-&gt;GetKey(kHdStreamLabel, encryption_key);</div>
 <div class="line"><a name="l01081"></a><span class="lineno"> 1081</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
 <div class="line"><a name="l01082"></a><span class="lineno"> 1082</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Fetch Key(s) failed for AssetID = &quot;</span></div>
 <div class="line"><a name="l01083"></a><span class="lineno"> 1083</span>&#160;               &lt;&lt; ntohlFromBuffer(asset_id) &lt;&lt; <span class="stringliteral">&quot;, error = &quot;</span> &lt;&lt; status;</div>
@@ -1272,7 +1272,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 22:14:15 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 15 2017 18:19:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -126,56 +126,40 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">   45</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> {</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">enum</span> TrackType {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    TRACK_TYPE_UNKNOWN = 0,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    TRACK_TYPE_SD = 1,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    TRACK_TYPE_HD = 2,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    TRACK_TYPE_UHD1 = 3,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    TRACK_TYPE_UHD2 = 4,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    TRACK_TYPE_AUDIO = 5,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    TRACK_TYPE_UNSPECIFIED = 6,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    NUM_VALID_TRACK_TYPES = 6</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  };</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>();</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(EmeInitDataType init_data_type,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                           <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; init_data) = 0;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a>(TrackType track_type, <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                        <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                                    TrackType track_type,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                                    <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">static</span> TrackType <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1">GetTrackTypeFromString</a>(<span class="keyword">const</span> std::string&amp; track_type_string);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">static</span> std::string <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">TrackTypeToString</a>(TrackType track_type);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;};</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_KEY_SOURCE_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a18806b962c858e35ed07753687605b16"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">shaka::media::KeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index, TrackType track_type, EncryptionKey *key)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a994eb66cf09d8b08fd1c964f6afd3ab3"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a4f9cede7a8c1678e1fac93c8fe12aa75"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">shaka::media::KeySource::TrackTypeToString</a></div><div class="ttdeci">static std::string TrackTypeToString(TrackType track_type)</div><div class="ttdoc">Convert TrackType to string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00037">key_source.cc:37</a></div></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(EmeInitDataType init_data_type,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                           <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; init_data) = 0;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                        <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                        <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                    <span class="keyword">const</span> std::string&amp; stream_label,</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                    <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;};</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_KEY_SOURCE_H_</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a34340247a575bc693d14c3bef9102258"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index, const std::string &amp;stream_label, EncryptionKey *key)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_af56c833453d65297c4dc96c9d2f83e1a"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(const std::string &amp;stream_label, EncryptionKey *key)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a0963412e7ee33d0e34893ebdf38d96c1"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1">shaka::media::KeySource::GetTrackTypeFromString</a></div><div class="ttdeci">static TrackType GetTrackTypeFromString(const std::string &amp;track_type_string)</div><div class="ttdoc">Convert string representation of track type to enum representation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00019">key_source.cc:19</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">shaka::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00034">key_source.h:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00088">status.h:88</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 22:14:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 15 2017 18:19:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -113,44 +113,18 @@ Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">KeySource implementation overrides.</div></td></tr>
 <tr class="memitem:a5cd8641873f213b826fc32e1c0026041"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a5cd8641873f213b826fc32e1c0026041">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data) override</td></tr>
 <tr class="separator:a5cd8641873f213b826fc32e1c0026041"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a267d1f36d1c015fd5e8c20b93f270d0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a267d1f36d1c015fd5e8c20b93f270d0a">GetKey</a> (TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
-<tr class="separator:a267d1f36d1c015fd5e8c20b93f270d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ebb4d8fdafa7c3e241038f1f8c0ed7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a3ebb4d8fdafa7c3e241038f1f8c0ed7b">GetKey</a> (const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
+<tr class="separator:a3ebb4d8fdafa7c3e241038f1f8c0ed7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58f9eae1ce9148a82f70118879b6c3f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a58f9eae1ce9148a82f70118879b6c3f1">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:a58f9eae1ce9148a82f70118879b6c3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa9abf3a9104cbcb4711eac65c8a5bdf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#afa9abf3a9104cbcb4711eac65c8a5bdf">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, TrackType track_type, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
-<tr class="separator:afa9abf3a9104cbcb4711eac65c8a5bdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1161732d3310177256ff0eed1f877e38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a1161732d3310177256ff0eed1f877e38">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
+<tr class="separator:a1161732d3310177256ff0eed1f877e38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a91ba439d785022a1e2ceeaa9ebe81a"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr<br class="typebreak"/>
 &lt; <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a9a91ba439d785022a1e2ceeaa9ebe81a">CreateFromHexStrings</a> (const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_boxes_hex, const std::string &amp;iv_hex)</td></tr>
 <tr class="separator:a9a91ba439d785022a1e2ceeaa9ebe81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_static_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
-<tr class="memitem:a0963412e7ee33d0e34893ebdf38d96c1 inherit pub_static_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0963412e7ee33d0e34893ebdf38d96c1"></a>
-static TrackType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a0963412e7ee33d0e34893ebdf38d96c1">GetTrackTypeFromString</a> (const std::string &amp;track_type_string)</td></tr>
-<tr class="memdesc:a0963412e7ee33d0e34893ebdf38d96c1 inherit pub_static_methods_classshaka_1_1media_1_1KeySource"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert string representation of track type to enum representation. <br/></td></tr>
-<tr class="separator:a0963412e7ee33d0e34893ebdf38d96c1 inherit pub_static_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f9cede7a8c1678e1fac93c8fe12aa75 inherit pub_static_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f9cede7a8c1678e1fac93c8fe12aa75"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a4f9cede7a8c1678e1fac93c8fe12aa75">TrackTypeToString</a> (TrackType track_type)</td></tr>
-<tr class="memdesc:a4f9cede7a8c1678e1fac93c8fe12aa75 inherit pub_static_methods_classshaka_1_1media_1_1KeySource"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert TrackType to string. <br/></td></tr>
-<tr class="separator:a4f9cede7a8c1678e1fac93c8fe12aa75 inherit pub_static_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
-<tr class="memitem:a2bb2755c69385800fa57172e262befdd inherit pub_types_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>TrackType</b> { <br/>
-&#160;&#160;<b>TRACK_TYPE_UNKNOWN</b> = 0, 
-<b>TRACK_TYPE_SD</b> = 1, 
-<b>TRACK_TYPE_HD</b> = 2, 
-<b>TRACK_TYPE_UHD1</b> = 3, 
-<br/>
-&#160;&#160;<b>TRACK_TYPE_UHD2</b> = 4, 
-<b>TRACK_TYPE_AUDIO</b> = 5, 
-<b>TRACK_TYPE_UNSPECIFIED</b> = 6, 
-<b>NUM_VALID_TRACK_TYPES</b> = 6
-<br/>
- }</td></tr>
-<tr class="separator:a2bb2755c69385800fa57172e262befdd inherit pub_types_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A key source that uses fixed keys for encryption. </p>
@@ -211,7 +185,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00077">77</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00078">78</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -262,7 +236,7 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="afa9abf3a9104cbcb4711eac65c8a5bdf"></a>
+<a class="anchor" id="a1161732d3310177256ff0eed1f877e38"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -278,8 +252,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">TrackType&#160;</td>
-          <td class="paramname"><em>track_type</em>, </td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stream_label</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -303,20 +277,20 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_period_index</td><td>is the sequence number of the key rotation period for which the key is being retrieved. </td></tr>
-    <tr><td class="paramname">track_type</td><td>is the type of track for which retrieving the key. </td></tr>
+    <tr><td class="paramname">stream_label</td><td>is the label of stream for which retrieving the key. </td></tr>
     <tr><td class="paramname">key</td><td>is a pointer to the <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> which will hold the retrieved key. Owner retains ownership, and may not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a18806b962c858e35ed07753687605b16">shaka::media::KeySource</a>.</p>
+<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a267d1f36d1c015fd5e8c20b93f270d0a"></a>
+<a class="anchor" id="a3ebb4d8fdafa7c3e241038f1f8c0ed7b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -326,8 +300,8 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::FixedKeySource::GetKey </td>
           <td>(</td>
-          <td class="paramtype">TrackType&#160;</td>
-          <td class="paramname"><em>track_type</em>, </td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stream_label</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -347,17 +321,17 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get encryption key of the specified track type. </p>
+<p>Get encryption key of the specified stream label. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">track_type</td><td>is the type of track for which retrieving the key. </td></tr>
+    <tr><td class="paramname">stream_label</td><td>is the label of stream for which retrieving the key. </td></tr>
     <tr><td class="paramname">key</td><td>is a pointer to the <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> which will hold the retrieved key. Owner retains ownership, and may not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource</a>.</p>
+<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource</a>.</p>
 
 <p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00024">24</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
@@ -406,7 +380,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html#l00032">32</a> of file <a class="el" href="../../d3/d6b/fixed__key__source_8cc_source.html">fixed_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -417,7 +391,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 22:14:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 15 2017 18:19:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -120,7 +120,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">if</span> (found == decryptor_map_.end()) {</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="comment">// Create new AesDecryptor based on decryption mode.</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    EncryptionKey key;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    Status status(key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a>(decrypt_config-&gt;key_id(), &amp;key));</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    Status status(key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(decrypt_config-&gt;key_id(), &amp;key));</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordflow">if</span> (!status.ok()) {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error retrieving decryption key: &quot;</span> &lt;&lt; status;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -201,12 +201,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_af56c833453d65297c4dc96c9d2f83e1a"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(const std::string &amp;stream_label, EncryptionKey *key)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16">shaka::media::AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00026">aes_pattern_cryptor.h:26</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a994eb66cf09d8b08fd1c964f6afd3ab3"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 13 2017 22:14:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 15 2017 18:19:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
