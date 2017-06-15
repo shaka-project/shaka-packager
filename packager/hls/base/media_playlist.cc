@@ -14,7 +14,6 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/media/file/file.h"
-#include "packager/media/file/file_closer.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -333,27 +332,10 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
     content += "#EXT-X-ENDLIST\n";
   }
 
-  std::unique_ptr<media::File, media::FileCloser> file(
-      media::File::Open(file_path.c_str(), "w"));
-  if (!file) {
-    LOG(ERROR) << "Failed to open file " << file_path;
+  if (!media::File::WriteFileAtomically(file_path.c_str(), content)) {
+    LOG(ERROR) << "Failed to write playlist to: " << file_path;
     return false;
   }
-  int64_t bytes_written = file->Write(content.data(), content.size());
-  if (bytes_written < 0) {
-    LOG(ERROR) << "Error while writing playlist to file.";
-    return false;
-  }
-
-  // TODO(rkuroiwa): There are at least 2 while (remaining_bytes > 0) logic in
-  // this library to handle partial writes by File. Dedup them and use it here
-  // has well.
-  if (static_cast<size_t>(bytes_written) < content.size()) {
-    LOG(ERROR) << "Failed to write the whole playlist. Wrote " << bytes_written
-               << " but the playlist is " << content.size() << " bytes.";
-    return false;
-  }
-
   return true;
 }
 

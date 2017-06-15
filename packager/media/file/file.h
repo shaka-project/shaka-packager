@@ -104,6 +104,13 @@ class File {
   /// @return true on success, false otherwise.
   static bool ReadFileToString(const char* file_name, std::string* contents);
 
+  /// Save `contents` to `file_name` in an atomic manner.
+  /// @param file_name is the destination file name.
+  /// @param contents is the data to be saved.
+  /// @return true on success, false otherwise.
+  static bool WriteFileAtomically(const char* file_name,
+                                  const std::string& contents);
+
   /// Copies files. This is not good for copying huge files. Although not
   /// recommended, it is safe to have source file and destination file name be
   /// the same.

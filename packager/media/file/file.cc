@@ -9,7 +9,9 @@
 #include <gflags/gflags.h>
 #include <algorithm>
 #include <memory>
+#include "packager/base/files/important_file_writer.h"
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_piece.h"
 #include "packager/media/file/local_file.h"
 #include "packager/media/file/memory_file.h"
 #include "packager/media/file/threaded_io_file.h"
@@ -39,12 +41,15 @@ namespace {
 
 typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);
 typedef bool (*FileDeleteFunction)(const char* file_name);
+typedef bool (*FileAtomicWriteFunction)(const char* file_name,
+                                        const std::string& contents);
 
-struct SupportedTypeInfo {
+struct FileTypeInfo {
   const char* type;
   size_t type_length;
   const FileFactoryFunction factory_function;
   const FileDeleteFunction delete_function;
+  const FileAtomicWriteFunction atomic_write_function;
 };
 
 File* CreateLocalFile(const char* file_name, const char* mode) {
@@ -53,6 +58,12 @@ File* CreateLocalFile(const char* file_name, const char* mode) {
 
 bool DeleteLocalFile(const char* file_name) {
   return LocalFile::Delete(file_name);
+}
+
+bool WriteLocalFileAtomically(const char* file_name,
+                              const std::string& contents) {
+  return base::ImportantFileWriter::WriteFileAtomically(
+      base::FilePath::FromUTF8Unsafe(file_name), contents);
 }
 
 File* CreateUdpFile(const char* file_name, const char* mode) {
@@ -72,26 +83,42 @@ bool DeleteMemoryFile(const char* file_name) {
   return true;
 }
 
-static const SupportedTypeInfo kSupportedTypeInfo[] = {
+static const FileTypeInfo kFileTypeInfo[] = {
   {
     kLocalFilePrefix,
     strlen(kLocalFilePrefix),
     &CreateLocalFile,
-    &DeleteLocalFile
+    &DeleteLocalFile,
+    &WriteLocalFileAtomically,
   },
   {
     kUdpFilePrefix,
     strlen(kUdpFilePrefix),
     &CreateUdpFile,
-    NULL
+    nullptr,
+    nullptr
   },
   {
     kMemoryFilePrefix,
     strlen(kMemoryFilePrefix),
     &CreateMemoryFile,
-    &DeleteMemoryFile
+    &DeleteMemoryFile,
+    nullptr
   },
 };
+
+const FileTypeInfo* GetFileTypeInfo(base::StringPiece file_name,
+                                    base::StringPiece* real_file_name) {
+  for (const FileTypeInfo& file_type : kFileTypeInfo) {
+    if (strncmp(file_type.type, file_name.data(), file_type.type_length) == 0) {
+      *real_file_name = file_name.substr(file_type.type_length);
+      return &file_type;
+    }
+  }
+  // Otherwise we default to the first file type, which is LocalFile.
+  *real_file_name = file_name;
+  return &kFileTypeInfo[0];
+}
 
 }  // namespace
 
@@ -123,19 +150,10 @@ File* File::Create(const char* file_name, const char* mode) {
 }
 
 File* File::CreateInternalFile(const char* file_name, const char* mode) {
-  std::unique_ptr<File, FileCloser> internal_file;
-  for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
-    const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
-    if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
-      internal_file.reset(type_info.factory_function(
-          file_name + type_info.type_length, mode));
-    }
-  }
-  // Otherwise we assume it is a local file
-  if (!internal_file)
-    internal_file.reset(CreateLocalFile(file_name, mode));
-
-  return internal_file.release();
+  base::StringPiece real_file_name;
+  const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
+  DCHECK(file_type);
+  return file_type->factory_function(real_file_name.data(), mode);
 }
 
 File* File::Open(const char* file_name, const char* mode) {
@@ -161,16 +179,12 @@ File* File::OpenWithNoBuffering(const char* file_name, const char* mode) {
 }
 
 bool File::Delete(const char* file_name) {
-  for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
-    const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
-    if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
-      return type_info.delete_function ?
-          type_info.delete_function(file_name + type_info.type_length) :
-          false;
-    }
-  }
-  // Otherwise we assume it is a local file
-  return DeleteLocalFile(file_name);
+  base::StringPiece real_file_name;
+  const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
+  DCHECK(file_type);
+  return file_type->delete_function
+             ? file_type->delete_function(real_file_name.data())
+             : false;
 }
 
 int64_t File::GetFileSize(const char* file_name) {
@@ -198,6 +212,42 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
 
   file->Close();
   return len == 0;
+}
+
+bool File::WriteFileAtomically(const char* file_name, const std::string& contents) {
+  base::StringPiece real_file_name;
+  const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
+  DCHECK(file_type);
+  if (file_type->atomic_write_function)
+    return file_type->atomic_write_function(real_file_name.data(), contents);
+
+  // Provide a default implementation which may not be atomic unfortunately.
+
+  // Skip the warning message for memory files, which is meant for testing
+  // anyway..
+  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0) {
+    LOG(WARNING) << "Writing to " << file_name
+                 << " is not guaranteed to be atomic.";
+  }
+
+  std::unique_ptr<File, FileCloser> file(media::File::Open(file_name, "w"));
+  if (!file) {
+    LOG(ERROR) << "Failed to open file " << file_name;
+    return false;
+  }
+  int64_t bytes_written = file->Write(contents.data(), contents.size());
+  if (bytes_written < 0) {
+    LOG(ERROR) << "Failed to write to file '" << file_name << "' ("
+               << bytes_written << ").";
+    return false;
+  }
+  if (static_cast<size_t>(bytes_written) != contents.size()) {
+    LOG(ERROR) << "Failed to write the whole file to " << file_name
+               << ". Wrote " << bytes_written << " but expecting "
+               << contents.size() << " bytes.";
+    return false;
+  }
+  return true;
 }
 
 bool File::Copy(const char* from_file_name, const char* to_file_name) {

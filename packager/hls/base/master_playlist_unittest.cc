@@ -7,8 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/files/file_util.h"
-#include "packager/base/files/scoped_temp_dir.h"
+#include "packager/base/files/file_path.h"
 #include "packager/hls/base/master_playlist.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/hls/base/mock_media_playlist.h"
@@ -37,32 +36,21 @@ const MediaPlaylist::MediaPlaylistType kVodPlaylist =
 
 class MasterPlaylistTest : public ::testing::Test {
  protected:
-  MasterPlaylistTest() : master_playlist_(kDefaultMasterPlaylistName) {}
+  MasterPlaylistTest()
+      : master_playlist_(kDefaultMasterPlaylistName),
+        test_output_dir_("memory://test_dir"),
+        master_playlist_path_(
+            FilePath::FromUTF8Unsafe(test_output_dir_)
+                .Append(FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName))
+                .AsUTF8Unsafe()) {}
 
   void SetUp() override {
     SetPackagerVersionForTesting("test");
-    GetOutputDir(&test_output_dir_path_, &test_output_dir_);
   }
 
   MasterPlaylist master_playlist_;
-  FilePath test_output_dir_path_;
   std::string test_output_dir_;
-
- private:
-  // Creates a path to the output directory for writing out playlists.
-  // |temp_dir_path| is set to the temporary directory so that it can be opened
-  // using base::File* related API.
-  // |output_dir| is set to an equivalent value to |temp_dir_path| but formatted
-  // so that media::File interface can Open it.
-  void GetOutputDir(FilePath* temp_dir_path, std::string* output_dir) {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(temp_dir_.IsValid());
-    *temp_dir_path = temp_dir_.path();
-    // TODO(rkuroiwa): Use memory file sys once prefix is exposed.
-    *output_dir = temp_dir_.path().AsUTF8Unsafe() + "/";
-  }
-
-  base::ScopedTempDir temp_dir_;
+  std::string master_playlist_path_;
 };
 
 TEST_F(MasterPlaylistTest, AddMediaPlaylist) {
@@ -88,14 +76,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
-  FilePath master_playlist_path =
-    test_output_dir_path_.Append(FilePath::FromUTF8Unsafe(
-        kDefaultMasterPlaylistName));
-  ASSERT_TRUE(base::PathExists(master_playlist_path))
-      << "Cannot find " << master_playlist_path.value();
-
   std::string actual;
-  ASSERT_TRUE(base::ReadFileToString(master_playlist_path, &actual));
+  ASSERT_TRUE(
+      media::File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -174,14 +157,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
-  FilePath master_playlist_path =
-    test_output_dir_path_.Append(FilePath::FromUTF8Unsafe(
-        kDefaultMasterPlaylistName));
-  ASSERT_TRUE(base::PathExists(master_playlist_path))
-      << "Cannot find " << master_playlist_path.value();
-
   std::string actual;
-  ASSERT_TRUE(base::ReadFileToString(master_playlist_path, &actual));
+  ASSERT_TRUE(
+      media::File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -250,13 +228,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   const char kBaseUrl[] = "http://anydomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
-  FilePath master_playlist_path = test_output_dir_path_.Append(
-      FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName));
-  ASSERT_TRUE(base::PathExists(master_playlist_path))
-      << "Cannot find " << master_playlist_path.value();
-
   std::string actual;
-  ASSERT_TRUE(base::ReadFileToString(master_playlist_path, &actual));
+  ASSERT_TRUE(
+      media::File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"

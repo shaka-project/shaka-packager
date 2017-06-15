@@ -9,13 +9,9 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/file/file.h"
-#include "packager/media/file/file_closer.h"
 #include "packager/mpd/base/mpd_utils.h"
 
 namespace shaka {
-
-using media::File;
-using media::FileCloser;
 
 bool WriteMpdToFile(const std::string& output_path, MpdBuilder* mpd_builder) {
   CHECK(!output_path.empty());
@@ -26,26 +22,11 @@ bool WriteMpdToFile(const std::string& output_path, MpdBuilder* mpd_builder) {
     return false;
   }
 
-  std::unique_ptr<File, FileCloser> file(File::Open(output_path.c_str(), "w"));
-  if (!file) {
-    LOG(ERROR) << "Failed to open file for writing: " << output_path;
+  if (!media::File::WriteFileAtomically(output_path.c_str(), mpd)) {
+    LOG(ERROR) << "Failed to write mpd to: " << output_path;
     return false;
   }
-
-  const char* mpd_char_ptr = mpd.data();
-  size_t mpd_bytes_left = mpd.size();
-  while (mpd_bytes_left > 0) {
-    int64_t length = file->Write(mpd_char_ptr, mpd_bytes_left);
-    if (length <= 0) {
-      LOG(ERROR) << "Failed to write to file '" << output_path << "' ("
-                 << length << ").";
-      return false;
-    }
-    mpd_char_ptr += length;
-    mpd_bytes_left -= length;
-  }
-  // Release the pointer because Close() destructs itself.
-  return file.release()->Close();
+  return true;
 }
 
 ContentType GetContentType(const MediaInfo& media_info) {

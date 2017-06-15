@@ -13,7 +13,6 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/file/file.h"
-#include "packager/media/file/file_closer.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -162,25 +161,11 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
       base::FilePath::FromUTF8Unsafe(output_dir)
           .Append(base::FilePath::FromUTF8Unsafe(file_name_))
           .AsUTF8Unsafe();
-  std::unique_ptr<media::File, media::FileCloser> file(
-      media::File::Open(file_path.c_str(), "w"));
-  if (!file) {
-    LOG(ERROR) << "Failed to open file " << file_path;
-    return false;
-  }
-
-  int64_t bytes_written = file->Write(content.data(), content.size());
-  if (bytes_written < 0) {
-    LOG(ERROR) << "Error while writing master playlist " << file_path;
-    return false;
-  }
-  if (static_cast<size_t>(bytes_written) != content.size()) {
-    LOG(ERROR) << "Written " << bytes_written << " but content size is "
-               << content.size() << " " << file_path;
+  if (!media::File::WriteFileAtomically(file_path.c_str(), content)) {
+    LOG(ERROR) << "Failed to write master playlist to: " << file_path;
     return false;
   }
   written_playlist_ = content;
-
   return true;
 }
 

@@ -186,29 +186,6 @@ int SearchTimedOutRepeatIndex(uint64_t timeshift_limit,
   return (timeshift_limit - segment_info.start_time) / segment_info.duration;
 }
 
-// Overload this function to support different types of |output|.
-// Note that this could be done by call MpdBuilder::ToString() and use the
-// result to write to a file, it requires an extra copy.
-bool WriteXmlCharArrayToOutput(xmlChar* doc,
-                               int doc_size,
-                               std::string* output) {
-  DCHECK(doc);
-  DCHECK(output);
-  output->assign(doc, doc + doc_size);
-  return true;
-}
-
-bool WriteXmlCharArrayToOutput(xmlChar* doc,
-                               int doc_size,
-                               media::File* output) {
-  DCHECK(doc);
-  DCHECK(output);
-  if (output->Write(doc, doc_size) < doc_size)
-    return false;
-
-  return output->Flush();
-}
-
 std::string MakePathRelative(const std::string& path,
                              const std::string& mpd_dir) {
   return (path.find(mpd_dir) == 0) ? path.substr(mpd_dir.size()) : path;
@@ -416,17 +393,8 @@ AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
   return adaptation_sets_.back().get();
 }
 
-bool MpdBuilder::WriteMpdToFile(media::File* output_file) {
-  DCHECK(output_file);
-  return WriteMpdToOutput(output_file);
-}
-
 bool MpdBuilder::ToString(std::string* output) {
   DCHECK(output);
-  return WriteMpdToOutput(output);
-}
-template <typename OutputType>
-bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
   static LibXmlInitializer lib_xml_initializer;
 
   xml::scoped_xml_ptr<xmlDoc> doc(GenerateMpd());
@@ -435,16 +403,15 @@ bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
 
   static const int kNiceFormat = 1;
   int doc_str_size = 0;
-  xmlChar* doc_str = NULL;
+  xmlChar* doc_str = nullptr;
   xmlDocDumpFormatMemoryEnc(doc.get(), &doc_str, &doc_str_size, "UTF-8",
                             kNiceFormat);
-
-  bool result = WriteXmlCharArrayToOutput(doc_str, doc_str_size, output);
+  output->assign(doc_str, doc_str + doc_str_size);
   xmlFree(doc_str);
 
   // Cleanup, free the doc.
   doc.reset();
-  return result;
+  return true;
 }
 
 xmlDocPtr MpdBuilder::GenerateMpd() {

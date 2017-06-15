@@ -71,15 +71,10 @@ class MpdBuilder {
   /// @return The new adaptation set, which is owned by this instance.
   virtual AdaptationSet* AddAdaptationSet(const std::string& lang);
 
-  /// Write the MPD to specified file.
-  /// @param[out] output_file is MPD destination. output_file will be
-  ///             flushed but not closed.
-  /// @return true on success, false otherwise.
-  bool WriteMpdToFile(media::File* output_file);
-
   /// Writes the MPD to the given string.
   /// @param[out] output is an output string where the MPD gets written.
   /// @return true on success, false otherwise.
+  // TODO(kqyang): Handle file IO in this class as in HLS media_playlist?
   virtual bool ToString(std::string* output);
 
   /// Adjusts the fields of MediaInfo so that paths are relative to the
@@ -102,13 +97,6 @@ class MpdBuilder {
   friend class LiveMpdBuilderTest;
   template <DashProfile profile>
   friend class MpdBuilderTest;
-
-  bool ToStringImpl(std::string* output);
-
-  // This is a helper method for writing out MPDs, called from WriteMpdToFile()
-  // and ToString().
-  template <typename OutputType>
-  bool WriteMpdToOutput(OutputType* output);
 
   // Returns the document pointer to the MPD. This must be freed by the caller
   // using appropriate xmlDocPtr freeing function.
