@@ -397,7 +397,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  CHECK(logging::InitLogging(log_settings));</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  google::SetVersionString(shaka::ShakaPackager::GetLibraryVersion());</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  google::SetVersionString(shaka::Packager::GetLibraryVersion());</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));</div>
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  google::ParseCommandLineFlags(&amp;argc, &amp;argv, <span class="keyword">true</span>);</div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="keywordflow">if</span> (argc &lt; 2) {</div>
@@ -422,7 +422,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      <span class="keywordflow">return</span> kArgumentValidationFailed;</div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    stream_descriptors.push_back(stream_descriptor.value());</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  }</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  ShakaPackager packager;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  Packager packager;</div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  media::Status status =</div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      packager.Initialize(packaging_params.value(), stream_descriptors);</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
@@ -475,7 +475,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 16 2017 18:29:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 16 2017 23:14:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
