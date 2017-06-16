@@ -178,9 +178,9 @@ bool HandleWidevineKeyFormats(
       return false;
     }
     // This format does not have a key id field.
-    NotifyEncryptionToMediaPlaylist(
-        encryption_method, key_uri_data,
-        std::vector<uint8_t>(), iv, "com.widevine", "", media_playlist);
+    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data,
+                                    std::vector<uint8_t>(), iv, "com.widevine",
+                                    "1", media_playlist);
   }
 
   std::string pssh_as_string(

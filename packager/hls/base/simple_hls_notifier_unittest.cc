@@ -689,22 +689,21 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
                           widevine_system_id_.size());
   pssh_info.add_key_id(any_key_id);
 
-  EXPECT_CALL(
-      *mock_media_playlist,
-      AddEncryptionInfo(_,
-                        StrEq("data:text/plain;base64," + expected_json_base64),
-                        StrEq(""),
-                        StrEq(""), StrEq("com.widevine"), _));
-
   EXPECT_CALL(*mock_media_playlist,
               AddEncryptionInfo(
-                  _,
-                  StrEq("data:text/plain;base64,"
-                        "AAAAS3Bzc2gAAAAA7e+"
-                        "LqXnWSs6jyCfc1R0h7QAAACsSEBEiM0QRIjNEESIzRBEiM0QaDHNvb"
-                        "WVwcm92aWRlciIJY29udGVudGlk"),
-                  StrEq("0x11223344112233441122334411223344"), StrEq(""),
-                  StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), _));
+                  _, StrEq("data:text/plain;base64," + expected_json_base64),
+                  StrEq(""), StrEq(""), StrEq("com.widevine"), StrEq("1")));
+
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddEncryptionInfo(
+          _,
+          StrEq("data:text/plain;base64,"
+                "AAAAS3Bzc2gAAAAA7e+"
+                "LqXnWSs6jyCfc1R0h7QAAACsSEBEiM0QRIjNEESIzRBEiM0QaDHNvb"
+                "WVwcm92aWRlciIJY29udGVudGlk"),
+          StrEq("0x11223344112233441122334411223344"), StrEq(""),
+          StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), StrEq("1")));
   std::vector<uint8_t> pssh_as_vec = pssh_info.CreateBox();
   std::string pssh_in_string(pssh_as_vec.begin(), pssh_as_vec.end());
   std::string base_64_encoded_pssh;
