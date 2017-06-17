@@ -52,9 +52,10 @@ class PackagerApp(object):
     # Put single-quotes around each entry so that things like '$' signs in
     # segment templates won't be interpreted as shell variables.
     self.packaging_command_line = ' '.join(["'%s'" % entry for entry in cmd])
-    self.packaging_result = subprocess.call(cmd)
-    if self.packaging_result != 0:
+    packaging_result = subprocess.call(cmd)
+    if packaging_result != 0:
       print '%s returned non-0 status' % self.packaging_command_line
+    return packaging_result
 
   def GetCommandLine(self):
     return self.packaging_command_line
