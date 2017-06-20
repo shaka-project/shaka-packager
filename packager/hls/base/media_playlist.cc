@@ -36,7 +36,7 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
 std::string CreatePlaylistHeader(const std::string& init_segment_name,
                                  uint32_t target_duration,
                                  MediaPlaylist::MediaPlaylistType type,
-                                 int sequence_number,
+                                 int media_sequence_number,
                                  int discontinuity_sequence_number) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
@@ -62,9 +62,9 @@ std::string CreatePlaylistHeader(const std::string& init_segment_name,
       header += "#EXT-X-PLAYLIST-TYPE:EVENT\n";
       break;
     case MediaPlaylist::MediaPlaylistType::kLive:
-      if (sequence_number > 0) {
+      if (media_sequence_number > 0) {
         base::StringAppendF(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
-                            sequence_number);
+                            media_sequence_number);
       }
       if (discontinuity_sequence_number > 0) {
         base::StringAppendF(&header, "#EXT-X-DISCONTINUITY-SEQUENCE:%d\n",
@@ -186,6 +186,27 @@ std::string EncryptionInfoEntry::ToString() {
   return ext_key + ",KEYFORMAT=\"" + key_format_ + "\"\n";
 }
 
+class DiscontinuityEntry : public HlsEntry {
+ public:
+  DiscontinuityEntry();
+
+  ~DiscontinuityEntry() override;
+
+  std::string ToString() override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DiscontinuityEntry);
+};
+
+DiscontinuityEntry::DiscontinuityEntry()
+    : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
+
+DiscontinuityEntry::~DiscontinuityEntry() {}
+
+std::string DiscontinuityEntry::ToString() {
+  return "#EXT-X-DISCONTINUITY\n";
+}
+
 double LatestSegmentStartTime(
     const std::list<std::unique_ptr<HlsEntry>>& entries) {
   DCHECK(!entries.empty());
@@ -276,69 +297,19 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   SlideWindow();
 }
 
-// TODO(rkuroiwa): This works for single key format but won't work for multiple
-// key formats (e.g. different DRM systems).
-// Candidate algorithm:
-// Assume entries_ is std::list (static_assert below).
-// Create a map from key_format to EncryptionInfoEntry (iterator actually).
-// Iterate over entries_ until it hits SegmentInfoEntry. While iterating over
-// entries_ if there are multiple EncryptionInfoEntry with the same key_format,
-// erase the older ones using the iterator.
-// Note that when erasing std::list iterators, only the deleted iterators are
-// invalidated.
-void MediaPlaylist::RemoveOldestSegment() {
-  static_assert(std::is_same<decltype(entries_),
-                             std::list<std::unique_ptr<HlsEntry>>>::value,
-                "This algorithm assumes std::list.");
-  if (entries_.empty())
-    return;
-  if (entries_.front()->type() == HlsEntry::EntryType::kExtInf) {
-    entries_.pop_front();
-    return;
-  }
-
-  // Make sure that the first EXT-X-KEY entry doesn't get popped out until the
-  // next EXT-X-KEY entry because the first EXT-X-KEY applies to all the
-  // segments following until the next one.
-
-  if (entries_.size() == 1) {
-    // More segments might get added, leave the entry in.
-    return;
-  }
-
-  if (entries_.size() == 2) {
-    auto entries_itr = entries_.begin();
-    ++entries_itr;
-    if ((*entries_itr)->type() == HlsEntry::EntryType::kExtKey) {
-      entries_.pop_front();
-    } else {
-      entries_.erase(entries_itr);
-    }
-    return;
-  }
-
-  auto entries_itr = entries_.begin();
-  ++entries_itr;
-  if ((*entries_itr)->type() == HlsEntry::EntryType::kExtInf) {
-    DCHECK((*entries_itr)->type() == HlsEntry::EntryType::kExtInf);
-    entries_.erase(entries_itr);
-    return;
-  }
-
-  ++entries_itr;
-  // This assumes that there is a segment between 2 EXT-X-KEY entries.
-  // Which should be the case due to logic in AddEncryptionInfo().
-  DCHECK((*entries_itr)->type() == HlsEntry::EntryType::kExtInf);
-  entries_.erase(entries_itr);
-  entries_.pop_front();
-}
-
 void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
                                       const std::string& url,
                                       const std::string& key_id,
                                       const std::string& iv,
                                       const std::string& key_format,
                                       const std::string& key_format_versions) {
+  if (!inserted_discontinuity_tag_) {
+    // Insert discontinuity tag only for the first EXT-X-KEY, only if there
+    // are non-encrypted media segments.
+    if (!entries_.empty())
+      entries_.emplace_back(new DiscontinuityEntry());
+    inserted_discontinuity_tag_ = true;
+  }
   entries_.emplace_back(new EncryptionInfoEntry(
       method, url, key_id, iv, key_format, key_format_versions));
 }
@@ -350,22 +321,11 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
 
   std::string header = CreatePlaylistHeader(
       media_info_.init_segment_name(), target_duration_, type_,
-      sequence_number_, discontinuity_sequence_number_);
+      media_sequence_number_, discontinuity_sequence_number_);
 
   std::string body;
-  if (!entries_.empty()) {
-    const bool first_is_ext_key =
-        entries_.front()->type() == HlsEntry::EntryType::kExtKey;
-    bool inserted_discontinuity_tag = false;
-    for (const auto& entry : entries_) {
-      if (!first_is_ext_key && !inserted_discontinuity_tag &&
-          entry->type() == HlsEntry::EntryType::kExtKey) {
-        body.append("#EXT-X-DISCONTINUITY\n");
-        inserted_discontinuity_tag = true;
-      }
-      body.append(entry->ToString());
-    }
-  }
+  for (const auto& entry : entries_)
+    body.append(entry->ToString());
 
   std::string content = header + body;
 
@@ -475,18 +435,11 @@ void MediaPlaylist::SlideWindow() {
   for (; last != entries_.end(); ++last) {
     HlsEntry::EntryType entry_type = last->get()->type();
     if (entry_type == HlsEntry::EntryType::kExtKey) {
-      if (prev_entry_type != HlsEntry::EntryType::kExtKey) {
-        if (!ext_x_keys.empty()) {
-          // Increase discontinuity sequence every time key changes. Note that
-          // it is inconsistent to how we insert EXT-X-DISCONTINUITY tag
-          // currently as we only insert the tag for the first EXT-X-KEY.
-          // TODO(kqyang): Find out if it is necessary to insert the
-          // EXT-X-DISCONTINUITY tag when key changes.
-          ++discontinuity_sequence_number_;
-          ext_x_keys.clear();
-        }
-      }
+      if (prev_entry_type != HlsEntry::EntryType::kExtKey)
+        ext_x_keys.clear();
       ext_x_keys.push_back(std::move(*last));
+    } else if (entry_type == HlsEntry::EntryType::kExtDiscontinuity) {
+      ++discontinuity_sequence_number_;
     } else {
       DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
       const SegmentInfoEntry* segment_info =
@@ -503,7 +456,7 @@ void MediaPlaylist::SlideWindow() {
   // Add key entries back.
   entries_.insert(entries_.begin(), std::make_move_iterator(ext_x_keys.begin()),
                   std::make_move_iterator(ext_x_keys.end()));
-  sequence_number_ += num_segments_removed;
+  media_sequence_number_ += num_segments_removed;
 }
 
 }  // namespace hls

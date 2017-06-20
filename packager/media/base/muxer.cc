@@ -46,20 +46,23 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
             kInitialEncryptionInfo, encryption_config.protection_scheme,
             encryption_config.key_id, encryption_config.constant_iv,
             encryption_config.key_system_info);
+        current_key_id_ = encryption_config.key_id;
       }
       return InitializeMuxer();
     case StreamDataType::kSegmentInfo: {
       auto& segment_info = stream_data->segment_info;
-      if (muxer_listener_) {
+      if (muxer_listener_ && segment_info->is_encrypted) {
         const EncryptionConfig* encryption_config =
             segment_info->key_rotation_encryption_config.get();
-        if (encryption_config) {
+        // Only call OnEncryptionInfoReady again when key updates.
+        if (encryption_config && encryption_config->key_id != current_key_id_) {
           muxer_listener_->OnEncryptionInfoReady(
               !kInitialEncryptionInfo, encryption_config->protection_scheme,
               encryption_config->key_id, encryption_config->constant_iv,
               encryption_config->key_system_info);
+          current_key_id_ = encryption_config->key_id;
         }
-        if (segment_info->is_encrypted && !encryption_started_) {
+        if (!encryption_started_) {
           encryption_started_ = true;
           muxer_listener_->OnEncryptionStart();
         }

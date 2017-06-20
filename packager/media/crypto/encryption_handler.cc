@@ -222,6 +222,7 @@ Status EncryptionHandler::ProcessMediaSample(MediaSample* sample) {
         return status;
       if (!CreateEncryptor(encryption_key))
         return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
+      prev_crypto_period_index_ = current_crypto_period_index;
     }
     check_new_crypto_period_ = false;
   }

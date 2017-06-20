@@ -88,6 +88,7 @@ class Muxer : public MediaHandler {
 
   MuxerOptions options_;
   std::vector<std::shared_ptr<StreamInfo>> streams_;
+  std::vector<uint8_t> current_key_id_;
   bool encryption_started_ = false;
   bool cancelled_;
 

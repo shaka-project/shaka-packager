@@ -38,15 +38,14 @@ class MuxerListener {
 
   virtual ~MuxerListener() {};
 
-  /// Called when the media's encryption information is ready. This should be
-  /// called before OnMediaStart(), if the media is encrypted.
-  /// All the parameters may be empty just to notify that the media is
-  /// encrypted.
-  /// For ISO BMFF (MP4) media:
-  /// If @a is_initial_encryption_info is true then @a key_id is the default_KID
-  /// in 'tenc' box.
-  /// If @a is_initial_encryption_info is false then @a key_id is the new key ID
-  /// for the for the next crypto period.
+  /// Called when the media's encryption information is ready.
+  /// OnEncryptionInfoReady with @a initial_encryption_info being true should be
+  /// called before OnMediaStart(), if the media is encrypted. All the
+  /// parameters may be empty just to notify that the media is encrypted. For
+  /// ISO BMFF (MP4) media: If @a is_initial_encryption_info is true then @a
+  /// key_id is the default_KID in 'tenc' box. If @a is_initial_encryption_info
+  /// is false then @a key_id is the new key ID for the for the next crypto
+  /// period.
   /// @param is_initial_encryption_info is true if this is the first encryption
   ///        info for the media. In general, this flag should always be true for
   ///        non-key-rotated media and should be called only once.

@@ -274,31 +274,6 @@ TEST_F(MediaPlaylistTest, WriteToFileWithClearLead) {
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
-
-TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
-  ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
-
-  media_playlist_.AddSegment("file1.ts", 0, 10 * kTimeScale, kMBytes);
-  media_playlist_.AddSegment("file2.ts", 10 * kTimeScale, 30 * kTimeScale,
-                             5 * kMBytes);
-  media_playlist_.RemoveOldestSegment();
-
-  const char kExpectedOutput[] =
-      "#EXTM3U\n"
-      "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version "
-      "test\n"
-      "#EXT-X-TARGETDURATION:30\n"
-      "#EXT-X-PLAYLIST-TYPE:VOD\n"
-      "#EXTINF:30.000,\n"
-      "file2.ts\n"
-      "#EXT-X-ENDLIST\n";
-
-  const char kMemoryFilePath[] = "memory://media.m3u8";
-  EXPECT_TRUE(media_playlist_.WriteToFile(kMemoryFilePath));
-  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
-}
-
 TEST_F(MediaPlaylistTest, GetLanguage) {
   MediaInfo media_info;
   media_info.set_reference_time_scale(kTimeScale);
@@ -510,6 +485,8 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfo) {
 TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
 
+  media_playlist_.AddSegment("file1.ts", 0, 10 * kTimeScale, kMBytes);
+
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
                                     "http://example.com", "", "0x12345678",
                                     "com.widevine", "1/2/4");
@@ -517,7 +494,8 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       MediaPlaylist::EncryptionMethod::kSampleAes, "http://mydomain.com",
       "0xfedc", "0x12345678", "com.widevine.someother", "1");
 
-  media_playlist_.AddSegment("file1.ts", 0, 10 * kTimeScale, kMBytes);
+  media_playlist_.AddSegment("file2.ts", 10 * kTimeScale, 20 * kTimeScale,
+                             2 * kMBytes);
 
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
                                     "http://example.com", "", "0x22345678",
@@ -526,7 +504,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       MediaPlaylist::EncryptionMethod::kSampleAes, "http://mydomain.com",
       "0xfedd", "0x22345678", "com.widevine.someother", "1");
 
-  media_playlist_.AddSegment("file2.ts", 10 * kTimeScale, 20 * kTimeScale,
+  media_playlist_.AddSegment("file3.ts", 30 * kTimeScale, 20 * kTimeScale,
                              2 * kMBytes);
 
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
@@ -536,7 +514,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       MediaPlaylist::EncryptionMethod::kSampleAes, "http://mydomain.com",
       "0xfede", "0x32345678", "com.widevine.someother", "1");
 
-  media_playlist_.AddSegment("file3.ts", 30 * kTimeScale, 20 * kTimeScale,
+  media_playlist_.AddSegment("file4.ts", 50 * kTimeScale, 20 * kTimeScale,
                              2 * kMBytes);
   const char kExpectedOutput[] =
       "#EXTM3U\n"
@@ -544,7 +522,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "#EXT-X-TARGETDURATION:20\n"
-      "#EXT-X-MEDIA-SEQUENCE:1\n"
+      "#EXT-X-MEDIA-SEQUENCE:2\n"
       "#EXT-X-DISCONTINUITY-SEQUENCE:1\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
       "URI=\"http://example.com\",IV=0x22345678,KEYFORMATVERSIONS=\"1/2/4\","
@@ -554,7 +532,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       "KEYFORMATVERSIONS=\"1\","
       "KEYFORMAT=\"com.widevine.someother\"\n"
       "#EXTINF:20.000,\n"
-      "file2.ts\n"
+      "file3.ts\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
       "URI=\"http://example.com\",IV=0x32345678,KEYFORMATVERSIONS=\"1/2/4\","
       "KEYFORMAT=\"com.widevine\"\n"
@@ -563,7 +541,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
       "KEYFORMATVERSIONS=\"1\","
       "KEYFORMAT=\"com.widevine.someother\"\n"
       "#EXTINF:20.000,\n"
-      "file3.ts\n";
+      "file4.ts\n";
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
   EXPECT_TRUE(media_playlist_.WriteToFile(kMemoryFilePath));

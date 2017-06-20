@@ -27,6 +27,7 @@ class HlsEntry {
   enum class EntryType {
     kExtInf,
     kExtKey,
+    kExtDiscontinuity,
   };
   virtual ~HlsEntry();
 
@@ -105,10 +106,6 @@ class MediaPlaylist {
                           uint64_t duration,
                           uint64_t size);
 
-  /// Removes the oldest segment from the playlist. Useful for manually managing
-  /// the length of the playlist.
-  virtual void RemoveOldestSegment();
-
   /// All segments added after calling this method must be decryptable with
   /// the key that can be fetched from |url|, until calling this again.
   /// @param method is the encryption method.
@@ -180,7 +177,8 @@ class MediaPlaylist {
   MediaPlaylistStreamType stream_type_ =
       MediaPlaylistStreamType::kPlaylistUnknown;
   std::string codec_;
-  int sequence_number_ = 0;
+  int media_sequence_number_ = 0;
+  bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;
 
   double longest_segment_duration_ = 0.0;

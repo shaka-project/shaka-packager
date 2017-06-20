@@ -461,6 +461,34 @@ class PackagerFunctionalTest(PackagerAppTest):
         os.path.join(self.tmp_dir, 'video.m3u8'),
         'bear-640x360-v-live-golden.m3u8')
 
+  def testPackageAvcTsLivePlaylistWithKeyRotation(self):
+    self.packager.Package(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            encryption=True,
+            key_rotation=True,
+            output_hls=True,
+            hls_playlist_type='LIVE',
+            time_shift_buffer_depth=0.5))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-enc-rotation-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-enc-rotation-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-a-live-enc-rotation-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-live-enc-rotation-golden.m3u8')
+
   def testPackageAvcTsEventPlaylist(self):
     self.assertPackageSuccess(
         self._GetStreams(
@@ -664,7 +692,7 @@ class PackagerFunctionalTest(PackagerAppTest):
                        'bear-640x360-v-enc-golden',
                        output_format='ts')
     self._DiffGold(self.hls_master_playlist_output,
-                   'bear-640x360-av-enc-master-golden.m3u8')
+                   'bear-640x360-av-master-golden.m3u8')
     self._DiffGold(
         os.path.join(self.tmp_dir, 'audio.m3u8'),
         'bear-640x360-a-enc-golden.m3u8')

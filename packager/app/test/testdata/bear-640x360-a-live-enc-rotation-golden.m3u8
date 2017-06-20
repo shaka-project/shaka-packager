@@ -1,0 +1,11 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-MEDIA-SEQUENCE:1
+#EXTINF:0.998,
+output_audio-2.ts
+#EXT-X-DISCONTINUITY
+#EXT-X-KEY:METHOD=SAMPLE-AES,URI="data:text/plain;base64,MzQ1Njc4OTAxMjM0NTYxMg==",IV=0x3334353637383930,KEYFORMAT="identity"
+#EXTINF:0.789,
+output_audio-3.ts

@@ -304,7 +304,8 @@ class EncryptionHandlerEncryptionTest
         } else {
           EXPECT_CALL(*mock_header_parser, GetHeaderSize(_))
               .WillOnce(Return(kSliceHeaderSize1))
-              .WillOnce(Return(kSliceHeaderSize2));
+              .WillOnce(Return(kSliceHeaderSize2))
+              .WillRepeatedly(Return(kSliceHeaderSize2));
         }
         InjectVideoSliceHeaderParserForTesting(std::move(mock_header_parser));
         break;
@@ -519,7 +520,9 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
 
 TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   const double kClearLeadInSeconds = 1.5 * kSegmentDuration / kTimeScale;
-  const double kCryptoPeriodDurationInSeconds = kSegmentDuration / kTimeScale;
+  const int kSegmentsPerCryptoPeriod = 2;  // 2 segments.
+  const double kCryptoPeriodDurationInSeconds =
+      kSegmentsPerCryptoPeriod * kSegmentDuration / kTimeScale;
   EncryptionOptions encryption_options;
   encryption_options.protection_scheme = protection_scheme_;
   encryption_options.clear_lead_in_seconds = kClearLeadInSeconds;
@@ -546,19 +549,20 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
 
   InjectCodecParser();
 
-  // There are three segments. Only the third segment is encrypted.
-  // Crypto period duration is the same as segment duration, so there are three
-  // crypto periods, although only the last is encrypted.
-  for (int i = 0; i < 3; ++i) {
-    EXPECT_CALL(mock_key_source_, GetCryptoPeriodKey(i, _, _))
-        .WillOnce(DoAll(SetArgPointee<2>(GetMockEncryptionKey()),
-                        Return(Status::OK)));
+  // There are five segments with the first two not encrypted.
+  for (int i = 0; i < 5; ++i) {
+    if ((i % kSegmentsPerCryptoPeriod) == 0) {
+      EXPECT_CALL(mock_key_source_,
+                  GetCryptoPeriodKey(i / kSegmentsPerCryptoPeriod, _, _))
+          .WillOnce(DoAll(SetArgPointee<2>(GetMockEncryptionKey()),
+                          Return(Status::OK)));
+    }
     // Use single-frame segment for testing.
     ASSERT_OK(Process(GetMediaSampleStreamData(
         kStreamIndex, i * kSegmentDuration, kSegmentDuration)));
     ASSERT_OK(Process(GetSegmentInfoStreamData(
         kStreamIndex, i * kSegmentDuration, kSegmentDuration, !kIsSubsegment)));
-    const bool is_encrypted = i == 2;
+    const bool is_encrypted = i >= 2;
     const auto& output_stream_data = GetOutputStreamDataVector();
     EXPECT_THAT(output_stream_data,
                 ElementsAre(IsMediaSample(kStreamIndex, i * kSegmentDuration,
