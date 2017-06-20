@@ -100,28 +100,30 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;gflags/gflags.h&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;DECLARE_bool(enable_playready_encryption);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;DECLARE_string(playready_server_url);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;DECLARE_string(program_identifier);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;DECLARE_string(playready_key_id);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;DECLARE_string(playready_key);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;DECLARE_string(ca_file);</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;DECLARE_string(client_cert_file);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;DECLARE_string(client_cert_private_key_file);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;DECLARE_string(client_cert_private_key_password);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/app/gflags_hex_bytes.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;DECLARE_bool(enable_playready_encryption);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;DECLARE_string(playready_server_url);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;DECLARE_string(program_identifier);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;DECLARE_hex_bytes(playready_key_id);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;DECLARE_hex_bytes(playready_key);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;DECLARE_string(ca_file);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;DECLARE_string(client_cert_file);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;DECLARE_string(client_cert_private_key_file);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;DECLARE_string(client_cert_private_key_password);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">ValidatePRCryptoFlags</a>();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">ValidatePRCryptoFlags</a>();</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif  // APP_PLAYREADY_KEY_ENCRYPTION_FLAGS_H_</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif  // APP_PLAYREADY_KEY_ENCRYPTION_FLAGS_H_</span></div>
 <div class="ttc" id="namespaceshaka_html_a8b6212ccc4b98e5fdb72f84acf252c6b"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">shaka::ValidatePRCryptoFlags</a></div><div class="ttdeci">bool ValidatePRCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00033">playready_key_encryption_flags.cc:33</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 20 2017 14:39:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 20 2017 22:39:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

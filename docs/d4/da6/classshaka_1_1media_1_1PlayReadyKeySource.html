@@ -134,9 +134,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a4f539e8a54fef68aea5629489669508b"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a4f539e8a54fef68aea5629489669508b">CreateFromKeyAndKeyId</a> (const std::string &amp;key_id_hex, const std::string &amp;key_hex)</td></tr>
-<tr class="separator:a4f539e8a54fef68aea5629489669508b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76f18b778d83492e5b7ed90637124b2c"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a76f18b778d83492e5b7ed90637124b2c">CreateFromKeyAndKeyId</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key)</td></tr>
+<tr class="separator:a76f18b778d83492e5b7ed90637124b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A key source that uses playready for encryption. </p>
@@ -219,7 +219,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a4f539e8a54fef68aea5629489669508b"></a>
+<a class="anchor" id="a76f18b778d83492e5b7ed90637124b2c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -229,14 +229,14 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">std::unique_ptr&lt; <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a> &gt; shaka::media::PlayReadyKeySource::CreateFromKeyAndKeyId </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>key_id_hex</em>, </td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>key_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>key_hex</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -250,14 +250,7 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Creates a new <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html" title="A key source that uses playready for encryption. ">PlayReadyKeySource</a> from the hex string information. Returns null if the strings are invalid. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key_id_hex</td><td>is the key id in hex string. </td></tr>
-    <tr><td class="paramname">key_hex</td><td>is the key in hex string. Note: GetKey on the created key source will always return the same key for all track types. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Creates a new <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html" title="A key source that uses playready for encryption. ">PlayReadyKeySource</a> from the given data. Returns null if the strings are invalid. Note: GetKey on the created key source will always return the same key for all track types. </p>
 
 <p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00184">184</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
@@ -306,7 +299,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00313">313</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00307">307</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -360,7 +353,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00340">340</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00334">334</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -407,7 +400,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00319">319</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00313">313</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -454,7 +447,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00330">330</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00324">324</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -465,7 +458,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 20 2017 14:39:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 20 2017 22:39:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

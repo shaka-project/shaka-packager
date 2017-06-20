@@ -122,16 +122,16 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a9a91ba439d785022a1e2ceeaa9ebe81a"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a9a91ba439d785022a1e2ceeaa9ebe81a">CreateFromHexStrings</a> (const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_boxes_hex, const std::string &amp;iv_hex)</td></tr>
-<tr class="separator:a9a91ba439d785022a1e2ceeaa9ebe81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebde54a272565d4b81a1139ea35fab63"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#aebde54a272565d4b81a1139ea35fab63">Create</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;pssh_boxes, const std::vector&lt; uint8_t &gt; &amp;iv)</td></tr>
+<tr class="separator:aebde54a272565d4b81a1139ea35fab63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A key source that uses fixed keys for encryption. </p>
 
 <p>Definition at line <a class="el" href="../../d3/d72/fixed__key__source_8h_source.html#l00027">27</a> of file <a class="el" href="../../d3/d72/fixed__key__source_8h_source.html">fixed_key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a9a91ba439d785022a1e2ceeaa9ebe81a"></a>
+<a class="anchor" id="aebde54a272565d4b81a1139ea35fab63"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -139,28 +139,28 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a> &gt; shaka::media::FixedKeySource::CreateFromHexStrings </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a> &gt; shaka::media::FixedKeySource::Create </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>key_id_hex</em>, </td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>key_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>key_hex</em>, </td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>pssh_boxes_hex</em>, </td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>pssh_boxes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>iv_hex</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>iv</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -174,13 +174,13 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Creates a new <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html" title="A key source that uses fixed keys for encryption. ">FixedKeySource</a> from the given hex strings. Returns null if the strings are invalid. </p>
+<p>Creates a new <a class="el" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html" title="A key source that uses fixed keys for encryption. ">FixedKeySource</a> from the given data. Returns null if the strings are invalid. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">key_id_hex</td><td>is the key id in hex string. </td></tr>
-    <tr><td class="paramname">key_hex</td><td>is the key in hex string. </td></tr>
-    <tr><td class="paramname">pssh_boxes_hex</td><td>is the pssh_boxes in hex string. </td></tr>
-    <tr><td class="paramname">iv_hex</td><td>is the IV in hex string. If not specified, a randomly generated IV with the default length will be used. Note: GetKey on the created key source will always return the same key for all track types. </td></tr>
+    <tr><td class="paramname">key_id</td><td>is the key identifier. Must be 16 bytes. </td></tr>
+    <tr><td class="paramname">key</td><td>is the encryption / decryption key. Must be 16 bytes. </td></tr>
+    <tr><td class="paramname">pssh_boxes</td><td>is the concatenated pssh boxes. </td></tr>
+    <tr><td class="paramname">iv</td><td>is the initialization vector. If not specified, a randomly generated IV with the default length will be used. Note: GetKey on the created key source will always return the same key for all track types. </td></tr>
   </table>
   </dd>
 </dl>
@@ -391,7 +391,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 20 2017 14:39:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 20 2017 22:39:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

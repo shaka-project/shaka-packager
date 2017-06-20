@@ -122,8 +122,8 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>si
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a43f4cc9fad9901fa905805be81f7d58c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html">AesRequestSigner</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a43f4cc9fad9901fa905805be81f7d58c">CreateSigner</a> (const std::string &amp;signer_name, const std::string &amp;aes_key_hex, const std::string &amp;iv_hex)</td></tr>
-<tr class="separator:a43f4cc9fad9901fa905805be81f7d58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ae2058318e5894422acb95586e3c471"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html">AesRequestSigner</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a8ae2058318e5894422acb95586e3c471">CreateSigner</a> (const std::string &amp;signer_name, const std::vector&lt; uint8_t &gt; &amp;aes_key, const std::vector&lt; uint8_t &gt; &amp;iv)</td></tr>
+<tr class="separator:a8ae2058318e5894422acb95586e3c471"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -135,9 +135,9 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html" title="AesRequestSigner uses AES-CBC signing. ">AesRequestSigner</a> uses AES-CBC signing. </p>
 
-<p>Definition at line <a class="el" href="../../d7/dd4/request__signer_8h_source.html#l00044">44</a> of file <a class="el" href="../../d7/dd4/request__signer_8h_source.html">request_signer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd4/request__signer_8h_source.html#l00045">45</a> of file <a class="el" href="../../d7/dd4/request__signer_8h_source.html">request_signer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a43f4cc9fad9901fa905805be81f7d58c"></a>
+<a class="anchor" id="a8ae2058318e5894422acb95586e3c471"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -153,14 +153,14 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>aes_key_hex</em>, </td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>aes_key</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>iv_hex</em>&#160;</td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>iv</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -174,10 +174,10 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create an AesSigner object from key and iv in hex. </p>
+<p>Create an AesSigner object from key and iv. </p>
 <dl class="section return"><dt>Returns</dt><dd>The created <a class="el" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html" title="AesRequestSigner uses AES-CBC signing. ">AesRequestSigner</a> object on success, NULL otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/df5/request__signer_8cc_source.html#l00029">29</a> of file <a class="el" href="../../d4/df5/request__signer_8cc_source.html">request_signer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/df5/request__signer_8cc_source.html#l00028">28</a> of file <a class="el" href="../../d4/df5/request__signer_8cc_source.html">request_signer.cc</a>.</p>
 
 </div>
 </div>
@@ -188,7 +188,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 20 2017 14:39:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jun 20 2017 22:39:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
