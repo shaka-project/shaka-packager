@@ -110,6 +110,8 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2d1611fe3e60fc6570fe0c21e13911b0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0">NaluReader</a> (Nalu::CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</td></tr>
 <tr class="separator:a2d1611fe3e60fc6570fe0c21e13911b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6890eb05c83bb540af84494ed0590c6b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a6890eb05c83bb540af84494ed0590c6b">NaluReader</a> (Nalu::CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size, const std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;subsamples)</td></tr>
+<tr class="separator:a6890eb05c83bb540af84494ed0590c6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae051f1f92d84acfcd4cc159d972d647a"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">Advance</a> (<a class="el" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> *nalu)</td></tr>
 <tr class="separator:ae051f1f92d84acfcd4cc159d972d647a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ed9d56a06f43717cdb7035f86075975"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#a9ed9d56a06f43717cdb7035f86075975">StartsWithStartCode</a> ()</td></tr>
@@ -120,6 +122,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ae7407c5437c807a51e8611a40a798966"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7407c5437c807a51e8611a40a798966"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode</b> (const uint8_t *data, uint64_t data_size, uint64_t *offset, uint8_t *start_code_size)</td></tr>
 <tr class="separator:ae7407c5437c807a51e8611a40a798966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa14b3cd5da5657d8a3d0ecfdf301a184"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#aa14b3cd5da5657d8a3d0ecfdf301a184">FindStartCodeInClearRange</a> (const uint8_t *data, uint64_t data_size, uint64_t *offset, uint8_t *start_code_size, const std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;subsamples)</td></tr>
+<tr class="separator:aa14b3cd5da5657d8a3d0ecfdf301a184"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper class used to read NAL units based on several formats:</p>
@@ -128,7 +132,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 <li>NAL Unit Stream </li>
 </ul>
 
-<p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00148">148</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00149">149</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a2d1611fe3e60fc6570fe0c21e13911b0"></a>
 <div class="memitem">
@@ -172,7 +176,63 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00163">163</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00212">212</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6890eb05c83bb540af84494ed0590c6b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">shaka::media::NaluReader::NaluReader </td>
+          <td>(</td>
+          <td class="paramtype">Nalu::CodecType&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>nal_length_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>stream_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>subsamples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>is the codec type of the NALU unit. </td></tr>
+    <tr><td class="paramname">nalu_length_size</td><td>should be set to 0 for AnnexB byte streams; otherwise, it indicates the size of NAL unit length for the NAL unit stream. </td></tr>
+    <tr><td class="paramname">stream</td><td>is the input stream. </td></tr>
+    <tr><td class="paramname">stream_size</td><td>is the size of <em>stream</em>. </td></tr>
+    <tr><td class="paramname">subsamples</td><td>specifies the clear and encrypted sections of the <em>stream</em> starting from the beginning of the <em>stream</em>. If <em>subsamples</em> doesn't cover the entire stream, then the rest is assumed to be in the clear. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00222">222</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -199,7 +259,69 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>kOk if a NALU is read; kEOStream if the stream is at the end-of-stream; kInvalidStream on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00177">177</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00239">239</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa14b3cd5da5657d8a3d0ecfdf301a184"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::media::NaluReader::FindStartCodeInClearRange </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>data_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t *&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>start_code_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>subsamples</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Same as FindStartCode() but also specify the subsamples. This searches for start codes in the clear section and will not scan for start codes in the encrypted section. Even if there is a real NALU start code in the encrypted section, this will skip them. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">subsamples</td><td>starting from the start of <em>data</em>. If <em>subsamples</em> does not cover the whole <em>data</em>, the rest is assumed to be in the clear. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if it finds a NALU. false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00344">344</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -217,7 +339,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if the current position points to a start code. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00229">229</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00297">297</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -228,7 +350,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 20 2017 23:10:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 22 2017 22:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

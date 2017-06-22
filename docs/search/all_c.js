@@ -6,7 +6,7 @@ var searchData=
   ['nalu_5flength_5fsize',['nalu_length_size',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aa3cae17e24d155caa3004ffa52d09d6b',1,'shaka::media::DecoderConfigurationRecord']]],
   ['nalunittobytestreamconverter',['NalUnitToByteStreamConverter',['../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html',1,'shaka::media']]],
   ['nalureader',['NaluReader',['../db/d86/classshaka_1_1media_1_1NaluReader.html',1,'shaka::media']]],
-  ['nalureader',['NaluReader',['../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0',1,'shaka::media::NaluReader']]],
+  ['nalureader',['NaluReader',['../db/d86/classshaka_1_1media_1_1NaluReader.html#a2d1611fe3e60fc6570fe0c21e13911b0',1,'shaka::media::NaluReader::NaluReader(Nalu::CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)'],['../db/d86/classshaka_1_1media_1_1NaluReader.html#a6890eb05c83bb540af84494ed0590c6b',1,'shaka::media::NaluReader::NaluReader(Nalu::CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)']]],
   ['newsamplecb',['NewSampleCB',['../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a3a1f87fb3ed95a9cbd2b6873326a1a4c',1,'shaka::media::MediaParser']]],
   ['newsegment',['NewSegment',['../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a9ba30b9cc1e4ae2992735709ae987c64',1,'shaka::media::mp2t::TsWriter']]],
   ['next_5fhandler',['next_handler',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#a00edfa6e4ab0371cdb823b72cb884306',1,'shaka::media::MediaHandlerTestBase']]],
