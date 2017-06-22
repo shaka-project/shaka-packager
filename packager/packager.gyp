@@ -40,11 +40,14 @@
         'version/version.gyp:version',
       ],
       'conditions': [
-        ['libpackager_type=="shared_library"', {
+        ['libpackager_type == "shared_library"', {
           'defines': [
             'SHARED_LIBRARY_BUILD',
             'SHAKA_IMPLEMENTATION',
           ],
+        }],
+        ['libpackager_type == "static_library"', {
+          'standalone_static_library': 1,
         }],
       ],
     },
