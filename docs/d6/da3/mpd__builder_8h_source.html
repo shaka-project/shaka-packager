@@ -444,50 +444,49 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;                    uint64_t duration,</div>
 <div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;                    uint64_t size) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  <span class="comment">// Remove elements from |segment_infos_| if</span></div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  <span class="comment">// mpd_options_.time_shift_buffer_depth is specified. Increments</span></div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;  <span class="comment">// |start_number_| by the number of segments removed.</span></div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;  <span class="keywordtype">void</span> SlideWindow();</div>
-<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;  <span class="comment">// Note: Because &#39;mimeType&#39; is a required field for a valid MPD, these return</span></div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  <span class="comment">// strings.</span></div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;  std::string GetVideoMimeType() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;  std::string GetAudioMimeType() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;  std::string GetTextMimeType() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;</div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;</div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;  <span class="comment">// Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So</span></div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;  <span class="comment">// any logic using this can assume only one set.</span></div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  MediaInfo media_info_;</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  std::list&lt;ContentProtectionElement&gt; content_protection_elements_;</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  std::list&lt;SegmentInfo&gt; segment_infos_;</div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;  <span class="keyword">const</span> uint32_t id_;</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;  std::string mime_type_;</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;  std::string codecs_;</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;  <a class="code" href="../../d2/d6f/classBandwidthEstimator.html">BandwidthEstimator</a> bandwidth_estimator_;</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options_;</div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;  <span class="comment">// startNumber attribute for SegmentTemplate.</span></div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;  <span class="comment">// Starts from 1.</span></div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;  uint32_t start_number_;</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;  <span class="comment">// If this is not null, then Representation is responsible for calling the</span></div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;  <span class="comment">// right methods at right timings.</span></div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;  std::unique_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener_;</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;  <span class="comment">// Bit vector for tracking witch attributes should not be output.</span></div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;  <span class="keywordtype">int</span> output_suppression_flags_;</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>);</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;};</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_BUILDER_H_</span></div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  <span class="comment">// Remove elements from |segment_infos_| for dynamic live profile. Increments</span></div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  <span class="comment">// |start_number_| by the number of segments removed.</span></div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;  <span class="keywordtype">void</span> SlideWindow();</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;  <span class="comment">// Note: Because &#39;mimeType&#39; is a required field for a valid MPD, these return</span></div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;  <span class="comment">// strings.</span></div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  std::string GetVideoMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;  std::string GetAudioMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;  std::string GetTextMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;</div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;  <span class="comment">// Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So</span></div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;  <span class="comment">// any logic using this can assume only one set.</span></div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;  MediaInfo media_info_;</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  std::list&lt;ContentProtectionElement&gt; content_protection_elements_;</div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  std::list&lt;SegmentInfo&gt; segment_infos_;</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;  <span class="keyword">const</span> uint32_t id_;</div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;  std::string mime_type_;</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;  std::string codecs_;</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;  <a class="code" href="../../d2/d6f/classBandwidthEstimator.html">BandwidthEstimator</a> bandwidth_estimator_;</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options_;</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;  <span class="comment">// startNumber attribute for SegmentTemplate.</span></div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;  <span class="comment">// Starts from 1.</span></div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;  uint32_t start_number_;</div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;  <span class="comment">// If this is not null, then Representation is responsible for calling the</span></div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;  <span class="comment">// right methods at right timings.</span></div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;  std::unique_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener_;</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;  <span class="comment">// Bit vector for tracking witch attributes should not be output.</span></div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;  <span class="keywordtype">int</span> output_suppression_flags_;</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>);</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;};</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_BUILDER_H_</span></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html_a37904780833b552b7f95f124ffd10456"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a37904780833b552b7f95f124ffd10456">shaka::AdaptationSet::OnSetFrameRateForRepresentation</a></div><div class="ttdeci">void OnSetFrameRateForRepresentation(uint32_t representation_id, uint32_t frame_duration, uint32_t timescale)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00891">mpd_builder.cc:891</a></div></div>
 <div class="ttc" id="classshaka_1_1xml_1_1RepresentationXmlNode_html"><div class="ttname"><a href="../../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html">shaka::xml::RepresentationXmlNode</a></div><div class="ttdoc">RepresentationType in MPD. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/de7/xml__node_8h_source.html#l00139">xml_node.h:139</a></div></div>
 <div class="ttc" id="classshaka_1_1Representation_html_a6ca8bbfd34ef8ca782d2ef18aeaad932"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a6ca8bbfd34ef8ca782d2ef18aeaad932">shaka::Representation::AddNewSegment</a></div><div class="ttdeci">virtual void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01130">mpd_builder.cc:1130</a></div></div>
@@ -531,7 +530,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 22 2017 22:14:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jun 24 2017 01:14:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
