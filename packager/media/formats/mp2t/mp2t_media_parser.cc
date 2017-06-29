@@ -318,8 +318,8 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
             sbr_in_mimetype_));
     is_audio = true;
   } else {
-    LOG(WARNING) << "Ignore unsupported stream type 0x" << std::hex
-                 << stream_type << std::dec;
+    VLOG(1) << "Ignore unsupported stream type 0x" << std::hex << stream_type
+            << std::dec;
     return;
   }
 
