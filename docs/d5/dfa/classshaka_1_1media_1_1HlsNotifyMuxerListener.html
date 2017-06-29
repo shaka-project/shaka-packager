@@ -240,7 +240,7 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called when the media's encryption information is ready. This should be called before <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ac60d8aed79f2a1581dfec1ed5ad10f22">OnMediaStart()</a>, if the media is encrypted. All the parameters may be empty just to notify that the media is encrypted. For ISO BMFF (MP4) media: If <em>is_initial_encryption_info</em> is true then <em>key_id</em> is the default_KID in 'tenc' box. If <em>is_initial_encryption_info</em> is false then <em>key_id</em> is the new key ID for the for the next crypto period. </p>
+<p>Called when the media's encryption information is ready. OnEncryptionInfoReady with <em>initial_encryption_info</em> being true should be called before <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ac60d8aed79f2a1581dfec1ed5ad10f22">OnMediaStart()</a>, if the media is encrypted. All the parameters may be empty just to notify that the media is encrypted. For ISO BMFF (MP4) media: If <em>is_initial_encryption_info</em> is true then <em>key_id</em> is the default_KID in 'tenc' box. If <em>is_initial_encryption_info</em> is false then <em>key_id</em> is the new key ID for the for the next crypto period. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">is_initial_encryption_info</td><td>is true if this is the first encryption info for the media. In general, this flag should always be true for non-key-rotated media and should be called only once. </td></tr>
@@ -253,7 +253,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab521acca727bbe01aa15c751325c0001">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00042">42</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00039">39</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -281,7 +281,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00062">62</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00059">59</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -369,7 +369,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00116">116</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00113">113</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -429,7 +429,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00085">85</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00082">82</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -489,7 +489,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00130">130</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00127">127</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -524,7 +524,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00114">114</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00111">111</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -535,7 +535,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Jun 24 2017 01:14:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 29 2017 22:09:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
