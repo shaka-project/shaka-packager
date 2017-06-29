@@ -11,9 +11,7 @@
 
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/base/status.h"
 #include "packager/media/base/stream_info.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/file/file_test_util.h"
@@ -21,6 +19,8 @@
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/segmenter.h"
 #include "packager/media/formats/webm/webm_parser.h"
+#include "packager/status.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {

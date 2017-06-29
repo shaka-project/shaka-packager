@@ -15,7 +15,6 @@
 namespace shaka {
 namespace {
 
-using media::Status;
 const char kTestFile[] = "bear-640x360.mp4";
 const char kOutputVideo[] = "output_video.mp4";
 const char kOutputVideoTemplate[] = "output_video_$Number$.m4s";
@@ -103,17 +102,16 @@ TEST_F(PackagerTest, Version) {
 
 TEST_F(PackagerTest, Success) {
   Packager packager;
-  ASSERT_TRUE(
-      packager.Initialize(SetupPackagingParams(), SetupStreamDescriptors())
-          .ok());
-  ASSERT_TRUE(packager.Run().ok());
+  ASSERT_EQ(Status::OK, packager.Initialize(SetupPackagingParams(),
+                                            SetupStreamDescriptors()));
+  ASSERT_EQ(Status::OK, packager.Run());
 }
 
 TEST_F(PackagerTest, MissingStreamDescriptors) {
   std::vector<StreamDescriptor> stream_descriptors;
   Packager packager;
   auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
-  ASSERT_EQ(media::error::INVALID_ARGUMENT, status.error_code());
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
 TEST_F(PackagerTest, MixingSegmentTemplateAndSingleSegment) {
@@ -134,7 +132,7 @@ TEST_F(PackagerTest, MixingSegmentTemplateAndSingleSegment) {
 
   Packager packager;
   auto status = packager.Initialize(SetupPackagingParams(), stream_descriptors);
-  ASSERT_EQ(media::error::INVALID_ARGUMENT, status.error_code());
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
 TEST_F(PackagerTest, SegmentAlignedAndSubsegmentNotAligned) {
@@ -142,9 +140,9 @@ TEST_F(PackagerTest, SegmentAlignedAndSubsegmentNotAligned) {
   packaging_params.chunking_params.segment_sap_aligned = true;
   packaging_params.chunking_params.subsegment_sap_aligned = false;
   Packager packager;
-  ASSERT_TRUE(
-      packager.Initialize(packaging_params, SetupStreamDescriptors()).ok());
-  ASSERT_TRUE(packager.Run().ok());
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, SetupStreamDescriptors()));
+  ASSERT_EQ(Status::OK, packager.Run());
 }
 
 TEST_F(PackagerTest, SegmentNotAlignedButSubsegmentAligned) {
@@ -153,7 +151,7 @@ TEST_F(PackagerTest, SegmentNotAlignedButSubsegmentAligned) {
   packaging_params.chunking_params.subsegment_sap_aligned = true;
   Packager packager;
   auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
-  ASSERT_EQ(media::error::INVALID_ARGUMENT, status.error_code());
+  ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 
 // TODO(kqyang): Add more tests.

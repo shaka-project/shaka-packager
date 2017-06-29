@@ -9,8 +9,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/formats/webm/webm_constants.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {

@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "packager/media/base/fourccs.h"
-#include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

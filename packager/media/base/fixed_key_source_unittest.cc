@@ -9,7 +9,7 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/fixed_key_source.h"
-#include "packager/media/base/test/status_test_util.h"
+#include "packager/status_test_util.h"
 
 #define EXPECT_HEX_EQ(expected, actual)                         \
   do {                                                          \

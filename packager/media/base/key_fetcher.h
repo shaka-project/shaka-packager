@@ -8,7 +8,7 @@
 #define MEDIA_BASE_KEY_FETCHER_H_
 
 #include "base/macros.h"
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

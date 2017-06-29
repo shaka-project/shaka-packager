@@ -15,9 +15,9 @@
 #include "packager/base/time/clock.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/base/status.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

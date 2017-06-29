@@ -14,7 +14,7 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/media_handler.h"
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

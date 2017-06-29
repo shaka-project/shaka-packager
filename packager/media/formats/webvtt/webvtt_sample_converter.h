@@ -10,10 +10,10 @@
 #include <stdint.h>
 #include <list>
 
-#include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/webvtt/cue.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

@@ -80,8 +80,6 @@
         'request_signer.h',
         'rsa_key.cc',
         'rsa_key.h',
-        'status.cc',
-        'status.h',
         'stream_info.cc',
         'stream_info.h',
         'text_sample.cc',
@@ -100,6 +98,7 @@
       'dependencies': [
         'widevine_pssh_data_proto',
         '../../base/base.gyp:base',
+        '../../packager.gyp:status',
         '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../third_party/curl/curl.gyp:libcurl',
         '../../third_party/libxml/libxml.gyp:libxml',
@@ -150,17 +149,15 @@
         'protection_system_specific_info_unittest.cc',
         'rsa_key_unittest.cc',
         'status_test_util_unittest.cc',
-        'status_unittest.cc',
         'test/fake_prng.cc',  # For rsa_key_unittest
         'test/fake_prng.h',   # For rsa_key_unittest
         'test/rsa_test_data.cc',  # For rsa_key_unittest
         'test/rsa_test_data.h',   # For rsa_key_unittest
-        'test/status_test_util.h',
         'widevine_key_source_unittest.cc',
       ],
       'dependencies': [
-        '../../testing/gtest.gyp:gtest',
         '../../testing/gmock.gyp:gmock',
+        '../../testing/gtest.gyp:gtest',
         '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../file/file.gyp:file',
         '../test/media_test.gyp:media_test_support',

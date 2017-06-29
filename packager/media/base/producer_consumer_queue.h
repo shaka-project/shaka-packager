@@ -13,7 +13,7 @@
 #include "packager/base/synchronization/condition_variable.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/timer/elapsed_timer.h"
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

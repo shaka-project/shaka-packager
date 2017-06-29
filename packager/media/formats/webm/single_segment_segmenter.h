@@ -10,8 +10,8 @@
 #include "packager/media/formats/webm/segmenter.h"
 
 #include <memory>
-#include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

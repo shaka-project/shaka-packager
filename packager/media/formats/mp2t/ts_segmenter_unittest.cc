@@ -8,10 +8,10 @@
 #include <gtest/gtest.h>
 
 #include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/mock_muxer_listener.h"
 #include "packager/media/formats/mp2t/ts_segmenter.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {

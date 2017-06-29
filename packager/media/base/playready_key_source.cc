@@ -89,9 +89,9 @@ std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
 // PlayReady PSSH Data is a PlayReady Header Object.
 // Format is outlined in the following document.
 // http://download.microsoft.com/download/2/3/8/238F67D9-1B8B-48D3-AB83-9C00112268B2/PlayReady%20Header%20Object%202015-08-13-FINAL-CL.PDF
-shaka::media::Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
-                                               const std::vector<uint8_t>& key,
-                                               std::vector<uint8_t>* output) {
+Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
+                                 const std::vector<uint8_t>& key,
+                                 std::vector<uint8_t>* output) {
   CHECK(output);
   std::vector<uint8_t> key_id_converted = ConvertGuidEndianness(key_id);
   std::vector<uint8_t> encrypted_key_id(key_id_converted.size());
@@ -118,7 +118,7 @@ shaka::media::Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_i
   // 'PlayReady Header Object' document.  Note data is in little endian format.
   std::vector<uint16_t> record_value =
       std::vector<uint16_t>(playready_header.begin(), playready_header.end());
-  shaka::media::BufferWriter writer_pr_record;
+  BufferWriter writer_pr_record;
   uint16_t record_type = 1; // Indicates that the record contains a rights management header.
   uint16_t record_length = record_value.size() * 2;
   writer_pr_record.AppendInt(static_cast<uint8_t>(record_type & 0xff));
@@ -133,7 +133,7 @@ shaka::media::Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_i
   // Create the PlayReady Header object.
   // Outline in section '1.PlayReady Header Objects' of
   // 'PlayReady Header Object' document.   Note data is in little endian format.
-  shaka::media::BufferWriter writer_pr_header_object;
+  BufferWriter writer_pr_header_object;
   uint32_t playready_header_length = writer_pr_record.Size() + 4 + 2;
   uint16_t record_count = 1;
   writer_pr_header_object.AppendInt(
@@ -152,7 +152,7 @@ shaka::media::Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_i
   *output = std::vector<uint8_t>(writer_pr_header_object.Buffer(),
                                  writer_pr_header_object.Buffer() +
                                  writer_pr_header_object.Size());
-  return shaka::media::Status::OK;
+  return Status::OK;
 }
 
 }  // namespace

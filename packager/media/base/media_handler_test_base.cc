@@ -7,8 +7,8 @@
 #include "packager/media/base/media_handler_test_base.h"
 
 #include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/status_test_util.h"
 
 namespace {
 

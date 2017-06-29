@@ -9,7 +9,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/media/base/test/status_test_util.h"
+#include "packager/status_test_util.h"
 
 namespace {
 const char kTestUrl[] = "http://packager-test.appspot.com/http_test";

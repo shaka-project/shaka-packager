@@ -320,7 +320,7 @@ int PackagerMain(int argc, char** argv) {
     stream_descriptors.push_back(stream_descriptor.value());
   }
   Packager packager;
-  media::Status status =
+  Status status =
       packager.Initialize(packaging_params.value(), stream_descriptors);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to initialize packager: " << status.ToString();

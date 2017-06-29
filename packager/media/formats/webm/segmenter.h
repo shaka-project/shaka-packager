@@ -8,9 +8,9 @@
 #define MEDIA_FORMATS_WEBM_SEGMENTER_H_
 
 #include <memory>
-#include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/seek_head.h"
+#include "packager/status.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
 namespace shaka {

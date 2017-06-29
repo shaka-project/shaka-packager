@@ -48,8 +48,6 @@ using media::Demuxer;
 using media::EncryptionOptions;
 using media::KeySource;
 using media::MuxerOptions;
-using media::Status;
-namespace error = media::error;
 
 namespace media {
 namespace {

@@ -11,8 +11,8 @@
 
 #include "packager/base/files/file_util.h"
 #include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/file/file.h"
+#include "packager/status_test_util.h"
 
 namespace {
 const int kReservedBufferCapacity = 1000;

@@ -9,10 +9,10 @@
 
 #include <memory>
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/base/status.h"
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp2t/pes_packet_generator.h"
 #include "packager/media/formats/mp2t/ts_writer.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

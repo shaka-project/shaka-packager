@@ -8,10 +8,9 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 namespace shaka {
-namespace media {
 
 static void CheckStatus(const Status& s,
                         error::Code code,
@@ -166,5 +165,4 @@ TEST(Status, EqualsDifferentMessage) {
             Status(error::UNKNOWN, "another"));
 }
 
-}  // namespace media
 }  // namespace shaka

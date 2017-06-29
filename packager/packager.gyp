@@ -137,6 +137,38 @@
       'dependencies': ['packager'],
     },
     {
+      'target_name': 'status',
+      'type': '<(component)',
+      'sources': [
+        'status.cc',
+        'status.h',
+      ],
+      'dependencies': [
+        'base/base.gyp:base',
+      ],
+      'conditions': [
+        ['libpackager_type == "shared_library"', {
+          'defines': [
+            'SHARED_LIBRARY_BUILD',
+            'SHAKA_IMPLEMENTATION',
+          ],
+        }],
+      ],
+    },
+    {
+      'target_name': 'status_unittest',
+      'type': '<(gtest_target_type)',
+      'sources': [
+        'status_unittest.cc',
+      ],
+      'dependencies': [
+        'status',
+        'testing/gmock.gyp:gmock',
+        'testing/gtest.gyp:gtest',
+        'testing/gtest.gyp:gtest_main',
+      ]
+    },
+    {
       'target_name': 'packager_builder_tests',
       'type': 'none',
       'dependencies': [
@@ -156,6 +188,7 @@
         'media/trick_play/trick_play.gyp:trick_play_unittest',
         'mpd/mpd.gyp:mpd_unittest',
         'packager_test',
+        'status_unittest',
       ],
     },
   ],

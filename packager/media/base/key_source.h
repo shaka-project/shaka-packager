@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

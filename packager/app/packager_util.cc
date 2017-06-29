@@ -14,13 +14,13 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/playready_key_source.h"
 #include "packager/media/base/request_signer.h"
-#include "packager/media/base/status.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/packager.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

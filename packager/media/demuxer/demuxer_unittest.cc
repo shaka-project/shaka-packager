@@ -11,8 +11,8 @@
 
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/test/test_data_util.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {

@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "packager/media/base/muxer_util.h"
-#include "packager/media/base/status.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

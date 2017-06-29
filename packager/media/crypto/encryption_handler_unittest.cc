@@ -13,9 +13,9 @@
 #include "packager/media/base/aes_pattern_cryptor.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {

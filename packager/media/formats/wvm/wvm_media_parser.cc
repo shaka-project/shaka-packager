@@ -13,12 +13,12 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/status.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/aac_audio_specific_config.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/formats/mp2t/adts_header.h"
+#include "packager/status.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \

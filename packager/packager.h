@@ -14,31 +14,7 @@
 #include <string>
 #include <vector>
 
-// TODO(kqyang): Refactor status.h and move it under packager/.
-#include "packager/media/base/status.h"
-
-#if defined(SHARED_LIBRARY_BUILD)
-#if defined(OS_WIN)
-
-#if defined(SHAKA_IMPLEMENTATION)
-#define SHAKA_EXPORT __declspec(dllexport)
-#else
-#define SHAKA_EXPORT __declspec(dllimport)
-#endif  // defined(SHAKA_IMPLEMENTATION)
-
-#else  // defined(OS_WIN)
-
-#if defined(SHAKA_IMPLEMENTATION)
-#define SHAKA_EXPORT __attribute__((visibility("default")))
-#else
-#define SHAKA_EXPORT
-#endif
-
-#endif  // defined(OS_WIN)
-
-#else  // defined(SHARED_LIBRARY_BUILD)
-#define SHAKA_EXPORT
-#endif  // defined(SHARED_LIBRARY_BUILD)
+#include "packager/status.h"
 
 namespace shaka {
 
@@ -454,14 +430,14 @@ class SHAKA_EXPORT Packager {
   /// @param packaging_params contains the packaging parameters.
   /// @param stream_descriptors a list of stream descriptors.
   /// @return OK on success, an appropriate error code on failure.
-  media::Status Initialize(
+  Status Initialize(
       const PackagingParams& packaging_params,
       const std::vector<StreamDescriptor>& stream_descriptors);
 
   /// Run the pipeline to completion (or failed / been cancelled). Note
   /// that it blocks until completion.
   /// @return OK on success, an appropriate error code on failure.
-  media::Status Run();
+  Status Run();
 
   /// Cancel packaging. Note that it has to be called from another thread.
   void Cancel();

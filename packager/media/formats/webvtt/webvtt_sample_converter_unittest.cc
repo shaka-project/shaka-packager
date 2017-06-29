@@ -5,7 +5,7 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/test/status_test_util.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {

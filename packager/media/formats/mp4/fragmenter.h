@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "packager/base/logging.h"
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {

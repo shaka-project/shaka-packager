@@ -4,13 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/status.h"
+#include "packager/status.h"
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
 
 namespace shaka {
-namespace media {
 
 namespace error {
 namespace {
@@ -80,5 +79,4 @@ std::ostream& operator<<(std::ostream& os, const Status& x) {
   return os;
 }
 
-}  // namespace media
 }  // namespace shaka

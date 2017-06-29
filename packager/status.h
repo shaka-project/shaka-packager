@@ -4,14 +4,36 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_BASE_STATUS_H_
-#define MEDIA_BASE_STATUS_H_
+#ifndef PACKAGER_STATUS_H_
+#define PACKAGER_STATUS_H_
 
 #include <iostream>
 #include <string>
 
+#if defined(SHARED_LIBRARY_BUILD)
+#if defined(OS_WIN)
+
+#if defined(SHAKA_IMPLEMENTATION)
+#define SHAKA_EXPORT __declspec(dllexport)
+#else
+#define SHAKA_EXPORT __declspec(dllimport)
+#endif  // defined(SHAKA_IMPLEMENTATION)
+
+#else  // defined(OS_WIN)
+
+#if defined(SHAKA_IMPLEMENTATION)
+#define SHAKA_EXPORT __attribute__((visibility("default")))
+#else
+#define SHAKA_EXPORT
+#endif
+
+#endif  // defined(OS_WIN)
+
+#else  // defined(SHARED_LIBRARY_BUILD)
+#define SHAKA_EXPORT
+#endif  // defined(SHARED_LIBRARY_BUILD)
+
 namespace shaka {
-namespace media {
 
 namespace error {
 
@@ -85,7 +107,7 @@ enum Code {
 
 }  // namespace error
 
-class Status {
+class SHAKA_EXPORT Status {
  public:
   /// Creates a "successful" status.
   Status() : error_code_(error::OK) {}
@@ -170,9 +192,8 @@ class Status {
   // generated copy constructor and assignment operator.
 };
 
-std::ostream& operator<<(std::ostream& os, const Status& x);
+SHAKA_EXPORT std::ostream& operator<<(std::ostream& os, const Status& x);
 
-}  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_STATUS_H_
+#endif  // PACKAGER_STATUS_H_

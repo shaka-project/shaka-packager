@@ -29,7 +29,6 @@ namespace media {
 
 class MediaHandler;
 class KeySource;
-class Status;
 struct ChunkingOptions;
 struct EncryptionOptions;
 struct MuxerOptions;

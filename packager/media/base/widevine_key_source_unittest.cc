@@ -15,8 +15,8 @@
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/key_fetcher.h"
 #include "packager/media/base/request_signer.h"
-#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/base/widevine_key_source.h"
+#include "packager/status_test_util.h"
 
 using ::testing::_;
 using ::testing::Bool;
