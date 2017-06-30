@@ -18,6 +18,7 @@
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/master_playlist.h"
 #include "packager/hls/base/media_playlist.h"
+#include "packager/hls/public/hls_playlist_type.h"
 
 namespace shaka {
 namespace hls {
@@ -27,12 +28,11 @@ namespace hls {
 class MediaPlaylistFactory {
  public:
   virtual ~MediaPlaylistFactory();
-  virtual std::unique_ptr<MediaPlaylist> Create(
-      MediaPlaylist::MediaPlaylistType type,
-      double time_shift_buffer_depth,
-      const std::string& file_name,
-      const std::string& name,
-      const std::string& group_id);
+  virtual std::unique_ptr<MediaPlaylist> Create(HlsPlaylistType type,
+                                                double time_shift_buffer_depth,
+                                                const std::string& file_name,
+                                                const std::string& name,
+                                                const std::string& group_id);
 };
 
 /// This is thread safe.
@@ -40,7 +40,7 @@ class SimpleHlsNotifier : public HlsNotifier {
  public:
   /// @a prefix is used as hte prefix for all the URIs for Media Playlist. This
   /// includes the segment URIs in the Media Playlists.
-  /// @param profile is the profile of the playlists.
+  /// @param playlist_type is the type of the playlists.
   /// @param time_shift_buffer_depth determines the duration of the time
   ///        shifting buffer, only for live HLS.
   /// @param prefix is the used as the prefix for MediaPlaylist URIs. May be
@@ -48,7 +48,7 @@ class SimpleHlsNotifier : public HlsNotifier {
   /// @param output_dir is the output directory of the playlists. May be empty
   ///        to write to current directory.
   /// @param master_playlist_name is the name of the master playlist.
-  SimpleHlsNotifier(HlsProfile profile,
+  SimpleHlsNotifier(HlsPlaylistType playlist_type,
                     double time_shift_buffer_depth,
                     const std::string& prefix,
                     const std::string& output_dir,

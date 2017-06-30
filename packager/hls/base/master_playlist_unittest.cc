@@ -30,8 +30,7 @@ namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
-const MediaPlaylist::MediaPlaylistType kVodPlaylist =
-    MediaPlaylist::MediaPlaylistType::kVod;
+const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
 }  // namespace
 
 class MasterPlaylistTest : public ::testing::Test {

@@ -10,22 +10,17 @@
 #include <string>
 #include <vector>
 
+#include "packager/hls/public/hls_playlist_type.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
 namespace hls {
 
-// TODO(kqyang): Combine with MediaPlaylistType in media_playlist.h.
-enum class HlsProfile {
-  kOnDemandProfile,
-  kEventProfile,
-  kLiveProfile,
-};
-
 // TODO(rkuroiwa): Consider merging this with MpdNotifier.
 class HlsNotifier {
  public:
-  explicit HlsNotifier(HlsProfile profile) : profile_(profile) {}
+  explicit HlsNotifier(HlsPlaylistType playlist_type)
+      : playlist_type_(playlist_type) {}
   virtual ~HlsNotifier() {}
 
   /// Intialize the notifier.
@@ -81,13 +76,14 @@ class HlsNotifier {
   /// @return true on success, false otherwise.
   virtual bool Flush() = 0;
 
-  /// @return the profile.
-  HlsProfile profile() const { return profile_; }
+  /// @return the playlist type.
+  HlsPlaylistType playlist_type() const { return playlist_type_; }
 
  private:
-  HlsProfile profile_;
+  HlsPlaylistType playlist_type_;
 };
 
 }  // namespace hls
 }  // namespace shaka
+
 #endif  // PACKAGER_HLS_BASE_HLS_NOTIFIER_H_

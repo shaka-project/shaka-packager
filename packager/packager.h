@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "packager/hls/public/hls_playlist_type.h"
 #include "packager/status.h"
 
 namespace shaka {
@@ -92,14 +93,6 @@ struct MpdParams {
   std::string default_language;
   /// Try to generate DASH-IF IOP compliant MPD.
   bool generate_dash_if_iop_compliant_mpd = true;
-};
-
-/// Defines the EXT-X-PLAYLIST-TYPE in the HLS specification. For
-/// HlsPlaylistType of kLive, EXT-X-PLAYLIST-TYPE tag is omitted.
-enum class HlsPlaylistType {
-  kVod,
-  kEvent,
-  kLive,
 };
 
 /// HLS related parameters.

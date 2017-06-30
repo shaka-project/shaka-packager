@@ -211,7 +211,7 @@ bool WriteMediaPlaylist(const std::string& output_dir,
 MediaPlaylistFactory::~MediaPlaylistFactory() {}
 
 std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
-    MediaPlaylist::MediaPlaylistType type,
+    HlsPlaylistType type,
     double time_shift_buffer_depth,
     const std::string& file_name,
     const std::string& name,
@@ -220,12 +220,12 @@ std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
       type, time_shift_buffer_depth, file_name, name, group_id));
 }
 
-SimpleHlsNotifier::SimpleHlsNotifier(HlsProfile profile,
+SimpleHlsNotifier::SimpleHlsNotifier(HlsPlaylistType playlist_type,
                                      double time_shift_buffer_depth,
                                      const std::string& prefix,
                                      const std::string& output_dir,
                                      const std::string& master_playlist_name)
-    : HlsNotifier(profile),
+    : HlsNotifier(playlist_type),
       time_shift_buffer_depth_(time_shift_buffer_depth),
       prefix_(prefix),
       output_dir_(output_dir),
@@ -245,27 +245,11 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
                                         uint32_t* stream_id) {
   DCHECK(stream_id);
 
-  MediaPlaylist::MediaPlaylistType type;
-  switch (profile()) {
-    case HlsProfile::kLiveProfile:
-      type = MediaPlaylist::MediaPlaylistType::kLive;
-      break;
-    case HlsProfile::kOnDemandProfile:
-      type = MediaPlaylist::MediaPlaylistType::kVod;
-      break;
-    case HlsProfile::kEventProfile:
-      type = MediaPlaylist::MediaPlaylistType::kEvent;
-      break;
-    default:
-      NOTREACHED();
-      return false;
-  }
-
   MediaInfo adjusted_media_info(media_info);
   MakePathsRelativeToOutputDirectory(output_dir_, &adjusted_media_info);
 
   std::unique_ptr<MediaPlaylist> media_playlist =
-      media_playlist_factory_->Create(type, time_shift_buffer_depth_,
+      media_playlist_factory_->Create(playlist_type(), time_shift_buffer_depth_,
                                       playlist_name, name, group_id);
   if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
@@ -324,8 +308,8 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   }
 
   // Update the playlists when there is new segments in live mode.
-  if (profile() == HlsProfile::kLiveProfile ||
-      profile() == HlsProfile::kEventProfile) {
+  if (playlist_type() == HlsPlaylistType::kLive ||
+      playlist_type() == HlsPlaylistType::kEvent) {
     if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_)) {
       LOG(ERROR) << "Failed to write master playlist.";
       return false;

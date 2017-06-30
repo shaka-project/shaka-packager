@@ -30,8 +30,7 @@ using ::testing::_;
 
 namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
-const MediaPlaylist::MediaPlaylistType kVodPlaylist =
-    MediaPlaylist::MediaPlaylistType::kVod;
+const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
 
 class MockMasterPlaylist : public MasterPlaylist {
  public:
@@ -45,13 +44,13 @@ class MockMasterPlaylist : public MasterPlaylist {
 class MockMediaPlaylistFactory : public MediaPlaylistFactory {
  public:
   MOCK_METHOD5(CreateMock,
-               MediaPlaylist*(MediaPlaylist::MediaPlaylistType type,
+               MediaPlaylist*(HlsPlaylistType type,
                               double time_shift_buffer_depth,
                               const std::string& file_name,
                               const std::string& name,
                               const std::string& group_id));
 
-  std::unique_ptr<MediaPlaylist> Create(MediaPlaylist::MediaPlaylistType type,
+  std::unique_ptr<MediaPlaylist> Create(HlsPlaylistType type,
                                         double time_shift_buffer_depth,
                                         const std::string& file_name,
                                         const std::string& name,
@@ -87,10 +86,9 @@ const char kSampleAesProtectionScheme[] = "cbca";
 
 class SimpleHlsNotifierTest : public ::testing::Test {
  protected:
-  SimpleHlsNotifierTest()
-      : SimpleHlsNotifierTest(HlsProfile::kOnDemandProfile) {}
+  SimpleHlsNotifierTest() : SimpleHlsNotifierTest(kVodPlaylist) {}
 
-  SimpleHlsNotifierTest(HlsProfile profile)
+  SimpleHlsNotifierTest(HlsPlaylistType playlist_type)
       : widevine_system_id_(
             media::kWidevineSystemId,
             media::kWidevineSystemId + arraysize(media::kWidevineSystemId)),
@@ -144,9 +142,8 @@ class SimpleHlsNotifierTest : public ::testing::Test {
 };
 
 TEST_F(SimpleHlsNotifierTest, Init) {
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   EXPECT_TRUE(notifier.Init());
 }
 
@@ -177,9 +174,8 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
                                    StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
 
   InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
   InjectMediaPlaylistFactory(std::move(factory), &notifier);
@@ -201,9 +197,9 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
 TEST_F(SimpleHlsNotifierTest,
        RebaseAbsoluteSegmentTemplatePrefixAndOutputDirMatch) {
   const char kAbsoluteOutputDir[] = "/tmp/something/";
-  SimpleHlsNotifier test_notifier(HlsProfile::kOnDemandProfile,
-                                  kTestTimeShiftBufferDepth, kTestPrefix,
-                                  kAbsoluteOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier test_notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                                  kTestPrefix, kAbsoluteOutputDir,
+                                  kMasterPlaylistName);
 
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
@@ -246,9 +242,9 @@ TEST_F(SimpleHlsNotifierTest,
 TEST_F(SimpleHlsNotifierTest,
        RebaseAbsoluteSegmentTemplateCompletelyDifferentDirectory) {
   const char kAbsoluteOutputDir[] = "/tmp/something/";
-  SimpleHlsNotifier test_notifier(HlsProfile::kOnDemandProfile,
-                                  kTestTimeShiftBufferDepth, kTestPrefix,
-                                  kAbsoluteOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier test_notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                                  kTestPrefix, kAbsoluteOutputDir,
+                                  kMasterPlaylistName);
 
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
@@ -286,9 +282,8 @@ TEST_F(SimpleHlsNotifierTest,
 }
 
 TEST_F(SimpleHlsNotifierTest, Flush) {
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
   EXPECT_CALL(*mock_master_playlist,
@@ -316,9 +311,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
                                    StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
 
   InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
   InjectMediaPlaylistFactory(std::move(factory), &notifier);
@@ -360,9 +354,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(*mock_media_playlist, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
 
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   MockMasterPlaylist* mock_master_playlist_ptr = mock_master_playlist.get();
   InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
   InjectMediaPlaylistFactory(std::move(factory), &notifier);
@@ -393,9 +386,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyNewSegmentWithoutStreamsRegistered) {
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   EXPECT_TRUE(notifier.Init());
   EXPECT_FALSE(notifier.NotifyNewSegment(1u, "anything", 0u, 0u, 0u, 0u));
 }
@@ -404,9 +396,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
 
@@ -467,9 +458,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
 
@@ -526,9 +516,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFixedKey) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
 
@@ -556,9 +545,8 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
 
@@ -634,9 +622,8 @@ TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
 
@@ -663,9 +650,8 @@ TEST_F(SimpleHlsNotifierTest, WidevineCencEncryptionScheme) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
 
@@ -712,9 +698,8 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
 
@@ -780,9 +765,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {
   std::vector<uint8_t> iv;
   std::vector<uint8_t> pssh_data;
   std::vector<uint8_t> key_id;
-  SimpleHlsNotifier notifier(HlsProfile::kOnDemandProfile,
-                             kTestTimeShiftBufferDepth, kTestPrefix,
-                             kAnyOutputDir, kMasterPlaylistName);
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   EXPECT_TRUE(notifier.Init());
   EXPECT_FALSE(
       notifier.NotifyEncryptionUpdate(1238u, key_id, system_id, iv, pssh_data));
@@ -790,23 +774,13 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {
 
 class LiveOrEventSimpleHlsNotifierTest
     : public SimpleHlsNotifierTest,
-      public ::testing::WithParamInterface<HlsProfile> {
+      public ::testing::WithParamInterface<HlsPlaylistType> {
  protected:
   LiveOrEventSimpleHlsNotifierTest() : SimpleHlsNotifierTest(GetParam()) {
-    switch (GetParam()) {
-      case HlsProfile::kLiveProfile:
-        expected_playlist_type_ = MediaPlaylist::MediaPlaylistType::kLive;
-        break;
-      case HlsProfile::kOnDemandProfile:
-        expected_playlist_type_ = MediaPlaylist::MediaPlaylistType::kVod;
-        break;
-      case HlsProfile::kEventProfile:
-        expected_playlist_type_ = MediaPlaylist::MediaPlaylistType::kEvent;
-        break;
-    }
+    expected_playlist_type_ = GetParam();
   }
 
-  MediaPlaylist::MediaPlaylistType expected_playlist_type_;
+  HlsPlaylistType expected_playlist_type_;
 };
 
 TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
@@ -959,7 +933,7 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
 
 INSTANTIATE_TEST_CASE_P(PlaylistTypes,
                         LiveOrEventSimpleHlsNotifierTest,
-                        ::testing::Values(HlsProfile::kLiveProfile,
-                                          HlsProfile::kEventProfile));
+                        ::testing::Values(HlsPlaylistType::kLive,
+                                          HlsPlaylistType::kEvent));
 }  // namespace hls
 }  // namespace shaka

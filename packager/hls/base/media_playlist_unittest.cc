@@ -36,10 +36,9 @@ MATCHER_P(MatchesString, expected_string, "") {
 
 class MediaPlaylistTest : public ::testing::Test {
  protected:
-  MediaPlaylistTest()
-      : MediaPlaylistTest(MediaPlaylist::MediaPlaylistType::kVod) {}
+  MediaPlaylistTest() : MediaPlaylistTest(HlsPlaylistType::kVod) {}
 
-  MediaPlaylistTest(MediaPlaylist::MediaPlaylistType type)
+  MediaPlaylistTest(HlsPlaylistType type)
       : default_file_name_(kDefaultPlaylistFileName),
         default_name_("default_name"),
         default_group_id_("default_group_id"),
@@ -77,7 +76,7 @@ class MediaPlaylistMultiSegmentTest : public MediaPlaylistTest {
  protected:
   MediaPlaylistMultiSegmentTest() : MediaPlaylistTest() {}
   // This constructor is for Live and Event playlist tests.
-  MediaPlaylistMultiSegmentTest(MediaPlaylist::MediaPlaylistType type)
+  MediaPlaylistMultiSegmentTest(HlsPlaylistType type)
       : MediaPlaylistTest(type) {}
 
   void SetUp() override {
@@ -538,8 +537,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, MultipleEncryptionInfo) {
 class LiveMediaPlaylistTest : public MediaPlaylistMultiSegmentTest {
  protected:
   LiveMediaPlaylistTest()
-      : MediaPlaylistMultiSegmentTest(MediaPlaylist::MediaPlaylistType::kLive) {
-  }
+      : MediaPlaylistMultiSegmentTest(HlsPlaylistType::kLive) {}
 };
 
 TEST_F(LiveMediaPlaylistTest, Basic) {
@@ -701,8 +699,7 @@ TEST_F(LiveMediaPlaylistTest, TimeShiftedWithEncryptionInfoShifted) {
 class EventMediaPlaylistTest : public MediaPlaylistMultiSegmentTest {
  protected:
   EventMediaPlaylistTest()
-      : MediaPlaylistMultiSegmentTest(
-            MediaPlaylist::MediaPlaylistType::kEvent) {}
+      : MediaPlaylistMultiSegmentTest(HlsPlaylistType::kEvent) {}
 };
 
 TEST_F(EventMediaPlaylistTest, Basic) {

@@ -22,6 +22,7 @@
 #include "packager/base/optional.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/file/file.h"
 #include "packager/packager.h"
@@ -114,6 +115,21 @@ bool GetWidevineSigner(WidevineSigner* signer) {
                  << "'.";
       return false;
     }
+  }
+  return true;
+}
+
+bool GetHlsPlaylistType(const std::string& playlist_type,
+                        HlsPlaylistType* playlist_type_enum) {
+  if (base::ToUpperASCII(playlist_type) == "VOD") {
+    *playlist_type_enum = HlsPlaylistType::kVod;
+  } else if (base::ToUpperASCII(playlist_type) == "LIVE") {
+    *playlist_type_enum = HlsPlaylistType::kLive;
+  } else if (base::ToUpperASCII(playlist_type) == "EVENT") {
+    *playlist_type_enum = HlsPlaylistType::kEvent;
+  } else {
+    LOG(ERROR) << "Unrecognized playlist type " << playlist_type;
+    return false;
   }
   return true;
 }
@@ -263,14 +279,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.default_language = FLAGS_default_language;
 
   HlsParams& hls_params = packaging_params.hls_params;
-  if (FLAGS_hls_playlist_type == "VOD") {
-    hls_params.playlist_type = HlsPlaylistType::kVod;
-  } else if (FLAGS_hls_playlist_type == "LIVE") {
-    hls_params.playlist_type = HlsPlaylistType::kLive;
-  } else if (FLAGS_hls_playlist_type == "EVENT") {
-    hls_params.playlist_type = HlsPlaylistType::kEvent;
-  } else {
-    LOG(ERROR) << "Unrecognized playlist type " << FLAGS_hls_playlist_type;
+  if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {
     return base::nullopt;
   }
   hls_params.master_playlist_output = FLAGS_hls_master_playlist_output;

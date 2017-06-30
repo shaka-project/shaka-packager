@@ -12,6 +12,7 @@
 #include <string>
 
 #include "packager/base/macros.h"
+#include "packager/hls/public/hls_playlist_type.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
@@ -42,11 +43,6 @@ class HlsEntry {
 /// Methods are virtual for mocking.
 class MediaPlaylist {
  public:
-  enum class MediaPlaylistType {
-    kVod,
-    kEvent,
-    kLive,
-  };
   enum class MediaPlaylistStreamType {
     kPlaylistUnknown,
     kPlayListAudio,
@@ -60,7 +56,7 @@ class MediaPlaylist {
     kSampleAesCenc,  // 'cenc' encrypted content.
   };
 
-  /// @param type is the type of this media playlist.
+  /// @param playlist_type is the type of this media playlist.
   /// @param time_shift_buffer_depth determines the duration of the time
   ///        shifting buffer, only for live HLS.
   /// @param file_name is the file name of this media playlist.
@@ -69,7 +65,7 @@ class MediaPlaylist {
   ///        necessarily the same as @a file_name.
   /// @param group_id is the group ID for this playlist. This is the value of
   ///        GROUP-ID attribute for EXT-X-MEDIA.
-  MediaPlaylist(MediaPlaylistType playlist_type,
+  MediaPlaylist(HlsPlaylistType playlist_type,
                 double time_shift_buffer_depth,
                 const std::string& file_name,
                 const std::string& name,
@@ -168,7 +164,7 @@ class MediaPlaylist {
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
 
-  const MediaPlaylistType playlist_type_;
+  const HlsPlaylistType playlist_type_;
   const double time_shift_buffer_depth_;
   // Mainly for MasterPlaylist to use these values.
   const std::string file_name_;

@@ -205,20 +205,6 @@ bool ValidateParams(const PackagingParams& packaging_params,
   return true;
 }
 
-hls::HlsProfile GetHlsNotifierProfile(HlsPlaylistType playlist_type) {
-  switch (playlist_type) {
-    case HlsPlaylistType::kVod:
-      return hls::HlsProfile::kOnDemandProfile;
-    case HlsPlaylistType::kEvent:
-      return hls::HlsProfile::kEventProfile;
-    case HlsPlaylistType::kLive:
-      return hls::HlsProfile::kLiveProfile;
-  }
-  LOG(WARNING) << "Unrecognized playlist type ("
-               << static_cast<int>(playlist_type) << "). Assuming VOD.";
-  return hls::HlsProfile::kOnDemandProfile;
-}
-
 class StreamDescriptorCompareFn {
  public:
   bool operator()(const StreamDescriptor& a, const StreamDescriptor& b) {
@@ -647,8 +633,8 @@ Status Packager::Initialize(
     base::FilePath master_playlist_name = master_playlist_path.BaseName();
 
     internal->hls_notifier.reset(new hls::SimpleHlsNotifier(
-        media::GetHlsNotifierProfile(hls_params.playlist_type),
-        hls_params.time_shift_buffer_depth, hls_params.base_url,
+        hls_params.playlist_type, hls_params.time_shift_buffer_depth,
+        hls_params.base_url,
         master_playlist_path.DirName().AsEndingWithSeparator().AsUTF8Unsafe(),
         master_playlist_name.AsUTF8Unsafe()));
   }

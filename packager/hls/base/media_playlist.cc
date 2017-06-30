@@ -59,12 +59,11 @@ std::string CreateExtXMap(const MediaInfo& media_info) {
   return ext_x_map;
 }
 
-std::string CreatePlaylistHeader(
-    const MediaInfo& media_info,
-    uint32_t target_duration,
-    MediaPlaylist::MediaPlaylistType type,
-    int media_sequence_number,
-    int discontinuity_sequence_number) {
+std::string CreatePlaylistHeader(const MediaInfo& media_info,
+                                 uint32_t target_duration,
+                                 HlsPlaylistType type,
+                                 int media_sequence_number,
+                                 int discontinuity_sequence_number) {
   const std::string version = GetPackagerVersion();
   std::string version_line;
   if (!version.empty()) {
@@ -82,13 +81,13 @@ std::string CreatePlaylistHeader(
       version_line.c_str(), target_duration);
 
   switch (type) {
-    case MediaPlaylist::MediaPlaylistType::kVod:
+    case HlsPlaylistType::kVod:
       header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
       break;
-    case MediaPlaylist::MediaPlaylistType::kEvent:
+    case HlsPlaylistType::kEvent:
       header += "#EXT-X-PLAYLIST-TYPE:EVENT\n";
       break;
-    case MediaPlaylist::MediaPlaylistType::kLive:
+    case HlsPlaylistType::kLive:
       if (media_sequence_number > 0) {
         base::StringAppendF(&header, "#EXT-X-MEDIA-SEQUENCE:%d\n",
                             media_sequence_number);
@@ -278,7 +277,7 @@ double LatestSegmentStartTime(
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
 HlsEntry::~HlsEntry() {}
 
-MediaPlaylist::MediaPlaylist(MediaPlaylistType playlist_type,
+MediaPlaylist::MediaPlaylist(HlsPlaylistType playlist_type,
                              double time_shift_buffer_depth,
                              const std::string& file_name,
                              const std::string& name,
@@ -379,8 +378,8 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
   }
 
   std::string header = CreatePlaylistHeader(
-      media_info_, target_duration_, playlist_type_,
-      media_sequence_number_, discontinuity_sequence_number_);
+      media_info_, target_duration_, playlist_type_, media_sequence_number_,
+      discontinuity_sequence_number_);
 
   std::string body;
   for (const auto& entry : entries_)
@@ -388,7 +387,7 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
 
   std::string content = header + body;
 
-  if (playlist_type_ == MediaPlaylistType::kVod) {
+  if (playlist_type_ == HlsPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";
   }
 
@@ -456,7 +455,7 @@ bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
 void MediaPlaylist::SlideWindow() {
   DCHECK(!entries_.empty());
   if (time_shift_buffer_depth_ <= 0.0 ||
-      playlist_type_ != MediaPlaylistType::kLive) {
+      playlist_type_ != HlsPlaylistType::kLive) {
     return;
   }
   DCHECK_GT(time_scale_, 0u);
