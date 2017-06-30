@@ -119,9 +119,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  ~<a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">ChunkingHandler</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">InitializeInternal</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">Process</a>(std::unique_ptr&lt;StreamData&gt; stream_data) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#ab526bd53e4d49d7209f01d9b10b9ab52">OnFlushRequest</a>(<span class="keywordtype">size_t</span> input_stream_index) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  Status <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a76a5f4b74da3876cc72f44301c389ebd">InitializeInternal</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  Status <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">Process</a>(std::unique_ptr&lt;StreamData&gt; stream_data) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  Status <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#ab526bd53e4d49d7209f01d9b10b9ab52">OnFlushRequest</a>(<span class="keywordtype">size_t</span> input_stream_index) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>ChunkingHandlerTest;</div>
@@ -130,14 +130,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">ChunkingHandler</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">ChunkingHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Processes media sample and apply chunking if needed.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> ProcessMediaSample(<span class="keyword">const</span> <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a>* sample);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  Status ProcessMediaSample(<span class="keyword">const</span> <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a>* sample);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// Dispatch cached non main stream samples before |timestamp_threshold|.</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> DispatchNonMainSamples(int64_t timestamp_threshold);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  Status DispatchNonMainSamples(int64_t timestamp_threshold);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// The (sub)segments are aligned and dispatched together.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> DispatchSegmentInfoForAllStreams();</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> DispatchSubsegmentInfoForAllStreams();</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  Status DispatchSegmentInfoForAllStreams();</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  Status DispatchSubsegmentInfoForAllStreams();</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html">ChunkingOptions</a> chunking_options_;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
@@ -183,13 +183,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">shaka::media::MediaSample</a></div><div class="ttdoc">Class to hold a media sample. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d80/media__sample_8h_source.html#l00022">media_sample.h:22</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html">shaka::media::ChunkingOptions</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00017">chunking_handler.h:17</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_a1cdbde61303f629cc9b4cbcd98f2d711"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a1cdbde61303f629cc9b4cbcd98f2d711">shaka::media::ChunkingOptions::segment_duration_in_seconds</a></div><div class="ttdeci">double segment_duration_in_seconds</div><div class="ttdoc">Segment duration in seconds. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00019">chunking_handler.h:19</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00088">status.h:88</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ChunkingHandler_html"><div class="ttname"><a href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">shaka::media::ChunkingHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00061">chunking_handler.h:61</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_a6d9761fdfca7819c94baa23845ce9ad7"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a6d9761fdfca7819c94baa23845ce9ad7">shaka::media::ChunkingOptions::subsegment_sap_aligned</a></div><div class="ttdeci">bool subsegment_sap_aligned</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00032">chunking_handler.h:32</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 29 2017 22:09:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 30 2017 20:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

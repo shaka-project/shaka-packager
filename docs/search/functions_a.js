@@ -1,7 +1,6 @@
 var searchData=
 [
   ['makepathsrelativetompd',['MakePathsRelativeToMpd',['../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9',1,'shaka::MpdBuilder']]],
-  ['matches',['Matches',['../d0/d93/classshaka_1_1media_1_1Status.html#a2a94b3ef32cf301bbb258c44ca180eba',1,'shaka::media::Status']]],
   ['mergefrom',['MergeFrom',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a36dddd88a09f038adfbf87063786178c',1,'shaka::media::VPCodecConfigurationRecord']]],
   ['mp4muxer',['MP4Muxer',['../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497',1,'shaka::media::mp4::MP4Muxer']]],
   ['mpd_5ftype',['mpd_type',['../d3/dd0/classshaka_1_1MpdNotifier.html#adfb5bc1586cdb7860dd349b3caf25faa',1,'shaka::MpdNotifier']]],

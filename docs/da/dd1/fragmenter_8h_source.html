@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/status.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
@@ -120,11 +120,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  ~<a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>();</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a9453ee5952fc923eae502467e50317e2">AddSample</a>(std::shared_ptr&lt;MediaSample&gt; sample);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  Status <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a9453ee5952fc923eae502467e50317e2">AddSample</a>(std::shared_ptr&lt;MediaSample&gt; sample);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#aa702c2af5ea5096d94f2943076a21e4a">InitializeFragment</a>(int64_t first_sample_dts);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  Status <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#aa702c2af5ea5096d94f2943076a21e4a">InitializeFragment</a>(int64_t first_sample_dts);</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#ae943e13eb86d54cffb7174d4513e4541">FinalizeFragment</a>();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  Status <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#ae943e13eb86d54cffb7174d4513e4541">FinalizeFragment</a>();</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#af1f1d56215c1e9543bfb516136862fa6">GenerateSegmentReference</a>(<a class="code" href="../../dd/d9b/structshaka_1_1media_1_1mp4_1_1SegmentReference.html">SegmentReference</a>* reference);</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
@@ -151,7 +151,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a208b7b8dd83e73c4206469695a3216d4">OptimizeSampleEntries</a>(std::vector&lt;T&gt;* entries, T* default_value);</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> FinalizeFragmentForEncryption();</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  Status FinalizeFragmentForEncryption();</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// Check if the current fragment starts with SAP.</span></div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">bool</span> StartsWithSAP();</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
@@ -202,13 +202,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html_a9453ee5952fc923eae502467e50317e2"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a9453ee5952fc923eae502467e50317e2">shaka::media::mp4::Fragmenter::AddSample</a></div><div class="ttdeci">Status AddSample(std::shared_ptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00064">fragmenter.cc:64</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">shaka::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html_af1f1d56215c1e9543bfb516136862fa6"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#af1f1d56215c1e9543bfb516136862fa6">shaka::media::mp4::Fragmenter::GenerateSegmentReference</a></div><div class="ttdeci">void GenerateSegmentReference(SegmentReference *reference)</div><div class="ttdoc">Fill reference with current fragment information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00204">fragmenter.cc:204</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00088">status.h:88</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html_ae943e13eb86d54cffb7174d4513e4541"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#ae943e13eb86d54cffb7174d4513e4541">shaka::media::mp4::Fragmenter::FinalizeFragment</a></div><div class="ttdeci">Status FinalizeFragment()</div><div class="ttdoc">Finalize and optimize the fragment. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00139">fragmenter.cc:139</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html_a208b7b8dd83e73c4206469695a3216d4"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a208b7b8dd83e73c4206469695a3216d4">shaka::media::mp4::Fragmenter::OptimizeSampleEntries</a></div><div class="ttdeci">bool OptimizeSampleEntries(std::vector&lt; T &gt; *entries, T *default_value)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00104">fragmenter.h:104</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 29 2017 22:09:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 30 2017 20:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

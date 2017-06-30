@@ -173,19 +173,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;EncryptionHandler::~EncryptionHandler() {}</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">   87</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">EncryptionHandler::InitializeInternal</a>() {</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">   87</a></span>&#160;Status <a class="code" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a3f1808a4386081e5e1c9a798a1a69dd0">EncryptionHandler::InitializeInternal</a>() {</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">if</span> (!encryption_options_.<a class="code" href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a586017f7bf6490e06a61c1f6eaf7970c">stream_label_func</a>) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::INVALID_ARGUMENT, <span class="stringliteral">&quot;Stream label function not set.&quot;</span>);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT, <span class="stringliteral">&quot;Stream label function not set.&quot;</span>);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">if</span> (num_input_streams() != 1 || next_output_stream_index() != 1) {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                  <span class="stringliteral">&quot;Expects exactly one input and output.&quot;</span>);</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  }</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">   98</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">EncryptionHandler::Process</a>(std::unique_ptr&lt;StreamData&gt; stream_data) {</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status;</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">   98</a></span>&#160;Status <a class="code" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">EncryptionHandler::Process</a>(std::unique_ptr&lt;StreamData&gt; stream_data) {</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  Status status;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">switch</span> (stream_data-&gt;stream_data_type) {</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">case</span> StreamDataType::kStreamInfo:</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      status = ProcessStreamInfo(stream_data-&gt;stream_info.get());</div>
@@ -216,9 +216,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordflow">return</span> status.ok() ? <a class="code" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca">Dispatch</a>(std::move(stream_data)) : status;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;}</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> EncryptionHandler::ProcessStreamInfo(<a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>* stream_info) {</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;Status EncryptionHandler::ProcessStreamInfo(<a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>* stream_info) {</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">if</span> (stream_info-&gt;is_encrypted()) {</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                  <span class="stringliteral">&quot;Input stream is already encrypted.&quot;</span>);</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  }</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
@@ -616,11 +616,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a40d9a82d274d6fbaee5346328f11dedd"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a40d9a82d274d6fbaee5346328f11dedd">shaka::media::AesCryptor::GenerateRandomIv</a></div><div class="ttdeci">static bool GenerateRandomIv(FourCC protection_scheme, std::vector&lt; uint8_t &gt; *iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00107">aes_cryptor.cc:107</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionOptions_html_a3d58dc01a4af0ebfb56f3c4979f745f7"><div class="ttname"><a href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a3d58dc01a4af0ebfb56f3c4979f745f7">shaka::media::EncryptionOptions::clear_lead_in_seconds</a></div><div class="ttdeci">double clear_lead_in_seconds</div><div class="ttdoc">Clear lead duration in seconds. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/encryption__handler_8h_source.html#l00026">encryption_handler.h:26</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionOptions_html_ac858b4c03e49e871e07e38fc35893088"><div class="ttname"><a href="../../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#ac858b4c03e49e871e07e38fc35893088">shaka::media::EncryptionOptions::protection_scheme</a></div><div class="ttdeci">FourCC protection_scheme</div><div class="ttdoc">The protection scheme: &#39;cenc&#39;, &#39;cens&#39;, &#39;cbc1&#39;, &#39;cbcs&#39;. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/encryption__handler_8h_source.html#l00028">encryption_handler.h:28</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00088">status.h:88</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 29 2017 22:09:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 30 2017 20:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -112,13 +112,13 @@ Inheritance diagram for shaka::media::KeySource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td></tr>
+<tr class="memitem:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memItemLeft" align="right" valign="top">virtual Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td></tr>
 <tr class="separator:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af56c833453d65297c4dc96c9d2f83e1a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a> (const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="memitem:af56c833453d65297c4dc96c9d2f83e1a"><td class="memItemLeft" align="right" valign="top">virtual Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a> (const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:af56c833453d65297c4dc96c9d2f83e1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="memitem:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memItemLeft" align="right" valign="top">virtual Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34340247a575bc693d14c3bef9102258"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="memitem:a34340247a575bc693d14c3bef9102258"><td class="memItemLeft" align="right" valign="top">virtual Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:a34340247a575bc693d14c3bef9102258"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -134,7 +134,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::FetchKeys </td>
+          <td class="memname">virtual Status shaka::media::KeySource::FetchKeys </td>
           <td>(</td>
           <td class="paramtype">EmeInitDataType&#160;</td>
           <td class="paramname"><em>init_data_type</em>, </td>
@@ -179,7 +179,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::GetCryptoPeriodKey </td>
+          <td class="memname">virtual Status shaka::media::KeySource::GetCryptoPeriodKey </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>crypto_period_index</em>, </td>
@@ -231,7 +231,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::GetKey </td>
+          <td class="memname">virtual Status shaka::media::KeySource::GetKey </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>stream_label</em>, </td>
@@ -276,7 +276,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> shaka::media::KeySource::GetKey </td>
+          <td class="memname">virtual Status shaka::media::KeySource::GetKey </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>key_id</em>, </td>
@@ -320,7 +320,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 29 2017 22:09:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 30 2017 20:14:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

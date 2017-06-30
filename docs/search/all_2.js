@@ -11,7 +11,7 @@ var searchData=
   ['chunkingoptions',['ChunkingOptions',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html',1,'shaka::media']]],
   ['chunklargeoffset',['ChunkLargeOffset',['../db/d95/structshaka_1_1media_1_1mp4_1_1ChunkLargeOffset.html',1,'shaka::media::mp4']]],
   ['chunkoffset',['ChunkOffset',['../dd/d06/structshaka_1_1media_1_1mp4_1_1ChunkOffset.html',1,'shaka::media::mp4']]],
-  ['clear',['Clear',['../d0/d93/classshaka_1_1media_1_1Status.html#a3abb4bb8075e30af97b671017e6c18ca',1,'shaka::media::Status::Clear()'],['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48',1,'shaka::media::IoCache::Clear()']]],
+  ['clear',['Clear',['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a29080034b90671628ea681e10ea92a48',1,'shaka::media::IoCache']]],
   ['clear_5flead_5fin_5fseconds',['clear_lead_in_seconds',['../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a3d58dc01a4af0ebfb56f3c4979f745f7',1,'shaka::media::EncryptionOptions']]],
   ['clearoutputstreamdatavector',['ClearOutputStreamDataVector',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#a7a600a18a6dec0d32b75c292dc634474',1,'shaka::media::MediaHandlerTestBase']]],
   ['clearsegmentpmt',['ClearSegmentPmt',['../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#abaf3df0bbb1b6ff5655d04b828d2889b',1,'shaka::media::mp2t::ProgramMapTableWriter::ClearSegmentPmt()'],['../de/d27/classshaka_1_1media_1_1mp2t_1_1H264ProgramMapTableWriter.html#a8f439af49b3144f892102c235fb51169',1,'shaka::media::mp2t::H264ProgramMapTableWriter::ClearSegmentPmt()'],['../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#aa6d50f3f1249bbf7c1d27608bfb9334f',1,'shaka::media::mp2t::AacProgramMapTableWriter::ClearSegmentPmt()']]],

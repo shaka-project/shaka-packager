@@ -170,23 +170,23 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;HttpKeyFetcher::~HttpKeyFetcher() {}</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#ab8e9b01fac00aa5dafb8983acd7a297b">   84</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#ab8e9b01fac00aa5dafb8983acd7a297b">HttpKeyFetcher::FetchKeys</a>(<span class="keyword">const</span> std::string&amp; url,</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#ab8e9b01fac00aa5dafb8983acd7a297b">   84</a></span>&#160;Status <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#ab8e9b01fac00aa5dafb8983acd7a297b">HttpKeyFetcher::FetchKeys</a>(<span class="keyword">const</span> std::string&amp; url,</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                                 <span class="keyword">const</span> std::string&amp; request,</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                                 std::string* response) {</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">Post</a>(url, request, response);</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a6b5b2c193d6055ca49d2d6af2b2ac4cc">   90</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a6b5b2c193d6055ca49d2d6af2b2ac4cc">HttpKeyFetcher::Get</a>(<span class="keyword">const</span> std::string&amp; path, std::string* response) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a6b5b2c193d6055ca49d2d6af2b2ac4cc">   90</a></span>&#160;Status <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a6b5b2c193d6055ca49d2d6af2b2ac4cc">HttpKeyFetcher::Get</a>(<span class="keyword">const</span> std::string&amp; path, std::string* response) {</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">return</span> FetchInternal(GET, path, <span class="stringliteral">&quot;&quot;</span>, response);</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">   94</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">HttpKeyFetcher::Post</a>(<span class="keyword">const</span> std::string&amp; path,</div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">   94</a></span>&#160;Status <a class="code" href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">HttpKeyFetcher::Post</a>(<span class="keyword">const</span> std::string&amp; path,</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                            <span class="keyword">const</span> std::string&amp; data,</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                            std::string* response) {</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">return</span> FetchInternal(POST, path, data, response);</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> HttpKeyFetcher::FetchInternal(HttpMethod method,</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;Status HttpKeyFetcher::FetchInternal(HttpMethod method,</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                                     <span class="keyword">const</span> std::string&amp; path,</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                                     <span class="keyword">const</span> std::string&amp; data,</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                                     std::string* response) {</div>
@@ -197,7 +197,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  CURL* curl = scoped_curl.get();</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (!curl) {</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;curl_easy_init() failed.&quot;</span>;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::HTTP_FAILURE, <span class="stringliteral">&quot;curl_easy_init() failed.&quot;</span>);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span> Status(error::HTTP_FAILURE, <span class="stringliteral">&quot;curl_easy_init() failed.&quot;</span>);</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  }</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  response-&gt;clear();</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
@@ -259,14 +259,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1HttpKeyFetcher_html_a6b5b2c193d6055ca49d2d6af2b2ac4cc"><div class="ttname"><a href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a6b5b2c193d6055ca49d2d6af2b2ac4cc">shaka::media::HttpKeyFetcher::Get</a></div><div class="ttdeci">virtual Status Get(const std::string &amp;url, std::string *response)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d70/http__key__fetcher_8cc_source.html#l00090">http_key_fetcher.cc:90</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00088">status.h:88</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1HttpKeyFetcher_html_ab8e9b01fac00aa5dafb8983acd7a297b"><div class="ttname"><a href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#ab8e9b01fac00aa5dafb8983acd7a297b">shaka::media::HttpKeyFetcher::FetchKeys</a></div><div class="ttdeci">Status FetchKeys(const std::string &amp;url, const std::string &amp;request, std::string *response) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d70/http__key__fetcher_8cc_source.html#l00084">http_key_fetcher.cc:84</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1HttpKeyFetcher_html_a02561dcbbaf66152dce3ebd466810f15"><div class="ttname"><a href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a02561dcbbaf66152dce3ebd466810f15">shaka::media::HttpKeyFetcher::HttpKeyFetcher</a></div><div class="ttdeci">HttpKeyFetcher()</div><div class="ttdoc">Creates a fetcher with no timeout. </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d70/http__key__fetcher_8cc_source.html#l00077">http_key_fetcher.cc:77</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1HttpKeyFetcher_html_a31e904e2f802e5626c4420675c76d513"><div class="ttname"><a href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a31e904e2f802e5626c4420675c76d513">shaka::media::HttpKeyFetcher::Post</a></div><div class="ttdeci">virtual Status Post(const std::string &amp;url, const std::string &amp;data, std::string *response)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d70/http__key__fetcher_8cc_source.html#l00094">http_key_fetcher.cc:94</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 29 2017 22:09:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 30 2017 20:14:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

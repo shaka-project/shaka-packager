@@ -103,7 +103,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/container_names.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_handler.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/status.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>media {</div>
@@ -123,13 +123,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">SetKeySource</a>(std::unique_ptr&lt;KeySource&gt; key_source);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a9e0b4a430603fdf4639c2153622ae1a2">Run</a>();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  Status <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a9e0b4a430603fdf4639c2153622ae1a2">Run</a>();</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a117ba5528a92b0cf4752d15d3692e158">Cancel</a>();</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
 <div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a385c93fd8d589b7d3bccd35e14c58290">   56</a></span>&#160;  MediaContainerName <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a385c93fd8d589b7d3bccd35e14c58290">container_name</a>() { <span class="keywordflow">return</span> container_name_; }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a1247302b6c57fbafb09aec71ce0109e3">SetHandler</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  Status <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a1247302b6c57fbafb09aec71ce0109e3">SetHandler</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    std::shared_ptr&lt;MediaHandler&gt; handler);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#aa3fe0a64a2745fa6f462c3d179809c3b">SetLanguageOverride</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
@@ -140,9 +140,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  }</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">   80</a></span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">InitializeInternal</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> Status::OK; }</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">   81</a></span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">Process</a>(std::unique_ptr&lt;StreamData&gt; stream_data)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::INTERNAL_ERROR,</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">   80</a></span>&#160;  Status <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">InitializeInternal</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> Status::OK; }</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">   81</a></span>&#160;  Status <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">Process</a>(std::unique_ptr&lt;StreamData&gt; stream_data)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> Status(error::INTERNAL_ERROR,</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                  <span class="stringliteral">&quot;Demuxer should not be the downstream handler.&quot;</span>);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  }</div>
 <div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a908f4c9bb410d1528b85e2c7f824deb6">   85</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a908f4c9bb410d1528b85e2c7f824deb6">ValidateOutputStreamIndex</a>(<span class="keywordtype">size_t</span> stream_index)<span class="keyword"> const override </span>{</div>
@@ -221,11 +221,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a7488d8ea312be5822c67f5b69a8dbd9f"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a7488d8ea312be5822c67f5b69a8dbd9f">shaka::media::Demuxer::InitializeInternal</a></div><div class="ttdeci">Status InitializeInternal() override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00080">demuxer.h:80</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a869b21d13f02d4d5c0519f9eb35117cd"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">shaka::media::Demuxer::Process</a></div><div class="ttdeci">Status Process(std::unique_ptr&lt; StreamData &gt; stream_data) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00081">demuxer.h:81</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_ae2fee69f99e5815de4f686b24393402e"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e">shaka::media::Demuxer::Demuxer</a></div><div class="ttdeci">Demuxer(const std::string &amp;file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00075">demuxer.cc:75</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00088">status.h:88</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 29 2017 22:09:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jun 30 2017 20:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
