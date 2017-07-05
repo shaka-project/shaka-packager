@@ -83,13 +83,13 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
 
 class EncryptionHandlerTest : public MediaHandlerTestBase {
  public:
-  void SetUp() override { SetUpEncryptionHandler(EncryptionOptions()); }
+  void SetUp() override { SetUpEncryptionHandler(EncryptionParams()); }
 
-  void SetUpEncryptionHandler(const EncryptionOptions& encryption_options) {
-    EncryptionOptions new_encryption_options = encryption_options;
-    if (!encryption_options.stream_label_func) {
+  void SetUpEncryptionHandler(const EncryptionParams& encryption_params) {
+    EncryptionParams new_encryption_params = encryption_params;
+    if (!encryption_params.stream_label_func) {
       // Setup default stream label function.
-      new_encryption_options.stream_label_func =
+      new_encryption_params.stream_label_func =
           [](const EncryptionParams::EncryptedStreamAttributes&
                  stream_attributes) {
             if (stream_attributes.stream_type ==
@@ -100,7 +100,7 @@ class EncryptionHandlerTest : public MediaHandlerTestBase {
           };
     }
     encryption_handler_.reset(
-        new EncryptionHandler(new_encryption_options, &mock_key_source_));
+        new EncryptionHandler(new_encryption_params, &mock_key_source_));
     SetUpGraph(1 /* one input */, 1 /* one output */, encryption_handler_);
   }
 
@@ -470,11 +470,11 @@ class EncryptionHandlerEncryptionTest
 
 TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
   const double kClearLeadInSeconds = 1.5 * kSegmentDuration / kTimeScale;
-  EncryptionOptions encryption_options;
-  encryption_options.protection_scheme = protection_scheme_;
-  encryption_options.clear_lead_in_seconds = kClearLeadInSeconds;
-  encryption_options.vp9_subsample_encryption = vp9_subsample_encryption_;
-  SetUpEncryptionHandler(encryption_options);
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = protection_scheme_;
+  encryption_params.clear_lead_in_seconds = kClearLeadInSeconds;
+  encryption_params.vp9_subsample_encryption = vp9_subsample_encryption_;
+  SetUpEncryptionHandler(encryption_params);
 
   const EncryptionKey mock_encryption_key = GetMockEncryptionKey();
   EXPECT_CALL(mock_key_source_, GetKey(_, _))
@@ -523,13 +523,13 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   const int kSegmentsPerCryptoPeriod = 2;  // 2 segments.
   const double kCryptoPeriodDurationInSeconds =
       kSegmentsPerCryptoPeriod * kSegmentDuration / kTimeScale;
-  EncryptionOptions encryption_options;
-  encryption_options.protection_scheme = protection_scheme_;
-  encryption_options.clear_lead_in_seconds = kClearLeadInSeconds;
-  encryption_options.crypto_period_duration_in_seconds =
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = protection_scheme_;
+  encryption_params.clear_lead_in_seconds = kClearLeadInSeconds;
+  encryption_params.crypto_period_duration_in_seconds =
       kCryptoPeriodDurationInSeconds;
-  encryption_options.vp9_subsample_encryption = vp9_subsample_encryption_;
-  SetUpEncryptionHandler(encryption_options);
+  encryption_params.vp9_subsample_encryption = vp9_subsample_encryption_;
+  SetUpEncryptionHandler(encryption_params);
 
   ASSERT_OK(Process(GetStreamInfoStreamData(kStreamIndex, codec_, kTimeScale)));
   EXPECT_THAT(GetOutputStreamDataVector(),
@@ -582,10 +582,10 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
 }
 
 TEST_P(EncryptionHandlerEncryptionTest, Encrypt) {
-  EncryptionOptions encryption_options;
-  encryption_options.protection_scheme = protection_scheme_;
-  encryption_options.vp9_subsample_encryption = vp9_subsample_encryption_;
-  SetUpEncryptionHandler(encryption_options);
+  EncryptionParams encryption_params;
+  encryption_params.protection_scheme = protection_scheme_;
+  encryption_params.vp9_subsample_encryption = vp9_subsample_encryption_;
+  SetUpEncryptionHandler(encryption_params);
 
   const EncryptionKey mock_encryption_key = GetMockEncryptionKey();
   EXPECT_CALL(mock_key_source_, GetKey(_, _))
@@ -653,15 +653,15 @@ class EncryptionHandlerTrackTypeTest : public EncryptionHandlerTest {
 
 TEST_F(EncryptionHandlerTrackTypeTest, AudioTrackType) {
   EncryptionParams::EncryptedStreamAttributes captured_stream_attributes;
-  EncryptionOptions encryption_options;
-  encryption_options.stream_label_func =
+  EncryptionParams encryption_params;
+  encryption_params.stream_label_func =
       [&captured_stream_attributes](
           const EncryptionParams::EncryptedStreamAttributes&
               stream_attributes) {
         captured_stream_attributes = stream_attributes;
         return kAudioStreamLabel;
       };
-  SetUpEncryptionHandler(encryption_options);
+  SetUpEncryptionHandler(encryption_params);
   EXPECT_CALL(mock_key_source_, GetKey(kAudioStreamLabel, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
@@ -672,15 +672,15 @@ TEST_F(EncryptionHandlerTrackTypeTest, AudioTrackType) {
 
 TEST_F(EncryptionHandlerTrackTypeTest, VideoTrackType) {
   EncryptionParams::EncryptedStreamAttributes captured_stream_attributes;
-  EncryptionOptions encryption_options;
-  encryption_options.stream_label_func =
+  EncryptionParams encryption_params;
+  encryption_params.stream_label_func =
       [&captured_stream_attributes](
           const EncryptionParams::EncryptedStreamAttributes&
               stream_attributes) {
         captured_stream_attributes = stream_attributes;
         return kSdVideoStreamLabel;
       };
-  SetUpEncryptionHandler(encryption_options);
+  SetUpEncryptionHandler(encryption_params);
   EXPECT_CALL(mock_key_source_, GetKey(kSdVideoStreamLabel, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));

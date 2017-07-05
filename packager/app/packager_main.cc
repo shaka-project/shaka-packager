@@ -134,6 +134,27 @@ bool GetHlsPlaylistType(const std::string& playlist_type,
   return true;
 }
 
+bool GetProtectionScheme(uint32_t* protection_scheme) {
+  if (FLAGS_protection_scheme == "cenc") {
+    *protection_scheme = EncryptionParams::kProtectionSchemeCenc;
+    return true;
+  }
+  if (FLAGS_protection_scheme == "cbc1") {
+    *protection_scheme = EncryptionParams::kProtectionSchemeCbc1;
+    return true;
+  }
+  if (FLAGS_protection_scheme == "cbcs") {
+    *protection_scheme = EncryptionParams::kProtectionSchemeCbcs;
+    return true;
+  }
+  if (FLAGS_protection_scheme == "cens") {
+    *protection_scheme = EncryptionParams::kProtectionSchemeCens;
+    return true;
+  }
+  LOG(ERROR) << "Unrecognized protection_scheme " << FLAGS_protection_scheme;
+  return false;
+}
+
 base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
@@ -166,12 +187,13 @@ base::Optional<PackagingParams> GetPackagingParams() {
 
   if (encryption_params.key_provider != KeyProvider::kNone) {
     encryption_params.clear_lead_in_seconds = FLAGS_clear_lead;
-    encryption_params.protection_scheme = FLAGS_protection_scheme;
+    if (!GetProtectionScheme(&encryption_params.protection_scheme))
+      return base::nullopt;
     encryption_params.crypto_period_duration_in_seconds =
         FLAGS_crypto_period_duration;
     encryption_params.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;
     encryption_params.stream_label_func = std::bind(
-        &EncryptionParams::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
+        &Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
         FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);
   }
   switch (encryption_params.key_provider) {

@@ -26,21 +26,6 @@ namespace shaka {
 namespace media {
 namespace {
 
-FourCC GetProtectionScheme(const std::string& protection_scheme) {
-  if (protection_scheme == "cenc") {
-    return FOURCC_cenc;
-  } else if (protection_scheme == "cens") {
-    return FOURCC_cens;
-  } else if (protection_scheme == "cbc1") {
-    return FOURCC_cbc1;
-  } else if (protection_scheme == "cbcs") {
-    return FOURCC_cbcs;
-  } else {
-    LOG(ERROR) << "Unknown protection scheme: " << protection_scheme;
-    return FOURCC_NULL;
-  }
-}
-
 }  // namespace
 
 std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
@@ -196,21 +181,6 @@ ChunkingOptions GetChunkingOptions(const ChunkingParams& chunking_params) {
   chunking_options.subsegment_sap_aligned =
       chunking_params.subsegment_sap_aligned;
   return chunking_options;
-}
-
-EncryptionOptions GetEncryptionOptions(
-    const EncryptionParams& encryption_params) {
-  EncryptionOptions encryption_options;
-  encryption_options.clear_lead_in_seconds =
-      encryption_params.clear_lead_in_seconds;
-  encryption_options.protection_scheme =
-      GetProtectionScheme(encryption_params.protection_scheme);
-  encryption_options.crypto_period_duration_in_seconds =
-      encryption_params.crypto_period_duration_in_seconds;
-  encryption_options.vp9_subsample_encryption =
-      encryption_params.vp9_subsample_encryption;
-  encryption_options.stream_label_func = encryption_params.stream_label_func;
-  return encryption_options;
 }
 
 MuxerOptions GetMuxerOptions(const std::string& temp_dir,

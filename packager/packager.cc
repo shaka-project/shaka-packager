@@ -316,7 +316,6 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const PackagingParams& packaging_params,
                      const ChunkingOptions& chunking_options,
-                     const EncryptionOptions& encryption_options,
                      const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
                      KeySource* encryption_key_source,
@@ -472,17 +471,25 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     Status status;
     if (encryption_key_source && !stream_iter->skip_encryption) {
-      auto new_encryption_options = encryption_options;
+      auto encryption_params = packaging_params.encryption_params;
       // Use Sample AES in MPEG2TS.
       // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
       // will support CENC in TS in the future.
       if (output_format == CONTAINER_MPEG2TS) {
         VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS.";
-        new_encryption_options.protection_scheme =
+        encryption_params.protection_scheme =
             kAppleSampleAesProtectionScheme;
       }
+      if (!encryption_params.stream_label_func) {
+        const int kDefaultMaxSdPixels = 768 * 576;
+        const int kDefaultMaxHdPixels = 1920 * 1080;
+        const int kDefaultMaxUhd1Pixels = 4096 * 2160;
+        encryption_params.stream_label_func = std::bind(
+            &Packager::DefaultStreamLabelFunction, kDefaultMaxSdPixels,
+            kDefaultMaxHdPixels, kDefaultMaxUhd1Pixels, std::placeholders::_1);
+      }
       handlers.emplace_back(
-          new EncryptionHandler(new_encryption_options, encryption_key_source));
+          new EncryptionHandler(encryption_params, encryption_key_source));
     }
 
     // If trick_play_handler is available, muxer should already be connected to
@@ -544,24 +551,6 @@ Status RunRemuxJobs(const std::vector<std::unique_ptr<Job>>& jobs) {
 }  // namespace
 }  // namespace media
 
-std::string EncryptionParams::DefaultStreamLabelFunction(
-    int max_sd_pixels,
-    int max_hd_pixels,
-    int max_uhd1_pixels,
-    const EncryptedStreamAttributes& stream_attributes) {
-  if (stream_attributes.stream_type == EncryptedStreamAttributes::kAudio)
-    return "AUDIO";
-  if (stream_attributes.stream_type == EncryptedStreamAttributes::kVideo) {
-    const int pixels = stream_attributes.oneof.video.width *
-                       stream_attributes.oneof.video.height;
-    if (pixels <= max_sd_pixels) return "SD";
-    if (pixels <= max_hd_pixels) return "HD";
-    if (pixels <= max_uhd1_pixels) return "UHD1";
-    return "UHD2";
-  }
-  return "";
-}
-
 struct Packager::PackagerInternal {
   media::FakeClock fake_clock;
   std::unique_ptr<KeySource> encryption_key_source;
@@ -596,8 +585,6 @@ Status Packager::Initialize(
 
   ChunkingOptions chunking_options =
       media::GetChunkingOptions(packaging_params.chunking_params);
-  EncryptionOptions encryption_options =
-      media::GetEncryptionOptions(packaging_params.encryption_params);
   MuxerOptions muxer_options = media::GetMuxerOptions(
       packaging_params.temp_dir, packaging_params.mp4_output_params);
 
@@ -608,11 +595,10 @@ Status Packager::Initialize(
 
   // Create encryption key source if needed.
   if (packaging_params.encryption_params.key_provider != KeyProvider::kNone) {
-    if (encryption_options.protection_scheme == media::FOURCC_NULL)
-      return Status(error::INVALID_ARGUMENT, "Invalid protection scheme.");
-    internal->encryption_key_source =
-        CreateEncryptionKeySource(encryption_options.protection_scheme,
-                                  packaging_params.encryption_params);
+    internal->encryption_key_source = CreateEncryptionKeySource(
+        static_cast<media::FourCC>(
+            packaging_params.encryption_params.protection_scheme),
+        packaging_params.encryption_params);
     if (!internal->encryption_key_source)
       return Status(error::INVALID_ARGUMENT, "Failed to create key source.");
   }
@@ -651,7 +637,7 @@ Status Packager::Initialize(
     stream_descriptor_list.insert(descriptor);
   if (!media::CreateRemuxJobs(
           stream_descriptor_list, packaging_params, chunking_options,
-          encryption_options, muxer_options, &internal->fake_clock,
+          muxer_options, &internal->fake_clock,
           internal->encryption_key_source.get(), internal->mpd_notifier.get(),
           internal->hls_notifier.get(), &internal->jobs)) {
     return Status(error::INVALID_ARGUMENT, "Failed to create remux jobs.");
@@ -689,6 +675,26 @@ void Packager::Cancel() {
 
 std::string Packager::GetLibraryVersion() {
   return GetPackagerVersion();
+}
+
+std::string Packager::DefaultStreamLabelFunction(
+    int max_sd_pixels,
+    int max_hd_pixels,
+    int max_uhd1_pixels,
+    const EncryptionParams::EncryptedStreamAttributes& stream_attributes) {
+  if (stream_attributes.stream_type ==
+      EncryptionParams::EncryptedStreamAttributes::kAudio)
+    return "AUDIO";
+  if (stream_attributes.stream_type ==
+      EncryptionParams::EncryptedStreamAttributes::kVideo) {
+    const int pixels = stream_attributes.oneof.video.width *
+                       stream_attributes.oneof.video.height;
+    if (pixels <= max_sd_pixels) return "SD";
+    if (pixels <= max_hd_pixels) return "HD";
+    if (pixels <= max_uhd1_pixels) return "UHD1";
+    return "UHD2";
+  }
+  return "";
 }
 
 }  // namespace shaka

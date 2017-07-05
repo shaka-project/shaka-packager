@@ -31,7 +31,7 @@ const uint8_t kKeyRotationDefaultKeyId[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-// Adds one or more subsamples to |*subsamples|.  This may add more than one
+// Adds one or more subsamples to |*decrypt_config|.  This may add more than one
 // if one of the values overflows the integer in the subsample.
 void AddSubsample(uint64_t clear_bytes,
                   uint64_t cipher_bytes,
@@ -77,15 +77,17 @@ std::string GetStreamLabelForEncryption(
 }
 }  // namespace
 
-EncryptionHandler::EncryptionHandler(
-    const EncryptionOptions& encryption_options,
-    KeySource* key_source)
-    : encryption_options_(encryption_options), key_source_(key_source) {}
+EncryptionHandler::EncryptionHandler(const EncryptionParams& encryption_params,
+                                     KeySource* key_source)
+    : encryption_params_(encryption_params),
+      protection_scheme_(
+          static_cast<FourCC>(encryption_params.protection_scheme)),
+      key_source_(key_source) {}
 
 EncryptionHandler::~EncryptionHandler() {}
 
 Status EncryptionHandler::InitializeInternal() {
-  if (!encryption_options_.stream_label_func) {
+  if (!encryption_params_.stream_label_func) {
     return Status(error::INVALID_ARGUMENT, "Stream label function not set.");
   }
   if (num_input_streams() != 1 || next_output_stream_index() != 1) {
@@ -134,17 +136,17 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
   }
 
   remaining_clear_lead_ =
-      encryption_options_.clear_lead_in_seconds * stream_info->time_scale();
+      encryption_params_.clear_lead_in_seconds * stream_info->time_scale();
   crypto_period_duration_ =
-      encryption_options_.crypto_period_duration_in_seconds *
+      encryption_params_.crypto_period_duration_in_seconds *
       stream_info->time_scale();
   codec_ = stream_info->codec();
   nalu_length_size_ = GetNaluLengthSize(*stream_info);
   stream_label_ = GetStreamLabelForEncryption(
-      *stream_info, encryption_options_.stream_label_func);
+      *stream_info, encryption_params_.stream_label_func);
   switch (codec_) {
     case kCodecVP9:
-      if (encryption_options_.vp9_subsample_encryption)
+      if (encryption_params_.vp9_subsample_encryption)
         vpx_parser_.reset(new VP9Parser);
       break;
     case kCodecH264:
@@ -192,8 +194,7 @@ Status EncryptionHandler::ProcessStreamInfo(StreamInfo* stream_info) {
     return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
 
   stream_info->set_is_encrypted(true);
-  stream_info->set_has_clear_lead(encryption_options_.clear_lead_in_seconds >
-                                  0);
+  stream_info->set_has_clear_lead(encryption_params_.clear_lead_in_seconds > 0);
   stream_info->set_encryption_config(*encryption_config_);
   return Status::OK;
 }
@@ -230,10 +231,10 @@ Status EncryptionHandler::ProcessMediaSample(MediaSample* sample) {
   if (remaining_clear_lead_ > 0)
     return Status::OK;
 
-  std::unique_ptr<DecryptConfig> decrypt_config(new DecryptConfig(
-      encryption_config_->key_id, encryptor_->iv(),
-      std::vector<SubsampleEntry>(), encryption_options_.protection_scheme,
-      crypt_byte_block_, skip_byte_block_));
+  std::unique_ptr<DecryptConfig> decrypt_config(
+      new DecryptConfig(encryption_config_->key_id, encryptor_->iv(),
+                        std::vector<SubsampleEntry>(), protection_scheme_,
+                        crypt_byte_block_, skip_byte_block_));
   bool result = true;
   if (vpx_parser_) {
     result = EncryptVpxFrame(vpx_frames, sample, decrypt_config.get());
@@ -262,7 +263,7 @@ Status EncryptionHandler::ProcessMediaSample(MediaSample* sample) {
 }
 
 Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
-  switch (encryption_options_.protection_scheme) {
+  switch (protection_scheme_) {
     case kAppleSampleAesProtectionScheme: {
       const size_t kH264LeadingClearBytesSize = 32u;
       const size_t kSmallNalUnitSize = 32u + 16u;
@@ -323,7 +324,7 @@ Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
 
 bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   std::unique_ptr<AesCryptor> encryptor;
-  switch (encryption_options_.protection_scheme) {
+  switch (protection_scheme_) {
     case FOURCC_cenc:
       encryptor.reset(new AesCtrEncryptor);
       break;
@@ -363,8 +364,7 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
 
   std::vector<uint8_t> iv = encryption_key.iv;
   if (iv.empty()) {
-    if (!AesCryptor::GenerateRandomIv(encryption_options_.protection_scheme,
-                                      &iv)) {
+    if (!AesCryptor::GenerateRandomIv(protection_scheme_, &iv)) {
       LOG(ERROR) << "Failed to generate random iv.";
       return false;
     }
@@ -374,7 +374,7 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
   encryptor_ = std::move(encryptor);
 
   encryption_config_.reset(new EncryptionConfig);
-  encryption_config_->protection_scheme = encryption_options_.protection_scheme;
+  encryption_config_->protection_scheme = protection_scheme_;
   encryption_config_->crypt_byte_block = crypt_byte_block_;
   encryption_config_->skip_byte_block = skip_byte_block_;
   if (encryptor_->use_constant_iv()) {
@@ -467,9 +467,9 @@ bool EncryptionHandler::EncryptNalFrame(MediaSample* sample,
       // CMAF requires 'cenc' scheme BytesOfProtectedData SHALL be a multiple
       // of 16 bytes; while 'cbcs' scheme BytesOfProtectedData SHALL start on
       // the first byte of video data following the slice header.
-      if (encryption_options_.protection_scheme == FOURCC_cbc1 ||
-          encryption_options_.protection_scheme == FOURCC_cens ||
-          encryption_options_.protection_scheme == FOURCC_cenc) {
+      if (protection_scheme_ == FOURCC_cbc1 ||
+          protection_scheme_ == FOURCC_cens ||
+          protection_scheme_ == FOURCC_cenc) {
         const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
         current_clear_bytes += misalign_bytes;
         cipher_bytes -= misalign_bytes;

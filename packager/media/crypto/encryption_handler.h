@@ -9,7 +9,7 @@
 
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_handler.h"
-#include "packager/packager.h"
+#include "packager/media/public/crypto_params.h"
 
 namespace shaka {
 namespace media {
@@ -20,27 +20,9 @@ class VPxParser;
 struct EncryptionKey;
 struct VPxFrameInfo;
 
-/// This structure defines encryption options.
-struct EncryptionOptions {
-  /// Clear lead duration in seconds.
-  double clear_lead_in_seconds = 0;
-  /// The protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'.
-  FourCC protection_scheme = FOURCC_cenc;
-  /// Crypto period duration in seconds. A positive value means key rotation is
-  /// enabled, the key source must support key rotation in this case.
-  double crypto_period_duration_in_seconds = 0;
-  /// Enable/disable subsample encryption for VP9.
-  bool vp9_subsample_encryption = true;
-  /// Stream label function used to get the label of the encrypted stream. Must
-  /// be set.
-  std::function<std::string(
-      const EncryptionParams::EncryptedStreamAttributes& stream_attributes)>
-      stream_label_func;
-};
-
 class EncryptionHandler : public MediaHandler {
  public:
-  EncryptionHandler(const EncryptionOptions& encryption_options,
+  EncryptionHandler(const EncryptionParams& encryption_params,
                     KeySource* key_source);
 
   ~EncryptionHandler() override;
@@ -76,7 +58,8 @@ class EncryptionHandler : public MediaHandler {
   void InjectVideoSliceHeaderParserForTesting(
       std::unique_ptr<VideoSliceHeaderParser> header_parser);
 
-  const EncryptionOptions encryption_options_;
+  const EncryptionParams encryption_params_;
+  const FourCC protection_scheme_ = FOURCC_NULL;
   KeySource* key_source_ = nullptr;
   std::string stream_label_;
   // Current encryption config and encryptor.
