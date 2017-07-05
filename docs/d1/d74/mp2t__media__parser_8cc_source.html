@@ -407,8 +407,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;            sbr_in_mimetype_));</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    is_audio = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Ignore unsupported stream type 0x&quot;</span> &lt;&lt; std::hex</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                 &lt;&lt; stream_type &lt;&lt; std::dec;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    VLOG(1) &lt;&lt; <span class="stringliteral">&quot;Ignore unsupported stream type 0x&quot;</span> &lt;&lt; std::hex &lt;&lt; stream_type</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;            &lt;&lt; std::dec;</div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  }</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
@@ -535,7 +535,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 30 2017 20:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jul 5 2017 23:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
