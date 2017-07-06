@@ -1556,16 +1556,14 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->PrepareChildren());
 
-  if (format == FOURCC_encv) {
-    if (buffer->Reading()) {
-      // Continue scanning until a supported protection scheme is found, or
-      // until we run out of protection schemes.
-      while (!IsProtectionSchemeSupported(sinf.type.type))
-        RCHECK(buffer->ReadWriteChild(&sinf));
-    } else {
-      DCHECK(IsProtectionSchemeSupported(sinf.type.type));
+  // This has to happen before reading codec configuration box as the actual
+  // format is read from sinf.format.format, which is needed to parse the codec
+  // configuration box.
+  if (format == FOURCC_encv && buffer->Reading()) {
+    // Continue scanning until a supported protection scheme is found, or
+    // until we run out of protection schemes.
+    while (!IsProtectionSchemeSupported(sinf.type.type))
       RCHECK(buffer->ReadWriteChild(&sinf));
-    }
   }
 
   const FourCC actual_format = GetActualFormat();
@@ -1575,10 +1573,19 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     DCHECK_EQ(codec_configuration.box_type,
               GetCodecConfigurationBoxType(actual_format));
   }
-  DCHECK_NE(codec_configuration.box_type, FOURCC_NULL);
+  if (codec_configuration.box_type == FOURCC_NULL)
+    return false;
 
   RCHECK(buffer->ReadWriteChild(&codec_configuration));
   RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
+
+  // Somehow Edge does not support having sinf box before codec_configuration,
+  // box, so just do it in the end of VideoSampleEntry. See
+  // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12658991/
+  if (format == FOURCC_encv && !buffer->Reading()) {
+    DCHECK(IsProtectionSchemeSupported(sinf.type.type));
+    RCHECK(buffer->ReadWriteChild(&sinf));
+  }
   return true;
 }
 
@@ -1805,6 +1812,16 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   samplerate >>= 16;
 
   RCHECK(buffer->PrepareChildren());
+
+  RCHECK(buffer->TryReadWriteChild(&esds));
+  RCHECK(buffer->TryReadWriteChild(&ddts));
+  RCHECK(buffer->TryReadWriteChild(&dac3));
+  RCHECK(buffer->TryReadWriteChild(&dec3));
+  RCHECK(buffer->TryReadWriteChild(&dops));
+
+  // Somehow Edge does not support having sinf box before codec_configuration,
+  // box, so just do it in the end of AudioSampleEntry. See
+  // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12658991/
   if (format == FOURCC_enca) {
     if (buffer->Reading()) {
       // Continue scanning until a supported protection scheme is found, or
@@ -1816,12 +1833,6 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&sinf));
     }
   }
-
-  RCHECK(buffer->TryReadWriteChild(&esds));
-  RCHECK(buffer->TryReadWriteChild(&ddts));
-  RCHECK(buffer->TryReadWriteChild(&dac3));
-  RCHECK(buffer->TryReadWriteChild(&dec3));
-  RCHECK(buffer->TryReadWriteChild(&dops));
   return true;
 }
 
