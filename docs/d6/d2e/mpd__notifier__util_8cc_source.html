@@ -98,79 +98,61 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_util.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_utils.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">using</span> media::File;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">using</span> media::FileCloser;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">   20</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">WriteMpdToFile</a>(<span class="keyword">const</span> std::string&amp; output_path, <a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html">MpdBuilder</a>* mpd_builder) {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  CHECK(!output_path.empty());</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  std::string mpd;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordflow">if</span> (!mpd_builder-&gt;<a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html#af7eae5cc11141eed2b5451d969e57db6">ToString</a>(&amp;mpd)) {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write MPD to string.&quot;</span>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  }</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; file(File::Open(output_path.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (!file) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to open file for writing: &quot;</span> &lt;&lt; output_path;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* mpd_char_ptr = mpd.data();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">size_t</span> mpd_bytes_left = mpd.size();</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">while</span> (mpd_bytes_left &gt; 0) {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    int64_t length = file-&gt;Write(mpd_char_ptr, mpd_bytes_left);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">if</span> (length &lt;= 0) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write to file &#39;&quot;</span> &lt;&lt; output_path &lt;&lt; <span class="stringliteral">&quot;&#39; (&quot;</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                 &lt;&lt; length &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    mpd_char_ptr += length;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    mpd_bytes_left -= length;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// Release the pointer because Close() destructs itself.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordflow">return</span> file.release()-&gt;Close();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">   51</a></span>&#160;ContentType <a class="code" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">GetContentType</a>(<span class="keyword">const</span> MediaInfo&amp; media_info) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_video = media_info.has_video_info();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_audio = media_info.has_audio_info();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_text = media_info.has_text_info();</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_utils.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">   16</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">WriteMpdToFile</a>(<span class="keyword">const</span> std::string&amp; output_path, <a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html">MpdBuilder</a>* mpd_builder) {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  CHECK(!output_path.empty());</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::string mpd;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordflow">if</span> (!mpd_builder-&gt;<a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html#af7eae5cc11141eed2b5451d969e57db6">ToString</a>(&amp;mpd)) {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write MPD to string.&quot;</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  }</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#af8a35510dc88fbc352900b55da4683b6">media::File::WriteFileAtomically</a>(output_path.c_str(), mpd)) {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write mpd to: &quot;</span> &lt;&lt; output_path;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  }</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">   32</a></span>&#160;ContentType <a class="code" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">GetContentType</a>(<span class="keyword">const</span> MediaInfo&amp; media_info) {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_video = media_info.has_video_info();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_audio = media_info.has_audio_info();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> has_text = media_info.has_text_info();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">if</span> (MoreThanOneTrue(has_video, has_audio, has_text)) {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;MediaInfo with more than one stream is not supported.&quot;</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">return</span> kContentTypeUnknown;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span> (!AtLeastOneTrue(has_video, has_audio, has_text)) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo should contain one audio, video, or text stream.&quot;</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">return</span> kContentTypeUnknown;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">return</span> has_video ? kContentTypeVideo</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                   : (has_audio ? kContentTypeAudio : kContentTypeText);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">   49</a></span>&#160;std::string <a class="code" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">Uint8VectorToBase64</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; input) {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  std::string output;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  std::string input_in_string(input.begin(), input.end());</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  base::Base64Encode(input_in_string, &amp;output);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">return</span> output;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">if</span> (MoreThanOneTrue(has_video, has_audio, has_text)) {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;MediaInfo with more than one stream is not supported.&quot;</span>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> kContentTypeUnknown;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">if</span> (!AtLeastOneTrue(has_video, has_audio, has_text)) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo should contain one audio, video, or text stream.&quot;</span>;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> kContentTypeUnknown;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">return</span> has_video ? kContentTypeVideo</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                   : (has_audio ? kContentTypeAudio : kContentTypeText);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">   68</a></span>&#160;std::string <a class="code" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">Uint8VectorToBase64</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; input) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::string output;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  std::string input_in_string(input.begin(), input.end());</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  base::Base64Encode(input_in_string, &amp;output);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">return</span> output;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1MpdBuilder_html"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html">shaka::MpdBuilder</a></div><div class="ttdoc">This class generates DASH MPDs (Media Presentation Descriptions). </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00057">mpd_builder.h:57</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a4c7f8f964fec2bb9543e7ee8da9cd994"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">shaka::Uint8VectorToBase64</a></div><div class="ttdeci">std::string Uint8VectorToBase64(const std::vector&lt; uint8_t &gt; &amp;input)</div><div class="ttdoc">Converts uint8 vector into base64 encoded string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00068">mpd_notifier_util.cc:68</a></div></div>
-<div class="ttc" id="classshaka_1_1MpdBuilder_html_af7eae5cc11141eed2b5451d969e57db6"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#af7eae5cc11141eed2b5451d969e57db6">shaka::MpdBuilder::ToString</a></div><div class="ttdeci">virtual bool ToString(std::string *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00424">mpd_builder.cc:424</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a5ea880937da26d677ff6a48c0219d090"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">shaka::GetContentType</a></div><div class="ttdeci">ContentType GetContentType(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00051">mpd_notifier_util.cc:51</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a7e940cda37fa0dbefef3b3cc9c802ab8"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">shaka::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(const std::string &amp;output_path, MpdBuilder *mpd_builder)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00020">mpd_notifier_util.cc:20</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a4c7f8f964fec2bb9543e7ee8da9cd994"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">shaka::Uint8VectorToBase64</a></div><div class="ttdeci">std::string Uint8VectorToBase64(const std::vector&lt; uint8_t &gt; &amp;input)</div><div class="ttdoc">Converts uint8 vector into base64 encoded string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00049">mpd_notifier_util.cc:49</a></div></div>
+<div class="ttc" id="classshaka_1_1MpdBuilder_html_af7eae5cc11141eed2b5451d969e57db6"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#af7eae5cc11141eed2b5451d969e57db6">shaka::MpdBuilder::ToString</a></div><div class="ttdeci">virtual bool ToString(std::string *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00396">mpd_builder.cc:396</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_af8a35510dc88fbc352900b55da4683b6"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#af8a35510dc88fbc352900b55da4683b6">shaka::media::File::WriteFileAtomically</a></div><div class="ttdeci">static bool WriteFileAtomically(const char *file_name, const std::string &amp;contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00217">file.cc:217</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a5ea880937da26d677ff6a48c0219d090"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">shaka::GetContentType</a></div><div class="ttdeci">ContentType GetContentType(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00032">mpd_notifier_util.cc:32</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a7e940cda37fa0dbefef3b3cc9c802ab8"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">shaka::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(const std::string &amp;output_path, MpdBuilder *mpd_builder)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00016">mpd_notifier_util.cc:16</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 7 2017 17:49:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 7 2017 19:14:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

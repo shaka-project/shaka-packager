@@ -145,6 +145,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a6981994874ee5832e3394744fd51fd79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a622dbc8abacebb40b816aa0174ba7c60"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">ReadFileToString</a> (const char *<a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">file_name</a>, std::string *contents)</td></tr>
 <tr class="separator:a622dbc8abacebb40b816aa0174ba7c60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8a35510dc88fbc352900b55da4683b6"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#af8a35510dc88fbc352900b55da4683b6">WriteFileAtomically</a> (const char *<a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">file_name</a>, const std::string &amp;contents)</td></tr>
+<tr class="separator:af8a35510dc88fbc352900b55da4683b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afacdff207ba8359eaa029d8b1414c641"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#afacdff207ba8359eaa029d8b1414c641">Copy</a> (const char *from_file_name, const char *to_file_name)</td></tr>
 <tr class="separator:afacdff207ba8359eaa029d8b1414c641"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c218b7f815bae0f48800b385ddce67e"><td class="memItemLeft" align="right" valign="top">static int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#a1c218b7f815bae0f48800b385ddce67e">CopyFile</a> (<a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html">File</a> *source, <a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html">File</a> *destination)</td></tr>
@@ -197,7 +199,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <p>Do <em>not</em> call the destructor directly (with the "delete" keyword) nor use std::unique_ptr; instead use <a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html#a2bfb0c180840356933652a795527b5c8">Close()</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00132">132</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00139">139</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
 
 </div>
 </div>
@@ -270,7 +272,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00203">203</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00253">253</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -315,7 +317,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00232">232</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00282">282</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -367,7 +369,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00236">236</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00286">286</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -401,7 +403,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00163">163</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00181">181</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -481,7 +483,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The size of a file in bytes on success, a value &lt; 0 otherwise. The file will be opened and closed in the process. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00176">176</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00190">190</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -526,7 +528,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> pointer on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00141">141</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00159">159</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -571,7 +573,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../d3/d61/classshaka_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> pointer on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00152">152</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00170">170</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -661,7 +663,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00185">185</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00199">199</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -804,6 +806,51 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 
 </div>
 </div>
+<a class="anchor" id="af8a35510dc88fbc352900b55da4683b6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::media::File::WriteFileAtomically </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>file_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>contents</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Save <code>contents</code> to <code>file_name</code> in an atomic manner. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_name</td><td>is the destination file name. </td></tr>
+    <tr><td class="paramname">contents</td><td>is the data to be saved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00217">217</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/file/<a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a></li>
 <li>media/file/<a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a></li>
@@ -811,7 +858,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 7 2017 17:49:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 7 2017 19:14:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
