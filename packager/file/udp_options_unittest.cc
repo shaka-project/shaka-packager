@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/udp_options.h"
+#include "packager/file/udp_options.h"
 
 #include <gflags/gflags.h>
 #include <gtest/gtest.h>
@@ -12,7 +12,6 @@
 DECLARE_string(udp_interface_address);
 
 namespace shaka {
-namespace media {
 
 class UdpOptionsTest : public testing::Test {
  public:
@@ -96,5 +95,4 @@ TEST_F(UdpOptionsTest, InvalidTimeout) {
       "224.1.2.30:88?source=10.11.12.13&timeout=1a9"));
 }
 
-}  // namespace media
 }  // namespace shaka

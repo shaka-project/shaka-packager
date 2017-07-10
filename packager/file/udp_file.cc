@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/udp_file.h"
+#include "packager/file/udp_file.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -22,10 +22,9 @@
 #include <limits>
 
 #include "packager/base/logging.h"
-#include "packager/media/file/udp_options.h"
+#include "packager/file/udp_options.h"
 
 namespace shaka {
-namespace media {
 
 namespace {
 
@@ -35,9 +34,8 @@ bool IsIpv4MulticastAddress(const struct in_addr& addr) {
 
 }  // anonymous namespace
 
-UdpFile::UdpFile(const char* file_name) :
-    File(file_name),
-    socket_(INVALID_SOCKET) {}
+UdpFile::UdpFile(const char* file_name)
+    : File(file_name), socket_(INVALID_SOCKET) {}
 
 UdpFile::~UdpFile() {}
 
@@ -60,8 +58,8 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
 
   int64_t result;
   do {
-    result = recvfrom(socket_, reinterpret_cast<char *>(buffer),
-                      length, 0, NULL, 0);
+    result =
+        recvfrom(socket_, reinterpret_cast<char*>(buffer), length, 0, NULL, 0);
   } while ((result == -1) && (errno == EINTR));
 
   return result;
@@ -103,7 +101,8 @@ class LibWinsockInitializer {
   }
 
   ~LibWinsockInitializer() {
-    if (error_ == 0) WSACleanup();
+    if (error_ == 0)
+      WSACleanup();
   }
 
   int error() const { return error_; }
@@ -115,8 +114,7 @@ class LibWinsockInitializer {
 
 class ScopedSocket {
  public:
-  explicit ScopedSocket(SOCKET sock_fd)
-      : sock_fd_(sock_fd) {}
+  explicit ScopedSocket(SOCKET sock_fd) : sock_fd_(sock_fd) {}
 
   ~ScopedSocket() {
     if (sock_fd_ != INVALID_SOCKET)
@@ -161,8 +159,7 @@ bool UdpFile::Open() {
   }
 
   struct in_addr local_in_addr = {0};
-  if (inet_pton(AF_INET, options->address().c_str(),
-                &local_in_addr) != 1) {
+  if (inet_pton(AF_INET, options->address().c_str(), &local_in_addr) != 1) {
     LOG(ERROR) << "Malformed IPv4 address " << options->address();
     return false;
   }
@@ -181,7 +178,7 @@ bool UdpFile::Open() {
   if (options->reuse()) {
     const int optval = 1;
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR,
-                   reinterpret_cast<const char *>(&optval),
+                   reinterpret_cast<const char*>(&optval),
                    sizeof(optval)) < 0) {
       LOG(ERROR)
           << "Could not apply the SO_REUSEADDR property to the UDP socket";
@@ -214,7 +211,7 @@ bool UdpFile::Open() {
     }
 
     if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                   reinterpret_cast<const char *>(&multicast_group),
+                   reinterpret_cast<const char*>(&multicast_group),
                    sizeof(multicast_group)) < 0) {
       LOG(ERROR) << "Failed to join multicast group.";
       return false;
@@ -237,5 +234,4 @@ bool UdpFile::Open() {
   return true;
 }
 
-}  // namespace media
 }  // namespace shaka

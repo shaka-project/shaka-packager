@@ -12,7 +12,7 @@
 #include <string>
 
 #include "packager/base/compiler_specific.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 #if defined(OS_WIN)
 #include <winsock2.h>
@@ -21,7 +21,6 @@ typedef int SOCKET;
 #endif  // defined(OS_WIN)
 
 namespace shaka {
-namespace media {
 
 /// Implements UdpFile, which receives UDP unicast and multicast streams.
 class UdpFile : public File {
@@ -52,7 +51,6 @@ class UdpFile : public File {
   DISALLOW_COPY_AND_ASSIGN(UdpFile);
 };
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // MEDIA_FILE_UDP_FILE_H_

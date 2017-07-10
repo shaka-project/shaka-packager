@@ -16,9 +16,7 @@
 
 namespace shaka {
 
-namespace media {
 class File;
-}  // namespace media
 
 namespace hls {
 

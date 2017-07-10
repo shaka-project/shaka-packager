@@ -13,9 +13,10 @@
 #include "packager/status.h"
 
 namespace shaka {
-namespace media {
 
 class File;
+
+namespace media {
 
 /// A simple buffer writer implementation which appends various data types to
 /// buffer.

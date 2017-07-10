@@ -12,8 +12,8 @@
 #include <memory>
 #include <vector>
 
-#include "packager/media/file/file.h"
-#include "packager/media/file/file_closer.h"
+#include "packager/file/file.h"
+#include "packager/file/file_closer.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
 #include "packager/media/formats/mp2t/pes_packet.h"
 #include "packager/media/formats/mp2t/program_map_table_writer.h"

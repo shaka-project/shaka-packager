@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 #include <gflags/gflags.h>
 #include <algorithm>
@@ -12,10 +12,10 @@
 #include "packager/base/files/important_file_writer.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_piece.h"
-#include "packager/media/file/local_file.h"
-#include "packager/media/file/memory_file.h"
-#include "packager/media/file/threaded_io_file.h"
-#include "packager/media/file/udp_file.h"
+#include "packager/file/local_file.h"
+#include "packager/file/memory_file.h"
+#include "packager/file/threaded_io_file.h"
+#include "packager/file/udp_file.h"
 
 DEFINE_uint64(io_cache_size,
               32ULL << 20,
@@ -31,7 +31,6 @@ DEFINE_uint64(io_block_size,
 #endif  // CopyFile
 
 namespace shaka {
-namespace media {
 
 const char* kLocalFilePrefix = "file://";
 const char* kUdpFilePrefix = "udp://";
@@ -84,27 +83,16 @@ bool DeleteMemoryFile(const char* file_name) {
 }
 
 static const FileTypeInfo kFileTypeInfo[] = {
-  {
-    kLocalFilePrefix,
-    strlen(kLocalFilePrefix),
-    &CreateLocalFile,
-    &DeleteLocalFile,
-    &WriteLocalFileAtomically,
-  },
-  {
-    kUdpFilePrefix,
-    strlen(kUdpFilePrefix),
-    &CreateUdpFile,
-    nullptr,
-    nullptr
-  },
-  {
-    kMemoryFilePrefix,
-    strlen(kMemoryFilePrefix),
-    &CreateMemoryFile,
-    &DeleteMemoryFile,
-    nullptr
-  },
+    {
+        kLocalFilePrefix,
+        strlen(kLocalFilePrefix),
+        &CreateLocalFile,
+        &DeleteLocalFile,
+        &WriteLocalFileAtomically,
+    },
+    {kUdpFilePrefix, strlen(kUdpFilePrefix), &CreateUdpFile, nullptr, nullptr},
+    {kMemoryFilePrefix, strlen(kMemoryFilePrefix), &CreateMemoryFile,
+     &DeleteMemoryFile, nullptr},
 };
 
 const FileTypeInfo* GetFileTypeInfo(base::StringPiece file_name,
@@ -214,7 +202,8 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
   return len == 0;
 }
 
-bool File::WriteFileAtomically(const char* file_name, const std::string& contents) {
+bool File::WriteFileAtomically(const char* file_name,
+                               const std::string& contents) {
   base::StringPiece real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
@@ -230,7 +219,7 @@ bool File::WriteFileAtomically(const char* file_name, const std::string& content
                  << " is not guaranteed to be atomic.";
   }
 
-  std::unique_ptr<File, FileCloser> file(media::File::Open(file_name, "w"));
+  std::unique_ptr<File, FileCloser> file(File::Open(file_name, "w"));
   if (!file) {
     LOG(ERROR) << "Failed to open file " << file_name;
     return false;
@@ -317,5 +306,4 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
   return bytes_copied;
 }
 
-}  // namespace media
 }  // namespace shaka

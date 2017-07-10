@@ -8,7 +8,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/sys_byteorder.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 namespace shaka {
 namespace media {

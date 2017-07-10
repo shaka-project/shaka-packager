@@ -9,11 +9,11 @@
 #include <google/protobuf/text_format.h>
 
 #include "packager/base/logging.h"
+#include "packager/file/file.h"
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/base/stream_info.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/stream_info.h"
 #include "packager/media/event/muxer_listener_internal.h"
-#include "packager/media/file/file.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
@@ -100,7 +100,7 @@ bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
     return false;
   }
 
-  media::File* file = File::Open(output_file_path.c_str(), "w");
+  File* file = File::Open(output_file_path.c_str(), "w");
   if (!file) {
     LOG(ERROR) << "Failed to open " << output_file_path;
     return false;

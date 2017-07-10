@@ -8,10 +8,9 @@
 #define MEDIA_FILE_FILE_CLOSER_H_
 
 #include "packager/base/logging.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 namespace shaka {
-namespace media {
 
 /// Used by std::unique_ptr to automatically close the file when it goes out of
 /// scope.
@@ -20,14 +19,12 @@ struct FileCloser {
     if (file != NULL) {
       const std::string filename = file->file_name();
       if (!file->Close()) {
-        LOG(WARNING) << "Failed to close the file properly: "
-                     << filename;
+        LOG(WARNING) << "Failed to close the file properly: " << filename;
       }
     }
   }
 };
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // MEDIA_FILE_FILE_CLOSER_H_

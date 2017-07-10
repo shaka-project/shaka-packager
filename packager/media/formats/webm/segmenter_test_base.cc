@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
-#include "packager/media/file/memory_file.h"
+#include "packager/file/memory_file.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/version/version.h"
 

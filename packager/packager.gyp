@@ -22,12 +22,12 @@
         'app/packager_util.h',
       ],
       'dependencies': [
+        'file/file.gyp:file',
         'hls/hls.gyp:hls_builder',
         'media/codecs/codecs.gyp:codecs',
         'media/chunking/chunking.gyp:chunking',
         'media/demuxer/demuxer.gyp:demuxer',
         'media/event/media_event.gyp:media_event',
-        'media/file/file.gyp:file',
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
         'media/formats/mpeg/mpeg.gyp:mpeg',
@@ -83,8 +83,8 @@
       ],
       'dependencies': [
         'base/base.gyp:base',
+        'file/file.gyp:file',
         'libpackager',
-        'media/file/file.gyp:file',
         'third_party/gflags/gflags.gyp:gflags',
       ],
       'conditions': [
@@ -172,6 +172,7 @@
       'target_name': 'packager_builder_tests',
       'type': 'none',
       'dependencies': [
+        'file/file.gyp:file_unittest',
         'hls/hls.gyp:hls_unittest',
         'media/base/media_base.gyp:media_base_unittest',
         'media/chunking/chunking.gyp:chunking_unittest',
@@ -179,7 +180,6 @@
         'media/crypto/crypto.gyp:crypto_unittest',
         'media/demuxer/demuxer.gyp:demuxer_unittest',
         'media/event/media_event.gyp:media_event_unittest',
-        'media/file/file.gyp:file_unittest',
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',
         'media/formats/mp4/mp4.gyp:mp4_unittest',
         'media/formats/webm/webm.gyp:webm_unittest',

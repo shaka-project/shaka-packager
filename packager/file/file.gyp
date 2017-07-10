@@ -6,7 +6,7 @@
 
 {
   'includes': [
-    '../../common.gypi',
+    '../common.gypi',
   ],
   'targets': [
     {
@@ -32,9 +32,8 @@
         'udp_options.h',
       ],
       'dependencies': [
-        '../../base/base.gyp:base',
-        '../../third_party/gflags/gflags.gyp:gflags',
-        '../base/media_base.gyp:media_base',
+        '../base/base.gyp:base',
+        '../third_party/gflags/gflags.gyp:gflags',
       ],
     },
     {
@@ -48,9 +47,9 @@
         'udp_options_unittest.cc',
       ],
       'dependencies': [
-        '../../testing/gtest.gyp:gtest',
-        '../../third_party/gflags/gflags.gyp:gflags',
-        '../test/media_test.gyp:run_tests_with_atexit_manager',
+        '../media/test/media_test.gyp:run_tests_with_atexit_manager',
+        '../testing/gtest.gyp:gtest',
+        '../third_party/gflags/gflags.gyp:gflags',
         'file',
       ],
     },

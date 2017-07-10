@@ -15,8 +15,8 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/file/file.h"
 #include "packager/media/base/language_utils.h"
-#include "packager/media/file/file.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -392,7 +392,7 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
     content += "#EXT-X-ENDLIST\n";
   }
 
-  if (!media::File::WriteFileAtomically(file_path.c_str(), content)) {
+  if (!File::WriteFileAtomically(file_path.c_str(), content)) {
     LOG(ERROR) << "Failed to write playlist to: " << file_path;
     return false;
   }

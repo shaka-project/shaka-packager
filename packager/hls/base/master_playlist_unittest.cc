@@ -8,10 +8,10 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/files/file_path.h"
+#include "packager/file/file.h"
 #include "packager/hls/base/master_playlist.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/hls/base/mock_media_playlist.h"
-#include "packager/media/file/file.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -77,8 +77,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
   std::string actual;
-  ASSERT_TRUE(
-      media::File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -158,8 +157,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
   std::string actual;
-  ASSERT_TRUE(
-      media::File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"
@@ -229,8 +227,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
   std::string actual;
-  ASSERT_TRUE(
-      media::File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
 
   const std::string expected =
       "#EXTM3U\n"

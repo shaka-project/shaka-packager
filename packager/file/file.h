@@ -14,7 +14,6 @@
 #include "packager/base/macros.h"
 
 namespace shaka {
-namespace media {
 
 extern const char* kLocalFilePrefix;
 extern const char* kMemoryFilePrefix;
@@ -154,7 +153,6 @@ class File {
   DISALLOW_COPY_AND_ASSIGN(File);
 };
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // PACKAGER_FILE_FILE_H_

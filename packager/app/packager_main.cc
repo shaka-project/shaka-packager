@@ -23,7 +23,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 #include "packager/packager.h"
 
 #if defined(OS_WIN)
@@ -108,8 +108,8 @@ bool GetWidevineSigner(WidevineSigner* signer) {
     signer->aes.iv = FLAGS_aes_signing_iv_bytes;
   } else if (!FLAGS_rsa_signing_key_path.empty()) {
     signer->signing_key_type = WidevineSigner::SigningKeyType::kRsa;
-    if (!media::File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
-                                       &signer->rsa.key)) {
+    if (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
+                                &signer->rsa.key)) {
       LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
                  << "'.";
       return false;

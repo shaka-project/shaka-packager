@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "packager/file/memory_file.h"
 #include <gtest/gtest.h>
 #include <memory>
-#include "packager/media/file/file.h"
-#include "packager/media/file/file_closer.h"
-#include "packager/media/file/memory_file.h"
+#include "packager/file/file.h"
+#include "packager/file/file_closer.h"
 
 namespace shaka {
-namespace media {
 namespace {
 
 const uint8_t kWriteBuffer[] = {1, 2, 3, 4, 5, 6, 7, 8};
 const int64_t kWriteBufferSize = sizeof(kWriteBuffer);
 
-}
+}  // namespace
 
 class MemoryFileTest : public testing::Test {
  protected:
-  void TearDown() override {
-    MemoryFile::DeleteAll();
-  }
+  void TearDown() override { MemoryFile::DeleteAll(); }
 };
 
 TEST_F(MemoryFileTest, ModifiesSameFile) {
@@ -110,5 +107,4 @@ TEST_F(MemoryFileTest, WriteExistingFileDeletes) {
   EXPECT_EQ(0, file2->Size());
 }
 
-}  // namespace media
 }  // namespace shaka

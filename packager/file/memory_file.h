@@ -12,10 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 namespace shaka {
-namespace media {
 
 /// Implements a File that is stored in memory.  This should be only used for
 /// testing, since this does not support larger files.
@@ -54,8 +53,6 @@ class MemoryFile : public File {
   DISALLOW_COPY_AND_ASSIGN(MemoryFile);
 };
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // MEDIA_FILE_MEDIA_FILE_H_
-

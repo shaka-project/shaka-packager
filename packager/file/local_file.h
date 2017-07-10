@@ -12,10 +12,9 @@
 #include <string>
 
 #include "packager/base/compiler_specific.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 namespace shaka {
-namespace media {
 
 /// Implement LocalFile which deals with local storage.
 class LocalFile : public File {
@@ -53,7 +52,6 @@ class LocalFile : public File {
   DISALLOW_COPY_AND_ASSIGN(LocalFile);
 };
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // PACKAGER_FILE_LOCAL_FILE_H_

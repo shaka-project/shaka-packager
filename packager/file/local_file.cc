@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/local_file.h"
+#include "packager/file/local_file.h"
 
 #include <stdio.h>
 #if defined(OS_WIN)
@@ -14,15 +14,12 @@
 #include "packager/base/logging.h"
 
 namespace shaka {
-namespace media {
 
 // Always open files in binary mode.
 const char kAdditionalFileMode[] = "b";
 
 LocalFile::LocalFile(const char* file_name, const char* mode)
-    : File(file_name),
-      file_mode_(mode),
-      internal_file_(NULL) {
+    : File(file_name), file_mode_(mode), internal_file_(NULL) {
   if (file_mode_.find(kAdditionalFileMode) == std::string::npos)
     file_mode_ += kAdditionalFileMode;
 }
@@ -60,7 +57,7 @@ int64_t LocalFile::Size() {
 
   int64_t file_size;
   if (!base::GetFileSize(base::FilePath::FromUTF8Unsafe(file_name()),
-       &file_size)) {
+                         &file_size)) {
     LOG(ERROR) << "Cannot get file size.";
     return -1;
   }
@@ -74,8 +71,8 @@ bool LocalFile::Flush() {
 
 bool LocalFile::Seek(uint64_t position) {
 #if defined(OS_WIN)
-  return _fseeki64(internal_file_, static_cast<__int64>(position),
-       SEEK_SET) == 0;
+  return _fseeki64(internal_file_, static_cast<__int64>(position), SEEK_SET) ==
+         0;
 #else
   return fseeko(internal_file_, position, SEEK_SET) >= 0;
 #endif  // !defined(OS_WIN)
@@ -96,8 +93,8 @@ bool LocalFile::Tell(uint64_t* position) {
 LocalFile::~LocalFile() {}
 
 bool LocalFile::Open() {
-  internal_file_ =
-    base::OpenFile(base::FilePath::FromUTF8Unsafe(file_name()), file_mode_.c_str());
+  internal_file_ = base::OpenFile(base::FilePath::FromUTF8Unsafe(file_name()),
+                                  file_mode_.c_str());
   return (internal_file_ != NULL);
 }
 
@@ -105,5 +102,4 @@ bool LocalFile::Delete(const char* file_name) {
   return base::DeleteFile(base::FilePath::FromUTF8Unsafe(file_name), false);
 }
 
-}  // namespace media
 }  // namespace shaka

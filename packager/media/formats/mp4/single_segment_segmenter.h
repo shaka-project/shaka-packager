@@ -7,8 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 #define MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 
+#include "packager/file/file_closer.h"
 #include "packager/media/event/muxer_listener.h"
-#include "packager/media/file/file_closer.h"
 #include "packager/media/formats/mp4/segmenter.h"
 
 namespace shaka {

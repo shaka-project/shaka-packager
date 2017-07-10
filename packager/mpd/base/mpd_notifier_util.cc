@@ -8,7 +8,7 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 #include "packager/mpd/base/mpd_utils.h"
 
 namespace shaka {
@@ -22,7 +22,7 @@ bool WriteMpdToFile(const std::string& output_path, MpdBuilder* mpd_builder) {
     return false;
   }
 
-  if (!media::File::WriteFileAtomically(output_path.c_str(), mpd)) {
+  if (!File::WriteFileAtomically(output_path.c_str(), mpd)) {
     LOG(ERROR) << "Failed to write mpd to: " << output_path;
     return false;
   }

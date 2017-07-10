@@ -10,11 +10,11 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
+#include "packager/file/file.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/event/muxer_listener.h"
-#include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
 namespace shaka {

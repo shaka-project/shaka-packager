@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "packager/media/file/file_closer.h"
+#include "packager/file/file_closer.h"
 #include "packager/status.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 

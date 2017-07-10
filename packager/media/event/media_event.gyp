@@ -24,12 +24,12 @@
         'vod_media_info_dump_muxer_listener.h',
       ],
       'dependencies': [
+        '../../file/file.gyp:file',
         '../../mpd/mpd.gyp:media_info_proto',
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
         '../base/media_base.gyp:media_base',
         '../codecs/codecs.gyp:codecs',
-        '../file/file.gyp:file',
       ],
     },
     {

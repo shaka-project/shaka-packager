@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/udp_options.h"
+#include "packager/file/udp_options.h"
 
 #include <gflags/gflags.h>
 
@@ -17,7 +17,6 @@ DEFINE_string(udp_interface_address,
               " or multicast streams");
 
 namespace shaka {
-namespace media {
 
 namespace {
 
@@ -101,7 +100,8 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
           break;
         case kTimeoutField:
           if (!base::StringToUint(pair.second, &options->timeout_us_)) {
-            LOG(ERROR) << "Invalid udp option for timeout field " << pair.second;
+            LOG(ERROR) << "Invalid udp option for timeout field "
+                       << pair.second;
             return nullptr;
           }
           break;
@@ -128,5 +128,4 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
   return options;
 }
 
-}  // namespace media
 }  // namespace shaka

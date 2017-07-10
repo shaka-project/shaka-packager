@@ -11,8 +11,8 @@
 #include "packager/base/files/file_path.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/file/file.h"
 #include "packager/hls/base/media_playlist.h"
-#include "packager/media/file/file.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -161,7 +161,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
       base::FilePath::FromUTF8Unsafe(output_dir)
           .Append(base::FilePath::FromUTF8Unsafe(file_name_))
           .AsUTF8Unsafe();
-  if (!media::File::WriteFileAtomically(file_path.c_str(), content)) {
+  if (!File::WriteFileAtomically(file_path.c_str(), content)) {
     LOG(ERROR) << "Failed to write master playlist to: " << file_path;
     return false;
   }

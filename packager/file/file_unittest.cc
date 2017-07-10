@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/files/file_util.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 
 DECLARE_uint64(io_cache_size);
 DECLARE_uint64(io_block_size);
@@ -18,7 +18,6 @@ const int kDataSize = 1024;
 }
 
 namespace shaka {
-namespace media {
 
 using base::FilePath;
 
@@ -41,7 +40,7 @@ class LocalFileTest : public testing::Test {
   void TearDown() override {
     // Remove test file if created.
     base::DeleteFile(FilePath::FromUTF8Unsafe(local_file_name_no_prefix_),
-         false);
+                     false);
   }
 
   std::string data_;
@@ -57,8 +56,7 @@ class LocalFileTest : public testing::Test {
 
 TEST_F(LocalFileTest, ReadNotExist) {
   // Remove test file if it exists.
-  base::DeleteFile(FilePath::FromUTF8Unsafe(local_file_name_no_prefix_),
-       false);
+  base::DeleteFile(FilePath::FromUTF8Unsafe(local_file_name_no_prefix_), false);
   ASSERT_TRUE(File::Open(local_file_name_.c_str(), "r") == NULL);
 }
 
@@ -73,21 +71,18 @@ TEST_F(LocalFileTest, Copy) {
             base::WriteFile(test_file_path_, data_.data(), kDataSize));
 
   FilePath temp_dir;
-  ASSERT_TRUE(base::CreateNewTempDirectory(FilePath::StringType(),
-             &temp_dir));
+  ASSERT_TRUE(base::CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
 
   // Copy the test file to temp dir as filename "a".
-  FilePath destination =
-    temp_dir.Append(FilePath::FromUTF8Unsafe("a"));
-  ASSERT_TRUE(
-      File::Copy(FilePath::FromUTF8Unsafe(local_file_name_).AsUTF8Unsafe().c_str(),
-     destination.AsUTF8Unsafe().c_str()));
+  FilePath destination = temp_dir.Append(FilePath::FromUTF8Unsafe("a"));
+  ASSERT_TRUE(File::Copy(
+      FilePath::FromUTF8Unsafe(local_file_name_).AsUTF8Unsafe().c_str(),
+      destination.AsUTF8Unsafe().c_str()));
 
   // Make a buffer bigger than the expected file content size to make sure that
   // there isn't extra stuff appended.
   char copied_file_content_buffer[kDataSize * 2] = {};
-  ASSERT_EQ(kDataSize, base::ReadFile(destination,
-                                      copied_file_content_buffer,
+  ASSERT_EQ(kDataSize, base::ReadFile(destination, copied_file_content_buffer,
                                       arraysize(copied_file_content_buffer)));
 
   ASSERT_EQ(data_, std::string(copied_file_content_buffer, kDataSize));
@@ -192,8 +187,7 @@ TEST_F(LocalFileTest, WriteFlushCheckSize) {
 }
 
 class ParamLocalFileTest : public LocalFileTest,
-                           public ::testing::WithParamInterface<uint8_t> {
-};
+                           public ::testing::WithParamInterface<uint8_t> {};
 
 TEST_P(ParamLocalFileTest, SeekWriteAndSeekRead) {
   const uint32_t kBlockSize(10);
@@ -297,5 +291,4 @@ TEST_F(LocalFileTest, DISABLED_ReadSeekOutOfBounds) {
   EXPECT_TRUE(file->Close());
 }
 
-}  // namespace media
 }  // namespace shaka

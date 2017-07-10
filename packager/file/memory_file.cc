@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/memory_file.h"
+#include "packager/file/memory_file.h"
 
 #include <string.h>  // for memcpy
 
@@ -15,7 +15,6 @@
 #include "packager/base/logging.h"
 
 namespace shaka {
-namespace media {
 namespace {
 
 // A helper filesystem object.  This holds the data for the memory files.
@@ -136,6 +135,4 @@ void MemoryFile::Delete(const std::string& file_name) {
   FileSystem::Instance()->Delete(file_name);
 }
 
-}  // namespace media
 }  // namespace shaka
-

@@ -7,8 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "packager/file/file_test_util.h"
 #include "packager/hls/base/media_playlist.h"
-#include "packager/media/file/file_test_util.h"
 #include "packager/version/version.h"
 
 namespace shaka {

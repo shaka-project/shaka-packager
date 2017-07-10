@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/threaded_io_file.h"
+#include "packager/file/threaded_io_file.h"
 
 #include "packager/base/bind.h"
 #include "packager/base/bind_helpers.h"
@@ -12,7 +12,6 @@
 #include "packager/base/threading/worker_pool.h"
 
 namespace shaka {
-namespace media {
 
 using base::subtle::NoBarrier_Load;
 using base::subtle::NoBarrier_Store;
@@ -49,9 +48,10 @@ bool ThreadedIoFile::Open() {
   position_ = 0;
   size_ = internal_file_->Size();
 
-  base::WorkerPool::PostTask(FROM_HERE, base::Bind(&ThreadedIoFile::TaskHandler,
-                                                   base::Unretained(this)),
-                             true /* task_is_slow */);
+  base::WorkerPool::PostTask(
+      FROM_HERE,
+      base::Bind(&ThreadedIoFile::TaskHandler, base::Unretained(this)),
+      true /* task_is_slow */);
   return true;
 }
 
@@ -78,7 +78,6 @@ int64_t ThreadedIoFile::Read(void* buffer, uint64_t length) {
 
   if (NoBarrier_Load(&internal_file_error_))
     return NoBarrier_Load(&internal_file_error_);
-
 
   uint64_t bytes_read = cache_.Read(buffer, length);
   position_ += bytes_read;
@@ -120,8 +119,10 @@ bool ThreadedIoFile::Flush() {
 bool ThreadedIoFile::Seek(uint64_t position) {
   if (mode_ == kOutputMode) {
     // Writing. Just flush the cache and seek.
-    if (!Flush()) return false;
-    if (!internal_file_->Seek(position)) return false;
+    if (!Flush())
+      return false;
+    if (!internal_file_->Seek(position))
+      return false;
   } else {
     // Reading. Close cache, wait for thread task to exit, seek, and re-post
     // the task.
@@ -140,7 +141,8 @@ bool ThreadedIoFile::Seek(uint64_t position) {
         FROM_HERE,
         base::Bind(&ThreadedIoFile::TaskHandler, base::Unretained(this)),
         true /* task_is_slow */);
-    if (!result) return false;
+    if (!result)
+      return false;
   }
   position_ = position;
   return true;
@@ -166,8 +168,8 @@ void ThreadedIoFile::RunInInputMode() {
   DCHECK_EQ(kInputMode, mode_);
 
   while (true) {
-    int64_t read_result = internal_file_->Read(&io_buffer_[0],
-                                               io_buffer_.size());
+    int64_t read_result =
+        internal_file_->Read(&io_buffer_[0], io_buffer_.size());
     if (read_result <= 0) {
       NoBarrier_Store(&eof_, read_result == 0);
       NoBarrier_Store(&internal_file_error_, read_result);
@@ -210,5 +212,4 @@ void ThreadedIoFile::RunInOutputMode() {
   }
 }
 
-}  // namespace media
 }  // namespace shaka

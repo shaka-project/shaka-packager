@@ -157,10 +157,10 @@
         'widevine_key_source_unittest.cc',
       ],
       'dependencies': [
+        '../../file/file.gyp:file',
         '../../testing/gmock.gyp:gmock',
         '../../testing/gtest.gyp:gtest',
         '../../third_party/boringssl/boringssl.gyp:boringssl',
-        '../file/file.gyp:file',
         '../test/media_test.gyp:media_test_support',
         'media_base',
       ],

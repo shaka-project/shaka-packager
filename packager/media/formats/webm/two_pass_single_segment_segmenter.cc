@@ -8,10 +8,10 @@
 
 #include <algorithm>
 
+#include "packager/file/file_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
-#include "packager/media/file/file_util.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"

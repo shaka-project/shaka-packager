@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/file/io_cache.h"
+#include "packager/file/io_cache.h"
 
 #include <string.h>
 
@@ -16,8 +16,6 @@ namespace shaka {
 
 using base::AutoLock;
 using base::AutoUnlock;
-
-namespace media {
 
 IoCache::IoCache(uint64_t cache_size)
     : cache_size_(cache_size),
@@ -47,8 +45,8 @@ uint64_t IoCache::Read(void* buffer, uint64_t size) {
   }
 
   size = std::min(size, BytesCachedInternal());
-  uint64_t first_chunk_size(std::min(size, static_cast<uint64_t>(
-      end_ptr_ - r_ptr_)));
+  uint64_t first_chunk_size(
+      std::min(size, static_cast<uint64_t>(end_ptr_ - r_ptr_)));
   memcpy(buffer, r_ptr_, first_chunk_size);
   r_ptr_ += first_chunk_size;
   DCHECK_GE(end_ptr_, r_ptr_);
@@ -80,8 +78,8 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
       return 0;
 
     uint64_t write_size(std::min(bytes_left, BytesFreeInternal()));
-    uint64_t first_chunk_size(std::min(write_size, static_cast<uint64_t>(
-        end_ptr_ - w_ptr_)));
+    uint64_t first_chunk_size(
+        std::min(write_size, static_cast<uint64_t>(end_ptr_ - w_ptr_)));
     memcpy(w_ptr_, r_ptr, first_chunk_size);
     w_ptr_ += first_chunk_size;
     DCHECK_GE(end_ptr_, w_ptr_);
@@ -152,5 +150,4 @@ void IoCache::WaitUntilEmptyOrClosed() {
   }
 }
 
-}  // namespace media
 }  // namespace shaka

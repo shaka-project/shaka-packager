@@ -39,11 +39,8 @@
 // element.
 namespace shaka {
 
-namespace media {
-class File;
-}  // namespace media
-
 class AdaptationSet;
+class File;
 class Representation;
 
 namespace xml {

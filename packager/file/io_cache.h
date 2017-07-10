@@ -14,7 +14,6 @@
 #include "packager/base/synchronization/waitable_event.h"
 
 namespace shaka {
-namespace media {
 
 /// Declaration of class which implements a thread-safe circular buffer.
 class IoCache {
@@ -80,7 +79,6 @@ class IoCache {
   DISALLOW_COPY_AND_ASSIGN(IoCache);
 };
 
-}  // namespace media
 }  // namespace shaka
 
 #endif  // PACKAGER_FILE_IO_CACHE_H

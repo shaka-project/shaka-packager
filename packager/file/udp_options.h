@@ -10,7 +10,6 @@
 #include "packager/base/strings/string_piece.h"
 
 namespace shaka {
-namespace media {
 
 /// Options parsed from UDP url string of the form: udp://ip:port[?options]
 class UdpOptions {
@@ -42,5 +41,4 @@ class UdpOptions {
   unsigned timeout_us_ = 0;
 };
 
-}  // namespace media
 }  // namespace shaka

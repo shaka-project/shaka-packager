@@ -11,12 +11,12 @@
 
 #include "packager/base/files/file_path.h"
 #include "packager/base/files/file_util.h"
+#include "packager/file/file.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener_test_helper.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
-#include "packager/media/file/file.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace {

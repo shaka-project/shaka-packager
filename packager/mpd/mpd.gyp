@@ -50,7 +50,8 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
-        '../media/file/file.gyp:file',
+        '../file/file.gyp:file',
+        '../media/base/media_base.gyp:media_base',
         '../third_party/libxml/libxml.gyp:libxml',
         '../version/version.gyp:version',
         'media_info_proto',
@@ -91,7 +92,7 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
-        '../media/file/file.gyp:file',
+        '../file/file.gyp:file',
         '../media/test/media_test.gyp:run_tests_with_atexit_manager',
         '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
@@ -108,7 +109,7 @@
         'util/mpd_writer.h',
       ],
       'dependencies': [
-        '../media/file/file.gyp:file',
+        '../file/file.gyp:file',
         '../third_party/gflags/gflags.gyp:gflags',
         'mpd_builder',
         'mpd_mocks',

@@ -12,7 +12,7 @@
 
 #include "packager/base/files/file_path.h"
 #include "packager/base/files/file_util.h"
-#include "packager/media/file/file.h"
+#include "packager/file/file.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier.h"
@@ -70,8 +70,7 @@ MpdWriter::~MpdWriter() {}
 bool MpdWriter::AddFile(const std::string& media_info_path,
                         const std::string& mpd_path) {
   std::string file_content;
-  if (!media::File::ReadFileToString(media_info_path.c_str(),
-                                     &file_content)) {
+  if (!File::ReadFileToString(media_info_path.c_str(), &file_content)) {
     LOG(ERROR) << "Failed to read " << media_info_path << " to string.";
     return false;
   }

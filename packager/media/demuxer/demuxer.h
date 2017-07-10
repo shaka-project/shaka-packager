@@ -17,10 +17,12 @@
 #include "packager/status.h"
 
 namespace shaka {
+
+class File;
+
 namespace media {
 
 class Decryptor;
-class File;
 class KeySource;
 class MediaParser;
 class MediaSample;

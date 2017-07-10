@@ -8,6 +8,7 @@
 
 #include "packager/base/time/clock.h"
 #include "packager/base/time/time.h"
+#include "packager/file/file.h"
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/fourccs.h"
@@ -17,7 +18,6 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/event/muxer_listener.h"
-#include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 #include "packager/media/formats/mp4/single_segment_segmenter.h"

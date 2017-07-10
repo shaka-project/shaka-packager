@@ -4,22 +4,36 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/file/io_cache.h"
 #include <gtest/gtest.h>
 #include <string.h>
 #include <algorithm>
 #include "packager/base/bind.h"
 #include "packager/base/bind_helpers.h"
-#include "packager/base/threading/platform_thread.h"
-#include "packager/media/base/closure_thread.h"
-#include "packager/media/file/io_cache.h"
+#include "packager/base/threading/simple_thread.h"
 
 namespace {
 const uint64_t kBlockSize = 256;
 const uint64_t kCacheSize = 16 * kBlockSize;
-}
+}  // namespace
 
 namespace shaka {
-namespace media {
+
+class ClosureThread : public base::SimpleThread {
+ public:
+  ClosureThread(const std::string& name_prefix, const base::Closure& task)
+      : base::SimpleThread(name_prefix), task_(task) {}
+
+  ~ClosureThread() {
+    if (HasBeenStarted() && !HasBeenJoined())
+      Join();
+  }
+
+  void Run() { task_.Run(); }
+
+ private:
+  const base::Closure task_;
+};
 
 class IoCacheTest : public testing::Test {
  public:
@@ -53,9 +67,7 @@ class IoCacheTest : public testing::Test {
     cache_closed_ = false;
   }
 
-  void TearDown() override {
-    WaitForWriterThread();
-  }
+  void TearDown() override { WaitForWriterThread(); }
 
   void GenerateTestBuffer(uint64_t size, std::vector<uint8_t>* test_buffer) {
     test_buffer->resize(size);
@@ -63,8 +75,8 @@ class IoCacheTest : public testing::Test {
     while (size) {
       uint64_t copy_size(std::min(size, kBlockSize));
       memcpy(w_ptr, reference_block_, copy_size);
-        w_ptr += copy_size;
-        size -= copy_size;
+      w_ptr += copy_size;
+      size -= copy_size;
     }
   }
 
@@ -72,17 +84,13 @@ class IoCacheTest : public testing::Test {
                             uint64_t num_writes,
                             int sleep_between_writes,
                             bool close_when_done) {
-    writer_thread_.reset(new ClosureThread("WriterThread",
-                                           base::Bind(
-                                               &IoCacheTest::WriteToCache,
-                                               base::Unretained(this),
-                                               test_buffer,
-                                               num_writes,
-                                               sleep_between_writes,
-                                               close_when_done)));
+    writer_thread_.reset(new ClosureThread(
+        "WriterThread",
+        base::Bind(&IoCacheTest::WriteToCache, base::Unretained(this),
+                   test_buffer, num_writes, sleep_between_writes,
+                   close_when_done)));
     writer_thread_->Start();
   }
-
 
   void WaitForWriterThread() {
     if (writer_thread_) {
@@ -140,8 +148,7 @@ TEST_F(IoCacheTest, LotsOfUnalignedBlocks) {
   EXPECT_EQ(write_buffer1, read_buffer1);
   std::vector<uint8_t> verify_buffer;
   for (uint64_t idx = 0; idx < kNumWrites; ++idx)
-    verify_buffer.insert(verify_buffer.end(),
-                         write_buffer2.begin(),
+    verify_buffer.insert(verify_buffer.end(), write_buffer2.begin(),
                          write_buffer2.end());
   uint64_t verify_index(0);
   while (verify_index < verify_buffer.size()) {
@@ -191,8 +198,7 @@ TEST_F(IoCacheTest, CloseByReader) {
   GenerateTestBuffer(kBlockSize, &write_buffer);
   WriteToCacheThreaded(write_buffer, kNumWrites, 0, false);
   while (cache_->BytesCached() < kCacheSize) {
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(10));
+    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
   }
   cache_->Close();
   WaitForWriterThread();
@@ -254,13 +260,11 @@ TEST_F(IoCacheTest, LargeRead) {
   WriteToCacheThreaded(write_buffer, kNumWrites, 0, false);
   std::vector<uint8_t> verify_buffer;
   while (verify_buffer.size() < kCacheSize) {
-    verify_buffer.insert(verify_buffer.end(),
-                         write_buffer.begin(),
+    verify_buffer.insert(verify_buffer.end(), write_buffer.begin(),
                          write_buffer.end());
   }
   while (cache_->BytesCached() < kCacheSize) {
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(10));
+    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
   }
   std::vector<uint8_t> read_buffer(kCacheSize);
   EXPECT_EQ(kCacheSize, cache_->Read(read_buffer.data(), kCacheSize));
@@ -268,5 +272,4 @@ TEST_F(IoCacheTest, LargeRead) {
   cache_->Close();
 }
 
-}  // namespace media
 }  // namespace shaka
