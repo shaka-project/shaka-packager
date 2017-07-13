@@ -87,6 +87,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="../../d2/d11/classshaka_1_1media_1_1MuxerListener-members.html">List of all members</a>  </div>
@@ -109,6 +110,11 @@ Inheritance diagram for shaka::media::MuxerListener:</div>
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a6e15ef9264cd3edbfef748d626dd91ae"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>ContainerType</b> { <b>kContainerUnknown</b> = 0, 
@@ -128,15 +134,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a31536ec385a7ec22f323a42b872b499a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad54aef6c349082d996a436ebea11eff2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">OnSampleDurationReady</a> (uint32_t sample_duration)=0</td></tr>
 <tr class="separator:ad54aef6c349082d996a436ebea11eff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac89a028372db9abbccf569819d9b2b35"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">OnMediaEnd</a> (bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size)=0</td></tr>
-<tr class="separator:ac89a028372db9abbccf569819d9b2b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab80aa62b360dbdf92f6d2e352b938639"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds, uint64_t file_size)=0</td></tr>
+<tr class="separator:ab80aa62b360dbdf92f6d2e352b938639"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cb75da6ff50d6403da18ea8dcc04265"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a> (const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</td></tr>
 <tr class="separator:a4cb75da6ff50d6403da18ea8dcc04265"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> is an event handler that can be registered to a muxer. A <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> cannot be shared amongst muxer instances, in other words, every muxer instance either owns a unique <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> instance. This also assumes that there is one media stream per muxer. </p>
 
-<p>Definition at line <a class="el" href="../../de/dfa/muxer__listener_8h_source.html#l00030">30</a> of file <a class="el" href="../../de/dfa/muxer__listener_8h_source.html">muxer_listener.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/dfa/muxer__listener_8h_source.html#l00032">32</a> of file <a class="el" href="../../de/dfa/muxer__listener_8h_source.html">muxer_listener.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ab521acca727bbe01aa15c751325c0001"></a>
 <div class="memitem">
@@ -228,7 +234,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac89a028372db9abbccf569819d9b2b35"></a>
+<a class="anchor" id="ab80aa62b360dbdf92f6d2e352b938639"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -238,38 +244,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void shaka::media::MuxerListener::OnMediaEnd </td>
           <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>has_init_range</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>init_range_start</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>init_range_end</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>has_index_range</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>index_range_start</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>index_range_end</em>, </td>
+          <td class="paramtype">const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;&#160;</td>
+          <td class="paramname"><em>media_ranges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -298,19 +274,14 @@ Public Member Functions</h2></td></tr>
 <p>Called when all files are written out and the muxer object does not output any more files. Note: This event might not be very interesting to MPEG DASH Live profile. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">has_init_range</td><td>is true if <em>init_range_start</em> and <em>init_range_end</em> actually define an initialization range of a segment. The range is inclusive for both start and end. </td></tr>
-    <tr><td class="paramname">init_range_start</td><td>is the start of the initialization range. </td></tr>
-    <tr><td class="paramname">init_range_end</td><td>is the end of the initialization range. </td></tr>
-    <tr><td class="paramname">has_index_range</td><td>is true if <em>index_range_start</em> and <em>index_range_end</em> actually define an index range of a segment. The range is inclusive for both start and end. </td></tr>
-    <tr><td class="paramname">index_range_start</td><td>is the start of the index range. </td></tr>
-    <tr><td class="paramname">index_range_end</td><td>is the end of the index range. </td></tr>
+    <tr><td class="paramname">media_ranges</td><td>is the ranges of the media file. </td></tr>
     <tr><td class="paramname">duration_seconds</td><td>is the length of the media in seconds. </td></tr>
     <tr><td class="paramname">file_size</td><td>is the size of the file in bytes. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a4e88a20067b619c932a41e89997eba6a">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a971bafa22a407a12f89bd4ddb33aac7e">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#adabba5568154b8f22b02a9b0572db32e">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html#af78148a726979c3773a02809153c0a8b">shaka::media::MockMuxerListener</a>, <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a364293169c006b55f6d80db536af8f0a">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a33a1fd0c31a62355ccfa9d659218c747">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a87e740887c17a1b6706299264353d25b">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -469,7 +440,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 7 2017 19:14:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 13 2017 00:24:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

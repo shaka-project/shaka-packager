@@ -86,6 +86,7 @@ var searchData=
   ['streaminfo',['StreamInfo',['../d5/db1/classshaka_1_1media_1_1StreamInfo.html',1,'shaka::media']]],
   ['subsampleentry',['SubsampleEntry',['../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html',1,'shaka::media']]],
   ['subsegment_5fduration_5fin_5fseconds',['subsegment_duration_in_seconds',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#ac9368f6edb53d9dd90bc128b664a12e5',1,'shaka::media::ChunkingOptions']]],
+  ['subsegment_5franges',['subsegment_ranges',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#a836626da601a9f6ea54502c7e5bdd7c9',1,'shaka::media::MuxerListener::MediaRanges']]],
   ['subsegment_5fsap_5faligned',['subsegment_sap_aligned',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a6d9761fdfca7819c94baa23845ce9ad7',1,'shaka::media::ChunkingOptions']]],
   ['subtitlemediaheader',['SubtitleMediaHeader',['../db/d21/structshaka_1_1media_1_1mp4_1_1SubtitleMediaHeader.html',1,'shaka::media::mp4']]],
   ['suppressonce',['SuppressOnce',['../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed',1,'shaka::Representation']]],

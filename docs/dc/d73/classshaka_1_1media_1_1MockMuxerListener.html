@@ -117,9 +117,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a84ccd0b2f2877caa428fb8201dfd8172"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a84ccd0b2f2877caa428fb8201dfd8172"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD1</b> (<a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">OnSampleDurationReady</a>, void(uint32_t sample_duration))</td></tr>
 <tr class="separator:a84ccd0b2f2877caa428fb8201dfd8172"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf39aa6378f0811a08be4cf6f63bebed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf39aa6378f0811a08be4cf6f63bebed"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD8</b> (<a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">OnMediaEnd</a>, void(bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size))</td></tr>
-<tr class="separator:abf39aa6378f0811a08be4cf6f63bebed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace3a46b7f17ad30ad289c725f78b7f1a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ace3a46b7f17ad30ad289c725f78b7f1a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD10</b> (OnMediaEndMock, void(bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, bool has_subsegment_ranges, const std::vector&lt; <a class="el" href="../../d9/de0/structshaka_1_1media_1_1Range.html">Range</a> &gt; subsegment_ranges, float duration_seconds, uint64_t file_size))</td></tr>
+<tr class="separator:ace3a46b7f17ad30ad289c725f78b7f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af78148a726979c3773a02809153c0a8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html#af78148a726979c3773a02809153c0a8b">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;range, float duration_seconds, uint64_t file_size) override</td></tr>
+<tr class="separator:af78148a726979c3773a02809153c0a8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a47c64bc7850046db1fc40fef1e0c4e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7a47c64bc7850046db1fc40fef1e0c4e"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD4</b> (<a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a>, void(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size))</td></tr>
 <tr class="separator:a7a47c64bc7850046db1fc40fef1e0c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,8 +134,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a31536ec385a7ec22f323a42b872b499a inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad54aef6c349082d996a436ebea11eff2 inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">OnSampleDurationReady</a> (uint32_t sample_duration)=0</td></tr>
 <tr class="separator:ad54aef6c349082d996a436ebea11eff2 inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac89a028372db9abbccf569819d9b2b35 inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">OnMediaEnd</a> (bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size)=0</td></tr>
-<tr class="separator:ac89a028372db9abbccf569819d9b2b35 inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cb75da6ff50d6403da18ea8dcc04265 inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a> (const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</td></tr>
 <tr class="separator:a4cb75da6ff50d6403da18ea8dcc04265 inherit pub_methods_classshaka_1_1media_1_1MuxerListener"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -150,14 +150,68 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="../../d2/de9/mock__muxer__listener_8h_source.html#l00020">20</a> of file <a class="el" href="../../d2/de9/mock__muxer__listener_8h_source.html">mock_muxer_listener.h</a>.</p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="af78148a726979c3773a02809153c0a8b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::MockMuxerListener::OnMediaEnd </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;&#160;</td>
+          <td class="paramname"><em>media_ranges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>duration_seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>file_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Called when all files are written out and the muxer object does not output any more files. Note: This event might not be very interesting to MPEG DASH Live profile. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">media_ranges</td><td>is the ranges of the media file. </td></tr>
+    <tr><td class="paramname">duration_seconds</td><td>is the length of the media in seconds. </td></tr>
+    <tr><td class="paramname">file_size</td><td>is the size of the file in bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">shaka::media::MuxerListener</a>.</p>
+
+<p>Definition at line <a class="el" href="../../dd/dd8/mock__muxer__listener_8cc_source.html#l00015">15</a> of file <a class="el" href="../../dd/dd8/mock__muxer__listener_8cc_source.html">mock_muxer_listener.cc</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/event/<a class="el" href="../../d2/de9/mock__muxer__listener_8h_source.html">mock_muxer_listener.h</a></li>
 <li>media/event/<a class="el" href="../../dd/dd8/mock__muxer__listener_8cc_source.html">mock_muxer_listener.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 7 2017 19:14:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 13 2017 00:24:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

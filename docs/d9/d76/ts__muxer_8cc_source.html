@@ -148,22 +148,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// For now, there is no single file TS segmenter. So all the values passed</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// here are false and 0. Called just to notify the MuxerListener.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> kHasInitRange = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> kHasIndexRange = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">OnMediaEnd</a>(!kHasInitRange, 0, 0, !kHasIndexRange, 0, 0, 0,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                               0);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ac89a028372db9abbccf569819d9b2b35"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size)=0</div></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// here are left empty.</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  MuxerListener::MediaRanges range;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">OnMediaEnd</a>(range, 0, 0);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ab80aa62b360dbdf92f6d2e352b938639"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds, uint64_t file_size)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 7 2017 19:14:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 13 2017 00:24:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

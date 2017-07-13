@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['range',['Range',['../d9/de0/structshaka_1_1media_1_1Range.html',1,'shaka::media']]],
   ['read',['Read',['../d3/d61/classshaka_1_1media_1_1File.html#aed0c0793fd8751330583314a4d3012b9',1,'shaka::media::File::Read()'],['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a3cb864f866af25f0ff92c367946b0945',1,'shaka::media::IoCache::Read()'],['../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1',1,'shaka::media::LocalFile::Read()'],['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#aac5f63ba0bb136eac2260a034edc10cf',1,'shaka::media::MemoryFile::Read()'],['../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a5bd05e37779441004cd7ba0c33de1ad6',1,'shaka::media::ThreadedIoFile::Read()'],['../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a9e6387d6c23e6cfd7a91ed432fe3e81c',1,'shaka::media::UdpFile::Read()']]],
   ['read1',['Read1',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05',1,'shaka::media::BufferReader']]],
   ['readallchildren',['ReadAllChildren',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a8b5c7d5a487fb3063eae1495aa3a7566',1,'shaka::media::mp4::BoxReader']]],

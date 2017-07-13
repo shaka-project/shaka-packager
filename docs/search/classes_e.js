@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['range',['Range',['../d9/de0/structshaka_1_1media_1_1Range.html',1,'shaka::media']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html',1,'shaka']]],
   ['representationbasexmlnode',['RepresentationBaseXmlNode',['../dd/db9/classshaka_1_1xml_1_1RepresentationBaseXmlNode.html',1,'shaka::xml']]],
   ['representationstatechangelistener',['RepresentationStateChangeListener',['../df/d94/classshaka_1_1RepresentationStateChangeListener.html',1,'shaka']]],
