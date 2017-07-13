@@ -109,7 +109,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
 
       uint32_t video_width;
       uint32_t video_height;
-      CHECK(video_playlist->GetResolution(&video_width, &video_height));
+      CHECK(video_playlist->GetDisplayResolution(&video_width, &video_height));
 
       AppendStreamInfoTag(video_bitrate + max_audio_bitrate,
                           video_codec + "," + audio_codec,
@@ -129,7 +129,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
 
       uint32_t video_width;
       uint32_t video_height;
-      CHECK(video_playlist->GetResolution(&video_width, &video_height));
+      CHECK(video_playlist->GetDisplayResolution(&video_width, &video_height));
 
       AppendStreamInfoTag(video_bitrate,
                           video_codec,

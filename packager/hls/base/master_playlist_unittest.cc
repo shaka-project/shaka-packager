@@ -67,7 +67,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
   mock_playlist.SetCodecForTesting(codec);
   EXPECT_CALL(mock_playlist, Bitrate()).WillOnce(Return(435889));
-  EXPECT_CALL(mock_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(mock_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .WillOnce(DoAll(SetArgPointee<0>(kWidth),
                       SetArgPointee<1>(kHeight),
                       Return(true)));
@@ -101,7 +101,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(sd_video_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(300000));
-  EXPECT_CALL(sd_video_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(sd_video_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
                             SetArgPointee<1>(kHeight),
                             Return(true)));
@@ -117,7 +117,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(hd_video_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(700000));
-  EXPECT_CALL(hd_video_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(hd_video_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
                             SetArgPointee<1>(kHeight),
                             Return(true)));
@@ -136,7 +136,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(english_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(50000));
-  EXPECT_CALL(english_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(english_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .Times(0);
   master_playlist_.AddMediaPlaylist(&english_playlist);
 
@@ -150,7 +150,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(spanish_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(60000));
-  EXPECT_CALL(spanish_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(spanish_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .Times(0);
   master_playlist_.AddMediaPlaylist(&spanish_playlist);
 
@@ -190,7 +190,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(video_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(300000));
-  EXPECT_CALL(video_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(video_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
                             SetArgPointee<1>(kHeight),
                             Return(true)));
@@ -207,7 +207,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(eng_lo_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(50000));
-  EXPECT_CALL(eng_lo_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(eng_lo_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .Times(0);
   master_playlist_.AddMediaPlaylist(&eng_lo_playlist);
 
@@ -221,7 +221,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(eng_hi_playlist, Bitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(100000));
-  EXPECT_CALL(eng_hi_playlist, GetResolution(NotNull(), NotNull()))
+  EXPECT_CALL(eng_hi_playlist, GetDisplayResolution(NotNull(), NotNull()))
       .Times(0);
   master_playlist_.AddMediaPlaylist(&eng_hi_playlist);
 

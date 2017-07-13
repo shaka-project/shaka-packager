@@ -163,7 +163,7 @@ class MediaPlaylist {
 
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.
-  virtual bool GetResolution(uint32_t* width, uint32_t* height) const;
+  virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;
 
  private:
   // Remove elements from |entries_| for live profile. Increments
