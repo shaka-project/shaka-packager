@@ -150,7 +150,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRange) {
       "test\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
-      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=501@0\n"
+      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
       "#EXT-X-ENDLIST\n";
   valid_video_media_info_.set_media_file_name("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(0);
@@ -170,7 +170,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRangeWithOffset) {
       "test\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
-      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=485@16\n"
+      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"485@16\"\n"
       "#EXT-X-ENDLIST\n";
   valid_video_media_info_.set_media_file_name("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(16);
@@ -192,7 +192,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
       "test\n"
       "#EXT-X-TARGETDURATION:10\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
-      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=501@0\n"
+      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
       "#EXTINF:10.000,\n"
       "#EXT-X-BYTERANGE:1000000@1000\n"
       "file.mp4\n"

@@ -52,8 +52,8 @@ std::string CreateExtXMap(const MediaInfo& media_info) {
     const uint64_t begin = media_info.init_range().begin();
     const uint64_t end = media_info.init_range().end();
     const uint64_t length = end - begin + 1;
-    base::StringAppendF(&ext_x_map, ",BYTERANGE=%" PRIu64 "@%" PRIu64, length,
-                        begin);
+    base::StringAppendF(&ext_x_map, ",BYTERANGE=\"%" PRIu64 "@%" PRIu64 "\"",
+                        length, begin);
   }
   ext_x_map += "\n";
   return ext_x_map;
