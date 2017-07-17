@@ -612,6 +612,7 @@ struct Packager::PackagerInternal {
   std::unique_ptr<MpdNotifier> mpd_notifier;
   std::unique_ptr<hls::HlsNotifier> hls_notifier;
   std::vector<std::unique_ptr<media::Job>> jobs;
+  BufferCallbackParams buffer_callback_params;
 };
 
 Packager::Packager() {}
@@ -651,12 +652,24 @@ Status Packager::Initialize(
       return Status(error::INVALID_ARGUMENT, "Failed to create key source.");
   }
 
-  const MpdParams& mpd_params = packaging_params.mpd_params;
+  // Store callback params to make it available during packaging.
+  internal->buffer_callback_params = packaging_params.buffer_callback_params;
+
+  // Update mpd output and hls output if callback param is specified.
+  MpdParams mpd_params = packaging_params.mpd_params;
+  HlsParams hls_params = packaging_params.hls_params;
+  if (internal->buffer_callback_params.write_func) {
+    mpd_params.mpd_output = File::MakeCallbackFileName(
+        internal->buffer_callback_params, mpd_params.mpd_output);
+    hls_params.master_playlist_output = File::MakeCallbackFileName(
+        internal->buffer_callback_params, hls_params.master_playlist_output);
+  }
+
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();
-    MpdOptions mpd_options = media::GetMpdOptions(on_demand_dash_profile,
-                                                  packaging_params.mpd_params);
+    MpdOptions mpd_options =
+        media::GetMpdOptions(on_demand_dash_profile, mpd_params);
     if (mpd_params.generate_dash_if_iop_compliant_mpd) {
       internal->mpd_notifier.reset(new DashIopMpdNotifier(mpd_options));
     } else {
@@ -669,7 +682,6 @@ Status Packager::Initialize(
     }
   }
 
-  const HlsParams& hls_params = packaging_params.hls_params;
   if (!hls_params.master_playlist_output.empty()) {
     base::FilePath master_playlist_path(
         base::FilePath::FromUTF8Unsafe(hls_params.master_playlist_output));
@@ -683,8 +695,26 @@ Status Packager::Initialize(
   }
 
   media::StreamDescriptorList stream_descriptor_list;
-  for (const StreamDescriptor& descriptor : stream_descriptors)
-    stream_descriptor_list.insert(descriptor);
+  for (const StreamDescriptor& descriptor : stream_descriptors) {
+    if (internal->buffer_callback_params.read_func ||
+        internal->buffer_callback_params.write_func) {
+      StreamDescriptor descriptor_copy = descriptor;
+      if (internal->buffer_callback_params.read_func) {
+        descriptor_copy.input = File::MakeCallbackFileName(
+            internal->buffer_callback_params, descriptor.input);
+      }
+      if (internal->buffer_callback_params.write_func) {
+        descriptor_copy.output = File::MakeCallbackFileName(
+            internal->buffer_callback_params, descriptor.output);
+        descriptor_copy.segment_template = File::MakeCallbackFileName(
+            internal->buffer_callback_params, descriptor.segment_template);
+      }
+      stream_descriptor_list.insert(descriptor_copy);
+    } else {
+      stream_descriptor_list.insert(descriptor);
+    }
+  }
+
   Status status = media::CreateRemuxJobs(
       stream_descriptor_list, packaging_params, &internal->fake_clock,
       internal->encryption_key_source.get(), internal->mpd_notifier.get(),

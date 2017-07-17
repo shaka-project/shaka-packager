@@ -300,4 +300,27 @@ TEST_F(LocalFileTest, DISABLED_ReadSeekOutOfBounds) {
   EXPECT_TRUE(file->Close());
 }
 
+TEST(FileTest, MakeCallbackFileName) {
+  const BufferCallbackParams* params =
+      reinterpret_cast<BufferCallbackParams*>(1000);
+  EXPECT_EQ("callback://1000/some name",
+            File::MakeCallbackFileName(*params, "some name"));
+  EXPECT_EQ("", File::MakeCallbackFileName(*params, ""));
+}
+
+TEST(FileTest, ParseCallbackFileName) {
+  const BufferCallbackParams* params = nullptr;
+  std::string name;
+  ASSERT_TRUE(File::ParseCallbackFileName("1000/some name", &params, &name));
+  EXPECT_EQ(1000, reinterpret_cast<int64_t>(params));
+  EXPECT_EQ("some name", name);
+}
+
+TEST(FileTest, ParseCallbackFileNameFailed) {
+  const BufferCallbackParams* params = nullptr;
+  std::string name;
+  ASSERT_FALSE(File::ParseCallbackFileName("1000\\some name", &params, &name));
+  ASSERT_FALSE(File::ParseCallbackFileName("abc/some name", &params, &name));
+}
+
 }  // namespace shaka

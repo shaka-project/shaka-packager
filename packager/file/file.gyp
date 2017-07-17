@@ -13,6 +13,8 @@
       'target_name': 'file',
       'type': '<(component)',
       'sources': [
+        'callback_file.cc',
+        'callback_file.h',
         'file.cc',
         'file.h',
         'file_util.cc',
@@ -24,6 +26,7 @@
         'local_file.h',
         'memory_file.cc',
         'memory_file.h',
+        'public/buffer_callback_params.h',
         'threaded_io_file.cc',
         'threaded_io_file.h',
         'udp_file.cc',
@@ -40,6 +43,7 @@
       'target_name': 'file_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'callback_file_unittest.cc',
         'file_unittest.cc',
         'file_util_unittest.cc',
         'io_cache_unittest.cc',
@@ -48,6 +52,7 @@
       ],
       'dependencies': [
         '../media/test/media_test.gyp:run_tests_with_atexit_manager',
+        '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
         '../third_party/gflags/gflags.gyp:gflags',
         'file',

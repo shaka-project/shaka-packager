@@ -12,11 +12,14 @@
 #include <string>
 
 #include "packager/base/macros.h"
+#include "packager/file/public/buffer_callback_params.h"
 
 namespace shaka {
 
+extern const char* kCallbackFilePrefix;
 extern const char* kLocalFilePrefix;
 extern const char* kMemoryFilePrefix;
+extern const char* kUdpFilePrefix;
 const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.
@@ -86,7 +89,8 @@ class File {
   /// @return true on succcess, false otherwise.
   virtual bool Tell(uint64_t* position) = 0;
 
-  /// @return The file name.
+  /// @return The file name. Note that the file type prefix has been stripped
+  ///         off.
   const std::string& file_name() const { return file_name_; }
 
   // ************************************************************
@@ -138,6 +142,27 @@ class File {
   /// @return Number of bytes written, or a value < 0 on error.
   static int64_t CopyFile(File* source, File* destination, int64_t max_copy);
 
+  /// Generate callback file name.
+  /// NOTE: THE GENERATED NAME IS ONLY VAID WHILE @a callback_params IS VALID.
+  /// @param callback_params references BufferCallbackParams, which will be
+  ///        embedded in the generated callback file name.
+  /// @param name is the name of the buffer, which will be embedded in the
+  ///        generated callback file name.
+  static std::string MakeCallbackFileName(
+      const BufferCallbackParams& callback_params,
+      const std::string& name);
+
+  /// Parse and extract callback params.
+  /// @param callback_file_name is the name of the callback file which contains
+  ///        @a callback_params and @a name.
+  /// @param callback_params points to the parsed BufferCallbackParams pointer.
+  /// @param name points to the parsed name.
+  /// @return true on success, false otherwise.
+  static bool ParseCallbackFileName(
+      const std::string& callback_file_name,
+      const BufferCallbackParams** callback_params,
+      std::string* name);
+
  protected:
   explicit File(const std::string& file_name) : file_name_(file_name) {}
   /// Do *not* call the destructor directly (with the "delete" keyword)
@@ -156,7 +181,9 @@ class File {
 
   static File* CreateInternalFile(const char* file_name, const char* mode);
 
+  // Note that the file type prefix has been stripped off.
   std::string file_name_;
+
   DISALLOW_COPY_AND_ASSIGN(File);
 };
 

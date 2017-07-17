@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "packager/hls/public/hls_params.h"
+#include "packager/file/public/buffer_callback_params.h"
 #include "packager/media/public/chunking_params.h"
 #include "packager/media/public/crypto_params.h"
 #include "packager/media/public/mp4_output_params.h"
@@ -55,6 +56,9 @@ struct PackagingParams {
   EncryptionParams encryption_params;
   DecryptionParams decryption_params;
 
+  /// Buffer callback params.
+  BufferCallbackParams buffer_callback_params;
+
   // Parameters for testing. Do not use in production.
   TestParams test_params;
 };
@@ -63,8 +67,6 @@ struct PackagingParams {
 struct StreamDescriptor {
   /// Input/source media file path or network stream URL. Required.
   std::string input;
-  // TODO(kqyang): Add support for feeding data through read func.
-  // std::function<int64_t(void* buffer, uint64_t length)> read_func;
 
   /// Stream selector, can be `audio`, `video`, `text` or a zero based stream
   /// index. Required.
@@ -75,9 +77,6 @@ struct StreamDescriptor {
   std::string output;
   /// Specifies segment template. Can be empty.
   std::string segment_template;
-  // TODO: Add support for writing data through write func.
-  // std::function<int64_t(const std::string& id, void* buffer, uint64_t
-  // length)> write_func;
 
   /// Optional value which specifies output container format, e.g. "mp4". If not
   /// specified, will detect from output / segment template name.

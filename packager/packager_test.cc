@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/base/files/file_util.h"
@@ -11,6 +12,14 @@
 #include "packager/base/path_service.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/packager.h"
+
+using testing::_;
+using testing::Invoke;
+using testing::MockFunction;
+using testing::Return;
+using testing::ReturnArg;
+using testing::StrEq;
+using testing::WithArgs;
 
 namespace shaka {
 namespace {
@@ -152,6 +161,69 @@ TEST_F(PackagerTest, SegmentNotAlignedButSubsegmentAligned) {
   Packager packager;
   auto status = packager.Initialize(packaging_params, SetupStreamDescriptors());
   ASSERT_EQ(error::INVALID_ARGUMENT, status.error_code());
+}
+
+TEST_F(PackagerTest, WriteOutputToBuffer) {
+  auto packaging_params = SetupPackagingParams();
+
+  MockFunction<int64_t(const std::string& name, const void* buffer,
+                       uint64_t length)>
+      mock_write_func;
+  packaging_params.buffer_callback_params.write_func =
+      mock_write_func.AsStdFunction();
+  EXPECT_CALL(mock_write_func, Call(StrEq(GetFullPath(kOutputVideo)), _, _))
+      .WillRepeatedly(ReturnArg<2>());
+  EXPECT_CALL(mock_write_func, Call(StrEq(GetFullPath(kOutputAudio)), _, _))
+      .WillRepeatedly(ReturnArg<2>());
+  EXPECT_CALL(mock_write_func, Call(StrEq(GetFullPath(kOutputMpd)), _, _))
+      .WillRepeatedly(ReturnArg<2>());
+
+  Packager packager;
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, SetupStreamDescriptors()));
+  ASSERT_EQ(Status::OK, packager.Run());
+}
+
+TEST_F(PackagerTest, ReadFromBuffer) {
+  auto packaging_params = SetupPackagingParams();
+
+  MockFunction<int64_t(const std::string& name, void* buffer, uint64_t length)>
+      mock_read_func;
+  packaging_params.buffer_callback_params.read_func =
+      mock_read_func.AsStdFunction();
+
+  const std::string file_name = GetTestDataFilePath(kTestFile);
+  FILE* file_ptr =
+      base::OpenFile(base::FilePath::FromUTF8Unsafe(file_name), "rb");
+  ASSERT_TRUE(file_ptr);
+  EXPECT_CALL(mock_read_func, Call(StrEq(file_name), _, _))
+      .WillRepeatedly(
+          WithArgs<1, 2>(Invoke([file_ptr](void* buffer, uint64_t size) {
+            return fread(buffer, sizeof(char), size, file_ptr);
+          })));
+
+  Packager packager;
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, SetupStreamDescriptors()));
+  ASSERT_EQ(Status::OK, packager.Run());
+
+  base::CloseFile(file_ptr);
+}
+
+TEST_F(PackagerTest, ReadFromBufferFailed) {
+  auto packaging_params = SetupPackagingParams();
+
+  MockFunction<int64_t(const std::string& name, void* buffer, uint64_t length)>
+      mock_read_func;
+  packaging_params.buffer_callback_params.read_func =
+      mock_read_func.AsStdFunction();
+
+  EXPECT_CALL(mock_read_func, Call(_, _, _)).WillOnce(Return(-1));
+
+  Packager packager;
+  ASSERT_EQ(Status::OK,
+            packager.Initialize(packaging_params, SetupStreamDescriptors()));
+  ASSERT_EQ(error::FILE_FAILURE, packager.Run().error_code());
 }
 
 // TODO(kqyang): Add more tests.
