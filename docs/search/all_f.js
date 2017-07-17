@@ -1,7 +1,6 @@
 var searchData=
 [
   ['range',['Range',['../d9/de0/structshaka_1_1media_1_1Range.html',1,'shaka::media']]],
-  ['read',['Read',['../d3/d61/classshaka_1_1media_1_1File.html#aed0c0793fd8751330583314a4d3012b9',1,'shaka::media::File::Read()'],['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a3cb864f866af25f0ff92c367946b0945',1,'shaka::media::IoCache::Read()'],['../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1',1,'shaka::media::LocalFile::Read()'],['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#aac5f63ba0bb136eac2260a034edc10cf',1,'shaka::media::MemoryFile::Read()'],['../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html#a5bd05e37779441004cd7ba0c33de1ad6',1,'shaka::media::ThreadedIoFile::Read()'],['../d7/d7a/classshaka_1_1media_1_1UdpFile.html#a9e6387d6c23e6cfd7a91ed432fe3e81c',1,'shaka::media::UdpFile::Read()']]],
   ['read1',['Read1',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05',1,'shaka::media::BufferReader']]],
   ['readallchildren',['ReadAllChildren',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a8b5c7d5a487fb3063eae1495aa3a7566',1,'shaka::media::mp4::BoxReader']]],
   ['readbits',['ReadBits',['../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4',1,'shaka::media::BitReader']]],
@@ -9,7 +8,6 @@ var searchData=
   ['readchild',['ReadChild',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a68defcd9be85bbd5cbded3bee86aa03a',1,'shaka::media::mp4::BoxReader']]],
   ['readchildren',['ReadChildren',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#aedb3a49da398833cda1caa1ad01a364a',1,'shaka::media::mp4::BoxReader']]],
   ['reader',['reader',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a6e7c1f50071b52d7f68e094f0401d3d9',1,'shaka::media::mp4::BoxBuffer']]],
-  ['readfiletostring',['ReadFileToString',['../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60',1,'shaka::media::File']]],
   ['reading',['Reading',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a6f952858fff424e19a05d64f485d3952',1,'shaka::media::mp4::BoxBuffer']]],
   ['readnbytesinto8',['ReadNBytesInto8',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#ac98c6631c07300a6b78ec58bfd4ced30',1,'shaka::media::BufferReader']]],
   ['readwrite',['ReadWrite',['../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#ac32331c506252793b4447940abbeafd9',1,'shaka::media::mp4::SampleEncryptionEntry']]],
@@ -19,7 +17,6 @@ var searchData=
   ['readwriteuint64nbytes',['ReadWriteUInt64NBytes',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a53c6b6a9bce0bb0fa61b9ce95c3f5cef',1,'shaka::media::mp4::BoxBuffer']]],
   ['readysamplessize',['ReadySamplesSize',['../de/ddd/classshaka_1_1media_1_1WebVttSampleConverter.html#a3b0e60f307c5ea57d232216eced6af76',1,'shaka::media::WebVttSampleConverter']]],
   ['release',['Release',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ae5cb2c3000ccbd53c0a1867db0b8a2d0',1,'shaka::xml::XmlNode']]],
-  ['reopen',['Reopen',['../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185',1,'shaka::media::IoCache']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html',1,'shaka']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb',1,'shaka::Representation']]],
   ['representationbasexmlnode',['RepresentationBaseXmlNode',['../dd/db9/classshaka_1_1xml_1_1RepresentationBaseXmlNode.html',1,'shaka::xml']]],

@@ -97,10 +97,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer_options.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/stream_info.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_util.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/file/file_util.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer_options.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/stream_info.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxer.hpp&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxerutil.hpp&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/webmids.hpp&quot;</span></div>
@@ -162,7 +162,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// of time as to make it.</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  set_progress_target(info()-&gt;duration() * 2);</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">TempFilePath</a>(options().temp_dir, &amp;temp_file_name_))</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span> (!TempFilePath(options().temp_dir, &amp;temp_file_name_))</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Unable to create temporary file.&quot;</span>);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::unique_ptr&lt;MkvWriter&gt; temp(<span class="keyword">new</span> MkvWriter);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  Status status = temp-&gt;Open(temp_file_name_);</div>
@@ -203,7 +203,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="comment">// Close the temp file and open it for reading.</span></div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  set_writer(std::unique_ptr&lt;MkvWriter&gt;());</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; temp_reader(</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      File::Open(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordflow">if</span> (!temp_reader)</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error opening temp file.&quot;</span>);</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
@@ -219,7 +219,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="comment">// Close and delete the temp file.</span></div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  temp_reader.reset();</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">File::Delete</a>(temp_file_name_.c_str())) {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordflow">if</span> (!File::Delete(temp_file_name_.c_str())) {</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unable to delete temporary file &quot;</span> &lt;&lt; temp_file_name_;</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  }</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
@@ -276,13 +276,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;}  <span class="comment">// namespace webm</span></div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_aad6b77e734bb22d077ece029c9e735a4"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">shaka::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
-<div class="ttc" id="namespaceshaka_html_a66e7e156c1f83435fb6c130803e48f62"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">shaka::TempFilePath</a></div><div class="ttdeci">bool TempFilePath(const std::string &amp;temp_dir, std::string *temp_file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d2b/file__util_8cc_source.html#l00027">file_util.cc:27</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a92cdfd68e6384dfcc14c78b20c98368e"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">shaka::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00181">file.cc:181</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 14 2017 18:14:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 17 2017 20:19:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

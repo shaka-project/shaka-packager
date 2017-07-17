@@ -10,7 +10,5 @@ var searchData=
   ['buffer',['Buffer',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ab3054a98a4ec27764c65511dc17a916d',1,'shaka::media::BufferWriter']]],
   ['bufferreader',['BufferReader',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a94771befc54d444630ade726689b7bf7',1,'shaka::media::BufferReader']]],
   ['bufferwriter',['BufferWriter',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a01d91524fd5c5491bafcc1cff16db916',1,'shaka::media::BufferWriter']]],
-  ['bytescached',['BytesCached',['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a385baed04dd0cc0d3dca20d78f61559f',1,'shaka::media::IoCache']]],
-  ['bytesfree',['BytesFree',['../dd/d7c/classshaka_1_1media_1_1IoCache.html#a74e1d7369afe4f03c551b6e67ec82ee9',1,'shaka::media::IoCache']]],
   ['bytesleft',['BytesLeft',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#acf36e70bcb8c4ee7939835126ae9b98b',1,'shaka::media::mp4::BoxBuffer']]]
 ];

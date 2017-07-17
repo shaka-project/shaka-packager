@@ -10,7 +10,6 @@ var searchData=
   ['mediaparser',['MediaParser',['../d3/d0a/classshaka_1_1media_1_1MediaParser.html',1,'shaka::media']]],
   ['mediaranges',['MediaRanges',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html',1,'shaka::media::MuxerListener']]],
   ['mediasample',['MediaSample',['../d7/d6d/classshaka_1_1media_1_1MediaSample.html',1,'shaka::media']]],
-  ['memoryfile',['MemoryFile',['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html',1,'shaka::media']]],
   ['metadata',['Metadata',['../dd/df6/structshaka_1_1media_1_1mp4_1_1Metadata.html',1,'shaka::media::mp4']]],
   ['mkvwriter',['MkvWriter',['../d1/d0a/classshaka_1_1media_1_1MkvWriter.html',1,'shaka::media']]],
   ['mockadaptationset',['MockAdaptationSet',['../db/d4b/classshaka_1_1MockAdaptationSet.html',1,'shaka']]],

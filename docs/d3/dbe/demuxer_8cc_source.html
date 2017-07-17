@@ -100,11 +100,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/bind.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/decryptor_source.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/stream_info.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/file/file.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/decryptor_source.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/stream_info.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/mp2t_media_parser.h&quot;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/mp4_media_parser.h&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/webm/webm_media_parser.h&quot;</span></div>
@@ -166,7 +166,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;Demuxer::~Demuxer() {</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">if</span> (media_file_)</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    media_file_-&gt;<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a2bfb0c180840356933652a795527b5c8">Close</a>();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    media_file_-&gt;Close();</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
 <div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">   83</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">Demuxer::SetKeySource</a>(std::unique_ptr&lt;KeySource&gt; key_source) {</div>
@@ -248,7 +248,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  LOG(INFO) &lt;&lt; <span class="stringliteral">&quot;Initialize Demuxer for file &#39;&quot;</span> &lt;&lt; file_name_ &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  media_file_ = <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  media_file_ = File::Open(file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>);</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">if</span> (!media_file_) {</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                  <span class="stringliteral">&quot;Cannot open file for reading &quot;</span> + file_name_);</div>
@@ -258,7 +258,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  int64_t bytes_read = 0;</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keywordflow">while</span> (static_cast&lt;size_t&gt;(bytes_read) &lt; kInitBufSize) {</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    int64_t read_result =</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        media_file_-&gt;<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aed0c0793fd8751330583314a4d3012b9">Read</a>(buffer_.get() + bytes_read, kInitBufSize);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        media_file_-&gt;Read(buffer_.get() + bytes_read, kInitBufSize);</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keywordflow">if</span> (read_result &lt; 0)</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Cannot read file &quot;</span> + file_name_);</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keywordflow">if</span> (read_result == 0)</div>
@@ -411,7 +411,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  DCHECK(parser_);</div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  DCHECK(buffer_);</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  int64_t bytes_read = media_file_-&gt;<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aed0c0793fd8751330583314a4d3012b9">Read</a>(buffer_.get(), kBufSize);</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  int64_t bytes_read = media_file_-&gt;Read(buffer_.get(), kBufSize);</div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="keywordflow">if</span> (bytes_read == 0) {</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keywordflow">if</span> (!parser_-&gt;Flush())</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;      <span class="keywordflow">return</span> Status(error::PARSER_FAILURE, <span class="stringliteral">&quot;Failed to flush.&quot;</span>);</div>
@@ -428,23 +428,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_aad6b77e734bb22d077ece029c9e735a4"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">shaka::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_a73dfbc5de4901830cfd25775e2e4fcff"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a73dfbc5de4901830cfd25775e2e4fcff">shaka::media::MediaHandler::DispatchMediaSample</a></div><div class="ttdeci">Status DispatchMediaSample(size_t stream_index, std::shared_ptr&lt; MediaSample &gt; media_sample)</div><div class="ttdoc">Dispatch the media sample to downstream handlers. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00137">media_handler.h:137</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a1247302b6c57fbafb09aec71ce0109e3"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a1247302b6c57fbafb09aec71ce0109e3">shaka::media::Demuxer::SetHandler</a></div><div class="ttdeci">Status SetHandler(const std::string &amp;stream_label, std::shared_ptr&lt; MediaHandler &gt; handler)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00132">demuxer.cc:132</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a9e0b4a430603fdf4639c2153622ae1a2"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a9e0b4a430603fdf4639c2153622ae1a2">shaka::media::Demuxer::Run</a></div><div class="ttdeci">Status Run()</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00087">demuxer.cc:87</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a2bfb0c180840356933652a795527b5c8"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a2bfb0c180840356933652a795527b5c8">shaka::media::File::Close</a></div><div class="ttdeci">virtual bool Close()=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_aa3fe0a64a2745fa6f462c3d179809c3b"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#aa3fe0a64a2745fa6f462c3d179809c3b">shaka::media::Demuxer::SetLanguageOverride</a></div><div class="ttdeci">void SetLanguageOverride(const std::string &amp;stream_label, const std::string &amp;language_override)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00142">demuxer.cc:142</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a117ba5528a92b0cf4752d15d3692e158"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a117ba5528a92b0cf4752d15d3692e158">shaka::media::Demuxer::Cancel</a></div><div class="ttdeci">void Cancel()</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00128">demuxer.cc:128</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_a855263bdfc4c0e24d94277dc4a1b415f"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a855263bdfc4c0e24d94277dc4a1b415f">shaka::media::MediaHandler::DispatchStreamInfo</a></div><div class="ttdeci">Status DispatchStreamInfo(size_t stream_index, std::shared_ptr&lt; StreamInfo &gt; stream_info)</div><div class="ttdoc">Dispatch the stream info to downstream handlers. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00127">media_handler.h:127</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_abfcf3a9a3f64c0e27497c72324049a1e"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">shaka::media::Demuxer::SetKeySource</a></div><div class="ttdeci">void SetKeySource(std::unique_ptr&lt; KeySource &gt; key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00083">demuxer.cc:83</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_aed0c0793fd8751330583314a4d3012b9"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#aed0c0793fd8751330583314a4d3012b9">shaka::media::File::Read</a></div><div class="ttdeci">virtual int64_t Read(void *buffer, uint64_t length)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_ad5001bf12073101a949b062943769f5b"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ad5001bf12073101a949b062943769f5b">shaka::media::MediaHandler::FlushDownstream</a></div><div class="ttdeci">Status FlushDownstream(size_t output_stream_index)</div><div class="ttdoc">Flush the downstream connected at the specified output stream index. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/de9/media__handler_8cc_source.html#l00063">media_handler.cc:63</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_ae2fee69f99e5815de4f686b24393402e"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e">shaka::media::Demuxer::Demuxer</a></div><div class="ttdeci">Demuxer(const std::string &amp;file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00075">demuxer.cc:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html_a0fac1fe2d593e78d47244acdfa21759d"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0fac1fe2d593e78d47244acdfa21759d">shaka::media::MediaHandler::SetHandler</a></div><div class="ttdeci">Status SetHandler(size_t output_stream_index, std::shared_ptr&lt; MediaHandler &gt; handler)</div><div class="ttdoc">Connect downstream handler at the specified output stream index. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/de9/media__handler_8cc_source.html#l00012">media_handler.cc:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 14 2017 18:14:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 17 2017 20:19:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

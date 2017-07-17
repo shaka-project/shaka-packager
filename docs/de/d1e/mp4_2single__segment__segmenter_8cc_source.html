@@ -97,11 +97,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_writer.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer_options.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/event/progress_listener.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_util.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/file/file.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/file/file_util.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_writer.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer_options.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/event/progress_listener.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>shaka {</div>
@@ -117,7 +117,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">if</span> (temp_file_)</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    temp_file_.release()-&gt;Close();</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (!temp_file_name_.empty()) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">File::Delete</a>(temp_file_name_.c_str()))</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">if</span> (!File::Delete(temp_file_name_.c_str()))</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unable to delete temporary file &quot;</span> &lt;&lt; temp_file_name_;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  }</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
@@ -162,9 +162,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// progress_target was set for stage 1. Times two to account for stage 2.</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  set_progress_target(progress_target() * 2);</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">TempFilePath</a>(options().temp_dir, &amp;temp_file_name_))</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span> (!TempFilePath(options().temp_dir, &amp;temp_file_name_))</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Unable to create temporary file.&quot;</span>);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  temp_file_.reset(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  temp_file_.reset(File::Open(temp_file_name_.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">return</span> temp_file_</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;             ? Status::OK</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;             : Status(error::FILE_FAILURE,</div>
@@ -184,7 +184,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  }</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; file(</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(options().output_file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;      File::Open(options().output_file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">if</span> (file == NULL) {</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                  <span class="stringliteral">&quot;Cannot open file to write &quot;</span> + options().output_file_name);</div>
@@ -204,7 +204,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="comment">// Load the temp file and write to output file.</span></div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; temp_file(</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      File::Open(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">if</span> (temp_file == NULL) {</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                  <span class="stringliteral">&quot;Cannot open file to read &quot;</span> + temp_file_name_);</div>
@@ -313,18 +313,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a4cb75da6ff50d6403da18ea8dcc04265"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_aad6b77e734bb22d077ece029c9e735a4"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">shaka::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ad54aef6c349082d996a436ebea11eff2"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
 <div class="ttc" id="structshaka_1_1media_1_1mp4_1_1SegmentReference_html"><div class="ttname"><a href="../../dd/d9b/structshaka_1_1media_1_1mp4_1_1SegmentReference.html">shaka::media::mp4::SegmentReference</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00750">box_definitions.h:750</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00039">muxer_options.h:39</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a66e7e156c1f83435fb6c130803e48f62"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a66e7e156c1f83435fb6c130803e48f62">shaka::TempFilePath</a></div><div class="ttdeci">bool TempFilePath(const std::string &amp;temp_dir, std::string *temp_file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d2b/file__util_8cc_source.html#l00027">file_util.cc:27</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1Range_html"><div class="ttname"><a href="../../d9/de0/structshaka_1_1media_1_1Range.html">shaka::media::Range</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d12/range_8h_source.html#l00019">range.h:19</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1Segmenter_html_a32dc8b7461252b99fe52384b04e3bca2"><div class="ttname"><a href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2">shaka::media::webm::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00265">segmenter.cc:265</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a92cdfd68e6384dfcc14c78b20c98368e"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">shaka::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00181">file.cc:181</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 14 2017 18:14:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 17 2017 20:19:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -100,20 +100,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/callback_helpers.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/audio_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/decrypt_config.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/macros.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/avc_decoder_configuration_record.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/es_descriptor.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/hevc_decoder_configuration_record.h&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/vp_codec_configuration_record.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/file/file.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/file/file_closer.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/audio_stream_info.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/decrypt_config.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/macros.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/avc_decoder_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/es_descriptor.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/hevc_decoder_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/vp_codec_configuration_record.h&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_reader.h&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/track_run_iterator.h&quot;</span></div>
@@ -261,7 +261,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
 <div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">  173</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">MP4MediaParser::LoadMoov</a>(<span class="keyword">const</span> std::string&amp; file_path) {</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; file(</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#ad1e9fc834093c8b35c0f8c1957974fda">File::OpenWithNoBuffering</a>(file_path.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      File::OpenWithNoBuffering(file_path.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">if</span> (!file) {</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unable to open media file &#39;&quot;</span> &lt;&lt; file_path &lt;&lt; <span class="stringliteral">&quot;&#39;&quot;</span>;</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -870,7 +870,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a1dfd11c891dd3b3171002cbc484eacdd"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">shaka::media::OffsetByteQueue::head</a></div><div class="ttdeci">int64_t head()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d34/offset__byte__queue_8h_source.html#l00052">offset_byte_queue.h:52</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a68832e85b25a9b543e54033bb70c4df6"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">shaka::media::OffsetByteQueue::PeekAt</a></div><div class="ttdeci">void PeekAt(int64_t offset, const uint8_t **buf, int *size)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1a/offset__byte__queue_8cc_source.html#l00041">offset_byte_queue.cc:41</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_ad1e9fc834093c8b35c0f8c1957974fda"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#ad1e9fc834093c8b35c0f8c1957974fda">shaka::media::File::OpenWithNoBuffering</a></div><div class="ttdeci">static File * OpenWithNoBuffering(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00170">file.cc:170</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_a6f26e0d76aeda601fa87190901de27ea"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#a6f26e0d76aeda601fa87190901de27ea">shaka::media::mp4::MP4MediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00132">mp4_media_parser.cc:132</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a77b9a12145dad80df95845bd2b66b6a8"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">shaka::media::OffsetByteQueue::Trim</a></div><div class="ttdeci">bool Trim(int64_t max_offset)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1a/offset__byte__queue_8cc_source.html#l00051">offset_byte_queue.cc:51</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_a4105cdbe5ece03071a17c06fb27699b0"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#a4105cdbe5ece03071a17c06fb27699b0">shaka::media::mp4::MP4MediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00139">mp4_media_parser.cc:139</a></div></div>
@@ -886,7 +885,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 14 2017 18:14:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 17 2017 20:19:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

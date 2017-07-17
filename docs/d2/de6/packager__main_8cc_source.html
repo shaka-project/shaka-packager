@@ -112,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_split.h&quot;</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/stringprintf.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/file/file.h&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/packager.h&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#if defined(OS_WIN)</span></div>
@@ -197,8 +197,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    signer-&gt;aes.iv = FLAGS_aes_signing_iv_bytes;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!FLAGS_rsa_signing_key_path.empty()) {</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    signer-&gt;signing_key_type = WidevineSigner::SigningKeyType::kRsa;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">media::File::ReadFileToString</a>(FLAGS_rsa_signing_key_path.c_str(),</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                                       &amp;signer-&gt;rsa.key)) {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">if</span> (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                                &amp;signer-&gt;rsa.key)) {</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to read from &#39;&quot;</span> &lt;&lt; FLAGS_rsa_signing_key_path</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -455,13 +455,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="preprocessor">#endif  // defined(OS_WIN)</span></div>
 <div class="ttc" id="namespaceshaka_html_a8d03e8120932485c8fa0c686e1e32dac"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">shaka::ParseStreamDescriptor</a></div><div class="ttdeci">base::Optional&lt; StreamDescriptor &gt; ParseStreamDescriptor(const std::string &amp;descriptor_string)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/da6/stream__descriptor_8cc_source.html#l00074">stream_descriptor.cc:74</a></div></div>
 <div class="ttc" id="namespaceshaka_html_ade3cbb360c0dcaacc5667676af885008"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#ade3cbb360c0dcaacc5667676af885008">shaka::ValidateWidevineCryptoFlags</a></div><div class="ttdeci">bool ValidateWidevineCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/widevine__encryption__flags_8cc_source.html#l00072">widevine_encryption_flags.cc:72</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a622dbc8abacebb40b816aa0174ba7c60"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">shaka::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00199">file.cc:199</a></div></div>
 <div class="ttc" id="namespaceshaka_html_abc3f498491fb895860ebdee359935d93"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abc3f498491fb895860ebdee359935d93">shaka::ValidateFixedCryptoFlags</a></div><div class="ttdeci">bool ValidateFixedCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html#l00035">fixed_key_encryption_flags.cc:35</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a8b6212ccc4b98e5fdb72f84acf252c6b"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">shaka::ValidatePRCryptoFlags</a></div><div class="ttdeci">bool ValidatePRCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00033">playready_key_encryption_flags.cc:33</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jul 14 2017 18:14:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 17 2017 20:19:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
