@@ -319,7 +319,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
 // Make sure it doesn't crash.
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaEnd) {
   // None of these values matter, they are not used.
-  listener_.OnMediaEnd(MuxerListener::MediaRanges(), 0, 0);
+  listener_.OnMediaEnd(MuxerListener::MediaRanges(), 0);
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnNewSegment) {
@@ -383,7 +383,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
   EXPECT_CALL(mock_notifier_,
               NotifyNewSegment(_, StrEq("filename.mp4"), kStartTime,
                                kDuration, kSegmentStartOffset, kFileSize));
-  listener_.OnMediaEnd(ranges, 200000, 98234328);
+  listener_.OnMediaEnd(ranges, 200000);
 }
 
 // Verify that when there is a mismatch in the number of calls to
@@ -435,7 +435,7 @@ TEST_F(HlsNotifyMuxerListenerTest,
   EXPECT_CALL(mock_notifier_,
               NotifyNewSegment(_, StrEq("filename.mp4"), kStartTime,
                                kDuration, kSegmentStartOffset, kFileSize));
-  listener_.OnMediaEnd(ranges, 200000, 98234328);
+  listener_.OnMediaEnd(ranges, 200000);
 }
 
 }  // namespace media

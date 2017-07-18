@@ -40,23 +40,21 @@ class MockMuxerListener : public MuxerListener {
 
   MOCK_METHOD1(OnSampleDurationReady, void(uint32_t sample_duration));
 
-  MOCK_METHOD10(OnMediaEndMock,
-                void(bool has_init_range,
-                     uint64_t init_range_start,
-                     uint64_t init_range_end,
-                     bool has_index_range,
-                     uint64_t index_range_start,
-                     uint64_t index_range_end,
-                     bool has_subsegment_ranges,
-                     const std::vector<Range> subsegment_ranges,
-                     float duration_seconds,
-                     uint64_t file_size));
+  MOCK_METHOD9(OnMediaEndMock,
+               void(bool has_init_range,
+                    uint64_t init_range_start,
+                    uint64_t init_range_end,
+                    bool has_index_range,
+                    uint64_t index_range_start,
+                    uint64_t index_range_end,
+                    bool has_subsegment_ranges,
+                    const std::vector<Range> subsegment_ranges,
+                    float duration_seconds));
 
   // Windows 32 bit cannot mock MediaRanges because it has Optionals that use
   // memory alignment of 8 bytes. The compiler fails if it is mocked.
   void OnMediaEnd(const MediaRanges& range,
-                  float duration_seconds,
-                  uint64_t file_size) override;
+                  float duration_seconds) override;
 
   MOCK_METHOD4(OnNewSegment,
                void(const std::string& segment_name,

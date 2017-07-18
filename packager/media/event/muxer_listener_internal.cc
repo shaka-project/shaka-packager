@@ -192,13 +192,8 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
                        float duration_seconds,
-                       uint64_t file_size,
                        MediaInfo* media_info) {
   DCHECK(media_info);
-  if (file_size == 0) {
-    LOG(ERROR) << "File size not specified.";
-    return false;
-  }
 
   if (duration_seconds <= 0.0f) {
     // Non positive second media must be invalid media.
@@ -220,6 +215,17 @@ bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
   media_info->set_media_duration_seconds(duration_seconds);
 
   if (!media_info->has_bandwidth()) {
+    // Calculate file size from media_ranges.
+    uint64_t file_size = 0;
+    if (media_ranges.init_range)
+      file_size = std::max(file_size, media_ranges.init_range->end + 1);
+    if (media_ranges.index_range)
+      file_size = std::max(file_size, media_ranges.index_range->end + 1);
+    if (!media_ranges.subsegment_ranges.empty()) {
+      file_size =
+          std::max(file_size, media_ranges.subsegment_ranges.back().end + 1);
+    }
+
     media_info->set_bandwidth(
         EstimateRequiredBandwidth(file_size, duration_seconds));
   }

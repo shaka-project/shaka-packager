@@ -76,7 +76,6 @@ struct VideoStreamInfoParameters {
 struct OnMediaEndParameters {
   MuxerListener::MediaRanges media_ranges;
   float duration_seconds;
-  uint64_t file_size;
 };
 
 // Creates StreamInfo instance from VideoStreamInfoParameters.

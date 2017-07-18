@@ -56,15 +56,17 @@ std::vector<Range> SingleSegmentSegmenter::GetSegmentRanges() {
   for (int32_t i = 0; i < cues()->cue_entries_size() - 1; ++i) {
     const mkvmuxer::CuePoint* cue_point = cues()->GetCueByIndex(i);
     Range r;
-    r.start = cue_point->cluster_pos();
-    r.end = cues()->GetCueByIndex(i + 1)->cluster_pos() - 1;
+    // Cue point cluster position is relative to segment payload pos.
+    r.start = segment_payload_pos() + cue_point->cluster_pos();
+    r.end =
+        segment_payload_pos() + cues()->GetCueByIndex(i + 1)->cluster_pos() - 1;
     ranges.push_back(r);
   }
 
   Range last_range;
   const mkvmuxer::CuePoint* last_cue_point =
       cues()->GetCueByIndex(cues()->cue_entries_size() - 1);
-  last_range.start = last_cue_point->cluster_pos();
+  last_range.start = segment_payload_pos() + last_cue_point->cluster_pos();
   last_range.end = last_range.start + cluster()->Size() - 1;
   ranges.push_back(last_range);
   return ranges;

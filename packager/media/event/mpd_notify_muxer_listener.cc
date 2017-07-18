@@ -110,8 +110,7 @@ void MpdNotifyMuxerListener::OnSampleDurationReady(
 }
 
 void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
-                                        float duration_seconds,
-                                        uint64_t file_size) {
+                                        float duration_seconds) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     DCHECK(subsegments_.empty());
     // TODO(kqyang): Set mpd duration to |duration_seconds|, which is more
@@ -122,7 +121,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   }
 
   DCHECK(media_info_);
-  if (!internal::SetVodInformation(media_ranges, duration_seconds, file_size,
+  if (!internal::SetVodInformation(media_ranges, duration_seconds,
                                    media_info_.get())) {
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;

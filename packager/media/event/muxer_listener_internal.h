@@ -37,7 +37,6 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 /// @return true on success, false otherwise.
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
                        float duration_seconds,
-                       uint64_t file_size,
                        MediaInfo* media_info);
 
 /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',

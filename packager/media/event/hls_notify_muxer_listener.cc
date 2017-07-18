@@ -116,8 +116,7 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
 void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
 
 void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
-                                        float duration_seconds,
-                                        uint64_t file_size) {
+                                        float duration_seconds) {
   // TODO(kqyang): Should we just Flush here to avoid calling Flush explicitly?
   // Don't flush the notifier here. Flushing here would write all the playlists
   // before all Media Playlists are read. Which could cause problems

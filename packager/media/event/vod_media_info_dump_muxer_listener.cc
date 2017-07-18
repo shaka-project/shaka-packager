@@ -73,10 +73,9 @@ void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(
 }
 
 void VodMediaInfoDumpMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
-                                               float duration_seconds,
-                                               uint64_t file_size) {
+                                               float duration_seconds) {
   DCHECK(media_info_);
-  if (!internal::SetVodInformation(media_ranges, duration_seconds, file_size,
+  if (!internal::SetVodInformation(media_ranges, duration_seconds,
                                    media_info_.get())) {
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;

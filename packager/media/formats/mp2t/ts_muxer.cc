@@ -61,7 +61,7 @@ void TsMuxer::FireOnMediaEndEvent() {
   // For now, there is no single file TS segmenter. So all the values passed
   // here are left empty.
   MuxerListener::MediaRanges range;
-  muxer_listener()->OnMediaEnd(range, 0, 0);
+  muxer_listener()->OnMediaEnd(range, 0);
 }
 
 }  // namespace mp2t

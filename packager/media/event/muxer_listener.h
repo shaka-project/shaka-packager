@@ -105,12 +105,11 @@ class MuxerListener {
   /// Called when all files are written out and the muxer object does not output
   /// any more files.
   /// Note: This event might not be very interesting to MPEG DASH Live profile.
-  /// @param media_ranges is the ranges of the media file.
+  /// @param media_ranges is the ranges of the media file. It should have ranges
+  ///        for the entire file, using which the file size can be calculated.
   /// @param duration_seconds is the length of the media in seconds.
-  /// @param file_size is the size of the file in bytes.
   virtual void OnMediaEnd(const MediaRanges& media_ranges,
-                          float duration_seconds,
-                          uint64_t file_size) = 0;
+                          float duration_seconds) = 0;
 
   /// Called when a segment has been muxed and the file has been written.
   /// Note: For some implementations, this is used to signal new subsegments.

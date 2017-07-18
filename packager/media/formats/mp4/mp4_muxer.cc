@@ -469,15 +469,7 @@ void MP4Muxer::FireOnMediaEndEvent() {
   media_range.subsegment_ranges = segmenter_->GetSegmentRanges();
 
   const float duration_seconds = static_cast<float>(segmenter_->GetDuration());
-
-  const int64_t file_size =
-      File::GetFileSize(options().output_file_name.c_str());
-  if (file_size <= 0) {
-    LOG(ERROR) << "Invalid file size: " << file_size;
-    return;
-  }
-
-  muxer_listener()->OnMediaEnd(media_range, duration_seconds, file_size);
+  muxer_listener()->OnMediaEnd(media_range, duration_seconds);
 }
 
 uint64_t MP4Muxer::IsoTimeNow() {

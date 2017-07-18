@@ -45,8 +45,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                     ContainerType container_type) override;
   void OnSampleDurationReady(uint32_t sample_duration) override;
   void OnMediaEnd(const MediaRanges& media_ranges,
-                  float duration_seconds,
-                  uint64_t file_size) override;
+                  float duration_seconds) override;
   void OnNewSegment(const std::string& file_name,
                     uint64_t start_time,
                     uint64_t duration,
