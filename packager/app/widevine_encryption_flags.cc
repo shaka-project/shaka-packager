@@ -63,6 +63,7 @@ DEFINE_int32(crypto_period_duration,
              0,
              "Crypto period duration in seconds. If it is non-zero, key "
              "rotation is enabled.");
+DEFINE_hex_bytes(group_id, "", "Identifier for a group of licenses (hex).");
 
 namespace shaka {
 namespace {

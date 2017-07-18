@@ -164,6 +164,8 @@ struct WidevineEncryptionParams {
   std::string policy;
   /// Signer credential for Widevine license / key server.
   WidevineSigner signer;
+  /// Group identifier, if present licenses will belong to this group.
+  std::vector<uint8_t> group_id;
 };
 
 /// Playready encryption parameters.

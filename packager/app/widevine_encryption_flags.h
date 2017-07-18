@@ -27,6 +27,7 @@ DECLARE_hex_bytes(aes_signing_key);
 DECLARE_hex_bytes(aes_signing_iv);
 DECLARE_string(rsa_signing_key_path);
 DECLARE_int32(crypto_period_duration);
+DECLARE_hex_bytes(group_id);
 
 namespace shaka {
 

@@ -292,6 +292,10 @@ void WidevineKeySource::set_key_fetcher(
   key_fetcher_ = std::move(key_fetcher);
 }
 
+void WidevineKeySource::set_group_id(const std::vector<uint8_t>& group_id) {
+  group_id_ = group_id;
+}
+
 Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
                                          const std::string& stream_label,
                                          EncryptionKey* key) {
@@ -432,6 +436,13 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
     request_dict_.SetDouble("first_crypto_period_index",
                             first_crypto_period_index);
     request_dict_.SetInteger("crypto_period_count", crypto_period_count_);
+  }
+
+  // Set group id if present.
+  if (!group_id_.empty()) {
+    std::string group_id_base64;
+    BytesToBase64String(group_id_, &group_id_base64);
+    request_dict_.SetString("group_id", group_id_base64);
   }
 
   base::JSONWriter::WriteWithOptions(

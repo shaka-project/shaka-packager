@@ -67,6 +67,10 @@ class WidevineKeySource : public KeySource {
   /// @param key_fetcher points to the @b KeyFetcher object to be injected.
   void set_key_fetcher(std::unique_ptr<KeyFetcher> key_fetcher);
 
+  // Set the group id for the key source
+  // @param group_id group identifier
+  void set_group_id(const std::vector<uint8_t>& group_id);
+
  private:
   typedef std::map<std::string, std::unique_ptr<EncryptionKey>>
       EncryptionKeyMap;
@@ -124,6 +128,7 @@ class WidevineKeySource : public KeySource {
   bool key_production_started_;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_;
+  std::vector<uint8_t> group_id_;
   std::unique_ptr<EncryptionKeyQueue> key_pool_;
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;
