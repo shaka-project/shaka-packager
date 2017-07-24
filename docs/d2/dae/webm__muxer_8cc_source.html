@@ -211,30 +211,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  media_range.subsegment_ranges = segmenter_-&gt;GetSegmentRanges();</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">float</span> duration_seconds = segmenter_-&gt;GetDurationInSeconds();</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keyword">const</span> int64_t file_size =</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      File::GetFileSize(options().output_file_name.c_str());</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">if</span> (file_size &lt;= 0) {</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid file size: &quot;</span> &lt;&lt; file_size;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  }</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">OnMediaEnd</a>(media_range, duration_seconds, file_size);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">OnMediaEnd</a>(media_range, duration_seconds);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;}</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00039">muxer_options.h:39</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a11d4301cd53ab421f524bfa143eac21a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00030">muxer.h:30</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1WebMMuxer_html_a17b47db217334b2ec328bdbf1a9c7e29"><div class="ttname"><a href="../../d3/d73/classshaka_1_1media_1_1webm_1_1WebMMuxer.html#a17b47db217334b2ec328bdbf1a9c7e29">shaka::media::webm::WebMMuxer::WebMMuxer</a></div><div class="ttdeci">WebMMuxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a WebMMuxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dae/webm__muxer_8cc_source.html#l00021">webm_muxer.cc:21</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ab80aa62b360dbdf92f6d2e352b938639"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds, uint64_t file_size)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 20 2017 17:10:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 24 2017 22:35:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

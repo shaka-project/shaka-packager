@@ -165,36 +165,35 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">   76</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <a class="code" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MuxerListener::MediaRanges</a> media_ranges;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">float</span> duration_seconds;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  uint64_t file_size;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">// Creates StreamInfo instance from VideoStreamInfoParameters.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;std::shared_ptr&lt;StreamInfo&gt; CreateVideoStreamInfo(</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>&amp; param);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">// Returns the &quot;default&quot; VideoStreamInfoParameters for testing.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a> GetDefaultVideoStreamInfoParams();</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">// Returns the &quot;default&quot; values for OnMediaEnd().</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<a class="code" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> GetDefaultOnMediaEndParams();</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">// Returns the &quot;default&quot; ProtectionSystemSpecificInfo for testing.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;std::vector&lt;ProtectionSystemSpecificInfo&gt; GetDefaultKeySystemInfo();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">// Sets &quot;default&quot; values for muxer_options for testing.</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keywordtype">void</span> SetDefaultMuxerOptionsValues(<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a>* muxer_options);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">// Expect that expect and actual are equal.</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keywordtype">void</span> ExpectMediaInfoEqual(<span class="keyword">const</span> MediaInfo&amp; expect, <span class="keyword">const</span> MediaInfo&amp; actual);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">// Returns true if expect and actual are equal.</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keywordtype">bool</span> MediaInfoEqual(<span class="keyword">const</span> MediaInfo&amp; expect, <span class="keyword">const</span> MediaInfo&amp; actual);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;};</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">// Creates StreamInfo instance from VideoStreamInfoParameters.</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;std::shared_ptr&lt;StreamInfo&gt; CreateVideoStreamInfo(</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>&amp; param);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">// Returns the &quot;default&quot; VideoStreamInfoParameters for testing.</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a> GetDefaultVideoStreamInfoParams();</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">// Returns the &quot;default&quot; values for OnMediaEnd().</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<a class="code" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> GetDefaultOnMediaEndParams();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">// Returns the &quot;default&quot; ProtectionSystemSpecificInfo for testing.</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;std::vector&lt;ProtectionSystemSpecificInfo&gt; GetDefaultKeySystemInfo();</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">// Sets &quot;default&quot; values for muxer_options for testing.</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keywordtype">void</span> SetDefaultMuxerOptionsValues(<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a>* muxer_options);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">// Expect that expect and actual are equal.</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="keywordtype">void</span> ExpectMediaInfoEqual(<span class="keyword">const</span> MediaInfo&amp; expect, <span class="keyword">const</span> MediaInfo&amp; actual);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">// Returns true if expect and actual are equal.</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">bool</span> MediaInfoEqual(<span class="keyword">const</span> MediaInfo&amp; expect, <span class="keyword">const</span> MediaInfo&amp; actual);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_</span></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1VideoStreamInfoParameters_html"><div class="ttname"><a href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">shaka::media::VideoStreamInfoParameters</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d0b/muxer__listener__test__helper_8h_source.html#l00057">muxer_listener_test_helper.h:57</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1OnMediaEndParameters_html"><div class="ttname"><a href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">shaka::media::OnMediaEndParameters</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d0b/muxer__listener__test__helper_8h_source.html#l00076">muxer_listener_test_helper.h:76</a></div></div>
@@ -202,7 +201,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 20 2017 17:10:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 24 2017 22:35:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

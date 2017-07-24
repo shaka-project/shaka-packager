@@ -117,8 +117,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad0aeb94e2e1fe1b5ead506b690e6f70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b0457b0147310ba07169cf84cfce2aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a3b0457b0147310ba07169cf84cfce2aa">OnSampleDurationReady</a> (uint32_t sample_duration) override</td></tr>
 <tr class="separator:a3b0457b0147310ba07169cf84cfce2aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33a1fd0c31a62355ccfa9d659218c747"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a33a1fd0c31a62355ccfa9d659218c747">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds, uint64_t file_size) override</td></tr>
-<tr class="separator:a33a1fd0c31a62355ccfa9d659218c747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa42f5472d5450d897f036ff582a31612"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#aa42f5472d5450d897f036ff582a31612">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds) override</td></tr>
+<tr class="separator:aa42f5472d5450d897f036ff582a31612"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9976447daf55bbdea1cd0d8846512e11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a9976447daf55bbdea1cd0d8846512e11">OnNewSegment</a> (const std::string &amp;file_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size) override</td></tr>
 <tr class="separator:a9976447daf55bbdea1cd0d8846512e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -263,7 +263,7 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a33a1fd0c31a62355ccfa9d659218c747"></a>
+<a class="anchor" id="aa42f5472d5450d897f036ff582a31612"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -280,13 +280,7 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>duration_seconds</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>file_size</em>&#160;</td>
+          <td class="paramname"><em>duration_seconds</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -303,14 +297,13 @@ Additional Inherited Members</h2></td></tr>
 <p>Called when all files are written out and the muxer object does not output any more files. Note: This event might not be very interesting to MPEG DASH Live profile. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">media_ranges</td><td>is the ranges of the media file. </td></tr>
+    <tr><td class="paramname">media_ranges</td><td>is the ranges of the media file. It should have ranges for the entire file, using which the file size can be calculated. </td></tr>
     <tr><td class="paramname">duration_seconds</td><td>is the length of the media in seconds. </td></tr>
-    <tr><td class="paramname">file_size</td><td>is the size of the file in bytes. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">shaka::media::MuxerListener</a>.</p>
+<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">shaka::media::MuxerListener</a>.</p>
 
 <p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00112">112</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
@@ -432,7 +425,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00145">145</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00144">144</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -478,7 +471,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 20 2017 17:10:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 24 2017 22:35:57 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

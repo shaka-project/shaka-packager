@@ -134,8 +134,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a31536ec385a7ec22f323a42b872b499a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad54aef6c349082d996a436ebea11eff2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">OnSampleDurationReady</a> (uint32_t sample_duration)=0</td></tr>
 <tr class="separator:ad54aef6c349082d996a436ebea11eff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab80aa62b360dbdf92f6d2e352b938639"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds, uint64_t file_size)=0</td></tr>
-<tr class="separator:ab80aa62b360dbdf92f6d2e352b938639"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11d4301cd53ab421f524bfa143eac21a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds)=0</td></tr>
+<tr class="separator:a11d4301cd53ab421f524bfa143eac21a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cb75da6ff50d6403da18ea8dcc04265"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a> (const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</td></tr>
 <tr class="separator:a4cb75da6ff50d6403da18ea8dcc04265"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -234,7 +234,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab80aa62b360dbdf92f6d2e352b938639"></a>
+<a class="anchor" id="a11d4301cd53ab421f524bfa143eac21a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -251,13 +251,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>duration_seconds</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>file_size</em>&#160;</td>
+          <td class="paramname"><em>duration_seconds</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -274,14 +268,13 @@ Public Member Functions</h2></td></tr>
 <p>Called when all files are written out and the muxer object does not output any more files. Note: This event might not be very interesting to MPEG DASH Live profile. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">media_ranges</td><td>is the ranges of the media file. </td></tr>
+    <tr><td class="paramname">media_ranges</td><td>is the ranges of the media file. It should have ranges for the entire file, using which the file size can be calculated. </td></tr>
     <tr><td class="paramname">duration_seconds</td><td>is the length of the media in seconds. </td></tr>
-    <tr><td class="paramname">file_size</td><td>is the size of the file in bytes. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html#af78148a726979c3773a02809153c0a8b">shaka::media::MockMuxerListener</a>, <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a364293169c006b55f6d80db536af8f0a">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a33a1fd0c31a62355ccfa9d659218c747">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a87e740887c17a1b6706299264353d25b">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aa2af080963ca02454786b8bb2ff6dd6d">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html#a915fc76c19622d7e82aa74dd996edacd">shaka::media::MockMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#aa42f5472d5450d897f036ff582a31612">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ab2ab9bc34256f8016f0e827097b97ca1">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -440,7 +433,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 20 2017 17:10:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 24 2017 22:35:57 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

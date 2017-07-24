@@ -558,37 +558,29 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  media_range.subsegment_ranges = segmenter_-&gt;GetSegmentRanges();</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;</div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">float</span> duration_seconds = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(segmenter_-&gt;GetDuration());</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="keyword">const</span> int64_t file_size =</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;      File::GetFileSize(options().output_file_name.c_str());</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  <span class="keywordflow">if</span> (file_size &lt;= 0) {</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid file size: &quot;</span> &lt;&lt; file_size;</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  }</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">OnMediaEnd</a>(media_range, duration_seconds, file_size);</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;}</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;uint64_t MP4Muxer::IsoTimeNow() {</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="comment">// Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.</span></div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  <span class="keyword">const</span> uint64_t kIsomTimeOffset = 2082844800l;</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;  <span class="keywordflow">return</span> kIsomTimeOffset +</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;         (clock() ? clock()-&gt;Now() : base::Time::Now()).ToDoubleT();</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;}</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">OnMediaEnd</a>(media_range, duration_seconds);</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;}</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;uint64_t MP4Muxer::IsoTimeNow() {</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  <span class="comment">// Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.</span></div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="keyword">const</span> uint64_t kIsomTimeOffset = 2082844800l;</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  <span class="keywordflow">return</span> kIsomTimeOffset +</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;         (clock() ? clock()-&gt;Now() : base::Time::Now()).ToDoubleT();</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;}</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00039">muxer_options.h:39</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4Muxer_html_a5b6a878865250e3e17268c011a361497"><div class="ttname"><a href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497">shaka::media::mp4::MP4Muxer::MP4Muxer</a></div><div class="ttdeci">MP4Muxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a MP4Muxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d88/mp4__muxer_8cc_source.html#l00108">mp4_muxer.cc:108</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a11d4301cd53ab421f524bfa143eac21a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00030">muxer.h:30</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ab80aa62b360dbdf92f6d2e352b938639"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab80aa62b360dbdf92f6d2e352b938639">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds, uint64_t file_size)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 20 2017 17:10:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 24 2017 22:35:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
