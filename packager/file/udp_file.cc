@@ -7,16 +7,26 @@
 #include "packager/file/udp_file.h"
 
 #if defined(OS_WIN)
+
 #include <windows.h>
 #include <ws2tcpip.h>
 #define close closesocket
+
 #else
+
 #include <arpa/inet.h>
 #include <errno.h>
 #include <strings.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
+
+// IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
+// building on a machine that is older than that.
+#ifndef IP_MULTICAST_ALL
+#define IP_MULTICAST_ALL      49
+#endif
+
 #endif  // defined(OS_WIN)
 
 #include <limits>
@@ -216,6 +226,19 @@ bool UdpFile::Open() {
       LOG(ERROR) << "Failed to join multicast group.";
       return false;
     }
+
+#if defined(__linux__)
+    // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets
+    // are bound to the same port but joined to different multicast groups.
+    const int optval_zero = 0;
+    if (setsockopt(new_socket.get(), IPPROTO_IP, IP_MULTICAST_ALL,
+                   reinterpret_cast<const char*>(&optval_zero),
+                   sizeof(optval_zero)) < 0 &&
+        errno != ENOPROTOOPT) {
+      LOG(ERROR) << "Failed to disable IP_MULTICAST_ALL option.";
+      return false;
+    }
+#endif  // #if defined(__linux__)
   }
 
   // Set timeout if needed.
