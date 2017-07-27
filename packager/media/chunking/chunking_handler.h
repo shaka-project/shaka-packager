@@ -10,30 +10,13 @@
 #include <atomic>
 
 #include "packager/media/base/media_handler.h"
+#include "packager/media/public/chunking_params.h"
 
 namespace shaka {
 namespace media {
 
-struct ChunkingOptions {
-  /// Segment duration in seconds.
-  double segment_duration_in_seconds = 0;
-
-  /// Subsegment duration in seconds. Should not be larger than the segment
-  /// duration.
-  double subsegment_duration_in_seconds = 0;
-
-  /// Force segments to begin with stream access points. Actual segment duration
-  /// may not be exactly what is specified by segment_duration.
-  bool segment_sap_aligned = true;
-
-  /// Force subsegments to begin with stream access points. Actual subsegment
-  /// duration may not be exactly what is specified by subsegment_duration.
-  /// Setting to true implies that segment_sap_aligned is true as well.
-  bool subsegment_sap_aligned = true;
-};
-
 /// ChunkingHandler splits the samples into segments / subsegments based on the
-/// specified chunking options.
+/// specified chunking params.
 /// This handler is a multi-in multi-out handler. If more than one input is
 /// provided, there should be one and only one video stream; also, all inputs
 /// should come from the same thread and are synchronized.
@@ -60,7 +43,7 @@ struct ChunkingOptions {
 /// are aligned.
 class ChunkingHandler : public MediaHandler {
  public:
-  explicit ChunkingHandler(const ChunkingOptions& chunking_options);
+  explicit ChunkingHandler(const ChunkingParams& chunking_params);
   ~ChunkingHandler() override;
 
  protected:
@@ -87,7 +70,7 @@ class ChunkingHandler : public MediaHandler {
   Status DispatchSegmentInfoForAllStreams();
   Status DispatchSubsegmentInfoForAllStreams();
 
-  const ChunkingOptions chunking_options_;
+  const ChunkingParams chunking_params_;
 
   // The inputs are expected to come from the same thread.
   std::atomic<int64_t> thread_id_;

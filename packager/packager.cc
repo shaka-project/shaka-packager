@@ -315,7 +315,6 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
 
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const PackagingParams& packaging_params,
-                     const ChunkingOptions& chunking_options,
                      const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
                      KeySource* encryption_key_source,
@@ -466,7 +465,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     std::vector<std::shared_ptr<MediaHandler>> handlers;
 
-    auto chunking_handler = std::make_shared<ChunkingHandler>(chunking_options);
+    auto chunking_handler =
+        std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
     handlers.push_back(chunking_handler);
 
     Status status;
@@ -583,8 +583,6 @@ Status Packager::Initialize(
 
   std::unique_ptr<PackagerInternal> internal(new PackagerInternal);
 
-  ChunkingOptions chunking_options =
-      media::GetChunkingOptions(packaging_params.chunking_params);
   MuxerOptions muxer_options = media::GetMuxerOptions(
       packaging_params.temp_dir, packaging_params.mp4_output_params);
 
@@ -636,10 +634,10 @@ Status Packager::Initialize(
   for (const StreamDescriptor& descriptor : stream_descriptors)
     stream_descriptor_list.insert(descriptor);
   if (!media::CreateRemuxJobs(
-          stream_descriptor_list, packaging_params, chunking_options,
-          muxer_options, &internal->fake_clock,
-          internal->encryption_key_source.get(), internal->mpd_notifier.get(),
-          internal->hls_notifier.get(), &internal->jobs)) {
+          stream_descriptor_list, packaging_params, muxer_options,
+          &internal->fake_clock, internal->encryption_key_source.get(),
+          internal->mpd_notifier.get(), internal->hls_notifier.get(),
+          &internal->jobs)) {
     return Status(error::INVALID_ARGUMENT, "Failed to create remux jobs.");
   }
   internal_ = std::move(internal);

@@ -171,18 +171,6 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
   return decryption_key_source;
 }
 
-ChunkingOptions GetChunkingOptions(const ChunkingParams& chunking_params) {
-  ChunkingOptions chunking_options;
-  chunking_options.segment_duration_in_seconds =
-      chunking_params.segment_duration_in_seconds;
-  chunking_options.subsegment_duration_in_seconds =
-      chunking_params.subsegment_duration_in_seconds;
-  chunking_options.segment_sap_aligned = chunking_params.segment_sap_aligned;
-  chunking_options.subsegment_sap_aligned =
-      chunking_params.subsegment_sap_aligned;
-  return chunking_options;
-}
-
 MuxerOptions GetMuxerOptions(const std::string& temp_dir,
                              const Mp4OutputParams& mp4_params) {
   MuxerOptions muxer_options;

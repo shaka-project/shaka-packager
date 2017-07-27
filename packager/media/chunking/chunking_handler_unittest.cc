@@ -33,8 +33,8 @@ const bool kEncrypted = true;
 class ChunkingHandlerTest : public MediaHandlerTestBase {
  public:
   void SetUpChunkingHandler(int num_inputs,
-                            const ChunkingOptions& chunking_options) {
-    chunking_handler_.reset(new ChunkingHandler(chunking_options));
+                            const ChunkingParams& chunking_params) {
+    chunking_handler_.reset(new ChunkingHandler(chunking_params));
     SetUpGraph(num_inputs, num_inputs, chunking_handler_);
     ASSERT_OK(chunking_handler_->Initialize());
   }
@@ -52,9 +52,9 @@ class ChunkingHandlerTest : public MediaHandlerTestBase {
 };
 
 TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
-  ChunkingOptions chunking_options;
-  chunking_options.segment_duration_in_seconds = 1;
-  SetUpChunkingHandler(1, chunking_options);
+  ChunkingParams chunking_params;
+  chunking_params.segment_duration_in_seconds = 1;
+  SetUpChunkingHandler(1, chunking_params);
 
   ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
   EXPECT_THAT(
@@ -88,10 +88,10 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
 }
 
 TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
-  ChunkingOptions chunking_options;
-  chunking_options.segment_duration_in_seconds = 1;
-  chunking_options.subsegment_duration_in_seconds = 0.5;
-  SetUpChunkingHandler(1, chunking_options);
+  ChunkingParams chunking_params;
+  chunking_params.segment_duration_in_seconds = 1;
+  chunking_params.subsegment_duration_in_seconds = 0.5;
+  SetUpChunkingHandler(1, chunking_params);
 
   ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
   for (int i = 0; i < 5; ++i) {
@@ -115,10 +115,10 @@ TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
 }
 
 TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
-  ChunkingOptions chunking_options;
-  chunking_options.segment_duration_in_seconds = 1;
-  chunking_options.subsegment_duration_in_seconds = 0.3;
-  SetUpChunkingHandler(1, chunking_options);
+  ChunkingParams chunking_params;
+  chunking_params.segment_duration_in_seconds = 1;
+  chunking_params.subsegment_duration_in_seconds = 0.3;
+  SetUpChunkingHandler(1, chunking_params);
 
   ASSERT_OK(Process(GetVideoStreamInfoStreamData(kStreamIndex0, kTimeScale1)));
   const int64_t kVideoStartTimestamp = 12345;
@@ -154,10 +154,10 @@ TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
 }
 
 TEST_F(ChunkingHandlerTest, AudioAndVideo) {
-  ChunkingOptions chunking_options;
-  chunking_options.segment_duration_in_seconds = 1;
-  chunking_options.subsegment_duration_in_seconds = 0.3;
-  SetUpChunkingHandler(2, chunking_options);
+  ChunkingParams chunking_params;
+  chunking_params.segment_duration_in_seconds = 1;
+  chunking_params.subsegment_duration_in_seconds = 0.3;
+  SetUpChunkingHandler(2, chunking_params);
 
   ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
   ASSERT_OK(Process(GetVideoStreamInfoStreamData(kStreamIndex1, kTimeScale1)));

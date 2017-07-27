@@ -18,9 +18,9 @@ int64_t kTimeStampToDispatchAllSamples = -1;
 namespace shaka {
 namespace media {
 
-ChunkingHandler::ChunkingHandler(const ChunkingOptions& chunking_options)
-    : chunking_options_(chunking_options), thread_id_(kThreadIdUnset) {
-  CHECK_NE(chunking_options.segment_duration_in_seconds, 0u);
+ChunkingHandler::ChunkingHandler(const ChunkingParams& chunking_params)
+    : chunking_params_(chunking_params), thread_id_(kThreadIdUnset) {
+  CHECK_NE(chunking_params.segment_duration_in_seconds, 0u);
 }
 
 ChunkingHandler::~ChunkingHandler() {}
@@ -56,9 +56,9 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
       if (is_main_stream) {
         main_stream_index_ = stream_data->stream_index;
         segment_duration_ =
-            chunking_options_.segment_duration_in_seconds * time_scale;
+            chunking_params_.segment_duration_in_seconds * time_scale;
         subsegment_duration_ =
-            chunking_options_.subsegment_duration_in_seconds * time_scale;
+            chunking_params_.subsegment_duration_in_seconds * time_scale;
       } else if (stream_data->stream_info->stream_type() == kStreamVideo) {
         return Status(error::CHUNKING_ERROR,
                       "Only one video stream is allowed per chunking handler.");
@@ -138,7 +138,7 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
   // Check if we need to terminate the current (sub)segment.
   bool new_segment = false;
   bool new_subsegment = false;
-  if (is_key_frame || !chunking_options_.segment_sap_aligned) {
+  if (is_key_frame || !chunking_params_.segment_sap_aligned) {
     const int64_t segment_index = timestamp / segment_duration_;
     if (segment_index != current_segment_index_) {
       current_segment_index_ = segment_index;
@@ -148,7 +148,7 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
     }
   }
   if (!new_segment && subsegment_duration_ > 0 &&
-      (is_key_frame || !chunking_options_.subsegment_sap_aligned)) {
+      (is_key_frame || !chunking_params_.subsegment_sap_aligned)) {
     const int64_t subsegment_index =
         (timestamp - segment_info_[main_stream_index_]->start_timestamp) /
         subsegment_duration_;
