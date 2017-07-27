@@ -101,7 +101,7 @@ class DashIopMpdNotifierTest : public ::testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
-    output_path_ = temp_file_path_.AsUTF8Unsafe();
+    empty_mpd_option_.mpd_params.mpd_output = temp_file_path_.AsUTF8Unsafe();
   }
 
   void TearDown() override {
@@ -113,11 +113,9 @@ class DashIopMpdNotifierTest : public ::testing::Test {
     notifier->SetMpdBuilderForTesting(std::move(mpd_builder));
   }
 
-  // Use output_path_ for specifying the MPD output path so that
+  // Empty mpd options except with output path specified, so that
   // WriteMpdToFile() doesn't crash.
-  std::string output_path_;
-  const MpdOptions empty_mpd_option_;
-  const std::vector<std::string> empty_base_urls_;
+  MpdOptions empty_mpd_option_;
 
   // Default mocks that can be used for the tests.
   // IOW, if a test only requires one instance of
@@ -132,8 +130,7 @@ class DashIopMpdNotifierTest : public ::testing::Test {
 // Verify that basic VOD NotifyNewContainer() operation works.
 // No encrypted contents.
 TEST_F(DashIopMpdNotifierTest, NotifyNewContainer) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
 
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
@@ -170,8 +167,7 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewContainerForTrickPlay) {
       "  playback_rate: 10\n"
       "}\n"
       "container_type: 1\n";
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
 
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
@@ -228,8 +224,7 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewTextContainer) {
       "  language: 'en'\n"
       "}\n"
       "container_type: CONTAINER_TEXT\n";
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
 
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
@@ -257,8 +252,7 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewTextContainer) {
 // AdaptationSets with different DRM won't be switchable.
 TEST_F(DashIopMpdNotifierTest,
        NotifyNewContainersWithDifferentProtectedContent) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // Note they both have different (bogus) pssh, like real use case.
@@ -375,8 +369,7 @@ TEST_F(DashIopMpdNotifierTest,
 // MediaInfo::ProtectedContent. Only one AdaptationSet should be
 // created.
 TEST_F(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // These have the same default key ID and PSSH.
@@ -477,8 +470,7 @@ TEST_F(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
 
 // AddContentProtection() should not work and should always return false.
 TEST_F(DashIopMpdNotifierTest, AddContentProtection) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
 
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
@@ -508,8 +500,7 @@ TEST_F(DashIopMpdNotifierTest, AddContentProtection) {
 // 3. Add a 4k protected content. This should also make a new AdaptationSet.
 //    It should be switchable with SD/HD AdaptationSet.
 TEST_F(DashIopMpdNotifierTest, SetAdaptationSetSwitching) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // These have the same default key ID and PSSH.
@@ -645,8 +636,7 @@ TEST_F(DashIopMpdNotifierTest, SetAdaptationSetSwitching) {
 // switchable.
 TEST_F(DashIopMpdNotifierTest,
        DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   // These have the same default key ID and PSSH.
@@ -752,8 +742,7 @@ TEST_F(DashIopMpdNotifierTest, UpdateEncryption) {
       "}\n"
       "container_type: 1\n";
 
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
 
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
@@ -792,8 +781,7 @@ TEST_F(DashIopMpdNotifierTest, UpdateEncryption) {
 // This issue identified a bug where using SimpleMpdNotifier with multiple
 // threads causes a deadlock. This tests with DashIopMpdNotifier.
 TEST_F(DashIopMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
   uint32_t container_id;
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
@@ -856,8 +844,7 @@ TEST_F(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
       "container_type: CONTAINER_WEBM\n"
       "media_duration_seconds: 10.5\n";
 
-  DashIopMpdNotifier notifier(empty_mpd_option_, empty_base_urls_,
-                              output_path_);
+  DashIopMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));

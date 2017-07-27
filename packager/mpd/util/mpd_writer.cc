@@ -35,11 +35,8 @@ class DashIopMpdNotifierFactory : public MpdNotifierFactory {
   DashIopMpdNotifierFactory() {}
   ~DashIopMpdNotifierFactory() override {}
 
-  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options,
-                                      const std::vector<std::string>& base_urls,
-                                      const std::string& output_path) override {
-    return std::unique_ptr<MpdNotifier>(
-        new DashIopMpdNotifier(mpd_options, base_urls, output_path));
+  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options) override {
+    return std::unique_ptr<MpdNotifier>(new DashIopMpdNotifier(mpd_options));
   }
 };
 
@@ -49,11 +46,8 @@ class SimpleMpdNotifierFactory : public MpdNotifierFactory {
   SimpleMpdNotifierFactory() {}
   ~SimpleMpdNotifierFactory() override {}
 
-  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options,
-                                      const std::vector<std::string>& base_urls,
-                                      const std::string& output_path) override {
-    return std::unique_ptr<MpdNotifier>(
-        new SimpleMpdNotifier(mpd_options, base_urls, output_path));
+  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options) override {
+    return std::unique_ptr<MpdNotifier>(new SimpleMpdNotifier(mpd_options));
   }
 };
 
@@ -93,8 +87,11 @@ void MpdWriter::AddBaseUrl(const std::string& base_url) {
 
 bool MpdWriter::WriteMpdToFile(const char* file_name) {
   CHECK(file_name);
+  MpdOptions mpd_options;
+  mpd_options.mpd_params.base_urls = base_urls_;
+  mpd_options.mpd_params.mpd_output = file_name;
   std::unique_ptr<MpdNotifier> notifier =
-      notifier_factory_->Create(MpdOptions(), base_urls_, file_name);
+      notifier_factory_->Create(mpd_options);
   if (!notifier->Init()) {
     LOG(ERROR) << "failed to initialize MpdNotifier.";
     return false;

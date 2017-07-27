@@ -30,9 +30,7 @@ struct MpdOptions;
 /// generates an Mpd file.
 class SimpleMpdNotifier : public MpdNotifier {
  public:
-  SimpleMpdNotifier(const MpdOptions& mpd_options,
-                    const std::vector<std::string>& base_urls,
-                    const std::string& output_path);
+  explicit SimpleMpdNotifier(const MpdOptions& mpd_options);
   ~SimpleMpdNotifier() override;
 
   /// @name MpdNotifier implemetation overrides.

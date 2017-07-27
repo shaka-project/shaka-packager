@@ -35,9 +35,7 @@ class MpdNotifierFactory {
   virtual ~MpdNotifierFactory() {}
 
   virtual std::unique_ptr<MpdNotifier> Create(
-      const MpdOptions& mpd_options,
-      const std::vector<std::string>& base_urls,
-      const std::string& output_path) = 0;
+      const MpdOptions& mpd_options) = 0;
 };
 
 // An instance of this class takes a set of MediaInfo files and generates an

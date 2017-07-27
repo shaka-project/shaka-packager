@@ -2196,7 +2196,8 @@ TEST_F(SegmentTemplateTest, OverlappingSegmentsWithinErrorRange) {
 // All segments have the same duration and size.
 TEST_F(TimeShiftBufferDepthTest, Normal) {
   const int kTimeShiftBufferDepth = 10;  // 10 sec.
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 0;
   // Trick to make every segment 1 second long.
@@ -2233,7 +2234,8 @@ TEST_F(TimeShiftBufferDepthTest, Normal) {
 // removed from the MPD.
 TEST_F(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
   const int kTimeShiftBufferDepth = 10;  // 10 sec.
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 0;
   // Each duration is a second longer than timeShiftBufferDepth.
@@ -2254,7 +2256,8 @@ TEST_F(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
 // More generic version the normal test.
 TEST_F(TimeShiftBufferDepthTest, Generic) {
   const int kTimeShiftBufferDepth = 30;
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 123;
   const uint64_t kDuration = DefaultTimeScale();
@@ -2296,7 +2299,8 @@ TEST_F(TimeShiftBufferDepthTest, Generic) {
 // the most recent segment added does not count
 TEST_F(TimeShiftBufferDepthTest, MoreThanOneS) {
   const int kTimeShiftBufferDepth = 100;
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 0;
   const uint64_t kSize = 20000;
@@ -2346,7 +2350,8 @@ TEST_F(TimeShiftBufferDepthTest, MoreThanOneS) {
 // Then the first S element's last segment should still be in the MPD.
 TEST_F(TimeShiftBufferDepthTest, UseLastSegmentInS) {
   const int kTimeShiftBufferDepth = 9;
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 1;
   const uint64_t kDuration1 = static_cast<uint64_t>(DefaultTimeScale() * 1.5);
@@ -2382,7 +2387,8 @@ TEST_F(TimeShiftBufferDepthTest, UseLastSegmentInS) {
 // Gap between S elements but both should be included.
 TEST_F(TimeShiftBufferDepthTest, NormalGap) {
   const int kTimeShiftBufferDepth = 10;
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 0;
   const uint64_t kDuration = DefaultTimeScale();
@@ -2413,7 +2419,8 @@ TEST_F(TimeShiftBufferDepthTest, NormalGap) {
 // Case where there is a huge gap so the first S element is removed.
 TEST_F(TimeShiftBufferDepthTest, HugeGap) {
   const int kTimeShiftBufferDepth = 10;
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 0;
   const uint64_t kDuration = DefaultTimeScale();
@@ -2448,7 +2455,8 @@ TEST_F(TimeShiftBufferDepthTest, HugeGap) {
 // Check if startNumber is working correctly.
 TEST_F(TimeShiftBufferDepthTest, ManySegments) {
   const int kTimeShiftBufferDepth = 1;
-  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
+      kTimeShiftBufferDepth;
 
   const uint64_t kInitialStartTime = 0;
   const uint64_t kDuration = DefaultTimeScale();

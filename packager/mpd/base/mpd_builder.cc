@@ -385,7 +385,7 @@ AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
                         &representation_counter_));
   DCHECK(adaptation_set);
 
-  if (!lang.empty() && lang == mpd_options_.default_language) {
+  if (!lang.empty() && lang == mpd_options_.mpd_params.default_language) {
     adaptation_set->AddRole(AdaptationSet::kRoleMain);
   }
 
@@ -503,9 +503,10 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
 }
 
 void MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
-  if (Positive(mpd_options_.min_buffer_time)) {
+  if (Positive(mpd_options_.mpd_params.min_buffer_time)) {
     mpd_node->SetStringAttribute(
-        "minBufferTime", SecondsToXmlDuration(mpd_options_.min_buffer_time));
+        "minBufferTime",
+        SecondsToXmlDuration(mpd_options_.mpd_params.min_buffer_time));
   } else {
     LOG(ERROR) << "minBufferTime value not specified.";
     // TODO(tinskip): Propagate error.
@@ -551,19 +552,19 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
     mpd_node->SetStringAttribute("availabilityStartTime",
                                  availability_start_time_);
 
-  if (Positive(mpd_options_.minimum_update_period)) {
+  if (Positive(mpd_options_.mpd_params.minimum_update_period)) {
     mpd_node->SetStringAttribute(
         "minimumUpdatePeriod",
-        SecondsToXmlDuration(mpd_options_.minimum_update_period));
+        SecondsToXmlDuration(mpd_options_.mpd_params.minimum_update_period));
   } else {
     LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
                     "specified.";
   }
 
-  SetIfPositive("timeShiftBufferDepth", mpd_options_.time_shift_buffer_depth,
-                mpd_node);
+  SetIfPositive("timeShiftBufferDepth",
+                mpd_options_.mpd_params.time_shift_buffer_depth, mpd_node);
   SetIfPositive("suggestedPresentationDelay",
-                mpd_options_.suggested_presentation_delay, mpd_node);
+                mpd_options_.mpd_params.suggested_presentation_delay, mpd_node);
 }
 
 float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
@@ -1287,15 +1288,15 @@ bool Representation::IsContiguous(uint64_t start_time,
 
 void Representation::SlideWindow() {
   DCHECK(!segment_infos_.empty());
-  if (mpd_options_.time_shift_buffer_depth <= 0.0 ||
+  if (mpd_options_.mpd_params.time_shift_buffer_depth <= 0.0 ||
       mpd_options_.mpd_type == MpdType::kStatic)
     return;
 
   const uint32_t time_scale = GetTimeScale(media_info_);
   DCHECK_GT(time_scale, 0u);
 
-  uint64_t time_shift_buffer_depth =
-      static_cast<uint64_t>(mpd_options_.time_shift_buffer_depth * time_scale);
+  uint64_t time_shift_buffer_depth = static_cast<uint64_t>(
+      mpd_options_.mpd_params.time_shift_buffer_depth * time_scale);
 
   // The start time of the latest segment is considered the current_play_time,
   // and this should guarantee that the latest segment will stay in the list.

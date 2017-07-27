@@ -26,8 +26,6 @@ namespace shaka {
 namespace media {
 namespace {
 
-}  // namespace
-
 std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
   std::unique_ptr<RequestSigner> request_signer;
   switch (signer.signing_key_type) {
@@ -46,6 +44,8 @@ std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
     LOG(ERROR) << "Failed to create the signer object.";
   return request_signer;
 }
+
+}  // namespace
 
 std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
@@ -179,12 +179,7 @@ MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params) {
       (on_demand_profile || mpd_params.generate_static_live_mpd)
           ? MpdType::kStatic
           : MpdType::kDynamic;
-  mpd_options.minimum_update_period = mpd_params.minimum_update_period;
-  mpd_options.min_buffer_time = mpd_params.min_buffer_time;
-  mpd_options.time_shift_buffer_depth = mpd_params.time_shift_buffer_depth;
-  mpd_options.suggested_presentation_delay =
-      mpd_params.suggested_presentation_delay;
-  mpd_options.default_language = mpd_params.default_language;
+  mpd_options.mpd_params = mpd_params;
   return mpd_options;
 }
 

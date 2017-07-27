@@ -43,9 +43,7 @@
 namespace shaka {
 
 // TODO(kqyang): Clean up namespaces.
-using media::ChunkingOptions;
 using media::Demuxer;
-using media::EncryptionOptions;
 using media::KeySource;
 using media::MuxerOptions;
 
@@ -602,11 +600,9 @@ Status Packager::Initialize(
   const MpdParams& mpd_params = packaging_params.mpd_params;
   if (!mpd_params.mpd_output.empty()) {
     if (mpd_params.generate_dash_if_iop_compliant_mpd) {
-      internal->mpd_notifier.reset(new DashIopMpdNotifier(
-          mpd_options, mpd_params.base_urls, mpd_params.mpd_output));
+      internal->mpd_notifier.reset(new DashIopMpdNotifier(mpd_options));
     } else {
-      internal->mpd_notifier.reset(new SimpleMpdNotifier(
-          mpd_options, mpd_params.base_urls, mpd_params.mpd_output));
+      internal->mpd_notifier.reset(new SimpleMpdNotifier(mpd_options));
     }
     if (!internal->mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";

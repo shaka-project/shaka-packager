@@ -43,7 +43,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
-    output_path_ = temp_file_path_.AsUTF8Unsafe();
+    empty_mpd_option_.mpd_params.mpd_output = temp_file_path_.AsUTF8Unsafe();
   }
 
   void TearDown() override {
@@ -55,10 +55,9 @@ class SimpleMpdNotifierTest : public ::testing::Test {
     notifier->SetMpdBuilderForTesting(std::move(mpd_builder));
   }
 
-  // Use output_path_ for specifying the MPD output path so that
+  // Empty mpd options except with output path specified, so that
   // WriteMpdToFile() doesn't crash.
-  std::string output_path_;
-  const MpdOptions empty_mpd_option_;
+  MpdOptions empty_mpd_option_;
   const std::vector<std::string> empty_base_urls_;
 
   // Default AdaptationSet mock.
@@ -70,7 +69,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
 
 // Verify NotifyNewContainer() works as expected for VOD.
 TEST_F(SimpleMpdNotifierTest, NotifyNewContainer) {
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
 
   const uint32_t kRepresentationId = 1u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
@@ -94,7 +93,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainer) {
 }
 
 TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
 
   const uint32_t kRepresentationId = 8u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
@@ -124,7 +123,7 @@ TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
 // This issue identified a bug where using SimpleMpdNotifier with multiple
 // threads causes a deadlock.
 TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
   uint32_t container_id;
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
@@ -134,7 +133,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
 }
 
 TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
 
   const uint32_t kRepresentationId = 447834u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
@@ -163,7 +162,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
 }
 
 TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
 
   const uint32_t kRepresentationId = 0u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
@@ -206,7 +205,7 @@ TEST_F(SimpleMpdNotifierTest, UpdateEncryption) {
       "  default_key_id: '_default_key_id_'\n"
       "}\n"
       "container_type: 1\n";
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
   const uint32_t kRepresentationId = 447834u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
@@ -294,7 +293,7 @@ TEST_F(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
       "container_type: CONTAINER_WEBM\n"
       "media_duration_seconds: 10.5\n";
 
-  SimpleMpdNotifier notifier(empty_mpd_option_, empty_base_urls_, output_path_);
+  SimpleMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
   std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));

@@ -47,6 +47,7 @@
         'base/xml/scoped_xml_ptr.h',
         'base/xml/xml_node.cc',
         'base/xml/xml_node.h',
+        'public/mpd_params.h',
       ],
       'dependencies': [
         '../base/base.gyp:base',

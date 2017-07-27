@@ -14,14 +14,12 @@
 
 namespace shaka {
 
-SimpleMpdNotifier::SimpleMpdNotifier(const MpdOptions& mpd_options,
-                                     const std::vector<std::string>& base_urls,
-                                     const std::string& output_path)
+SimpleMpdNotifier::SimpleMpdNotifier(const MpdOptions& mpd_options)
     : MpdNotifier(mpd_options),
-      output_path_(output_path),
+      output_path_(mpd_options.mpd_params.mpd_output),
       mpd_builder_(new MpdBuilder(mpd_options)) {
-  for (size_t i = 0; i < base_urls.size(); ++i)
-    mpd_builder_->AddBaseUrl(base_urls[i]);
+  for (const std::string& base_url : mpd_options.mpd_params.base_urls)
+    mpd_builder_->AddBaseUrl(base_url);
 }
 
 SimpleMpdNotifier::~SimpleMpdNotifier() {
