@@ -144,7 +144,7 @@ bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_box,
   return true;
 }
 
-base::Optional<MediaPlaylist::EncryptionMethod> StringToEncrypionMethod(
+base::Optional<MediaPlaylist::EncryptionMethod> StringToEncryptionMethod(
     const std::string& method) {
   if (method == "cenc") {
     return MediaPlaylist::EncryptionMethod::kSampleAesCenc;
@@ -282,7 +282,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     const std::string& protection_scheme =
         media_info.protected_content().protection_scheme();
     base::Optional<MediaPlaylist::EncryptionMethod> enc_method =
-        StringToEncrypionMethod(protection_scheme);
+        StringToEncryptionMethod(protection_scheme);
     if (!enc_method) {
       LOG(ERROR) << "Failed to recognize protection scheme "
                  << protection_scheme;

@@ -4,7 +4,7 @@
   <Period id="0" start="PT0S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="876578" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
-        <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="00000000-0000-0000-0000-000000000000"/>
+        <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011"/>
         <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"/>
         <SegmentTemplate timescale="30000" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
@@ -17,7 +17,7 @@
     <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
       <Representation id="1" bandwidth="125598" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="00000000-0000-0000-0000-000000000000"/>
+        <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011"/>
         <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"/>
         <SegmentTemplate timescale="44100" initialization="output_audio-init.mp4" media="output_audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>

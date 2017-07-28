@@ -15,6 +15,14 @@
 namespace shaka {
 namespace {
 
+bool IsKeyRotationDefaultKeyId(const std::string& key_id) {
+  for (char c : key_id) {
+    if (c != '\0')
+      return false;
+  }
+  return true;
+}
+
 std::string TextCodecString(const MediaInfo& media_info) {
   CHECK(media_info.has_text_info());
   const std::string& format = media_info.text_info().format();
@@ -295,7 +303,8 @@ void AddContentProtectionElementsHelperTemplated(
   const bool is_mp4_container =
       media_info.container_type() == MediaInfo::CONTAINER_MP4;
   std::string key_id_uuid_format;
-  if (protected_content.has_default_key_id()) {
+  if (protected_content.has_default_key_id() &&
+      !IsKeyRotationDefaultKeyId(protected_content.default_key_id())) {
     if (!HexToUUID(protected_content.default_key_id(), &key_id_uuid_format)) {
       LOG(ERROR) << "Failed to convert default key ID into UUID format.";
     }
@@ -313,10 +322,7 @@ void AddContentProtectionElementsHelperTemplated(
     parent->AddContentProtectionElement(mp4_content_protection);
   }
 
-  for (int i = 0; i < protected_content.content_protection_entry().size();
-       ++i) {
-    const MediaInfo::ProtectedContent::ContentProtectionEntry& entry =
-        protected_content.content_protection_entry(i);
+  for (const auto& entry : protected_content.content_protection_entry()) {
     if (!entry.has_uuid()) {
       LOG(WARNING)
           << "ContentProtectionEntry was specified but no UUID is set for "
@@ -348,8 +354,9 @@ void AddContentProtectionElementsHelperTemplated(
     parent->AddContentProtectionElement(drm_content_protection);
   }
 
-  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)
-      << "The media is encrypted but no content protection specified.";
+  VLOG_IF(1, protected_content.content_protection_entry().size() == 0)
+      << "The media is encrypted but no content protection specified (can "
+         "happen with key rotation).";
 }
 }  // namespace
 
