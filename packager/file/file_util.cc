@@ -10,17 +10,20 @@
 
 #include "packager/base/files/file_path.h"
 #include "packager/base/files/file_util.h"
+#include "packager/base/process/process_handle.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/platform_thread.h"
 #include "packager/base/time/time.h"
 
 namespace shaka {
 namespace {
-// Create a temp file name using process/thread id and current time.
+// Create a temp file name using process id, thread id and current time.
 std::string TempFileName() {
+  const int32_t pid = static_cast<int32_t>(base::GetCurrentProcId());
   const int32_t tid = static_cast<int32_t>(base::PlatformThread::CurrentId());
   const int64_t current_time = base::Time::Now().ToInternalValue();
-  return base::StringPrintf("packager-tempfile-%x-%" PRIx64, tid, current_time);
+  return base::StringPrintf("packager-tempfile-%x-%x-%" PRIx64, pid, tid,
+                            current_time);
 }
 }  // namespace
 

@@ -9,9 +9,10 @@
 #include <gflags/gflags.h>
 #include <algorithm>
 #include <memory>
-#include "packager/base/files/important_file_writer.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_piece.h"
+#include "packager/file/file_util.h"
 #include "packager/file/local_file.h"
 #include "packager/file/memory_file.h"
 #include "packager/file/threaded_io_file.h"
@@ -61,8 +62,21 @@ bool DeleteLocalFile(const char* file_name) {
 
 bool WriteLocalFileAtomically(const char* file_name,
                               const std::string& contents) {
-  return base::ImportantFileWriter::WriteFileAtomically(
-      base::FilePath::FromUTF8Unsafe(file_name), contents);
+  const base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file_name);
+  const std::string dir_name = file_path.DirName().AsUTF8Unsafe();
+  std::string temp_file_name;
+  if (!TempFilePath(dir_name, &temp_file_name))
+    return false;
+  if (!File::WriteStringToFile(temp_file_name.c_str(), contents))
+    return false;
+  base::File::Error replace_file_error = base::File::FILE_OK;
+  if (!base::ReplaceFile(base::FilePath::FromUTF8Unsafe(temp_file_name),
+                         file_path, &replace_file_error)) {
+    LOG(ERROR) << "Failed to replace file '" << file_name << "' with '"
+               << temp_file_name << "', error: " << replace_file_error;
+    return false;
+  }
+  return true;
 }
 
 File* CreateUdpFile(const char* file_name, const char* mode) {
@@ -202,23 +216,8 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
   return len == 0;
 }
 
-bool File::WriteFileAtomically(const char* file_name,
-                               const std::string& contents) {
-  base::StringPiece real_file_name;
-  const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
-  DCHECK(file_type);
-  if (file_type->atomic_write_function)
-    return file_type->atomic_write_function(real_file_name.data(), contents);
-
-  // Provide a default implementation which may not be atomic unfortunately.
-
-  // Skip the warning message for memory files, which is meant for testing
-  // anyway..
-  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0) {
-    LOG(WARNING) << "Writing to " << file_name
-                 << " is not guaranteed to be atomic.";
-  }
-
+bool File::WriteStringToFile(const char* file_name,
+                             const std::string& contents) {
   std::unique_ptr<File, FileCloser> file(File::Open(file_name, "w"));
   if (!file) {
     LOG(ERROR) << "Failed to open file " << file_name;
@@ -236,7 +235,30 @@ bool File::WriteFileAtomically(const char* file_name,
                << contents.size() << " bytes.";
     return false;
   }
+  if (!file->Flush()) {
+    LOG(ERROR) << "Failed to flush the file '" << file_name << "'.";
+    return false;
+  }
   return true;
+}
+
+bool File::WriteFileAtomically(const char* file_name,
+                               const std::string& contents) {
+  base::StringPiece real_file_name;
+  const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
+  DCHECK(file_type);
+  if (file_type->atomic_write_function)
+    return file_type->atomic_write_function(real_file_name.data(), contents);
+
+  // Provide a default implementation which may not be atomic unfortunately.
+
+  // Skip the warning message for memory files, which is meant for testing
+  // anyway..
+  if (strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix)) != 0) {
+    LOG(WARNING) << "Writing to " << file_name
+                 << " is not guaranteed to be atomic.";
+  }
+  return WriteStringToFile(file_name, contents);
 }
 
 bool File::Copy(const char* from_file_name, const char* to_file_name) {
