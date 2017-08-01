@@ -27,6 +27,7 @@ namespace hls {
 namespace {
 
 const char kUriBase64Prefix[] = "data:text/plain;base64,";
+const char kUriFairplayBase64Prefix[] = "skd://";
 const char kWidevineDashIfIopUUID[] =
     "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
 
@@ -39,6 +40,11 @@ bool IsWidevineSystemId(const std::vector<uint8_t>& system_id) {
 bool IsCommonSystemId(const std::vector<uint8_t>& system_id) {
   return system_id.size() == arraysize(media::kCommonSystemId) &&
          std::equal(system_id.begin(), system_id.end(), media::kCommonSystemId);
+}
+
+bool IsFairplaySystemId(const std::vector<uint8_t>& system_id) {
+  return system_id.size() == arraysize(media::kFairplaySystemId) &&
+         std::equal(system_id.begin(), system_id.end(), media::kFairplaySystemId);
 }
 
 // TODO(rkuroiwa): Dedup these with the functions in MpdBuilder.
@@ -157,11 +163,10 @@ void NotifyEncryptionToMediaPlaylist(
   if (!key_id.empty()) {
     key_id_string = "0x" + base::HexEncode(key_id.data(), key_id.size());
   }
-  std::string key_uri_data_base64;
-  base::Base64Encode(uri, &key_uri_data_base64);
+
   media_playlist->AddEncryptionInfo(
       encryption_method,
-      kUriBase64Prefix + key_uri_data_base64, key_id_string, iv_string,
+      uri, key_id_string, iv_string,
       key_format, key_format_version);
 }
 
@@ -179,8 +184,11 @@ bool HandleWidevineKeyFormats(
                             &key_uri_data)) {
       return false;
     }
+
+    std::string key_uri_data_base64;
+    base::Base64Encode(key_uri_data, &key_uri_data_base64);
     // This format does not have a key id field.
-    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data,
+    NotifyEncryptionToMediaPlaylist(encryption_method, kUriBase64Prefix + key_uri_data_base64,
                                     std::vector<uint8_t>(), iv, "com.widevine",
                                     "1", media_playlist);
   }
@@ -188,7 +196,10 @@ bool HandleWidevineKeyFormats(
   std::string pssh_as_string(
       reinterpret_cast<const char*>(protection_system_specific_data.data()),
       protection_system_specific_data.size());
-  NotifyEncryptionToMediaPlaylist(encryption_method, pssh_as_string, key_id, iv,
+
+  std::string key_uri_data_base64;
+  base::Base64Encode(pssh_as_string, &key_uri_data_base64);
+  NotifyEncryptionToMediaPlaylist(encryption_method, kUriBase64Prefix + key_uri_data_base64, key_id, iv,
                                   kWidevineDashIfIopUUID, "1", media_playlist);
   return true;
 }
@@ -357,12 +368,28 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     // Use key_id as the key_uri. The player needs to have custom logic to
     // convert it to the actual key url.
     std::string key_uri_data;
+    std::string key_uri_data_base64;
     key_uri_data.assign(key_id.begin(), key_id.end());
+    base::Base64Encode(key_uri_data, &key_uri_data_base64);
     NotifyEncryptionToMediaPlaylist(encryption_method,
-                                    key_uri_data, std::vector<uint8_t>(), iv,
+                                    kUriBase64Prefix + key_uri_data_base64, std::vector<uint8_t>(), iv,
                                     "identity", "", media_playlist.get());
     return true;
   }
+
+  if (IsFairplaySystemId(system_id)) {
+    // Use key_id as the key_uri. The player needs to have custom logic to
+    // convert it to the actual key url.
+    std::string key_uri_data;
+    std::string key_uri_data_base64;
+    key_uri_data.assign(key_id.begin(), key_id.end());
+    base::Base64Encode(key_uri_data, &key_uri_data_base64);
+    NotifyEncryptionToMediaPlaylist(encryption_method,
+                                    kUriFairplayBase64Prefix + key_uri_data_base64, std::vector<uint8_t>(), std::vector<uint8_t>(),
+                                    "com.apple.streamingkeydelivery", "1", media_playlist.get());
+    return true;
+  }
+
   LOG(ERROR) << "Unknown system ID: "
              << base::HexEncode(system_id.data(), system_id.size());
   return false;
