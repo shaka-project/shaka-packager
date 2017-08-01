@@ -97,11 +97,18 @@ class File {
   ///         The file will be opened and closed in the process.
   static int64_t GetFileSize(const char* file_name);
 
-  /// Read the file into string.
+  /// Read the contents of a file into string.
   /// @param file_name is the file to be read. It should be a valid file.
   /// @param contents[out] points to the output string. Should not be NULL.
   /// @return true on success, false otherwise.
   static bool ReadFileToString(const char* file_name, std::string* contents);
+
+  /// Writes the data to file.
+  /// @param file_name is the file to write to.
+  /// @param contents is the data to write.
+  /// @return true on success, false otherwise.
+  static bool WriteStringToFile(const char* file_name,
+                                const std::string& contents);
 
   /// Save `contents` to `file_name` in an atomic manner.
   /// @param file_name is the destination file name.

@@ -154,6 +154,15 @@ TEST_F(LocalFileTest, WriteRead) {
   EXPECT_EQ(data_, read_data);
 }
 
+TEST_F(LocalFileTest, WriteStringReadString) {
+  ASSERT_TRUE(
+      File::WriteStringToFile(local_file_name_no_prefix_.c_str(), data_));
+  std::string read_data;
+  ASSERT_TRUE(
+      File::ReadFileToString(local_file_name_no_prefix_.c_str(), &read_data));
+  EXPECT_EQ(data_, read_data);
+}
+
 // There is no easy way to test if a write operation is atomic. This test only
 // ensures the data is written correctly.
 TEST_F(LocalFileTest, AtomicWriteRead) {
