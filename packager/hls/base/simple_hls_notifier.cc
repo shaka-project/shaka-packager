@@ -42,7 +42,7 @@ bool IsCommonSystemId(const std::vector<uint8_t>& system_id) {
          std::equal(system_id.begin(), system_id.end(), media::kCommonSystemId);
 }
 
-std::string Base64EncodeUri(const std::string& prefix,
+std::string Base64EncodeData(const std::string& prefix,
                             const std::string& data) {
     std::string data_base64;
     base::Base64Encode(data, &data_base64);
@@ -199,7 +199,7 @@ bool HandleWidevineKeyFormats(
 
 
     std::string key_uri_data_base64 =
-        Base64EncodeUri(kUriBase64Prefix, key_uri_data);
+        Base64EncodeData(kUriBase64Prefix, key_uri_data);
 
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
                                     std::vector<uint8_t>(), iv, "com.widevine",
@@ -211,7 +211,7 @@ bool HandleWidevineKeyFormats(
       protection_system_specific_data.size());
 
   std::string key_uri_data_base64 =
-      Base64EncodeUri(kUriBase64Prefix, pssh_as_string);
+      Base64EncodeData(kUriBase64Prefix, pssh_as_string);
 
   NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
                                   key_id, iv, kWidevineDashIfIopUUID, "1",
@@ -384,7 +384,7 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     // convert it to the actual key url.
     std::string key_uri_data = VectorToString(key_id);
     std::string key_uri_data_base64 =
-        Base64EncodeUri(kUriBase64Prefix, key_uri_data);
+        Base64EncodeData(kUriBase64Prefix, key_uri_data);
     NotifyEncryptionToMediaPlaylist(encryption_method,
                                     key_uri_data_base64, std::vector<uint8_t>(),
                                     iv, "identity", "", media_playlist.get());
@@ -396,7 +396,7 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     // convert it to the actual key url.
     std::string key_uri_data = VectorToString(key_id);
     std::string key_uri_data_base64 =
-        Base64EncodeUri(kUriFairplayPrefix, key_uri_data);
+        Base64EncodeData(kUriFairplayPrefix, key_uri_data);
 
     // Fairplay defines IV to be carried with the key, not the playlist.
     NotifyEncryptionToMediaPlaylist(encryption_method,
