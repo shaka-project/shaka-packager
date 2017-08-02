@@ -20,7 +20,7 @@
         'base/media_playlist.h',
         'base/simple_hls_notifier.cc',
         'base/simple_hls_notifier.h',
-        'public/hls_playlist_type.h',
+        'public/hls_params.h',
       ],
       'dependencies': [
         '../base/base.gyp:base',

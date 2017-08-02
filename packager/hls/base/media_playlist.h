@@ -12,7 +12,7 @@
 #include <string>
 
 #include "packager/base/macros.h"
-#include "packager/hls/public/hls_playlist_type.h"
+#include "packager/hls/public/hls_params.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {

@@ -19,7 +19,6 @@
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/mpd/base/mpd_options.h"
-#include "packager/packager.h"
 #include "packager/status.h"
 
 namespace shaka {

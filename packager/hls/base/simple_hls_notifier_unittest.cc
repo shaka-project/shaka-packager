@@ -79,12 +79,6 @@ const char kSampleAesProtectionScheme[] = "cbca";
 
 }  // namespace
 
-//      : notifier_(profile,
-//                  kTestTimeShiftBufferDepth,
-//                  kTestPrefix,
-//                  kAnyOutputDir,
-//                  kMasterPlaylistName),
-
 class SimpleHlsNotifierTest : public ::testing::Test {
  protected:
   SimpleHlsNotifierTest() : SimpleHlsNotifierTest(kVodPlaylist) {}

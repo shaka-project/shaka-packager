@@ -582,11 +582,6 @@ Status Packager::Initialize(
 
   std::unique_ptr<PackagerInternal> internal(new PackagerInternal);
 
-  const bool on_demand_dash_profile =
-      stream_descriptors.begin()->segment_template.empty();
-  MpdOptions mpd_options =
-      media::GetMpdOptions(on_demand_dash_profile, packaging_params.mpd_params);
-
   // Create encryption key source if needed.
   if (packaging_params.encryption_params.key_provider != KeyProvider::kNone) {
     internal->encryption_key_source = CreateEncryptionKeySource(
@@ -599,6 +594,10 @@ Status Packager::Initialize(
 
   const MpdParams& mpd_params = packaging_params.mpd_params;
   if (!mpd_params.mpd_output.empty()) {
+    const bool on_demand_dash_profile =
+        stream_descriptors.begin()->segment_template.empty();
+    MpdOptions mpd_options = media::GetMpdOptions(on_demand_dash_profile,
+                                                  packaging_params.mpd_params);
     if (mpd_params.generate_dash_if_iop_compliant_mpd) {
       internal->mpd_notifier.reset(new DashIopMpdNotifier(mpd_options));
     } else {

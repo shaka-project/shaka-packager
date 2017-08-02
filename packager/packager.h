@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/hls/public/hls_playlist_type.h"
+#include "packager/hls/public/hls_params.h"
 #include "packager/media/public/chunking_params.h"
 #include "packager/media/public/crypto_params.h"
 #include "packager/media/public/mp4_output_params.h"
@@ -19,20 +19,6 @@
 #include "packager/status.h"
 
 namespace shaka {
-
-/// HLS related parameters.
-struct HlsParams {
-  /// HLS playlist type. See HLS specification for details.
-  HlsPlaylistType playlist_type = HlsPlaylistType::kVod;
-  /// HLS master playlist output path.
-  std::string master_playlist_output;
-  /// The base URL for the Media Playlists and media files listed in the
-  /// playlists. This is the prefix for the files.
-  std::string base_url;
-  /// Defines the live window, or the guaranteed duration of the time shifting
-  /// buffer for 'live' playlists.
-  double time_shift_buffer_depth = 0;
-};
 
 /// Parameters used for testing.
 struct TestParams {
