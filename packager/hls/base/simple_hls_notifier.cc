@@ -42,8 +42,13 @@ bool IsCommonSystemId(const std::vector<uint8_t>& system_id) {
          std::equal(system_id.begin(), system_id.end(), media::kCommonSystemId);
 }
 
+bool IsFairplaySystemId(const std::vector<uint8_t>& system_id) {
+  return system_id.size() == arraysize(media::kFairplaySystemId) &&
+      std::equal(system_id.begin(), system_id.end(), media::kFairplaySystemId);
+}
+
 std::string Base64EncodeData(const std::string& prefix,
-                            const std::string& data) {
+                             const std::string& data) {
     std::string data_base64;
     base::Base64Encode(data, &data_base64);
     return prefix + data_base64;
@@ -51,11 +56,6 @@ std::string Base64EncodeData(const std::string& prefix,
 
 std::string VectorToString(const std::vector<uint8_t>& v) {
     return std::string(v.begin(), v.end());
-}
-
-bool IsFairplaySystemId(const std::vector<uint8_t>& system_id) {
-  return system_id.size() == arraysize(media::kFairplaySystemId) &&
-      std::equal(system_id.begin(), system_id.end(), media::kFairplaySystemId);
 }
 
 // TODO(rkuroiwa): Dedup these with the functions in MpdBuilder.
@@ -195,12 +195,8 @@ bool HandleWidevineKeyFormats(
                             &key_uri_data)) {
       return false;
     }
-
-
-
     std::string key_uri_data_base64 =
         Base64EncodeData(kUriBase64Prefix, key_uri_data);
-
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
                                     std::vector<uint8_t>(), iv, "com.widevine",
                                     "1", media_playlist);
@@ -209,10 +205,8 @@ bool HandleWidevineKeyFormats(
   std::string pssh_as_string(
       reinterpret_cast<const char*>(protection_system_specific_data.data()),
       protection_system_specific_data.size());
-
   std::string key_uri_data_base64 =
       Base64EncodeData(kUriBase64Prefix, pssh_as_string);
-
   NotifyEncryptionToMediaPlaylist(encryption_method, key_uri_data_base64,
                                   key_id, iv, kWidevineDashIfIopUUID, "1",
                                   media_playlist);
@@ -411,8 +405,6 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
              << base::HexEncode(system_id.data(), system_id.size());
   return false;
 }
-
-
 
 bool SimpleHlsNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
