@@ -8,6 +8,7 @@
 
 # Scan ca bundle in its common appearing locations.
 paths=('/etc/pki/tls/certs/ca-bundle.crt'
+       '/etc/ssl/ca-bundle.pem'
        '/etc/ssl/cert.pem'
        '/etc/ssl/certs/ca-bundle.crt'
        '/etc/ssl/certs/ca-certificates.crt'
