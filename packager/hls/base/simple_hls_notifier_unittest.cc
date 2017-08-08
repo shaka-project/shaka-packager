@@ -31,6 +31,7 @@ using ::testing::_;
 namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
 const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
+const HlsPlaylistType kLivePlaylist = HlsPlaylistType::kLive;
 
 class MockMasterPlaylist : public MasterPlaylist {
  public:
@@ -94,7 +95,10 @@ class SimpleHlsNotifierTest : public ::testing::Test {
             media::kWidevineSystemId + arraysize(media::kWidevineSystemId)),
         common_system_id_(
             media::kCommonSystemId,
-            media::kCommonSystemId + arraysize(media::kCommonSystemId)) {}
+            media::kCommonSystemId + arraysize(media::kCommonSystemId)),
+        fairplay_system_id_(
+            media::kFairplaySystemId,
+            media::kFairplaySystemId + arraysize(media::kFairplaySystemId)) {}
 
   void InjectMediaPlaylistFactory(std::unique_ptr<MediaPlaylistFactory> factory,
                                   SimpleHlsNotifier* notifier) {
@@ -139,6 +143,7 @@ class SimpleHlsNotifierTest : public ::testing::Test {
 
   const std::vector<uint8_t> widevine_system_id_;
   const std::vector<uint8_t> common_system_id_;
+  const std::vector<uint8_t> fairplay_system_id_;
 };
 
 TEST_F(SimpleHlsNotifierTest, Init) {
@@ -643,6 +648,35 @@ TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
           StrEq("0x45454545454545454545454545454545"), StrEq("identity"), _));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
+}
+
+// Verify that the Fairplay systemID is correctly handled when constructing
+// encryption info.
+TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kLivePlaylist, "playlist.m3u8", "", "");
+  SimpleHlsNotifier notifier(kLivePlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
+  const uint32_t stream_id =
+      SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
+  const std::vector<uint8_t> key_id(16, 0x12);
+  const std::vector<uint8_t> dummy_pssh_data(10, 'p');
+
+  std::string expected_key_uri_base64;
+  base::Base64Encode(std::string(key_id.begin(), key_id.end()),
+                     &expected_key_uri_base64);
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddEncryptionInfo(
+          MediaPlaylist::EncryptionMethod::kSampleAes,
+          StrEq("skd://" + expected_key_uri_base64),
+          StrEq(""),
+          StrEq(""),
+          StrEq("com.apple.streamingkeydelivery"), StrEq("1")));
+  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
+      stream_id, key_id, fairplay_system_id_, std::vector<uint8_t>(),
+      dummy_pssh_data));
 }
 
 // If using 'cenc' with Widevine, don't output the json form.
