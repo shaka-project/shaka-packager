@@ -651,7 +651,7 @@ TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
 }
 
 // Verify that the Fairplay systemID is correctly handled when constructing
-// encryption info
+// encryption info.
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
@@ -660,16 +660,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
                              kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
-  const std::vector<uint8_t> key_id(16, 0x00);
-  const std::vector<uint8_t> iv(16, 0x45);
-  std::vector<uint8_t> pssh_box = { 0x00, 0x00, 0x00, 0x34, 0x70, 0x73, 0x73,
-                                    0x68, 0x01, 0x00, 0x00, 0x00, 0x29, 0x70,
-                                    0x1F, 0xE4, 0x3C, 0xC7, 0x4A, 0x34, 0x8C,
-                                    0x5B, 0xAE, 0x90, 0xC7, 0x43, 0x9A, 0x47,
-                                    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00 };
+  const std::vector<uint8_t> key_id(16, 0x12);
+  const std::vector<uint8_t> dummy_pssh_data(10, 'p');
 
   std::string expected_key_uri_base64;
   base::Base64Encode(std::string(key_id.begin(), key_id.end()),
@@ -684,7 +676,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
           StrEq("com.apple.streamingkeydelivery"), StrEq("1")));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id, key_id, fairplay_system_id_, std::vector<uint8_t>(),
-      pssh_box));
+      dummy_pssh_data));
 }
 
 // If using 'cenc' with Widevine, don't output the json form.
