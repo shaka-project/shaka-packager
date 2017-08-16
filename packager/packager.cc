@@ -231,27 +231,33 @@ class FakeClock : public base::Clock {
   base::Time Now() override { return base::Time(); }
 };
 
-// Demux, Mux(es) and worker thread used to remux a source file/stream.
-class RemuxJob : public base::SimpleThread {
+class Job : public base::SimpleThread {
  public:
-  RemuxJob(std::unique_ptr<Demuxer> demuxer)
-      : SimpleThread("RemuxJob"), demuxer_(std::move(demuxer)) {}
+   Job(const std::string& name, std::shared_ptr<OriginHandler> work)
+      : SimpleThread(name), work_(work) {}
 
-  ~RemuxJob() override {}
+  void Initialize() {
+    DCHECK(work_);
+    status_ = work_->Initialize();
+  }
 
-  Demuxer* demuxer() { return demuxer_.get(); }
+  void Cancel() {
+    DCHECK(work_);
+    work_->Cancel();
+  }
+
   Status status() { return status_; }
 
  private:
-  RemuxJob(const RemuxJob&) = delete;
-  RemuxJob& operator=(const RemuxJob&) = delete;
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
 
   void Run() override {
-    DCHECK(demuxer_);
-    status_ = demuxer_->Run();
+    DCHECK(work_);
+    status_ = work_->Run();
   }
 
-  std::unique_ptr<Demuxer> demuxer_;
+  std::shared_ptr<OriginHandler> work_;
   Status status_;
 };
 
@@ -316,11 +322,12 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      KeySource* encryption_key_source,
                      MpdNotifier* mpd_notifier,
                      hls::HlsNotifier* hls_notifier,
-                     std::vector<std::unique_ptr<RemuxJob>>* remux_jobs) {
+                     std::vector<std::unique_ptr<Job>>* jobs) {
   // No notifiers OR (mpd_notifier XOR hls_notifier); which is NAND.
   DCHECK(!(mpd_notifier && hls_notifier));
-  DCHECK(remux_jobs);
+  DCHECK(jobs);
 
+  std::shared_ptr<Demuxer> demuxer;
   std::shared_ptr<TrickPlayHandler> trick_play_handler;
 
   std::string previous_input;
@@ -370,7 +377,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
-      std::unique_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
+      demuxer = std::make_shared<Demuxer>(stream_iter->input);
+
       demuxer->set_dump_stream_info(
           packaging_params.test_params.dump_stream_info);
       if (packaging_params.decryption_params.key_provider !=
@@ -381,14 +389,14 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
           return false;
         demuxer->SetKeySource(std::move(decryption_key_source));
       }
-      remux_jobs->emplace_back(new RemuxJob(std::move(demuxer)));
+      jobs->emplace_back(new media::Job("RemuxJob", demuxer));
       trick_play_handler.reset();
       previous_input = stream_iter->input;
       // Skip setting up muxers if output is not needed.
       if (stream_iter->output.empty() && stream_iter->segment_template.empty())
         continue;
     }
-    DCHECK(!remux_jobs->empty());
+    DCHECK(!jobs->empty());
 
     // Each stream selector requires an individual trick play handler.
     // E.g., an input with two video streams needs two trick play handlers.
@@ -485,7 +493,6 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       handlers.push_back(std::move(muxer));
     }
 
-    auto* demuxer = remux_jobs->back()->demuxer();
     const std::string& stream_selector = stream_iter->stream_selector;
     status.Update(demuxer->SetHandler(stream_selector, chunking_handler));
     status.Update(ConnectHandlers(handlers));
@@ -499,19 +506,19 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
   }
 
   // Initialize processing graph.
-  for (const std::unique_ptr<RemuxJob>& job : *remux_jobs) {
-    Status status = job->demuxer()->Initialize();
-    if (!status.ok()) {
-      LOG(ERROR) << "Failed to initialize processing graph " << status;
+  for (const std::unique_ptr<Job>& job : *jobs) {
+    job->Initialize();
+    if (!job->status().ok()) {
+      LOG(ERROR) << "Failed to initialize processing graph " << job->status();
       return false;
     }
   }
   return true;
 }
 
-Status RunRemuxJobs(const std::vector<std::unique_ptr<RemuxJob>>& remux_jobs) {
+Status RunRemuxJobs(const std::vector<std::unique_ptr<Job>>& jobs) {
   // Start the job threads.
-  for (const std::unique_ptr<RemuxJob>& job : remux_jobs)
+  for (const std::unique_ptr<Job>& job : jobs)
     job->Start();
 
   // Wait for all jobs to complete or an error occurs.
@@ -519,7 +526,7 @@ Status RunRemuxJobs(const std::vector<std::unique_ptr<RemuxJob>>& remux_jobs) {
   bool all_joined;
   do {
     all_joined = true;
-    for (const std::unique_ptr<RemuxJob>& job : remux_jobs) {
+    for (const std::unique_ptr<Job>& job : jobs) {
       if (job->HasBeenJoined()) {
         status = job->status();
         if (!status.ok())
@@ -560,7 +567,7 @@ struct Packager::PackagerInternal {
   std::unique_ptr<KeySource> encryption_key_source;
   std::unique_ptr<MpdNotifier> mpd_notifier;
   std::unique_ptr<hls::HlsNotifier> hls_notifier;
-  std::vector<std::unique_ptr<media::RemuxJob>> remux_jobs;
+  std::vector<std::unique_ptr<media::Job>> jobs;
 };
 
 Packager::Packager() {}
@@ -646,7 +653,7 @@ Status Packager::Initialize(
           stream_descriptor_list, packaging_params, chunking_options,
           encryption_options, muxer_options, &internal->fake_clock,
           internal->encryption_key_source.get(), internal->mpd_notifier.get(),
-          internal->hls_notifier.get(), &internal->remux_jobs)) {
+          internal->hls_notifier.get(), &internal->jobs)) {
     return Status(error::INVALID_ARGUMENT, "Failed to create remux jobs.");
   }
   internal_ = std::move(internal);
@@ -656,7 +663,7 @@ Status Packager::Initialize(
 Status Packager::Run() {
   if (!internal_)
     return Status(error::INVALID_ARGUMENT, "Not yet initialized.");
-  Status status = media::RunRemuxJobs(internal_->remux_jobs);
+  Status status = media::RunRemuxJobs(internal_->jobs);
   if (!status.ok())
     return status;
 
@@ -676,8 +683,8 @@ void Packager::Cancel() {
     LOG(INFO) << "Not yet initialized. Return directly.";
     return;
   }
-  for (const std::unique_ptr<media::RemuxJob>& job : internal_->remux_jobs)
-    job->demuxer()->Cancel();
+  for (const std::unique_ptr<media::Job>& job : internal_->jobs)
+    job->Cancel();
 }
 
 std::string Packager::GetLibraryVersion() {

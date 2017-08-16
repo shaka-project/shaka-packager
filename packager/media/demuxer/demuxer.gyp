@@ -24,6 +24,7 @@
         '../formats/webm/webm.gyp:webm',
         '../formats/webvtt/webvtt.gyp:webvtt',
         '../formats/wvm/wvm.gyp:wvm',
+        '../origin/origin.gyp:origin',
       ],
     },
     {

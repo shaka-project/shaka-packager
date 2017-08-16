@@ -26,6 +26,7 @@
         '../../../base/base.gyp:base',
         '../../base/media_base.gyp:media_base',
         '../../formats/mp4/mp4.gyp:mp4',
+        '../../origin/origin.gyp:origin',
       ],
     },
     {

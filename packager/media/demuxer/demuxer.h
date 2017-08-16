@@ -13,7 +13,7 @@
 
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/container_names.h"
-#include "packager/media/base/media_handler.h"
+#include "packager/media/origin/origin_handler.h"
 #include "packager/status.h"
 
 namespace shaka {
@@ -31,7 +31,7 @@ class StreamInfo;
 
 /// Demuxer is responsible for extracting elementary stream samples from a
 /// media file, e.g. an ISO BMFF file.
-class Demuxer : public MediaHandler {
+class Demuxer : public OriginHandler {
  public:
   /// @param file_name specifies the input source. It uses prefix matching to
   ///        create a proper File object. The user can extend File to support
@@ -47,11 +47,11 @@ class Demuxer : public MediaHandler {
 
   /// Drive the remuxing from demuxer side (push). Read the file and push
   /// the Data to Muxer until Eof.
-  Status Run();
+  Status Run() override;
 
   /// Cancel a demuxing job in progress. Will cause @a Run to exit with an error
   /// status of type CANCELLED.
-  void Cancel();
+  void Cancel() override;
 
   /// @return Container name (type). Value is CONTAINER_UNKNOWN if the demuxer
   ///         is not initialized.
