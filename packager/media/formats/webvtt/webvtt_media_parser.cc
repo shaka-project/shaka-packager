@@ -93,14 +93,14 @@ bool ParseTimingAndSettingsLine(const std::string& line,
   }
 
   const std::string& start_time_str = entries[0];
-  if (!WebVttTimestampParse(start_time_str, start_time)) {
+  if (!WebVttTimestampToMs(start_time_str, start_time)) {
     LOG(ERROR) << "Failed to parse " << start_time_str << " in " << line;
     return false;
   }
 
   const std::string& end_time_str = entries[2];
   uint64_t end_time = 0;
-  if (!WebVttTimestampParse(end_time_str, &end_time)) {
+  if (!WebVttTimestampToMs(end_time_str, &end_time)) {
     LOG(ERROR) << "Failed to parse " << end_time_str << " in " << line;
     return false;
   }

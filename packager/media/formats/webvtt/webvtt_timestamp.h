@@ -18,7 +18,10 @@ namespace media {
 // Parse a timestamp into milliseconds using the two patterns defined by WebVtt:
 //  LONG  : ##:##:##.### (long can have 2 or more hour digits)
 //  SHORT :    ##:##:###
-bool WebVttTimestampParse(const base::StringPiece& source, uint64_t* out);
+bool WebVttTimestampToMs(const base::StringPiece& source, uint64_t* out);
+
+// Create a long form timestamp encoded as a string.
+std::string MsToWebVttTimestamp(uint64_t ms);
 }  // namespace media
 }  // namespace shaka
 
