@@ -17,6 +17,7 @@ var searchData=
   ['optimizesampleentries',['OptimizeSampleEntries',['../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a208b7b8dd83e73c4206469695a3216d4',1,'shaka::media::mp4::Fragmenter']]],
   ['opusspecific',['OpusSpecific',['../de/dfa/structshaka_1_1media_1_1mp4_1_1OpusSpecific.html',1,'shaka::media::mp4']]],
   ['originalformat',['OriginalFormat',['../d5/d05/structshaka_1_1media_1_1mp4_1_1OriginalFormat.html',1,'shaka::media::mp4']]],
+  ['originhandler',['OriginHandler',['../de/d85/classshaka_1_1media_1_1OriginHandler.html',1,'shaka::media']]],
   ['output_5ffile_5fname',['output_file_name',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82',1,'shaka::media::MuxerOptions']]],
   ['outputfilename',['OutputFileName',['../d2/dba/classshaka_1_1media_1_1SegmentTestBase.html#ace8082bd6dcd3aa07177c648f6ad7ecf',1,'shaka::media::SegmentTestBase']]]
 ];

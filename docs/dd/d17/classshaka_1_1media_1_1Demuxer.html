@@ -102,6 +102,7 @@ Inheritance diagram for shaka::media::Demuxer:</div>
  <div class="center">
   <img src="../../dd/d17/classshaka_1_1media_1_1Demuxer.png" usemap="#shaka::media::Demuxer_map" alt=""/>
   <map id="shaka::media::Demuxer_map" name="shaka::media::Demuxer_map">
+<area href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html" alt="shaka::media::OriginHandler" shape="rect" coords="0,56,170,80"/>
 <area href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html" alt="shaka::media::MediaHandler" shape="rect" coords="0,0,170,24"/>
 </map>
  </div></div>
@@ -112,10 +113,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae2fee69f99e5815de4f686b24393402e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfcf3a9a3f64c0e27497c72324049a1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">SetKeySource</a> (std::unique_ptr&lt; <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> &gt; key_source)</td></tr>
 <tr class="separator:abfcf3a9a3f64c0e27497c72324049a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e0b4a430603fdf4639c2153622ae1a2"><td class="memItemLeft" align="right" valign="top">Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a9e0b4a430603fdf4639c2153622ae1a2">Run</a> ()</td></tr>
-<tr class="separator:a9e0b4a430603fdf4639c2153622ae1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a117ba5528a92b0cf4752d15d3692e158"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a117ba5528a92b0cf4752d15d3692e158">Cancel</a> ()</td></tr>
-<tr class="separator:a117ba5528a92b0cf4752d15d3692e158"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a006e77dc91701543231bfda75b946d3c"><td class="memItemLeft" align="right" valign="top">Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a006e77dc91701543231bfda75b946d3c">Run</a> () override</td></tr>
+<tr class="separator:a006e77dc91701543231bfda75b946d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a683de4ad66155311d90d92635546dc8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a683de4ad66155311d90d92635546dc8d">Cancel</a> () override</td></tr>
+<tr class="separator:a683de4ad66155311d90d92635546dc8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a385c93fd8d589b7d3bccd35e14c58290"><td class="memItemLeft" align="right" valign="top">MediaContainerName&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a385c93fd8d589b7d3bccd35e14c58290">container_name</a> ()</td></tr>
 <tr class="separator:a385c93fd8d589b7d3bccd35e14c58290"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1247302b6c57fbafb09aec71ce0109e3"><td class="memItemLeft" align="right" valign="top">Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a1247302b6c57fbafb09aec71ce0109e3">SetHandler</a> (const std::string &amp;stream_label, std::shared_ptr&lt; <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> &gt; handler)</td></tr>
@@ -244,9 +245,12 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a117ba5528a92b0cf4752d15d3692e158"></a>
+<a class="anchor" id="a683de4ad66155311d90d92635546dc8d"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void shaka::media::Demuxer::Cancel </td>
@@ -255,8 +259,15 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Cancel a demuxing job in progress. Will cause <em>Run</em> to exit with an error status of type CANCELLED. </p>
+
+<p>Implements <a class="el" href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">shaka::media::OriginHandler</a>.</p>
 
 <p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00128">128</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
@@ -345,9 +356,12 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="a9e0b4a430603fdf4639c2153622ae1a2"></a>
+<a class="anchor" id="a006e77dc91701543231bfda75b946d3c"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">Status shaka::media::Demuxer::Run </td>
@@ -356,8 +370,15 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Drive the remuxing from demuxer side (push). Read the file and push the Data to <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a> until Eof. </p>
+
+<p>Implements <a class="el" href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">shaka::media::OriginHandler</a>.</p>
 
 <p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00087">87</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
@@ -467,7 +488,7 @@ std::pair&lt; std::shared_ptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 8 2017 17:39:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 18 2017 17:10:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
