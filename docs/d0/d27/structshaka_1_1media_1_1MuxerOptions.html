@@ -101,10 +101,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a2db773300dadf681c40bef0b3eca3ece"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a2db773300dadf681c40bef0b3eca3ece">num_subsegments_per_sidx</a> = 0</td></tr>
-<tr class="separator:a2db773300dadf681c40bef0b3eca3ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d3d8c1923a2e0f684c2591cd7f4a890"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4d3d8c1923a2e0f684c2591cd7f4a890">mp4_use_decoding_timestamp_in_timeline</a> = false</td></tr>
-<tr class="separator:a4d3d8c1923a2e0f684c2591cd7f4a890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa616f5958ea9df2d70f3fe42ff47ff43"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa616f5958ea9df2d70f3fe42ff47ff43"></a>
+<a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html">Mp4OutputParams</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#aa616f5958ea9df2d70f3fe42ff47ff43">mp4_params</a></td></tr>
+<tr class="memdesc:aa616f5958ea9df2d70f3fe42ff47ff43"><td class="mdescLeft">&#160;</td><td class="mdescRight">MP4 (ISO-BMFF) specific parameters. <br/></td></tr>
+<tr class="separator:aa616f5958ea9df2d70f3fe42ff47ff43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5397ee8759a663aea68261600e528d82"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">output_file_name</a></td></tr>
 <tr class="separator:a5397ee8759a663aea68261600e528d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab98cfd28046fc5c52ab2a45dba1a339a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ab98cfd28046fc5c52ab2a45dba1a339a">segment_template</a></td></tr>
@@ -115,14 +115,11 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:a872d1150a71d9f0fb5db0ab81334d614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a930587b1f3a3e38cf1e7974f01d8ce1e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a930587b1f3a3e38cf1e7974f01d8ce1e">bandwidth</a> = 0</td></tr>
 <tr class="separator:a930587b1f3a3e38cf1e7974f01d8ce1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58e3b0a93aedc208a8b6f565ec595ece"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58e3b0a93aedc208a8b6f565ec595ece"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>mp4_include_pssh_in_stream</b> = true</td></tr>
-<tr class="separator:a58e3b0a93aedc208a8b6f565ec595ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This structure contains the list of configuration options for <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00018">18</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00020">20</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a930587b1f3a3e38cf1e7974f01d8ce1e"></a>
 <div class="memitem">
@@ -135,37 +132,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>mp4_include_pssh_in_s
 </div><div class="memdoc">
 <p>User-specified bit rate for the media stream. If zero, the muxer will attempt to estimate. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00052">52</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4d3d8c1923a2e0f684c2591cd7f4a890"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::MuxerOptions::mp4_use_decoding_timestamp_in_timeline = false</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>For ISO BMFF only. Set the flag use_decoding_timestamp_in_timeline, which if set to true, use decoding timestamp instead of presentation timestamp in media timeline, which is needed to workaround a Chromium bug that decoding timestamp is used in buffered range, <a href="https://crbug.com/398130">https://crbug.com/398130</a>. </p>
-
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00034">34</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a2db773300dadf681c40bef0b3eca3ece"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int shaka::media::MuxerOptions::num_subsegments_per_sidx = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>For ISO BMFF only. Set the number of subsegments in each SIDX box. If 0, a single SIDX box is used per segment. If -1, no SIDX box is used. Otherwise, the <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a> will pack N subsegments in the root SIDX of the segment, with segment_duration/N/fragment_duration fragments per subsegment. </p>
-
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00027">27</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00043">43</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -180,7 +147,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>mp4_include_pssh_in_s
 </div><div class="memdoc">
 <p>Output file name. If segment_template is not specified, the <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a> generates this single output file with all segments concatenated; Otherwise, it specifies the init segment name. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00039">39</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00030">30</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -195,7 +162,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>mp4_include_pssh_in_s
 </div><div class="memdoc">
 <p>Specify output segment name pattern for generated segments. It can furthermore be configured by using a subset of the SegmentTemplate identifiers: $RepresentationID$, $Number$, $Bandwidth$ and $Time. Optional. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00045">45</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00036">36</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -206,7 +173,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>mp4_include_pssh_in_s
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 18 2017 18:39:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 18 2017 21:09:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

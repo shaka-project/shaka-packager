@@ -108,9 +108,9 @@ Inheritance diagram for shaka::media::ChunkingHandler:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a29ee238e2b9f8051ead89143c943e989"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a29ee238e2b9f8051ead89143c943e989"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ChunkingHandler</b> (const <a class="el" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html">ChunkingOptions</a> &amp;chunking_options)</td></tr>
-<tr class="separator:a29ee238e2b9f8051ead89143c943e989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8557544d71622f047977c79ae90b0e8e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8557544d71622f047977c79ae90b0e8e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ChunkingHandler</b> (const <a class="el" href="../../d2/d1f/structshaka_1_1ChunkingParams.html">ChunkingParams</a> &amp;chunking_params)</td></tr>
+<tr class="separator:a8557544d71622f047977c79ae90b0e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classshaka_1_1media_1_1MediaHandler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1MediaHandler')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">shaka::media::MediaHandler</a></td></tr>
 <tr class="memitem:a0fac1fe2d593e78d47244acdfa21759d inherit pub_methods_classshaka_1_1media_1_1MediaHandler"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0fac1fe2d593e78d47244acdfa21759d"></a>
 Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a0fac1fe2d593e78d47244acdfa21759d">SetHandler</a> (size_t output_stream_index, std::shared_ptr&lt; <a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> &gt; handler)</td></tr>
@@ -199,7 +199,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ChunkingHandlerTest<
 <tr class="separator:a2c0bf3b08ac78ebaa87687991c9ca542"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">ChunkingHandler</a> splits the samples into segments / subsegments based on the specified chunking options. This handler is a multi-in multi-out handler. If more than one input is provided, there should be one and only one video stream; also, all inputs should come from the same thread and are synchronized. There can be multiple chunking handler running in different threads or even different processes, we use the "consistent chunking algorithm" to make sure the chunks in different streams are aligned without explicit communcating with each other - which is not efficient and often difficult.</p>
+<div class="textblock"><p><a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">ChunkingHandler</a> splits the samples into segments / subsegments based on the specified chunking params. This handler is a multi-in multi-out handler. If more than one input is provided, there should be one and only one video stream; also, all inputs should come from the same thread and are synchronized. There can be multiple chunking handler running in different threads or even different processes, we use the "consistent chunking algorithm" to make sure the chunks in different streams are aligned without explicit communcating with each other - which is not efficient and often difficult.</p>
 <p>Consistent Chunking Algorithm:</p>
 <ol type="1">
 <li>Find the consistent chunkable boundary Let the timestamps for video frames be (t1, t2, t3, ...). Then a consistent chunkable boundary is simply the first chunkable boundary after (tk / N) != (tk-1 / N), where '/' denotes integer division, and N is the intended chunk duration.</li>
@@ -207,7 +207,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ChunkingHandlerTest<
 </ol>
 <p>This algorithm will make sure the chunks from different video streams are aligned if they have aligned GoPs. However, this algorithm will only work for video streams. To be able to chunk non video streams at similar positions as video streams, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html">ChunkingHandler</a> is designed to accept one video input and multiple non video inputs, the non video inputs are chunked when the video input is chunked. If the inputs are synchronized - which is true if the inputs come from the same demuxer, the video and non video chunks are aligned. </p>
 
-<p>Definition at line <a class="el" href="../../d7/d79/chunking__handler_8h_source.html#l00061">61</a> of file <a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d79/chunking__handler_8h_source.html#l00044">44</a> of file <a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a76a5f4b74da3876cc72f44301c389ebd"></a>
 <div class="memitem">
@@ -273,7 +273,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ChunkingHandlerTest<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 18 2017 18:39:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 18 2017 21:09:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

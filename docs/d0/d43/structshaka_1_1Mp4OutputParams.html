@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: shaka::media::ChunkingOptions Struct Reference</title>
+<title>DASH Media Packaging SDK: shaka::Mp4OutputParams Struct Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -82,87 +82,93 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../d8/daf/namespaceshaka.html">shaka</a></li><li class="navelem"><b>media</b></li><li class="navelem"><a class="el" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html">ChunkingOptions</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../d8/daf/namespaceshaka.html">shaka</a></li><li class="navelem"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html">Mp4OutputParams</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="../../d2/dce/structshaka_1_1media_1_1ChunkingOptions-members.html">List of all members</a>  </div>
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="../../d6/dd7/structshaka_1_1Mp4OutputParams-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">shaka::media::ChunkingOptions Struct Reference</div>  </div>
+<div class="title">shaka::Mp4OutputParams Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>MP4 (ISO-BMFF) output related parameters.  
+ <a href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a1cdbde61303f629cc9b4cbcd98f2d711"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1cdbde61303f629cc9b4cbcd98f2d711"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a1cdbde61303f629cc9b4cbcd98f2d711">segment_duration_in_seconds</a> = 0</td></tr>
-<tr class="memdesc:a1cdbde61303f629cc9b4cbcd98f2d711"><td class="mdescLeft">&#160;</td><td class="mdescRight">Segment duration in seconds. <br/></td></tr>
-<tr class="separator:a1cdbde61303f629cc9b4cbcd98f2d711"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9368f6edb53d9dd90bc128b664a12e5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#ac9368f6edb53d9dd90bc128b664a12e5">subsegment_duration_in_seconds</a> = 0</td></tr>
-<tr class="separator:ac9368f6edb53d9dd90bc128b664a12e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ae39a9eef9c4adc63916fa594f0fe64"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a0ae39a9eef9c4adc63916fa594f0fe64">segment_sap_aligned</a> = true</td></tr>
-<tr class="separator:a0ae39a9eef9c4adc63916fa594f0fe64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d9761fdfca7819c94baa23845ce9ad7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a6d9761fdfca7819c94baa23845ce9ad7">subsegment_sap_aligned</a> = true</td></tr>
-<tr class="separator:a6d9761fdfca7819c94baa23845ce9ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdff0b6ab552e27e275d8d23cc2f60b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abdff0b6ab552e27e275d8d23cc2f60b1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>include_pssh_in_stream</b> = true</td></tr>
+<tr class="separator:abdff0b6ab552e27e275d8d23cc2f60b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e7b9297fca52043abef99859170aa19"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e7b9297fca52043abef99859170aa19"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>num_subsegments_per_sidx</b> = kSingleSidxPerSegment</td></tr>
+<tr class="separator:a3e7b9297fca52043abef99859170aa19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0de7f58e0a83896e14e5603e2f965f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#a4e0de7f58e0a83896e14e5603e2f965f">use_decoding_timestamp_in_timeline</a> = false</td></tr>
+<tr class="separator:a4e0de7f58e0a83896e14e5603e2f965f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a41ff299070f75fd0dca96d83706d32ff"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#a41ff299070f75fd0dca96d83706d32ff">kNoSidxBoxInSegment</a> = -1</td></tr>
+<tr class="separator:a41ff299070f75fd0dca96d83706d32ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29114105681ec79f37faa62cd6dc7889"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a29114105681ec79f37faa62cd6dc7889"></a>
+static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kSingleSidxPerSegment</b> = 0</td></tr>
+<tr class="separator:a29114105681ec79f37faa62cd6dc7889"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="../../d7/d79/chunking__handler_8h_source.html#l00017">17</a> of file <a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a>.</p>
+<div class="textblock"><p>MP4 (ISO-BMFF) output related parameters. </p>
+
+<p>Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00013">13</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a0ae39a9eef9c4adc63916fa594f0fe64"></a>
+<a class="anchor" id="a41ff299070f75fd0dca96d83706d32ff"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int shaka::Mp4OutputParams::kNoSidxBoxInSegment = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the number of subsegments in each SIDX box. If 0, a single SIDX box is used per segment. If -1, no SIDX box is used. Otherwise, the Muxer will pack N subsegments in the root SIDX of the segment, with segment_duration/N/subsegment_duration fragments per subsegment. This flag is ingored for DASH MPD with on-demand profile. </p>
+
+<p>Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00024">24</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4e0de7f58e0a83896e14e5603e2f965f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool shaka::media::ChunkingOptions::segment_sap_aligned = true</td>
+          <td class="memname">bool shaka::Mp4OutputParams::use_decoding_timestamp_in_timeline = false</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Force segments to begin with stream access points. Actual segment duration may not be exactly what is specified by segment_duration. </p>
+<p>Set the flag use_decoding_timestamp_in_timeline, which if set to true, use decoding timestamp instead of presentation timestamp in media timeline, which is needed to workaround a Chromium bug that decoding timestamp is used in buffered range, <a href="https://crbug.com/398130">https://crbug.com/398130</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d7/d79/chunking__handler_8h_source.html#l00027">27</a> of file <a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac9368f6edb53d9dd90bc128b664a12e5"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double shaka::media::ChunkingOptions::subsegment_duration_in_seconds = 0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Subsegment duration in seconds. Should not be larger than the segment duration. </p>
-
-<p>Definition at line <a class="el" href="../../d7/d79/chunking__handler_8h_source.html#l00023">23</a> of file <a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6d9761fdfca7819c94baa23845ce9ad7"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::ChunkingOptions::subsegment_sap_aligned = true</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Force subsegments to begin with stream access points. Actual subsegment duration may not be exactly what is specified by subsegment_duration. Setting to true implies that segment_sap_aligned is true as well. </p>
-
-<p>Definition at line <a class="el" href="../../d7/d79/chunking__handler_8h_source.html#l00032">32</a> of file <a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00031">31</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>media/chunking/<a class="el" href="../../d7/d79/chunking__handler_8h_source.html">chunking_handler.h</a></li>
+<li>media/public/<a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 18 2017 18:39:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 18 2017 21:09:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

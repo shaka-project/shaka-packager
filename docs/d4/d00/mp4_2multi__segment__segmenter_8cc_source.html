@@ -175,7 +175,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  sidx()-&gt;earliest_presentation_time =</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      sidx()-&gt;references[0].earliest_presentation_time;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">if</span> (options().num_subsegments_per_sidx &lt;= 0)</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">if</span> (options().mp4_params.num_subsegments_per_sidx &lt;= 0)</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> WriteSegment();</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">// sidx() contains pre-generated segment references with one reference per</span></div>
@@ -183,7 +183,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="comment">// pre-generated references into final subsegment references.</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">size_t</span> num_fragments = sidx()-&gt;references.size();</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">size_t</span> num_fragments_per_subsegment =</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      (num_fragments - 1) / options().num_subsegments_per_sidx + 1;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      (num_fragments - 1) / options().mp4_params.num_subsegments_per_sidx + 1;</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">if</span> (num_fragments_per_subsegment &lt;= 1)</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">return</span> WriteSegment();</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
@@ -219,7 +219,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    }</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  }</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  refs.resize(options().num_subsegments_per_sidx);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  refs.resize(options().mp4_params.num_subsegments_per_sidx);</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="comment">// earliest_presentation_time is the earliest presentation time of any</span></div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="comment">// access unit in the reference stream in the first subsegment.</span></div>
@@ -258,7 +258,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  }</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="comment">// If num_subsegments_per_sidx is negative, no SIDX box is generated.</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keywordflow">if</span> (options().num_subsegments_per_sidx &gt;= 0)</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keywordflow">if</span> (options().mp4_params.num_subsegments_per_sidx &gt;= 0)</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    sidx()-&gt;<a class="code" href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a15bd0622fdb129d921287e690f117bde">Write</a>(buffer.get());</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> segment_size = buffer-&gt;Size() + fragment_buffer()-&gt;Size();</div>
@@ -306,7 +306,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 18 2017 18:39:36 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 18 2017 21:09:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

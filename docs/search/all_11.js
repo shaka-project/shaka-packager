@@ -10,6 +10,7 @@ var searchData=
   ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3e759066195689154ef2a8cf2825ea4b',1,'shaka::media::TextStreamInfo']]],
   ['texttrack',['TextTrack',['../d4/d0b/classshaka_1_1media_1_1TextTrack.html',1,'shaka::media']]],
   ['texttrackconfig',['TextTrackConfig',['../de/db3/classshaka_1_1media_1_1TextTrackConfig.html',1,'shaka::media']]],
+  ['time_5fshift_5fbuffer_5fdepth',['time_shift_buffer_depth',['../df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032',1,'shaka::MpdParams']]],
   ['tostring',['ToString',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a7f94e51abcf522ff70e2456a8c8595df',1,'shaka::media::AudioStreamInfo::ToString()'],['../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614',1,'shaka::media::MediaSample::ToString()'],['../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d',1,'shaka::media::StreamInfo::ToString()'],['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a9cac8e75d76f1192a48d1dcf61435537',1,'shaka::media::VideoStreamInfo::ToString()'],['../dc/da1/classshaka_1_1MpdBuilder.html#af7eae5cc11141eed2b5451d969e57db6',1,'shaka::MpdBuilder::ToString()']]],
   ['track',['Track',['../d3/db5/structshaka_1_1media_1_1mp4_1_1Track.html',1,'shaka::media::mp4']]],
   ['trackencryption',['TrackEncryption',['../db/db8/structshaka_1_1media_1_1mp4_1_1TrackEncryption.html',1,'shaka::media::mp4']]],
@@ -34,8 +35,8 @@ var searchData=
   ['tssectionpes',['TsSectionPes',['../d1/d30/classshaka_1_1media_1_1mp2t_1_1TsSectionPes.html',1,'shaka::media::mp2t']]],
   ['tssectionpmt',['TsSectionPmt',['../d2/de3/classshaka_1_1media_1_1mp2t_1_1TsSectionPmt.html',1,'shaka::media::mp2t']]],
   ['tssectionpsi',['TsSectionPsi',['../de/d7e/classshaka_1_1media_1_1mp2t_1_1TsSectionPsi.html',1,'shaka::media::mp2t']]],
-  ['tssegmenter',['TsSegmenter',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#af0e91f691388ecffb8a473554707c917',1,'shaka::media::mp2t::TsSegmenter']]],
   ['tssegmenter',['TsSegmenter',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html',1,'shaka::media::mp2t']]],
+  ['tssegmenter',['TsSegmenter',['../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#af0e91f691388ecffb8a473554707c917',1,'shaka::media::mp2t::TsSegmenter']]],
   ['tswriter',['TsWriter',['../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html',1,'shaka::media::mp2t']]],
   ['twopasssinglesegmentsegmenter',['TwoPassSingleSegmentSegmenter',['../dd/da5/classshaka_1_1media_1_1webm_1_1TwoPassSingleSegmentSegmenter.html',1,'shaka::media::webm']]],
   ['type',['type',['../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c',1,'shaka::media::Nalu']]]

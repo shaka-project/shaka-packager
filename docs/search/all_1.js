@@ -2,6 +2,7 @@ var searchData=
 [
   ['bandwidth',['bandwidth',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a930587b1f3a3e38cf1e7974f01d8ce1e',1,'shaka::media::MuxerOptions']]],
   ['bandwidthestimator',['BandwidthEstimator',['../d2/d6f/classBandwidthEstimator.html',1,'BandwidthEstimator'],['../d2/d6f/classBandwidthEstimator.html#aaae9573785ee9d62e0927f806537ea97',1,'BandwidthEstimator::BandwidthEstimator()']]],
+  ['base_5furls',['base_urls',['../df/ddc/structshaka_1_1MpdParams.html#a9fe508f9c56a6424fd857d43a4a69e7c',1,'shaka::MpdParams']]],
   ['bit_5fposition',['bit_position',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a6b7456b84d6b463767127b57cd0dc898',1,'shaka::media::BitReader']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html',1,'shaka::media']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a264dbe3e94ba76214c1af75ab3877945',1,'shaka::media::BitReader']]],
@@ -15,8 +16,8 @@ var searchData=
   ['buffer',['Buffer',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ab3054a98a4ec27764c65511dc17a916d',1,'shaka::media::BufferWriter']]],
   ['bufferreader',['BufferReader',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a94771befc54d444630ade726689b7bf7',1,'shaka::media::BufferReader']]],
   ['bufferreader',['BufferReader',['../d9/d13/classshaka_1_1media_1_1BufferReader.html',1,'shaka::media']]],
-  ['bufferwriter',['BufferWriter',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html',1,'shaka::media']]],
   ['bufferwriter',['BufferWriter',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a01d91524fd5c5491bafcc1cff16db916',1,'shaka::media::BufferWriter']]],
+  ['bufferwriter',['BufferWriter',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html',1,'shaka::media']]],
   ['bytequeue',['ByteQueue',['../d7/dda/classshaka_1_1media_1_1ByteQueue.html',1,'shaka::media']]],
   ['bytesleft',['BytesLeft',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#acf36e70bcb8c4ee7939835126ae9b98b',1,'shaka::media::mp4::BoxBuffer']]]
 ];

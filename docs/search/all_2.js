@@ -9,7 +9,7 @@ var searchData=
   ['chunkinfoiterator',['ChunkInfoIterator',['../d9/d57/classshaka_1_1media_1_1mp4_1_1ChunkInfoIterator.html',1,'shaka::media::mp4']]],
   ['chunkinfoiterator',['ChunkInfoIterator',['../d9/d57/classshaka_1_1media_1_1mp4_1_1ChunkInfoIterator.html#adae19e8f34f3f962e9858c67f984445d',1,'shaka::media::mp4::ChunkInfoIterator']]],
   ['chunkinghandler',['ChunkingHandler',['../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html',1,'shaka::media']]],
-  ['chunkingoptions',['ChunkingOptions',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html',1,'shaka::media']]],
+  ['chunkingparams',['ChunkingParams',['../d2/d1f/structshaka_1_1ChunkingParams.html',1,'shaka']]],
   ['chunklargeoffset',['ChunkLargeOffset',['../db/d95/structshaka_1_1media_1_1mp4_1_1ChunkLargeOffset.html',1,'shaka::media::mp4']]],
   ['chunkoffset',['ChunkOffset',['../dd/d06/structshaka_1_1media_1_1mp4_1_1ChunkOffset.html',1,'shaka::media::mp4']]],
   ['clear_5flead_5fin_5fseconds',['clear_lead_in_seconds',['../dc/da0/structshaka_1_1EncryptionParams.html#a1ad46963dc926aa4b72813dccb3f6a45',1,'shaka::EncryptionParams']]],

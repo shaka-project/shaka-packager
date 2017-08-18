@@ -115,26 +115,26 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span>{</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;std::unique_ptr&lt;RequestSigner&gt; CreateSigner(<span class="keyword">const</span> WidevineSigner&amp; signer) {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  std::unique_ptr&lt;RequestSigner&gt; request_signer;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">switch</span> (signer.signing_key_type) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">case</span> WidevineSigner::SigningKeyType::kAes:</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      request_signer.reset(<a class="code" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a8ae2058318e5894422acb95586e3c471">AesRequestSigner::CreateSigner</a>(</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;          signer.signer_name, signer.aes.key, signer.aes.iv));</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">case</span> WidevineSigner::SigningKeyType::kRsa:</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      request_signer.reset(</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;          <a class="code" href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">RsaRequestSigner::CreateSigner</a>(signer.signer_name, signer.rsa.key));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;std::unique_ptr&lt;RequestSigner&gt; CreateSigner(<span class="keyword">const</span> WidevineSigner&amp; signer) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  std::unique_ptr&lt;RequestSigner&gt; request_signer;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">switch</span> (signer.signing_key_type) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordflow">case</span> WidevineSigner::SigningKeyType::kAes:</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      request_signer.reset(<a class="code" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a8ae2058318e5894422acb95586e3c471">AesRequestSigner::CreateSigner</a>(</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;          signer.signer_name, signer.aes.key, signer.aes.iv));</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">case</span> WidevineSigner::SigningKeyType::kRsa:</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      request_signer.reset(</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          <a class="code" href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">RsaRequestSigner::CreateSigner</a>(signer.signer_name, signer.rsa.key));</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">case</span> WidevineSigner::SigningKeyType::kNone:</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">case</span> WidevineSigner::SigningKeyType::kNone:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">if</span> (!request_signer)</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to create the signer object.&quot;</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordflow">return</span> request_signer;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">if</span> (!request_signer)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to create the signer object.&quot;</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">return</span> request_signer;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;std::unique_ptr&lt;KeySource&gt; CreateEncryptionKeySource(</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    FourCC protection_scheme,</div>
@@ -260,68 +260,38 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keywordflow">return</span> decryption_key_source;</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;}</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;ChunkingOptions GetChunkingOptions(<span class="keyword">const</span> ChunkingParams&amp; chunking_params) {</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  ChunkingOptions chunking_options;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  chunking_options.<a class="code" href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a1cdbde61303f629cc9b4cbcd98f2d711">segment_duration_in_seconds</a> =</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      chunking_params.segment_duration_in_seconds;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  chunking_options.subsegment_duration_in_seconds =</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      chunking_params.subsegment_duration_in_seconds;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  chunking_options.segment_sap_aligned = chunking_params.segment_sap_aligned;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  chunking_options.subsegment_sap_aligned =</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      chunking_params.subsegment_sap_aligned;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keywordflow">return</span> chunking_options;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;MpdOptions GetMpdOptions(<span class="keywordtype">bool</span> on_demand_profile, <span class="keyword">const</span> MpdParams&amp; mpd_params) {</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  MpdOptions mpd_options;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  mpd_options.dash_profile =</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      on_demand_profile ? DashProfile::kOnDemand : DashProfile::kLive;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  mpd_options.mpd_type =</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      (on_demand_profile || mpd_params.generate_static_live_mpd)</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;          ? MpdType::kStatic</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;          : MpdType::kDynamic;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  mpd_options.mpd_params = mpd_params;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keywordflow">return</span> mpd_options;</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;MuxerOptions GetMuxerOptions(<span class="keyword">const</span> std::string&amp; temp_dir,</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                             <span class="keyword">const</span> Mp4OutputParams&amp; mp4_params) {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  MuxerOptions muxer_options;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  muxer_options.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a2db773300dadf681c40bef0b3eca3ece">num_subsegments_per_sidx</a> = mp4_params.num_subsegments_per_sidx;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  muxer_options.mp4_include_pssh_in_stream = mp4_params.include_pssh_in_stream;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  muxer_options.mp4_use_decoding_timestamp_in_timeline =</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;      mp4_params.use_decoding_timestamp_in_timeline;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  muxer_options.temp_dir = temp_dir;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">return</span> muxer_options;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;MpdOptions GetMpdOptions(<span class="keywordtype">bool</span> on_demand_profile, <span class="keyword">const</span> MpdParams&amp; mpd_params) {</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  MpdOptions mpd_options;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  mpd_options.dash_profile =</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      on_demand_profile ? DashProfile::kOnDemand : DashProfile::kLive;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  mpd_options.mpd_type =</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      (on_demand_profile || mpd_params.generate_static_live_mpd)</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;          ? MpdType::kStatic</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;          : MpdType::kDynamic;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  mpd_options.minimum_update_period = mpd_params.minimum_update_period;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  mpd_options.min_buffer_time = mpd_params.min_buffer_time;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  mpd_options.time_shift_buffer_depth = mpd_params.time_shift_buffer_depth;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  mpd_options.suggested_presentation_delay =</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      mpd_params.suggested_presentation_delay;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  mpd_options.default_language = mpd_params.default_language;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  <span class="keywordflow">return</span> mpd_options;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;}</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;Status ConnectHandlers(std::vector&lt;std::shared_ptr&lt;MediaHandler&gt;&gt;&amp; handlers) {</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <span class="keywordtype">size_t</span> num_handlers = handlers.size();</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  Status status;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_handlers; ++i) {</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    status.Update(handlers[i - 1]-&gt;AddHandler(handlers[i]));</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  }</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;}</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;Status ConnectHandlers(std::vector&lt;std::shared_ptr&lt;MediaHandler&gt;&gt;&amp; handlers) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordtype">size_t</span> num_handlers = handlers.size();</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  Status status;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_handlers; ++i) {</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    status.Update(handlers[i - 1]-&gt;AddHandler(handlers[i]));</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  }</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;}</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1RsaRequestSigner_html_af6af635a7c0a01bb638befb71b88386c"><div class="ttname"><a href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">shaka::media::RsaRequestSigner::CreateSigner</a></div><div class="ttdeci">static RsaRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;pkcs1_rsa_key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00053">request_signer.cc:53</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesRequestSigner_html_a8ae2058318e5894422acb95586e3c471"><div class="ttname"><a href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a8ae2058318e5894422acb95586e3c471">shaka::media::AesRequestSigner::CreateSigner</a></div><div class="ttdeci">static AesRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::vector&lt; uint8_t &gt; &amp;aes_key, const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00028">request_signer.cc:28</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_adeac90b9cff39bfa259f81ff3e93679c"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#adeac90b9cff39bfa259f81ff3e93679c">shaka::media::PlayReadyKeySource::SetCaFile</a></div><div class="ttdeci">void SetCaFile(const std::string &amp;ca_file)</div><div class="ttdoc">Sets the Certificate Authority file for validating self-signed certificates. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d00/playready__key__source_8h_source.html#l00062">playready_key_source.h:62</a></div></div>
-<div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a2db773300dadf681c40bef0b3eca3ece"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a2db773300dadf681c40bef0b3eca3ece">shaka::media::MuxerOptions::num_subsegments_per_sidx</a></div><div class="ttdeci">int num_subsegments_per_sidx</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00027">muxer_options.h:27</a></div></div>
-<div class="ttc" id="structshaka_1_1media_1_1ChunkingOptions_html_a1cdbde61303f629cc9b4cbcd98f2d711"><div class="ttname"><a href="../../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a1cdbde61303f629cc9b4cbcd98f2d711">shaka::media::ChunkingOptions::segment_duration_in_seconds</a></div><div class="ttdeci">double segment_duration_in_seconds</div><div class="ttdoc">Segment duration in seconds. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d79/chunking__handler_8h_source.html#l00019">chunking_handler.h:19</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_aebde54a272565d4b81a1139ea35fab63"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#aebde54a272565d4b81a1139ea35fab63">shaka::media::FixedKeySource::Create</a></div><div class="ttdeci">static std::unique_ptr&lt; FixedKeySource &gt; Create(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;pssh_boxes, const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00078">fixed_key_source.cc:78</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a76f18b778d83492e5b7ed90637124b2c"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a76f18b778d83492e5b7ed90637124b2c">shaka::media::PlayReadyKeySource::CreateFromKeyAndKeyId</a></div><div class="ttdeci">static std::unique_ptr&lt; PlayReadyKeySource &gt; CreateFromKeyAndKeyId(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00184">playready_key_source.cc:184</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 18 2017 18:39:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 18 2017 21:09:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

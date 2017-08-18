@@ -17,6 +17,7 @@ var searchData=
   ['decryptconfig',['DecryptConfig',['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a24035bb6edcb3aaaa9923bf385376ae5',1,'shaka::media::DecryptConfig::DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)'],['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#ab2dfe0a2ee285539843ac55b5f1ac7c7',1,'shaka::media::DecryptConfig::DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block)']]],
   ['decryptionparams',['DecryptionParams',['../d1/d4f/structshaka_1_1DecryptionParams.html',1,'shaka']]],
   ['decryptorsource',['DecryptorSource',['../d7/d59/classshaka_1_1media_1_1DecryptorSource.html',1,'shaka::media']]],
+  ['default_5flanguage',['default_language',['../df/ddc/structshaka_1_1MpdParams.html#a74df80bd74635090e97837f3a5941d73',1,'shaka::MpdParams']]],
   ['demuxer',['Demuxer',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e',1,'shaka::media::Demuxer']]],
   ['demuxer',['Demuxer',['../dd/d17/classshaka_1_1media_1_1Demuxer.html',1,'shaka::media']]],
   ['demuxstreamidmediasample',['DemuxStreamIdMediaSample',['../d1/da1/structshaka_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample.html',1,'shaka::media::wvm']]],

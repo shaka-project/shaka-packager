@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['group_5fid',['group_id',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a6d69402cd4c66d546be180c7800e6d09',1,'shaka::WidevineEncryptionParams']]]
+  ['default_5flanguage',['default_language',['../df/ddc/structshaka_1_1MpdParams.html#a74df80bd74635090e97837f3a5941d73',1,'shaka::MpdParams']]]
 ];
