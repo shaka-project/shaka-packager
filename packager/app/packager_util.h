@@ -50,10 +50,6 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
 std::unique_ptr<KeySource> CreateDecryptionKeySource(
     const DecryptionParams& decryption_params);
 
-/// @return MuxerOptions from provided command line options.
-MuxerOptions GetMuxerOptions(const std::string& temp_dir,
-                             const Mp4OutputParams& mp4_params);
-
 /// @return MpdOptions from provided command line options.
 MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params);
 

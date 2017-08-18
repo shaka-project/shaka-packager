@@ -171,7 +171,8 @@ Status MP4Muxer::InitializeMuxer() {
                          << streams()[i]->stream_type();
     }
 
-    if (streams()[i]->is_encrypted() && options().mp4_include_pssh_in_stream) {
+    if (streams()[i]->is_encrypted() &&
+        options().mp4_params.include_pssh_in_stream) {
       const auto& key_system_info =
           streams()[i]->encryption_config().key_system_info;
       moov->pssh.resize(key_system_info.size());

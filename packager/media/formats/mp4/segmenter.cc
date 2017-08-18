@@ -69,7 +69,7 @@ Status Segmenter::Initialize(
     fragmenters_[i].reset(new Fragmenter(streams[i], &moof_->tracks[i]));
   }
 
-  if (options_.mp4_use_decoding_timestamp_in_timeline) {
+  if (options_.mp4_params.use_decoding_timestamp_in_timeline) {
     for (uint32_t i = 0; i < streams.size(); ++i)
       fragmenters_[i]->set_use_decoding_timestamp_in_timeline(true);
   }
@@ -252,7 +252,7 @@ void Segmenter::FinalizeFragmentForKeyRotation(
     size_t stream_id,
     bool fragment_encrypted,
     const EncryptionConfig& encryption_config) {
-  if (options_.mp4_include_pssh_in_stream) {
+  if (options_.mp4_params.include_pssh_in_stream) {
     const std::vector<ProtectionSystemSpecificInfo>& system_info =
         encryption_config.key_system_info;
     moof_->pssh.resize(system_info.size());

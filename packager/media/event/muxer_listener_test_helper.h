@@ -92,7 +92,7 @@ OnMediaEndParameters GetDefaultOnMediaEndParams();
 std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo();
 
 // Sets "default" values for muxer_options for testing.
-void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options);
+void SetDefaultMuxerOptions(MuxerOptions* muxer_options);
 
 // Expect that expect and actual are equal.
 void ExpectMediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual);

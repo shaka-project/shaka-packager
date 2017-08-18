@@ -86,7 +86,7 @@ Status MultiSegmentSegmenter::DoFinalizeSegment() {
   sidx()->earliest_presentation_time =
       sidx()->references[0].earliest_presentation_time;
 
-  if (options().num_subsegments_per_sidx <= 0)
+  if (options().mp4_params.num_subsegments_per_sidx <= 0)
     return WriteSegment();
 
   // sidx() contains pre-generated segment references with one reference per
@@ -94,7 +94,7 @@ Status MultiSegmentSegmenter::DoFinalizeSegment() {
   // pre-generated references into final subsegment references.
   size_t num_fragments = sidx()->references.size();
   size_t num_fragments_per_subsegment =
-      (num_fragments - 1) / options().num_subsegments_per_sidx + 1;
+      (num_fragments - 1) / options().mp4_params.num_subsegments_per_sidx + 1;
   if (num_fragments_per_subsegment <= 1)
     return WriteSegment();
 
@@ -130,7 +130,7 @@ Status MultiSegmentSegmenter::DoFinalizeSegment() {
     }
   }
 
-  refs.resize(options().num_subsegments_per_sidx);
+  refs.resize(options().mp4_params.num_subsegments_per_sidx);
 
   // earliest_presentation_time is the earliest presentation time of any
   // access unit in the reference stream in the first subsegment.
@@ -169,7 +169,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
   }
 
   // If num_subsegments_per_sidx is negative, no SIDX box is generated.
-  if (options().num_subsegments_per_sidx >= 0)
+  if (options().mp4_params.num_subsegments_per_sidx >= 0)
     sidx()->Write(buffer.get());
 
   const size_t segment_size = buffer->Size() + fragment_buffer()->Size();

@@ -43,8 +43,8 @@ MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
   return media_info;
 }
 
-void SetDefaultLiveMuxerOptionsValues(media::MuxerOptions* muxer_options) {
-  muxer_options->num_subsegments_per_sidx = 0;
+void SetDefaultLiveMuxerOptions(media::MuxerOptions* muxer_options) {
+  muxer_options->mp4_params.num_subsegments_per_sidx = 0;
   muxer_options->output_file_name = "liveinit.mp4";
   muxer_options->segment_template = "live-$NUMBER$.mp4";
   muxer_options->temp_dir.clear();
@@ -98,7 +98,7 @@ MATCHER_P(ExpectMediaInfoEq, expected_text_format, "") {
 TEST_F(MpdNotifyMuxerListenerTest, VodClearContent) {
   SetupForVod();
   MuxerOptions muxer_options;
-  SetDefaultMuxerOptionsValues(&muxer_options);
+  SetDefaultMuxerOptions(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
@@ -143,7 +143,7 @@ MATCHER_P4(ProtectedContentEq, uuid, name, default_key_id, pssh, "") {
 TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
   SetupForVod();
   MuxerOptions muxer_options;
-  SetDefaultMuxerOptionsValues(&muxer_options);
+  SetDefaultMuxerOptions(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
@@ -186,7 +186,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
 TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
   SetupForVod();
   MuxerOptions muxer_options;
-  SetDefaultMuxerOptionsValues(&muxer_options);
+  SetDefaultMuxerOptions(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
@@ -233,7 +233,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
 TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
   SetupForVod();
   MuxerOptions muxer_options;
-  SetDefaultMuxerOptionsValues(&muxer_options);
+  SetDefaultMuxerOptions(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
@@ -270,7 +270,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
 TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   SetupForLive();
   MuxerOptions muxer_options;
-  SetDefaultLiveMuxerOptionsValues(&muxer_options);
+  SetDefaultLiveMuxerOptions(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
@@ -343,7 +343,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
 TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   SetupForLive();
   MuxerOptions muxer_options;
-  SetDefaultLiveMuxerOptionsValues(&muxer_options);
+  SetDefaultLiveMuxerOptions(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);

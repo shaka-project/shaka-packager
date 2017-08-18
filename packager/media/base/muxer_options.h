@@ -11,6 +11,8 @@
 
 #include <string>
 
+#include "packager/media/public/mp4_output_params.h"
+
 namespace shaka {
 namespace media {
 
@@ -19,19 +21,8 @@ struct MuxerOptions {
   MuxerOptions();
   ~MuxerOptions();
 
-  /// For ISO BMFF only.
-  /// Set the number of subsegments in each SIDX box. If 0, a single SIDX box
-  /// is used per segment. If -1, no SIDX box is used. Otherwise, the Muxer
-  /// will pack N subsegments in the root SIDX of the segment, with
-  /// segment_duration/N/fragment_duration fragments per subsegment.
-  int num_subsegments_per_sidx = 0;
-
-  /// For ISO BMFF only.
-  /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
-  /// decoding timestamp instead of presentation timestamp in media timeline,
-  /// which is needed to workaround a Chromium bug that decoding timestamp is
-  /// used in buffered range, https://crbug.com/398130.
-  bool mp4_use_decoding_timestamp_in_timeline = false;
+  /// MP4 (ISO-BMFF) specific parameters.
+  Mp4OutputParams mp4_params;
 
   /// Output file name. If segment_template is not specified, the Muxer
   /// generates this single output file with all segments concatenated;
@@ -50,12 +41,6 @@ struct MuxerOptions {
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
   uint32_t bandwidth = 0;
-
-  // MP4 only: include pssh in the encrypted stream. CMAF recommends carrying
-  // license acquisition information in the manifest and not duplicate the
-  // information in the stream. (This is not a hard requirement so we are still
-  // CMAF compatible even if pssh is included in the stream.)
-  bool mp4_include_pssh_in_stream = true;
 };
 
 }  // namespace media

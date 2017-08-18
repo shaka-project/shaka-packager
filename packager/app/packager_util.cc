@@ -171,17 +171,6 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
   return decryption_key_source;
 }
 
-MuxerOptions GetMuxerOptions(const std::string& temp_dir,
-                             const Mp4OutputParams& mp4_params) {
-  MuxerOptions muxer_options;
-  muxer_options.num_subsegments_per_sidx = mp4_params.num_subsegments_per_sidx;
-  muxer_options.mp4_include_pssh_in_stream = mp4_params.include_pssh_in_stream;
-  muxer_options.mp4_use_decoding_timestamp_in_timeline =
-      mp4_params.use_decoding_timestamp_in_timeline;
-  muxer_options.temp_dir = temp_dir;
-  return muxer_options;
-}
-
 MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params) {
   MpdOptions mpd_options;
   mpd_options.dash_profile =

@@ -315,7 +315,6 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
 
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const PackagingParams& packaging_params,
-                     const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
                      KeySource* encryption_key_source,
                      MpdNotifier* mpd_notifier,
@@ -338,7 +337,9 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     MediaContainerName output_format = GetOutputFormat(*stream_iter);
 
     // Process stream descriptor.
-    MuxerOptions stream_muxer_options(muxer_options);
+    MuxerOptions stream_muxer_options;
+    stream_muxer_options.mp4_params = packaging_params.mp4_output_params;
+    stream_muxer_options.temp_dir = packaging_params.temp_dir;
     stream_muxer_options.output_file_name = stream_iter->output;
     if (!stream_iter->segment_template.empty()) {
       if (!ValidateSegmentTemplate(stream_iter->segment_template)) {
@@ -583,9 +584,6 @@ Status Packager::Initialize(
 
   std::unique_ptr<PackagerInternal> internal(new PackagerInternal);
 
-  MuxerOptions muxer_options = media::GetMuxerOptions(
-      packaging_params.temp_dir, packaging_params.mp4_output_params);
-
   const bool on_demand_dash_profile =
       stream_descriptors.begin()->segment_template.empty();
   MpdOptions mpd_options =
@@ -634,10 +632,9 @@ Status Packager::Initialize(
   for (const StreamDescriptor& descriptor : stream_descriptors)
     stream_descriptor_list.insert(descriptor);
   if (!media::CreateRemuxJobs(
-          stream_descriptor_list, packaging_params, muxer_options,
-          &internal->fake_clock, internal->encryption_key_source.get(),
-          internal->mpd_notifier.get(), internal->hls_notifier.get(),
-          &internal->jobs)) {
+          stream_descriptor_list, packaging_params, &internal->fake_clock,
+          internal->encryption_key_source.get(), internal->mpd_notifier.get(),
+          internal->hls_notifier.get(), &internal->jobs)) {
     return Status(error::INVALID_ARGUMENT, "Failed to create remux jobs.");
   }
   internal_ = std::move(internal);
