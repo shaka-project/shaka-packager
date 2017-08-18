@@ -42,5 +42,6 @@ var searchData=
   ['getvideostreaminfo',['GetVideoStreamInfo',['../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a305b6679d9cd2457a3a3ba72319a3249',1,'shaka::media::WebMVideoClient']]],
   ['getvideostreaminfostreamdata',['GetVideoStreamInfoStreamData',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#a5638d5f1141920ebe7a189c6b6a18b48',1,'shaka::media::MediaHandlerTestBase']]],
   ['getvpcodecconfig',['GetVpCodecConfig',['../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#aa553acba4e9c70e92af5612b03b4daf3',1,'shaka::media::WebMVideoClient']]],
-  ['getxml',['GetXml',['../d8/d8e/classshaka_1_1AdaptationSet.html#af988e3a6d8b0d3ede66e3f3aea992d5e',1,'shaka::AdaptationSet::GetXml()'],['../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960',1,'shaka::Representation::GetXml()']]]
+  ['getxml',['GetXml',['../d8/d8e/classshaka_1_1AdaptationSet.html#af988e3a6d8b0d3ede66e3f3aea992d5e',1,'shaka::AdaptationSet::GetXml()'],['../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960',1,'shaka::Representation::GetXml()']]],
+  ['group_5fid',['group_id',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a6d69402cd4c66d546be180c7800e6d09',1,'shaka::WidevineEncryptionParams']]]
 ];

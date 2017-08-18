@@ -16,7 +16,7 @@ var searchData=
   ['videostreaminfoparameters',['VideoStreamInfoParameters',['../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html',1,'shaka::media']]],
   ['vodmediainfodumpmuxerlistener',['VodMediaInfoDumpMuxerListener',['../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html',1,'shaka::media']]],
   ['vp8parser',['VP8Parser',['../d8/d14/classshaka_1_1media_1_1VP8Parser.html',1,'shaka::media']]],
-  ['vp9_5fsubsample_5fencryption',['vp9_subsample_encryption',['../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a2f971f63a7525a777d5578d87ef0c99f',1,'shaka::media::EncryptionOptions']]],
+  ['vp9_5fsubsample_5fencryption',['vp9_subsample_encryption',['../dc/da0/structshaka_1_1EncryptionParams.html#a48d415f17d51306ce7e1931fd954c37c',1,'shaka::EncryptionParams']]],
   ['vp9parser',['VP9Parser',['../db/d5a/classshaka_1_1media_1_1VP9Parser.html',1,'shaka::media']]],
   ['vpcodecconfigurationrecord',['VPCodecConfigurationRecord',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html',1,'shaka::media']]],
   ['vpxframeinfo',['VPxFrameInfo',['../d0/d11/structshaka_1_1media_1_1VPxFrameInfo.html',1,'shaka::media']]],

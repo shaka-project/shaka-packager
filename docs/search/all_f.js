@@ -1,6 +1,8 @@
 var searchData=
 [
   ['range',['Range',['../d9/de0/structshaka_1_1media_1_1Range.html',1,'shaka::media']]],
+  ['rawkeydecryptionparams',['RawKeyDecryptionParams',['../d9/da8/structshaka_1_1RawKeyDecryptionParams.html',1,'shaka']]],
+  ['rawkeyencryptionparams',['RawKeyEncryptionParams',['../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html',1,'shaka']]],
   ['read1',['Read1',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05',1,'shaka::media::BufferReader']]],
   ['readallchildren',['ReadAllChildren',['../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a8b5c7d5a487fb3063eae1495aa3a7566',1,'shaka::media::mp4::BoxReader']]],
   ['readbits',['ReadBits',['../d6/da9/classshaka_1_1media_1_1BitReader.html#ae40382c4ca4a57b3bb3531a337aebbe4',1,'shaka::media::BitReader']]],

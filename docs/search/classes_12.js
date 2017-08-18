@@ -15,6 +15,9 @@ var searchData=
   ['webvttmediaparser',['WebVttMediaParser',['../dc/df2/classshaka_1_1media_1_1WebVttMediaParser.html',1,'shaka::media']]],
   ['webvttsampleconverter',['WebVttSampleConverter',['../de/ddd/classshaka_1_1media_1_1WebVttSampleConverter.html',1,'shaka::media']]],
   ['webvttsourcelabelbox',['WebVTTSourceLabelBox',['../d4/d33/structshaka_1_1media_1_1mp4_1_1WebVTTSourceLabelBox.html',1,'shaka::media::mp4']]],
+  ['widevinedecryptionparams',['WidevineDecryptionParams',['../d8/d48/structshaka_1_1WidevineDecryptionParams.html',1,'shaka']]],
+  ['widevineencryptionparams',['WidevineEncryptionParams',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html',1,'shaka']]],
   ['widevinekeysource',['WidevineKeySource',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html',1,'shaka::media']]],
+  ['widevinesigner',['WidevineSigner',['../df/d22/structshaka_1_1WidevineSigner.html',1,'shaka']]],
   ['wvmmediaparser',['WvmMediaParser',['../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html',1,'shaka::media::wvm']]]
 ];

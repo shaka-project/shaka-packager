@@ -5,8 +5,18 @@ var searchData=
   ['kdefaultaudiobufferdurationinms',['kDefaultAudioBufferDurationInMs',['../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#abe19fd2154084026a514541e152600e0a696e4587c758dc7908ad6bbb376ae06d',1,'shaka::media::WebMClusterParser']]],
   ['kdefaultvideobufferdurationinms',['kDefaultVideoBufferDurationInMs',['../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#abe19fd2154084026a514541e152600e0ae4ed667d0b90505a42a7983b0aa4d57f',1,'shaka::media::WebMClusterParser']]],
   ['kencryptifcryptbyteblockremaining',['kEncryptIfCryptByteBlockRemaining',['../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16',1,'shaka::media::AesPatternCryptor']]],
+  ['key',['key',['../df/d22/structshaka_1_1WidevineSigner.html#ad5c378d29df509280d8697f986163324',1,'shaka::WidevineSigner::key()'],['../df/d22/structshaka_1_1WidevineSigner.html#a25bb558aa06563d24c3d7f9733ff8898',1,'shaka::WidevineSigner::key()'],['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#a2ba545b465d64da1ac9458ba45338f76',1,'shaka::PlayreadyEncryptionParams::key()']]],
+  ['key_5fid',['key_id',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#a872107e40137be5a6c1f932db67c2a9d',1,'shaka::PlayreadyEncryptionParams']]],
+  ['key_5fmap',['key_map',['../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html#a70893a2ff3b6fc74fd53e9b00f2a023d',1,'shaka::RawKeyEncryptionParams::key_map()'],['../d9/da8/structshaka_1_1RawKeyDecryptionParams.html#a1ed59af3d5fe891e05acb4ee59ff6dc1',1,'shaka::RawKeyDecryptionParams::key_map()']]],
+  ['key_5fprovider',['key_provider',['../dc/da0/structshaka_1_1EncryptionParams.html#adcf61ebf8d129a5bcf3f159b9b076eed',1,'shaka::EncryptionParams::key_provider()'],['../d1/d4f/structshaka_1_1DecryptionParams.html#ad93d153f9e777cccb6404611d5b4d339',1,'shaka::DecryptionParams::key_provider()']]],
+  ['key_5fserver_5furl',['key_server_url',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#ac222c5bd0620e5a6f9bf5e9fec534fb9',1,'shaka::WidevineEncryptionParams::key_server_url()'],['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#a3a31b3002f86834b1799279bf5b5fc11',1,'shaka::PlayreadyEncryptionParams::key_server_url()'],['../d8/d48/structshaka_1_1WidevineDecryptionParams.html#adb765979bcc7f63ce46c9ed6ead1ee5b',1,'shaka::WidevineDecryptionParams::key_server_url()']]],
   ['keyfetcher',['KeyFetcher',['../df/d66/classshaka_1_1media_1_1KeyFetcher.html',1,'shaka::media']]],
+  ['keypair',['KeyPair',['../df/d5d/structshaka_1_1RawKeyEncryptionParams_1_1KeyPair.html',1,'shaka::RawKeyEncryptionParams']]],
+  ['keypair',['KeyPair',['../d8/d8b/structshaka_1_1RawKeyDecryptionParams_1_1KeyPair.html',1,'shaka::RawKeyDecryptionParams']]],
+  ['keyprovider',['KeyProvider',['../d8/daf/namespaceshaka.html#a539b99ce5c34193e294bc544437e9185',1,'shaka']]],
   ['keysource',['KeySource',['../d1/d1f/classshaka_1_1media_1_1KeySource.html',1,'shaka::media']]],
+  ['knokeyrotation',['kNoKeyRotation',['../dc/da0/structshaka_1_1EncryptionParams.html#a92ad4ca8e1ccb7d6b5fa2ee0b1b196fa',1,'shaka::EncryptionParams']]],
   ['korderinvalid',['kOrderInvalid',['../dc/da6/classshaka_1_1media_1_1ContentEncoding.html#a3ba32d5ca8b0688b2dc6b2ec8a5be6d2',1,'shaka::media::ContentEncoding']]],
+  ['kprotectionschemecenc',['kProtectionSchemeCenc',['../dc/da0/structshaka_1_1EncryptionParams.html#a1d7a8c6b5e46b51ccadcaef3f9cf9cb0',1,'shaka::EncryptionParams']]],
   ['kskipifcryptbyteblockremaining',['kSkipIfCryptByteBlockRemaining',['../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f',1,'shaka::media::AesPatternCryptor']]]
 ];

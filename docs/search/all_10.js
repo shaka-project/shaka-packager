@@ -27,8 +27,8 @@ var searchData=
   ['segment_5fduration_5fin_5fseconds',['segment_duration_in_seconds',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a1cdbde61303f629cc9b4cbcd98f2d711',1,'shaka::media::ChunkingOptions']]],
   ['segment_5fsap_5faligned',['segment_sap_aligned',['../db/d02/structshaka_1_1media_1_1ChunkingOptions.html#a0ae39a9eef9c4adc63916fa594f0fe64',1,'shaka::media::ChunkingOptions']]],
   ['segment_5ftemplate',['segment_template',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ab98cfd28046fc5c52ab2a45dba1a339a',1,'shaka::media::MuxerOptions']]],
-  ['segmenter',['Segmenter',['../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html',1,'shaka::media::mp4']]],
   ['segmenter',['Segmenter',['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html',1,'shaka::media::webm']]],
+  ['segmenter',['Segmenter',['../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html',1,'shaka::media::mp4']]],
   ['segmentindex',['SegmentIndex',['../d4/df9/structshaka_1_1media_1_1mp4_1_1SegmentIndex.html',1,'shaka::media::mp4']]],
   ['segmentinfo',['SegmentInfo',['../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html',1,'shaka::media']]],
   ['segmentinfo',['SegmentInfo',['../dc/de1/structshaka_1_1SegmentInfo.html',1,'shaka']]],
@@ -66,6 +66,9 @@ var searchData=
   ['setupgraph',['SetUpGraph',['../d4/d9b/classshaka_1_1media_1_1MediaHandlerTestBase.html#a7ab44361bc98f2a9e32a9510388dbd70',1,'shaka::media::MediaHandlerTestBase']]],
   ['shaka',['shaka',['../d8/daf/namespaceshaka.html',1,'']]],
   ['signalencrypted',['SignalEncrypted',['../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#afc47f61bce7cd4f8f6a6ea0ec2c96d4c',1,'shaka::media::mp2t::TsWriter']]],
+  ['signer',['signer',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a233141ad4baf2f2afce30f96adf340ae',1,'shaka::WidevineEncryptionParams::signer()'],['../d8/d48/structshaka_1_1WidevineDecryptionParams.html#acf84772bb9787f61110e388490412939',1,'shaka::WidevineDecryptionParams::signer()']]],
+  ['signer_5fname',['signer_name',['../df/d22/structshaka_1_1WidevineSigner.html#a6768d5addb3c90f33ce5f241705c827e',1,'shaka::WidevineSigner']]],
+  ['signing_5fkey_5ftype',['signing_key_type',['../df/d22/structshaka_1_1WidevineSigner.html#a656fbc14799c96fa8b822e3917070cf6',1,'shaka::WidevineSigner']]],
   ['simplempdnotifier',['SimpleMpdNotifier',['../d8/de1/classshaka_1_1SimpleMpdNotifier.html',1,'shaka']]],
   ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html',1,'shaka::media::mp4']]],
   ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html',1,'shaka::media::webm']]],
@@ -80,7 +83,7 @@ var searchData=
   ['stop',['Stop',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#ac600977b708381facf07f87e36b43d79',1,'shaka::media::ProducerConsumerQueue']]],
   ['stopped',['Stopped',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#a3d88bdebfa412f2847f1d96fd804bba1',1,'shaka::media::ProducerConsumerQueue']]],
   ['stream_5fid',['stream_id',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#aa023c7fafbced88ca40e98362a7e4c69',1,'shaka::media::mp2t::PesPacket']]],
-  ['stream_5flabel_5ffunc',['stream_label_func',['../d6/d82/structshaka_1_1media_1_1EncryptionOptions.html#a586017f7bf6490e06a61c1f6eaf7970c',1,'shaka::media::EncryptionOptions']]],
+  ['stream_5flabel_5ffunc',['stream_label_func',['../dc/da0/structshaka_1_1EncryptionParams.html#a7686a6aca6a7c3d077a5d7215c39fc51',1,'shaka::EncryptionParams']]],
   ['streamdata',['StreamData',['../d0/d4c/structshaka_1_1media_1_1StreamData.html',1,'shaka::media']]],
   ['streaminfo',['StreamInfo',['../d5/db1/classshaka_1_1media_1_1StreamInfo.html',1,'shaka::media']]],
   ['subsampleentry',['SubsampleEntry',['../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html',1,'shaka::media']]],
@@ -90,6 +93,6 @@ var searchData=
   ['subtitlemediaheader',['SubtitleMediaHeader',['../db/d21/structshaka_1_1media_1_1mp4_1_1SubtitleMediaHeader.html',1,'shaka::media::mp4']]],
   ['suppressonce',['SuppressOnce',['../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed',1,'shaka::Representation']]],
   ['syncsample',['SyncSample',['../dd/d3f/structshaka_1_1media_1_1mp4_1_1SyncSample.html',1,'shaka::media::mp4']]],
-  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html',1,'shaka::media::mp4']]],
-  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html#af8bc2d5d153bfdd168f145213c47d3fe',1,'shaka::media::mp4::SyncSampleIterator']]]
+  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html#af8bc2d5d153bfdd168f145213c47d3fe',1,'shaka::media::mp4::SyncSampleIterator']]],
+  ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html',1,'shaka::media::mp4']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['index_5frange',['index_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#aa15231fb064efc4b56800df24b074b29',1,'shaka::media::MuxerListener::MediaRanges']]],
-  ['init_5frange',['init_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#a6070da9ce7fab251c82b25a4020373c0',1,'shaka::media::MuxerListener::MediaRanges']]]
+  ['group_5fid',['group_id',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a6d69402cd4c66d546be180c7800e6d09',1,'shaka::WidevineEncryptionParams']]]
 ];
