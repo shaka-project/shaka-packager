@@ -17,6 +17,8 @@
         'hls_notify_muxer_listener.h',
         'mpd_notify_muxer_listener.cc',
         'mpd_notify_muxer_listener.h',
+        'hls_mpd_notify_muxer_listener.cc',
+        'hls_mpd_notify_muxer_listener.h',
         'muxer_listener.h',
         'muxer_listener_internal.cc',
         'muxer_listener_internal.h',
