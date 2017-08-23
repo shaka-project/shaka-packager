@@ -59,7 +59,7 @@ const char kMediaInfoSuffix[] = ".media_info";
 
 // TODO(rkuroiwa): Write TTML and WebVTT parser (demuxing) for a better check
 // and for supporting live/segmenting (muxing).  With a demuxer and a muxer,
-// CreateRemuxJobs() shouldn't treat text as a special case.
+// CreateAllJobs() shouldn't treat text as a special case.
 std::string DetermineTextFileFormat(const std::string& file) {
   std::string content;
   if (!File::ReadFileToString(file.c_str(), &content)) {
@@ -437,31 +437,26 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   return std::make_shared<EncryptionHandler>(encryption_params, key_source);
 }
 
-Status CreateRemuxJobs(const std::vector<StreamDescriptor> stream_descriptors,
-                       const PackagingParams& packaging_params,
-                       FakeClock* fake_clock,
-                       KeySource* encryption_key_source,
-                       MpdNotifier* mpd_notifier,
-                       hls::HlsNotifier* hls_notifier,
-                       std::vector<std::unique_ptr<Job>>* jobs) {
-  DCHECK(jobs);
+Status CreateTextJobs(
+    int first_stream_number,
+    const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
+    const PackagingParams& packaging_params,
+    MpdNotifier* mpd_notifier,
+    std::vector<std::unique_ptr<Job>>* jobs) {
+  // -1 so that it will be back at |first_stream_number| on the first
+  // iteration.
+  int stream_number = first_stream_number - 1;
 
-  // Demuxers are shared among all streams with the same input.
-  std::shared_ptr<Demuxer> demuxer;
-  std::shared_ptr<MediaHandler> replicator;
-
-  std::string previous_input;
-  std::string previous_selector;
-
-  // Start at -1 so that it will be at 0 on the first iteration.
-  int stream_number = -1;
-
-  // Move everything into a queue so that it will be easier to work with.
-  for (const StreamDescriptor& stream : stream_descriptors) {
+  for (const StreamDescriptor& stream : streams) {
     stream_number += 1;
 
-    if (stream.stream_selector == "text" &&
-        GetOutputFormat(stream) != CONTAINER_MOV) {
+    const MediaContainerName output_format = GetOutputFormat(stream);
+
+    if (output_format == CONTAINER_MOV) {
+      // TODO(vaage): Complete this part of the text pipeline. This path will
+      // be similar to the audio/video pipeline but with some components
+      // removed (e.g. trick play).
+    } else {
       MediaInfo text_media_info;
       if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
         return Status(error::INVALID_ARGUMENT,
@@ -476,12 +471,44 @@ Status CreateRemuxJobs(const std::vector<StreamDescriptor> stream_descriptors,
           return Status(error::PARSER_FAILURE,
                         "Failed to process text file " + stream.input);
         }
-      } else if (packaging_params.output_media_info) {
+      }
+
+      if (packaging_params.output_media_info) {
         VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
             text_media_info, stream.output + kMediaInfoSuffix);
       }
-      continue;
     }
+  }
+
+  return Status::OK;
+}
+
+Status CreateAudioVideoJobs(
+    int first_stream_number,
+    const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
+    const PackagingParams& packaging_params,
+    FakeClock* fake_clock,
+    KeySource* encryption_key_source,
+    MpdNotifier* mpd_notifier,
+    hls::HlsNotifier* hls_notifier,
+    std::vector<std::unique_ptr<Job>>* jobs) {
+  DCHECK(jobs);
+
+  // Demuxers are shared among all streams with the same input.
+  std::shared_ptr<Demuxer> demuxer;
+  // Replicators are shared among all streams with the same input and stream
+  // selector.
+  std::shared_ptr<MediaHandler> replicator;
+
+  std::string previous_input;
+  std::string previous_selector;
+
+  // -1 so that it will be back at |first_stream_number| on the first
+  // iteration.
+  int stream_number = first_stream_number - 1;
+
+  for (const StreamDescriptor& stream : streams) {
+    stream_number += 1;
 
     // If we changed our input files, we need a new demuxer.
     if (previous_input != stream.input) {
@@ -584,12 +611,62 @@ Status CreateRemuxJobs(const std::vector<StreamDescriptor> stream_descriptors,
     }
   }
 
-  // Initialize processing graph.
+  return Status::OK;
+}
+
+Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
+                     const PackagingParams& packaging_params,
+                     FakeClock* fake_clock,
+                     KeySource* encryption_key_source,
+                     MpdNotifier* mpd_notifier,
+                     hls::HlsNotifier* hls_notifier,
+                     std::vector<std::unique_ptr<Job>>* jobs) {
+  DCHECK(jobs);
+
+  // Group all streams based on which pipeline they will use.
+  std::vector<std::reference_wrapper<const StreamDescriptor>> text_streams;
+  std::vector<std::reference_wrapper<const StreamDescriptor>>
+      audio_video_streams;
+
+  for (const StreamDescriptor& stream : stream_descriptors) {
+    // TODO: Find a better way to determine what stream type a stream
+    // descriptor is as |stream_selector| may use an index. This would
+    // also allow us to use a simpler audio pipeline.
+    if (stream.stream_selector == "text") {
+      text_streams.push_back(stream);
+    } else {
+      audio_video_streams.push_back(stream);
+    }
+  }
+
+  // Audio/Video streams need to be in sorted order so that demuxers and trick
+  // play handlers get setup correctly.
+  std::sort(audio_video_streams.begin(), audio_video_streams.end(),
+            media::StreamDescriptorCompareFn);
+
+  int stream_number = 0;
+
   Status status;
+
+  status.Update(CreateTextJobs(stream_number, text_streams, packaging_params,
+                               mpd_notifier, jobs));
+
+  stream_number += text_streams.size();
+
+  status.Update(CreateAudioVideoJobs(
+      stream_number, audio_video_streams, packaging_params, fake_clock,
+      encryption_key_source, mpd_notifier, hls_notifier, jobs));
+
+  if (!status.ok()) {
+    return status;
+  }
+
+  // Initialize processing graph.
   for (const std::unique_ptr<Job>& job : *jobs) {
     job->Initialize();
     status.Update(job->status());
   }
+
   return status;
 }
 
@@ -732,42 +809,48 @@ Status Packager::Initialize(
         master_playlist_name.AsUTF8Unsafe()));
   }
 
-  std::vector<StreamDescriptor> stream_descriptors_copy = stream_descriptors;
-  std::sort(stream_descriptors_copy.begin(), stream_descriptors_copy.end(),
-            media::StreamDescriptorCompareFn);
-  for (StreamDescriptor& descriptor : stream_descriptors_copy) {
+  std::vector<StreamDescriptor> streams_for_jobs;
+
+  for (const StreamDescriptor& descriptor : stream_descriptors) {
+    // We may need to overwrite some values, so make a copy first.
+    StreamDescriptor copy = descriptor;
+
     if (internal->buffer_callback_params.read_func) {
-      descriptor.input = File::MakeCallbackFileName(
-          internal->buffer_callback_params, descriptor.input);
+      copy.input = File::MakeCallbackFileName(internal->buffer_callback_params,
+                                              descriptor.input);
     }
+
     if (internal->buffer_callback_params.write_func) {
-      descriptor.output = File::MakeCallbackFileName(
-          internal->buffer_callback_params, descriptor.output);
-      descriptor.segment_template = File::MakeCallbackFileName(
+      copy.output = File::MakeCallbackFileName(internal->buffer_callback_params,
+                                               descriptor.output);
+      copy.segment_template = File::MakeCallbackFileName(
           internal->buffer_callback_params, descriptor.segment_template);
     }
 
     // Update language to ISO_639_2 code if set.
-    if (!descriptor.language.empty()) {
-      descriptor.language = LanguageToISO_639_2(descriptor.language);
-      if (descriptor.language == "und") {
+    if (!copy.language.empty()) {
+      copy.language = LanguageToISO_639_2(descriptor.language);
+      if (copy.language == "und") {
         return Status(
             error::INVALID_ARGUMENT,
             "Unknown/invalid language specified: " + descriptor.language);
       }
     }
+
+    streams_for_jobs.push_back(copy);
   }
 
-  Status status = media::CreateRemuxJobs(
-      stream_descriptors_copy, packaging_params, &internal->fake_clock,
+  Status status = media::CreateAllJobs(
+      streams_for_jobs, packaging_params, &internal->fake_clock,
       internal->encryption_key_source.get(), internal->mpd_notifier.get(),
       internal->hls_notifier.get(), &internal->jobs);
 
-  if (status.ok()) {
-    internal_ = std::move(internal);
+  if (!status.ok()) {
+    return status;
   }
 
-  return status;
+  internal_ = std::move(internal);
+  return Status::OK;
 }
 
 Status Packager::Run() {
