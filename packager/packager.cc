@@ -27,7 +27,9 @@
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/demuxer/demuxer.h"
-#include "packager/media/event/hls_mpd_notify_muxer_listener.h"
+#include "packager/media/event/mpd_notify_muxer_listener.h"
+#include "packager/media/event/hls_notify_muxer_listener.h"
+#include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
@@ -400,7 +402,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (packaging_params.test_params.inject_fake_clock)
       muxer->set_clock(fake_clock);
 
-    std::unique_ptr<MuxerListener> muxer_listener;
+    std::list<std::unique_ptr<MuxerListener>> muxer_listeners;
     DCHECK(!(packaging_params.output_media_info && mpd_notifier));
     if (packaging_params.output_media_info) {
       const std::string output_media_info_file_name =
@@ -408,10 +410,16 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       std::unique_ptr<VodMediaInfoDumpMuxerListener>
           vod_media_info_dump_muxer_listener(
               new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
-      muxer_listener = std::move(vod_media_info_dump_muxer_listener);
+      muxer_listeners.emplace_back(std::move(vod_media_info_dump_muxer_listener));
     }
 
-    if ((mpd_notifier && hls_notifier) || hls_notifier) {
+    if (mpd_notifier) {
+      std::unique_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
+          new MpdNotifyMuxerListener(mpd_notifier));
+      muxer_listeners.emplace_back(std::move(mpd_notify_muxer_listener));
+    }
+
+    if (hls_notifier) {
       std::string group_id = stream_iter->hls_group_id;
       std::string name = stream_iter->hls_name;
       std::string hls_playlist_name = stream_iter->hls_playlist_name;
@@ -422,20 +430,16 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       if (hls_playlist_name.empty())
         hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
 
-      if(mpd_notifier && hls_notifier)
-          muxer_listener.reset(new HlsMpdNotifyMuxerListener(hls_playlist_name, name,
-                                                          group_id, hls_notifier, mpd_notifier));
-      else
-          muxer_listener.reset(new HlsNotifyMuxerListener(hls_playlist_name, name,
-                                                          group_id, hls_notifier));
-    } else if (mpd_notifier) {
-      std::unique_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
-          new MpdNotifyMuxerListener(mpd_notifier));
-      muxer_listener = std::move(mpd_notify_muxer_listener);
+      muxer_listeners.emplace_back(new HlsNotifyMuxerListener(hls_playlist_name, name,
+                                                      group_id, hls_notifier));
     }
 
-    if (muxer_listener)
-      muxer->SetMuxerListener(std::move(muxer_listener));
+    if (!muxer_listeners.empty()) {
+        std::unique_ptr<MuxerListener> muxer_listener;
+        std::unique_ptr<CombinedMuxerListener> combined_muxer_listener(new CombinedMuxerListener(&muxer_listeners));
+        muxer_listener = std::move(combined_muxer_listener);
+        muxer->SetMuxerListener(std::move(muxer_listener));
+    }
 
     // Create a new trick_play_handler. Note that the stream_decriptors
     // are sorted so that for the same input and stream_selector, the main

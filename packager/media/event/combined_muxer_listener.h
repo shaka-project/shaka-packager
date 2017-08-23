@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_MEDIA_EVENT_HLS_MPD_NOTIFY_MUXER_LISTENER_H_
-#define PACKAGER_MEDIA_EVENT_HLS_MPD_NOTIFY_MUXER_LISTENER_H_
+#ifndef PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
+#define PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 
 #include <string>
 
@@ -16,23 +16,10 @@ namespace shaka {
 
 namespace media {
 
-/// MuxerListener that uses HlsNotifier.
-class HlsMpdNotifyMuxerListener : public MuxerListener {
+class CombinedMuxerListener : public MuxerListener {
  public:
-  /// @param playlist_name is the name of the playlist for the muxer's stream.
-  /// @param ext_x_media_name is the name of this playlist. This is the
-  ///        value of the NAME attribute for EXT-X-MEDIA, it is not the same as
-  ///        @a playlist_name. This may be empty for video.
-  /// @param ext_x_media_group_id is the group ID for this playlist. This is the
-  ///        value of GROUP-ID attribute for EXT-X-MEDIA. This may be empty for
-  ///        video.
-  /// @param hls_notifier used by this listener. Ownership does not transfer.
-  HlsMpdNotifyMuxerListener(const std::string& playlist_name,
-                         const std::string& ext_x_media_name,
-                         const std::string& ext_x_media_group_id,
-                         hls::HlsNotifier* hls_notifier,
-                         MpdNotifier* mpd_notifier);
-  ~HlsMpdNotifyMuxerListener() override;
+  explicit CombinedMuxerListener(std::list<std::unique_ptr<MuxerListener>>* muxer_listeners);
+  ~CombinedMuxerListener() override;
 
   void OnEncryptionInfoReady(bool is_initial_encryption_info,
                              FourCC protection_scheme,
@@ -53,13 +40,12 @@ class HlsMpdNotifyMuxerListener : public MuxerListener {
                     uint64_t duration,
                     uint64_t segment_file_size) override;
 
-  DISALLOW_COPY_AND_ASSIGN(HlsMpdNotifyMuxerListener);
+  DISALLOW_COPY_AND_ASSIGN(CombinedMuxerListener);
 
   private:
-  std::unique_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener;
-  std::unique_ptr<HlsNotifyMuxerListener> hls_notify_muxer_listener;
+  std::list<std::unique_ptr<MuxerListener>> muxer_listeners_;
 };
 
 }  // namespace media
 }  // namespace shaka
-#endif  // PACKAGER_MEDIA_EVENT_HLS_MPD_NOTIFY_MUXER_LISTENER_H_
+#endif  // PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
