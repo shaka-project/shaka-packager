@@ -231,7 +231,7 @@ class FakeClock : public base::Clock {
 
 class Job : public base::SimpleThread {
  public:
-   Job(const std::string& name, std::shared_ptr<OriginHandler> work)
+  Job(const std::string& name, std::shared_ptr<OriginHandler> work)
       : SimpleThread(name),
         work_(work),
         wait_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -319,13 +319,13 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
   }
 }
 
-bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
-                     const PackagingParams& packaging_params,
-                     FakeClock* fake_clock,
-                     KeySource* encryption_key_source,
-                     MpdNotifier* mpd_notifier,
-                     hls::HlsNotifier* hls_notifier,
-                     std::vector<std::unique_ptr<Job>>* jobs) {
+Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
+                       const PackagingParams& packaging_params,
+                       FakeClock* fake_clock,
+                       KeySource* encryption_key_source,
+                       MpdNotifier* mpd_notifier,
+                       hls::HlsNotifier* hls_notifier,
+                       std::vector<std::unique_ptr<Job>>* jobs) {
   // No notifiers OR (mpd_notifier XOR hls_notifier); which is NAND.
   DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(jobs);
@@ -349,9 +349,9 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     stream_muxer_options.output_file_name = stream_iter->output;
     if (!stream_iter->segment_template.empty()) {
       if (!ValidateSegmentTemplate(stream_iter->segment_template)) {
-        LOG(ERROR) << "ERROR: segment template with '"
-                   << stream_iter->segment_template << "' is invalid.";
-        return false;
+        return Status(
+            error::INVALID_ARGUMENT,
+            "Invalid segment template: " + stream_iter->segment_template);
       }
       stream_muxer_options.segment_template = stream_iter->segment_template;
     }
@@ -362,7 +362,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       MediaInfo text_media_info;
       if (!StreamInfoToTextMediaInfo(*stream_iter, stream_muxer_options,
                                      &text_media_info)) {
-        return false;
+        return Status(error::INVALID_ARGUMENT,
+                      "Could not create media info for stream.");
       }
 
       if (mpd_notifier) {
@@ -390,8 +391,11 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
           KeyProvider::kNone) {
         std::unique_ptr<KeySource> decryption_key_source(
             CreateDecryptionKeySource(packaging_params.decryption_params));
-        if (!decryption_key_source)
-          return false;
+        if (!decryption_key_source) {
+          return Status(
+              error::INVALID_ARGUMENT,
+              "Must define decryption key source when defining key provider");
+        }
         demuxer->SetKeySource(std::move(decryption_key_source));
       }
       jobs->emplace_back(new media::Job("RemuxJob", demuxer));
@@ -484,8 +488,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       // will support CENC in TS in the future.
       if (output_format == CONTAINER_MPEG2TS) {
         VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS.";
-        encryption_params.protection_scheme =
-            kAppleSampleAesProtectionScheme;
+        encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
       }
       if (!encryption_params.stream_label_func) {
         const int kDefaultMaxSdPixels = 768 * 576;
@@ -512,22 +515,19 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     status.Update(ConnectHandlers(handlers));
 
     if (!status.ok()) {
-      LOG(ERROR) << "Failed to setup graph: " << status;
-      return false;
+      return status;
     }
     if (!stream_iter->language.empty())
       demuxer->SetLanguageOverride(stream_selector, stream_iter->language);
   }
 
   // Initialize processing graph.
+  Status status;
   for (const std::unique_ptr<Job>& job : *jobs) {
     job->Initialize();
-    if (!job->status().ok()) {
-      LOG(ERROR) << "Failed to initialize processing graph " << job->status();
-      return false;
-    }
+    status.Update(job->status());
   }
-  return true;
+  return status;
 }
 
 Status RunJobs(const std::vector<std::unique_ptr<Job>>& jobs) {
@@ -553,8 +553,8 @@ Status RunJobs(const std::vector<std::unique_ptr<Job>>& jobs) {
   while (status.ok() && active_jobs.size()) {
     // Wait for an event to finish and then update our status so that we can
     // quit if something has gone wrong.
-    const size_t done = base::WaitableEvent::WaitMany(active_waits.data(),
-                                                      active_waits.size());
+    const size_t done =
+        base::WaitableEvent::WaitMany(active_waits.data(), active_waits.size());
     Job* job = active_jobs[done];
 
     job->Join();
@@ -657,14 +657,16 @@ Status Packager::Initialize(
   media::StreamDescriptorList stream_descriptor_list;
   for (const StreamDescriptor& descriptor : stream_descriptors)
     stream_descriptor_list.insert(descriptor);
-  if (!media::CreateRemuxJobs(
-          stream_descriptor_list, packaging_params, &internal->fake_clock,
-          internal->encryption_key_source.get(), internal->mpd_notifier.get(),
-          internal->hls_notifier.get(), &internal->jobs)) {
-    return Status(error::INVALID_ARGUMENT, "Failed to create remux jobs.");
+  Status status = media::CreateRemuxJobs(
+      stream_descriptor_list, packaging_params, &internal->fake_clock,
+      internal->encryption_key_source.get(), internal->mpd_notifier.get(),
+      internal->hls_notifier.get(), &internal->jobs);
+
+  if (status.ok()) {
+    internal_ = std::move(internal);
   }
-  internal_ = std::move(internal);
-  return Status::OK;
+
+  return status;
 }
 
 Status Packager::Run() {
@@ -710,9 +712,12 @@ std::string Packager::DefaultStreamLabelFunction(
       EncryptionParams::EncryptedStreamAttributes::kVideo) {
     const int pixels = stream_attributes.oneof.video.width *
                        stream_attributes.oneof.video.height;
-    if (pixels <= max_sd_pixels) return "SD";
-    if (pixels <= max_hd_pixels) return "HD";
-    if (pixels <= max_uhd1_pixels) return "UHD1";
+    if (pixels <= max_sd_pixels)
+      return "SD";
+    if (pixels <= max_hd_pixels)
+      return "HD";
+    if (pixels <= max_uhd1_pixels)
+      return "UHD1";
     return "UHD2";
   }
   return "";
