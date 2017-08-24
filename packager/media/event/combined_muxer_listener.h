@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All rights reserved.
+// Copyright 2017 Google Inc. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -7,10 +7,10 @@
 #ifndef PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_
 
-#include <string>
+#include <list>
+#include <memory>
 
-#include "packager/media/event/hls_notify_muxer_listener.h"
-#include "packager/media/event/mpd_notify_muxer_listener.h"
+#include "packager/media/event/muxer_listener.h"
 
 namespace shaka {
 
@@ -18,7 +18,8 @@ namespace media {
 
 class CombinedMuxerListener : public MuxerListener {
  public:
-  explicit CombinedMuxerListener(std::list<std::unique_ptr<MuxerListener>>* muxer_listeners);
+  explicit CombinedMuxerListener(
+      std::list<std::unique_ptr<MuxerListener>>* muxer_listeners);
   ~CombinedMuxerListener() override;
 
   void OnEncryptionInfoReady(bool is_initial_encryption_info,
@@ -40,10 +41,10 @@ class CombinedMuxerListener : public MuxerListener {
                     uint64_t duration,
                     uint64_t segment_file_size) override;
 
-  DISALLOW_COPY_AND_ASSIGN(CombinedMuxerListener);
-
-  private:
+ private:
   std::list<std::unique_ptr<MuxerListener>> muxer_listeners_;
+
+  DISALLOW_COPY_AND_ASSIGN(CombinedMuxerListener);
 };
 
 }  // namespace media

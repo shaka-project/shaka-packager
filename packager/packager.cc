@@ -407,16 +407,12 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (packaging_params.output_media_info) {
       const std::string output_media_info_file_name =
           stream_muxer_options.output_file_name + kMediaInfoSuffix;
-      std::unique_ptr<VodMediaInfoDumpMuxerListener>
-          vod_media_info_dump_muxer_listener(
-              new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
-      muxer_listeners.emplace_back(std::move(vod_media_info_dump_muxer_listener));
+      muxer_listeners.emplace_back(
+          new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
     }
 
     if (mpd_notifier) {
-      std::unique_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
-          new MpdNotifyMuxerListener(mpd_notifier));
-      muxer_listeners.emplace_back(std::move(mpd_notify_muxer_listener));
+      muxer_listeners.emplace_back(new MpdNotifyMuxerListener(mpd_notifier));
     }
 
     if (hls_notifier) {
@@ -430,15 +426,16 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       if (hls_playlist_name.empty())
         hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
 
-      muxer_listeners.emplace_back(new HlsNotifyMuxerListener(hls_playlist_name, name,
-                                                      group_id, hls_notifier));
+      muxer_listeners.emplace_back(
+          new HlsNotifyMuxerListener(hls_playlist_name, name,
+                                     group_id, hls_notifier));
     }
 
     if (!muxer_listeners.empty()) {
-        std::unique_ptr<MuxerListener> muxer_listener;
-        std::unique_ptr<CombinedMuxerListener> combined_muxer_listener(new CombinedMuxerListener(&muxer_listeners));
-        muxer_listener = std::move(combined_muxer_listener);
-        muxer->SetMuxerListener(std::move(muxer_listener));
+      std::unique_ptr<MuxerListener> muxer_listener;
+      std::unique_ptr<CombinedMuxerListener> combined_muxer_listener(
+          new CombinedMuxerListener(&muxer_listeners));
+      muxer->SetMuxerListener(std::move(combined_muxer_listener));
     }
 
     // Create a new trick_play_handler. Note that the stream_decriptors
