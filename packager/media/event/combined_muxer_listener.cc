@@ -57,16 +57,16 @@ void CombinedMuxerListener::OnSampleDurationReady(
 }
 
 void CombinedMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
-                                        float duration_seconds) {
+                                       float duration_seconds) {
   for (auto& listener: muxer_listeners_) {
     listener->OnMediaEnd(media_ranges, duration_seconds);
   }
 }
 
 void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
-                                          uint64_t start_time,
-                                          uint64_t duration,
-                                          uint64_t segment_file_size) {
+                                         uint64_t start_time,
+                                         uint64_t duration,
+                                         uint64_t segment_file_size) {
   for (auto& listener: muxer_listeners_) {
     listener->OnNewSegment(file_name, start_time, duration, segment_file_size);
   }

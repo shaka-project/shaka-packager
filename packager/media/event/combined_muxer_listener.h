@@ -13,7 +13,6 @@
 #include "packager/media/event/muxer_listener.h"
 
 namespace shaka {
-
 namespace media {
 
 class CombinedMuxerListener : public MuxerListener {
@@ -49,4 +48,5 @@ class CombinedMuxerListener : public MuxerListener {
 
 }  // namespace media
 }  // namespace shaka
+
 #endif  // PACKAGER_MEDIA_EVENT_COMBINED_MUXER_LISTENER_H_

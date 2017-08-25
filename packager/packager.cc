@@ -27,9 +27,9 @@
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/demuxer/demuxer.h"
-#include "packager/media/event/mpd_notify_muxer_listener.h"
-#include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/combined_muxer_listener.h"
+#include "packager/media/event/hls_notify_muxer_listener.h"
+#include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
@@ -151,18 +151,6 @@ bool ValidateParams(const PackagingParams& packaging_params,
       packaging_params.chunking_params.subsegment_sap_aligned) {
     LOG(ERROR) << "Setting segment_sap_aligned to false but "
                   "subsegment_sap_aligned to true is not allowed.";
-    return false;
-  }
-
-  if (packaging_params.output_media_info &&
-      !packaging_params.mpd_params.mpd_output.empty()) {
-    LOG(ERROR) << "output_media_info and MPD output do not work together.";
-    return false;
-  }
-
-  if (packaging_params.output_media_info &&
-      !packaging_params.hls_params.master_playlist_output.empty()) {
-    LOG(ERROR) << "output_media_info and HLS output do not work together.";
     return false;
   }
 
@@ -416,6 +404,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
 
     if (hls_notifier) {
+      // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
+      // languages.
       std::string group_id = stream_iter->hls_group_id;
       std::string name = stream_iter->hls_name;
       std::string hls_playlist_name = stream_iter->hls_playlist_name;
@@ -432,7 +422,6 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
 
     if (!muxer_listeners.empty()) {
-      std::unique_ptr<MuxerListener> muxer_listener;
       std::unique_ptr<CombinedMuxerListener> combined_muxer_listener(
           new CombinedMuxerListener(&muxer_listeners));
       muxer->SetMuxerListener(std::move(combined_muxer_listener));
