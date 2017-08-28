@@ -9,346 +9,274 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/status_test_util.h"
 
-using ::testing::ElementsAre;
-using ::testing::IsEmpty;
-
 namespace shaka {
 namespace media {
 namespace {
-const size_t kStreamIndex0 = 0;
-const size_t kStreamIndex1 = 1;
-const size_t kStreamIndex2 = 2;
-const uint32_t kTimeScale = 800;
-const uint32_t kDuration = 200;
-const uint32_t kTrickPlayFactors[]{1, 2};
-const uint32_t kTrickPlayFactorsDecreasing[]{2, 1};
+const size_t kStreamIndex = 0;
+
+// This value does not matter as trick play does not use it, but it is needed
+// to create the audio and video info.
+const uint32_t kTimescale = 1000u;
+
+const bool kSubSegment = true;
 const bool kEncrypted = true;
 }  // namespace
 
-MATCHER_P5(IsTrickPlayVideoStreamInfo,
-           stream_index,
-           time_scale,
-           encrypted,
-           trick_play_factor,
-           playback_rate,
-           "") {
-  return arg->stream_index == stream_index &&
-         arg->stream_data_type == StreamDataType::kStreamInfo &&
-         arg->stream_info->time_scale() == time_scale &&
-         arg->stream_info->is_encrypted() == encrypted &&
-         arg->stream_info->stream_type() == kStreamVideo &&
-         static_cast<const VideoStreamInfo*>(arg->stream_info.get())
-                 ->trick_play_factor() == trick_play_factor &&
-         static_cast<const VideoStreamInfo*>(arg->stream_info.get())
-                 ->playback_rate() == playback_rate;
+MATCHER_P2(IsTrickPlayVideoStream, trick_play_factor, playback_rate, "") {
+  if (arg->stream_data_type != StreamDataType::kStreamInfo ||
+      arg->stream_info->stream_type() != kStreamVideo) {
+    return false;
+  }
+  const VideoStreamInfo* video_info =
+      static_cast<const VideoStreamInfo*>(arg->stream_info.get());
+  return video_info->trick_play_factor() == trick_play_factor &&
+         video_info->playback_rate() == playback_rate;
 }
 
-MATCHER_P3(IsKeyFrameMediaSample, stream_index, timestamp, duration, "") {
-  return arg->stream_index == stream_index &&
+MATCHER_P2(IsTrickPlaySample, timestamp, duration, "") {
+  return arg->stream_index == kStreamIndex &&
          arg->stream_data_type == StreamDataType::kMediaSample &&
          arg->media_sample->dts() == timestamp &&
          arg->media_sample->duration() == duration &&
-         arg->media_sample->is_key_frame() == true;
+         arg->media_sample->is_key_frame();
 }
 
-class TrickPlayHandlerTest : public MediaHandlerGraphTestBase {
- public:
-  void SetUpTrickPlayHandler(const std::vector<uint32_t>& trick_play_factors) {
-    trick_play_handler_.reset(new TrickPlayHandler());
-    // Use SetUpGraph to set only input handler, and use
-    // SetHandlerForMainStream and SetHandlerForTrickPlay for the output
-    // handlers.
-    SetUpGraph(1, 0, trick_play_handler_);
-    trick_play_handler_->SetHandlerForMainStream(next_handler());
-    for (uint32_t rate : trick_play_factors) {
-      trick_play_handler_->SetHandlerForTrickPlay(rate, next_handler());
-    }
-    ASSERT_OK(trick_play_handler_->Initialize());
-  }
-
-  Status Process(std::unique_ptr<StreamData> stream_data) {
-    return trick_play_handler_->Process(std::move(stream_data));
-  }
-
-  Status FlushStream(size_t stream_index) {
-    return trick_play_handler_->OnFlushRequest(stream_index);
-  }
-
+// Creates a structure of [input]->[trick play]->[output] where all
+// interactions are with input and output.
+class TrickPlayHandlerTest : public MediaHandlerTestBase {
  protected:
-  std::shared_ptr<TrickPlayHandler> trick_play_handler_;
+  void SetUpAndInitializeGraph(uint32_t factor) {
+    input_ = std::make_shared<FakeInputMediaHandler>();
+    trick_play_ = std::make_shared<TrickPlayHandler>(factor);
+    output_ = std::make_shared<MockOutputMediaHandler>();
+
+    ASSERT_OK(input_->AddHandler(trick_play_));
+    ASSERT_OK(trick_play_->AddHandler(output_));
+
+    ASSERT_OK(input_->Initialize());
+  }
+
+  FakeInputMediaHandler* input() { return input_.get(); }
+  MockOutputMediaHandler* output() { return output_.get(); }
+
+  // Create a series of samples where each sample has the same duration and ever
+  // sample that is an even multiple of |key_frame_frequency| will be a key
+  // frame.
+  std::vector<std::shared_ptr<MediaSample>> CreateSamples(
+      size_t count,
+      uint64_t start_time,
+      uint64_t frame_duration,
+      size_t key_frame_frequency) {
+    std::vector<std::shared_ptr<MediaSample>> samples;
+
+    uint64_t time = start_time;
+
+    for (size_t sample_index = 0; sample_index < count; sample_index++) {
+      const bool is_key_frame = (sample_index % key_frame_frequency) == 0;
+      samples.push_back(GetMediaSample(time, frame_duration, is_key_frame));
+      time += frame_duration;
+    }
+
+    return samples;
+  }
+
+ private:
+  std::shared_ptr<FakeInputMediaHandler> input_;
+  std::shared_ptr<MediaHandler> trick_play_;
+  std::shared_ptr<MockOutputMediaHandler> output_;
 };
 
-// This test makes sure the audio stream is rejected by the trick play handler.
-TEST_F(TrickPlayHandlerTest, AudioStream) {
-  const std::vector<uint32_t> trick_play_factors(std::begin(kTrickPlayFactors),
-                                                 std::end(kTrickPlayFactors));
-  SetUpTrickPlayHandler(trick_play_factors);
+// This test makes sure that audio streams are rejected by trick play handlers.
+TEST_F(TrickPlayHandlerTest, RejectsAudio) {
+  const uint32_t kTrickPlayFactor = 1u;
+  SetUpAndInitializeGraph(kTrickPlayFactor);
 
-  Status status = Process(StreamData::FromStreamInfo(
-      kStreamIndex0, GetAudioStreamInfo(kTimeScale)));
-  Status kExpectStatus(error::TRICK_PLAY_ERROR, "Some Messages");
-  EXPECT_TRUE(status.Matches(kExpectStatus));
+  Status status = input()->Dispatch(
+      StreamData::FromStreamInfo(kStreamIndex, GetAudioStreamInfo(kTimescale)));
+  EXPECT_EQ(error::TRICK_PLAY_ERROR, status.error_code());
 }
 
-// This test makes sure the trick play handler can process stream data
-// correctly.
-TEST_F(TrickPlayHandlerTest, VideoStreamWithTrickPlay) {
-  const std::vector<uint32_t> trick_play_factors(std::begin(kTrickPlayFactors),
-                                                 std::end(kTrickPlayFactors));
-  SetUpTrickPlayHandler(trick_play_factors);
+// This test makes sure that when the trick play handler is initialized using
+// a non-main-stream track that only a sub set of information gets passed
+// through. This checks the specific case where no media samples are sent.
+TEST_F(TrickPlayHandlerTest, TrickTrackNoSamples) {
+  // When there are no samples, play rate could not be determined and should be
+  // set to 0.
+  const int64_t kPlayRate = 0;
+  const uint32_t kTrickPlayFactor = 1u;
 
-  ASSERT_OK(Process(StreamData::FromStreamInfo(
-      kStreamIndex0, GetVideoStreamInfo(kTimeScale))));
-  // The stream info is cached, so the output is empty.
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(IsStreamInfo(kStreamIndex0, kTimeScale, !kEncrypted)));
-  ClearOutputStreamDataVector();
+  SetUpAndInitializeGraph(kTrickPlayFactor);
 
-  const int kVideoStartTimestamp = 12345;
-  // Group of Picture size, the frequency of key frames.
-  const int kGOPSize = 3;
-  for (int i = 0; i < 3; ++i) {
-    const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration * i,
-            kDuration,
-            is_key_frame))));
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*output(),
+                OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
+    EXPECT_CALL(*output(), OnFlush(kStreamIndex));
   }
 
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(
-          // Frame 0, key frame.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp, kDuration,
-                        !kEncrypted),
-          // Frame 1.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration,
-                        kDuration, !kEncrypted),
-          // Frame 2.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 2,
-                        kDuration, !kEncrypted)));
-  ClearOutputStreamDataVector();
-
-  // This expectation are separated from the expectation above because
-  // ElementsAre supports at most 10 elements.
-  for (int i = 3; i < 6; ++i) {
-    const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration * i,
-            kDuration,
-            is_key_frame))));
-  }
-
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(
-          // Frame 3, key frame.
-          IsKeyFrameMediaSample(
-              kStreamIndex0, kVideoStartTimestamp + kDuration * 3, kDuration),
-          // Stream info, TrickPlayFactor = 1.
-          IsTrickPlayVideoStreamInfo(
-              kStreamIndex1, kTimeScale, !kEncrypted, kTrickPlayFactors[0],
-              static_cast<uint32_t>(kGOPSize) * kTrickPlayFactors[0]),
-          // Frame 0, TrickPlayFactor = 1.
-          IsKeyFrameMediaSample(kStreamIndex1, kVideoStartTimestamp,
-                                kDuration * 3),
-          // Frame 4.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 4,
-                        kDuration, !kEncrypted),
-          // Frame 5.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 5,
-                        kDuration, !kEncrypted)));
-  ClearOutputStreamDataVector();
-
-  // This expectation are separated from the expectation above because
-  // ElementsAre supports at most 10 elements.
-  for (int i = 6; i < 8; ++i) {
-    const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration * i,
-            kDuration,
-            is_key_frame))));
-  }
-
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(
-          // Frame 6, key frame.
-          IsKeyFrameMediaSample(
-              kStreamIndex0, kVideoStartTimestamp + kDuration * 6, kDuration),
-          // Frame 3, TrickPlayFactor = 1.
-          IsKeyFrameMediaSample(kStreamIndex1,
-                                kVideoStartTimestamp + kDuration * 3,
-                                kDuration * 3),
-          // Stream info, TrickPlayFactor = 2.
-          IsTrickPlayVideoStreamInfo(
-              kStreamIndex2, kTimeScale, !kEncrypted, kTrickPlayFactors[1],
-              static_cast<uint32_t>(kGOPSize) * kTrickPlayFactors[1]),
-          // Frame 0, TrickPlayFactor = 2.
-          IsKeyFrameMediaSample(kStreamIndex2, kVideoStartTimestamp,
-                                kDuration * 6),
-          // Frame 7.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 7,
-                        kDuration, !kEncrypted)));
-  ClearOutputStreamDataVector();
-
-  ASSERT_OK(FlushStream(0));
-  EXPECT_THAT(GetOutputStreamDataVector(),
-              ElementsAre(
-                  // Frame 6, TrickPlayFactor = 1.
-                  IsKeyFrameMediaSample(kStreamIndex1,
-                                        kVideoStartTimestamp + kDuration * 6,
-                                        kDuration * 2),
-                  // Frame 6, TrickPlayFactor = 2.
-                  IsKeyFrameMediaSample(kStreamIndex2,
-                                        kVideoStartTimestamp + kDuration * 6,
-                                        kDuration * 2)));
-  ClearOutputStreamDataVector();
-
-  // Flush again, get nothing.
-  ASSERT_OK(FlushStream(0));
-  EXPECT_THAT(GetOutputStreamDataVector(), IsEmpty());
+  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimescale))));
+  ASSERT_OK(input()->FlushAllDownstreams());
 }
 
-// This test makes sure the trick play handler can process stream data
-// correctly with a decreasing order of trick play factors.
-TEST_F(TrickPlayHandlerTest, VideoStreamWithDecreasingTrickPlayFactors) {
-  const std::vector<uint32_t> trick_play_factors(
-      std::begin(kTrickPlayFactorsDecreasing),
-      std::end(kTrickPlayFactorsDecreasing));
-  SetUpTrickPlayHandler(trick_play_factors);
+// This test makes sure that when the trick play handler is initialized using
+// a non-main-stream track that only a sub set of information gets passed
+// through.
+TEST_F(TrickPlayHandlerTest, TrickTrackWithSamplesOnlyGetsKeyFrames) {
+  const uint32_t kTrickPlayFactor = 1u;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
+  const int64_t kKeyFrameRate = 3;
 
-  ASSERT_OK(Process(StreamData::FromStreamInfo(
-      kStreamIndex0, GetVideoStreamInfo(kTimeScale))));
-  // The stream info is cached, so the output is empty.
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(IsStreamInfo(kStreamIndex0, kTimeScale, !kEncrypted)));
-  ClearOutputStreamDataVector();
+  const int64_t kPlayRate = kKeyFrameRate * kTrickPlayFactor;
+  const int64_t kTrickPlaySampleDuration = kDuration * kPlayRate;
 
-  const int kVideoStartTimestamp = 12345;
-  // Group of Picture size, the frequency of key frames.
-  const int kGOPSize = 3;
-  for (int i = 0; i < 3; ++i) {
-    const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration * i,
-            kDuration,
-            is_key_frame))));
+  SetUpAndInitializeGraph(kTrickPlayFactor);
+
+  // Only some samples we send to trick play should also be sent to our mock
+  // handler.
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*output(),
+                OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
+    for (int i = 0; i < 3; i++) {
+      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
+                                 kStartTime + i * kTrickPlaySampleDuration,
+                                 kTrickPlaySampleDuration)));
+    }
+    EXPECT_CALL(*output(), OnFlush(kStreamIndex));
   }
 
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(
-          // Frame 0, key frame.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp, kDuration,
-                        !kEncrypted),
-          // Frame 1.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration,
-                        kDuration, !kEncrypted),
-          // Frame 2.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 2,
-                        kDuration, !kEncrypted)));
-  ClearOutputStreamDataVector();
+  std::vector<std::shared_ptr<MediaSample>> samples =
+      CreateSamples(9 /* sample count */, kStartTime, kDuration, kKeyFrameRate);
 
-  // This expectation are separated from the expectation above because
-  // ElementsAre supports at most 10 elements.
-  for (int i = 3; i < 6; ++i) {
-    const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration * i,
-            kDuration,
-            is_key_frame))));
+  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimescale))));
+
+  for (const auto& sample : samples) {
+    ASSERT_OK(
+        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
   }
 
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(
-          // Frame 3, key frame.
-          IsKeyFrameMediaSample(
-              kStreamIndex0, kVideoStartTimestamp + kDuration * 3, kDuration),
-          // Stream info, TrickPlayFactor = 1.
-          IsTrickPlayVideoStreamInfo(
-              kStreamIndex2, kTimeScale, !kEncrypted,
-              kTrickPlayFactorsDecreasing[1],
-              static_cast<uint32_t>(kGOPSize) * kTrickPlayFactorsDecreasing[1]),
-          // Frame 0, TrickPlayFactor = 1.
-          IsKeyFrameMediaSample(kStreamIndex2, kVideoStartTimestamp,
-                                kDuration * 3),
-          // Frame 4.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 4,
-                        kDuration, !kEncrypted),
-          // Frame 5.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 5,
-                        kDuration, !kEncrypted)));
-  ClearOutputStreamDataVector();
+  ASSERT_OK(input()->FlushAllDownstreams());
+}
 
-  // This expectation are separated from the expectation above because
-  // ElementsAre supports at most 10 elements.
-  for (int i = 6; i < 8; ++i) {
-    const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration * i,
-            kDuration,
-            is_key_frame))));
+// This test makes sure that when the trick play handler is initialized using
+// a non-main-stream track that only a sub set of information gets passed
+// through.
+TEST_F(TrickPlayHandlerTest, TrickTrackWithSamples) {
+  const uint32_t kTrickPlayFactor = 2u;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
+  const int64_t kKeyFrameRate = 2;
+
+  const int64_t kPlayRate = kKeyFrameRate * kTrickPlayFactor;
+  const int64_t kTrickPlaySampleDuration = kDuration * kPlayRate;
+
+  SetUpAndInitializeGraph(kTrickPlayFactor);
+
+  // Only some samples we send to trick play should also be sent to our mock
+  // handler.
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*output(),
+                OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
+    for (int i = 0; i < 2; i++) {
+      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
+                                 kStartTime + i * kTrickPlaySampleDuration,
+                                 kTrickPlaySampleDuration)));
+    }
+    EXPECT_CALL(*output(), OnFlush(0u));
   }
 
-  EXPECT_THAT(
-      GetOutputStreamDataVector(),
-      ElementsAre(
-          // Frame 6, key frame.
-          IsKeyFrameMediaSample(
-              kStreamIndex0, kVideoStartTimestamp + kDuration * 6, kDuration),
-          // Stream info, TrickPlayFactor = 2.
-          IsTrickPlayVideoStreamInfo(
-              kStreamIndex1, kTimeScale, !kEncrypted,
-              kTrickPlayFactorsDecreasing[0],
-              static_cast<uint32_t>(kGOPSize) * kTrickPlayFactorsDecreasing[0]),
-          // Frame 0, TrickPlayFactor = 2.
-          IsKeyFrameMediaSample(kStreamIndex1, kVideoStartTimestamp,
-                                kDuration * 6),
-          // Frame 3, TrickPlayFactor = 1.
-          IsKeyFrameMediaSample(kStreamIndex2,
-                                kVideoStartTimestamp + kDuration * 3,
-                                kDuration * 3),
-          // Frame 7.
-          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration * 7,
-                        kDuration, !kEncrypted)));
-  ClearOutputStreamDataVector();
+  std::vector<std::shared_ptr<MediaSample>> samples =
+      CreateSamples(8 /* sample count */, kStartTime, kDuration, kKeyFrameRate);
 
-  ASSERT_OK(FlushStream(0));
-  EXPECT_THAT(GetOutputStreamDataVector(),
-              ElementsAre(
-                  // Frame 6, TrickPlayFactor = 2.
-                  IsKeyFrameMediaSample(kStreamIndex1,
-                                        kVideoStartTimestamp + kDuration * 6,
-                                        kDuration * 2),
-                  // Frame 6, TrickPlayFactor = 1.
-                  IsKeyFrameMediaSample(kStreamIndex2,
-                                        kVideoStartTimestamp + kDuration * 6,
-                                        kDuration * 2)));
-  ClearOutputStreamDataVector();
+  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimescale))));
 
-  // Flush again, get nothing.
-  ASSERT_OK(FlushStream(0));
-  EXPECT_THAT(GetOutputStreamDataVector(), IsEmpty());
+  for (const auto& sample : samples) {
+    ASSERT_OK(
+        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+  }
+
+  ASSERT_OK(input()->FlushAllDownstreams());
+}
+
+TEST_F(TrickPlayHandlerTest, TrickTrackWithSamplesAndSegments) {
+  const uint32_t kTrickPlayFactor = 1u;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 100;
+  const int64_t kKeyFrameRate = 2;
+
+  const int64_t kPlayRate = kKeyFrameRate * kTrickPlayFactor;
+  const int64_t kTrickPlaySampleDuration = kDuration * kPlayRate;
+
+  SetUpAndInitializeGraph(kTrickPlayFactor);
+
+  // Only some samples we send to trick play should also be sent to our mock
+  // handler.
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*output(),
+                OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
+
+    // Segment One
+    for (int i = 0; i < 2; i++) {
+      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
+                                 kStartTime + kTrickPlaySampleDuration * i,
+                                 kTrickPlaySampleDuration)));
+    }
+    EXPECT_CALL(*output(),
+                OnProcess(IsSegmentInfo(kStreamIndex, kStartTime, 4 * kDuration,
+                                        !kSubSegment, !kEncrypted)));
+
+    // Segment Two
+    for (int i = 2; i < 4; i++) {
+      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
+                                 kStartTime + kTrickPlaySampleDuration * i,
+                                 kTrickPlaySampleDuration)));
+    }
+    EXPECT_CALL(*output(), OnProcess(IsSegmentInfo(
+                               kStreamIndex, kStartTime + 4 * kDuration,
+                               4 * kDuration, !kSubSegment, !kEncrypted)));
+
+    EXPECT_CALL(*output(), OnFlush(0u));
+  }
+
+  std::vector<std::shared_ptr<MediaSample>> segment_one_samples =
+      CreateSamples(4 /* sample count */, kStartTime, kDuration, kKeyFrameRate);
+
+  std::vector<std::shared_ptr<MediaSample>> segment_two_samples =
+      CreateSamples(4 /* sample count */, kStartTime + 4 * kDuration, kDuration,
+                    kKeyFrameRate);
+
+  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimescale))));
+
+  // Segment One
+  for (const auto& sample : segment_one_samples) {
+    ASSERT_OK(
+        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+  }
+  ASSERT_OK(input()->Dispatch(StreamData::FromSegmentInfo(
+      kStreamIndex, GetSegmentInfo(kStartTime, kDuration * 4, !kEncrypted))));
+
+  // Segment Two
+  for (const auto& sample : segment_two_samples) {
+    ASSERT_OK(
+        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+  }
+  ASSERT_OK(input()->Dispatch(StreamData::FromSegmentInfo(
+      kStreamIndex,
+      GetSegmentInfo(kStartTime + 4 * kDuration, 4 * kDuration, !kEncrypted))));
+
+  ASSERT_OK(input()->FlushAllDownstreams());
 }
 
 }  // namespace media

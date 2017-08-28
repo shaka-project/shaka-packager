@@ -24,8 +24,8 @@
       'dependencies': [
         'file/file.gyp:file',
         'hls/hls.gyp:hls_builder',
-        'media/codecs/codecs.gyp:codecs',
         'media/chunking/chunking.gyp:chunking',
+        'media/codecs/codecs.gyp:codecs',
         'media/demuxer/demuxer.gyp:demuxer',
         'media/event/media_event.gyp:media_event',
         'media/formats/mp2t/mp2t.gyp:mp2t',
@@ -34,6 +34,7 @@
         'media/formats/webm/webm.gyp:webm',
         'media/formats/webvtt/webvtt.gyp:webvtt',
         'media/formats/wvm/wvm.gyp:wvm',
+        'media/replicator/replicator.gyp:replicator',
         'media/trick_play/trick_play.gyp:trick_play',
         'mpd/mpd.gyp:mpd_builder',
         'third_party/boringssl/boringssl.gyp:boringssl',

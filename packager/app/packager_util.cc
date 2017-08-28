@@ -182,14 +182,5 @@ MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params) {
   return mpd_options;
 }
 
-Status ConnectHandlers(std::vector<std::shared_ptr<MediaHandler>>& handlers) {
-  size_t num_handlers = handlers.size();
-  Status status;
-  for (size_t i = 1; i < num_handlers; ++i) {
-    status.Update(handlers[i - 1]->AddHandler(handlers[i]));
-  }
-  return status;
-}
-
 }  // namespace media
 }  // namespace shaka

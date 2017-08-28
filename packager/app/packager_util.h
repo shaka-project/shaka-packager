@@ -47,12 +47,6 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
 /// @return MpdOptions from provided inputs.
 MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params);
 
-/// Connect handlers in the vector.
-/// @param handlers A vector of media handlers to be conncected. the handlers
-///        are chained from front() to back().
-/// @return OK on success.
-Status ConnectHandlers(std::vector<std::shared_ptr<MediaHandler>>& handlers);
-
 }  // namespace media
 }  // namespace shaka
 

@@ -34,6 +34,7 @@
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/formats/webm/webm_muxer.h"
+#include "packager/media/replicator/replicator.h"
 #include "packager/media/trick_play/trick_play_handler.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -211,11 +212,17 @@ class StreamDescriptorCompareFn {
  public:
   bool operator()(const StreamDescriptor& a, const StreamDescriptor& b) {
     if (a.input == b.input) {
-      if (a.stream_selector == b.stream_selector)
-        // Stream with high trick_play_factor is at the beginning.
-        return a.trick_play_factor > b.trick_play_factor;
-      else
+      if (a.stream_selector == b.stream_selector) {
+        // The MPD notifier requires that the main track comes first, so make
+        // sure that happens.
+        if (a.trick_play_factor == 0 || b.trick_play_factor == 0) {
+          return a.trick_play_factor == 0;
+        } else {
+          return a.trick_play_factor > b.trick_play_factor;
+        }
+      } else {
         return a.stream_selector < b.stream_selector;
+      }
     }
 
     return a.input < b.input;
@@ -444,44 +451,46 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
   DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(jobs);
 
+  // Demuxers are shared among all streams with the same input.
   std::shared_ptr<Demuxer> demuxer;
-  std::shared_ptr<TrickPlayHandler> trick_play_handler;
+  std::shared_ptr<MediaHandler> replicator;
 
   std::string previous_input;
-  std::string previous_stream_selector;
-  int stream_number = 0;
-  for (StreamDescriptorList::const_iterator
-           stream_iter = stream_descriptors.begin();
-       stream_iter != stream_descriptors.end();
-       ++stream_iter, ++stream_number) {
-    MediaContainerName output_format = GetOutputFormat(*stream_iter);
+  std::string previous_selector;
 
-    // Process stream descriptor.
-    if (stream_iter->stream_selector == "text" &&
-        output_format != CONTAINER_MOV) {
+  // Start at -1 so that it will be at 0 on the first iteration.
+  int stream_number = -1;
+
+  // Move everything into a queue so that it will be easier to work with.
+  for (const StreamDescriptor& stream : stream_descriptors) {
+    stream_number += 1;
+
+    if (stream.stream_selector == "text" &&
+        GetOutputFormat(stream) != CONTAINER_MOV) {
       MediaInfo text_media_info;
-      if (!StreamInfoToTextMediaInfo(*stream_iter, &text_media_info)) {
+      if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
         return Status(error::INVALID_ARGUMENT,
                       "Could not create media info for stream.");
       }
 
       if (mpd_notifier) {
         uint32_t unused;
-        if (!mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
-          LOG(ERROR) << "Failed to process text file " << stream_iter->input;
-        } else {
+        if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
           mpd_notifier->Flush();
+        } else {
+          return Status(error::PARSER_FAILURE,
+                        "Failed to process text file " + stream.input);
         }
       } else if (packaging_params.output_media_info) {
         VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
-            text_media_info, stream_iter->output + kMediaInfoSuffix);
+            text_media_info, stream.output + kMediaInfoSuffix);
       }
       continue;
     }
 
-    if (stream_iter->input != previous_input) {
-      // New remux job needed. Create demux and job thread.
-      demuxer = std::make_shared<Demuxer>(stream_iter->input);
+    // If we changed our input files, we need a new demuxer.
+    if (previous_input != stream.input) {
+      demuxer = std::make_shared<Demuxer>(stream.input);
 
       demuxer->set_dump_stream_info(
           packaging_params.test_params.dump_stream_info);
@@ -496,87 +505,88 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         }
         demuxer->SetKeySource(std::move(decryption_key_source));
       }
-      jobs->emplace_back(new media::Job("RemuxJob", demuxer));
-      trick_play_handler.reset();
-      previous_input = stream_iter->input;
-      // Skip setting up muxers if output is not needed.
-      if (stream_iter->output.empty() && stream_iter->segment_template.empty())
-        continue;
-    }
-    DCHECK(!jobs->empty());
 
-    // Each stream selector requires an individual trick play handler.
-    // E.g., an input with two video streams needs two trick play handlers.
-    // TODO(hmchen): add a test case in packager_test.py for two video streams
-    // input.
-    if (stream_iter->stream_selector != previous_stream_selector) {
-      previous_stream_selector = stream_iter->stream_selector;
-      trick_play_handler.reset();
+      jobs->emplace_back(new media::Job("RemuxJob", demuxer));
+    }
+
+    if (!stream.language.empty()) {
+      demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
+    }
+
+    const bool new_source = previous_input != stream.input ||
+                            previous_selector != stream.stream_selector;
+    previous_input = stream.input;
+    previous_selector = stream.stream_selector;
+
+    // If the stream has no output, then there is no reason setting-up the rest
+    // of the pipeline.
+    if (stream.output.empty() && stream.segment_template.empty()) {
+      continue;
+    }
+
+    if (new_source) {
+      replicator = std::make_shared<Replicator>();
+
+      std::shared_ptr<MediaHandler> chunker =
+          std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
+
+      std::shared_ptr<MediaHandler> encryptor = CreateEncryptionHandler(
+          packaging_params, stream, encryption_key_source);
+
+      Status status;
+
+      // The path is different if there is encryption. Even though there are
+      // common elements, it is easier to understand the path if they are
+      // expressed independently of each other.
+      if (encryptor) {
+        status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
+        status.Update(chunker->AddHandler(encryptor));
+        status.Update(encryptor->AddHandler(replicator));
+      } else {
+        status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
+        status.Update(chunker->AddHandler(replicator));
+      }
+
+      if (!status.ok()) {
+        return status;
+      }
+
+      if (!stream.language.empty()) {
+        demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
+      }
     }
 
     // Create the muxer (output) for this track.
     std::unique_ptr<MuxerListener> muxer_listener = CreateMuxerListener(
-        *stream_iter, stream_number, packaging_params.output_media_info,
-        mpd_notifier, hls_notifier);
+        stream, stream_number, packaging_params.output_media_info, mpd_notifier,
+        hls_notifier);
     std::shared_ptr<Muxer> muxer = CreateMuxer(
-        packaging_params, *stream_iter,
+        packaging_params, stream,
         packaging_params.test_params.inject_fake_clock ? fake_clock : nullptr,
         std::move(muxer_listener));
 
     if (!muxer) {
       return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +
-                                                 stream_iter->input + ":" +
-                                                 stream_iter->stream_selector);
+                                                 stream.input + ":" +
+                                                 stream.stream_selector);
     }
 
-    // Create a new trick_play_handler. Note that the stream_decriptors
-    // are sorted so that for the same input and stream_selector, the main
-    // stream is always the last one following the trick play streams.
-    if (stream_iter->trick_play_factor > 0) {
-      if (!trick_play_handler) {
-        trick_play_handler.reset(new TrickPlayHandler());
-      }
-      trick_play_handler->SetHandlerForTrickPlay(stream_iter->trick_play_factor,
-                                                 std::move(muxer));
-      if (trick_play_handler->IsConnected())
-        continue;
-    } else if (trick_play_handler) {
-      trick_play_handler->SetHandlerForMainStream(std::move(muxer));
-      DCHECK(trick_play_handler->IsConnected());
-      continue;
-    }
-
-    std::vector<std::shared_ptr<MediaHandler>> handlers;
-
-    auto chunking_handler =
-        std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
-    handlers.push_back(chunking_handler);
-
-    std::shared_ptr<MediaHandler> encryption_handler = CreateEncryptionHandler(
-        packaging_params, *stream_iter, encryption_key_source);
-    if (encryption_handler) {
-      handlers.push_back(encryption_handler);
-    }
-
-    // If trick_play_handler is available, muxer should already be connected to
-    // trick_play_handler.
-    if (trick_play_handler) {
-      handlers.push_back(trick_play_handler);
-    } else {
-      handlers.push_back(std::move(muxer));
+    std::shared_ptr<MediaHandler> trick_play;
+    if (stream.trick_play_factor) {
+      trick_play = std::make_shared<TrickPlayHandler>(stream.trick_play_factor);
     }
 
     Status status;
-    status.Update(
-        demuxer->SetHandler(stream_iter->stream_selector, chunking_handler));
-    status.Update(ConnectHandlers(handlers));
+    if (trick_play) {
+      status.Update(replicator->AddHandler(trick_play));
+      status.Update(trick_play->AddHandler(muxer));
+    } else {
+      status.Update(replicator->AddHandler(muxer));
+    }
 
     if (!status.ok()) {
       return status;
     }
-    if (!stream_iter->language.empty())
-      demuxer->SetLanguageOverride(stream_iter->stream_selector,
-                                   stream_iter->language);
   }
 
   // Initialize processing graph.
