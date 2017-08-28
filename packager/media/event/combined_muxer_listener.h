@@ -17,9 +17,9 @@ namespace media {
 
 class CombinedMuxerListener : public MuxerListener {
  public:
-  explicit CombinedMuxerListener(
-      std::list<std::unique_ptr<MuxerListener>>* muxer_listeners);
-  ~CombinedMuxerListener() override;
+  CombinedMuxerListener() = default;
+
+  void AddListener(std::unique_ptr<MuxerListener> listener);
 
   void OnEncryptionInfoReady(bool is_initial_encryption_info,
                              FourCC protection_scheme,

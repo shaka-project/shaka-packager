@@ -272,7 +272,6 @@ class Job : public base::SimpleThread {
 };
 
 bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
-                               const MuxerOptions& stream_muxer_options,
                                MediaInfo* text_media_info) {
   const std::string& language = stream_descriptor.language;
   const std::string format = DetermineTextFileFormat(stream_descriptor.input);
@@ -283,18 +282,17 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   }
 
   if (!File::Copy(stream_descriptor.input.c_str(),
-                  stream_muxer_options.output_file_name.c_str())) {
+                  stream_descriptor.output.c_str())) {
     LOG(ERROR) << "Failed to copy the input file (" << stream_descriptor.input
-               << ") to output file (" << stream_muxer_options.output_file_name
-               << ").";
+               << ") to output file (" << stream_descriptor.output << ").";
     return false;
   }
 
-  text_media_info->set_media_file_name(stream_muxer_options.output_file_name);
+  text_media_info->set_media_file_name(stream_descriptor.output);
   text_media_info->set_container_type(MediaInfo::CONTAINER_TEXT);
 
-  if (stream_muxer_options.bandwidth != 0) {
-    text_media_info->set_bandwidth(stream_muxer_options.bandwidth);
+  if (stream_descriptor.bandwidth != 0) {
+    text_media_info->set_bandwidth(stream_descriptor.bandwidth);
   } else {
     // Text files are usually small and since the input is one file; there's no
     // way for the player to do ranged requests. So set this value to something
@@ -311,16 +309,93 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
-std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
-                                         MediaContainerName container) {
-  if (container == CONTAINER_WEBM) {
-    return std::shared_ptr<Muxer>(new webm::WebMMuxer(options));
-  } else if (container == CONTAINER_MPEG2TS) {
-    return std::shared_ptr<Muxer>(new mp2t::TsMuxer(options));
-  } else {
-    DCHECK_EQ(container, CONTAINER_MOV);
-    return std::shared_ptr<Muxer>(new mp4::MP4Muxer(options));
+std::unique_ptr<MuxerListener> CreateMuxerListener(
+    const StreamDescriptor& stream,
+    int stream_number,
+    bool output_media_info,
+    MpdNotifier* mpd_notifier,
+    hls::HlsNotifier* hls_notifier) {
+  std::unique_ptr<CombinedMuxerListener> combined_listener(
+      new CombinedMuxerListener);
+
+  if (output_media_info) {
+    std::unique_ptr<MuxerListener> listener(
+        new VodMediaInfoDumpMuxerListener(stream.output + kMediaInfoSuffix));
+    combined_listener->AddListener(std::move(listener));
   }
+
+  if (mpd_notifier) {
+    std::unique_ptr<MuxerListener> listener(
+        new MpdNotifyMuxerListener(mpd_notifier));
+    combined_listener->AddListener(std::move(listener));
+  }
+
+  if (hls_notifier) {
+    // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
+    // languages.
+    std::string group_id = stream.hls_group_id;
+    std::string name = stream.hls_name;
+    std::string hls_playlist_name = stream.hls_playlist_name;
+    if (group_id.empty())
+      group_id = "audio";
+    if (name.empty())
+      name = base::StringPrintf("stream_%d", stream_number);
+    if (hls_playlist_name.empty())
+      hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
+
+    std::unique_ptr<MuxerListener> listener(new HlsNotifyMuxerListener(
+        hls_playlist_name, name, group_id, hls_notifier));
+    combined_listener->AddListener(std::move(listener));
+  }
+
+  return std::move(combined_listener);
+}
+
+std::shared_ptr<Muxer> CreateMuxer(const PackagingParams& packaging_params,
+                                   const StreamDescriptor& stream,
+                                   base::Clock* clock,
+                                   std::unique_ptr<MuxerListener> listener) {
+  const MediaContainerName format = GetOutputFormat(stream);
+
+  MuxerOptions options;
+  options.mp4_params = packaging_params.mp4_output_params;
+  options.temp_dir = packaging_params.temp_dir;
+  options.bandwidth = stream.bandwidth;
+  options.output_file_name = stream.output;
+  options.segment_template = stream.segment_template;
+
+  std::shared_ptr<Muxer> muxer;
+
+  switch (format) {
+    case CONTAINER_WEBM:
+      muxer = std::make_shared<webm::WebMMuxer>(options);
+      break;
+    case CONTAINER_MPEG2TS:
+      muxer = std::make_shared<mp2t::TsMuxer>(options);
+      break;
+    case CONTAINER_MOV:
+      muxer = std::make_shared<mp4::MP4Muxer>(options);
+      break;
+    default:
+      LOG(ERROR) << "Cannot support muxing to " << format;
+      break;
+  }
+
+  if (!muxer) {
+    return nullptr;
+  }
+
+  // We successfully created a muxer, then there is a couple settings
+  // we should set before returning it.
+  if (clock) {
+    muxer->set_clock(clock);
+  }
+
+  if (listener) {
+    muxer->SetMuxerListener(std::move(listener));
+  }
+
+  return muxer;
 }
 
 std::shared_ptr<MediaHandler> CreateCryptoHandler(
@@ -399,8 +474,7 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (stream_iter->stream_selector == "text" &&
         output_format != CONTAINER_MOV) {
       MediaInfo text_media_info;
-      if (!StreamInfoToTextMediaInfo(*stream_iter, stream_muxer_options,
-                                     &text_media_info)) {
+      if (!StreamInfoToTextMediaInfo(*stream_iter, &text_media_info)) {
         return Status(error::INVALID_ARGUMENT,
                       "Could not create media info for stream.");
       }
@@ -414,8 +488,7 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         }
       } else if (packaging_params.output_media_info) {
         VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
-            text_media_info,
-            stream_muxer_options.output_file_name + kMediaInfoSuffix);
+            text_media_info, stream_iter->output + kMediaInfoSuffix);
       }
       continue;
     }
@@ -455,45 +528,19 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       trick_play_handler.reset();
     }
 
-    std::shared_ptr<Muxer> muxer(
-        CreateOutputMuxer(stream_muxer_options, output_format));
-    if (packaging_params.test_params.inject_fake_clock)
-      muxer->set_clock(fake_clock);
+    // Create the muxer (output) for this track.
+    std::unique_ptr<MuxerListener> muxer_listener = CreateMuxerListener(
+        *stream_iter, stream_number, packaging_params.output_media_info,
+        mpd_notifier, hls_notifier);
+    std::shared_ptr<Muxer> muxer = CreateMuxer(
+        packaging_params, *stream_iter,
+        packaging_params.test_params.inject_fake_clock ? fake_clock : nullptr,
+        std::move(muxer_listener));
 
-    std::list<std::unique_ptr<MuxerListener>> muxer_listeners;
-    DCHECK(!(packaging_params.output_media_info && mpd_notifier));
-    if (packaging_params.output_media_info) {
-      const std::string output_media_info_file_name =
-          stream_muxer_options.output_file_name + kMediaInfoSuffix;
-      muxer_listeners.emplace_back(
-          new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
-    }
-
-    if (mpd_notifier) {
-      muxer_listeners.emplace_back(new MpdNotifyMuxerListener(mpd_notifier));
-    }
-
-    if (hls_notifier) {
-      // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
-      // languages.
-      std::string group_id = stream_iter->hls_group_id;
-      std::string name = stream_iter->hls_name;
-      std::string hls_playlist_name = stream_iter->hls_playlist_name;
-      if (group_id.empty())
-        group_id = "audio";
-      if (name.empty())
-        name = base::StringPrintf("stream_%d", stream_number);
-      if (hls_playlist_name.empty())
-        hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
-
-      muxer_listeners.emplace_back(new HlsNotifyMuxerListener(
-          hls_playlist_name, name, group_id, hls_notifier));
-    }
-
-    if (!muxer_listeners.empty()) {
-      std::unique_ptr<CombinedMuxerListener> combined_muxer_listener(
-          new CombinedMuxerListener(&muxer_listeners));
-      muxer->SetMuxerListener(std::move(combined_muxer_listener));
+    if (!muxer) {
+      return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +
+                                                 stream_iter->input + ":" +
+                                                 stream_iter->stream_selector);
     }
 
     // Create a new trick_play_handler. Note that the stream_decriptors
