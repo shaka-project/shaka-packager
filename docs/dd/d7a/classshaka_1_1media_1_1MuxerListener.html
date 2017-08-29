@@ -103,10 +103,11 @@ Inheritance diagram for shaka::media::MuxerListener:</div>
  <div class="center">
   <img src="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.png" usemap="#shaka::media::MuxerListener_map" alt=""/>
   <map id="shaka::media::MuxerListener_map" name="shaka::media::MuxerListener_map">
-<area href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html" title="MuxerListener that uses HlsNotifier. " alt="shaka::media::HlsNotifyMuxerListener" shape="rect" coords="0,56,282,80"/>
-<area href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html" alt="shaka::media::MockMuxerListener" shape="rect" coords="292,56,574,80"/>
-<area href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html" alt="shaka::media::MpdNotifyMuxerListener" shape="rect" coords="584,56,866,80"/>
-<area href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html" alt="shaka::media::VodMediaInfoDumpMuxerListener" shape="rect" coords="876,56,1158,80"/>
+<area href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html" alt="shaka::media::CombinedMuxerListener" shape="rect" coords="0,56,282,80"/>
+<area href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html" title="MuxerListener that uses HlsNotifier. " alt="shaka::media::HlsNotifyMuxerListener" shape="rect" coords="292,56,574,80"/>
+<area href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html" alt="shaka::media::MockMuxerListener" shape="rect" coords="584,56,866,80"/>
+<area href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html" alt="shaka::media::MpdNotifyMuxerListener" shape="rect" coords="876,56,1158,80"/>
+<area href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html" alt="shaka::media::VodMediaInfoDumpMuxerListener" shape="rect" coords="1168,56,1450,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -204,7 +205,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a8be7a524212bdd401150aa6bcb374792">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a10071445982f736bb1e6e04133dd60cb">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a683882564ac762e2e94795964f8be4b8">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a8be7a524212bdd401150aa6bcb374792">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a10071445982f736bb1e6e04133dd60cb">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a683882564ac762e2e94795964f8be4b8">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a445b97bf06c20a44ae5d0fef926cbd9f">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -230,7 +231,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a49b4187f39abe517768364f7ecb280f9">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a56ccf04196458894f31d0db102153334">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae8f6f65fbab9f301be5bb35f5b8d1cbc">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a49b4187f39abe517768364f7ecb280f9">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a56ccf04196458894f31d0db102153334">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae8f6f65fbab9f301be5bb35f5b8d1cbc">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a40a2b9e923b6a6e255ee5632bffc1134">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -274,7 +275,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aa2af080963ca02454786b8bb2ff6dd6d">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html#a915fc76c19622d7e82aa74dd996edacd">shaka::media::MockMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#aa42f5472d5450d897f036ff582a31612">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ab2ab9bc34256f8016f0e827097b97ca1">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aa2af080963ca02454786b8bb2ff6dd6d">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../dc/d73/classshaka_1_1media_1_1MockMuxerListener.html#a915fc76c19622d7e82aa74dd996edacd">shaka::media::MockMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#aa42f5472d5450d897f036ff582a31612">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ab2ab9bc34256f8016f0e827097b97ca1">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#aaf16580970d5e65d33c80cb9e8a57651">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -332,7 +333,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ac60d8aed79f2a1581dfec1ed5ad10f22">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#ad0aeb94e2e1fe1b5ead506b690e6f70f">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4811b4ce8292f0f449a35a837aeab74f">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ac60d8aed79f2a1581dfec1ed5ad10f22">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#ad0aeb94e2e1fe1b5ead506b690e6f70f">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4811b4ce8292f0f449a35a837aeab74f">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a289148dbb60121fb0f9ef0b469bc18be">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -390,7 +391,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aea9c2b0247695d4cf20d50fe44c7d918">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a9976447daf55bbdea1cd0d8846512e11">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a36e979fe7b3cfa69dc257e5e439dca08">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aea9c2b0247695d4cf20d50fe44c7d918">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a9976447daf55bbdea1cd0d8846512e11">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a36e979fe7b3cfa69dc257e5e439dca08">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a6c785d9517d89b74a4594f201800365c">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -423,7 +424,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ae6e2531350df353910b1d777427b822d">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a3b0457b0147310ba07169cf84cfce2aa">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a25fc470ed18733954876a4d4256aacf9">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ae6e2531350df353910b1d777427b822d">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a3b0457b0147310ba07169cf84cfce2aa">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a25fc470ed18733954876a4d4256aacf9">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#abe3741f816b44948586cf17b2c31eb7f">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -433,7 +434,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 28 2017 21:04:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Aug 29 2017 20:49:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
