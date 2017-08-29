@@ -13,6 +13,8 @@
       'target_name': 'media_event',
       'type': '<(component)',
       'sources': [
+        'combined_muxer_listener.cc',
+        'combined_muxer_listener.h',
         'hls_notify_muxer_listener.cc',
         'hls_notify_muxer_listener.h',
         'mpd_notify_muxer_listener.cc',

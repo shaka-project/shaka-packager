@@ -27,6 +27,7 @@
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/demuxer/demuxer.h"
+#include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
@@ -150,26 +151,6 @@ bool ValidateParams(const PackagingParams& packaging_params,
       packaging_params.chunking_params.subsegment_sap_aligned) {
     LOG(ERROR) << "Setting segment_sap_aligned to false but "
                   "subsegment_sap_aligned to true is not allowed.";
-    return false;
-  }
-
-  if (packaging_params.output_media_info &&
-      !packaging_params.mpd_params.mpd_output.empty()) {
-    LOG(ERROR) << "output_media_info and MPD output do not work together.";
-    return false;
-  }
-
-  if (packaging_params.output_media_info &&
-      !packaging_params.hls_params.master_playlist_output.empty()) {
-    LOG(ERROR) << "output_media_info and HLS output do not work together.";
-    return false;
-  }
-
-  // Since there isn't a muxer listener that can output both MPD and HLS,
-  // disallow specifying both MPD and HLS flags.
-  if (!packaging_params.mpd_params.mpd_output.empty() &&
-      !packaging_params.hls_params.master_playlist_output.empty()) {
-    LOG(ERROR) << "output both MPD and HLS are not supported.";
     return false;
   }
 
@@ -421,20 +402,17 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (packaging_params.test_params.inject_fake_clock)
       muxer->set_clock(fake_clock);
 
-    std::unique_ptr<MuxerListener> muxer_listener;
+    std::list<std::unique_ptr<MuxerListener>> muxer_listeners;
     DCHECK(!(packaging_params.output_media_info && mpd_notifier));
     if (packaging_params.output_media_info) {
       const std::string output_media_info_file_name =
           stream_muxer_options.output_file_name + kMediaInfoSuffix;
-      std::unique_ptr<VodMediaInfoDumpMuxerListener>
-          vod_media_info_dump_muxer_listener(
-              new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
-      muxer_listener = std::move(vod_media_info_dump_muxer_listener);
+      muxer_listeners.emplace_back(
+          new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
     }
+
     if (mpd_notifier) {
-      std::unique_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
-          new MpdNotifyMuxerListener(mpd_notifier));
-      muxer_listener = std::move(mpd_notify_muxer_listener);
+      muxer_listeners.emplace_back(new MpdNotifyMuxerListener(mpd_notifier));
     }
 
     if (hls_notifier) {
@@ -450,12 +428,16 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       if (hls_playlist_name.empty())
         hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
 
-      muxer_listener.reset(new HlsNotifyMuxerListener(hls_playlist_name, name,
-                                                      group_id, hls_notifier));
+      muxer_listeners.emplace_back(
+          new HlsNotifyMuxerListener(hls_playlist_name, name,
+                                     group_id, hls_notifier));
     }
 
-    if (muxer_listener)
-      muxer->SetMuxerListener(std::move(muxer_listener));
+    if (!muxer_listeners.empty()) {
+      std::unique_ptr<CombinedMuxerListener> combined_muxer_listener(
+          new CombinedMuxerListener(&muxer_listeners));
+      muxer->SetMuxerListener(std::move(combined_muxer_listener));
+    }
 
     // Create a new trick_play_handler. Note that the stream_decriptors
     // are sorted so that for the same input and stream_selector, the main
