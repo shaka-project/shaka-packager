@@ -300,6 +300,41 @@ std::shared_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
   }
 }
 
+std::shared_ptr<MediaHandler> CreateCryptoHandler(
+    const PackagingParams& packaging_params,
+    const StreamDescriptor& stream,
+    KeySource* key_source) {
+  if (stream.skip_encryption) {
+    return nullptr;
+  }
+
+  if (!key_source) {
+    return nullptr;
+  }
+
+  // Make a copy so that we can modify it for this specific stream.
+  EncryptionParams encryption_params = packaging_params.encryption_params;
+
+  // Use Sample AES in MPEG2TS.
+  // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
+  // will support CENC in TS in the future.
+  if (GetOutputFormat(stream) == CONTAINER_MPEG2TS) {
+    VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS.";
+    encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
+  }
+
+  if (!encryption_params.stream_label_func) {
+    const int kDefaultMaxSdPixels = 768 * 576;
+    const int kDefaultMaxHdPixels = 1920 * 1080;
+    const int kDefaultMaxUhd1Pixels = 4096 * 2160;
+    encryption_params.stream_label_func = std::bind(
+        &Packager::DefaultStreamLabelFunction, kDefaultMaxSdPixels,
+        kDefaultMaxHdPixels, kDefaultMaxUhd1Pixels, std::placeholders::_1);
+  }
+
+  return std::make_shared<EncryptionHandler>(encryption_params, key_source);
+}
+
 Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                        const PackagingParams& packaging_params,
                        FakeClock* fake_clock,
@@ -428,9 +463,8 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       if (hls_playlist_name.empty())
         hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
 
-      muxer_listeners.emplace_back(
-          new HlsNotifyMuxerListener(hls_playlist_name, name,
-                                     group_id, hls_notifier));
+      muxer_listeners.emplace_back(new HlsNotifyMuxerListener(
+          hls_playlist_name, name, group_id, hls_notifier));
     }
 
     if (!muxer_listeners.empty()) {
@@ -462,26 +496,10 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
     handlers.push_back(chunking_handler);
 
-    Status status;
-    if (encryption_key_source && !stream_iter->skip_encryption) {
-      auto encryption_params = packaging_params.encryption_params;
-      // Use Sample AES in MPEG2TS.
-      // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
-      // will support CENC in TS in the future.
-      if (output_format == CONTAINER_MPEG2TS) {
-        VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS.";
-        encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
-      }
-      if (!encryption_params.stream_label_func) {
-        const int kDefaultMaxSdPixels = 768 * 576;
-        const int kDefaultMaxHdPixels = 1920 * 1080;
-        const int kDefaultMaxUhd1Pixels = 4096 * 2160;
-        encryption_params.stream_label_func = std::bind(
-            &Packager::DefaultStreamLabelFunction, kDefaultMaxSdPixels,
-            kDefaultMaxHdPixels, kDefaultMaxUhd1Pixels, std::placeholders::_1);
-      }
-      handlers.emplace_back(
-          new EncryptionHandler(encryption_params, encryption_key_source));
+    std::shared_ptr<MediaHandler> crypto_handler = CreateCryptoHandler(
+        packaging_params, *stream_iter, encryption_key_source);
+    if (crypto_handler) {
+      handlers.push_back(crypto_handler);
     }
 
     // If trick_play_handler is available, muxer should already be connected to
@@ -492,15 +510,17 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       handlers.push_back(std::move(muxer));
     }
 
-    const std::string& stream_selector = stream_iter->stream_selector;
-    status.Update(demuxer->SetHandler(stream_selector, chunking_handler));
+    Status status;
+    status.Update(
+        demuxer->SetHandler(stream_iter->stream_selector, chunking_handler));
     status.Update(ConnectHandlers(handlers));
 
     if (!status.ok()) {
       return status;
     }
     if (!stream_iter->language.empty())
-      demuxer->SetLanguageOverride(stream_selector, stream_iter->language);
+      demuxer->SetLanguageOverride(stream_iter->stream_selector,
+                                   stream_iter->language);
   }
 
   // Initialize processing graph.
