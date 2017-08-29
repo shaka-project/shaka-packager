@@ -97,66 +97,84 @@ MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
   return output_format;
 }
 
-bool ValidateStreamDescriptor(bool dump_stream_info,
-                              const StreamDescriptor& descriptor) {
-  // Validate and insert the descriptor
-  if (descriptor.input.empty()) {
-    LOG(ERROR) << "Stream input not specified.";
-    return false;
-  }
-  if (!dump_stream_info && descriptor.stream_selector.empty()) {
-    LOG(ERROR) << "Stream stream_selector not specified.";
-    return false;
+Status ValidateStreamDescriptor(bool dump_stream_info,
+                                const StreamDescriptor& stream) {
+  if (stream.input.empty()) {
+    return Status(error::INVALID_ARGUMENT, "Stream input not specified.");
   }
 
-  // We should have either output or segment_template specified.
-  const bool output_specified =
-      !descriptor.output.empty() || !descriptor.segment_template.empty();
-  if (!output_specified) {
-    if (!dump_stream_info) {
-      LOG(ERROR) << "Stream output not specified.";
-      return false;
+  // The only time a stream can have no outputs, is when dump stream info is
+  // set.
+  if (dump_stream_info && stream.output.empty() &&
+      stream.segment_template.empty()) {
+    return Status::OK;
+  }
+
+  if (stream.output.empty() && stream.segment_template.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Streams must specify 'output' or 'segment template'.");
+  }
+
+  // Whenever there is output, a stream must be selected.
+  if (stream.stream_selector.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Stream stream_selector not specified.");
+  }
+
+  // If a segment template is provided, it must be valid.
+  if (stream.segment_template.length()) {
+    Status template_check = ValidateSegmentTemplate(stream.segment_template);
+    if (!template_check.ok()) {
+      return template_check;
+    }
+  }
+
+  // There are some specifics that must be checked based on which format
+  // we are writing to.
+  const MediaContainerName output_format = GetOutputFormat(stream);
+
+  if (output_format == CONTAINER_UNKNOWN) {
+    return Status(error::INVALID_ARGUMENT, "Unsupported output format.");
+  } else if (output_format == MediaContainerName::CONTAINER_MPEG2TS) {
+    if (stream.segment_template.empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Please specify segment_template. Single file TS output is "
+                    "not supported.");
+    }
+
+    // Right now the init segment is saved in |output| for multi-segment
+    // content. However, for TS all segments must be self-initializing so
+    // there cannot be an init segment.
+    if (stream.output.length()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "All TS segments must be self-initializing. Stream "
+                    "descriptors 'output' or 'init_segment' are not allowed.");
     }
   } else {
-    const MediaContainerName output_format = GetOutputFormat(descriptor);
-    if (output_format == CONTAINER_UNKNOWN)
-      return false;
-
-    if (output_format == MediaContainerName::CONTAINER_MPEG2TS) {
-      if (descriptor.segment_template.empty()) {
-        LOG(ERROR) << "Please specify segment_template. Single file TS output "
-                      "is not supported.";
-        return false;
-      }
-      // Note that MPEG2 TS doesn't need a separate initialization segment, so
-      // output field is not needed.
-      if (!descriptor.output.empty()) {
-        LOG(WARNING) << "TS init_segment '" << descriptor.output
-                     << "' ignored. TS muxer does not support initialization "
-                        "segment generation.";
-      }
-    } else {
-      if (descriptor.output.empty()) {
-        LOG(ERROR) << "init_segment is required for format " << output_format;
-        return false;
-      }
+    // For any other format, if there is a segment template, there must be an
+    // init segment provided.
+    if (stream.segment_template.length() && stream.output.empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Please specify 'init_segment'. All non-TS multi-segment "
+                    "content must provide an init segment.");
     }
   }
-  return true;
+
+  return Status::OK;
 }
 
-bool ValidateParams(const PackagingParams& packaging_params,
-                    const std::vector<StreamDescriptor>& stream_descriptors) {
+Status ValidateParams(const PackagingParams& packaging_params,
+                      const std::vector<StreamDescriptor>& stream_descriptors) {
   if (!packaging_params.chunking_params.segment_sap_aligned &&
       packaging_params.chunking_params.subsegment_sap_aligned) {
-    LOG(ERROR) << "Setting segment_sap_aligned to false but "
-                  "subsegment_sap_aligned to true is not allowed.";
-    return false;
+    return Status(error::INVALID_ARGUMENT,
+                  "Setting segment_sap_aligned to false but "
+                  "subsegment_sap_aligned to true is not allowed.");
   }
 
   if (stream_descriptors.empty()) {
-    LOG(ERROR) << "Stream descriptors cannot be empty.";
-    return false;
+    return Status(error::INVALID_ARGUMENT,
+                  "Stream descriptors cannot be empty.");
   }
 
   // On demand profile generates single file segment while live profile
@@ -165,23 +183,28 @@ bool ValidateParams(const PackagingParams& packaging_params,
       stream_descriptors.begin()->segment_template.empty();
   for (const auto& descriptor : stream_descriptors) {
     if (on_demand_dash_profile != descriptor.segment_template.empty()) {
-      LOG(ERROR) << "Inconsistent stream descriptor specification: "
+      return Status(error::INVALID_ARGUMENT,
+                    "Inconsistent stream descriptor specification: "
                     "segment_template should be specified for none or all "
-                    "stream descriptors.";
-      return false;
+                    "stream descriptors.");
     }
-    if (!ValidateStreamDescriptor(packaging_params.test_params.dump_stream_info,
-                                  descriptor))
-      return false;
-  }
-  if (packaging_params.output_media_info && !on_demand_dash_profile) {
-    // TODO(rkuroiwa, kqyang): Support partial media info dump for live.
-    NOTIMPLEMENTED() << "ERROR: --output_media_info is only supported for "
-                        "on-demand profile (not using segment_template).";
-    return false;
+
+    Status stream_check = ValidateStreamDescriptor(
+        packaging_params.test_params.dump_stream_info, descriptor);
+
+    if (!stream_check.ok()) {
+      return stream_check;
+    }
   }
 
-  return true;
+  if (packaging_params.output_media_info && !on_demand_dash_profile) {
+    // TODO(rkuroiwa, kqyang): Support partial media info dump for live.
+    return Status(error::UNIMPLEMENTED,
+                  "--output_media_info is only supported for on-demand profile "
+                  "(not using segment_template).");
+  }
+
+  return Status::OK;
 }
 
 class StreamDescriptorCompareFn {
@@ -364,10 +387,10 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     stream_muxer_options.temp_dir = packaging_params.temp_dir;
     stream_muxer_options.output_file_name = stream_iter->output;
     if (!stream_iter->segment_template.empty()) {
-      if (!ValidateSegmentTemplate(stream_iter->segment_template)) {
-        return Status(
-            error::INVALID_ARGUMENT,
-            "Invalid segment template: " + stream_iter->segment_template);
+      Status template_check =
+          ValidateSegmentTemplate(stream_iter->segment_template);
+      if (!template_check.ok()) {
+        return template_check;
       }
       stream_muxer_options.segment_template = stream_iter->segment_template;
     }
@@ -605,8 +628,11 @@ Status Packager::Initialize(
   if (internal_)
     return Status(error::INVALID_ARGUMENT, "Already initialized.");
 
-  if (!media::ValidateParams(packaging_params, stream_descriptors))
-    return Status(error::INVALID_ARGUMENT, "Invalid packaging params.");
+  Status param_check =
+      media::ValidateParams(packaging_params, stream_descriptors);
+  if (!param_check.ok()) {
+    return param_check;
+  }
 
   if (!packaging_params.test_params.injected_library_version.empty()) {
     SetPackagerVersionForTesting(

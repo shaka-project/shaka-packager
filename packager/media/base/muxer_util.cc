@@ -19,26 +19,33 @@
 
 namespace shaka {
 namespace {
-bool ValidateFormatTag(const std::string& format_tag) {
-  DCHECK(!format_tag.empty());
+Status ValidateFormatTag(const std::string& format_tag) {
+  if (format_tag.empty()) {
+    return Status(error::INVALID_ARGUMENT, "Format tag should not be empty");
+  }
+
   // Format tag should follow this prototype: %0[width]d.
   if (format_tag.size() > 3 && format_tag[0] == '%' && format_tag[1] == '0' &&
       format_tag[format_tag.size() - 1] == 'd') {
     unsigned out;
-    if (base::StringToUint(format_tag.substr(2, format_tag.size() - 3), &out))
-      return true;
+    if (base::StringToUint(format_tag.substr(2, format_tag.size() - 3), &out)) {
+      return Status::OK;
+    }
   }
-  LOG(ERROR) << "SegmentTemplate: Format tag should follow this prototype: "
-             << "%0[width]d if exist.";
-  return false;
+
+  return Status(
+      error::INVALID_ARGUMENT,
+      "Format tag should follow this prototype: %0[width]d if exist.");
 }
 }  // namespace
 
 namespace media {
 
-bool ValidateSegmentTemplate(const std::string& segment_template) {
-  if (segment_template.empty())
-    return false;
+Status ValidateSegmentTemplate(const std::string& segment_template) {
+  if (segment_template.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Segment template should not be empty.");
+  }
 
   std::vector<std::string> splits = base::SplitString(
       segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -47,8 +54,8 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
   // Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.
   // "$" always appears in pairs, so there should be odd number of splits.
   if (splits.size() % 2 == 0) {
-    LOG(ERROR) << "SegmentTemplate: '$' should appear in pairs.";
-    return false;
+    return Status(error::INVALID_ARGUMENT,
+                  "In segment templates, '$' should appear in pairs.");
   }
 
   bool has_number = false;
@@ -61,49 +68,51 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
     size_t format_pos = splits[i].find('%');
     std::string identifier = splits[i].substr(0, format_pos);
     if (format_pos != std::string::npos) {
-      if (!ValidateFormatTag(splits[i].substr(format_pos)))
-        return false;
+      Status tag_check = ValidateFormatTag(splits[i].substr(format_pos));
+      if (!tag_check.ok()) {
+        return tag_check;
+      }
     }
 
     // TODO(kqyang): Support "RepresentationID".
     if (identifier == "RepresentationID") {
-      NOTIMPLEMENTED() << "SegmentTemplate: $RepresentationID$ is not supported "
-                          "yet.";
-      return false;
+      return Status(
+          error::UNIMPLEMENTED,
+          "Segment template flag $RepresentationID$ is not supported yet.");
     } else if (identifier == "Number") {
       has_number = true;
     } else if (identifier == "Time") {
       has_time = true;
     } else if (identifier == "") {
       if (format_pos != std::string::npos) {
-        LOG(ERROR) << "SegmentTemplate: $$ should not have any format tags.";
-        return false;
+        return Status(error::INVALID_ARGUMENT,
+                      "'$$' should not have any format tags.");
       }
     } else if (identifier != "Bandwidth") {
-      LOG(ERROR) << "SegmentTemplate: '$" << splits[i]
-                 << "$' is not a valid identifier.";
-      return false;
+      return Status(error::INVALID_ARGUMENT,
+                    "'$" + splits[i] + "$' is not a valid identifier.");
     }
   }
   if (has_number && has_time) {
-    LOG(ERROR) << "SegmentTemplate: $Number$ and $Time$ should not co-exist.";
-    return false;
+    return Status(
+        error::INVALID_ARGUMENT,
+        "In segment templates $Number$ and $Time$ should not co-exist.");
   }
   if (!has_number && !has_time) {
-    LOG(ERROR) << "SegmentTemplate: $Number$ or $Time$ should exist.";
-    return false;
+    return Status(error::INVALID_ARGUMENT,
+                  "In segment templates $Number$ or $Time$ should exist.");
   }
   // Note: The below check is skipped.
   // Strings outside identifiers shall only contain characters that are
   // permitted within URLs according to RFC 1738.
-  return true;
+  return Status::OK;
 }
 
 std::string GetSegmentName(const std::string& segment_template,
                            uint64_t segment_start_time,
                            uint32_t segment_index,
                            uint32_t bandwidth) {
-  DCHECK(ValidateSegmentTemplate(segment_template));
+  DCHECK_EQ(Status::OK, ValidateSegmentTemplate(segment_template));
 
   std::vector<std::string> splits = base::SplitString(
       segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -131,7 +140,7 @@ std::string GetSegmentName(const std::string& segment_template,
     std::string format_tag;
     if (format_pos != std::string::npos) {
       format_tag = splits[i].substr(format_pos);
-      DCHECK(ValidateFormatTag(format_tag));
+      DCHECK_EQ(Status::OK, ValidateFormatTag(format_tag));
       // Replace %d formatting to correctly format uint64_t.
       format_tag = format_tag.substr(0, format_tag.size() - 1) + PRIu64;
     } else {

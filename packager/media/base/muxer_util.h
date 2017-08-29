@@ -23,9 +23,9 @@ class StreamInfo;
 /// Validates the segment template against segment URL construction rule
 /// specified in ISO/IEC 23009-1:2012 5.3.9.4.4.
 /// @param segment_template is the template to be validated.
-/// @return true if the segment template complies with
-//          ISO/IEC 23009-1:2012 5.3.9.4.4, false otherwise.
-bool ValidateSegmentTemplate(const std::string& segment_template);
+/// @return OK if the segment template complies with
+//          ISO/IEC 23009-1:2012 5.3.9.4.4.
+Status ValidateSegmentTemplate(const std::string& segment_template);
 
 /// Build the segment name from provided input.
 /// @param segment_template is the segment template pattern, which should

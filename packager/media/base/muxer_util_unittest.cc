@@ -12,52 +12,52 @@ namespace shaka {
 namespace media {
 
 TEST(MuxerUtilTest, ValidateSegmentTemplate) {
-  EXPECT_FALSE(ValidateSegmentTemplate(""));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate(""));
 
-  EXPECT_TRUE(ValidateSegmentTemplate("$Number$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time$$Time$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("foo$Time$goo"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Number$_$Number$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Number$$Bandwidth$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time$$Bandwidth$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Number$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time$$Time$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("foo$Time$goo"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Number$_$Number$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Number$$Bandwidth$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time$$Bandwidth$"));
 
   // Bandwidth without Number or Time should not be valid.
-  EXPECT_FALSE(ValidateSegmentTemplate("$Bandwidth$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Bandwidth$"));
 
   // Escape sequence "$$".
-  EXPECT_TRUE(ValidateSegmentTemplate("foo$Time$__$$loo"));
-  EXPECT_TRUE(ValidateSegmentTemplate("foo$Time$$$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$$$Time$$$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("foo$Time$__$$loo"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("foo$Time$$$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$$$Time$$$"));
 
   // Missing $Number$ / $Time$.
-  EXPECT_FALSE(ValidateSegmentTemplate("$$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("foo$$goo"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("foo$$goo"));
 
   // $Number$, $Time$ should not co-exist.
-  EXPECT_FALSE(ValidateSegmentTemplate("$Number$$Time$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("foo$Number$_$Time$loo"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Number$$Time$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("foo$Number$_$Time$loo"));
 
   // $RepresentationID$ not implemented yet.
-  EXPECT_FALSE(ValidateSegmentTemplate("$RepresentationID$__$Time$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$RepresentationID$__$Time$"));
 
   // Unknown identifier.
-  EXPECT_FALSE(ValidateSegmentTemplate("$foo$$Time$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$foo$$Time$"));
 }
 
 TEST(MuxerUtilTest, ValidateSegmentTemplateWithFormatTag) {
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time%01d$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time%05d$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("$Time%1d$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("$Time%$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("$Time%01$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("$Time%0xd$"));
-  EXPECT_FALSE(ValidateSegmentTemplate("$Time%03xd$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time%01d$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time%05d$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Time%1d$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Time%$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Time%01$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Time%0xd$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$Time%03xd$"));
   // $$ should not have any format tag.
-  EXPECT_FALSE(ValidateSegmentTemplate("$%01d$$Time$"));
+  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$%01d$$Time$"));
   // Format specifier edge cases.
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time%00d$"));
-  EXPECT_TRUE(ValidateSegmentTemplate("$Time%005d$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time%00d$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$Time%005d$"));
 }
 
 TEST(MuxerUtilTest, GetSegmentName) {
