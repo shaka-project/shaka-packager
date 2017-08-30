@@ -182,14 +182,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  }</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">const</span> std::string&amp; start_time_str = entries[0];</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">if</span> (!WebVttTimestampParse(start_time_str, start_time)) {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">if</span> (!WebVttTimestampToMs(start_time_str, start_time)) {</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse &quot;</span> &lt;&lt; start_time_str &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; line;</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  }</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keyword">const</span> std::string&amp; end_time_str = entries[2];</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  uint64_t end_time = 0;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">if</span> (!WebVttTimestampParse(end_time_str, &amp;end_time)) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">if</span> (!WebVttTimestampToMs(end_time_str, &amp;end_time)) {</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse &quot;</span> &lt;&lt; end_time_str &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; line;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
@@ -408,7 +408,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 29 2017 20:49:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 30 2017 18:34:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
