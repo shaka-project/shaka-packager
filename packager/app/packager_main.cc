@@ -87,7 +87,7 @@ const char kUsage[] =
     "    If specified, the output is a trick play stream.\n"
     "  - hls_name: Required for audio when outputting HLS.\n"
     "    name of the output stream. This is not (necessarily) the same as\n"
-    "    output. This is used as the NAME attribute for EXT-X-MEDIA\n"
+    "    output. This is used as the NAME attribute for EXT-X-MEDIA.\n"
     "  - hls_group_id: Required for audio when outputting HLS.\n"
     "    The group ID for the output stream. This is used as the GROUP-ID\n"
     "    attribute for EXT-X-MEDIA.\n"

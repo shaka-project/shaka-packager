@@ -15,9 +15,9 @@
 
 DEFINE_bool(enable_widevine_encryption,
             false,
-            "Enable encryption with Widevine license server/proxy. User should "
-            "provide either AES signing key (--aes_signing_key, "
-            "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
+            "Enable encryption with Widevine key server. User should provide "
+            "either AES signing key (--aes_signing_key, --aes_signing_iv) or "
+            "RSA signing key (--rsa_signing_key_path).");
 DEFINE_bool(enable_widevine_decryption,
             false,
             "Enable decryption with Widevine license server/proxy. User should "
