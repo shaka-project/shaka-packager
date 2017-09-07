@@ -90,8 +90,10 @@ Status SingleSegmentSegmenter::DoFinalize() {
 
   // Close the temp file to prepare for reading later.
   if (!temp_file_.release()->Close()) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot close the temp file " + temp_file_name_);
+    return Status(
+        error::FILE_FAILURE,
+        "Cannot close the temp file " + temp_file_name_ +
+            ", possibly file permission issue or running out of disk space.");
   }
 
   std::unique_ptr<File, FileCloser> file(
@@ -141,6 +143,16 @@ Status SingleSegmentSegmenter::DoFinalize() {
     }
     UpdateProgress(static_cast<double>(size) / temp_file->Size() *
                    re_segment_progress_target);
+  }
+  if (!temp_file.release()->Close()) {
+    return Status(error::FILE_FAILURE, "Cannot close the temp file " +
+                                           temp_file_name_ + " after reading.");
+  }
+  if (!file.release()->Close()) {
+    return Status(
+        error::FILE_FAILURE,
+        "Cannot close file " + options().output_file_name +
+            ", possibly file permission issue or running out of disk space.");
   }
   SetComplete();
   return Status::OK;

@@ -29,7 +29,10 @@ Status MkvWriter::Open(const std::string& name) {
 Status MkvWriter::Close() {
   const std::string file_name = file_->file_name();
   if (!file_.release()->Close()) {
-    return Status(error::FILE_FAILURE, "Cannot close file " + file_name);
+    return Status(
+        error::FILE_FAILURE,
+        "Cannot close file " + file_name +
+            ", possibly file permission issue or running out of disk space.");
   }
   return Status::OK;
 }

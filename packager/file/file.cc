@@ -250,8 +250,10 @@ bool File::WriteStringToFile(const char* file_name,
                << contents.size() << " bytes.";
     return false;
   }
-  if (!file->Flush()) {
-    LOG(ERROR) << "Failed to flush the file '" << file_name << "'.";
+  if (!file.release()->Close()) {
+    LOG(ERROR)
+        << "Failed to close file '" << file_name
+        << "', possibly file permission issue or running out of disk space.";
     return false;
   }
   return true;
@@ -301,6 +303,12 @@ bool File::Copy(const char* from_file_name, const char* to_file_name) {
     }
 
     total_bytes_written += bytes_written;
+  }
+  if (!output_file.release()->Close()) {
+    LOG(ERROR)
+        << "Failed to close file '" << to_file_name
+        << "', possibly file permission issue or running out of disk space.";
+    return false;
   }
   return true;
 }

@@ -37,13 +37,25 @@ bool LocalFile::Close() {
 int64_t LocalFile::Read(void* buffer, uint64_t length) {
   DCHECK(buffer != NULL);
   DCHECK(internal_file_ != NULL);
-  return fread(buffer, sizeof(char), length, internal_file_);
+  size_t bytes_read = fread(buffer, sizeof(char), length, internal_file_);
+  VLOG(2) << "Read " << length << " return " << bytes_read << " error "
+          << ferror(internal_file_);
+  if (bytes_read == 0 && ferror(internal_file_) != 0) {
+    return -1;
+  }
+  return bytes_read;
 }
 
 int64_t LocalFile::Write(const void* buffer, uint64_t length) {
   DCHECK(buffer != NULL);
   DCHECK(internal_file_ != NULL);
-  return fwrite(buffer, sizeof(char), length, internal_file_);
+  size_t bytes_written = fwrite(buffer, sizeof(char), length, internal_file_);
+  VLOG(2) << "Write " << length << " return " << bytes_written << " error "
+          << ferror(internal_file_);
+  if (bytes_written == 0 && ferror(internal_file_) != 0) {
+    return -1;
+  }
+  return bytes_written;
 }
 
 int64_t LocalFile::Size() {

@@ -58,13 +58,14 @@ bool ThreadedIoFile::Open() {
 bool ThreadedIoFile::Close() {
   DCHECK(internal_file_);
 
+  bool result = true;
   if (mode_ == kOutputMode)
-    Flush();
+    result = Flush();
 
   cache_.Close();
   task_exit_event_.Wait();
 
-  bool result = internal_file_.release()->Close();
+  result &= internal_file_.release()->Close();
   delete this;
   return result;
 }
@@ -109,6 +110,9 @@ int64_t ThreadedIoFile::Size() {
 bool ThreadedIoFile::Flush() {
   DCHECK(internal_file_);
   DCHECK_EQ(kOutputMode, mode_);
+
+  if (NoBarrier_Load(&internal_file_error_))
+    return false;
 
   flushing_ = true;
   cache_.Close();
@@ -204,6 +208,10 @@ void ThreadedIoFile::RunInOutputMode() {
         if (write_result < 0) {
           NoBarrier_Store(&internal_file_error_, write_result);
           cache_.Close();
+          if (flushing_) {
+            flushing_ = false;
+            flush_complete_event_.Signal();
+          }
           return;
         }
         bytes_written += write_result;
