@@ -2482,59 +2482,36 @@ TEST_F(TimeShiftBufferDepthTest, ManySegments) {
       kDefaultStartNumber + kExpectedRemovedSegments));
 }
 
+namespace {
+const char kMediaFile[] = "foo/bar/media.mp4";
+const char kMediaFileBase[] = "media.mp4";
+const char kInitSegment[] = "foo/bar/init.mp4";
+const char kInitSegmentBase[] = "init.mp4";
+const char kSegmentTemplate[] = "foo/bar/segment-$Number$.mp4";
+const char kSegmentTemplateBase[] = "segment-$Number$.mp4";
+const char kPathModifiedMpd[] = "foo/bar/media.mpd";
+const char kPathNotModifiedMpd[] = "foo/baz/media.mpd";
+}  // namespace
+
 TEST(RelativePaths, PathsModified) {
-  const FilePath kCommonPath(
-      FilePath::FromUTF8Unsafe("foo").Append(FilePath::FromUTF8Unsafe("bar")));
-  const std::string kMediaFileBase("media.mp4");
-  const std::string kInitSegmentBase("init.mp4");
-  const std::string kSegmentTemplateBase("segment-$Number$.mp4");
-  const std::string kMediaFile(
-      kCommonPath.Append(FilePath::FromUTF8Unsafe(kMediaFileBase))
-          .AsUTF8Unsafe());
-  const std::string kInitSegment(
-      kCommonPath.Append(FilePath::FromUTF8Unsafe(kInitSegmentBase))
-          .AsUTF8Unsafe());
-  const std::string kSegmentTemplate(
-      kCommonPath.Append(FilePath::FromUTF8Unsafe(kSegmentTemplateBase))
-          .AsUTF8Unsafe());
-  const std::string kMpd(
-      kCommonPath.Append(FilePath::FromUTF8Unsafe("media.mpd")).AsUTF8Unsafe());
   MediaInfo media_info;
 
   media_info.set_media_file_name(kMediaFile);
   media_info.set_init_segment_name(kInitSegment);
   media_info.set_segment_template(kSegmentTemplate);
-  MpdBuilder::MakePathsRelativeToMpd(kMpd, &media_info);
+  MpdBuilder::MakePathsRelativeToMpd(kPathModifiedMpd, &media_info);
   EXPECT_EQ(kMediaFileBase, media_info.media_file_name());
   EXPECT_EQ(kInitSegmentBase, media_info.init_segment_name());
   EXPECT_EQ(kSegmentTemplateBase, media_info.segment_template());
 }
 
 TEST(RelativePaths, PathsNotModified) {
-  const FilePath kMediaCommon(
-      FilePath::FromUTF8Unsafe("foo").Append(FilePath::FromUTF8Unsafe("bar")));
-  const std::string kMediaFileBase("media.mp4");
-  const std::string kInitSegmentBase("init.mp4");
-  const std::string kSegmentTemplateBase("segment-$Number$.mp4");
-  const std::string kMediaFile(
-      kMediaCommon.Append(FilePath::FromUTF8Unsafe(kMediaFileBase))
-          .AsUTF8Unsafe());
-  const std::string kInitSegment(
-      kMediaCommon.Append(FilePath::FromUTF8Unsafe(kInitSegmentBase))
-          .AsUTF8Unsafe());
-  const std::string kSegmentTemplate(
-      kMediaCommon.Append(FilePath::FromUTF8Unsafe(kSegmentTemplateBase))
-          .AsUTF8Unsafe());
-  const std::string kMpd(FilePath::FromUTF8Unsafe("foo")
-                             .Append(FilePath::FromUTF8Unsafe("baz"))
-                             .Append(FilePath::FromUTF8Unsafe("media.mpd"))
-                             .AsUTF8Unsafe());
   MediaInfo media_info;
 
   media_info.set_media_file_name(kMediaFile);
   media_info.set_init_segment_name(kInitSegment);
   media_info.set_segment_template(kSegmentTemplate);
-  MpdBuilder::MakePathsRelativeToMpd(kMpd, &media_info);
+  MpdBuilder::MakePathsRelativeToMpd(kPathNotModifiedMpd, &media_info);
   EXPECT_EQ(kMediaFile, media_info.media_file_name());
   EXPECT_EQ(kInitSegment, media_info.init_segment_name());
   EXPECT_EQ(kSegmentTemplate, media_info.segment_template());

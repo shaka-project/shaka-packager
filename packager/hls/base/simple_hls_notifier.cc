@@ -22,6 +22,9 @@
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
 namespace shaka {
+
+using base::FilePath;
+
 namespace hls {
 
 namespace {
@@ -59,40 +62,44 @@ std::string VectorToString(const std::vector<uint8_t>& v) {
 }
 
 // TODO(rkuroiwa): Dedup these with the functions in MpdBuilder.
-std::string MakePathRelative(const std::string& original_path,
-                             const std::string& output_dir) {
-  return (original_path.find(output_dir) == 0)
-             ? original_path.substr(output_dir.size())
-             : original_path;
+// If |media_path| is contained in |parent_path|, then
+//   Strips the common path and keep only the relative part of |media_path|.
+//   e.g. if |parent_path| is /some/parent/ and
+//           |media_path| is /some/parent/abc/child/item.ext,
+//        abc/child/item.ext is returned.
+// else
+//   Returns |media_path|.
+// The path separator of the output is also changed to "/" if it is not.
+std::string MakePathRelative(const std::string& media_path,
+                             const FilePath& parent_path) {
+  FilePath relative_path;
+  const FilePath child_path = FilePath::FromUTF8Unsafe(media_path);
+  const bool is_child =
+      parent_path.AppendRelativePath(child_path, &relative_path);
+  if (!is_child)
+    relative_path = child_path;
+  return relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe();
 }
 
-void MakePathsRelativeToOutputDirectory(const std::string& output_dir,
-                                        MediaInfo* media_info) {
-  DCHECK(media_info);
-  const std::string kFileProtocol("file://");
-  std::string prefix_stripped_output_dir =
-      (output_dir.find(kFileProtocol) == 0)
-          ? output_dir.substr(kFileProtocol.size())
-          : output_dir;
-
-  if (prefix_stripped_output_dir.empty())
-    return;
-
-  std::string directory_with_separator(
-      base::FilePath::FromUTF8Unsafe(prefix_stripped_output_dir)
-      .AsEndingWithSeparator()
-      .AsUTF8Unsafe());
-  if (directory_with_separator.empty())
-    return;
-
-  if (media_info->has_media_file_name()) {
-    media_info->set_media_file_name(MakePathRelative(
-        media_info->media_file_name(), directory_with_separator));
+// Segment URL is relative to either output directory or the directory
+// containing the media playlist depends on whether base_url is set.
+std::string GenerateSegmentUrl(const std::string& segment_name,
+                               const std::string& base_url,
+                               const std::string& output_dir,
+                               const std::string& playlist_file_name) {
+  FilePath output_path = FilePath::FromUTF8Unsafe(output_dir);
+  if (!base_url.empty()) {
+    // Media segment URL is base_url + segment path relative to output
+    // directory.
+    return base_url + MakePathRelative(segment_name, output_path);
   }
-  if (media_info->has_segment_template()) {
-    media_info->set_segment_template(MakePathRelative(
-        media_info->segment_template(), directory_with_separator));
-  }
+  // Media segment URL is segment path relative to the directory containing the
+  // playlist.
+  const FilePath playlist_dir =
+      output_path.Append(FilePath::FromUTF8Unsafe(playlist_file_name))
+          .DirName()
+          .AsEndingWithSeparator();
+  return MakePathRelative(segment_name, playlist_dir);
 }
 
 bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_box,
@@ -216,8 +223,8 @@ bool HandleWidevineKeyFormats(
 bool WriteMediaPlaylist(const std::string& output_dir,
                         MediaPlaylist* playlist) {
   std::string file_path =
-      base::FilePath::FromUTF8Unsafe(output_dir)
-          .Append(base::FilePath::FromUTF8Unsafe(playlist->file_name()))
+      FilePath::FromUTF8Unsafe(output_dir)
+          .Append(FilePath::FromUTF8Unsafe(playlist->file_name()))
           .AsUTF8Unsafe();
   if (!playlist->WriteToFile(file_path)) {
     LOG(ERROR) << "Failed to write playlist " << file_path;
@@ -265,13 +272,10 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
                                         uint32_t* stream_id) {
   DCHECK(stream_id);
 
-  MediaInfo adjusted_media_info(media_info);
-  MakePathsRelativeToOutputDirectory(output_dir_, &adjusted_media_info);
-
   std::unique_ptr<MediaPlaylist> media_playlist =
       media_playlist_factory_->Create(playlist_type(), time_shift_buffer_depth_,
                                       playlist_name, name, group_id);
-  if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
+  if (!media_playlist->SetMediaInfo(media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
   }
@@ -311,12 +315,11 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
     return false;
   }
-  const std::string relative_segment_name =
-      MakePathRelative(segment_name, output_dir_);
-
   auto& media_playlist = stream_iterator->second->media_playlist;
-  media_playlist->AddSegment(prefix_ + relative_segment_name, start_time,
-                             duration, start_byte_offset, size);
+  const std::string& segment_url = GenerateSegmentUrl(
+      segment_name, prefix_, output_dir_, media_playlist->file_name());
+  media_playlist->AddSegment(segment_url, start_time, duration,
+                             start_byte_offset, size);
 
   // Update target duration.
   uint32_t longest_segment_duration =

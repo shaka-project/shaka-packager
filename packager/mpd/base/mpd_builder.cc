@@ -186,9 +186,15 @@ int SearchTimedOutRepeatIndex(uint64_t timeshift_limit,
   return (timeshift_limit - segment_info.start_time) / segment_info.duration;
 }
 
-std::string MakePathRelative(const std::string& path,
-                             const std::string& mpd_dir) {
-  return (path.find(mpd_dir) == 0) ? path.substr(mpd_dir.size()) : path;
+std::string MakePathRelative(const std::string& media_path,
+                             const FilePath& parent_path) {
+  FilePath relative_path;
+  const FilePath child_path = FilePath::FromUTF8Unsafe(media_path);
+  const bool is_child =
+      parent_path.AppendRelativePath(child_path, &relative_path);
+  if (!is_child)
+    relative_path = child_path;
+  return relative_path.NormalizePathSeparatorsTo('/').AsUTF8Unsafe();
 }
 
 // Check whether the video info has width and height.
@@ -627,8 +633,9 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
                                   : mpd_path;
 
   if (!mpd_file_path.empty()) {
-    std::string mpd_dir(FilePath::FromUTF8Unsafe(mpd_file_path)
-      .DirName().AsEndingWithSeparator().AsUTF8Unsafe());
+    const FilePath mpd_dir(FilePath::FromUTF8Unsafe(mpd_file_path)
+                               .DirName()
+                               .AsEndingWithSeparator());
     if (!mpd_dir.empty()) {
       if (media_info->has_media_file_name()) {
         media_info->set_media_file_name(

@@ -63,16 +63,12 @@ class MockMediaPlaylistFactory : public MediaPlaylistFactory {
 
 const double kTestTimeShiftBufferDepth = 1800.0;
 const char kTestPrefix[] = "http://testprefix.com/";
+const char kEmptyPrefix[] = "";
 const char kAnyOutputDir[] = "anything/";
 
 const uint64_t kAnyStartTime = 10;
 const uint64_t kAnyDuration = 1000;
 const uint64_t kAnySize = 2000;
-
-MATCHER_P(SegmentTemplateEq, expected_template, "") {
-  *result_listener << " which is " << arg.segment_template();
-  return arg.segment_template() == expected_template;
-}
 
 const char kCencProtectionScheme[] = "cenc";
 const char kSampleAesProtectionScheme[] = "cbca";
@@ -149,7 +145,7 @@ TEST_F(SimpleHlsNotifierTest, Init) {
 // Verify that relative paths can be handled.
 // For this test, since the prefix "anything/" matches, the prefix should be
 // stripped.
-TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
+TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
   std::unique_ptr<MockMediaPlaylistFactory> factory(
@@ -160,9 +156,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
   EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
-  EXPECT_CALL(*mock_media_playlist,
-              SetMediaInfo(SegmentTemplateEq("path/to/media$Number$.ts")))
-      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
 
   // Verify that the common prefix is stripped for AddSegment().
   EXPECT_CALL(
@@ -181,7 +175,6 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
 
   EXPECT_TRUE(notifier.Init());
   MediaInfo media_info;
-  media_info.set_segment_template("anything/path/to/media$Number$.ts");
   uint32_t stream_id;
   EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
                                        "name", "groupid", &stream_id));
@@ -191,10 +184,46 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
                                         kAnySize));
 }
 
-// Verify that when segment template's prefix and output dir match, then the
-// prefix is stripped from segment template.
-TEST_F(SimpleHlsNotifierTest,
-       RebaseAbsoluteSegmentTemplatePrefixAndOutputDirMatch) {
+TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "video/playlist.m3u8", "", "");
+  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
+
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
+
+  // Verify that the segment URL is relative to playlist path.
+  EXPECT_CALL(*mock_media_playlist,
+              AddSegment(StrEq("path/to/media1.ts"), _, _, _, _));
+  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
+                                   StrEq("video/playlist.m3u8"), StrEq("name"),
+                                   StrEq("groupid")))
+      .WillOnce(Return(mock_media_playlist));
+
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kEmptyPrefix, kAnyOutputDir, kMasterPlaylistName);
+
+  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &notifier);
+
+  EXPECT_TRUE(notifier.Init());
+  MediaInfo media_info;
+  uint32_t stream_id;
+  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video/playlist.m3u8",
+                                       "name", "groupid", &stream_id));
+  EXPECT_TRUE(
+      notifier.NotifyNewSegment(stream_id, "anything/video/path/to/media1.ts",
+                                kAnyStartTime, kAnyDuration, 0, kAnySize));
+}
+
+// Verify that when segment path's prefix and output dir match, then the
+// prefix is stripped from segment path.
+TEST_F(SimpleHlsNotifierTest, RebaseAbsoluteSegmentPrefixAndOutputDirMatch) {
   const char kAbsoluteOutputDir[] = "/tmp/something/";
   SimpleHlsNotifier test_notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
                                   kTestPrefix, kAbsoluteOutputDir,
@@ -210,9 +239,7 @@ TEST_F(SimpleHlsNotifierTest,
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
   EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
-  EXPECT_CALL(*mock_media_playlist,
-              SetMediaInfo(SegmentTemplateEq("media$Number$.ts")))
-      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
 
   // Verify that the output_dir is stripped and then kTestPrefix is prepended.
   EXPECT_CALL(*mock_media_playlist,
@@ -226,7 +253,6 @@ TEST_F(SimpleHlsNotifierTest,
   InjectMediaPlaylistFactory(std::move(factory), &test_notifier);
   EXPECT_TRUE(test_notifier.Init());
   MediaInfo media_info;
-  media_info.set_segment_template("/tmp/something/media$Number$.ts");
   uint32_t stream_id;
   EXPECT_TRUE(test_notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
                                             "name", "groupid", &stream_id));
@@ -239,7 +265,7 @@ TEST_F(SimpleHlsNotifierTest,
 // If the paths don't match at all and they are both absolute and completely
 // different, then keep it as is.
 TEST_F(SimpleHlsNotifierTest,
-       RebaseAbsoluteSegmentTemplateCompletelyDifferentDirectory) {
+       RebaseAbsoluteSegmentCompletelyDifferentDirectory) {
   const char kAbsoluteOutputDir[] = "/tmp/something/";
   SimpleHlsNotifier test_notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
                                   kTestPrefix, kAbsoluteOutputDir,
@@ -255,10 +281,7 @@ TEST_F(SimpleHlsNotifierTest,
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
   EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
-  EXPECT_CALL(
-      *mock_media_playlist,
-      SetMediaInfo(SegmentTemplateEq("/var/somewhereelse/media$Number$.ts")))
-      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist,
               AddSegment("http://testprefix.com//var/somewhereelse/media1.ts",
                          _, _, _, _));
