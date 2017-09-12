@@ -162,8 +162,10 @@ def _generate_widevine_data(key_ids, content_id, provider, protection_scheme):
   """Generate widevine pssh data."""
   wv = widevine_pssh_data_pb2.WidevinePsshData()
   wv.key_id.extend(key_ids)
-  wv.provider = provider or ''
-  wv.content_id = content_id
+  if provider:
+    wv.provider = provider
+  if content_id:
+    wv.content_id = content_id
   # 'cenc' is the default, so omitted to save bytes.
   if protection_scheme and protection_scheme != 'cenc':
     wv.protection_scheme = struct.unpack('>L', protection_scheme)[0]
@@ -404,16 +406,22 @@ def main(all_args):
     if ns.content_id:
       if ns.system_id != WIDEVINE_SYSTEM_ID:
         raise Exception('--content-id only valid with Widevine system ID')
-      pssh_data = _generate_widevine_data(ns.key_id, ns.content_id, ns.provider,
-                                          ns.protection_scheme)
 
     # Ignore if we have no data.
     if not pssh_data and not ns.key_id and not ns.system_id:
       continue
     if not ns.system_id:
       raise Exception('System ID is required')
-
-    version = 1 if ns.key_id and not ns.content_id else 0
+    if ns.system_id == WIDEVINE_SYSTEM_ID:
+      # Always generate version 0 for Widevine for backward compatibility.
+      version = 0
+      if not pssh_data:
+        if not ns.key_id and not ns.content_id:
+          raise Exception('Widevine system needs key-id or content-id or both')
+        pssh_data = _generate_widevine_data(ns.key_id, ns.content_id,
+                                            ns.provider, ns.protection_scheme)
+    else:
+      version = 1 if ns.key_id else 0
     boxes.append(Pssh(version, ns.system_id, ns.key_id, pssh_data))
 
   if output_format == 'human' or not output_format:
