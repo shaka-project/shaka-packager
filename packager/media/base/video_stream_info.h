@@ -50,6 +50,7 @@ class VideoStreamInfo : public StreamInfo {
   /// @{
   bool IsValidConfig() const override;
   std::string ToString() const override;
+  std::unique_ptr<StreamInfo> Clone() const override;
   /// @}
 
   H26xStreamFormat h26x_stream_format() const { return h26x_stream_format_; }

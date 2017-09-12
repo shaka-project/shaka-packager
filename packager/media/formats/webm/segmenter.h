@@ -41,7 +41,7 @@ class Segmenter {
   /// @param info The stream info for the stream being segmented.
   /// @param muxer_listener receives muxer events. Can be NULL.
   /// @return OK on success, an error status otherwise.
-  Status Initialize(StreamInfo* info,
+  Status Initialize(const StreamInfo& info,
                     ProgressListener* progress_listener,
                     MuxerListener* muxer_listener);
 
@@ -52,7 +52,7 @@ class Segmenter {
   /// Add sample to the indicated stream.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(std::shared_ptr<MediaSample> sample);
+  Status AddSample(const MediaSample& sample);
 
   /// Finalize the (sub)segment.
   virtual Status FinalizeSegment(uint64_t start_timestamp,
@@ -95,19 +95,20 @@ class Segmenter {
   mkvmuxer::Cluster* cluster() { return cluster_.get(); }
   mkvmuxer::Cues* cues() { return &cues_; }
   MuxerListener* muxer_listener() { return muxer_listener_; }
-  StreamInfo* info() { return info_; }
   SeekHead* seek_head() { return &seek_head_; }
 
   int track_id() const { return track_id_; }
   uint64_t segment_payload_pos() const { return segment_payload_pos_; }
 
+  uint64_t duration() const { return duration_; }
+
   virtual Status DoInitialize() = 0;
   virtual Status DoFinalize() = 0;
 
  private:
-  Status InitializeAudioTrack(const AudioStreamInfo* info,
+  Status InitializeAudioTrack(const AudioStreamInfo& info,
                               mkvmuxer::AudioTrack* track);
-  Status InitializeVideoTrack(const VideoStreamInfo* info,
+  Status InitializeVideoTrack(const VideoStreamInfo& info,
                               mkvmuxer::VideoTrack* track);
 
   // Writes the previous frame to the file.
@@ -120,7 +121,7 @@ class Segmenter {
   virtual Status NewSegment(uint64_t start_timestamp, bool is_subsegment) = 0;
 
   // Store the previous sample so we know which one is the last frame.
-  std::shared_ptr<MediaSample> prev_sample_;
+  std::shared_ptr<const MediaSample> prev_sample_;
   // The reference frame timestamp; used to populate the ReferenceBlock element
   // when writing non-keyframe BlockGroups.
   uint64_t reference_frame_timestamp_ = 0;
@@ -133,7 +134,6 @@ class Segmenter {
   mkvmuxer::SegmentInfo segment_info_;
   mkvmuxer::Tracks tracks_;
 
-  StreamInfo* info_ = nullptr;
   MuxerListener* muxer_listener_ = nullptr;
   ProgressListener* progress_listener_ = nullptr;
   uint64_t progress_target_ = 0;
@@ -150,6 +150,11 @@ class Segmenter {
   // Indicate whether a new subsegment needed to be created.
   bool new_subsegment_ = false;
   int track_id_ = 0;
+
+  // The subset of information that we need from StreamInfo
+  bool is_encrypted_ = false;
+  uint64_t time_scale_ = 0;
+  uint64_t duration_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

@@ -28,5 +28,9 @@ bool TextStreamInfo::IsValidConfig() const {
   return true;
 }
 
+std::unique_ptr<StreamInfo> TextStreamInfo::Clone() const {
+  return std::unique_ptr<StreamInfo>(new TextStreamInfo(*this));
+}
+
 }  // namespace media
 }  // namespace shaka

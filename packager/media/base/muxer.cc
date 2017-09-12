@@ -50,10 +50,10 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
       }
       return InitializeMuxer();
     case StreamDataType::kSegmentInfo: {
-      auto& segment_info = stream_data->segment_info;
-      if (muxer_listener_ && segment_info->is_encrypted) {
+      const auto& segment_info = *stream_data->segment_info;
+      if (muxer_listener_ && segment_info.is_encrypted) {
         const EncryptionConfig* encryption_config =
-            segment_info->key_rotation_encryption_config.get();
+            segment_info.key_rotation_encryption_config.get();
         // Only call OnEncryptionInfoReady again when key updates.
         if (encryption_config && encryption_config->key_id != current_key_id_) {
           muxer_listener_->OnEncryptionInfoReady(
@@ -67,12 +67,11 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
           muxer_listener_->OnEncryptionStart();
         }
       }
-      return FinalizeSegment(stream_data->stream_index,
-                             std::move(segment_info));
+      return FinalizeSegment(stream_data->stream_index, segment_info);
     }
     case StreamDataType::kMediaSample:
       return AddSample(stream_data->stream_index,
-                       std::move(stream_data->media_sample));
+                       *stream_data->media_sample);
     default:
       VLOG(3) << "Stream data type "
               << static_cast<int>(stream_data->stream_data_type) << " ignored.";

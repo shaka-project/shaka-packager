@@ -209,7 +209,7 @@ class EncryptedSegmenterTest : public SegmentTestBase {
   void InitializeSegmenter(const MuxerOptions& options) {
     ASSERT_NO_FATAL_FAILURE(
         CreateAndInitializeSegmenter<webm::TwoPassSingleSegmentSegmenter>(
-            options, info_.get(), &segmenter_));
+            options, *info_, &segmenter_));
   }
 
   std::shared_ptr<StreamInfo> info_;
@@ -236,7 +236,7 @@ TEST_F(EncryptedSegmenterTest, BasicSupport) {
                             std::vector<SubsampleEntry>()));
       sample->set_decrypt_config(std::move(decrypt_config));
     }
-    ASSERT_OK(segmenter_->AddSample(sample));
+    ASSERT_OK(segmenter_->AddSample(*sample));
   }
   ASSERT_OK(
       segmenter_->FinalizeSegment(3 * kDuration, 2 * kDuration, !kSubsegment));

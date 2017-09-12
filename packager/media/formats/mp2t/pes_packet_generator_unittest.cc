@@ -205,7 +205,7 @@ TEST_F(PesPacketGeneratorTest, AddVideoSample) {
 
   UseMockNalUnitToByteStreamConverter(std::move(mock));
 
-  EXPECT_TRUE(generator_.PushSample(sample));
+  EXPECT_TRUE(generator_.PushSample(*sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
   std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);
@@ -252,7 +252,7 @@ TEST_F(PesPacketGeneratorTest, AddEncryptedVideoSample) {
 
   UseMockNalUnitToByteStreamConverter(std::move(mock));
 
-  EXPECT_TRUE(generator_.PushSample(sample));
+  EXPECT_TRUE(generator_.PushSample(*sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
   std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);
@@ -285,7 +285,7 @@ TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
 
   UseMockNalUnitToByteStreamConverter(std::move(mock));
 
-  EXPECT_FALSE(generator_.PushSample(sample));
+  EXPECT_FALSE(generator_.PushSample(*sample));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
   EXPECT_TRUE(generator_.Flush());
 }
@@ -308,7 +308,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
 
   UseMockAACAudioSpecificConfig(std::move(mock));
 
-  EXPECT_TRUE(generator_.PushSample(sample));
+  EXPECT_TRUE(generator_.PushSample(*sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
   std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);
@@ -335,7 +335,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 
   UseMockAACAudioSpecificConfig(std::move(mock));
 
-  EXPECT_FALSE(generator_.PushSample(sample));
+  EXPECT_FALSE(generator_.PushSample(*sample));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
   EXPECT_TRUE(generator_.Flush());
 }
@@ -369,7 +369,7 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
 
   UseMockNalUnitToByteStreamConverter(std::move(mock));
 
-  EXPECT_TRUE(generator_.PushSample(sample));
+  EXPECT_TRUE(generator_.PushSample(*sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
   std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);

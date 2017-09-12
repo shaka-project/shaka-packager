@@ -38,7 +38,7 @@ Status WebMMuxer::InitializeMuxer() {
   }
 
   Status initialized = segmenter_->Initialize(
-      streams()[0].get(), progress_listener(), muxer_listener());
+      *streams()[0], progress_listener(), muxer_listener());
   if (!initialized.ok())
     return initialized;
 
@@ -58,26 +58,25 @@ Status WebMMuxer::Finalize() {
   return Status::OK;
 }
 
-Status WebMMuxer::AddSample(size_t stream_id,
-                            std::shared_ptr<MediaSample> sample) {
+Status WebMMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK(segmenter_);
   DCHECK_EQ(stream_id, 0u);
   return segmenter_->AddSample(sample);
 }
 
 Status WebMMuxer::FinalizeSegment(size_t stream_id,
-                                  std::shared_ptr<SegmentInfo> segment_info) {
+                                  const SegmentInfo& segment_info) {
   DCHECK(segmenter_);
   DCHECK_EQ(stream_id, 0u);
 
-  if (segment_info->key_rotation_encryption_config) {
+  if (segment_info.key_rotation_encryption_config) {
     NOTIMPLEMENTED() << "Key rotation is not implemented for WebM.";
     return Status(error::UNIMPLEMENTED,
                   "Key rotation is not implemented for WebM");
   }
-  return segmenter_->FinalizeSegment(segment_info->start_timestamp,
-                                     segment_info->duration,
-                                     segment_info->is_subsegment);
+  return segmenter_->FinalizeSegment(segment_info.start_timestamp,
+                                     segment_info.duration,
+                                     segment_info.is_subsegment);
 }
 
 void WebMMuxer::FireOnMediaStartEvent() {

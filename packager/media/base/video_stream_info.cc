@@ -88,5 +88,9 @@ std::string VideoStreamInfo::ToString() const {
       nalu_length_size_);
 }
 
+std::unique_ptr<StreamInfo> VideoStreamInfo::Clone() const {
+  return std::unique_ptr<StreamInfo>(new VideoStreamInfo(*this));
+}
+
 }  // namespace media
 }  // namespace shaka

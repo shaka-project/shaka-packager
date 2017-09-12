@@ -48,12 +48,66 @@ struct StreamData {
   size_t stream_index = static_cast<size_t>(-1);
   StreamDataType stream_data_type = StreamDataType::kUnknown;
 
-  std::shared_ptr<PeriodInfo> period_info;
-  std::shared_ptr<StreamInfo> stream_info;
-  std::shared_ptr<MediaSample> media_sample;
-  std::shared_ptr<TextSample> text_sample;
-  std::shared_ptr<MediaEvent> media_event;
-  std::shared_ptr<SegmentInfo> segment_info;
+  std::shared_ptr<const PeriodInfo> period_info;
+  std::shared_ptr<const StreamInfo> stream_info;
+  std::shared_ptr<const MediaSample> media_sample;
+  std::shared_ptr<const TextSample> text_sample;
+  std::shared_ptr<const MediaEvent> media_event;
+  std::shared_ptr<const SegmentInfo> segment_info;
+
+  static std::unique_ptr<StreamData> FromPeriodInfo(
+      size_t stream_index, std::shared_ptr<const PeriodInfo> period_info) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kPeriodInfo;
+    stream_data->period_info = std::move(period_info);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromStreamInfo(
+      size_t stream_index, std::shared_ptr<const StreamInfo> stream_info) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kStreamInfo;
+    stream_data->stream_info = std::move(stream_info);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromMediaSample(
+      size_t stream_index, std::shared_ptr<const MediaSample> media_sample) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kMediaSample;
+    stream_data->media_sample = std::move(media_sample);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromTextSample(
+      size_t stream_index, std::shared_ptr<const TextSample> text_sample) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kTextSample;
+    stream_data->text_sample = std::move(text_sample);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromMediaEvent(
+      size_t stream_index, std::shared_ptr<const MediaEvent> media_event) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kMediaEvent;
+    stream_data->media_event = std::move(media_event);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromSegmentInfo(
+      size_t stream_index, std::shared_ptr<const SegmentInfo> segment_info) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kSegmentInfo;
+    stream_data->segment_info = std::move(segment_info);
+    return stream_data;
+  }
 };
 
 /// MediaHandler is the base media processing unit. Media handlers transform
@@ -114,64 +168,40 @@ class MediaHandler {
   Status Dispatch(std::unique_ptr<StreamData> stream_data);
 
   /// Dispatch the period info to downstream handlers.
-  Status DispatchPeriodInfo(size_t stream_index,
-                            std::shared_ptr<PeriodInfo> period_info) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kPeriodInfo;
-    stream_data->period_info = std::move(period_info);
-    return Dispatch(std::move(stream_data));
+  Status DispatchPeriodInfo(
+      size_t stream_index, std::shared_ptr<const PeriodInfo> period_info) {
+    return Dispatch(StreamData::FromPeriodInfo(stream_index, period_info));
   }
 
   /// Dispatch the stream info to downstream handlers.
-  Status DispatchStreamInfo(size_t stream_index,
-                            std::shared_ptr<StreamInfo> stream_info) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kStreamInfo;
-    stream_data->stream_info = std::move(stream_info);
-    return Dispatch(std::move(stream_data));
+  Status DispatchStreamInfo(
+      size_t stream_index, std::shared_ptr<const StreamInfo> stream_info) {
+    return Dispatch(StreamData::FromStreamInfo(stream_index, stream_info));
   }
 
   /// Dispatch the media sample to downstream handlers.
-  Status DispatchMediaSample(size_t stream_index,
-                             std::shared_ptr<MediaSample> media_sample) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kMediaSample;
-    stream_data->media_sample = std::move(media_sample);
-    return Dispatch(std::move(stream_data));
+  Status DispatchMediaSample(
+      size_t stream_index, std::shared_ptr<const MediaSample> media_sample) {
+    return Dispatch(StreamData::FromMediaSample(stream_index, media_sample));
   }
 
   /// Dispatch the text sample to downsream handlers.
   // DispatchTextSample should only be override for testing.
-  Status DispatchTextSample(size_t stream_index,
-                            std::shared_ptr<TextSample> text_sample) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kTextSample;
-    stream_data->text_sample = std::move(text_sample);
-    return Dispatch(std::move(stream_data));
+  Status DispatchTextSample(
+      size_t stream_index, std::shared_ptr<const TextSample> text_sample) {
+    return Dispatch(StreamData::FromTextSample(stream_index, text_sample));
   }
 
   /// Dispatch the media event to downstream handlers.
-  Status DispatchMediaEvent(size_t stream_index,
-                            std::shared_ptr<MediaEvent> media_event) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kMediaEvent;
-    stream_data->media_event = std::move(media_event);
-    return Dispatch(std::move(stream_data));
+  Status DispatchMediaEvent(
+      size_t stream_index, std::shared_ptr<const MediaEvent> media_event) {
+    return Dispatch(StreamData::FromMediaEvent(stream_index, media_event));
   }
 
   /// Dispatch the segment info to downstream handlers.
-  Status DispatchSegmentInfo(size_t stream_index,
-                             std::shared_ptr<SegmentInfo> segment_info) {
-    std::unique_ptr<StreamData> stream_data(new StreamData);
-    stream_data->stream_index = stream_index;
-    stream_data->stream_data_type = StreamDataType::kSegmentInfo;
-    stream_data->segment_info = std::move(segment_info);
-    return Dispatch(std::move(stream_data));
+  Status DispatchSegmentInfo(
+      size_t stream_index, std::shared_ptr<const SegmentInfo> segment_info) {
+    return Dispatch(StreamData::FromSegmentInfo(stream_index, segment_info));
   }
 
   /// Flush the downstream connected at the specified output stream index.

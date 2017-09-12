@@ -88,8 +88,8 @@ TEST_F(TrickPlayHandlerTest, AudioStream) {
                                                  std::end(kTrickPlayFactors));
   SetUpTrickPlayHandler(trick_play_factors);
 
-  Status status =
-      Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale));
+  Status status = Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetAudioStreamInfo(kTimeScale)));
   Status kExpectStatus(error::TRICK_PLAY_ERROR, "Some Messages");
   EXPECT_TRUE(status.Matches(kExpectStatus));
 }
@@ -101,7 +101,8 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithTrickPlay) {
                                                  std::end(kTrickPlayFactors));
   SetUpTrickPlayHandler(trick_play_factors);
 
-  ASSERT_OK(Process(GetVideoStreamInfoStreamData(kStreamIndex0, kTimeScale)));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetVideoStreamInfo(kTimeScale))));
   // The stream info is cached, so the output is empty.
   EXPECT_THAT(
       GetOutputStreamDataVector(),
@@ -113,9 +114,12 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithTrickPlay) {
   const int kGOPSize = 3;
   for (int i = 0; i < 3; ++i) {
     const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + kDuration * i, kDuration,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration * i,
+            kDuration,
+            is_key_frame))));
   }
 
   EXPECT_THAT(
@@ -136,9 +140,12 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithTrickPlay) {
   // ElementsAre supports at most 10 elements.
   for (int i = 3; i < 6; ++i) {
     const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + kDuration * i, kDuration,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration * i,
+            kDuration,
+            is_key_frame))));
   }
 
   EXPECT_THAT(
@@ -166,9 +173,12 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithTrickPlay) {
   // ElementsAre supports at most 10 elements.
   for (int i = 6; i < 8; ++i) {
     const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + kDuration * i, kDuration,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration * i,
+            kDuration,
+            is_key_frame))));
   }
 
   EXPECT_THAT(
@@ -219,7 +229,8 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithDecreasingTrickPlayFactors) {
       std::end(kTrickPlayFactorsDecreasing));
   SetUpTrickPlayHandler(trick_play_factors);
 
-  ASSERT_OK(Process(GetVideoStreamInfoStreamData(kStreamIndex0, kTimeScale)));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetVideoStreamInfo(kTimeScale))));
   // The stream info is cached, so the output is empty.
   EXPECT_THAT(
       GetOutputStreamDataVector(),
@@ -231,9 +242,12 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithDecreasingTrickPlayFactors) {
   const int kGOPSize = 3;
   for (int i = 0; i < 3; ++i) {
     const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + kDuration * i, kDuration,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration * i,
+            kDuration,
+            is_key_frame))));
   }
 
   EXPECT_THAT(
@@ -254,9 +268,12 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithDecreasingTrickPlayFactors) {
   // ElementsAre supports at most 10 elements.
   for (int i = 3; i < 6; ++i) {
     const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + kDuration * i, kDuration,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration * i,
+            kDuration,
+            is_key_frame))));
   }
 
   EXPECT_THAT(
@@ -285,9 +302,12 @@ TEST_F(TrickPlayHandlerTest, VideoStreamWithDecreasingTrickPlayFactors) {
   // ElementsAre supports at most 10 elements.
   for (int i = 6; i < 8; ++i) {
     const bool is_key_frame = (i % kGOPSize == 0);
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + kDuration * i, kDuration,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration * i,
+            kDuration,
+            is_key_frame))));
   }
 
   EXPECT_THAT(

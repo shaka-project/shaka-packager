@@ -39,10 +39,9 @@ class MP4Muxer : public Muxer {
   // Muxer implementation overrides.
   Status InitializeMuxer() override;
   Status Finalize() override;
-  Status AddSample(size_t stream_id,
-                   std::shared_ptr<MediaSample> sample) override;
+  Status AddSample(size_t stream_id, const MediaSample& sample) override;
   Status FinalizeSegment(size_t stream_id,
-                         std::shared_ptr<SegmentInfo> segment_info) override;
+                         const SegmentInfo& segment_info) override;
 
   // Generate Audio/Video Track box.
   void InitializeTrak(const StreamInfo* info, Track* trak);

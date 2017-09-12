@@ -46,7 +46,7 @@ class SegmentTestBase : public ::testing::Test {
   template <typename S>
   void CreateAndInitializeSegmenter(
       const MuxerOptions& options,
-      StreamInfo* info,
+      const StreamInfo& info,
       std::unique_ptr<webm::Segmenter>* result) const {
     std::unique_ptr<S> segmenter(new S(options));
 

@@ -75,14 +75,17 @@ Segmenter::Segmenter(const MuxerOptions& options) : options_(options) {}
 
 Segmenter::~Segmenter() {}
 
-Status Segmenter::Initialize(StreamInfo* info,
+Status Segmenter::Initialize(const StreamInfo& info,
                              ProgressListener* progress_listener,
                              MuxerListener* muxer_listener) {
+  is_encrypted_ = info.is_encrypted();
+  duration_ = info.duration();
+  time_scale_ = info.time_scale();
+
   muxer_listener_ = muxer_listener;
-  info_ = info;
 
   // Use media duration as progress target.
-  progress_target_ = info_->duration();
+  progress_target_ = info.duration();
   progress_listener_ = progress_listener;
 
   segment_info_.Init();
@@ -106,39 +109,39 @@ Status Segmenter::Initialize(StreamInfo* info,
   unsigned int seed = 0;
   std::unique_ptr<mkvmuxer::Track> track;
   Status status;
-  switch (info_->stream_type()) {
+  switch (info.stream_type()) {
     case kStreamVideo: {
       std::unique_ptr<VideoTrack> video_track(new VideoTrack(&seed));
-      status = InitializeVideoTrack(static_cast<VideoStreamInfo*>(info_),
+      status = InitializeVideoTrack(static_cast<const VideoStreamInfo&>(info),
                                     video_track.get());
       track = std::move(video_track);
       break;
     }
     case kStreamAudio: {
       std::unique_ptr<AudioTrack> audio_track(new AudioTrack(&seed));
-      status = InitializeAudioTrack(static_cast<AudioStreamInfo*>(info_),
+      status = InitializeAudioTrack(static_cast<const AudioStreamInfo&>(info),
                                     audio_track.get());
       track = std::move(audio_track);
       break;
     }
     default:
       NOTIMPLEMENTED() << "Not implemented for stream type: "
-                       << info_->stream_type();
+                       << info.stream_type();
       status = Status(error::UNIMPLEMENTED, "Not implemented for stream type");
   }
   if (!status.ok())
     return status;
 
-  if (info_->is_encrypted()) {
-    if (info->encryption_config().per_sample_iv_size != kWebMIvSize)
+  if (info.is_encrypted()) {
+    if (info.encryption_config().per_sample_iv_size != kWebMIvSize)
       return Status(error::MUXER_FAILURE, "Incorrect size WebM encryption IV.");
-    status = UpdateTrackForEncryption(info_->encryption_config().key_id,
+    status = UpdateTrackForEncryption(info.encryption_config().key_id,
                                       track.get());
     if (!status.ok())
       return status;
   }
 
-  tracks_.AddTrack(track.get(), info_->track_id());
+  tracks_.AddTrack(track.get(), info.track_id());
   // number() is only available after the above instruction.
   track_id_ = track->number();
   // |tracks_| owns |track|.
@@ -153,7 +156,9 @@ Status Segmenter::Finalize() {
   return DoFinalize();
 }
 
-Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
+Status Segmenter::AddSample(const MediaSample& source_sample) {
+  std::shared_ptr<MediaSample> sample = MediaSample::CopyFrom(source_sample);
+
   if (sample_duration_ == 0) {
     first_timestamp_ = sample->pts();
     sample_duration_ = sample->duration();
@@ -178,7 +183,7 @@ Status Segmenter::AddSample(std::shared_ptr<MediaSample> sample) {
   if (!status.ok())
     return status;
 
-  if (info_->is_encrypted())
+  if (is_encrypted_)
     UpdateFrameForEncryption(sample.get());
 
   new_subsegment_ = false;
@@ -205,14 +210,14 @@ float Segmenter::GetDurationInSeconds() const {
 
 uint64_t Segmenter::FromBmffTimestamp(uint64_t bmff_timestamp) {
   return NsToWebMTimecode(
-      BmffTimestampToNs(bmff_timestamp, info_->time_scale()),
+      BmffTimestampToNs(bmff_timestamp, time_scale_),
       segment_info_.timecode_scale());
 }
 
 uint64_t Segmenter::FromWebMTimecode(uint64_t webm_timecode) {
   return NsToBmffTimestamp(
       WebMTimecodeToNs(webm_timecode, segment_info_.timecode_scale()),
-      info_->time_scale());
+      time_scale_);
 }
 
 Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {
@@ -277,17 +282,17 @@ void Segmenter::UpdateProgress(uint64_t progress) {
   }
 }
 
-Status Segmenter::InitializeVideoTrack(const VideoStreamInfo* info,
+Status Segmenter::InitializeVideoTrack(const VideoStreamInfo& info,
                                        VideoTrack* track) {
-  if (info->codec() == kCodecVP8) {
+  if (info.codec() == kCodecVP8) {
     track->set_codec_id(mkvmuxer::Tracks::kVp8CodecId);
-  } else if (info->codec() == kCodecVP9) {
+  } else if (info.codec() == kCodecVP9) {
     track->set_codec_id(mkvmuxer::Tracks::kVp9CodecId);
 
     // The |StreamInfo::codec_config| field is stored using the MP4 format; we
     // need to convert it to the WebM format.
     VPCodecConfigurationRecord vp_config;
-    if (!vp_config.ParseMP4(info->codec_config())) {
+    if (!vp_config.ParseMP4(info.codec_config())) {
       return Status(error::INTERNAL_ERROR,
                     "Unable to parse VP9 codec configuration");
     }
@@ -319,43 +324,43 @@ Status Segmenter::InitializeVideoTrack(const VideoStreamInfo* info,
                   "Only VP8 and VP9 video codecs are supported in WebM.");
   }
 
-  track->set_uid(info->track_id());
-  if (!info->language().empty())
-    track->set_language(info->language().c_str());
+  track->set_uid(info.track_id());
+  if (!info.language().empty())
+    track->set_language(info.language().c_str());
   track->set_type(mkvmuxer::Tracks::kVideo);
-  track->set_width(info->width());
-  track->set_height(info->height());
-  track->set_display_height(info->height());
-  track->set_display_width(info->width() * info->pixel_width() /
-                           info->pixel_height());
+  track->set_width(info.width());
+  track->set_height(info.height());
+  track->set_display_height(info.height());
+  track->set_display_width(info.width() * info.pixel_width() /
+                           info.pixel_height());
   return Status::OK;
 }
 
-Status Segmenter::InitializeAudioTrack(const AudioStreamInfo* info,
+Status Segmenter::InitializeAudioTrack(const AudioStreamInfo& info,
                                        AudioTrack* track) {
-  if (info->codec() == kCodecOpus) {
+  if (info.codec() == kCodecOpus) {
     track->set_codec_id(mkvmuxer::Tracks::kOpusCodecId);
-  } else if (info->codec() == kCodecVorbis) {
+  } else if (info.codec() == kCodecVorbis) {
     track->set_codec_id(mkvmuxer::Tracks::kVorbisCodecId);
   } else {
     LOG(ERROR) << "Only Vorbis and Opus audio codec are supported in WebM.";
     return Status(error::UNIMPLEMENTED,
                   "Only Vorbis and Opus audio codecs are supported in WebM.");
   }
-  if (!track->SetCodecPrivate(info->codec_config().data(),
-                              info->codec_config().size())) {
+  if (!track->SetCodecPrivate(info.codec_config().data(),
+                              info.codec_config().size())) {
     return Status(error::INTERNAL_ERROR,
                   "Private codec data required for audio streams");
   }
 
-  track->set_uid(info->track_id());
-  if (!info->language().empty())
-    track->set_language(info->language().c_str());
+  track->set_uid(info.track_id());
+  if (!info.language().empty())
+    track->set_language(info.language().c_str());
   track->set_type(mkvmuxer::Tracks::kAudio);
-  track->set_sample_rate(info->sampling_frequency());
-  track->set_channels(info->num_channels());
-  track->set_seek_pre_roll(info->seek_preroll_ns());
-  track->set_codec_delay(info->codec_delay_ns());
+  track->set_sample_rate(info.sampling_frequency());
+  track->set_channels(info.num_channels());
+  track->set_seek_pre_roll(info.seek_preroll_ns());
+  track->set_codec_delay(info.codec_delay_ns());
   return Status::OK;
 }
 
@@ -372,11 +377,11 @@ Status Segmenter::WriteFrame(bool write_duration) {
 
   if (write_duration) {
     frame.set_duration(
-        BmffTimestampToNs(prev_sample_->duration(), info_->time_scale()));
+        BmffTimestampToNs(prev_sample_->duration(), time_scale_));
   }
   frame.set_is_key(prev_sample_->is_key_frame());
   frame.set_timestamp(
-      BmffTimestampToNs(prev_sample_->pts(), info_->time_scale()));
+      BmffTimestampToNs(prev_sample_->pts(), time_scale_));
   frame.set_track_number(track_id_);
 
   if (prev_sample_->side_data_size() > 0) {
@@ -397,7 +402,7 @@ Status Segmenter::WriteFrame(bool write_duration) {
 
   if (!prev_sample_->is_key_frame() && !frame.CanBeSimpleBlock()) {
     frame.set_reference_block_timestamp(
-        BmffTimestampToNs(reference_frame_timestamp_, info_->time_scale()));
+        BmffTimestampToNs(reference_frame_timestamp_, time_scale_));
   }
 
   // GetRelativeTimecode will return -1 if the relative timecode is too large

@@ -33,6 +33,7 @@ class AudioStreamInfo : public StreamInfo {
   /// @{
   bool IsValidConfig() const override;
   std::string ToString() const override;
+  std::unique_ptr<StreamInfo> Clone() const override;
   /// @}
 
   uint8_t sample_bits() const { return sample_bits_; }

@@ -44,7 +44,7 @@ class Muxer : public MediaHandler {
   /// @param progress_listener should not be NULL.
   void SetProgressListener(std::unique_ptr<ProgressListener> progress_listener);
 
-  const std::vector<std::shared_ptr<StreamInfo>>& streams() const {
+  const std::vector<std::shared_ptr<const StreamInfo>>& streams() const {
     return streams_;
   }
 
@@ -79,15 +79,17 @@ class Muxer : public MediaHandler {
   virtual Status Finalize() = 0;
 
   // Add a new sample.
-  virtual Status AddSample(size_t stream_id,
-                           std::shared_ptr<MediaSample> sample) = 0;
+  virtual Status AddSample(
+      size_t stream_id,
+      const MediaSample& sample) = 0;
 
   // Finalize the segment or subsegment.
-  virtual Status FinalizeSegment(size_t stream_id,
-                                 std::shared_ptr<SegmentInfo> segment_info) = 0;
+  virtual Status FinalizeSegment(
+      size_t stream_id,
+      const SegmentInfo& segment_info) = 0;
 
   MuxerOptions options_;
-  std::vector<std::shared_ptr<StreamInfo>> streams_;
+  std::vector<std::shared_ptr<const StreamInfo>> streams_;
   std::vector<uint8_t> current_key_id_;
   bool encryption_started_ = false;
   bool cancelled_;

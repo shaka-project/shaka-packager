@@ -92,6 +92,10 @@ std::string AudioStreamInfo::ToString() const {
   return str;
 }
 
+std::unique_ptr<StreamInfo> AudioStreamInfo::Clone() const {
+  return std::unique_ptr<StreamInfo>(new AudioStreamInfo(*this));
+}
+
 std::string AudioStreamInfo::GetCodecString(Codec codec,
                                             uint8_t audio_object_type) {
   switch (codec) {

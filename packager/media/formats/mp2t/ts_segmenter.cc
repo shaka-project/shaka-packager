@@ -45,11 +45,11 @@ Status TsSegmenter::Finalize() {
   return Status::OK;
 }
 
-Status TsSegmenter::AddSample(std::shared_ptr<MediaSample> sample) {
-  if (sample->is_encrypted())
+Status TsSegmenter::AddSample(const MediaSample& sample) {
+  if (sample.is_encrypted())
     ts_writer_->SignalEncrypted();
 
-  if (!ts_writer_file_opened_ && !sample->is_key_frame())
+  if (!ts_writer_file_opened_ && !sample.is_key_frame())
     LOG(WARNING) << "A segment will start with a non key frame.";
 
   if (!pes_packet_generator_->PushSample(sample)) {

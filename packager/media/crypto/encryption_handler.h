@@ -41,17 +41,21 @@ class EncryptionHandler : public MediaHandler {
   EncryptionHandler& operator=(const EncryptionHandler&) = delete;
 
   // Processes |stream_info| and sets up stream specific variables.
-  Status ProcessStreamInfo(StreamInfo* stream_info);
+  Status ProcessStreamInfo(const StreamInfo& stream_info);
   // Processes media sample and encrypts it if needed.
-  Status ProcessMediaSample(MediaSample* sample);
+  Status ProcessMediaSample(std::shared_ptr<const MediaSample> clear_sample);
 
   Status SetupProtectionPattern(StreamType stream_type);
   bool CreateEncryptor(const EncryptionKey& encryption_key);
   bool EncryptVpxFrame(const std::vector<VPxFrameInfo>& vpx_frames,
-                       MediaSample* sample,
+                       uint8_t* source,
+                       size_t source_size,
                        DecryptConfig* decrypt_config);
-  bool EncryptNalFrame(MediaSample* sample, DecryptConfig* decrypt_config);
-  void EncryptBytes(uint8_t* data, size_t size);
+  bool EncryptNalFrame(uint8_t* data,
+                       size_t data_length,
+                       DecryptConfig* decrypt_config);
+  void EncryptBytes(uint8_t* data,
+                    size_t size);
 
   // Testing injections.
   void InjectVpxParserForTesting(std::unique_ptr<VPxParser> vpx_parser);

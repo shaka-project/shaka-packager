@@ -54,9 +54,10 @@ class Segmenter {
   /// @param muxer_listener receives muxer events. Can be NULL.
   /// @param progress_listener receives progress updates. Can be NULL.
   /// @return OK on success, an error status otherwise.
-  Status Initialize(const std::vector<std::shared_ptr<StreamInfo>>& streams,
-                    MuxerListener* muxer_listener,
-                    ProgressListener* progress_listener);
+  Status Initialize(
+      const std::vector<std::shared_ptr<const StreamInfo>>& streams,
+      MuxerListener* muxer_listener,
+      ProgressListener* progress_listener);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.
@@ -66,14 +67,13 @@ class Segmenter {
   /// @param stream_id is the zero-based stream index.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(size_t stream_id, std::shared_ptr<MediaSample> sample);
+  Status AddSample(size_t stream_id, const MediaSample& sample);
 
   /// Finalize the segment / subsegment.
   /// @param stream_id is the zero-based stream index.
   /// @param is_subsegment indicates if it is a subsegment (fragment).
   /// @return OK on success, an error status otherwise.
-  Status FinalizeSegment(size_t stream_id,
-                         std::shared_ptr<SegmentInfo> segment_info);
+  Status FinalizeSegment(size_t stream_id, const SegmentInfo& segment_info);
 
   // TODO(rkuroiwa): Change these Get*Range() methods to return
   // base::Optional<Range> as well.

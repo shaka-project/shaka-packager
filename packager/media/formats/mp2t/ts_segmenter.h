@@ -46,7 +46,7 @@ class TsSegmenter {
 
   /// @param sample gets added to this object.
   /// @return OK on success.
-  Status AddSample(std::shared_ptr<MediaSample> sample);
+  Status AddSample(const MediaSample& sample);
 
   /// Flush all the samples that are (possibly) buffered and write them to the
   /// current segment, this will close the file. If a file is not already opened

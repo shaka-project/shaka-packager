@@ -65,21 +65,21 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
   return false;
 }
 
-bool PesPacketGenerator::PushSample(std::shared_ptr<MediaSample> sample) {
+bool PesPacketGenerator::PushSample(const MediaSample& sample) {
   if (!current_processing_pes_)
     current_processing_pes_.reset(new PesPacket());
 
-  current_processing_pes_->set_pts(timescale_scale_ * sample->pts());
-  current_processing_pes_->set_dts(timescale_scale_ * sample->dts());
+  current_processing_pes_->set_pts(timescale_scale_ * sample.pts());
+  current_processing_pes_->set_dts(timescale_scale_ * sample.dts());
   if (stream_type_ == kStreamVideo) {
     DCHECK(converter_);
     std::vector<SubsampleEntry> subsamples;
-    if (sample->decrypt_config())
-      subsamples = sample->decrypt_config()->subsamples();
+    if (sample.decrypt_config())
+      subsamples = sample.decrypt_config()->subsamples();
     const bool kEscapeEncryptedNalu = true;
     std::vector<uint8_t> byte_stream;
     if (!converter_->ConvertUnitToByteStreamWithSubsamples(
-            sample->data(), sample->data_size(), sample->is_key_frame(),
+            sample.data(), sample.data_size(), sample.is_key_frame(),
             kEscapeEncryptedNalu, &byte_stream, &subsamples)) {
       LOG(ERROR) << "Failed to convert sample to byte stream.";
       return false;
@@ -93,8 +93,8 @@ bool PesPacketGenerator::PushSample(std::shared_ptr<MediaSample> sample) {
   DCHECK_EQ(stream_type_, kStreamAudio);
   DCHECK(adts_converter_);
 
-  std::vector<uint8_t> aac_frame(sample->data(),
-                                 sample->data() + sample->data_size());
+  std::vector<uint8_t> aac_frame(sample.data(),
+                                 sample.data() + sample.data_size());
 
   // TODO(rkuroiwa): ConvertToADTS() makes another copy of aac_frame internally.
   // Optimize copying in this function, possibly by adding a method on

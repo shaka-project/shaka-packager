@@ -95,36 +95,46 @@ class MediaHandlerTestBase : public ::testing::Test {
  public:
   MediaHandlerTestBase();
 
-  /// @return a stream data with mock stream info.
-  std::unique_ptr<StreamData> GetStreamInfoStreamData(int stream_index,
-                                                      Codec codec,
-                                                      uint32_t time_scale);
+  bool IsVideoCodec(Codec codec) const;
 
-  /// @return a stream data with mock video stream info.
-  std::unique_ptr<StreamData> GetVideoStreamInfoStreamData(
-      int stream_index,
-      uint32_t time_scale) {
-    return GetStreamInfoStreamData(stream_index, kCodecVP9, time_scale);
-  }
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
+      uint32_t time_scale) const;
 
-  /// @return a stream data with mock audio stream info.
-  std::unique_ptr<StreamData> GetAudioStreamInfoStreamData(
-      int stream_index,
-      uint32_t time_scale) {
-    return GetStreamInfoStreamData(stream_index, kCodecAAC, time_scale);
-  }
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
+      uint32_t time_scale, uint32_t width, uint64_t height) const;
 
-  /// @return a stream data with mock media sample.
-  std::unique_ptr<StreamData> GetMediaSampleStreamData(int stream_index,
-                                                       int64_t timestamp,
-                                                       int64_t duration,
-                                                       bool is_keyframe);
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
+      uint32_t time_scale, Codec codec) const;
 
-  /// @return a stream data with mock segment info.
-  std::unique_ptr<StreamData> GetSegmentInfoStreamData(int stream_index,
-                                                       int64_t start_timestamp,
-                                                       int64_t duration,
-                                                       bool is_subsegment);
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
+      uint32_t time_scale,
+      Codec codec,
+      uint32_t width,
+      uint64_t height) const;
+
+  std::unique_ptr<StreamInfo> GetAudioStreamInfo(
+      uint32_t time_scale) const;
+
+  std::unique_ptr<StreamInfo> GetAudioStreamInfo(
+      uint32_t time_scale,
+      Codec codec) const;
+
+  std::unique_ptr<MediaSample> GetMediaSample(
+      int64_t timestamp,
+      int64_t duration,
+      bool is_keyframe) const;
+
+  std::unique_ptr<MediaSample> GetMediaSample(
+      int64_t timestamp,
+      int64_t duration,
+      bool is_keyframe,
+      const uint8_t* data,
+      size_t data_length) const;
+
+  std::unique_ptr<SegmentInfo> GetSegmentInfo(
+      int64_t start_timestamp,
+      int64_t duration,
+      bool is_subsegment) const;
 
   /// Setup a graph using |handler| with |num_inputs| and |num_outputs|.
   void SetUpGraph(size_t num_inputs,
@@ -147,10 +157,6 @@ class MediaHandlerTestBase : public ::testing::Test {
  private:
   MediaHandlerTestBase(const MediaHandlerTestBase&) = delete;
   MediaHandlerTestBase& operator=(const MediaHandlerTestBase&) = delete;
-
-  // Get a mock stream info for testing.
-  std::shared_ptr<StreamInfo> GetMockStreamInfo(Codec codec,
-                                                uint32_t time_scale);
 
   // Downstream handler used in testing graph.
   std::shared_ptr<FakeMediaHandler> next_handler_;

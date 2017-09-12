@@ -38,6 +38,8 @@ class TextStreamInfo : public StreamInfo {
 
   bool IsValidConfig() const override;
 
+  std::unique_ptr<StreamInfo> Clone() const override;
+
   uint16_t width() const { return width_; }
   uint16_t height() const { return height_; }
 

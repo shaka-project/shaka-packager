@@ -124,7 +124,7 @@ Status MP4Muxer::InitializeMuxer() {
     if (streams()[0]->stream_type() == kStreamVideo) {
       codec_fourcc =
           CodecToFourCC(streams()[0]->codec(),
-                        static_cast<VideoStreamInfo*>(streams()[0].get())
+                        static_cast<const VideoStreamInfo*>(streams()[0].get())
                             ->h26x_stream_format());
       if (codec_fourcc != FOURCC_NULL)
         ftyp->compatible_brands.push_back(codec_fourcc);
@@ -155,16 +155,22 @@ Status MP4Muxer::InitializeMuxer() {
 
     switch (streams()[i]->stream_type()) {
       case kStreamVideo:
-        GenerateVideoTrak(static_cast<VideoStreamInfo*>(streams()[i].get()),
-                          &trak, i + 1);
+        GenerateVideoTrak(
+            static_cast<const VideoStreamInfo*>(streams()[i].get()),
+            &trak,
+            i + 1);
         break;
       case kStreamAudio:
-        GenerateAudioTrak(static_cast<AudioStreamInfo*>(streams()[i].get()),
-                          &trak, i + 1);
+        GenerateAudioTrak(
+            static_cast<const AudioStreamInfo*>(streams()[i].get()),
+            &trak,
+            i + 1);
         break;
       case kStreamText:
-        GenerateTextTrak(static_cast<TextStreamInfo*>(streams()[i].get()),
-                         &trak, i + 1);
+        GenerateTextTrak(
+            static_cast<const TextStreamInfo*>(streams()[i].get()),
+            &trak,
+            i + 1);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
@@ -210,19 +216,18 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::AddSample(size_t stream_id,
-                           std::shared_ptr<MediaSample> sample) {
+Status MP4Muxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK(segmenter_);
   return segmenter_->AddSample(stream_id, sample);
 }
 
 Status MP4Muxer::FinalizeSegment(size_t stream_id,
-                                 std::shared_ptr<SegmentInfo> segment_info) {
+                                 const SegmentInfo& segment_info) {
   DCHECK(segmenter_);
-  VLOG(3) << "Finalize " << (segment_info->is_subsegment ? "sub" : "")
-          << "segment " << segment_info->start_timestamp << " duration "
-          << segment_info->duration;
-  return segmenter_->FinalizeSegment(stream_id, std::move(segment_info));
+  VLOG(3) << "Finalize " << (segment_info.is_subsegment ? "sub" : "")
+          << "segment " << segment_info.start_timestamp << " duration "
+          << segment_info.duration;
+  return segmenter_->FinalizeSegment(stream_id, segment_info);
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {

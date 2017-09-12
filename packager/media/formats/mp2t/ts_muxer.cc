@@ -32,19 +32,18 @@ Status TsMuxer::Finalize() {
   return segmenter_->Finalize();
 }
 
-Status TsMuxer::AddSample(size_t stream_id,
-                          std::shared_ptr<MediaSample> sample) {
+Status TsMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
   return segmenter_->AddSample(sample);
 }
 
 Status TsMuxer::FinalizeSegment(size_t stream_id,
-                                std::shared_ptr<SegmentInfo> segment_info) {
+                                const SegmentInfo& segment_info) {
   DCHECK_EQ(stream_id, 0u);
-  return segment_info->is_subsegment
+  return segment_info.is_subsegment
              ? Status::OK
-             : segmenter_->FinalizeSegment(segment_info->start_timestamp,
-                                           segment_info->duration);
+             : segmenter_->FinalizeSegment(segment_info.start_timestamp,
+                                           segment_info.duration);
 }
 
 void TsMuxer::FireOnMediaStartEvent() {

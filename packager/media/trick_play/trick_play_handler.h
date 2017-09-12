@@ -56,8 +56,9 @@ class TrickPlayHandler : public MediaHandler {
   // Decoding timestamp for current key media sample. It is used for calculating
   // the duration of previous key media sample, to make sure there is no gap
   // between two key media samples.
-  Status ProcessOneStreamData(size_t output_stream_index,
-                              const std::shared_ptr<StreamData>& stream_data);
+  Status ProcessOneStreamData(
+      size_t output_stream_index,
+      const StreamData& stream_data);
 
   // Trick play factors. Note that there can be multiple trick play factors,
   // e.g., 2, 4 and 8. That means, one input video stream will generate 3

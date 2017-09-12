@@ -56,15 +56,17 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
   chunking_params.segment_duration_in_seconds = 1;
   SetUpChunkingHandler(1, chunking_params);
 
-  ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetAudioStreamInfo(kTimeScale0))));
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(IsStreamInfo(kStreamIndex0, kTimeScale0, !kEncrypted)));
 
   for (int i = 0; i < 5; ++i) {
     ClearOutputStreamDataVector();
-    ASSERT_OK(Process(GetMediaSampleStreamData(kStreamIndex0, i * kDuration1,
-                                               kDuration1, kKeyFrame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(i * kDuration1, kDuration1, kKeyFrame))));
     // One output stream_data except when i == 3, which also has SegmentInfo.
     if (i == 3) {
       EXPECT_THAT(GetOutputStreamDataVector(),
@@ -93,10 +95,12 @@ TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
   chunking_params.subsegment_duration_in_seconds = 0.5;
   SetUpChunkingHandler(1, chunking_params);
 
-  ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetAudioStreamInfo(kTimeScale0))));
   for (int i = 0; i < 5; ++i) {
-    ASSERT_OK(Process(GetMediaSampleStreamData(kStreamIndex0, i * kDuration1,
-                                               kDuration1, kKeyFrame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(i * kDuration1, kDuration1, kKeyFrame))));
   }
   EXPECT_THAT(
       GetOutputStreamDataVector(),
@@ -120,14 +124,18 @@ TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
   chunking_params.subsegment_duration_in_seconds = 0.3;
   SetUpChunkingHandler(1, chunking_params);
 
-  ASSERT_OK(Process(GetVideoStreamInfoStreamData(kStreamIndex0, kTimeScale1)));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetVideoStreamInfo(kTimeScale1))));
   const int64_t kVideoStartTimestamp = 12345;
   for (int i = 0; i < 6; ++i) {
     // Alternate key frame.
     const bool is_key_frame = (i % 2) == 1;
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kVideoStartTimestamp + i * kDuration1, kDuration1,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kVideoStartTimestamp + i * kDuration1,
+            kDuration1,
+            is_key_frame))));
   }
   EXPECT_THAT(
       GetOutputStreamDataVector(),
@@ -159,8 +167,10 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
   chunking_params.subsegment_duration_in_seconds = 0.3;
   SetUpChunkingHandler(2, chunking_params);
 
-  ASSERT_OK(Process(GetAudioStreamInfoStreamData(kStreamIndex0, kTimeScale0)));
-  ASSERT_OK(Process(GetVideoStreamInfoStreamData(kStreamIndex1, kTimeScale1)));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetAudioStreamInfo(kTimeScale0))));
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex1, GetVideoStreamInfo(kTimeScale1))));
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(IsStreamInfo(kStreamIndex0, kTimeScale0, !kEncrypted),
@@ -171,14 +181,20 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
   const int64_t kAudioStartTimestamp = 9876;
   const int64_t kVideoStartTimestamp = 12345;
   for (int i = 0; i < 5; ++i) {
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex0, kAudioStartTimestamp + kDuration0 * i, kDuration0,
-        true)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0,
+        GetMediaSample(
+            kAudioStartTimestamp + kDuration0 * i,
+            kDuration0,
+            true))));
     // Alternate key frame.
     const bool is_key_frame = (i % 2) == 1;
-    ASSERT_OK(Process(GetMediaSampleStreamData(
-        kStreamIndex1, kVideoStartTimestamp + kDuration1 * i, kDuration1,
-        is_key_frame)));
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex1,
+        GetMediaSample(
+            kVideoStartTimestamp + kDuration1 * i,
+            kDuration1,
+            is_key_frame))));
   }
 
   EXPECT_THAT(
@@ -211,15 +227,24 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
 
   // The side comments below show the equivalent timestamp in video timescale.
   // The audio and video are made ~aligned.
-  ASSERT_OK(Process(GetMediaSampleStreamData(
-      kStreamIndex0, kAudioStartTimestamp + kDuration0 * 5, kDuration0,
-      true)));  // 13595
-  ASSERT_OK(Process(GetMediaSampleStreamData(
-      kStreamIndex1, kVideoStartTimestamp + kDuration1 * 5, kDuration1,
-      true)));  // 13845
-  ASSERT_OK(Process(GetMediaSampleStreamData(
-      kStreamIndex0, kAudioStartTimestamp + kDuration0 * 6, kDuration0,
-      true)));  // 13845
+  ASSERT_OK(Process(StreamData::FromMediaSample(
+      kStreamIndex0,
+      GetMediaSample(
+          kAudioStartTimestamp + kDuration0 * 5,
+          kDuration0,
+          true))));  // 13595
+  ASSERT_OK(Process(StreamData::FromMediaSample(
+      kStreamIndex1,
+      GetMediaSample(
+          kVideoStartTimestamp + kDuration1 * 5,
+          kDuration1,
+          true))));  // 13845
+  ASSERT_OK(Process(StreamData::FromMediaSample(
+      kStreamIndex0,
+      GetMediaSample(
+          kAudioStartTimestamp + kDuration0 * 6,
+          kDuration0,
+          true))));  // 13845
   // This expectation are separated from the expectation above because
   // ElementsAre supports at most 10 elements.
   EXPECT_THAT(

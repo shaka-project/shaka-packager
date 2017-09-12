@@ -80,45 +80,86 @@ MediaHandlerTestBase::MediaHandlerTestBase()
     : next_handler_(new FakeMediaHandler),
       some_handler_(new FakeMediaHandler) {}
 
-std::unique_ptr<StreamData> MediaHandlerTestBase::GetStreamInfoStreamData(
-    int stream_index,
-    Codec codec,
-    uint32_t time_scale) {
-  std::unique_ptr<StreamData> stream_data(new StreamData);
-  stream_data->stream_index = stream_index;
-  stream_data->stream_data_type = StreamDataType::kStreamInfo;
-  stream_data->stream_info = GetMockStreamInfo(codec, time_scale);
-  return stream_data;
+bool MediaHandlerTestBase::IsVideoCodec(Codec codec) const {
+  return codec >= kCodecVideo && codec < kCodecVideoMaxPlusOne;
 }
 
-std::unique_ptr<StreamData> MediaHandlerTestBase::GetMediaSampleStreamData(
-    int stream_index,
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
+    uint32_t time_scale) const {
+  return GetVideoStreamInfo(time_scale, kCodecVP9, kWidth, kHeight);
+}
+
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
+    uint32_t time_scale,
+    uint32_t width,
+    uint64_t height) const {
+  return GetVideoStreamInfo(time_scale, kCodecVP9, width, height);
+}
+
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
+    uint32_t time_scale,
+    Codec codec) const {
+  return GetVideoStreamInfo(time_scale, codec, kWidth, kHeight);
+}
+
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetVideoStreamInfo(
+    uint32_t time_scale,
+    Codec codec,
+    uint32_t width,
+    uint64_t height) const {
+  return std::unique_ptr<VideoStreamInfo>(new VideoStreamInfo(
+      kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
+      kCodecString, kCodecConfig, sizeof(kCodecConfig), width, height,
+      kPixelWidth, kPixelHeight, kTrickPlayFactor, kNaluLengthSize, kLanguage,
+      !kEncrypted));
+}
+
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(
+    uint32_t time_scale) const {
+  return GetAudioStreamInfo(time_scale, kCodecAAC);
+}
+
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(
+    uint32_t time_scale,
+    Codec codec) const {
+  return std::unique_ptr<AudioStreamInfo>(new AudioStreamInfo(
+      kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,
+      sizeof(kCodecConfig), kSampleBits, kNumChannels, kSamplingFrequency,
+      kSeekPrerollNs, kCodecDelayNs, kMaxBitrate, kAvgBitrate, kLanguage,
+      !kEncrypted));
+}
+
+std::unique_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
     int64_t timestamp,
     int64_t duration,
-    bool is_keyframe) {
-  std::unique_ptr<StreamData> stream_data(new StreamData);
-  stream_data->stream_index = stream_index;
-  stream_data->stream_data_type = StreamDataType::kMediaSample;
-  stream_data->media_sample.reset(
-      new MediaSample(kData, sizeof(kData), nullptr, 0, is_keyframe));
-  stream_data->media_sample->set_dts(timestamp);
-  stream_data->media_sample->set_duration(duration);
-  return stream_data;
+    bool is_keyframe) const {
+  return GetMediaSample(timestamp, duration, is_keyframe, kData, sizeof(kData));
 }
 
-std::unique_ptr<StreamData> MediaHandlerTestBase::GetSegmentInfoStreamData(
-    int stream_index,
+std::unique_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
+    int64_t timestamp,
+    int64_t duration,
+    bool is_keyframe,
+    const uint8_t* data,
+    size_t data_length) const {
+  std::unique_ptr<MediaSample> sample(
+      new MediaSample(data, data_length, nullptr, 0, is_keyframe));
+  sample->set_dts(timestamp);
+  sample->set_duration(duration);
+
+  return sample;
+}
+
+std::unique_ptr<SegmentInfo> MediaHandlerTestBase::GetSegmentInfo(
     int64_t start_timestamp,
     int64_t duration,
-    bool is_subsegment) {
-  std::unique_ptr<StreamData> stream_data(new StreamData);
-  stream_data->stream_index = stream_index;
-  stream_data->stream_data_type = StreamDataType::kSegmentInfo;
-  stream_data->segment_info.reset(new SegmentInfo);
-  stream_data->segment_info->start_timestamp = start_timestamp;
-  stream_data->segment_info->duration = duration;
-  stream_data->segment_info->is_subsegment = is_subsegment;
-  return stream_data;
+    bool is_subsegment) const {
+  std::unique_ptr<SegmentInfo> info(new SegmentInfo);
+  info->start_timestamp = start_timestamp;
+  info->duration = duration;
+  info->is_subsegment = is_subsegment;
+
+  return info;
 }
 
 void MediaHandlerTestBase::SetUpGraph(size_t num_inputs,
@@ -141,25 +182,6 @@ MediaHandlerTestBase::GetOutputStreamDataVector() const {
 
 void MediaHandlerTestBase::ClearOutputStreamDataVector() {
   next_handler_->clear_stream_data_vector();
-}
-
-std::shared_ptr<StreamInfo> MediaHandlerTestBase::GetMockStreamInfo(
-    Codec codec,
-    uint32_t time_scale) {
-  if (codec >= kCodecAudio && codec < kCodecAudioMaxPlusOne) {
-    return std::shared_ptr<StreamInfo>(new AudioStreamInfo(
-        kTrackId, time_scale, kDuration, codec, kCodecString, kCodecConfig,
-        sizeof(kCodecConfig), kSampleBits, kNumChannels, kSamplingFrequency,
-        kSeekPrerollNs, kCodecDelayNs, kMaxBitrate, kAvgBitrate, kLanguage,
-        !kEncrypted));
-  } else if (codec >= kCodecVideo && codec < kCodecVideoMaxPlusOne) {
-    return std::shared_ptr<StreamInfo>(new VideoStreamInfo(
-        kTrackId, time_scale, kDuration, codec, H26xStreamFormat::kUnSpecified,
-        kCodecString, kCodecConfig, sizeof(kCodecConfig), kWidth, kHeight,
-        kPixelWidth, kPixelHeight, kTrickPlayFactor, kNaluLengthSize, kLanguage,
-        !kEncrypted));
-  }
-  return nullptr;
 }
 
 }  // namespace media

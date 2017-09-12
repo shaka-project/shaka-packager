@@ -47,7 +47,7 @@ Segmenter::Segmenter(const MuxerOptions& options,
 Segmenter::~Segmenter() {}
 
 Status Segmenter::Initialize(
-    const std::vector<std::shared_ptr<StreamInfo>>& streams,
+    const std::vector<std::shared_ptr<const StreamInfo>>& streams,
     MuxerListener* muxer_listener,
     ProgressListener* progress_listener) {
   DCHECK_LT(0u, streams.size());
@@ -112,12 +112,11 @@ Status Segmenter::Finalize() {
   return DoFinalize();
 }
 
-Status Segmenter::AddSample(size_t stream_id,
-                            std::shared_ptr<MediaSample> sample) {
+Status Segmenter::AddSample(size_t stream_id, const MediaSample& sample) {
   // Set default sample duration if it has not been set yet.
   if (moov_->extends.tracks[stream_id].default_sample_duration == 0) {
     moov_->extends.tracks[stream_id].default_sample_duration =
-        sample->duration();
+        sample.duration();
   }
 
   DCHECK_LT(stream_id, fragmenters_.size());
@@ -132,17 +131,17 @@ Status Segmenter::AddSample(size_t stream_id,
     return status;
 
   if (sample_duration_ == 0)
-    sample_duration_ = sample->duration();
-  stream_durations_[stream_id] += sample->duration();
+    sample_duration_ = sample.duration();
+  stream_durations_[stream_id] += sample.duration();
   return Status::OK;
 }
 
 Status Segmenter::FinalizeSegment(size_t stream_id,
-                                  std::shared_ptr<SegmentInfo> segment_info) {
-  if (segment_info->key_rotation_encryption_config) {
+                                  const SegmentInfo& segment_info) {
+  if (segment_info.key_rotation_encryption_config) {
     FinalizeFragmentForKeyRotation(
-        stream_id, segment_info->is_encrypted,
-        *segment_info->key_rotation_encryption_config);
+        stream_id, segment_info.is_encrypted,
+        *segment_info.key_rotation_encryption_config);
   }
 
   DCHECK_LT(stream_id, fragmenters_.size());
@@ -200,7 +199,7 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
 
   for (std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
     fragmenter->ClearFragmentFinalized();
-  if (!segment_info->is_subsegment) {
+  if (!segment_info.is_subsegment) {
     Status status = DoFinalizeSegment();
     // Reset segment information to initial state.
     sidx_->references.clear();

@@ -52,7 +52,7 @@ const uint8_t kAnyData[] = {
 class MockPesPacketGenerator : public PesPacketGenerator {
  public:
   MOCK_METHOD1(Initialize, bool(const StreamInfo& info));
-  MOCK_METHOD1(PushSample, bool(std::shared_ptr<MediaSample> sample));
+  MOCK_METHOD1(PushSample, bool(const MediaSample& sample));
 
   MOCK_METHOD0(NumberOfReadyPesPackets, size_t());
 
@@ -161,7 +161,7 @@ TEST_F(TsSegmenterTest, AddSample) {
       std::move(mock_pes_packet_generator_));
 
   EXPECT_OK(segmenter.Initialize(*stream_info));
-  EXPECT_OK(segmenter.AddSample(sample));
+  EXPECT_OK(segmenter.AddSample(*sample));
 }
 
 // This will add one sample then finalize segment then add another sample.
@@ -257,9 +257,9 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   segmenter.InjectPesPacketGeneratorForTesting(
       std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info));
-  EXPECT_OK(segmenter.AddSample(sample1));
+  EXPECT_OK(segmenter.AddSample(*sample1));
   EXPECT_OK(segmenter.FinalizeSegment(kFirstPts, sample1->duration()));
-  EXPECT_OK(segmenter.AddSample(sample2));
+  EXPECT_OK(segmenter.AddSample(*sample2));
 }
 
 // Finalize right after Initialize(). The writer will not be initialized.
@@ -395,13 +395,13 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       std::move(mock_pes_packet_generator_));
 
   EXPECT_OK(segmenter.Initialize(*stream_info));
-  EXPECT_OK(segmenter.AddSample(sample1));
+  EXPECT_OK(segmenter.AddSample(*sample1));
 
   EXPECT_OK(segmenter.FinalizeSegment(1, sample1->duration()));
   // Signal encrypted if sample is encrypted.
   EXPECT_CALL(*mock_ts_writer_raw, SignalEncrypted());
   sample2->set_is_encrypted(true);
-  EXPECT_OK(segmenter.AddSample(sample2));
+  EXPECT_OK(segmenter.AddSample(*sample2));
 }
 
 }  // namespace mp2t

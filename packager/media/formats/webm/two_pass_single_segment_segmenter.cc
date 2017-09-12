@@ -71,7 +71,7 @@ TwoPassSingleSegmentSegmenter::~TwoPassSingleSegmentSegmenter() {}
 Status TwoPassSingleSegmentSegmenter::DoInitialize() {
   // Assume the amount of time to copy the temp file as the same amount
   // of time as to make it.
-  set_progress_target(info()->duration() * 2);
+  set_progress_target(duration() * 2);
 
   if (!TempFilePath(options().temp_dir, &temp_file_name_))
     return Status(error::FILE_FAILURE, "Unable to create temporary file.");

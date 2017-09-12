@@ -42,7 +42,7 @@ class PesPacketGenerator {
   /// NumberOfReadyPesPackets().
   /// If this returns false, the object may end up in an undefined state.
   /// @return true on success, false otherwise.
-  virtual bool PushSample(std::shared_ptr<MediaSample> sample);
+  virtual bool PushSample(const MediaSample& sample);
 
   /// @return The number of PES packets that are ready to be consumed.
   virtual size_t NumberOfReadyPesPackets();

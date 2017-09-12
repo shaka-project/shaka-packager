@@ -49,27 +49,29 @@ Status TrickPlayHandler::InitializeInternal() {
   return Status::OK;
 }
 
-Status TrickPlayHandler::Process(
-    std::unique_ptr<StreamData> input_stream_data) {
+Status TrickPlayHandler::Process(std::unique_ptr<StreamData> stream_data) {
   // The non-trick play stream is dispatched at index 0.
   // The trick-play streams are dispatched to index 1, index 2 and so on.
-  DCHECK_EQ(input_stream_data->stream_index, 0u);
-  std::unique_ptr<StreamData> output_stream_data(new StreamData());
-  *output_stream_data = *input_stream_data;
-  Status status = Dispatch(std::move(output_stream_data));
+  DCHECK(stream_data);
+  DCHECK_EQ(stream_data->stream_index, 0u);
+
+  std::unique_ptr<StreamData> copy(new StreamData);
+  *copy = *stream_data;
+  Status status = Dispatch(std::move(copy));
   if (!status.ok()) {
     return status;
   }
 
-  std::shared_ptr<StreamData> stream_data(std::move(input_stream_data));
-  if (stream_data->stream_data_type == StreamDataType::kStreamInfo) {
-    if (stream_data->stream_info->stream_type() != kStreamVideo) {
+  std::shared_ptr<StreamData> shared_stream_data(std::move(stream_data));
+
+  if (shared_stream_data->stream_data_type == StreamDataType::kStreamInfo) {
+    if (shared_stream_data->stream_info->stream_type() != kStreamVideo) {
       status.SetError(error::TRICK_PLAY_ERROR,
                       "Trick play does not support non-video stream");
       return status;
     }
     const VideoStreamInfo& video_stream_info =
-        static_cast<const VideoStreamInfo&>(*stream_data->stream_info);
+        static_cast<const VideoStreamInfo&>(*shared_stream_data->stream_info);
     if (video_stream_info.trick_play_factor() > 0) {
       status.SetError(error::TRICK_PLAY_ERROR,
                       "This stream is alreay a trick play stream.");
@@ -77,28 +79,28 @@ Status TrickPlayHandler::Process(
     }
   }
 
-  if (stream_data->stream_data_type == StreamDataType::kSegmentInfo) {
+  if (shared_stream_data->stream_data_type == StreamDataType::kSegmentInfo) {
     for (auto& cached_data : cached_stream_data_) {
       // It is possible that trick play stream has large frame duration that
       // some segments in the main stream are skipped. To avoid empty segments,
       // only cache SegementInfo with MediaSample before it.
       if (!cached_data.empty() &&
           cached_data.back()->stream_data_type == StreamDataType::kMediaSample)
-        cached_data.push_back(stream_data);
+        cached_data.push_back(shared_stream_data);
     }
     return Status::OK;
   }
 
-  if (stream_data->stream_data_type != StreamDataType::kMediaSample) {
+  if (shared_stream_data->stream_data_type != StreamDataType::kMediaSample) {
     // Non media sample stream data needs to be dispatched to every output
     // stream. It is just cached in every queue until a new key frame comes or
     // the stream is flushed.
     for (size_t i = 0; i < cached_stream_data_.size(); ++i)
-      cached_stream_data_[i].push_back(stream_data);
+      cached_stream_data_[i].push_back(shared_stream_data);
     return Status::OK;
   }
 
-  if (stream_data->media_sample->is_key_frame()) {
+  if (shared_stream_data->media_sample->is_key_frame()) {
     // For a new key frame, some of the trick play streams may include it.
     // The cached data in those trick play streams will be processed.
     DCHECK_EQ(trick_play_factors_.size(), cached_stream_data_.size());
@@ -118,7 +120,7 @@ Status TrickPlayHandler::Process(
           if (!status.ok())
             return status;
         }
-        cached_stream_data_[i].push_back(stream_data);
+        cached_stream_data_[i].push_back(shared_stream_data);
       }
     }
 
@@ -126,8 +128,8 @@ Status TrickPlayHandler::Process(
   }
 
   total_frames_++;
-  prev_sample_end_timestamp_ =
-      stream_data->media_sample->dts() + stream_data->media_sample->duration();
+  prev_sample_end_timestamp_ = shared_stream_data->media_sample->dts() +
+                               shared_stream_data->media_sample->duration();
 
   return Status::OK;
 }
@@ -166,7 +168,7 @@ Status TrickPlayHandler::ProcessCachedStreamData(
     std::deque<std::shared_ptr<StreamData>>* cached_stream_data) {
   while (!cached_stream_data->empty()) {
     Status status =
-        ProcessOneStreamData(output_stream_index, cached_stream_data->front());
+        ProcessOneStreamData(output_stream_index, *cached_stream_data->front());
     if (!status.ok()) {
       return status;
     }
@@ -175,17 +177,16 @@ Status TrickPlayHandler::ProcessCachedStreamData(
   return Status::OK;
 }
 
-Status TrickPlayHandler::ProcessOneStreamData(
-    size_t output_stream_index,
-    const std::shared_ptr<StreamData>& stream_data) {
+Status TrickPlayHandler::ProcessOneStreamData(size_t output_stream_index,
+                                              const StreamData& stream_data) {
   size_t trick_play_index = output_stream_index - 1;
   uint32_t trick_play_factor = trick_play_factors_[trick_play_index];
   Status status;
-  switch (stream_data->stream_data_type) {
+  switch (stream_data.stream_data_type) {
     // trick_play_factor in StreamInfo should be modified.
     case StreamDataType::kStreamInfo: {
       const VideoStreamInfo& video_stream_info =
-          static_cast<const VideoStreamInfo&>(*stream_data->stream_info);
+          static_cast<const VideoStreamInfo&>(*stream_data.stream_info);
       std::shared_ptr<VideoStreamInfo> trick_play_video_stream_info(
           new VideoStreamInfo(video_stream_info));
       trick_play_video_stream_info->set_trick_play_factor(trick_play_factor);
@@ -197,20 +198,20 @@ Status TrickPlayHandler::ProcessOneStreamData(
       break;
     }
     case StreamDataType::kMediaSample: {
-      if (stream_data->media_sample->is_key_frame()) {
+      if (stream_data.media_sample->is_key_frame()) {
         std::shared_ptr<MediaSample> trick_play_media_sample =
-            MediaSample::CopyFrom(*(stream_data->media_sample));
+            MediaSample::CopyFrom(*(stream_data.media_sample));
         trick_play_media_sample->set_duration(prev_sample_end_timestamp_ -
-                                              stream_data->media_sample->dts());
+                                              stream_data.media_sample->dts());
         status =
             DispatchMediaSample(output_stream_index, trick_play_media_sample);
       }
       break;
     }
     default:
-      std::unique_ptr<StreamData> new_stream_data(new StreamData(*stream_data));
-      new_stream_data->stream_index = output_stream_index;
-      status = Dispatch(std::move(new_stream_data));
+      std::unique_ptr<StreamData> copy(new StreamData(stream_data));
+      copy->stream_index = output_stream_index;
+      status = Dispatch(std::move(copy));
       break;
   }
   return status;

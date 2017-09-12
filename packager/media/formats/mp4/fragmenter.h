@@ -31,14 +31,14 @@ class Fragmenter {
  public:
   /// @param info contains stream information.
   /// @param traf points to a TrackFragment box.
-  Fragmenter(std::shared_ptr<StreamInfo> info, TrackFragment* traf);
+  Fragmenter(std::shared_ptr<const StreamInfo> info, TrackFragment* traf);
 
   ~Fragmenter();
 
   /// Add a sample to the fragmenter.
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
-  Status AddSample(std::shared_ptr<MediaSample> sample);
+  Status AddSample(const MediaSample& sample);
 
   /// Initialize the fragment with default data.
   /// @param first_sample_dts specifies the decoding timestamp for the first
@@ -86,7 +86,7 @@ class Fragmenter {
   // Check if the current fragment starts with SAP.
   bool StartsWithSAP();
 
-  std::shared_ptr<StreamInfo> stream_info_;
+  std::shared_ptr<const StreamInfo> stream_info_;
   bool use_decoding_timestamp_in_timeline_;
   TrackFragment* traf_;
   uint64_t seek_preroll_;
