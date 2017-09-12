@@ -51,11 +51,6 @@ struct WidevineSigner {
 struct WidevineEncryptionParams {
   /// Widevine license / key server URL.
   std::string key_server_url;
-  /// Generates and includes an additional v1 PSSH box for the common system ID.
-  /// See: https://goo.gl/s8RIhr.
-  // TODO(kqyang): Move to EncryptionParams and support common PSSH generation
-  // in all key providers.
-  bool include_common_pssh = false;
   /// Content identifier.
   std::vector<uint8_t> content_id;
   /// The name of a stored policy, which specifies DRM content rights.
@@ -127,6 +122,20 @@ struct EncryptionParams {
   WidevineEncryptionParams widevine;
   PlayreadyEncryptionParams playready;
   RawKeyParams raw_key;
+
+  /// When it is true, generate a v1 PSSH box for the common
+  /// system ID. See: https://goo.gl/s8RIhr.
+  /// The flag is default to be true if --enable_raw_key_encryption
+  /// is set and no other pssh flags are specified.
+  bool generate_common_pssh = false;
+  /// When it is true, include a Playready PSSH box.
+  /// A playready PSSH is always generated regardless of the value of
+  /// --generate_playready_pssh for --enable_playready_encryption.
+  bool generate_playready_pssh = false;
+  /// When it is true, include a widevine PSSH box.
+  /// A widevine PSSH is always generated regardless of the value of
+  /// --generate_widevine_pssh for --enable_widevine_encryption.
+  bool generate_widevine_pssh = false;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;

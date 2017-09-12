@@ -15,7 +15,6 @@
 
 DECLARE_bool(enable_widevine_encryption);
 DECLARE_bool(enable_widevine_decryption);
-DECLARE_bool(include_common_pssh);
 DECLARE_string(key_server_url);
 DECLARE_hex_bytes(content_id);
 DECLARE_string(policy);

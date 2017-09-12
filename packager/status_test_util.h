@@ -13,5 +13,7 @@
 
 #define EXPECT_OK(val) EXPECT_EQ(shaka::Status::OK, (val))
 #define ASSERT_OK(val) ASSERT_EQ(shaka::Status::OK, (val))
+#define EXPECT_NOT_OK(val) EXPECT_NE(shaka::Status::OK, (val))
+#define ASSERT_NOT_OK(val) ASSERT_NE(shaka::Status::OK, (val))
 
 #endif  // PACKAGER_STATUS_TEST_UTIL_H_

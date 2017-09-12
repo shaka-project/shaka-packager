@@ -7,10 +7,13 @@
 #ifndef PACKAGER_MEDIA_BASE_KEY_SOURCE_H_
 #define PACKAGER_MEDIA_BASE_KEY_SOURCE_H_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/pssh_generator.h"
 #include "packager/status.h"
 
 namespace shaka {
@@ -41,10 +44,13 @@ struct EncryptionKey {
   std::vector<uint8_t> iv;
 };
 
+typedef std::map<std::string, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
+
 /// KeySource is responsible for encryption key acquisition.
 class KeySource {
  public:
-  KeySource();
+  explicit KeySource(int protection_systems_flags);
+
   virtual ~KeySource();
 
   /// Fetch keys based on the specified encrypted media init data.
@@ -81,7 +87,14 @@ class KeySource {
                                     const std::string& stream_label,
                                     EncryptionKey* key) = 0;
 
+ protected:
+  /// Update the protection sysmtem specific info for the encryption keys.
+  /// @param encryption_key_map is a map of encryption keys for all tracks.
+  Status UpdateProtectionSystemInfo(EncryptionKeyMap* encryption_key_map);
+
  private:
+  std::vector<std::unique_ptr<PsshGenerator>> pssh_generators_;
+
   DISALLOW_COPY_AND_ASSIGN(KeySource);
 };
 

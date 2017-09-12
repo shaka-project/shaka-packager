@@ -13,9 +13,11 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/key_fetcher.h"
-#include "packager/media/base/raw_key_source.h"
+#include "packager/media/base/playready_pssh_generator.h"
+#include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_key_source.h"
+#include "packager/media/base/widevine_pssh_generator.h"
 #include "packager/status_test_util.h"
 
 using ::testing::_;
@@ -103,7 +105,11 @@ std::string GetMockKeyId(const std::string& track_type) {
 }
 
 std::string GetMockKey(const std::string& track_type) {
-  return "MockKey" + track_type;
+  // The key must be 16 characters, in case the key is needed to generate a
+  // PlayReady pssh.
+  std::string key = "MockKey" + track_type;
+  key.resize(16, '~');
+  return key;
 }
 
 std::string GetMockPsshData() {
@@ -189,8 +195,13 @@ class WidevineKeySourceTest : public Test {
   }
 
   void CreateWidevineKeySource() {
+    int protection_system_flags = WIDEVINE_PROTECTION_SYSTEM_FLAG;
+    if (add_common_pssh_)
+      protection_system_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
+    if (add_playready_pssh_)
+      protection_system_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
     widevine_key_source_.reset(
-        new WidevineKeySource(kServerUrl, add_common_pssh_));
+        new WidevineKeySource(kServerUrl, protection_system_flags));
     widevine_key_source_->set_protection_scheme(protection_scheme_);
     widevine_key_source_->set_key_fetcher(std::move(mock_key_fetcher_));
   }
@@ -202,8 +213,9 @@ class WidevineKeySourceTest : public Test {
       ASSERT_OK(widevine_key_source_->GetKey(stream_label, &encryption_key));
       EXPECT_EQ(GetMockKey(stream_label), ToString(encryption_key.key));
       if (!classic) {
-        ASSERT_EQ(add_common_pssh_ ? 2u : 1u,
-                  encryption_key.key_system_info.size());
+        size_t num_key_system_info =
+            1 + (add_common_pssh_ ? 1 : 0) + (add_playready_pssh_ ? 1 : 0);
+        ASSERT_EQ(num_key_system_info, encryption_key.key_system_info.size());
         EXPECT_EQ(GetMockKeyId(stream_label), ToString(encryption_key.key_id));
         EXPECT_EQ(GetMockPsshData(),
                   ToString(encryption_key.key_system_info[0].pssh_data()));
@@ -226,6 +238,24 @@ class WidevineKeySourceTest : public Test {
             EXPECT_THAT(key_ids, testing::Contains(key_id));
           }
         }
+
+        if (add_playready_pssh_) {
+          const std::vector<uint8_t> playready_system_id(
+              kPlayReadySystemId,
+              kPlayReadySystemId + arraysize(kPlayReadySystemId));
+
+          // Playready pssh index depends on if there has common pssh box.
+          const uint8_t playready_index = 1 + (add_common_pssh_ ? 1 : 0);
+          ASSERT_EQ(
+              playready_system_id,
+              encryption_key.key_system_info[playready_index].system_id());
+          const std::vector<std::vector<uint8_t>>& key_ids =
+              encryption_key.key_system_info[playready_index].key_ids();
+
+          // Each of the keys contains its corresponding key ID.
+          ASSERT_EQ(1u, key_ids.size());
+          EXPECT_EQ(ToString(key_ids[0]), GetMockKeyId(stream_label));
+        }
       }
     }
   }
@@ -234,6 +264,7 @@ class WidevineKeySourceTest : public Test {
   std::unique_ptr<WidevineKeySource> widevine_key_source_;
   std::vector<uint8_t> content_id_;
   bool add_common_pssh_ = false;
+  bool add_playready_pssh_ = false;
   FourCC protection_scheme_ = FOURCC_cenc;
 
  private:
@@ -300,11 +331,12 @@ TEST_F(WidevineKeySourceTest, NoRetryOnUnknownError) {
 
 class WidevineKeySourceParameterizedTest
     : public WidevineKeySourceTest,
-      public WithParamInterface<std::tr1::tuple<bool, FourCC>> {
+      public WithParamInterface<std::tr1::tuple<bool, bool, FourCC>> {
  public:
   WidevineKeySourceParameterizedTest() {
     add_common_pssh_ = std::tr1::get<0>(GetParam());
-    protection_scheme_ = std::tr1::get<1>(GetParam());
+    add_playready_pssh_ = std::tr1::get<1>(GetParam());
+    protection_scheme_ = std::tr1::get<2>(GetParam());
   }
 };
 
@@ -442,7 +474,11 @@ const char kCryptoPeriodTrackFormat[] =
     "\"crypto_period_index\":%u}";
 
 std::string GetMockKey(const std::string& track_type, uint32_t index) {
-  return "MockKey" + track_type + "@" + base::UintToString(index);
+  // The key must be 16 characters, in case the key is needed to generate a
+  // PlayReady pssh.
+  std::string key = "MockKey" + track_type + "@" + base::UintToString(index);
+  key.resize(16, '~');
+  return key;
 }
 
 std::string GenerateMockKeyRotationLicenseResponse(
@@ -532,6 +568,7 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
 INSTANTIATE_TEST_CASE_P(WidevineKeySourceInstance,
                         WidevineKeySourceParameterizedTest,
                         Combine(Bool(),
+                                Bool(),
                                 Values(FOURCC_cenc,
                                        FOURCC_cbcs,
                                        FOURCC_cens,

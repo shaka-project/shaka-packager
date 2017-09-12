@@ -81,6 +81,8 @@
         'app/playready_key_encryption_flags.h',
         'app/raw_key_encryption_flags.cc',
         'app/raw_key_encryption_flags.h',
+        'app/protection_system_flags.cc',
+        'app/protection_system_flags.h',
         'app/retired_flags.cc',
         'app/retired_flags.h',
         'app/stream_descriptor.cc',

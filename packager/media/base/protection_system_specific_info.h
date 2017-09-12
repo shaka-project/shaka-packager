@@ -4,14 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef PACKAGER_MEDIA_BASE_PSSH_H_
-#define PACKAGER_MEDIA_BASE_PSSH_H_
+#ifndef PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_
+#define PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_
 
 #include <stdint.h>
 #include <vector>
 
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_reader.h"
+
+#define COMMON_PROTECTION_SYSTEM_FLAG 0x01
+#define PLAYREADY_PROTECTION_SYSTEM_FLAG 0x02
+#define WIDEVINE_PROTECTION_SYSTEM_FLAG 0x04
 
 namespace shaka {
 namespace media {
@@ -70,4 +74,4 @@ class ProtectionSystemSpecificInfo {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // PACKAGER_MEDIA_BASE_PSSH_H_
+#endif  // PACKAGER_MEDIA_BASE_PROTECTION_SYSTEM_SPECIFIC_INFO_H_

@@ -17,9 +17,11 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
+#include "packager/media/base/widevine_pssh_generator.h"
 
 namespace shaka {
 

@@ -18,10 +18,6 @@
 namespace shaka {
 namespace media {
 
-const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
-                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
-                                     0xd5, 0x1d, 0x21, 0xed};
-
 class KeyFetcher;
 class RequestSigner;
 template <class T> class ProducerConsumerQueue;
@@ -31,7 +27,10 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  WidevineKeySource(const std::string& server_url, bool add_common_pssh);
+  /// @param proteciton_systems_flags is the flags indicating which PSSH should
+  ///        be included.
+  WidevineKeySource(const std::string& server_url,
+                    int protection_systems_flags);
 
   ~WidevineKeySource() override;
 
@@ -72,8 +71,6 @@ class WidevineKeySource : public KeySource {
   void set_group_id(const std::vector<uint8_t>& group_id);
 
  private:
-  typedef std::map<std::string, std::unique_ptr<EncryptionKey>>
-      EncryptionKeyMap;
   typedef ProducerConsumerQueue<std::shared_ptr<EncryptionKeyMap>>
       EncryptionKeyQueue;
 
@@ -124,7 +121,6 @@ class WidevineKeySource : public KeySource {
   const uint32_t crypto_period_count_;
   FourCC protection_scheme_;
   base::Lock lock_;
-  bool add_common_pssh_;
   bool key_production_started_;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_;

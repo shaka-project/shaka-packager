@@ -15,6 +15,7 @@
 #include "packager/app/muxer_flags.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/playready_key_encryption_flags.h"
+#include "packager/app/protection_system_flags.h"
 #include "packager/app/raw_key_encryption_flags.h"
 #include "packager/app/stream_descriptor.h"
 #include "packager/app/vlog_flags.h"
@@ -279,6 +280,9 @@ base::Optional<PackagingParams> GetPackagingParams() {
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
+  encryption_params.generate_common_pssh = FLAGS_generate_common_pssh;
+  encryption_params.generate_playready_pssh = FLAGS_generate_playready_pssh;
+  encryption_params.generate_widevine_pssh = FLAGS_generate_widevine_pssh;
   if (FLAGS_enable_widevine_encryption) {
     encryption_params.key_provider = KeyProvider::kWidevine;
     ++num_key_providers;
@@ -313,7 +317,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
     case KeyProvider::kWidevine: {
       WidevineEncryptionParams& widevine = encryption_params.widevine;
       widevine.key_server_url = FLAGS_key_server_url;
-      widevine.include_common_pssh = FLAGS_include_common_pssh;
 
       widevine.content_id = FLAGS_content_id_bytes;
       widevine.policy = FLAGS_policy;

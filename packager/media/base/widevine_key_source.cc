@@ -6,8 +6,6 @@
 
 #include "packager/media/base/widevine_key_source.h"
 
-#include <set>
-
 #include "packager/base/base64.h"
 #include "packager/base/bind.h"
 #include "packager/base/json/json_reader.h"
@@ -17,10 +15,10 @@
 #include "packager/media/base/network_util.h"
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/protection_system_specific_info.h"
-#include "packager/media/base/raw_key_source.h"
+#include "packager/media/base/pssh_generator_util.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/request_signer.h"
-#include "packager/media/base/widevine_pssh_data.pb.h"
+#include "packager/media/base/widevine_pssh_generator.h"
 
 namespace shaka {
 namespace media {
@@ -43,18 +41,6 @@ const int kFirstRetryDelayMilliseconds = 1000;
 const int kDefaultCryptoPeriodCount = 10;
 const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
 const int kKeyFetchTimeoutInSeconds = 60;  // 1 minute.
-
-std::vector<uint8_t> StringToBytes(const std::string& string) {
-  return std::vector<uint8_t>(string.begin(), string.end());
-}
-
-std::vector<uint8_t> WidevinePsshFromKeyId(
-    const std::vector<std::vector<uint8_t>>& key_ids) {
-  media::WidevinePsshData widevine_pssh_data;
-  for (const std::vector<uint8_t>& key_id : key_ids)
-    widevine_pssh_data.add_key_id(key_id.data(), key_id.size());
-  return StringToBytes(widevine_pssh_data.SerializeAsString());
-}
 
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8_t>* bytes) {
@@ -128,15 +114,16 @@ bool IsProtectionSchemeValid(FourCC protection_scheme) {
 }  // namespace
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
-                                     bool add_common_pssh)
-    : key_production_thread_("KeyProductionThread",
+                                     int protection_system_flags)
+    // Widevine PSSH is fetched from Widevine license server.
+    : KeySource(protection_system_flags & ~WIDEVINE_PROTECTION_SYSTEM_FLAG),
+      key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       crypto_period_count_(kDefaultCryptoPeriodCount),
       protection_scheme_(FOURCC_cenc),
-      add_common_pssh_(add_common_pssh),
       key_production_started_(false),
       start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED),
@@ -191,14 +178,14 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
               init_data.data(), init_data.size(), &protection_systems_info)) {
         return Status(error::PARSER_FAILURE, "Error parsing the PSSH boxes.");
       }
-      for (const auto& info: protection_systems_info) {
+      for (const auto& info : protection_systems_info) {
         // Use Widevine PSSH if available otherwise construct a Widevine PSSH
         // from the first available key ids.
         if (info.system_id() == widevine_system_id) {
           pssh_data = info.pssh_data();
           break;
         } else if (pssh_data.empty() && !info.key_ids().empty()) {
-          pssh_data = WidevinePsshFromKeyId(info.key_ids());
+          pssh_data = GenerateWidevinePsshDataFromKeyIds(info.key_ids());
           // Continue to see if there is any Widevine PSSH. The KeyId generated
           // PSSH is only used if a Widevine PSSH could not be found.
           continue;
@@ -208,9 +195,10 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
         return Status(error::INVALID_ARGUMENT, "No supported PSSHs found.");
       break;
     }
-    case EmeInitDataType::WEBM:
-      pssh_data = WidevinePsshFromKeyId({init_data});
+    case EmeInitDataType::WEBM: {
+      pssh_data = GenerateWidevinePsshDataFromKeyIds({init_data});
       break;
+    }
     case EmeInitDataType::WIDEVINE_CLASSIC:
       if (init_data.size() < sizeof(asset_id))
         return Status(error::INVALID_ARGUMENT, "Invalid asset id.");
@@ -585,24 +573,9 @@ bool WidevineKeySource::ExtractEncryptionKey(
     encryption_key_map[stream_label] = std::move(encryption_key);
   }
 
-  // If the flag exists, create a common system ID PSSH box that contains the
-  // key IDs of all the keys.
-  if (add_common_pssh_ && !widevine_classic) {
-    std::set<std::vector<uint8_t>> key_ids;
-    for (const EncryptionKeyMap::value_type& pair : encryption_key_map) {
-      key_ids.insert(pair.second->key_id);
-    }
-
-    // Create a common system PSSH box.
-    ProtectionSystemSpecificInfo info;
-    info.set_system_id(kCommonSystemId, arraysize(kCommonSystemId));
-    info.set_pssh_box_version(1);
-    for (const std::vector<uint8_t>& key_id : key_ids) {
-      info.add_key_id(key_id);
-    }
-
-    for (const EncryptionKeyMap::value_type& pair : encryption_key_map) {
-      pair.second->key_system_info.push_back(info);
+  if (!widevine_classic) {
+    if (!UpdateProtectionSystemInfo(&encryption_key_map).ok()) {
+      return false;
     }
   }
 

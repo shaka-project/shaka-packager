@@ -49,6 +49,14 @@ std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
 std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
     const EncryptionParams& encryption_params) {
+  int protection_systems_flags(0);
+  if (encryption_params.generate_common_pssh)
+    protection_systems_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
+  if (encryption_params.generate_playready_pssh)
+    protection_systems_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
+  if (encryption_params.generate_widevine_pssh)
+    protection_systems_flags |= WIDEVINE_PROTECTION_SYSTEM_FLAG;
+
   std::unique_ptr<KeySource> encryption_key_source;
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
@@ -63,7 +71,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       }
       std::unique_ptr<WidevineKeySource> widevine_key_source(
           new WidevineKeySource(widevine.key_server_url,
-                                widevine.include_common_pssh));
+                                protection_systems_flags));
       widevine_key_source->set_protection_scheme(protection_scheme);
       if (!widevine.signer.signer_name.empty()) {
         std::unique_ptr<RequestSigner> request_signer(
@@ -85,10 +93,12 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
+      // TODO(hmchen): add multiple DRM support for raw key source.
       encryption_key_source = RawKeySource::Create(encryption_params.raw_key);
       break;
     }
     case KeyProvider::kPlayready: {
+      // TODO(hmchen): add multiple DRM support for playready key source.
       const PlayreadyEncryptionParams& playready = encryption_params.playready;
       if (!playready.key_id.empty() || !playready.key.empty()) {
         if (playready.key_id.empty() || playready.key.empty()) {
@@ -151,9 +161,9 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
         LOG(ERROR) << "'key_server_url' should not be empty.";
         return std::unique_ptr<KeySource>();
       }
-      std::unique_ptr<WidevineKeySource> widevine_key_source(
-          new WidevineKeySource(widevine.key_server_url,
-                                true /* commmon pssh, does not matter here */));
+      std::unique_ptr<WidevineKeySource> widevine_key_source(new WidevineKeySource(
+          widevine.key_server_url,
+          WIDEVINE_PROTECTION_SYSTEM_FLAG /* value does not matter here */));
       if (!widevine.signer.signer_name.empty()) {
         std::unique_ptr<RequestSigner> request_signer(
             CreateSigner(widevine.signer));

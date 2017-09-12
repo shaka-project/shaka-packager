@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/raw_key_pssh_generator.h"
 
 namespace {
 const char kEmptyDrmLabel[] = "";
@@ -152,9 +153,10 @@ std::unique_ptr<RawKeySource> RawKeySource::Create(
       new RawKeySource(std::move(encryption_key_map)));
 }
 
-RawKeySource::RawKeySource() {}
+RawKeySource::RawKeySource() : KeySource(COMMON_PROTECTION_SYSTEM_FLAG) {}
 RawKeySource::RawKeySource(EncryptionKeyMap&& encryption_key_map)
-    : encryption_key_map_(std::move(encryption_key_map)) {}
+    : KeySource(COMMON_PROTECTION_SYSTEM_FLAG),
+      encryption_key_map_(std::move(encryption_key_map)) {}
 
 }  // namespace media
 }  // namespace shaka
