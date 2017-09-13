@@ -1,0 +1,17 @@
+@import url("sphinxdoc.css");
+
+h3 {
+  margin-bottom: 0;
+}
+
+table.option-list td, table.option-list th {
+  border: 0 !important;
+}
+
+th.field-name, th.field-name ~ td, td.option-group, td.option-group ~ td {
+  padding-top: 10px !important;
+}
+
+span.option {
+  font-weight: bold;
+}
