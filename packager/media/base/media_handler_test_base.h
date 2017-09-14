@@ -97,7 +97,8 @@ class MockOutputMediaHandler : public MediaHandler {
   Status OnFlushRequest(size_t index) override;
 };
 
-// A fake media handler definition used for testing.
+// TODO(vaage) : Remove this test handler and convert other tests to use
+//               FakeInputMediaHandler and MockOutputMediaHandler.
 class FakeMediaHandler : public MediaHandler {
  public:
   const std::vector<std::unique_ptr<StreamData>>& stream_data_vector() const {
@@ -116,49 +117,54 @@ class FakeMediaHandler : public MediaHandler {
 
 class MediaHandlerTestBase : public ::testing::Test {
  public:
-  MediaHandlerTestBase();
+  MediaHandlerTestBase() = default;
 
+ protected:
   bool IsVideoCodec(Codec codec) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
-      uint32_t time_scale) const;
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
-      uint32_t time_scale, uint32_t width, uint64_t height) const;
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale,
+                                                 uint32_t width,
+                                                 uint64_t height) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
-      uint32_t time_scale, Codec codec) const;
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale,
+                                                 Codec codec) const;
 
-  std::unique_ptr<StreamInfo> GetVideoStreamInfo(
-      uint32_t time_scale,
-      Codec codec,
-      uint32_t width,
-      uint64_t height) const;
+  std::unique_ptr<StreamInfo> GetVideoStreamInfo(uint32_t time_scale,
+                                                 Codec codec,
+                                                 uint32_t width,
+                                                 uint64_t height) const;
 
-  std::unique_ptr<StreamInfo> GetAudioStreamInfo(
-      uint32_t time_scale) const;
+  std::unique_ptr<StreamInfo> GetAudioStreamInfo(uint32_t time_scale) const;
 
-  std::unique_ptr<StreamInfo> GetAudioStreamInfo(
-      uint32_t time_scale,
-      Codec codec) const;
+  std::unique_ptr<StreamInfo> GetAudioStreamInfo(uint32_t time_scale,
+                                                 Codec codec) const;
 
-  std::unique_ptr<MediaSample> GetMediaSample(
-      int64_t timestamp,
-      int64_t duration,
-      bool is_keyframe) const;
+  std::unique_ptr<MediaSample> GetMediaSample(int64_t timestamp,
+                                              int64_t duration,
+                                              bool is_keyframe) const;
 
-  std::unique_ptr<MediaSample> GetMediaSample(
-      int64_t timestamp,
-      int64_t duration,
-      bool is_keyframe,
-      const uint8_t* data,
-      size_t data_length) const;
+  std::unique_ptr<MediaSample> GetMediaSample(int64_t timestamp,
+                                              int64_t duration,
+                                              bool is_keyframe,
+                                              const uint8_t* data,
+                                              size_t data_length) const;
 
-  std::unique_ptr<SegmentInfo> GetSegmentInfo(
-      int64_t start_timestamp,
-      int64_t duration,
-      bool is_subsegment) const;
+  std::unique_ptr<SegmentInfo> GetSegmentInfo(int64_t start_timestamp,
+                                              int64_t duration,
+                                              bool is_subsegment) const;
 
+ private:
+  MediaHandlerTestBase(const MediaHandlerTestBase&) = delete;
+  MediaHandlerTestBase& operator=(const MediaHandlerTestBase&) = delete;
+};
+
+class MediaHandlerGraphTestBase : public MediaHandlerTestBase {
+ public:
+  MediaHandlerGraphTestBase();
+
+ protected:
   /// Setup a graph using |handler| with |num_inputs| and |num_outputs|.
   void SetUpGraph(size_t num_inputs,
                   size_t num_outputs,
@@ -178,8 +184,8 @@ class MediaHandlerTestBase : public ::testing::Test {
   std::shared_ptr<FakeMediaHandler> next_handler() { return next_handler_; }
 
  private:
-  MediaHandlerTestBase(const MediaHandlerTestBase&) = delete;
-  MediaHandlerTestBase& operator=(const MediaHandlerTestBase&) = delete;
+  MediaHandlerGraphTestBase(const MediaHandlerTestBase&) = delete;
+  MediaHandlerGraphTestBase& operator=(const MediaHandlerTestBase&) = delete;
 
   // Downstream handler used in testing graph.
   std::shared_ptr<FakeMediaHandler> next_handler_;

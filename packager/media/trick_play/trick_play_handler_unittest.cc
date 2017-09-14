@@ -55,7 +55,7 @@ MATCHER_P3(IsKeyFrameMediaSample, stream_index, timestamp, duration, "") {
          arg->media_sample->is_key_frame() == true;
 }
 
-class TrickPlayHandlerTest : public MediaHandlerTestBase {
+class TrickPlayHandlerTest : public MediaHandlerGraphTestBase {
  public:
   void SetUpTrickPlayHandler(const std::vector<uint32_t>& trick_play_factors) {
     trick_play_handler_.reset(new TrickPlayHandler());

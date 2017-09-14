@@ -68,7 +68,8 @@ Status FakeInputMediaHandler::InitializeInternal() {
 }
 
 Status FakeInputMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
-  return Status::OK;
+  return Status(error::INTERNAL_ERROR,
+                "FakeInputMediaHandler should never be a downstream handler.");
 }
 
 Status MockOutputMediaHandler::InitializeInternal() {
@@ -102,10 +103,6 @@ Status FakeMediaHandler::OnFlushRequest(size_t input_stream_index) {
 bool FakeMediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
   return true;
 }
-
-MediaHandlerTestBase::MediaHandlerTestBase()
-    : next_handler_(new FakeMediaHandler),
-      some_handler_(new FakeMediaHandler) {}
 
 bool MediaHandlerTestBase::IsVideoCodec(Codec codec) const {
   return codec >= kCodecVideo && codec < kCodecVideoMaxPlusOne;
@@ -189,7 +186,11 @@ std::unique_ptr<SegmentInfo> MediaHandlerTestBase::GetSegmentInfo(
   return info;
 }
 
-void MediaHandlerTestBase::SetUpGraph(size_t num_inputs,
+MediaHandlerGraphTestBase::MediaHandlerGraphTestBase()
+    : next_handler_(new FakeMediaHandler),
+      some_handler_(new FakeMediaHandler) {}
+
+void MediaHandlerGraphTestBase::SetUpGraph(size_t num_inputs,
                                       size_t num_outputs,
                                       std::shared_ptr<MediaHandler> handler) {
   // Input handler is not really used anywhere but just to satisfy one input
@@ -203,11 +204,11 @@ void MediaHandlerTestBase::SetUpGraph(size_t num_inputs,
 }
 
 const std::vector<std::unique_ptr<StreamData>>&
-MediaHandlerTestBase::GetOutputStreamDataVector() const {
+MediaHandlerGraphTestBase::GetOutputStreamDataVector() const {
   return next_handler_->stream_data_vector();
 }
 
-void MediaHandlerTestBase::ClearOutputStreamDataVector() {
+void MediaHandlerGraphTestBase::ClearOutputStreamDataVector() {
   next_handler_->clear_stream_data_vector();
 }
 

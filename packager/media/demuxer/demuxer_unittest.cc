@@ -29,7 +29,7 @@ class MockKeySource : public FixedKeySource {
 };
 }  // namespace
 
-class DemuxerTest : public MediaHandlerTestBase {
+class DemuxerTest : public MediaHandlerGraphTestBase {
  protected:
   EncryptionKey GetMockEncryptionKey() {
     const uint8_t kKeyId[]{

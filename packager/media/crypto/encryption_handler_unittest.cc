@@ -81,7 +81,7 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
 
 }  // namespace
 
-class EncryptionHandlerTest : public MediaHandlerTestBase {
+class EncryptionHandlerTest : public MediaHandlerGraphTestBase {
  public:
   void SetUp() override { SetUpEncryptionHandler(EncryptionParams()); }
 

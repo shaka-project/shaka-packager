@@ -30,7 +30,7 @@ const bool kEncrypted = true;
 
 }  // namespace
 
-class ChunkingHandlerTest : public MediaHandlerTestBase {
+class ChunkingHandlerTest : public MediaHandlerGraphTestBase {
  public:
   void SetUpChunkingHandler(int num_inputs,
                             const ChunkingParams& chunking_params) {
