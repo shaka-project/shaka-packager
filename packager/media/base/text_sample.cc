@@ -21,6 +21,13 @@ void TextSample::SetTime(uint64_t start_time, uint64_t end_time) {
   duration_ = end_time - start_time;
 }
 
+void TextSample::AppendStyle(const std::string& style) {
+  if (settings_.length()) {
+    settings_ += " ";
+  }
+  settings_ += style;
+}
+
 void TextSample::AppendPayload(const std::string& payload) {
   if (payload_.length()) {
     payload_ += "\n";

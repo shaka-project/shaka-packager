@@ -26,8 +26,8 @@ class TextSample {
   uint64_t EndTime() const;
 
   void set_id(const std::string& id) { id_ = id; }
-  void set_settings(const std::string& settings) { settings_ = settings; }
   void SetTime(uint64_t start_time, uint64_t end_time);
+  void AppendStyle(const std::string& style);
   void AppendPayload(const std::string& payload);
 
  private:
