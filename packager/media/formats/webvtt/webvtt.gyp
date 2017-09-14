@@ -15,8 +15,12 @@
       'sources': [
         'cue.cc',
         'cue.h',
+        'text_readers.cc',
+        'text_readers.h',
         'webvtt_media_parser.cc',
         'webvtt_media_parser.h',
+        'webvtt_parser.cc',
+        'webvtt_parser.h',
         'webvtt_sample_converter.cc',
         'webvtt_sample_converter.h',
         'webvtt_timestamp.cc',
@@ -33,13 +37,16 @@
       'target_name': 'webvtt_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'text_readers_unittest.cc',
         'webvtt_media_parser_unittest.cc',
+        'webvtt_parser_unittest.cc',
         'webvtt_sample_converter_unittest.cc',
         'webvtt_timestamp_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gmock.gyp:gmock',
         '../../../testing/gtest.gyp:gtest',
+        '../../base/media_base.gyp:media_handler_test_base',
         '../../test/media_test.gyp:media_test_support',
         'webvtt',
       ]
