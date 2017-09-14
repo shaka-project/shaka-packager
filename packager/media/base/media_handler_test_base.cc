@@ -59,6 +59,33 @@ const uint8_t kData[]{
 namespace shaka {
 namespace media {
 
+bool FakeInputMediaHandler::ValidateOutputStreamIndex(size_t index) const {
+  return true;
+}
+
+Status FakeInputMediaHandler::InitializeInternal() {
+  return Status::OK;
+}
+
+Status FakeInputMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
+  return Status::OK;
+}
+
+Status MockOutputMediaHandler::InitializeInternal() {
+  return Status::OK;
+}
+
+Status MockOutputMediaHandler::Process(
+    std::unique_ptr<StreamData> stream_data) {
+  OnProcess(stream_data.get());
+  return Status::OK;
+}
+
+Status MockOutputMediaHandler::OnFlushRequest(size_t index) {
+  OnFlush(index);
+  return Status::OK;
+}
+
 Status FakeMediaHandler::InitializeInternal() {
   return Status::OK;
 }

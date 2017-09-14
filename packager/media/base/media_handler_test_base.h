@@ -74,6 +74,29 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
          arg->media_sample->is_encrypted() == encrypted;
 }
 
+class FakeInputMediaHandler : public MediaHandler {
+ public:
+  using MediaHandler::Dispatch;
+  using MediaHandler::FlushAllDownstreams;
+  using MediaHandler::FlushDownstream;
+
+ private:
+  bool ValidateOutputStreamIndex(size_t index) const override;
+  Status InitializeInternal() override;
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
+};
+
+class MockOutputMediaHandler : public MediaHandler {
+ public:
+  MOCK_METHOD1(OnProcess, void(const StreamData*));
+  MOCK_METHOD1(OnFlush, void(size_t index));
+
+ private:
+  Status InitializeInternal() override;
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
+  Status OnFlushRequest(size_t index) override;
+};
+
 // A fake media handler definition used for testing.
 class FakeMediaHandler : public MediaHandler {
  public:
