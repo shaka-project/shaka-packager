@@ -39,6 +39,10 @@
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/formats/webm/webm_muxer.h"
+#include "packager/media/formats/webvtt/text_readers.h"
+#include "packager/media/formats/webvtt/webvtt_output_handler.h"
+#include "packager/media/formats/webvtt/webvtt_parser.h"
+#include "packager/media/formats/webvtt/webvtt_segmenter.h"
 #include "packager/media/replicator/replicator.h"
 #include "packager/media/trick_play/trick_play_handler.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -57,6 +61,19 @@ namespace media {
 namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
+
+MuxerOptions CreateMuxerOptions(const StreamDescriptor& stream,
+                                const PackagingParams& params) {
+  MuxerOptions options;
+
+  options.mp4_params = params.mp4_output_params;
+  options.temp_dir = params.temp_dir;
+  options.bandwidth = stream.bandwidth;
+  options.output_file_name = stream.output;
+  options.segment_template = stream.segment_template;
+
+  return options;
+}
 
 // TODO(rkuroiwa): Write TTML and WebVTT parser (demuxing) for a better check
 // and for supporting live/segmenting (muxing).  With a demuxer and a muxer,
@@ -343,6 +360,28 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
+std::unique_ptr<MuxerListener> CreateHlsListener(const StreamDescriptor& stream,
+                                                 int stream_number,
+                                                 hls::HlsNotifier* notifier) {
+  DCHECK(notifier);
+  DCHECK_GE(stream_number, 0);
+
+  // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
+  // languages.
+  std::string group_id = stream.hls_group_id;
+  std::string name = stream.hls_name;
+  std::string hls_playlist_name = stream.hls_playlist_name;
+  if (group_id.empty())
+    group_id = "audio";
+  if (name.empty())
+    name = base::StringPrintf("stream_%d", stream_number);
+  if (hls_playlist_name.empty())
+    hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
+
+  return std::unique_ptr<MuxerListener>(
+      new HlsNotifyMuxerListener(hls_playlist_name, name, group_id, notifier));
+}
+
 std::unique_ptr<MuxerListener> CreateMuxerListener(
     const StreamDescriptor& stream,
     int stream_number,
@@ -365,21 +404,8 @@ std::unique_ptr<MuxerListener> CreateMuxerListener(
   }
 
   if (hls_notifier) {
-    // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
-    // languages.
-    std::string group_id = stream.hls_group_id;
-    std::string name = stream.hls_name;
-    std::string hls_playlist_name = stream.hls_playlist_name;
-    if (group_id.empty())
-      group_id = "audio";
-    if (name.empty())
-      name = base::StringPrintf("stream_%d", stream_number);
-    if (hls_playlist_name.empty())
-      hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
-
-    std::unique_ptr<MuxerListener> listener(new HlsNotifyMuxerListener(
-        hls_playlist_name, name, group_id, hls_notifier));
-    combined_listener->AddListener(std::move(listener));
+    combined_listener->AddListener(
+        CreateHlsListener(stream, stream_number, hls_notifier));
   }
 
   return std::move(combined_listener);
@@ -479,6 +505,60 @@ Status CreateMp4ToMp4TextJob(int stream_number,
   return status;
 }
 
+Status CreateHlsTextJob(const StreamDescriptor& stream,
+                        int stream_number,
+                        const PackagingParams& packaging_params,
+                        hls::HlsNotifier* notifier,
+                        JobManager* job_manager) {
+  DCHECK(notifier);
+  DCHECK_GE(stream_number, 0);
+
+  if (stream.segment_template.empty()) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Cannot output text (" + stream.input +
+                      ") to HLS with no segment template");
+  }
+
+  const float segment_length_in_seconds =
+      packaging_params.chunking_params.segment_duration_in_seconds;
+  const uint64_t segment_length_in_ms =
+      static_cast<uint64_t>(segment_length_in_seconds * 1000);
+
+  // Text files are usually small and since the input is one file;
+  // there's no way for the player to do ranged requests. So set this
+  // value to something reasonable if it is missing.
+  MuxerOptions muxer_options = CreateMuxerOptions(stream, packaging_params);
+  muxer_options.bandwidth = stream.bandwidth ? stream.bandwidth : 256;
+
+  std::unique_ptr<MuxerListener> muxer_listener =
+      CreateHlsListener(stream, stream_number, notifier);
+
+  std::shared_ptr<WebVttSegmentedOutputHandler> output(
+      new WebVttSegmentedOutputHandler(muxer_options,
+                                       std::move(muxer_listener)));
+
+  std::unique_ptr<FileReader> reader;
+  Status open_status = FileReader::Open(stream.input, &reader);
+  if (!open_status.ok()) {
+    return open_status;
+  }
+
+  std::shared_ptr<OriginHandler> parser(new WebVttParser(std::move(reader)));
+  std::shared_ptr<MediaHandler> segmenter(
+      new WebVttSegmenter(segment_length_in_ms));
+
+  // Build in reverse to allow us to move the pointers.
+  Status status;
+  status.Update(segmenter->AddHandler(std::move(output)));
+  status.Update(parser->AddHandler(std::move(segmenter)));
+  if (!status.ok()) {
+    return status;
+  }
+
+  job_manager->Add("Segmented Text Job", std::move(parser));
+  return Status::OK;
+}
+
 Status CreateTextJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
@@ -517,6 +597,15 @@ Status CreateTextJobs(
         } else {
           return Status(error::PARSER_FAILURE,
                         "Failed to process text file " + stream.input);
+        }
+      }
+
+      if (hls_notifier) {
+        Status status =
+            CreateHlsTextJob(stream, (*stream_number)++, packaging_params,
+                             hls_notifier, job_manager);
+        if (!status.ok()) {
+          return status;
         }
       }
 
