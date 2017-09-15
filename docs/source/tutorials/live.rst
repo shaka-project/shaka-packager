@@ -4,11 +4,6 @@ Live
 A typical live source is UDP multicast, which is the only live protocol
 packager supports directly right now.
 
-.. include:: /options/udp_file_options.rst
-
-Pipe through FFmpeg
--------------------
-
 For other unsupported protocols, you can use FFmpeg to pipe the input.
 See :doc:`ffmpeg_piping` for details.
 
@@ -44,3 +39,7 @@ Here are some examples.
 
     Packager does not support removing old segments internally. The user is
     resposible for setting up a cron job to do so.
+
+.. include:: /options/udp_file_options.rst
+
+.. include:: /options/segment_template_formatting.rst

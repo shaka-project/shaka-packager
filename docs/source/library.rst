@@ -2,8 +2,8 @@ Shaka Packager Library
 ======================
 
 Documentation for the top level Shaka packager library. See
-`Internal API <http://google.github.io/shaka-packager/docs/annotated.html>`_ for
-documentation on internal APIs.
+`Internal API <https://google.github.io/shaka-packager/docs/annotated.html>`_
+for documentation on internal APIs.
 
 .. doxygenclass:: shaka::Packager
 
