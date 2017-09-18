@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 
 #include "packager/media/base/aes_encryptor.h"
@@ -259,48 +260,46 @@ Status EncryptionHandler::ProcessMediaSample(
   // in-place.
   std::shared_ptr<MediaSample> cipher_sample =
       MediaSample::CopyFrom(*clear_sample);
+  // |cipher_sample| above still contains the old clear sample data. We will
+  // use |cipher_sample_data| to hold cipher sample data then transfer it to
+  // |cipher_sample| after encryption.
+  std::shared_ptr<uint8_t> cipher_sample_data(
+      new uint8_t[clear_sample->data_size()], std::default_delete<uint8_t[]>());
 
-  Status result;
   if (vpx_parser_) {
-    if (EncryptVpxFrame(vpx_frames,
-                        cipher_sample->writable_data(),
-                        cipher_sample->data_size(),
-                        decrypt_config.get())) {
-      DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
-                cipher_sample->data_size());
-    } else {
-      result = Status(
-          error::ENCRYPTION_FAILURE,
-          "Failed to encrypt VPX frame.");
+    if (!EncryptVpxFrame(vpx_frames, clear_sample->data(),
+                         clear_sample->data_size(),
+                         &cipher_sample_data.get()[0], decrypt_config.get())) {
+      return Status(error::ENCRYPTION_FAILURE, "Failed to encrypt VPX frame.");
     }
+    DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
+              clear_sample->data_size());
   } else if (header_parser_) {
-    if (EncryptNalFrame(cipher_sample->writable_data(),
-                        cipher_sample->data_size(),
-                        decrypt_config.get())) {
-      DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
-                cipher_sample->data_size());
-    } else {
-      result = Status(
-          error::ENCRYPTION_FAILURE,
-          "Failed to encrypt NAL frame.");
+    if (!EncryptNalFrame(clear_sample->data(), clear_sample->data_size(),
+                         &cipher_sample_data.get()[0], decrypt_config.get())) {
+      return Status(error::ENCRYPTION_FAILURE, "Failed to encrypt NAL frame.");
     }
-  } else if (cipher_sample->data_size() > leading_clear_bytes_size_) {
-    EncryptBytes(
-        cipher_sample->writable_data() + leading_clear_bytes_size_,
-        cipher_sample->data_size() - leading_clear_bytes_size_);
+    DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
+              clear_sample->data_size());
+  } else {
+    memcpy(&cipher_sample_data.get()[0], clear_sample->data(),
+           std::min(clear_sample->data_size(), leading_clear_bytes_size_));
+    if (clear_sample->data_size() > leading_clear_bytes_size_) {
+      EncryptBytes(clear_sample->data() + leading_clear_bytes_size_,
+                   clear_sample->data_size() - leading_clear_bytes_size_,
+                   &cipher_sample_data.get()[leading_clear_bytes_size_]);
+    }
   }
 
-  if (!result.ok()) {
-    return result;
-  }
-
-  encryptor_->UpdateIv();
-
+  cipher_sample->TransferData(std::move(cipher_sample_data),
+                              clear_sample->data_size());
   // Finish initializing the sample before sending it downstream. We must
-  // wait until now to finish the initialization as we will loose access to
+  // wait until now to finish the initialization as we will lose access to
   // |decrypt_config| once we set it.
   cipher_sample->set_is_encrypted(true);
   cipher_sample->set_decrypt_config(std::move(decrypt_config));
+
+  encryptor_->UpdateIv();
 
   return DispatchMediaSample(kStreamIndex, std::move(cipher_sample));
 }
@@ -433,10 +432,11 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
 
 bool EncryptionHandler::EncryptVpxFrame(
     const std::vector<VPxFrameInfo>& vpx_frames,
-    uint8_t* source,
+    const uint8_t* source,
     size_t source_size,
+    uint8_t* dest,
     DecryptConfig* decrypt_config) {
-  uint8_t* data = source;
+  const uint8_t* data = source;
   for (const VPxFrameInfo& frame : vpx_frames) {
     uint16_t clear_bytes =
         static_cast<uint16_t>(frame.uncompressed_header_size);
@@ -456,9 +456,11 @@ bool EncryptionHandler::EncryptVpxFrame(
     cipher_bytes -= misalign_bytes;
 
     decrypt_config->AddSubsample(clear_bytes, cipher_bytes);
+    memcpy(dest, data, clear_bytes);
     if (cipher_bytes > 0)
-      EncryptBytes(data + clear_bytes, cipher_bytes);
+      EncryptBytes(data + clear_bytes, cipher_bytes, dest + clear_bytes);
     data += frame.frame_size;
+    dest += frame.frame_size;
   }
   // Add subsample for the superframe index if exists.
   const bool is_superframe = vpx_frames.size() > 1;
@@ -469,18 +471,20 @@ bool EncryptionHandler::EncryptVpxFrame(
     uint16_t clear_bytes = static_cast<uint16_t>(index_size);
     uint32_t cipher_bytes = 0;
     decrypt_config->AddSubsample(clear_bytes, cipher_bytes);
+    memcpy(dest, data, clear_bytes);
   }
   return true;
 }
 
-bool EncryptionHandler::EncryptNalFrame(uint8_t* data,
-                                        size_t data_length,
+bool EncryptionHandler::EncryptNalFrame(const uint8_t* source,
+                                        size_t source_size,
+                                        uint8_t* dest,
                                         DecryptConfig* decrypt_config) {
   DCHECK_NE(nalu_length_size_, 0u);
   DCHECK(header_parser_);
   const Nalu::CodecType nalu_type =
       (codec_ == kCodecH265) ? Nalu::kH265 : Nalu::kH264;
-  NaluReader reader(nalu_type, nalu_length_size_, data, data_length);
+  NaluReader reader(nalu_type, nalu_length_size_, source, source_size);
 
   // Store the current length of clear data.  This is used to squash
   // multiple unencrypted NAL units into fewer subsample entries.
@@ -519,13 +523,17 @@ bool EncryptionHandler::EncryptNalFrame(uint8_t* data,
         cipher_bytes -= misalign_bytes;
       }
 
-      const uint8_t* nalu_data = nalu.data() + current_clear_bytes;
-      EncryptBytes(const_cast<uint8_t*>(nalu_data), cipher_bytes);
-
-      AddSubsample(
-          accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,
-          cipher_bytes, decrypt_config);
+      accumulated_clear_bytes += nalu_length_size_ + current_clear_bytes;
+      AddSubsample(accumulated_clear_bytes, cipher_bytes, decrypt_config);
+      memcpy(dest, source, accumulated_clear_bytes);
+      source += accumulated_clear_bytes;
+      dest += accumulated_clear_bytes;
       accumulated_clear_bytes = 0;
+
+      DCHECK_EQ(nalu.data() + current_clear_bytes, source);
+      EncryptBytes(source, cipher_bytes, dest);
+      source += cipher_bytes;
+      dest += cipher_bytes;
     } else {
       // For non-video-slice or small NAL units, don't encrypt.
       accumulated_clear_bytes += nalu_length_size_ + nalu_total_size;
@@ -536,13 +544,17 @@ bool EncryptionHandler::EncryptNalFrame(uint8_t* data,
     return false;
   }
   AddSubsample(accumulated_clear_bytes, 0, decrypt_config);
+  memcpy(dest, source, accumulated_clear_bytes);
   return true;
 }
 
-void EncryptionHandler::EncryptBytes(uint8_t* data, size_t size) {
-  DCHECK(data);
+void EncryptionHandler::EncryptBytes(const uint8_t* source,
+                                     size_t source_size,
+                                     uint8_t* dest) {
+  DCHECK(source);
+  DCHECK(dest);
   DCHECK(encryptor_);
-  CHECK(encryptor_->Crypt(data, size, data));
+  CHECK(encryptor_->Crypt(source, source_size, dest));
 }
 
 void EncryptionHandler::InjectVpxParserForTesting(

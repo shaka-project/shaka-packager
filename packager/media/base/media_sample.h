@@ -66,16 +66,21 @@ class MediaSample {
   /// is disallowed.
   static std::shared_ptr<MediaSample> CreateEOSBuffer();
 
-  // Create a MediaSample. Buffer will be padded and aligned as necessary.
-  // |data|,|side_data| can be NULL, which indicates an empty sample.
-  // |size|,|side_data_size| should not be negative.
-  MediaSample(const uint8_t* data,
-              size_t size,
-              const uint8_t* side_data,
-              size_t side_data_size,
-              bool is_key_frame);
-  MediaSample();
   virtual ~MediaSample();
+
+  /// Transfer data to this media sample. No data copying is involved.
+  /// @param data points to the data to be transferred.
+  /// @param data_size is the size of the data to be transferred.
+  void TransferData(std::shared_ptr<uint8_t> data, size_t data_size);
+
+  /// Set the data in this media sample. Note that this method involves data
+  /// copying.
+  /// @param data points to the data to be copied.
+  /// @param data_size is the size of the data to be copied.
+  void SetData(const uint8_t* data, size_t data_size);
+
+  /// @return a human-readable string describing |*this|.
+  std::string ToString() const;
 
   int64_t dts() const {
     DCHECK(!end_of_stream());
@@ -112,38 +117,19 @@ class MediaSample {
   }
   const uint8_t* data() const {
     DCHECK(!end_of_stream());
-    return data_.data();
-  }
-
-  uint8_t* writable_data() {
-    DCHECK(!end_of_stream());
-    return data_.data();
+    return data_.get();
   }
 
   size_t data_size() const {
     DCHECK(!end_of_stream());
-    return data_.size();
+    return data_size_;
   }
 
-  const uint8_t* side_data() const {
-    return side_data_.data();
-  }
+  const uint8_t* side_data() const { return side_data_.get(); }
 
-  size_t side_data_size() const {
-    return side_data_.size();
-  }
+  size_t side_data_size() const { return side_data_size_; }
 
-  const DecryptConfig* decrypt_config() const {
-    return decrypt_config_.get();
-  }
-
-  void set_data(const uint8_t* data, const size_t data_size) {
-    data_.assign(data, data + data_size);
-  }
-
-  void resize_data(const size_t data_size) {
-    data_.resize(data_size);
-  }
+  const DecryptConfig* decrypt_config() const { return decrypt_config_.get(); }
 
   void set_is_key_frame(bool value) {
     is_key_frame_ = value;
@@ -158,32 +144,42 @@ class MediaSample {
   }
 
   // If there's no data in this buffer, it represents end of stream.
-  bool end_of_stream() const { return data_.size() == 0; }
+  bool end_of_stream() const { return data_size_ == 0; }
 
   const std::string& config_id() const { return config_id_; }
   void set_config_id(const std::string& config_id) {
     config_id_ = config_id;
   }
 
-  /// @return a human-readable string describing |*this|.
-  std::string ToString() const;
+ protected:
+  // Made it protected to disallow the constructor to be called directly.
+  // Create a MediaSample. Buffer will be padded and aligned as necessary.
+  // |data|,|side_data| can be nullptr, which indicates an empty sample.
+  MediaSample(const uint8_t* data,
+              size_t data_size,
+              const uint8_t* side_data,
+              size_t side_data_size,
+              bool is_key_frame);
+  MediaSample();
 
  private:
   // Decoding time stamp.
-  int64_t dts_;
+  int64_t dts_ = 0;
   // Presentation time stamp.
-  int64_t pts_;
-  int64_t duration_;
-  bool is_key_frame_;
+  int64_t pts_ = 0;
+  int64_t duration_ = 0;
+  bool is_key_frame_ = false;
   // is sample encrypted ?
-  bool is_encrypted_;
+  bool is_encrypted_ = false;
 
   // Main buffer data.
-  std::vector<uint8_t> data_;
+  std::shared_ptr<const uint8_t> data_;
+  size_t data_size_ = 0;
   // Contain additional buffers to complete the main one. Needed by WebM
   // http://www.matroska.org/technical/specs/index.html BlockAdditional[A5].
   // Not used by mp4 and other containers.
-  std::vector<uint8_t> side_data_;
+  std::shared_ptr<const uint8_t> side_data_;
+  size_t side_data_size_ = 0;
 
   // Text specific fields.
   // For now this is the cue identifier for WebVTT.

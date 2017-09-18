@@ -10,6 +10,18 @@
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
 
+namespace {
+// Return true if [encrypted_buffer, encrypted_buffer + buffer_size) overlaps
+// with [decrypted_buffer, decrypted_buffer + buffer_size).
+bool CheckMemoryOverlap(const uint8_t* encrypted_buffer,
+                        size_t buffer_size,
+                        uint8_t* decrypted_buffer) {
+  return (decrypted_buffer < encrypted_buffer)
+             ? (encrypted_buffer < decrypted_buffer + buffer_size)
+             : (decrypted_buffer < encrypted_buffer + buffer_size);
+}
+}  // namespace
+
 namespace shaka {
 namespace media {
 
@@ -20,10 +32,17 @@ DecryptorSource::DecryptorSource(KeySource* key_source)
 DecryptorSource::~DecryptorSource() {}
 
 bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
-                                          uint8_t* buffer,
-                                          size_t buffer_size) {
+                                          const uint8_t* encrypted_buffer,
+                                          size_t buffer_size,
+                                          uint8_t* decrypted_buffer) {
   DCHECK(decrypt_config);
-  DCHECK(buffer);
+  DCHECK(encrypted_buffer);
+  DCHECK(decrypted_buffer);
+
+  if (CheckMemoryOverlap(encrypted_buffer, buffer_size, decrypted_buffer)) {
+    LOG(ERROR) << "Encrypted buffer and decrypted buffer cannot overlap.";
+    return false;
+  }
 
   // Get the decryptor object.
   AesCryptor* decryptor = nullptr;
@@ -83,7 +102,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
 
   if (decrypt_config->subsamples().empty()) {
     // Sample not encrypted using subsample encryption. Decrypt whole.
-    if (!decryptor->Crypt(buffer, buffer_size, buffer)) {
+    if (!decryptor->Crypt(encrypted_buffer, buffer_size, decrypted_buffer)) {
       LOG(ERROR) << "Error during bulk sample decryption.";
       return false;
     }
@@ -92,20 +111,24 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
 
   // Subsample decryption.
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
-  uint8_t* current_ptr = buffer;
-  const uint8_t* const buffer_end = buffer + buffer_size;
+  const uint8_t* current_ptr = encrypted_buffer;
+  const uint8_t* const buffer_end = encrypted_buffer + buffer_size;
   for (const auto& subsample : subsamples) {
     if ((current_ptr + subsample.clear_bytes + subsample.cipher_bytes) >
         buffer_end) {
       LOG(ERROR) << "Subsamples overflow sample buffer.";
       return false;
     }
+    memcpy(decrypted_buffer, current_ptr, subsample.clear_bytes);
     current_ptr += subsample.clear_bytes;
-    if (!decryptor->Crypt(current_ptr, subsample.cipher_bytes, current_ptr)) {
+    decrypted_buffer += subsample.clear_bytes;
+    if (!decryptor->Crypt(current_ptr, subsample.cipher_bytes,
+                          decrypted_buffer)) {
       LOG(ERROR) << "Error decrypting subsample buffer.";
       return false;
     }
     current_ptr += subsample.cipher_bytes;
+    decrypted_buffer += subsample.cipher_bytes;
   }
   return true;
 }

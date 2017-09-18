@@ -21,12 +21,24 @@ namespace media {
 /// DecryptorSource wraps KeySource and is responsible for decryptor management.
 class DecryptorSource {
  public:
+  /// Constructs a DecryptorSource object.
+  /// @param key_source points to the key source that contains the keys.
   explicit DecryptorSource(KeySource* key_source);
   ~DecryptorSource();
 
+  /// Decrypt encrypted buffer.
+  /// @param decrypt_config contains decrypt configuration, e.g. protection
+  ///        scheme, subsample information etc.
+  /// @param encrypted_buffer points to the encrypted buffer that is to be
+  ///        decrypted. It should not overlap with @a decrypted_buffer.
+  /// @param buffer_size is the size of encrypted buffer and decrypted buffer.
+  /// @param decrypted_buffer points to the decrypted buffer. It should not
+  ///        overlap with @a encrypted_buffer.
+  /// @return true if success, false otherwise.
   bool DecryptSampleBuffer(const DecryptConfig* decrypt_config,
-                           uint8_t* buffer,
-                           size_t buffer_size);
+                           const uint8_t* encrypted_buffer,
+                           size_t buffer_size,
+                           uint8_t* decrypted_buffer);
 
  private:
   KeySource* key_source_;

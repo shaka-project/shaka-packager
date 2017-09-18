@@ -47,15 +47,22 @@ class EncryptionHandler : public MediaHandler {
 
   Status SetupProtectionPattern(StreamType stream_type);
   bool CreateEncryptor(const EncryptionKey& encryption_key);
+  // Encrypt a VPx frame with size |source_size|. |dest| should have at least
+  // |source_size| bytes.
   bool EncryptVpxFrame(const std::vector<VPxFrameInfo>& vpx_frames,
-                       uint8_t* source,
+                       const uint8_t* source,
                        size_t source_size,
+                       uint8_t* dest,
                        DecryptConfig* decrypt_config);
-  bool EncryptNalFrame(uint8_t* data,
-                       size_t data_length,
+  // Encrypt a NAL unit frame with size |source_size|. |dest| should have at
+  // least |source_size| bytes.
+  bool EncryptNalFrame(const uint8_t* source,
+                       size_t source_size,
+                       uint8_t* dest,
                        DecryptConfig* decrypt_config);
-  void EncryptBytes(uint8_t* data,
-                    size_t size);
+  // Encrypt an array with size |source_size|. |dest| should have at
+  // least |source_size| bytes.
+  void EncryptBytes(const uint8_t* source, size_t source_size, uint8_t* dest);
 
   // Testing injections.
   void InjectVpxParserForTesting(std::unique_ptr<VPxParser> vpx_parser);

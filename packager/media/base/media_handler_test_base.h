@@ -150,11 +150,11 @@ class MediaHandlerTestBase : public ::testing::Test {
   std::unique_ptr<StreamInfo> GetAudioStreamInfo(uint32_t time_scale,
                                                  Codec codec) const;
 
-  std::unique_ptr<MediaSample> GetMediaSample(int64_t timestamp,
+  std::shared_ptr<MediaSample> GetMediaSample(int64_t timestamp,
                                               int64_t duration,
                                               bool is_keyframe) const;
 
-  std::unique_ptr<MediaSample> GetMediaSample(int64_t timestamp,
+  std::shared_ptr<MediaSample> GetMediaSample(int64_t timestamp,
                                               int64_t duration,
                                               bool is_keyframe,
                                               const uint8_t* data,

@@ -64,13 +64,15 @@ class DecryptorSourceTest : public ::testing::Test {
   DecryptorSourceTest()
       : decryptor_source_(&mock_key_source_),
         key_id_(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId))),
-        buffer_(std::vector<uint8_t>(kBuffer, kBuffer + arraysize(kBuffer))) {}
+        encrypted_buffer_(kBuffer, kBuffer + arraysize(kBuffer)),
+        decrypted_buffer_(arraysize(kBuffer)) {}
 
  protected:
   StrictMock<MockKeySource> mock_key_source_;
   DecryptorSource decryptor_source_;
   std::vector<uint8_t> key_id_;
-  std::vector<uint8_t> buffer_;
+  std::vector<uint8_t> encrypted_buffer_;
+  std::vector<uint8_t> decrypted_buffer_;
 };
 
 TEST_F(DecryptorSourceTest, FullSampleDecryption) {
@@ -83,24 +85,27 @@ TEST_F(DecryptorSourceTest, FullSampleDecryption) {
                                std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
                                std::vector<SubsampleEntry>());
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
-      &decrypt_config, &buffer_[0], buffer_.size()));
+      &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
+      &decrypted_buffer_[0]));
   EXPECT_EQ(std::vector<uint8_t>(
                 kExpectedDecryptedBuffer,
                 kExpectedDecryptedBuffer + arraysize(kExpectedDecryptedBuffer)),
-            buffer_);
+            decrypted_buffer_);
 
   // DecryptSampleBuffer can be called repetitively. No GetKey call again with
   // the same key id.
-  buffer_.assign(kBuffer2, kBuffer2 + arraysize(kBuffer2));
+  encrypted_buffer_.assign(kBuffer2, kBuffer2 + arraysize(kBuffer2));
+  decrypted_buffer_.resize(arraysize(kBuffer2));
   DecryptConfig decrypt_config2(
       key_id_, std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)),
       std::vector<SubsampleEntry>());
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
-      &decrypt_config2, &buffer_[0], buffer_.size()));
+      &decrypt_config2, &encrypted_buffer_[0], encrypted_buffer_.size(),
+      &decrypted_buffer_[0]));
   EXPECT_EQ(std::vector<uint8_t>(kExpectedDecryptedBuffer2,
                                  kExpectedDecryptedBuffer2 +
                                      arraysize(kExpectedDecryptedBuffer2)),
-            buffer_);
+            decrypted_buffer_);
 }
 
 TEST_F(DecryptorSourceTest, SubsampleDecryption) {
@@ -131,11 +136,12 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
       std::vector<SubsampleEntry>(kSubsamples,
                                   kSubsamples + arraysize(kSubsamples)));
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
-      &decrypt_config, &buffer_[0], buffer_.size()));
+      &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
+      &decrypted_buffer_[0]));
   EXPECT_EQ(std::vector<uint8_t>(
                 kExpectedDecryptedBuffer,
                 kExpectedDecryptedBuffer + arraysize(kExpectedDecryptedBuffer)),
-            buffer_);
+            decrypted_buffer_);
 }
 
 TEST_F(DecryptorSourceTest, SubsampleDecryptionSizeValidation) {
@@ -155,7 +161,8 @@ TEST_F(DecryptorSourceTest, SubsampleDecryptionSizeValidation) {
       std::vector<SubsampleEntry>(kSubsamples,
                                   kSubsamples + arraysize(kSubsamples)));
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
-      &decrypt_config, &buffer_[0], buffer_.size()));
+      &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
+      &decrypted_buffer_[0]));
 }
 
 TEST_F(DecryptorSourceTest, DecryptFailedIfGetKeyFailed) {
@@ -166,7 +173,17 @@ TEST_F(DecryptorSourceTest, DecryptFailedIfGetKeyFailed) {
                                std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
                                std::vector<SubsampleEntry>());
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
-      &decrypt_config, &buffer_[0], buffer_.size()));
+      &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
+      &decrypted_buffer_[0]));
+}
+
+TEST_F(DecryptorSourceTest, EncryptedBufferAndDecryptedBufferOverlap) {
+  DecryptConfig decrypt_config(key_id_,
+                               std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
+                               std::vector<SubsampleEntry>());
+  ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
+      &decrypt_config, &encrypted_buffer_[0], encrypted_buffer_.size(),
+      &encrypted_buffer_[5]));
 }
 
 }  // namespace media

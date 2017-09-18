@@ -708,9 +708,17 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
     return false;
   }
 
+  const uint8_t* media_data = buf;
+  const size_t media_data_size = runs_->sample_size();
+  // Use a dummy data size of 0 to avoid copying overhead.
+  // Actual media data is set later.
+  const size_t kDummyDataSize = 0;
   std::shared_ptr<MediaSample> stream_sample(
-      MediaSample::CopyFrom(buf, runs_->sample_size(), runs_->is_keyframe()));
+      MediaSample::CopyFrom(media_data, kDummyDataSize, runs_->is_keyframe()));
+
   if (runs_->is_encrypted()) {
+    std::shared_ptr<uint8_t> decrypted_media_data(
+        new uint8_t[media_data_size], std::default_delete<uint8_t[]>());
     std::unique_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
     if (!decrypt_config) {
       *err = true;
@@ -719,17 +727,24 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
     }
 
     if (!decryptor_source_) {
+      stream_sample->SetData(media_data, media_data_size);
       // If the demuxer does not have the decryptor_source_, store
       // decrypt_config so that the demuxed sample can be decrypted later.
       stream_sample->set_decrypt_config(std::move(decrypt_config));
       stream_sample->set_is_encrypted(true);
-    } else if (!decryptor_source_->DecryptSampleBuffer(
-                   decrypt_config.get(), stream_sample->writable_data(),
-                   stream_sample->data_size())) {
-      *err = true;
-      LOG(ERROR) << "Cannot decrypt samples.";
-      return false;
+    } else {
+      if (!decryptor_source_->DecryptSampleBuffer(decrypt_config.get(),
+                                                  media_data, media_data_size,
+                                                  decrypted_media_data.get())) {
+        *err = true;
+        LOG(ERROR) << "Cannot decrypt samples.";
+        return false;
+      }
+      stream_sample->TransferData(std::move(decrypted_media_data),
+                                  media_data_size);
     }
+  } else {
+    stream_sample->SetData(media_data, media_data_size);
   }
 
   stream_sample->set_dts(runs_->dts());

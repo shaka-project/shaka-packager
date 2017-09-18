@@ -816,7 +816,7 @@ void WvmMediaParser::StartMediaSampleDemux() {
 
 bool WvmMediaParser::Output(bool output_encrypted_sample) {
   if (output_encrypted_sample) {
-    media_sample_->set_data(sample_data_.data(), sample_data_.size());
+    media_sample_->SetData(sample_data_.data(), sample_data_.size());
     media_sample_->set_is_encrypted(true);
   } else {
     if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
@@ -827,7 +827,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
         LOG(ERROR) << "Could not convert h.264 byte stream sample";
         return false;
       }
-      media_sample_->set_data(nal_unit_stream.data(), nal_unit_stream.size());
+      media_sample_->SetData(nal_unit_stream.data(), nal_unit_stream.size());
       if (!is_initialized_) {
         // Set extra data for video stream from AVC Decoder Config Record.
         // Also, set codec string from the AVC Decoder Config Record.
@@ -914,8 +914,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
       }
       size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
                                                          frame_size);
-      media_sample_->set_data(frame_ptr + header_size,
-                              frame_size - header_size);
+      media_sample_->SetData(frame_ptr + header_size, frame_size - header_size);
       if (!is_initialized_) {
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
           if (stream_infos_[i]->stream_type() == kStreamAudio &&

@@ -154,21 +154,21 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetAudioStreamInfo(
       !kEncrypted));
 }
 
-std::unique_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
+std::shared_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
     int64_t timestamp,
     int64_t duration,
     bool is_keyframe) const {
   return GetMediaSample(timestamp, duration, is_keyframe, kData, sizeof(kData));
 }
 
-std::unique_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
+std::shared_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
     int64_t timestamp,
     int64_t duration,
     bool is_keyframe,
     const uint8_t* data,
     size_t data_length) const {
-  std::unique_ptr<MediaSample> sample(
-      new MediaSample(data, data_length, nullptr, 0, is_keyframe));
+  std::shared_ptr<MediaSample> sample =
+      MediaSample::CopyFrom(data, data_length, nullptr, 0, is_keyframe);
   sample->set_dts(timestamp);
   sample->set_duration(duration);
 
