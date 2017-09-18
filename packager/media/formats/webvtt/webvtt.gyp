@@ -23,6 +23,8 @@
         'webvtt_parser.h',
         'webvtt_sample_converter.cc',
         'webvtt_sample_converter.h',
+        'webvtt_segmenter.cc',
+        'webvtt_segmenter.h',
         'webvtt_timestamp.cc',
         'webvtt_timestamp.h',
       ],
@@ -41,6 +43,7 @@
         'webvtt_media_parser_unittest.cc',
         'webvtt_parser_unittest.cc',
         'webvtt_sample_converter_unittest.cc',
+        'webvtt_segmenter_unittest.cc',
         'webvtt_timestamp_unittest.cc',
       ],
       'dependencies': [

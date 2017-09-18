@@ -235,7 +235,7 @@ Status MediaHandlerTestBase::SetUpAndInitializeGraph(
 
   // Add and connect all the requested outputs.
   for (size_t i = 0; i < output_count; i++) {
-    outputs_.emplace_back(new MockOutputMediaHandler);
+    outputs_.emplace_back(new testing::NiceMock<MockOutputMediaHandler>);
   }
 
   for (auto& output : outputs_) {

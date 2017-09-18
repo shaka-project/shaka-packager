@@ -13,6 +13,11 @@
 namespace shaka {
 namespace media {
 
+MATCHER_P(IsStreamInfo, stream_index, "") {
+  return arg->stream_index == stream_index &&
+         arg->stream_data_type == StreamDataType::kStreamInfo;
+}
+
 MATCHER_P3(IsStreamInfo, stream_index, time_scale, encrypted, "") {
   *result_listener << "which is (" << stream_index << "," << time_scale << ","
                    << (encrypted ? "encrypted" : "not encrypted") << ")";
