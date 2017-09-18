@@ -74,6 +74,15 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
          arg->media_sample->is_encrypted() == encrypted;
 }
 
+MATCHER_P5(IsTextSample, id, start_time, end_time, settings, payload, "") {
+  return arg->stream_data_type == StreamDataType::kTextSample &&
+         arg->text_sample->id() == id &&
+         arg->text_sample->start_time() == start_time &&
+         arg->text_sample->EndTime() == end_time &&
+         arg->text_sample->settings() == settings &&
+         arg->text_sample->payload() == payload;
+}
+
 class FakeInputMediaHandler : public MediaHandler {
  public:
   using MediaHandler::Dispatch;
@@ -154,6 +163,13 @@ class MediaHandlerTestBase : public ::testing::Test {
   std::unique_ptr<SegmentInfo> GetSegmentInfo(int64_t start_timestamp,
                                               int64_t duration,
                                               bool is_subsegment) const;
+
+  std::unique_ptr<StreamInfo> GetTextStreamInfo() const;
+
+  std::unique_ptr<TextSample> GetTextSample(const std::string& id,
+                                            uint64_t start,
+                                            uint64_t end,
+                                            const std::string& payload) const;
 
  private:
   MediaHandlerTestBase(const MediaHandlerTestBase&) = delete;

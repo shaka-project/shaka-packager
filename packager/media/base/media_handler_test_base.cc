@@ -7,6 +7,7 @@
 #include "packager/media/base/media_handler_test_base.h"
 
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/status_test_util.h"
 
@@ -186,13 +187,33 @@ std::unique_ptr<SegmentInfo> MediaHandlerTestBase::GetSegmentInfo(
   return info;
 }
 
+std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetTextStreamInfo() const {
+  // None of this information is actually used by the text out handler.
+  // The stream info is just needed to signal the start of the stream.
+  return std::unique_ptr<StreamInfo>(
+      new TextStreamInfo(0, 0, 0, kUnknownCodec, "", "", 0, 0, ""));
+}
+
+std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
+    const std::string& id,
+    uint64_t start,
+    uint64_t end,
+    const std::string& payload) const {
+  std::unique_ptr<TextSample> sample(new TextSample);
+  sample->set_id(id);
+  sample->SetTime(start, end);
+  sample->AppendPayload(payload);
+
+  return sample;
+}
 MediaHandlerGraphTestBase::MediaHandlerGraphTestBase()
     : next_handler_(new FakeMediaHandler),
       some_handler_(new FakeMediaHandler) {}
 
-void MediaHandlerGraphTestBase::SetUpGraph(size_t num_inputs,
-                                      size_t num_outputs,
-                                      std::shared_ptr<MediaHandler> handler) {
+void MediaHandlerGraphTestBase::SetUpGraph(
+    size_t num_inputs,
+    size_t num_outputs,
+    std::shared_ptr<MediaHandler> handler) {
   // Input handler is not really used anywhere but just to satisfy one input
   // one output restriction for the encryption handler.
   auto input_handler = std::make_shared<FakeMediaHandler>();
