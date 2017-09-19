@@ -410,9 +410,13 @@ Status Segmenter::WriteFrame(bool write_duration) {
   if (cluster_->GetRelativeTimecode(NsToWebMTimecode(
           frame.timestamp(), cluster_->timecode_scale())) < 0) {
     const double segment_duration =
-        static_cast<double>(frame.timestamp()) / kSecondsToNs;
+        static_cast<double>(frame.timestamp() -
+                            WebMTimecodeToNs(cluster_->timecode(),
+                                             cluster_->timecode_scale())) /
+        kSecondsToNs;
     LOG(ERROR) << "Error adding sample to segment: segment too large, "
-               << segment_duration << " seconds.";
+               << segment_duration
+               << " seconds. Please check your GOP size and segment duration.";
     return Status(error::MUXER_FAILURE,
                   "Error adding sample to segment: segment too large");
   }
