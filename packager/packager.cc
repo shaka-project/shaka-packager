@@ -457,20 +457,6 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     MediaContainerName output_format = GetOutputFormat(*stream_iter);
 
     // Process stream descriptor.
-    MuxerOptions stream_muxer_options;
-    stream_muxer_options.mp4_params = packaging_params.mp4_output_params;
-    stream_muxer_options.temp_dir = packaging_params.temp_dir;
-    stream_muxer_options.output_file_name = stream_iter->output;
-    if (!stream_iter->segment_template.empty()) {
-      Status template_check =
-          ValidateSegmentTemplate(stream_iter->segment_template);
-      if (!template_check.ok()) {
-        return template_check;
-      }
-      stream_muxer_options.segment_template = stream_iter->segment_template;
-    }
-    stream_muxer_options.bandwidth = stream_iter->bandwidth;
-
     if (stream_iter->stream_selector == "text" &&
         output_format != CONTAINER_MOV) {
       MediaInfo text_media_info;
