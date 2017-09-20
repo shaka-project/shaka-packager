@@ -398,7 +398,7 @@ std::shared_ptr<Muxer> CreateMuxer(const PackagingParams& packaging_params,
   return muxer;
 }
 
-std::shared_ptr<MediaHandler> CreateCryptoHandler(
+std::shared_ptr<MediaHandler> CreateEncryptionHandler(
     const PackagingParams& packaging_params,
     const StreamDescriptor& stream,
     KeySource* key_source) {
@@ -552,10 +552,10 @@ Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
     handlers.push_back(chunking_handler);
 
-    std::shared_ptr<MediaHandler> crypto_handler = CreateCryptoHandler(
+    std::shared_ptr<MediaHandler> encryption_handler = CreateEncryptionHandler(
         packaging_params, *stream_iter, encryption_key_source);
-    if (crypto_handler) {
-      handlers.push_back(crypto_handler);
+    if (encryption_handler) {
+      handlers.push_back(encryption_handler);
     }
 
     // If trick_play_handler is available, muxer should already be connected to
