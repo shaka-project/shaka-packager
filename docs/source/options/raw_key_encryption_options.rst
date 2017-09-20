@@ -9,14 +9,27 @@ Raw key encryption options
 
     Enable decryption with fixed key.
 
+--keys <key_info_string[,key_info_string][,key_info_string]...>
+
+    **key_info_string** is of the form::
+
+        label={label}:key_id={key_id}:key={key}
+
+    *label* can be an arbitrary string or a predefined DRM label like AUDIO,
+    SD, HD, etc. Label with an empty string indicates the default key and
+    key_id. The *drm_label* in :doc:`/options/stream_descriptors`,
+    which can be implicit, determines which key info is applied to the stream
+    by matching the *drm_label* with the *label* in key info.
+
+    *key_id* and *key* should be 32-digit hex strings.
+
 --key_id <32-digit hex string>
 
-    The key id in hex string format.
-    HEX.
+    The key id in hex string format. Deprecated. Use --keys instead.
 
 --key <32-digit hex string>
 
-    The key in hex string format.
+    The key in hex string format. Deprecated. Use --keys instead.
 
 --iv <16-digit or 32-digit hex string>
 

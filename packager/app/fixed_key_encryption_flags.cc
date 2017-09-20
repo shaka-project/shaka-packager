@@ -18,6 +18,11 @@ DEFINE_bool(enable_fixed_key_decryption,
             "Enable decryption with fixed key.");
 DEFINE_hex_bytes(key_id, "", "Key id in hex string format.");
 DEFINE_hex_bytes(key, "", "Key in hex string format.");
+DEFINE_string(keys,
+              "",
+              "A list of key information in the form of label=<drm "
+              "label>:key_id=<32-digit key id in hex>:key=<32-digit key in "
+              "hex>,label=...");
 DEFINE_hex_bytes(
     iv,
     "",
@@ -40,13 +45,25 @@ bool ValidateFixedCryptoFlags() {
   const char fixed_crypto_label[] = "--enable_fixed_key_encryption/decryption";
   // --key_id and --key are associated with --enable_fixed_key_encryption and
   // --enable_fixed_key_decryption.
-  if (!ValidateFlag("key_id", FLAGS_key_id_bytes, fixed_crypto, false,
-                    fixed_crypto_label)) {
-    success = false;
-  }
-  if (!ValidateFlag("key", FLAGS_key_bytes, fixed_crypto, false,
-                    fixed_crypto_label)) {
-    success = false;
+  if (FLAGS_keys.empty()) {
+    if (!ValidateFlag("key_id", FLAGS_key_id_bytes, fixed_crypto, false,
+                      fixed_crypto_label)) {
+      success = false;
+    }
+    if (!ValidateFlag("key", FLAGS_key_bytes, fixed_crypto, false,
+                      fixed_crypto_label)) {
+      success = false;
+    }
+    if (success && (!FLAGS_key_id_bytes.empty() || !FLAGS_key_bytes.empty())) {
+      PrintWarning(
+          "--key_id and --key are going to be deprecated. Please switch to "
+          "--keys as soon as possible.");
+    }
+  } else {
+    if (!FLAGS_key_id_bytes.empty() || !FLAGS_key_bytes.empty()) {
+      PrintError("--key_id or --key cannot be used together with --keys.");
+      success = false;
+    }
   }
   if (!ValidateFlag("iv", FLAGS_iv_bytes, FLAGS_enable_fixed_key_encryption,
                     true, "--enable_fixed_key_encryption")) {

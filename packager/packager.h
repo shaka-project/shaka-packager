@@ -82,6 +82,11 @@ struct StreamDescriptor {
   /// If set to true, the stream will not be encrypted. This is useful, e.g. to
   /// encrypt only video streams.
   bool skip_encryption = false;
+  /// Specifies a custom DRM stream label, which can be a DRM label defined by
+  /// the DRM system. Typically values include AUDIO, SD, HD, UHD1, UHD2. If not
+  /// provided, the DRM stream label is derived from stream type (video, audio),
+  /// resolutions etc.
+  std::string drm_label;
   /// If set to a non-zero value, will generate a trick play / trick mode
   /// stream with frames sampled from the key frames in the original stream.
   /// `trick_play_factor` defines the sampling rate.

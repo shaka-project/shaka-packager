@@ -10,6 +10,10 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 
+namespace {
+const char kEmptyDrmLabel[] = "";
+}  // namespace
+
 namespace shaka {
 namespace media {
 
@@ -24,30 +28,40 @@ Status FixedKeySource::FetchKeys(EmeInitDataType init_data_type,
 Status FixedKeySource::GetKey(const std::string& stream_label,
                               EncryptionKey* key) {
   DCHECK(key);
-  DCHECK(encryption_key_);
-  *key = *encryption_key_;
+  // Try to find the key with label |stream_label|. If it is not available,
+  // fall back to the default empty label if it is available.
+  auto iter = encryption_key_map_.find(stream_label);
+  if (iter == encryption_key_map_.end()) {
+    iter = encryption_key_map_.find(kEmptyDrmLabel);
+    if (iter == encryption_key_map_.end()) {
+      return Status(error::NOT_FOUND,
+                    "Key for '" + stream_label + "' was not found.");
+    }
+  }
+  *key = *iter->second;
   return Status::OK;
 }
 
 Status FixedKeySource::GetKey(const std::vector<uint8_t>& key_id,
                               EncryptionKey* key) {
   DCHECK(key);
-  DCHECK(encryption_key_);
-  if (key_id != encryption_key_->key_id) {
-    return Status(error::NOT_FOUND,
-                  std::string("Key for key ID ") +
-                      base::HexEncode(&key_id[0], key_id.size()) +
-                      " was not found.");
+  for (const auto& pair : encryption_key_map_) {
+    if (pair.second->key_id == key_id) {
+      *key = *pair.second;
+      return Status::OK;
+    }
   }
-  *key = *encryption_key_;
-  return Status::OK;
+  return Status(error::INTERNAL_ERROR,
+                "Key for key_id=" + base::HexEncode(&key_id[0], key_id.size()) +
+                    " was not found.");
 }
 
 Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
                                           const std::string& stream_label,
                                           EncryptionKey* key) {
-  // Create a copy of the key.
-  *key = *encryption_key_;
+  Status status = GetKey(stream_label, key);
+  if (!status.ok())
+    return status;
 
   // A naive key rotation algorithm is implemented here by left rotating the
   // key, key_id and pssh. Note that this implementation is only intended for
@@ -88,51 +102,59 @@ Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
 }
 
 std::unique_ptr<FixedKeySource> FixedKeySource::Create(
-    const std::vector<uint8_t>& key_id,
-    const std::vector<uint8_t>& key,
-    const std::vector<uint8_t>& pssh_boxes,
-    const std::vector<uint8_t>& iv) {
-  std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
-
-  if (key_id.size() != 16) {
-    LOG(ERROR) << "Invalid key ID size '" << key_id.size()
-               << "', must be 16 bytes.";
-    return std::unique_ptr<FixedKeySource>();
-  }
-  if (key.size() != 16) {
-    // CENC only supports AES-128, i.e. 16 bytes.
-    LOG(ERROR) << "Invalid key size '" << key.size() << "', must be 16 bytes.";
-    return std::unique_ptr<FixedKeySource>();
-  }
-
-  encryption_key->key_id = key_id;
-  encryption_key->key = key;
-  encryption_key->iv = iv;
-
-  if (!ProtectionSystemSpecificInfo::ParseBoxes(
-          pssh_boxes.data(), pssh_boxes.size(),
-          &encryption_key->key_system_info)) {
-    LOG(ERROR) << "--pssh argument should be full PSSH boxes.";
-    return std::unique_ptr<FixedKeySource>();
+    const RawKeyParams& raw_key) {
+  std::vector<ProtectionSystemSpecificInfo> key_system_info;
+  if (!raw_key.pssh.empty()) {
+    if (!ProtectionSystemSpecificInfo::ParseBoxes(
+            raw_key.pssh.data(), raw_key.pssh.size(), &key_system_info)) {
+      LOG(ERROR) << "--pssh argument should be full PSSH boxes.";
+      return std::unique_ptr<FixedKeySource>();
+    }
+  } else {
+    // If there aren't any PSSH boxes given, create one with the common system
+    // ID.
+    key_system_info.resize(1);
+    for (const auto& entry : raw_key.key_map) {
+      const RawKeyParams::KeyInfo& key_pair = entry.second;
+      key_system_info.back().add_key_id(key_pair.key_id);
+    }
+    key_system_info.back().set_system_id(kCommonSystemId,
+                                         arraysize(kCommonSystemId));
+    key_system_info.back().set_pssh_box_version(1);
   }
 
-  // If there aren't any PSSH boxes given, create one with the common system ID.
-  if (encryption_key->key_system_info.size() == 0) {
-    ProtectionSystemSpecificInfo info;
-    info.add_key_id(encryption_key->key_id);
-    info.set_system_id(kCommonSystemId, arraysize(kCommonSystemId));
-    info.set_pssh_box_version(1);
+  EncryptionKeyMap encryption_key_map;
+  for (const auto& entry : raw_key.key_map) {
+    const std::string& drm_label = entry.first;
+    const RawKeyParams::KeyInfo& key_pair = entry.second;
 
-    encryption_key->key_system_info.push_back(info);
+    if (key_pair.key_id.size() != 16) {
+      LOG(ERROR) << "Invalid key ID size '" << key_pair.key_id.size()
+                 << "', must be 16 bytes.";
+      return std::unique_ptr<FixedKeySource>();
+    }
+    if (key_pair.key.size() != 16) {
+      // CENC only supports AES-128, i.e. 16 bytes.
+      LOG(ERROR) << "Invalid key size '" << key_pair.key.size()
+                 << "', must be 16 bytes.";
+      return std::unique_ptr<FixedKeySource>();
+    }
+
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
+    encryption_key->key_id = key_pair.key_id;
+    encryption_key->key = key_pair.key;
+    encryption_key->iv = raw_key.iv;
+    encryption_key->key_system_info = key_system_info;
+    encryption_key_map[drm_label] = std::move(encryption_key);
   }
 
   return std::unique_ptr<FixedKeySource>(
-      new FixedKeySource(std::move(encryption_key)));
+      new FixedKeySource(std::move(encryption_key_map)));
 }
 
 FixedKeySource::FixedKeySource() {}
-FixedKeySource::FixedKeySource(std::unique_ptr<EncryptionKey> key)
-    : encryption_key_(std::move(key)) {}
+FixedKeySource::FixedKeySource(EncryptionKeyMap&& encryption_key_map)
+    : encryption_key_map_(std::move(encryption_key_map)) {}
 
 }  // namespace media
 }  // namespace shaka

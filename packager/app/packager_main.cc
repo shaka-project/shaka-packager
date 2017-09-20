@@ -82,6 +82,12 @@ const char kUsage[] =
     "    derived from the file extension of the output file.\n"
     "  - skip_encryption=0|1: Optional. Defaults to 0 if not specified. If\n"
     "    it is set to 1, no encryption of the stream will be made.\n"
+    "  - drm_label: Optional value for custom DRM label, which defines the\n"
+    "    encryption key applied to the stream. Typical values include AUDIO,\n"
+    "    SD, HD, UHD1, UHD2. For raw key, it should be a label defined in\n"
+    "    --keys. If not provided, the DRM label is derived from stream type\n"
+    "    (video, audio), resolution, etc.\n"
+    "    Note that it is case sensitive.\n"
     "  - trick_play_factor (tpf): Optional value which specifies the trick\n"
     "    play, a.k.a. trick mode, stream sampling rate among key frames.\n"
     "    If specified, the output is a trick play stream.\n"
@@ -92,6 +98,11 @@ const char kUsage[] =
     "  - playlist_name: Used for HLS to name the playlist for the stream.\n"
     "    Usually ends with '.m3u8'. If unspecified, defaults to something of\n"
     "    the form 'stream_0.m3u8', 'stream_1.m3u8', 'stream_2.m3u8', etc.\n";
+
+// Labels for parameters in RawKey key info.
+const char kDrmLabelLabel[] = "label";
+const char kKeyIdLabel[] = "key_id";
+const char kKeyLabel[] = "key";
 
 enum ExitStatus {
   kSuccess = 0,
@@ -152,6 +163,50 @@ bool GetProtectionScheme(uint32_t* protection_scheme) {
   }
   LOG(ERROR) << "Unrecognized protection_scheme " << FLAGS_protection_scheme;
   return false;
+}
+
+bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
+  for (const std::string& key_data : base::SplitString(
+           keys, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    base::StringPairs string_pairs;
+    base::SplitStringIntoKeyValuePairs(key_data, '=', ':', &string_pairs);
+
+    std::map<std::string, std::string> value_map;
+    for (const auto& string_pair : string_pairs)
+      value_map[string_pair.first] = string_pair.second;
+    const std::string drm_label = value_map[kDrmLabelLabel];
+    if (raw_key->key_map.find(drm_label) != raw_key->key_map.end()) {
+      LOG(ERROR) << "Seeing duplicated DRM label '" << drm_label << "'.";
+      return false;
+    }
+    auto& key_info = raw_key->key_map[drm_label];
+    if (value_map[kKeyIdLabel].empty() ||
+        !base::HexStringToBytes(value_map[kKeyIdLabel], &key_info.key_id)) {
+      return false;
+    }
+    if (value_map[kKeyLabel].empty() ||
+        !base::HexStringToBytes(value_map[kKeyLabel], &key_info.key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool GetRawKeyParams(RawKeyParams* raw_key) {
+  raw_key->iv = FLAGS_iv_bytes;
+  raw_key->pssh = FLAGS_pssh_bytes;
+  if (!FLAGS_keys.empty()) {
+    if (!ParseKeys(FLAGS_keys, raw_key)) {
+      LOG(ERROR) << "Failed to parse --keys " << FLAGS_keys;
+      return false;
+    }
+  } else {
+    // An empty StreamLabel specifies the default key info.
+    RawKeyParams::KeyInfo& key_info = raw_key->key_map[""];
+    key_info.key_id = FLAGS_key_id_bytes;
+    key_info.key = FLAGS_key_bytes;
+  }
+  return true;
 }
 
 base::Optional<PackagingParams> GetPackagingParams() {
@@ -223,13 +278,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
       break;
     }
     case KeyProvider::kRawKey: {
-      RawKeyEncryptionParams& raw_key = encryption_params.raw_key;
-      raw_key.iv = FLAGS_iv_bytes;
-      raw_key.pssh = FLAGS_pssh_bytes;
-      // An empty StreamLabel specifies the default KeyPair.
-      RawKeyEncryptionParams::KeyPair& key_pair = raw_key.key_map[""];
-      key_pair.key_id = FLAGS_key_id_bytes;
-      key_pair.key = FLAGS_key_bytes;
+      if (!GetRawKeyParams(&encryption_params.raw_key))
+        return base::nullopt;
       break;
     }
     case KeyProvider::kNone:
@@ -260,11 +310,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
       break;
     }
     case KeyProvider::kRawKey: {
-      RawKeyDecryptionParams& raw_key = decryption_params.raw_key;
-      // An empty StreamLabel specifies the default KeyPair.
-      RawKeyDecryptionParams::KeyPair& key_pair = raw_key.key_map[""];
-      key_pair.key_id = FLAGS_key_id_bytes;
-      key_pair.key = FLAGS_key_bytes;
+      if (!GetRawKeyParams(&decryption_params.raw_key))
+        return base::nullopt;
       break;
     }
     case KeyProvider::kPlayready:

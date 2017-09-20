@@ -18,6 +18,7 @@ DECLARE_bool(enable_fixed_key_encryption);
 DECLARE_bool(enable_fixed_key_decryption);
 DECLARE_hex_bytes(key_id);
 DECLARE_hex_bytes(key);
+DECLARE_string(keys);
 DECLARE_hex_bytes(iv);
 DECLARE_hex_bytes(pssh);
 

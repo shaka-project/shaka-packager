@@ -50,7 +50,6 @@ class ProtectionSystemSpecificInfo {
     system_id_.assign(system_id, system_id + system_id_size);
   }
   void add_key_id(const std::vector<uint8_t>& key_id) {
-    DCHECK_EQ(16u, key_id.size());
     key_ids_.push_back(key_id);
   }
   void clear_key_ids() { key_ids_.clear(); }
@@ -72,4 +71,3 @@ class ProtectionSystemSpecificInfo {
 }  // namespace shaka
 
 #endif  // MEDIA_BASE_PSSH_H_
-

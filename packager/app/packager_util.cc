@@ -85,12 +85,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      const RawKeyEncryptionParams& raw_key = encryption_params.raw_key;
-      const std::string kDefaultTrackType;
-      // TODO(kqyang): Refactor FixedKeySource.
-      encryption_key_source = FixedKeySource::Create(
-          raw_key.key_map.find("")->second.key_id,
-          raw_key.key_map.find("")->second.key, raw_key.pssh, raw_key.iv);
+      encryption_key_source = FixedKeySource::Create(encryption_params.raw_key);
       break;
     }
     case KeyProvider::kPlayready: {
@@ -171,12 +166,7 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      const RawKeyDecryptionParams& raw_key = decryption_params.raw_key;
-      const std::vector<uint8_t> kNoPssh;
-      const std::vector<uint8_t> kNoIv;
-      decryption_key_source = FixedKeySource::Create(
-          raw_key.key_map.find("")->second.key_id,
-          raw_key.key_map.find("")->second.key, kNoPssh, kNoIv);
+      decryption_key_source = FixedKeySource::Create(decryption_params.raw_key);
       break;
     }
     case KeyProvider::kNone:

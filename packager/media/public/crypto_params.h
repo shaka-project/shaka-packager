@@ -72,7 +72,7 @@ struct WidevineEncryptionParams {
 ///       required. The presence of other parameters may be necessary depends
 ///       on server configuration.
 ///   (2) Provide the raw key directly. Both `key_id` and `key` are required.
-///       We are planning to merge this mode with `RawKeyEncryptionParams`.
+///       We are planning to merge this mode with `RawKeyParams`.
 struct PlayreadyEncryptionParams {
   /// Playready license / key server URL.
   std::string key_server_url;
@@ -95,24 +95,26 @@ struct PlayreadyEncryptionParams {
   std::vector<uint8_t> key;
 };
 
-/// Raw key encryption parameters, i.e. with key parameters provided.
-struct RawKeyEncryptionParams {
+/// Raw key encryption/decryption parameters, i.e. with key parameters provided.
+struct RawKeyParams {
   /// An optional initialization vector. If not provided, a random `iv` will be
   /// generated. Note that this parameter should only be used during testing.
+  /// Not needed for decryption.
   std::vector<uint8_t> iv;
   /// Inject a custom `pssh` or multiple concatenated `psshs`. If not provided,
   /// a common system pssh will be generated.
+  /// Not needed for decryption.
   std::vector<uint8_t> pssh;
 
   using StreamLabel = std::string;
-  struct KeyPair {
+  struct KeyInfo {
     std::vector<uint8_t> key_id;
     std::vector<uint8_t> key;
   };
-  /// Defines the KeyPair for the streams. An empty `StreamLabel` indicates the
-  /// default `KeyPair`, which applies to all the `StreamLabels` not present in
+  /// Defines the KeyInfo for the streams. An empty `StreamLabel` indicates the
+  /// default `KeyInfo`, which applies to all the `StreamLabels` not present in
   /// `key_map`.
-  std::map<StreamLabel, KeyPair> key_map;
+  std::map<StreamLabel, KeyInfo> key_map;
 };
 
 /// Encryption parameters.
@@ -124,7 +126,7 @@ struct EncryptionParams {
   // Only one of the three fields is valid.
   WidevineEncryptionParams widevine;
   PlayreadyEncryptionParams playready;
-  RawKeyEncryptionParams raw_key;
+  RawKeyParams raw_key;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;
@@ -182,19 +184,6 @@ struct WidevineDecryptionParams {
   WidevineSigner signer;
 };
 
-/// Raw key decryption parameters, i.e. with key parameters provided.
-struct RawKeyDecryptionParams {
-  using StreamLabel = std::string;
-  struct KeyPair {
-    std::vector<uint8_t> key_id;
-    std::vector<uint8_t> key;
-  };
-  /// Defines the KeyPair for the streams. An empty `StreamLabel` indicates the
-  /// default `KeyPair`, which applies to all the `StreamLabels` not present in
-  /// `key_map`.
-  std::map<StreamLabel, KeyPair> key_map;
-};
-
 /// Decryption parameters.
 struct DecryptionParams {
   /// Specifies the key provider, which determines which key provider is used
@@ -203,7 +192,7 @@ struct DecryptionParams {
   KeyProvider key_provider = KeyProvider::kNone;
   // Only one of the two fields is valid.
   WidevineDecryptionParams widevine;
-  RawKeyDecryptionParams raw_key;
+  RawKeyParams raw_key;
 };
 
 }  // namespace shaka

@@ -425,7 +425,13 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
     encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
   }
 
-  if (!encryption_params.stream_label_func) {
+  if (!stream.drm_label.empty()) {
+    const std::string& drm_label = stream.drm_label;
+    encryption_params.stream_label_func =
+        [drm_label](const EncryptionParams::EncryptedStreamAttributes&) {
+          return drm_label;
+        };
+  } else if (!encryption_params.stream_label_func) {
     const int kDefaultMaxSdPixels = 768 * 576;
     const int kDefaultMaxHdPixels = 1920 * 1080;
     const int kDefaultMaxUhd1Pixels = 4096 * 2160;

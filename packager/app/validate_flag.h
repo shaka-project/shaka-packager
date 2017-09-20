@@ -19,6 +19,10 @@ namespace shaka {
 /// @param error_message specifies the error message.
 void PrintError(const std::string& error_message);
 
+/// Format and print warning message.
+/// @param warning_message specifies the warning message.
+void PrintWarning(const std::string& warning_message);
+
 /// Validate a flag against the given condition.
 /// @param flag_name is the name of the flag.
 /// @param flag_value is the value of the flag.

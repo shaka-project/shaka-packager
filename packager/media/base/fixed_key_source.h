@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "packager/media/base/key_source.h"
+#include "packager/media/public/crypto_params.h"
 
 namespace shaka {
 namespace media {
@@ -47,30 +48,22 @@ class FixedKeySource : public KeySource {
   /// @}
 
   /// Creates a new FixedKeySource from the given data.  Returns null
-  /// if the strings are invalid.
-  /// @param key_id is the key identifier. Must be 16 bytes.
-  /// @param key is the encryption / decryption key. Must be 16 bytes.
-  /// @param pssh_boxes is the concatenated pssh boxes.
-  /// @param iv is the initialization vector. If not specified, a randomly
-  ///        generated IV with the default length will be used.
-  /// Note: GetKey on the created key source will always return the same key for
-  /// all track types.
-  static std::unique_ptr<FixedKeySource> Create(
-      const std::vector<uint8_t>& key_id,
-      const std::vector<uint8_t>& key,
-      const std::vector<uint8_t>& pssh_boxes,
-      const std::vector<uint8_t>& iv);
+  /// if the parameter is malformed.
+  /// @param raw_key contains parameters to setup the key source.
+  static std::unique_ptr<FixedKeySource> Create(const RawKeyParams& raw_key);
 
  protected:
   // Allow default constructor for mock key sources.
   FixedKeySource();
 
  private:
-  explicit FixedKeySource(std::unique_ptr<EncryptionKey> key);
+  typedef std::map<std::string, std::unique_ptr<EncryptionKey>>
+      EncryptionKeyMap;
+  explicit FixedKeySource(EncryptionKeyMap&& encryption_key_map);
+  FixedKeySource(const FixedKeySource&) = delete;
+  FixedKeySource& operator=(const FixedKeySource&) = delete;
 
-  std::unique_ptr<EncryptionKey> encryption_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedKeySource);
+  EncryptionKeyMap encryption_key_map_;
 };
 
 }  // namespace media

@@ -16,4 +16,8 @@ void PrintError(const std::string& error_message) {
   fprintf(stderr, "ERROR: %s\n", error_message.c_str());
 }
 
+void PrintWarning(const std::string& warning_message) {
+  fprintf(stderr, "WARNING: %s\n", warning_message.c_str());
+}
+
 }  // namespace shaka

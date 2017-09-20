@@ -151,10 +151,12 @@ class PackagerAppTest(unittest.TestCase):
           '--content_id=' + self.widevine_content_id,
       ]
     elif encryption:
-      flags += ['--enable_fixed_key_encryption',
-                '--key_id=' + self.encryption_key_id,
-                '--key=' + self.encryption_key,
-                '--clear_lead={0}'.format(clear_lead)]
+      flags += [
+          '--enable_fixed_key_encryption',
+          '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
+                                                    self.encryption_key),
+          '--clear_lead={0}'.format(clear_lead)
+      ]
 
       if not random_iv:
         flags.append('--iv=' + self.encryption_iv)
@@ -164,9 +166,11 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--vp9_subsample_encryption=false']
 
     if decryption:
-      flags += ['--enable_fixed_key_decryption',
-                '--key_id=' + self.encryption_key_id,
-                '--key=' + self.encryption_key]
+      flags += [
+          '--enable_fixed_key_decryption',
+          '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
+                                                    self.encryption_key)
+      ]
 
     if key_rotation:
       flags.append('--crypto_period_duration=1')
@@ -565,6 +569,50 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testPackageWithEncryptionMultiKeys(self):
+    audio_key_id = '10111213141516171819202122232425'
+    audio_key = '11121314151617181920212223242526'
+    video_key_id = '20212223242526272829303132333435'
+    video_key = '21222324252627282930313233343536'
+    flags = self._GetFlags() + [
+        '--enable_fixed_key_encryption',
+        '--keys=label=AUDIO:key_id={0}:key={1},label=SD:key_id={2}:key={3}'.
+        format(audio_key_id, audio_key, video_key_id, video_key),
+        '--clear_lead={0}'.format(1), '--iv={0}'.format(self.encryption_iv)
+    ]
+    self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
+
+    self.encryption_key_id = audio_key_id
+    self.encryption_key = audio_key
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self.encryption_key_id = video_key_id
+    self.encryption_key = video_key
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testPackageWithEncryptionMultiKeysWithStreamLabel(self):
+    audio_key_id = '20212223242526272829303132333435'
+    audio_key = '21222324252627282930313233343536'
+    video_key_id = '10111213141516171819202122232425'
+    video_key = '11121314151617181920212223242526'
+    flags = self._GetFlags() + [
+        '--enable_fixed_key_encryption',
+        '--keys=label=MyAudio:key_id={0}:key={1},label=:key_id={2}:key={3}'.
+        format(audio_key_id, audio_key, video_key_id, video_key),
+        '--clear_lead={0}'.format(1), '--iv={0}'.format(self.encryption_iv)
+    ]
+    # DRM label 'MyVideo' is not defined, will fall back to the key for the
+    # empty default label.
+    self.assertPackageSuccess(
+        self._GetStreams(['audio,drm_label=MyAudio',
+                          'video,drm_label=MyVideo']), flags)
+
+    self.encryption_key_id = audio_key_id
+    self.encryption_key = audio_key
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self.encryption_key_id = video_key_id
+    self.encryption_key = video_key
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWithEncryptionOfOnlyVideoStream(self):

@@ -22,82 +22,123 @@ namespace shaka {
 namespace media {
 
 namespace {
-const char kKeyIdHex[] =   "0101020305080d1522375990e9000000";
-const char kKeyHex[] =     "00100100200300500801302103405500";
+const char kKeyIdHex[] = "0101020305080d1522375990e9000000";
+const char kKeyHex[] = "00100100200300500801302103405500";
+const char kKeyId2Hex[] = "1111121315180d1522375990e9000000";
+const char kKey2Hex[] = "10201110300300500801302103405500";
 const char kIvHex[] = "000102030405060708090a0b0c0d0e0f";
+// PSSH boxes generated manually according to PSSH box syntax specified in
+// ISO/IEC 23001-7:2016 8.1.2.
 const char kPsshBox1Hex[] =
-  "000000427073736801000000"
-  "020305070b0d1113171d1f25292b2f35"
-  "00000001"
-  "0101020305080d1522375990e9000000"
-  "0000000e"
-  "6544617368207061636b61676572";
+    "000000427073736801000000"
+    "020305070b0d1113171d1f25292b2f35"
+    "00000001"
+    "0101020305080d1522375990e9000000"
+    "0000000e"
+    "6544617368207061636b61676572";
 const char kPsshBox2Hex[] =
-  "0000002e7073736800000000"
-  "bbbbbbbbbaaaaaaaaaaaaddddddddddd"
-  "0000000e"
-  "fffffffff000000000000ddddddd";
+    "0000002e7073736800000000"
+    "bbbbbbbbbaaaaaaaaaaaaddddddddddd"
+    "0000000e"
+    "fffffffff000000000000ddddddd";
 const char kDefaultPsshBoxHex[] =
-  "000000347073736801000000"
-  "1077efecc0b24d02ace33c1e52e2fb4b"
-  "00000001"
-  "0101020305080d1522375990e9000000"
-  "00000000";
+    "000000447073736801000000"
+    "1077efecc0b24d02ace33c1e52e2fb4b"
+    "00000002"
+    "1111121315180d1522375990e9000000"
+    "0101020305080d1522375990e9000000"
+    "00000000";
+const char kDrmLabel[] = "SomeDrmLabel";
+const char kAnotherDrmLabel[] = "AnotherDrmLabel";
+const char kEmptyDrmLabel[] = "";
 
 std::vector<uint8_t> HexStringToVector(const std::string& str) {
   std::vector<uint8_t> vec;
   CHECK(base::HexStringToBytes(str, &vec));
   return vec;
 }
-}
+}  // namespace
 
 TEST(FixedKeySourceTest, Success) {
-  std::string pssh_boxes = std::string(kPsshBox1Hex) + kPsshBox2Hex;
-  std::unique_ptr<FixedKeySource> key_source = FixedKeySource::Create(
-      HexStringToVector(kKeyIdHex), HexStringToVector(kKeyHex),
-      HexStringToVector(pssh_boxes), HexStringToVector(kIvHex));
+  RawKeyParams raw_key_params;
+  raw_key_params.key_map[kDrmLabel].key_id = HexStringToVector(kKeyIdHex);
+  raw_key_params.key_map[kDrmLabel].key = HexStringToVector(kKeyHex);
+  raw_key_params.key_map[kEmptyDrmLabel].key_id = HexStringToVector(kKeyId2Hex);
+  raw_key_params.key_map[kEmptyDrmLabel].key = HexStringToVector(kKey2Hex);
+  raw_key_params.iv = HexStringToVector(kIvHex);
+  raw_key_params.pssh =
+      HexStringToVector(std::string(kPsshBox1Hex) + kPsshBox2Hex);
+  std::unique_ptr<FixedKeySource> key_source =
+      FixedKeySource::Create(raw_key_params);
   ASSERT_NE(nullptr, key_source);
 
-  EncryptionKey key;
-  ASSERT_OK(key_source->GetKey("SomeStreamLabel", &key));
+  EncryptionKey key_from_drm_label;
+  ASSERT_OK(key_source->GetKey(kDrmLabel, &key_from_drm_label));
+  EXPECT_HEX_EQ(kKeyIdHex, key_from_drm_label.key_id);
+  EXPECT_HEX_EQ(kKeyHex, key_from_drm_label.key);
+  EXPECT_HEX_EQ(kIvHex, key_from_drm_label.iv);
+  ASSERT_EQ(2u, key_from_drm_label.key_system_info.size());
+  EXPECT_HEX_EQ(kPsshBox1Hex,
+                key_from_drm_label.key_system_info[0].CreateBox());
+  EXPECT_HEX_EQ(kPsshBox2Hex,
+                key_from_drm_label.key_system_info[1].CreateBox());
 
-  EXPECT_HEX_EQ(kKeyIdHex, key.key_id);
-  EXPECT_HEX_EQ(kKeyHex, key.key);
-  EXPECT_HEX_EQ(kIvHex, key.iv);
+  // Using Key ID.
+  EncryptionKey key_from_key_id;
+  ASSERT_OK(key_source->GetKey(HexStringToVector(kKeyIdHex), &key_from_key_id));
+  EXPECT_EQ(key_from_key_id.key_id, key_from_drm_label.key_id);
 
-  ASSERT_EQ(2u, key.key_system_info.size());
-  EXPECT_HEX_EQ(kPsshBox1Hex, key.key_system_info[0].CreateBox());
-  EXPECT_HEX_EQ(kPsshBox2Hex, key.key_system_info[1].CreateBox());
+  // |kAnotherDrmLabel| is not present in the key source, but |kEmptyDrmLabel|
+  // is in the key source, the associated key for |kEmptyDrmLabel| will be
+  // returned.
+  ASSERT_OK(key_source->GetKey(kAnotherDrmLabel, &key_from_drm_label));
+  EXPECT_HEX_EQ(kKeyId2Hex, key_from_drm_label.key_id);
+  EXPECT_HEX_EQ(kKey2Hex, key_from_drm_label.key);
+  EXPECT_HEX_EQ(kIvHex, key_from_drm_label.iv);
+  ASSERT_EQ(2u, key_from_drm_label.key_system_info.size());
+  EXPECT_HEX_EQ(kPsshBox1Hex,
+                key_from_drm_label.key_system_info[0].CreateBox());
+  EXPECT_HEX_EQ(kPsshBox2Hex,
+                key_from_drm_label.key_system_info[1].CreateBox());
 }
 
 TEST(FixedKeySourceTest, EmptyPssh) {
-  std::unique_ptr<FixedKeySource> key_source = FixedKeySource::Create(
-      HexStringToVector(kKeyIdHex), HexStringToVector(kKeyHex),
-      std::vector<uint8_t>(), HexStringToVector(kIvHex));
+  RawKeyParams raw_key_params;
+  raw_key_params.key_map[kDrmLabel].key_id = HexStringToVector(kKeyIdHex);
+  raw_key_params.key_map[kDrmLabel].key = HexStringToVector(kKeyHex);
+  raw_key_params.key_map[kAnotherDrmLabel].key_id =
+      HexStringToVector(kKeyId2Hex);
+  raw_key_params.key_map[kAnotherDrmLabel].key = HexStringToVector(kKey2Hex);
+  raw_key_params.iv = HexStringToVector(kIvHex);
+  std::unique_ptr<FixedKeySource> key_source =
+      FixedKeySource::Create(raw_key_params);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
-  ASSERT_OK(key_source->GetKey("SomeStreamLabel", &key));
-
+  ASSERT_OK(key_source->GetKey(kDrmLabel, &key));
   EXPECT_HEX_EQ(kKeyIdHex, key.key_id);
   EXPECT_HEX_EQ(kKeyHex, key.key);
   EXPECT_HEX_EQ(kIvHex, key.iv);
-
   ASSERT_EQ(1u, key.key_system_info.size());
   EXPECT_HEX_EQ(kDefaultPsshBoxHex, key.key_system_info[0].CreateBox());
 }
 
 TEST(FixedKeySourceTest, Failure) {
   // Invalid key id size.
-  std::unique_ptr<FixedKeySource> key_source = FixedKeySource::Create(
-      HexStringToVector("000102030405"), HexStringToVector(kKeyHex),
-      HexStringToVector(kPsshBox1Hex), HexStringToVector(kIvHex));
+  RawKeyParams raw_key_params;
+  raw_key_params.key_map[kEmptyDrmLabel].key_id =
+      HexStringToVector("000102030405");
+  raw_key_params.key_map[kEmptyDrmLabel].key = HexStringToVector(kKeyHex);
+  raw_key_params.pssh = HexStringToVector(kPsshBox1Hex);
+  raw_key_params.iv = HexStringToVector(kIvHex);
+  std::unique_ptr<FixedKeySource> key_source =
+      FixedKeySource::Create(raw_key_params);
   EXPECT_EQ(nullptr, key_source);
 
   // Invalid pssh box.
-  key_source = FixedKeySource::Create(
-      HexStringToVector(kKeyIdHex), HexStringToVector(kKeyHex),
-      HexStringToVector("000102030405"), HexStringToVector(kIvHex));
+  raw_key_params.key_map[kEmptyDrmLabel].key_id = HexStringToVector(kKeyIdHex);
+  raw_key_params.pssh = HexStringToVector("000102030405");
+  key_source = FixedKeySource::Create(raw_key_params);
   EXPECT_EQ(nullptr, key_source);
 }
 

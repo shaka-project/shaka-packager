@@ -28,6 +28,7 @@ enum FieldType {
   kHlsPlaylistNameField,
   kTrickPlayFactorField,
   kSkipEncryptionField,
+  kDrmStreamLabelField,
 };
 
 struct FieldNameToTypeMapping {
@@ -58,6 +59,8 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"trick_play_factor", kTrickPlayFactorField},
     {"tpf", kTrickPlayFactorField},
     {"skip_encryption", kSkipEncryptionField},
+    {"drm_stream_label", kDrmStreamLabelField},
+    {"drm_label", kDrmStreamLabelField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -152,6 +155,10 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         }
 
         descriptor.skip_encryption = skip_encryption_value > 0;
+        break;
+      }
+      case kDrmStreamLabelField: {
+        descriptor.drm_label = iter->second;
         break;
       }
       default:
