@@ -22,6 +22,7 @@ Shaka Packager supports:
   - [CENC](https://en.wikipedia.org/wiki/MPEG_Common_Encryption)
   - [SAMPLE-AES](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/HLS_Sample_Encryption/Intro/Intro.html)
 - Media Containers and codecs
+
   |      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     |
   |:-----------------:|:------------:|:------------:|:------------:|:-----------:|
   |    H264 (AVC)     |    I / O     |      -       |     I / O    |      I      |
@@ -33,6 +34,7 @@ Shaka Packager supports:
   |       DTS         |    I / O     |      -       |       -      |      -      |
   |       Opus        |   *I / O*    |    I / O     |       -      |      -      |
   |      Vorbis       |      -       |    I / O     |       -      |      -      |
+
   ** I for input and O for output.
   ** Opus support in ISO-BMFF is experimental.
 - Platforms
@@ -58,8 +60,8 @@ There are several ways you can get Shaka Packager.
 
 - [Mailing List](https://groups.google.com/forum/#!forum/shaka-packager-users)
   (join for release announcements or problem discussions)
-- [Documentation](https://google.github.io/shaka-packager/)
-- [Tutorials](https://google.github.io/shaka-packager/tutorials/tutorials.html)
+- [Documentation](https://google.github.io/shaka-packager/html/)
+- [Tutorials](https://google.github.io/shaka-packager/html/tutorials/tutorials.html)
 - Several open source players:
   - [Web: Shaka Player](https://github.com/google/shaka-player)
   - [Web: dash.js](https://github.com/Dash-Industry-Forum/dash.js)
