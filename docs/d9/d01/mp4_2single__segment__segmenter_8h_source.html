@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/formats/mp4/single_segment_segmenter.h Source File</title>
+<title>Shaka Packager SDK: packager/media/formats/mp4/single_segment_segmenter.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_65f7acfa8cf3a5f1edc11faa2428b914.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_3e9291fd7a18fdecc763294cb2628910.html">mp4</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_375ba2cfd8fd5b05c50b92d996b9d386.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_ae142483ff91a68c468a97c037f98d4d.html">mp4</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -117,9 +117,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// Segmenter implementation overrides.</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  Status DoInitialize() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  Status DoFinalize() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  Status DoFinalizeSegment() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> DoInitialize() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> DoFinalize() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> DoFinalizeSegment() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  std::unique_ptr&lt;SegmentIndex&gt; vod_sidx_;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  std::string temp_file_name_;</div>
@@ -135,13 +135,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter_html_a5877fd31ed73a048529385b36437364a"><div class="ttname"><a href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#a5877fd31ed73a048529385b36437364a">shaka::media::mp4::SingleSegmentSegmenter::GetIndexRange</a></div><div class="ttdeci">bool GetIndexRange(size_t *offset, size_t *size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d1e/mp4_2single__segment__segmenter_8cc_source.html#l00043">single_segment_segmenter.cc:43</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00020">muxer_options.h:20</a></div></div>
+<div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html">shaka::media::mp4::Segmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00043">segmenter.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter_html"><div class="ttname"><a href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html">shaka::media::mp4::SingleSegmentSegmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d01/mp4_2single__segment__segmenter_8h_source.html#l00029">single_segment_segmenter.h:29</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter_html_a61e71cfc720342ecb16b830e6fca0fe4"><div class="ttname"><a href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#a61e71cfc720342ecb16b830e6fca0fe4">shaka::media::mp4::SingleSegmentSegmenter::GetInitRange</a></div><div class="ttdeci">bool GetInitRange(size_t *offset, size_t *size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d1e/mp4_2single__segment__segmenter_8cc_source.html#l00036">single_segment_segmenter.cc:36</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

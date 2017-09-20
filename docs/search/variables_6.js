@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['min_5fbuffer_5ftime',['min_buffer_time',['../df/ddc/structshaka_1_1MpdParams.html#aee1510b64b9acbc17b8bfccac2e132a3',1,'shaka::MpdParams']]],
-  ['minimum_5fupdate_5fperiod',['minimum_update_period',['../df/ddc/structshaka_1_1MpdParams.html#a4a5dafe570fd7e35749ce12d83ca9559',1,'shaka::MpdParams']]],
-  ['mp4_5fparams',['mp4_params',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#aa616f5958ea9df2d70f3fe42ff47ff43',1,'shaka::media::MuxerOptions']]],
-  ['mpd_5foutput',['mpd_output',['../df/ddc/structshaka_1_1MpdParams.html#aa6ca18997bb307d3b5fe1c9ced161ff6',1,'shaka::MpdParams']]]
+  ['include_5fcommon_5fpssh',['include_common_pssh',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a5985f2d6fbe33273654695050757d0b0',1,'shaka::WidevineEncryptionParams']]],
+  ['index_5frange',['index_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#aa15231fb064efc4b56800df24b074b29',1,'shaka::media::MuxerListener::MediaRanges']]],
+  ['init_5frange',['init_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#a6070da9ce7fab251c82b25a4020373c0',1,'shaka::media::MuxerListener::MediaRanges']]],
+  ['inject_5ffake_5fclock',['inject_fake_clock',['../d6/d62/structshaka_1_1TestParams.html#a90ba653c71c94709b8ef3e7c3cc07e6c',1,'shaka::TestParams']]],
+  ['injected_5flibrary_5fversion',['injected_library_version',['../d6/d62/structshaka_1_1TestParams.html#ac72df3ec74369d0723f0217eac6b5098',1,'shaka::TestParams']]],
+  ['input',['input',['../d2/d7b/structshaka_1_1StreamDescriptor.html#ae86324b838baa66dbab9a3d35352e200',1,'shaka::StreamDescriptor']]],
+  ['iv',['iv',['../df/d22/structshaka_1_1WidevineSigner.html#a6db96d4c3f1189bbd09515732bec94d9',1,'shaka::WidevineSigner::iv()'],['../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html#a2b8b36d5dd357a6b354de194bc3fb702',1,'shaka::RawKeyEncryptionParams::iv()']]]
 ];

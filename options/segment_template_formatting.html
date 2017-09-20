@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Segment template formatting &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/options/segment_template_formatting.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="segment-template-formatting">
+<h1>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h1>
+<p>The implementation is based on <em>Template-based Segment URL construction</em>
+described in ISO/IEC 23009-1:2014.</p>
+<table border="1" class="styled-table docutils" id="id1">
+<caption><span class="caption-text">Supported identifiers</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="19%" />
+<col width="41%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="left-align head">$&lt;Identifier&gt;$</th>
+<th class="left-align head">Substitution parameter</th>
+<th class="left-align head">Format</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td class="left-align">$$</td>
+<td class="left-align">is an escape sequence, i.e.
+&#8220;$$&#8221; is replaced with a single
+&#8220;$&#8221;.</td>
+<td class="left-align">Not applicable.</td>
+</tr>
+<tr class="row-odd"><td class="left-align">$Number$</td>
+<td class="left-align">This identifier is substitued
+with the <em>number</em> of the
+corresponding Segment.</td>
+<td class="left-align"><p class="first">The format tag may be present.</p>
+<p class="last">If no format tag is present, a
+default format tag with
+<em>width</em>=1 shall be used.</p>
+</td>
+</tr>
+<tr class="row-even"><td class="left-align">$Time$</td>
+<td class="left-align">This identifier is substituted
+with the value of the
+<strong>SegmentTimeline&#64;t</strong>
+attribute for the Segment
+being accessed. Either
+$Number$ or $Time$ may be used
+but not both at the same time.</td>
+<td class="left-align"><p class="first">The format tag may be present.</p>
+<p class="last">If no format tag is present, a
+default format tag with
+<em>width</em>=1 shall be used.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
+version. Please file an <a class="reference external" href="https://github.com/google/shaka-packager/issues">issue</a> if you want it to be
+supported.</p>
+</div>
+<p>In each URL, the identifiers shall be replaced by the substitution parameter
+per the definition in the above table. Identifier matching is case-sensitive.</p>
+<p>Each identifier may be suffixed, within the enclosing &#8216;$&#8217; characters, with an
+additional format tag aligned with the <em>printf</em> format tag as defined in IEEE
+1003.1-2008 following this prototype:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>The <em>width</em> parameter is an unsigned integer that provides the minimum number
+of characters to be printed. If the value to be printed is shorter than this
+number, the result shall be padded with zeros. The value is not truncated even
+if the result is larger.</p>
+<p>Strings outside identifiers shall only contain characters that are permitted
+within URLs according to RFC 3986.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

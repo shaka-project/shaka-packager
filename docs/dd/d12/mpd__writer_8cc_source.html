@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: mpd/util/mpd_writer.cc Source File</title>
+<title>Shaka Packager SDK: packager/mpd/util/mpd_writer.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_89dd766eb2df7d7257dbe806a34404af.html">mpd</a></li><li class="navelem"><a class="el" href="../../dir_49627ef5ef0630f6cf11dd06344c4cf0.html">util</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_b885194e7131202a9b4650a8967e838c.html">mpd</a></li><li class="navelem"><a class="el" href="../../dir_c41da90e13af52a77978e497cf9cac63.html">util</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -153,7 +153,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keywordtype">bool</span> MpdWriter::AddFile(<span class="keyword">const</span> std::string&amp; media_info_path,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                        <span class="keyword">const</span> std::string&amp; mpd_path) {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  std::string file_content;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">if</span> (!File::ReadFileToString(media_info_path.c_str(), &amp;file_content)) {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">File::ReadFileToString</a>(media_info_path.c_str(), &amp;file_content)) {</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to read &quot;</span> &lt;&lt; media_info_path &lt;&lt; <span class="stringliteral">&quot; to string.&quot;</span>;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  }</div>
@@ -210,11 +210,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1MpdBuilder_html_a247a9c807274d4e707530f24e2d207f9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">shaka::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00621">mpd_builder.cc:621</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_ac9a19cb5fc45664ca440996bf1201c30"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">shaka::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00216">file.cc:216</a></div></div>
+<div class="ttc" id="classshaka_1_1MpdBuilder_html_a247a9c807274d4e707530f24e2d207f9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">shaka::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00627">mpd_builder.cc:627</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:13 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

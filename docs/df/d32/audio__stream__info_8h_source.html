@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/base/audio_stream_info.h Source File</title>
+<title>Shaka Packager SDK: packager/media/base/audio_stream_info.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_c6ada2450b25ab5438a4dba6c9b890af.html">base</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_e3bda0bde998a4d5063328245b9909be.html">base</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -118,53 +118,55 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a3c50d026e8deadac46741143d4b5ddb9">IsValidConfig</a>() <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  std::string <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a7f94e51abcf522ff70e2456a8c8595df">ToString</a>() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  uint8_t sample_bits()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sample_bits_; }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  uint8_t sample_bytes()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sample_bits_ / 8; }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  uint8_t num_channels()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> num_channels_; }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  uint32_t sampling_frequency()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sampling_frequency_; }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  uint32_t bytes_per_frame()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(num_channels_) * sample_bits_ / 8;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  uint64_t seek_preroll_ns()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> seek_preroll_ns_; }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint64_t codec_delay_ns()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> codec_delay_ns_; }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  uint32_t max_bitrate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> max_bitrate_; }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint32_t avg_bitrate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> avg_bitrate_; }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> set_sampling_frequency(<span class="keyword">const</span> uint32_t sampling_frequency) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    sampling_frequency_ = sampling_frequency;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keyword">static</span> std::string <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">GetCodecString</a>(Codec codec, uint8_t audio_object_type);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  uint8_t sample_bits_;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  uint8_t num_channels_;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  uint32_t sampling_frequency_;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  uint64_t seek_preroll_ns_;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  uint64_t codec_delay_ns_;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  uint32_t max_bitrate_;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  uint32_t avg_bitrate_;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">// typically small, the performance impact is minimal.</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_AUDIO_STREAM_INFO_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00057">stream_info.h:57</a></div></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  std::unique_ptr&lt;StreamInfo&gt; <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a306c5ebb4a42eced7d1a3deaad23c17b">Clone</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  uint8_t sample_bits()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sample_bits_; }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  uint8_t sample_bytes()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sample_bits_ / 8; }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  uint8_t num_channels()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> num_channels_; }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  uint32_t sampling_frequency()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sampling_frequency_; }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  uint32_t bytes_per_frame()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(num_channels_) * sample_bits_ / 8;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint64_t seek_preroll_ns()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> seek_preroll_ns_; }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  uint64_t codec_delay_ns()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> codec_delay_ns_; }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint32_t max_bitrate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> max_bitrate_; }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  uint32_t avg_bitrate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> avg_bitrate_; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> set_sampling_frequency(<span class="keyword">const</span> uint32_t sampling_frequency) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    sampling_frequency_ = sampling_frequency;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">static</span> std::string <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">GetCodecString</a>(Codec codec, uint8_t audio_object_type);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  uint8_t sample_bits_;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  uint8_t num_channels_;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  uint32_t sampling_frequency_;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  uint64_t seek_preroll_ns_;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  uint64_t codec_delay_ns_;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  uint32_t max_bitrate_;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  uint32_t avg_bitrate_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// typically small, the performance impact is minimal.</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_AUDIO_STREAM_INFO_H_</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00058">stream_info.h:58</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_a7f94e51abcf522ff70e2456a8c8595df"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a7f94e51abcf522ff70e2456a8c8595df">shaka::media::AudioStreamInfo::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00078">audio_stream_info.cc:78</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_a3c50d026e8deadac46741143d4b5ddb9"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a3c50d026e8deadac46741143d4b5ddb9">shaka::media::AudioStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00071">audio_stream_info.cc:71</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00099">audio_stream_info.cc:99</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_a306c5ebb4a42eced7d1a3deaad23c17b"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a306c5ebb4a42eced7d1a3deaad23c17b">shaka::media::AudioStreamInfo::Clone</a></div><div class="ttdeci">std::unique_ptr&lt; StreamInfo &gt; Clone() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_a1333ea7b15790da37addb60ba49131b4"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a1333ea7b15790da37addb60ba49131b4">shaka::media::AudioStreamInfo::AudioStreamInfo</a></div><div class="ttdeci">AudioStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, Codec codec, const std::string &amp;codec_string, const uint8_t *codec_config, size_t codec_config_size, uint8_t sample_bits, uint8_t num_channels, uint32_t sampling_frequency, uint64_t seek_preroll_ns, uint64_t codec_delay_ns, uint32_t max_bitrate, uint32_t avg_bitrate, const std::string &amp;language, bool is_encrypted)</div><div class="ttdoc">Construct an initialized audio stream info object. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00051">audio_stream_info.cc:51</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">shaka::media::AudioStreamInfo</a></div><div class="ttdoc">Holds audio stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d32/audio__stream__info_8h_source.html#l00018">audio_stream_info.h:18</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

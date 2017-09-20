@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/formats/webm/webm_audio_client.cc Source File</title>
+<title>Shaka Packager SDK: packager/media/formats/webm/webm_audio_client.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_65f7acfa8cf3a5f1edc11faa2428b914.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_5039d854a18988ed1f1dbebc120ffbf7.html">webm</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_375ba2cfd8fd5b05c50b92d996b9d386.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_b23f8e22c8c095d1c8c0cb8f88104a00.html">webm</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -208,12 +208,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMAudioClient_html_a0fcbddd20199044f860331b3bd9ef3b8"><div class="ttname"><a href="../../d3/d7c/classshaka_1_1media_1_1WebMAudioClient.html#a0fcbddd20199044f860331b3bd9ef3b8">shaka::media::WebMAudioClient::GetAudioStreamInfo</a></div><div class="ttdeci">std::shared_ptr&lt; AudioStreamInfo &gt; GetAudioStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, int64_t seek_preroll, int64_t codec_delay, const std::string &amp;language, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00031">webm_audio_client.cc:31</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00099">audio_stream_info.cc:99</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMAudioClient_html_afd1a338848c52dc4db79d89ae13b6ea6"><div class="ttname"><a href="../../d3/d7c/classshaka_1_1media_1_1WebMAudioClient.html#afd1a338848c52dc4db79d89ae13b6ea6">shaka::media::WebMAudioClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new audio track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00025">webm_audio_client.cc:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

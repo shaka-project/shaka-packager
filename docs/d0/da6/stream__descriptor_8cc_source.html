@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: app/stream_descriptor.cc Source File</title>
+<title>Shaka Packager SDK: packager/app/stream_descriptor.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_d422163b96683743ed3963d4aac17747.html">app</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_bf7f1d16febc509cca62cff27fb88644.html">app</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -162,7 +162,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
 <div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">   74</a></span>&#160;base::Optional&lt;StreamDescriptor&gt; <a class="code" href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">ParseStreamDescriptor</a>(</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">const</span> std::string&amp; descriptor_string) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  StreamDescriptor descriptor;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html">StreamDescriptor</a> descriptor;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// Split descriptor string into name/value pairs.</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  base::StringPairs pairs;</div>
@@ -175,16 +175,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;       iter != pairs.end(); ++iter) {</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">switch</span> (GetFieldType(iter-&gt;first)) {</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="keywordflow">case</span> kStreamSelectorField:</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        descriptor.stream_selector = iter-&gt;second;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a386c5e3717b5f982f72698abba09df2c">stream_selector</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keywordflow">case</span> kInputField:</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        descriptor.input = iter-&gt;second;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#ae86324b838baa66dbab9a3d35352e200">input</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keywordflow">case</span> kOutputField:</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        descriptor.output = iter-&gt;second;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a08ce812991297de47354b99cdaec5415">output</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      <span class="keywordflow">case</span> kSegmentTemplateField:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        descriptor.segment_template = iter-&gt;second;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#af3e55c8970e8a7604ca79a98f4642872">segment_template</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <span class="keywordflow">case</span> kBandwidthField: {</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <span class="keywordtype">unsigned</span> bw;</div>
@@ -192,7 +192,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;          LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Non-numeric bandwidth specified.&quot;</span>;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;          <span class="keywordflow">return</span> base::nullopt;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        descriptor.bandwidth = bw;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a9bcce2ca86a33f41803f7a6417a2758c">bandwidth</a> = bw;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      }</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">case</span> kLanguageField: {</div>
@@ -202,23 +202,23 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;          LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unknown/invalid language specified: &quot;</span> &lt;&lt; iter-&gt;second;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;          <span class="keywordflow">return</span> base::nullopt;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        descriptor.language = language;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#af2e3479d90070a03a801ecc5a3d35d7e">language</a> = language;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      }</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keywordflow">case</span> kOutputFormatField: {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        descriptor.output_format = iter-&gt;second;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a025d9a9a1612654da2b0c99fe81378db">output_format</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      }</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      <span class="keywordflow">case</span> kHlsNameField: {</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        descriptor.hls_name = iter-&gt;second;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a92efcc01f52430f3d3ec030beb8c65c7">hls_name</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <span class="keywordflow">case</span> kHlsGroupIdField: {</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        descriptor.hls_group_id = iter-&gt;second;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a25764b4ffa8cb0da3b88cc251928ad96">hls_group_id</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      }</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <span class="keywordflow">case</span> kHlsPlaylistNameField: {</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        descriptor.hls_playlist_name = iter-&gt;second;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#aa0d36cf55c46def14bc2fa6c293859ef">hls_playlist_name</a> = iter-&gt;second;</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;      }</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="keywordflow">case</span> kTrickPlayFactorField: {</div>
@@ -232,7 +232,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;          LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stream trick_play_factor should be &gt; 0.&quot;</span>;</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;          <span class="keywordflow">return</span> base::nullopt;</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        }</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        descriptor.trick_play_factor = factor;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a5cc00f367691729460e0b75b8ec6c512">trick_play_factor</a> = factor;</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      }</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      <span class="keywordflow">case</span> kSkipEncryptionField: {</div>
@@ -247,7 +247,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;          <span class="keywordflow">return</span> base::nullopt;</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        }</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        descriptor.skip_encryption = skip_encryption_value &gt; 0;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        descriptor.<a class="code" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#abbaf07b1faa84803478f89bc6dd8cb4a">skip_encryption</a> = skip_encryption_value &gt; 0;</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;      }</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;      <span class="keywordflow">default</span>:</div>
@@ -260,12 +260,25 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;}</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a386c5e3717b5f982f72698abba09df2c"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a386c5e3717b5f982f72698abba09df2c">shaka::StreamDescriptor::stream_selector</a></div><div class="ttdeci">std::string stream_selector</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00073">packager.h:73</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html">shaka::StreamDescriptor</a></div><div class="ttdoc">Defines a single input/output stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00067">packager.h:67</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_ae86324b838baa66dbab9a3d35352e200"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#ae86324b838baa66dbab9a3d35352e200">shaka::StreamDescriptor::input</a></div><div class="ttdeci">std::string input</div><div class="ttdoc">Input/source media file path or network stream URL. Required. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00069">packager.h:69</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_aa0d36cf55c46def14bc2fa6c293859ef"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#aa0d36cf55c46def14bc2fa6c293859ef">shaka::StreamDescriptor::hls_playlist_name</a></div><div class="ttdeci">std::string hls_playlist_name</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00107">packager.h:107</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a92efcc01f52430f3d3ec030beb8c65c7"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a92efcc01f52430f3d3ec030beb8c65c7">shaka::StreamDescriptor::hls_name</a></div><div class="ttdeci">std::string hls_name</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00101">packager.h:101</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a8d03e8120932485c8fa0c686e1e32dac"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">shaka::ParseStreamDescriptor</a></div><div class="ttdeci">base::Optional&lt; StreamDescriptor &gt; ParseStreamDescriptor(const std::string &amp;descriptor_string)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/da6/stream__descriptor_8cc_source.html#l00074">stream_descriptor.cc:74</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_af3e55c8970e8a7604ca79a98f4642872"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#af3e55c8970e8a7604ca79a98f4642872">shaka::StreamDescriptor::segment_template</a></div><div class="ttdeci">std::string segment_template</div><div class="ttdoc">Specifies segment template. Can be empty. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00079">packager.h:79</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a025d9a9a1612654da2b0c99fe81378db"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a025d9a9a1612654da2b0c99fe81378db">shaka::StreamDescriptor::output_format</a></div><div class="ttdeci">std::string output_format</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00083">packager.h:83</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a05a31cd741e2ee18f1399284e921e527"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a05a31cd741e2ee18f1399284e921e527">shaka::LanguageToISO_639_2</a></div><div class="ttdeci">std::string LanguageToISO_639_2(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00117">language_utils.cc:117</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a5cc00f367691729460e0b75b8ec6c512"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a5cc00f367691729460e0b75b8ec6c512">shaka::StreamDescriptor::trick_play_factor</a></div><div class="ttdeci">uint32_t trick_play_factor</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00090">packager.h:90</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a08ce812991297de47354b99cdaec5415"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a08ce812991297de47354b99cdaec5415">shaka::StreamDescriptor::output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00077">packager.h:77</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a9bcce2ca86a33f41803f7a6417a2758c"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a9bcce2ca86a33f41803f7a6417a2758c">shaka::StreamDescriptor::bandwidth</a></div><div class="ttdeci">uint32_t bandwidth</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00094">packager.h:94</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_abbaf07b1faa84803478f89bc6dd8cb4a"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#abbaf07b1faa84803478f89bc6dd8cb4a">shaka::StreamDescriptor::skip_encryption</a></div><div class="ttdeci">bool skip_encryption</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00086">packager.h:86</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_af2e3479d90070a03a801ecc5a3d35d7e"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#af2e3479d90070a03a801ecc5a3d35d7e">shaka::StreamDescriptor::language</a></div><div class="ttdeci">std::string language</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00097">packager.h:97</a></div></div>
+<div class="ttc" id="structshaka_1_1StreamDescriptor_html_a25764b4ffa8cb0da3b88cc251928ad96"><div class="ttname"><a href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a25764b4ffa8cb0da3b88cc251928ad96">shaka::StreamDescriptor::hls_group_id</a></div><div class="ttdeci">std::string hls_group_id</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/db5/packager_8h_source.html#l00104">packager.h:104</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

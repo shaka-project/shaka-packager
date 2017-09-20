@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/base/key_source.h Source File</title>
+<title>Shaka Packager SDK: packager/media/base/key_source.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_c6ada2450b25ab5438a4dba6c9b890af.html">base</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_e3bda0bde998a4d5063328245b9909be.html">base</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -129,16 +129,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>();</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>();</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">virtual</span> Status <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(EmeInitDataType init_data_type,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a>(EmeInitDataType init_data_type,</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                           <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; init_data) = 0;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">virtual</span> Status <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                        <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">virtual</span> Status <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                        <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">virtual</span> Status <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                    <span class="keyword">const</span> std::string&amp; stream_label,</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                    <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) = 0;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
@@ -152,13 +152,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_KEY_SOURCE_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a34340247a575bc693d14c3bef9102258"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index, const std::string &amp;stream_label, EncryptionKey *key)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_af56c833453d65297c4dc96c9d2f83e1a"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(const std::string &amp;stream_label, EncryptionKey *key)=0</div></div>
+<div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</div></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">shaka::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00034">key_source.h:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

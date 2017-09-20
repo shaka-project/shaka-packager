@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/formats/mp4/mp4_media_parser.cc Source File</title>
+<title>Shaka Packager SDK: packager/media/formats/mp4/mp4_media_parser.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_65f7acfa8cf3a5f1edc11faa2428b914.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_3e9291fd7a18fdecc763294cb2628910.html">mp4</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_375ba2cfd8fd5b05c50b92d996b9d386.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_ae142483ff91a68c468a97c037f98d4d.html">mp4</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -261,7 +261,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
 <div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">  173</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">MP4MediaParser::LoadMoov</a>(<span class="keyword">const</span> std::string&amp; file_path) {</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; file(</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      File::OpenWithNoBuffering(file_path.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      <a class="code" href="../../d3/d73/classshaka_1_1File.html#a0a50526352bd6e946c4f33d3e8431b2d">File::OpenWithNoBuffering</a>(file_path.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">if</span> (!file) {</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unable to open media file &#39;&quot;</span> &lt;&lt; file_path &lt;&lt; <span class="stringliteral">&quot;&#39;&quot;</span>;</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -874,7 +874,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a77b9a12145dad80df95845bd2b66b6a8"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">shaka::media::OffsetByteQueue::Trim</a></div><div class="ttdeci">bool Trim(int64_t max_offset)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1a/offset__byte__queue_8cc_source.html#l00051">offset_byte_queue.cc:51</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_a4105cdbe5ece03071a17c06fb27699b0"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#a4105cdbe5ece03071a17c06fb27699b0">shaka::media::mp4::MP4MediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00139">mp4_media_parser.cc:139</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_a0a50526352bd6e946c4f33d3e8431b2d"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a0a50526352bd6e946c4f33d3e8431b2d">shaka::File::OpenWithNoBuffering</a></div><div class="ttdeci">static File * OpenWithNoBuffering(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00187">file.cc:187</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00099">audio_stream_info.cc:99</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_af0ec1b44528a2997c0d548bee47862cf"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">shaka::media::mp4::MP4MediaParser::LoadMoov</a></div><div class="ttdeci">bool LoadMoov(const std::string &amp;file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00173">mp4_media_parser.cc:173</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_ad8975dbb21747ff32c8604f5489bf5c9"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
@@ -885,7 +886,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

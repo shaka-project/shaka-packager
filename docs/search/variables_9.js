@@ -1,14 +1,10 @@
 var searchData=
 [
-  ['sample_5fencryption_5fdata',['sample_encryption_data',['../d4/dad/structshaka_1_1media_1_1mp4_1_1SampleEncryption.html#a621791262888f30b4ee8a8acb37cd5a3',1,'shaka::media::mp4::SampleEncryption']]],
-  ['segment_5fduration_5fin_5fseconds',['segment_duration_in_seconds',['../d2/d1f/structshaka_1_1ChunkingParams.html#a01414f1502775576d68e45d172029358',1,'shaka::ChunkingParams']]],
-  ['segment_5fsap_5faligned',['segment_sap_aligned',['../d2/d1f/structshaka_1_1ChunkingParams.html#a1ab10c82260dc073fb3830efcdabb171',1,'shaka::ChunkingParams']]],
-  ['segment_5ftemplate',['segment_template',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ab98cfd28046fc5c52ab2a45dba1a339a',1,'shaka::media::MuxerOptions']]],
-  ['signer',['signer',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a233141ad4baf2f2afce30f96adf340ae',1,'shaka::WidevineEncryptionParams::signer()'],['../d8/d48/structshaka_1_1WidevineDecryptionParams.html#acf84772bb9787f61110e388490412939',1,'shaka::WidevineDecryptionParams::signer()']]],
-  ['signer_5fname',['signer_name',['../df/d22/structshaka_1_1WidevineSigner.html#a6768d5addb3c90f33ce5f241705c827e',1,'shaka::WidevineSigner']]],
-  ['signing_5fkey_5ftype',['signing_key_type',['../df/d22/structshaka_1_1WidevineSigner.html#a656fbc14799c96fa8b822e3917070cf6',1,'shaka::WidevineSigner']]],
-  ['stream_5flabel_5ffunc',['stream_label_func',['../dc/da0/structshaka_1_1EncryptionParams.html#a7686a6aca6a7c3d077a5d7215c39fc51',1,'shaka::EncryptionParams']]],
-  ['subsegment_5fduration_5fin_5fseconds',['subsegment_duration_in_seconds',['../d2/d1f/structshaka_1_1ChunkingParams.html#ae303f5bf58edbb231b0cfbbf9c4e05d7',1,'shaka::ChunkingParams']]],
-  ['subsegment_5franges',['subsegment_ranges',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#a836626da601a9f6ea54502c7e5bdd7c9',1,'shaka::media::MuxerListener::MediaRanges']]],
-  ['subsegment_5fsap_5faligned',['subsegment_sap_aligned',['../d2/d1f/structshaka_1_1ChunkingParams.html#afcde8cc6cf9646c78f5bf13181022aa7',1,'shaka::ChunkingParams']]]
+  ['master_5fplaylist_5foutput',['master_playlist_output',['../d0/da8/structshaka_1_1HlsParams.html#ae3706891d39f8da72ed59d8fb13f2e30',1,'shaka::HlsParams']]],
+  ['min_5fbuffer_5ftime',['min_buffer_time',['../df/ddc/structshaka_1_1MpdParams.html#aee1510b64b9acbc17b8bfccac2e132a3',1,'shaka::MpdParams']]],
+  ['minimum_5fupdate_5fperiod',['minimum_update_period',['../df/ddc/structshaka_1_1MpdParams.html#a4a5dafe570fd7e35749ce12d83ca9559',1,'shaka::MpdParams']]],
+  ['mp4_5foutput_5fparams',['mp4_output_params',['../d5/de3/structshaka_1_1PackagingParams.html#a794072e13c04de6b98e5d1e7cc5b57d6',1,'shaka::PackagingParams']]],
+  ['mp4_5fparams',['mp4_params',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#aa616f5958ea9df2d70f3fe42ff47ff43',1,'shaka::media::MuxerOptions']]],
+  ['mpd_5foutput',['mpd_output',['../df/ddc/structshaka_1_1MpdParams.html#aa6ca18997bb307d3b5fe1c9ced161ff6',1,'shaka::MpdParams']]],
+  ['mpd_5fparams',['mpd_params',['../d5/de3/structshaka_1_1PackagingParams.html#acfa10a8e9c877a3c2baf83525837a254',1,'shaka::PackagingParams']]]
 ];

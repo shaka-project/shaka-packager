@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/base/text_stream_info.h Source File</title>
+<title>Shaka Packager SDK: packager/media/base/text_stream_info.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_c6ada2450b25ab5438a4dba6c9b890af.html">base</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_e3bda0bde998a4d5063328245b9909be.html">base</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -115,28 +115,31 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#ab40aed17c046e639efde04a2075e25a8">IsValidConfig</a>() <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  uint16_t width()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  uint16_t height()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  uint16_t width_;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint16_t height_;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// Allow copying. This is very light weight.</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00057">stream_info.h:57</a></div></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  std::unique_ptr&lt;StreamInfo&gt; <a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#aa8cfad62fa0186a4f82a8dc43ee1c96d">Clone</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  uint16_t width()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  uint16_t height()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  uint16_t width_;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint16_t height_;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// Allow copying. This is very light weight.</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00058">stream_info.h:58</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html_a3e759066195689154ef2a8cf2825ea4b"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a3e759066195689154ef2a8cf2825ea4b">shaka::media::TextStreamInfo::TextStreamInfo</a></div><div class="ttdeci">TextStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, Codec codec, const std::string &amp;codec_string, const std::string &amp;codec_config, uint16_t width, uint16_t height, const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00012">text_stream_info.cc:12</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html_ab40aed17c046e639efde04a2075e25a8"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#ab40aed17c046e639efde04a2075e25a8">shaka::media::TextStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00027">text_stream_info.cc:27</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html_aa8cfad62fa0186a4f82a8dc43ee1c96d"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#aa8cfad62fa0186a4f82a8dc43ee1c96d">shaka::media::TextStreamInfo::Clone</a></div><div class="ttdeci">std::unique_ptr&lt; StreamInfo &gt; Clone() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00031">text_stream_info.cc:31</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">shaka::media::TextStreamInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d2a/text__stream__info_8h_source.html#l00017">text_stream_info.h:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

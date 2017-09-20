@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keyprovider',['KeyProvider',['../d8/daf/namespaceshaka.html#a539b99ce5c34193e294bc544437e9185',1,'shaka']]]
+  ['hlsplaylisttype',['HlsPlaylistType',['../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d',1,'shaka']]]
 ];

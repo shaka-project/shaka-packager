@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: app/packager_main.cc Source File</title>
+<title>Shaka Packager SDK: packager/app/packager_main.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_d422163b96683743ed3963d4aac17747.html">app</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_bf7f1d16febc509cca62cff27fb88644.html">app</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -176,7 +176,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="stringliteral">&quot;    If specified, the output is a trick play stream.\n&quot;</span></div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="stringliteral">&quot;  - hls_name: Required for audio when outputting HLS.\n&quot;</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="stringliteral">&quot;    name of the output stream. This is not (necessarily) the same as\n&quot;</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="stringliteral">&quot;    output. This is used as the NAME attribute for EXT-X-MEDIA\n&quot;</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="stringliteral">&quot;    output. This is used as the NAME attribute for EXT-X-MEDIA.\n&quot;</span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="stringliteral">&quot;  - hls_group_id: Required for audio when outputting HLS.\n&quot;</span></div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="stringliteral">&quot;    The group ID for the output stream. This is used as the GROUP-ID\n&quot;</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="stringliteral">&quot;    attribute for EXT-X-MEDIA.\n&quot;</span></div>
@@ -198,7 +198,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    signer-&gt;aes.iv = FLAGS_aes_signing_iv_bytes;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!FLAGS_rsa_signing_key_path.empty()) {</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    signer-&gt;signing_key_type = WidevineSigner::SigningKeyType::kRsa;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">if</span> (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">File::ReadFileToString</a>(FLAGS_rsa_signing_key_path.c_str(),</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                                &amp;signer-&gt;rsa.key)) {</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to read from &#39;&quot;</span> &lt;&lt; FLAGS_rsa_signing_key_path</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
@@ -209,7 +209,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="keywordtype">bool</span> GetHlsPlaylistType(<span class="keyword">const</span> std::string&amp; playlist_type,</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                        HlsPlaylistType* playlist_type_enum) {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                        <a class="code" href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">HlsPlaylistType</a>* playlist_type_enum) {</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keywordflow">if</span> (base::ToUpperASCII(playlist_type) == <span class="stringliteral">&quot;VOD&quot;</span>) {</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    *playlist_type_enum = HlsPlaylistType::kVod;</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::ToUpperASCII(playlist_type) == <span class="stringliteral">&quot;LIVE&quot;</span>) {</div>
@@ -282,7 +282,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        FLAGS_crypto_period_duration;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    encryption_params.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    encryption_params.stream_label_func = std::bind(</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        &amp;Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        &amp;<a class="code" href="../../db/dd0/classshaka_1_1Packager.html#a59fec4e3f33138081e5222d3553ab948">Packager::DefaultStreamLabelFunction</a>, FLAGS_max_sd_pixels,</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  }</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordflow">switch</span> (encryption_params.key_provider) {</div>
@@ -415,7 +415,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  CHECK(logging::InitLogging(log_settings));</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  google::SetVersionString(shaka::Packager::GetLibraryVersion());</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  google::SetVersionString(<a class="code" href="../../db/dd0/classshaka_1_1Packager.html#a7bae5b5c202a716f5d890e70afae51b2">shaka::Packager::GetLibraryVersion</a>());</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  google::ParseCommandLineFlags(&amp;argc, &amp;argv, <span class="keyword">true</span>);</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">if</span> (argc &lt; 2) {</div>
@@ -485,15 +485,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <span class="keywordflow">return</span> shaka::PackagerMain(argc, argv);</div>
 <div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;}</div>
 <div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="preprocessor">#endif  // defined(OS_WIN)</span></div>
+<div class="ttc" id="classshaka_1_1Packager_html_a59fec4e3f33138081e5222d3553ab948"><div class="ttname"><a href="../../db/dd0/classshaka_1_1Packager.html#a59fec4e3f33138081e5222d3553ab948">shaka::Packager::DefaultStreamLabelFunction</a></div><div class="ttdeci">static std::string DefaultStreamLabelFunction(int max_sd_pixels, int max_hd_pixels, int max_uhd1_pixels, const EncryptionParams::EncryptedStreamAttributes &amp;stream_attributes)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d48/packager_8cc_source.html#l00808">packager.cc:808</a></div></div>
+<div class="ttc" id="namespaceshaka_html_ab63a3c00cdbf61cfb6dd7a2497b26f8d"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">shaka::HlsPlaylistType</a></div><div class="ttdeci">HlsPlaylistType</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d47/hls__params_8h_source.html#l00016">hls_params.h:16</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a8d03e8120932485c8fa0c686e1e32dac"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">shaka::ParseStreamDescriptor</a></div><div class="ttdeci">base::Optional&lt; StreamDescriptor &gt; ParseStreamDescriptor(const std::string &amp;descriptor_string)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/da6/stream__descriptor_8cc_source.html#l00074">stream_descriptor.cc:74</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_ac9a19cb5fc45664ca440996bf1201c30"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#ac9a19cb5fc45664ca440996bf1201c30">shaka::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00216">file.cc:216</a></div></div>
 <div class="ttc" id="namespaceshaka_html_ade3cbb360c0dcaacc5667676af885008"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#ade3cbb360c0dcaacc5667676af885008">shaka::ValidateWidevineCryptoFlags</a></div><div class="ttdeci">bool ValidateWidevineCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/widevine__encryption__flags_8cc_source.html#l00073">widevine_encryption_flags.cc:73</a></div></div>
+<div class="ttc" id="classshaka_1_1Packager_html_a7bae5b5c202a716f5d890e70afae51b2"><div class="ttname"><a href="../../db/dd0/classshaka_1_1Packager.html#a7bae5b5c202a716f5d890e70afae51b2">shaka::Packager::GetLibraryVersion</a></div><div class="ttdeci">static std::string GetLibraryVersion()</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d48/packager_8cc_source.html#l00804">packager.cc:804</a></div></div>
 <div class="ttc" id="structshaka_1_1EncryptionParams_html_a1d7a8c6b5e46b51ccadcaef3f9cf9cb0"><div class="ttname"><a href="../../dc/da0/structshaka_1_1EncryptionParams.html#a1d7a8c6b5e46b51ccadcaef3f9cf9cb0">shaka::EncryptionParams::kProtectionSchemeCenc</a></div><div class="ttdeci">static constexpr uint32_t kProtectionSchemeCenc</div><div class="ttdoc">The protection scheme: &quot;cenc&quot;, &quot;cens&quot;, &quot;cbc1&quot;, &quot;cbcs&quot;. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d58/crypto__params_8h_source.html#l00132">crypto_params.h:132</a></div></div>
 <div class="ttc" id="namespaceshaka_html_abc3f498491fb895860ebdee359935d93"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abc3f498491fb895860ebdee359935d93">shaka::ValidateFixedCryptoFlags</a></div><div class="ttdeci">bool ValidateFixedCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html#l00035">fixed_key_encryption_flags.cc:35</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a8b6212ccc4b98e5fdb72f84acf252c6b"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">shaka::ValidatePRCryptoFlags</a></div><div class="ttdeci">bool ValidatePRCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00033">playready_key_encryption_flags.cc:33</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/formats/mp2t/ts_muxer.cc Source File</title>
+<title>Shaka Packager SDK: packager/media/formats/mp2t/ts_muxer.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_65f7acfa8cf3a5f1edc11faa2428b914.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_f7dcbe7025bbacfc4b9a7dff6ad41d72.html">mp2t</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_375ba2cfd8fd5b05c50b92d996b9d386.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_35c1fdffcdd4ade6d7f948073ab165de.html">mp2t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -121,47 +121,46 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">return</span> segmenter_-&gt;Finalize();</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;Status TsMuxer::AddSample(<span class="keywordtype">size_t</span> stream_id,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                          std::shared_ptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  DCHECK_EQ(stream_id, 0u);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> segmenter_-&gt;AddSample(sample);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;Status TsMuxer::FinalizeSegment(<span class="keywordtype">size_t</span> stream_id,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                                std::shared_ptr&lt;SegmentInfo&gt; segment_info) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  DCHECK_EQ(stream_id, 0u);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">return</span> segment_info-&gt;is_subsegment</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;             ? Status::OK</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;             : segmenter_-&gt;FinalizeSegment(segment_info-&gt;start_timestamp,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                           segment_info-&gt;duration);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keywordtype">void</span> TsMuxer::FireOnMediaStartEvent() {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">OnMediaStart</a>(options(), *streams().front(), kTsTimescale,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                 MuxerListener::kContainerWebM);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keywordtype">void</span> TsMuxer::FireOnMediaEndEvent() {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// For now, there is no single file TS segmenter. So all the values passed</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// here are left empty.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  MuxerListener::MediaRanges range;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">OnMediaEnd</a>(range, 0);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;Status TsMuxer::AddSample(<span class="keywordtype">size_t</span> stream_id, <span class="keyword">const</span> MediaSample&amp; sample) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  DCHECK_EQ(stream_id, 0u);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">return</span> segmenter_-&gt;AddSample(sample);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;Status TsMuxer::FinalizeSegment(<span class="keywordtype">size_t</span> stream_id,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                <span class="keyword">const</span> SegmentInfo&amp; segment_info) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  DCHECK_EQ(stream_id, 0u);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">return</span> segment_info.is_subsegment</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;             ? Status::OK</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;             : segmenter_-&gt;FinalizeSegment(segment_info.start_timestamp,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                                           segment_info.duration);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">void</span> TsMuxer::FireOnMediaStartEvent() {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">OnMediaStart</a>(options(), *streams().front(), kTsTimescale,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                 MuxerListener::kContainerWebM);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keywordtype">void</span> TsMuxer::FireOnMediaEndEvent() {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (!muxer_listener())</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// For now, there is no single file TS segmenter. So all the values passed</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// here are left empty.</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  MuxerListener::MediaRanges range;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">OnMediaEnd</a>(range, 0);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a11d4301cd53ab421f524bfa143eac21a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

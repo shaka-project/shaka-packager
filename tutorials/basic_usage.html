@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Basic Usage &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DASH" href="dash.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dash.html" title="DASH"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorials.html" title="Tutorials"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Basic Usage</a><ul>
+<li><a class="reference internal" href="#getting-help">Getting help</a></li>
+<li><a class="reference internal" href="#media-file-analysis">Media file analysis</a></li>
+<li><a class="reference internal" href="#basic-transmuxing">Basic transmuxing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorials.html"
+                        title="previous chapter">Tutorials</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dash.html"
+                        title="next chapter">DASH</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/basic_usage.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="basic-usage">
+<span id="basic-usage"></span><h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-help">
+<span id="getting-help"></span><h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager --help
+</pre></div>
+</div>
+</div>
+<div class="section" id="media-file-analysis">
+<span id="media-file-analysis"></span><h2>Media file analysis<a class="headerlink" href="#media-file-analysis" title="Permalink to this headline">¶</a></h2>
+<p>Shaka Packager can be used to inspect the content of a media file and dump basic
+stream information.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager <span class="nv">input</span><span class="o">=</span>some_content.mp4 --dump_stream_info
+</pre></div>
+</div>
+<p>The output looks like:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>File <span class="s2">&quot;some_content.mp4&quot;</span>:
+Found <span class="m">2</span> stream<span class="o">(</span>s<span class="o">)</span>.
+Stream <span class="o">[</span><span class="m">0</span><span class="o">]</span> type: Video
+ codec_string: avc1.4d001e
+ time_scale: <span class="m">24000</span>
+ duration: <span class="m">3002000</span> <span class="o">(</span><span class="m">125</span>.1 seconds<span class="o">)</span>
+ is_encrypted: <span class="nb">false</span>
+ codec: H264
+ width: <span class="m">720</span>
+ height: <span class="m">360</span>
+ pixel_aspect_ratio: <span class="m">8</span>:9
+ trick_play_factor: <span class="m">0</span>
+ nalu_length_size: <span class="m">4</span>
+
+Stream <span class="o">[</span><span class="m">1</span><span class="o">]</span> type: Audio
+ codec_string: mp4a.40.2
+ time_scale: <span class="m">44100</span>
+ duration: <span class="m">5517311</span> <span class="o">(</span><span class="m">125</span>.1 seconds<span class="o">)</span>
+ is_encrypted: <span class="nb">false</span>
+ codec: AAC
+ sample_bits: <span class="m">16</span>
+ num_channels: <span class="m">2</span>
+ sampling_frequency: <span class="m">44100</span>
+ language: eng
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-transmuxing">
+<span id="basic-transmuxing"></span><h2>Basic transmuxing<a class="headerlink" href="#basic-transmuxing" title="Permalink to this headline">¶</a></h2>
+<p>Shaka Packager can be used to extract streams, optionally transmuxes the streams
+from one container format to another container format.</p>
+<p>Here is a simple command that extracts video and audio from the input file:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager <span class="nv">in</span><span class="o">=</span>some_content.mp4,stream<span class="o">=</span>video,out<span class="o">=</span>video.mp4 <span class="se">\</span>
+           <span class="nv">in</span><span class="o">=</span>some_content.mp4,stream<span class="o">=</span>audio,out<span class="o">=</span>audio.mp4
+</pre></div>
+</div>
+<p>Shaka Packager is also capable of more complex tasks, such as applying
+encryption, packaging contents to DASH or HLS formats, etc. Refer
+:doc:<code class="docutils literal"><span class="pre">tutorials</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dash.html" title="DASH"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorials.html" title="Tutorials"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

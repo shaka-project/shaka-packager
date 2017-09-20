@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: Class Members</title>
+<title>Shaka Packager SDK: Class Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -74,6 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
       <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
+      <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -109,7 +110,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -153,6 +154,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>AddElements()
 : <a class="el" href="d1/d31/classshaka_1_1xml_1_1XmlNode.html#a31d77d822a66991f48b67bfad3fa86d0">shaka::xml::XmlNode</a>
 </li>
+<li>AddEncryptionInfo()
+: <a class="el" href="dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a4aaa21da07864789895048e8558ab816">shaka::hls::MediaPlaylist</a>
+</li>
 <li>AddEssentialProperty()
 : <a class="el" href="dd/db9/classshaka_1_1xml_1_1RepresentationBaseXmlNode.html#aebcc18275733668d46622a7ac9ceb2e8">shaka::xml::RepresentationBaseXmlNode</a>
 </li>
@@ -161,6 +165,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>AddLiveOnlyInfo()
 : <a class="el" href="df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#ae9ff190e1a653a348b00b5edd9d6cc60">shaka::xml::RepresentationXmlNode</a>
+</li>
+<li>AddMediaPlaylist()
+: <a class="el" href="d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a3a21debb2dfda210dde8b74c663a1647">shaka::hls::MasterPlaylist</a>
 </li>
 <li>AddNalu()
 : <a class="el" href="de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a6b2234ce5bdffaaaad217414df314598">shaka::media::DecoderConfigurationRecord</a>
@@ -181,10 +188,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="d1/de7/classshaka_1_1xml_1_1AdaptationSetXmlNode.html#a2718eede55bb89447a74ff802b95fdb1">shaka::xml::AdaptationSetXmlNode</a>
 </li>
 <li>AddSample()
-: <a class="el" href="de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a16a92ce0a4d60e502135f89c4b7ffc9b">shaka::media::mp2t::TsSegmenter</a>
-, <a class="el" href="db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a9453ee5952fc923eae502467e50317e2">shaka::media::mp4::Fragmenter</a>
-, <a class="el" href="d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#ad57a8ed22af5499bcb6c3fa88767dabe">shaka::media::mp4::Segmenter</a>
-, <a class="el" href="dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aad137d0ae95d3e47a32725276970e324">shaka::media::webm::Segmenter</a>
+: <a class="el" href="de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#ad1f32c39f29599522f58fe6567b890e4">shaka::media::mp2t::TsSegmenter</a>
+, <a class="el" href="db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a993d83a58a8407d46279b3490723c5ca">shaka::media::mp4::Fragmenter</a>
+, <a class="el" href="d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a6b859a1e564cf007a34f6bfa2d48baeb">shaka::media::mp4::Segmenter</a>
+, <a class="el" href="dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a94352e60afa9b2409fecd4e45a56e547">shaka::media::webm::Segmenter</a>
+</li>
+<li>AddSegment()
+: <a class="el" href="dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a32d145d5e7d2fe9fed9c8a0a55e047ab">shaka::hls::MediaPlaylist</a>
 </li>
 <li>AddSubsample()
 : <a class="el" href="de/d49/classshaka_1_1media_1_1DecryptConfig.html#a36681ecf1eeb8a4effb0f00b232bda58">shaka::media::DecryptConfig</a>
@@ -218,10 +228,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#a6ff6e2ce67a54051c5a7e39dfadcb48d">shaka::media::mp4::TrackRunIterator</a>
 </li>
 <li>AesCbcDecryptor()
-: <a class="el" href="df/d2d/classshaka_1_1media_1_1AesCbcDecryptor.html#a855ab9fa2f350879a7716ec90033f825">shaka::media::AesCbcDecryptor</a>
+: <a class="el" href="df/d2d/classshaka_1_1media_1_1AesCbcDecryptor.html#a350d11c34c42ee4d4e62cdd7aebc5fbb">shaka::media::AesCbcDecryptor</a>
 </li>
 <li>AesCbcEncryptor()
-: <a class="el" href="d4/d20/classshaka_1_1media_1_1AesCbcEncryptor.html#adbe4df9a37be949487a806301d143230">shaka::media::AesCbcEncryptor</a>
+: <a class="el" href="d4/d20/classshaka_1_1media_1_1AesCbcEncryptor.html#a2cc8f20b92d884d959b3a586b527fece">shaka::media::AesCbcEncryptor</a>
 </li>
 <li>AesCryptor()
 : <a class="el" href="df/d87/classshaka_1_1media_1_1AesCryptor.html#a47fbdacc296fbddd899c47ec0c17e5e8">shaka::media::AesCryptor</a>
@@ -251,7 +261,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:42 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

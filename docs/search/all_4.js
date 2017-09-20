@@ -11,6 +11,7 @@ var searchData=
   ['encrypt',['Encrypt',['../d9/d0c/classshaka_1_1media_1_1RsaPublicKey.html#ab9dcf591f3235b8f4eaa02886f9845e3',1,'shaka::media::RsaPublicKey']]],
   ['encryptedsegmentpmt',['EncryptedSegmentPmt',['../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#a7f40bf474758b80e57fede27c2610756',1,'shaka::media::mp2t::ProgramMapTableWriter::EncryptedSegmentPmt()'],['../de/d27/classshaka_1_1media_1_1mp2t_1_1H264ProgramMapTableWriter.html#a14d7933ee669e7c5daeb8d03f2f0b1d0',1,'shaka::media::mp2t::H264ProgramMapTableWriter::EncryptedSegmentPmt()'],['../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#a37616e314cb20775644b9c5e3417f8e5',1,'shaka::media::mp2t::AacProgramMapTableWriter::EncryptedSegmentPmt()']]],
   ['encryptedstreamattributes',['EncryptedStreamAttributes',['../d7/d6d/structshaka_1_1EncryptionParams_1_1EncryptedStreamAttributes.html',1,'shaka::EncryptionParams']]],
+  ['encryption_5fparams',['encryption_params',['../d5/de3/structshaka_1_1PackagingParams.html#a7792bf4a71a35d2a3f99d8b4806a3913',1,'shaka::PackagingParams']]],
   ['encryptionconfig',['EncryptionConfig',['../d7/d34/structshaka_1_1media_1_1EncryptionConfig.html',1,'shaka::media']]],
   ['encryptionhandler',['EncryptionHandler',['../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html',1,'shaka::media']]],
   ['encryptionkey',['EncryptionKey',['../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html',1,'shaka::media']]],

@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Media Encoding &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ffmpeg piping" href="ffmpeg_piping.html" />
+    <link rel="prev" title="Shaka Packager Library (Continued)" href="../library_details.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ffmpeg_piping.html" title="ffmpeg piping"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../library_details.html" title="Shaka Packager Library (Continued)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Media Encoding</a><ul>
+<li><a class="reference internal" href="#general-guidelines-of-how-contents-should-be-encoded">General guidelines of how contents should be encoded</a></li>
+<li><a class="reference internal" href="#sample-commands-to-generate-multi-bitrate-content">Sample commands to generate multi-bitrate content</a><ul>
+<li><a class="reference internal" href="#h264-encoding">H264 encoding</a></li>
+<li><a class="reference internal" href="#vp9-encoding">VP9 encoding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../library_details.html"
+                        title="previous chapter">Shaka Packager Library (Continued)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ffmpeg_piping.html"
+                        title="next chapter">ffmpeg piping</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/encoding.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="media-encoding">
+<h1>Media Encoding<a class="headerlink" href="#media-encoding" title="Permalink to this headline">¶</a></h1>
+<p>Shaka Packager does not do transcoding internally. The contents need to be
+pre-encoded before passing to Shaka Packager.</p>
+<div class="section" id="general-guidelines-of-how-contents-should-be-encoded">
+<h2>General guidelines of how contents should be encoded<a class="headerlink" href="#general-guidelines-of-how-contents-should-be-encoded" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Encode multiple bitrates or resolutions of the same content. Shaka Packager
+can then package the content into DASH / HLS formats, allowing different
+bitrates of the content to be served for different network conditions,
+achieving adaptive bitrate streaming.</li>
+<li>Not a must, but the multibirate content is recommended to have aligned GOPs
+across the different bitrate streams. This makes bitrate switching easier and
+smoother.</li>
+<li>We recommend setting GOP size to 5s or less. The streams are usually
+switchable only at GOP boundaries. A smaller GOP size results in faster
+switching when network condition changes.</li>
+<li>In the same stream, the bitrate should be more or less the same in the
+inter-GOP level.</li>
+</ul>
+</div>
+<div class="section" id="sample-commands-to-generate-multi-bitrate-content">
+<h2>Sample commands to generate multi-bitrate content<a class="headerlink" href="#sample-commands-to-generate-multi-bitrate-content" title="Permalink to this headline">¶</a></h2>
+<p>Let us say we have a 1080p original content <cite>original.mp4</cite> containing an audio
+track in <cite>AAC</cite> and a video track in <cite>H264</cite>. The frame rate is 24. We want to
+encode the contents into four resolutions: 360p, 480p, 720p and 1080p with GOP
+size 72, i.e. 3 seconds.</p>
+<p>We use <a class="reference external" href="https://www.ffmpeg.org/">ffmpeg</a> here, which is a common tool used for
+transcoding.</p>
+<div class="section" id="h264-encoding">
+<h3>H264 encoding<a class="headerlink" href="#h264-encoding" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">360p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+  -vf &quot;scale=-2:360&quot; \
+  -c:v libx264 -profile:v baseline -level:v 3.0 \
+  -x264opts scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
+  -minrate 600k -maxrate 600k -bufsize 600k -b:v 600k \
+  -y h264_baseline_360p_600.mp4
+</pre></div>
+</div>
+</li>
+<li><p class="first">480p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+  -vf &quot;scale=-2:480&quot; \
+  -c:v libx264 -profile:v main -level:v 3.1 \
+  -x264opts scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
+  -minrate 1000k -maxrate 1000k -bufsize 1000k -b:v 1000k \
+  -y h264_main_480p_1000.mp4
+</pre></div>
+</div>
+</li>
+<li><p class="first">720p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+  -vf &quot;scale=-2:720&quot; \
+  -c:v libx264 -profile:v main -level:v 4.0 \
+  -x264opts scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
+  -minrate 3000k -maxrate 3000k -bufsize 3000k -b:v 3000k \
+  -y h264_main_720p_3000.mp4
+</pre></div>
+</div>
+</li>
+<li><p class="first">1080p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+  -vf &quot;scale=-2:1080&quot; \
+  -c:v libx264 -profile:v main -level:v 4.2 \
+  -x264opts scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
+  -minrate 6000k -maxrate 6000k -bufsize 6000k -b:v 6000k \
+  -y h264_main_1080p_6000.mp4
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="vp9-encoding">
+<h3>VP9 encoding<a class="headerlink" href="#vp9-encoding" title="Permalink to this headline">¶</a></h3>
+<p>The audio is encoded into <cite>opus</cite>.</p>
+<ul>
+<li><p class="first">360p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+  -strict -2 -c:a opus \
+  -vf &quot;scale=-2:360&quot; \
+  -c:v libvpx-vp9 -profile:v 0 \
+  -keyint_min 72 -g 72 \
+  -tile-columns 4 -frame-parallel 1 -speed 1 \
+  -auto-alt-ref 1 -lag-in-frames 25 \
+  -b:v 300k \
+  -y vp9_360p_300.webm
+</pre></div>
+</div>
+</li>
+<li><p class="first">480p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+  -strict -2 -c:a opus \
+  -vf &quot;scale=-2:480&quot; \
+  -c:v libvpx-vp9 -profile:v 0 \
+  -keyint_min 72 -g 72 \
+  -tile-columns 4 -frame-parallel 1 -speed 1 \
+  -auto-alt-ref 1 -lag-in-frames 25 \
+  -b:v 500k \
+  -y vp9_480p_500.webm
+</pre></div>
+</div>
+</li>
+<li><p class="first">720p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+  -strict -2 -c:a opus \
+  -vf &quot;scale=-2:720&quot; \
+  -c:v libvpx-vp9 -profile:v 0 \
+  -keyint_min 72 -g 72 \
+  -tile-columns 4 -frame-parallel 1 -speed 1 \
+  -auto-alt-ref 1 -lag-in-frames 25 \
+  -b:v 1500k \
+  -y vp9_720p_1500.webm
+</pre></div>
+</div>
+</li>
+<li><p class="first">1080p:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+  -strict -2 -c:a opus \
+  -vf &quot;scale=-2:1080&quot; \
+  -c:v libvpx-vp9 -profile:v 0 \
+  -keyint_min 72 -g 72 \
+  -tile-columns 4 -frame-parallel 1 -speed 1 \
+  -auto-alt-ref 1 -lag-in-frames 25 \
+  -b:v 3000k \
+  -y vp9_1080p_3000.webm
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ffmpeg_piping.html" title="ffmpeg piping"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../library_details.html" title="Shaka Packager Library (Continued)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

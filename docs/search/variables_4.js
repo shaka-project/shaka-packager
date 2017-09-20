@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['include_5fcommon_5fpssh',['include_common_pssh',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a5985f2d6fbe33273654695050757d0b0',1,'shaka::WidevineEncryptionParams']]],
-  ['index_5frange',['index_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#aa15231fb064efc4b56800df24b074b29',1,'shaka::media::MuxerListener::MediaRanges']]],
-  ['init_5frange',['init_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#a6070da9ce7fab251c82b25a4020373c0',1,'shaka::media::MuxerListener::MediaRanges']]],
-  ['iv',['iv',['../df/d22/structshaka_1_1WidevineSigner.html#a6db96d4c3f1189bbd09515732bec94d9',1,'shaka::WidevineSigner::iv()'],['../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html#a2b8b36d5dd357a6b354de194bc3fb702',1,'shaka::RawKeyEncryptionParams::iv()']]]
+  ['generate_5fdash_5fif_5fiop_5fcompliant_5fmpd',['generate_dash_if_iop_compliant_mpd',['../df/ddc/structshaka_1_1MpdParams.html#aa1b2ec6746586d4981655cee62669ba2',1,'shaka::MpdParams']]],
+  ['generate_5fstatic_5flive_5fmpd',['generate_static_live_mpd',['../df/ddc/structshaka_1_1MpdParams.html#ab5a09b17ee41a0960e813bd0c72bf4f6',1,'shaka::MpdParams']]],
+  ['group_5fid',['group_id',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a6d69402cd4c66d546be180c7800e6d09',1,'shaka::WidevineEncryptionParams']]]
 ];

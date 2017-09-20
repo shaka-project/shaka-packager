@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Shaka Packager Library &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Build Instructions" href="build_instructions.html" />
+    <link rel="prev" title="Playready" href="tutorials/playready.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="build_instructions.html" title="Build Instructions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorials/playready.html" title="Playready"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorials/playready.html"
+                        title="previous chapter">Playready</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="build_instructions.html"
+                        title="next chapter">Build Instructions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/library.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="shaka-packager-library">
+<h1>Shaka Packager Library<a class="headerlink" href="#shaka-packager-library" title="Permalink to this headline">¶</a></h1>
+<p>Documentation for the top level Shaka packager library. See
+<a class="reference external" href="http://google.github.io/shaka-packager/docs/annotated.html">Internal API</a> for
+documentation on internal APIs.</p>
+<dl class="class">
+<dt id="_CPPv2N5shaka8PackagerE">
+<span id="shaka::Packager"></span><span class="target" id="shakadb/dd0/classshaka_1_1Packager"></span><em class="property">class </em><code class="descclassname">shaka::</code><code class="descname">Packager</code><a class="headerlink" href="#_CPPv2N5shaka8PackagerE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="function">
+<dt id="_CPPv2N5shaka8Packager10InitializeERK15PackagingParamsRKNSt6vectorI16StreamDescriptorEE">
+<span id="shaka::Packager::Initialize__PackagingParamsCR.std::vector:StreamDescriptor:CR"></span><span class="target" id="shakadb/dd0/classshaka_1_1Packager_1ae40969a98da3a27a0b1633927afb3ce2"></span><a class="reference internal" href="library_details.html#_CPPv2N5shaka6StatusE" title="shaka::Status">Status</a> <code class="descname">Initialize</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="library_details.html#_CPPv2N5shaka15PackagingParamsE" title="shaka::PackagingParams">PackagingParams</a> &amp;<em>packaging_params</em>, <em class="property">const</em> std::vector&lt;<a class="reference internal" href="library_details.html#_CPPv2N5shaka16StreamDescriptorE" title="shaka::StreamDescriptor">StreamDescriptor</a>&gt; &amp;<em>stream_descriptors</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka8Packager10InitializeERK15PackagingParamsRKNSt6vectorI16StreamDescriptorEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialize packaging pipeline. <dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>OK on success, an appropriate error code on failure. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal"><span class="pre">packaging_params</span></code>: contains the packaging parameters. </li>
+<li><code class="docutils literal"><span class="pre">stream_descriptors</span></code>: a list of stream descriptors. </li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv2N5shaka8Packager3RunEv">
+<span id="shaka::Packager::Run"></span><span class="target" id="shakadb/dd0/classshaka_1_1Packager_1a48275206bc7032eb69607081ac0ada08"></span><a class="reference internal" href="library_details.html#_CPPv2N5shaka6StatusE" title="shaka::Status">Status</a> <code class="descname">Run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka8Packager3RunEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Run the pipeline to completion (or failed / been cancelled). Note that it blocks until completion. <dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>OK on success, an appropriate error code on failure. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv2N5shaka8Packager6CancelEv">
+<span id="shaka::Packager::Cancel"></span><span class="target" id="shakadb/dd0/classshaka_1_1Packager_1a5323e6dc242b1cdd6208cd6ea77dd0c7"></span>void <code class="descname">Cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka8Packager6CancelEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Cancel packaging. Note that it has to be called from another thread. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Static Functions</p>
+<dl class="function">
+<dt id="_CPPv2N5shaka8Packager17GetLibraryVersionEv">
+<span id="shaka::Packager::GetLibraryVersion"></span><span class="target" id="shakadb/dd0/classshaka_1_1Packager_1a7bae5b5c202a716f5d890e70afae51b2"></span>std::string <code class="descname">GetLibraryVersion</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka8Packager17GetLibraryVersionEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>The version of the library. </dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv2N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE">
+<span id="shaka::Packager::DefaultStreamLabelFunction__i.i.i.EncryptionParams::EncryptedStreamAttributesCR"></span><span class="target" id="shakadb/dd0/classshaka_1_1Packager_1a59fec4e3f33138081e5222d3553ab948"></span>std::string <code class="descname">DefaultStreamLabelFunction</code><span class="sig-paren">(</span>int <em>max_sd_pixels</em>, int <em>max_hd_pixels</em>, int <em>max_uhd1_pixels</em>, <em class="property">const</em> <a class="reference internal" href="library_details.html#_CPPv2N5shaka16EncryptionParamsE" title="shaka::EncryptionParams">EncryptionParams</a>::<a class="reference internal" href="library_details.html#_CPPv2N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="shaka::EncryptionParams::EncryptedStreamAttributes">EncryptedStreamAttributes</a> &amp;<em>stream_attributes</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka8Packager26DefaultStreamLabelFunctionEiiiRKN16EncryptionParams25EncryptedStreamAttributesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default stream label function implementation. <dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>the stream label associated with <code class="docutils literal"><span class="pre">stream_info</span></code>. Can be &#8220;AUDIO&#8221;, &#8220;SD&#8221;, &#8220;HD&#8221;, &#8220;UHD1&#8221; or &#8220;UHD2&#8221;. </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last simple">
+<li><code class="docutils literal"><span class="pre">max_sd_pixels</span></code>: The threshold to determine whether a video track should be considered as SD. If the max pixels per frame is no higher than max_sd_pixels, i.e. [0, max_sd_pixels], it is SD. </li>
+<li><code class="docutils literal"><span class="pre">max_hd_pixels</span></code>: The threshold to determine whether a video track should be considered as HD. If the max pixels per frame is higher than max_sd_pixels, but no higher than max_hd_pixels, i.e. (max_sd_pixels, max_hd_pixels], it is HD. </li>
+<li><code class="docutils literal"><span class="pre">max_uhd1_pixels</span></code>: The threshold to determine whether a video track should be considered as UHD1. If the max pixels per frame is higher than max_hd_pixels, but no higher than max_uhd1_pixels, i.e. (max_hd_pixels, max_uhd1_pixels], it is UHD1. Otherwise it is UHD2. </li>
+<li><code class="docutils literal"><span class="pre">stream_info</span></code>: Encrypted stream info. </li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<p>Sample code:</p>
+<div class="highlight-c++"><div class="highlight"><pre><span></span><span class="n">shaka</span><span class="o">::</span><span class="n">Packager</span> <span class="n">packager</span><span class="p">;</span>
+
+<span class="c1">// Setup packaging parameters.</span>
+<span class="n">shaka</span><span class="o">::</span><span class="n">PackagingParams</span> <span class="n">packaging_params</span><span class="p">;</span>
+<span class="c1">// Use default parameters here.</span>
+
+<span class="c1">// Setup stream descriptors.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">shaka</span><span class="o">::</span><span class="n">StreamDescriptor</span><span class="o">&gt;</span> <span class="n">stream_descriptors</span><span class="p">;</span>
+<span class="n">shaka</span><span class="o">::</span><span class="n">StreamDescriptor</span> <span class="n">stream_descriptor</span><span class="p">;</span>
+<span class="n">stream_descriptor</span><span class="p">.</span><span class="n">input</span> <span class="o">=</span> <span class="s">&quot;input.mp4&quot;</span><span class="p">;</span>
+<span class="n">stream_descriptor</span><span class="p">.</span><span class="n">stream_selector</span> <span class="o">=</span> <span class="s">&quot;video&quot;</span><span class="p">;</span>
+<span class="n">stream_descriptor</span><span class="p">.</span><span class="n">output</span> <span class="o">=</span> <span class="s">&quot;output_video.mp4&quot;</span><span class="p">;</span>
+<span class="n">stream_descriptors</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">stream_descriptor</span><span class="p">);</span>
+<span class="n">shaka</span><span class="o">::</span><span class="n">StreamDescriptor</span> <span class="n">stream_descriptor</span><span class="p">;</span>
+<span class="n">stream_descriptor</span><span class="p">.</span><span class="n">input</span> <span class="o">=</span> <span class="s">&quot;input.mp4&quot;</span><span class="p">;</span>
+<span class="n">stream_descriptor</span><span class="p">.</span><span class="n">stream_selector</span> <span class="o">=</span> <span class="s">&quot;audio&quot;</span><span class="p">;</span>
+<span class="n">stream_descriptor</span><span class="p">.</span><span class="n">output</span> <span class="o">=</span> <span class="s">&quot;output_audio.mp4&quot;</span><span class="p">;</span>
+<span class="n">stream_descriptors</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">stream_descriptor</span><span class="p">);</span>
+
+<span class="n">shaka</span><span class="o">::</span><span class="n">Status</span> <span class="n">status</span> <span class="o">=</span> <span class="n">packager</span><span class="p">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">packaging_params</span><span class="p">,</span>
+                                           <span class="n">stream_descriptors</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">status</span><span class="p">.</span><span class="n">ok</span><span class="p">())</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">packager</span><span class="p">.</span><span class="n">Run</span><span class="p">();</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">status</span><span class="p">.</span><span class="n">ok</span><span class="p">())</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="build_instructions.html" title="Build Instructions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorials/playready.html" title="Playready"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

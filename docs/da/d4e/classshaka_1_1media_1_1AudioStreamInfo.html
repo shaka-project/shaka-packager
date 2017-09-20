@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: shaka::media::AudioStreamInfo Class Reference</title>
+<title>Shaka Packager SDK: shaka::media::AudioStreamInfo Class Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -150,6 +150,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_sampling_frequenc
 <tr class="separator:a3c50d026e8deadac46741143d4b5ddb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f94e51abcf522ff70e2456a8c8595df"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a7f94e51abcf522ff70e2456a8c8595df">ToString</a> () const override</td></tr>
 <tr class="separator:a7f94e51abcf522ff70e2456a8c8595df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a306c5ebb4a42eced7d1a3deaad23c17b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a306c5ebb4a42eced7d1a3deaad23c17b">Clone</a> () const override</td></tr>
+<tr class="separator:a306c5ebb4a42eced7d1a3deaad23c17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classshaka_1_1media_1_1StreamInfo"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1StreamInfo')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></td></tr>
 <tr class="memitem:a4dd520edf7452a27afccd578a53c246f inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4dd520edf7452a27afccd578a53c246f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>StreamInfo</b> (StreamType stream_type, int track_id, uint32_t time_scale, uint64_t duration, Codec codec, const std::string &amp;codec_string, const uint8_t *codec_config, size_t codec_config_size, const std::string &amp;language, bool is_encrypted)</td></tr>
@@ -222,6 +224,34 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="../../df/d32/audio__stream__info_8h_source.html#l00018">18</a> of file <a class="el" href="../../df/d32/audio__stream__info_8h_source.html">audio_stream_info.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a306c5ebb4a42eced7d1a3deaad23c17b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; shaka::media::AudioStreamInfo::Clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>A new copy of this stream info. The copy will be of the same type as the original. This should be used when a copy is needed without explicitly knowing the stream info type. </dd></dl>
+
+<p>Implements <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#afdd9b2df8ae1c11bb033c44eaba5e38d">shaka::media::StreamInfo</a>.</p>
+
+<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00095">95</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="aee79e7aa61b741bb96f451c6de1c9d42"></a>
 <div class="memitem">
 <div class="memproto">
@@ -261,7 +291,7 @@ Static Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00095">95</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00099">99</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
 
 </div>
 </div>
@@ -322,13 +352,13 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>media/base/<a class="el" href="../../df/d32/audio__stream__info_8h_source.html">audio_stream_info.h</a></li>
-<li>media/base/<a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a></li>
+<li>packager/media/base/<a class="el" href="../../df/d32/audio__stream__info_8h_source.html">audio_stream_info.h</a></li>
+<li>packager/media/base/<a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:17 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

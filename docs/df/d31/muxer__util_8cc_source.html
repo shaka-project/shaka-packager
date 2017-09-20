@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/base/muxer_util.cc Source File</title>
+<title>Shaka Packager SDK: packager/media/base/muxer_util.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_c6ada2450b25ab5438a4dba6c9b890af.html">base</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_e3bda0bde998a4d5063328245b9909be.html">base</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -108,147 +108,156 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>{</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">bool</span> ValidateFormatTag(<span class="keyword">const</span> std::string&amp; format_tag) {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  DCHECK(!format_tag.empty());</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="comment">// Format tag should follow this prototype: %0[width]d.</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">if</span> (format_tag.size() &gt; 3 &amp;&amp; format_tag[0] == <span class="charliteral">&#39;%&#39;</span> &amp;&amp; format_tag[1] == <span class="charliteral">&#39;0&#39;</span> &amp;&amp;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      format_tag[format_tag.size() - 1] == <span class="charliteral">&#39;d&#39;</span>) {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordtype">unsigned</span> out;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">if</span> (base::StringToUint(format_tag.substr(2, format_tag.size() - 3), &amp;out))</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  }</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: Format tag should follow this prototype: &quot;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;             &lt;&lt; <span class="stringliteral">&quot;%0[width]d if exist.&quot;</span>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">bool</span> ValidateSegmentTemplate(<span class="keyword">const</span> std::string&amp; segment_template) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordflow">if</span> (segment_template.empty())</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::vector&lt;std::string&gt; splits = base::SplitString(</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      segment_template, <span class="stringliteral">&quot;$&quot;</span>, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// &quot;$&quot; always appears in pairs, so there should be odd number of splits.</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">if</span> (splits.size() % 2 == 0) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: &#39;$&#39; should appear in pairs.&quot;</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">bool</span> has_number = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">bool</span> has_time = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// Every second substring in split output should be an identifier.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; splits.size(); i += 2) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="comment">// Each identifier may be suffixed, within the enclosing ‘$’ characters,</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="comment">// with an additional format tag aligned with the printf format tag as</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// defined in IEEE 1003.1-2008 [10] following this prototype: %0[width]d.</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">size_t</span> format_pos = splits[i].find(<span class="charliteral">&#39;%&#39;</span>);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    std::string identifier = splits[i].substr(0, format_pos);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (format_pos != std::string::npos) {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">if</span> (!ValidateFormatTag(splits[i].substr(format_pos)))</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// TODO(kqyang): Support &quot;RepresentationID&quot;.</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;RepresentationID&quot;</span>) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: $RepresentationID$ is not supported &quot;</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                          <span class="stringliteral">&quot;yet.&quot;</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Number&quot;</span>) {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      has_number = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Time&quot;</span>) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      has_time = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;&quot;</span>) {</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordflow">if</span> (format_pos != std::string::npos) {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: $$ should not have any format tags.&quot;</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;      }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier != <span class="stringliteral">&quot;Bandwidth&quot;</span>) {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: &#39;$&quot;</span> &lt;&lt; splits[i]</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot;$&#39; is not a valid identifier.&quot;</span>;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">if</span> (has_number &amp;&amp; has_time) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: $Number$ and $Time$ should not co-exist.&quot;</span>;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  }</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">if</span> (!has_number &amp;&amp; !has_time) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;SegmentTemplate: $Number$ or $Time$ should exist.&quot;</span>;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;Status ValidateFormatTag(<span class="keyword">const</span> std::string&amp; format_tag) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordflow">if</span> (format_tag.empty()) {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT, <span class="stringliteral">&quot;Format tag should not be empty&quot;</span>);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  }</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// Format tag should follow this prototype: %0[width]d.</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">if</span> (format_tag.size() &gt; 3 &amp;&amp; format_tag[0] == <span class="charliteral">&#39;%&#39;</span> &amp;&amp; format_tag[1] == <span class="charliteral">&#39;0&#39;</span> &amp;&amp;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      format_tag[format_tag.size() - 1] == <span class="charliteral">&#39;d&#39;</span>) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordtype">unsigned</span> out;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">if</span> (base::StringToUint(format_tag.substr(2, format_tag.size() - 3), &amp;out)) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    }</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  }</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">return</span> Status(</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="stringliteral">&quot;Format tag should follow this prototype: %0[width]d if exist.&quot;</span>);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;Status ValidateSegmentTemplate(<span class="keyword">const</span> std::string&amp; segment_template) {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">if</span> (segment_template.empty()) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                  <span class="stringliteral">&quot;Segment template should not be empty.&quot;</span>);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  std::vector&lt;std::string&gt; splits = base::SplitString(</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      segment_template, <span class="stringliteral">&quot;$&quot;</span>, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// &quot;$&quot; always appears in pairs, so there should be odd number of splits.</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">if</span> (splits.size() % 2 == 0) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                  <span class="stringliteral">&quot;In segment templates, &#39;$&#39; should appear in pairs.&quot;</span>);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">bool</span> has_number = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">bool</span> has_time = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">// Every second substring in split output should be an identifier.</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; splits.size(); i += 2) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// Each identifier may be suffixed, within the enclosing ‘$’ characters,</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="comment">// with an additional format tag aligned with the printf format tag as</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="comment">// defined in IEEE 1003.1-2008 [10] following this prototype: %0[width]d.</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">size_t</span> format_pos = splits[i].find(<span class="charliteral">&#39;%&#39;</span>);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::string identifier = splits[i].substr(0, format_pos);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">if</span> (format_pos != std::string::npos) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      Status tag_check = ValidateFormatTag(splits[i].substr(format_pos));</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">if</span> (!tag_check.ok()) {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">return</span> tag_check;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="comment">// TODO(kqyang): Support &quot;RepresentationID&quot;.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;RepresentationID&quot;</span>) {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      <span class="keywordflow">return</span> Status(</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;          error::UNIMPLEMENTED,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;          <span class="stringliteral">&quot;Segment template flag $RepresentationID$ is not supported yet.&quot;</span>);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Number&quot;</span>) {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      has_number = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Time&quot;</span>) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      has_time = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;&quot;</span>) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      <span class="keywordflow">if</span> (format_pos != std::string::npos) {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                      <span class="stringliteral">&quot;&#39;$$&#39; should not have any format tags.&quot;</span>);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier != <span class="stringliteral">&quot;Bandwidth&quot;</span>) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                    <span class="stringliteral">&quot;&#39;$&quot;</span> + splits[i] + <span class="stringliteral">&quot;$&#39; is not a valid identifier.&quot;</span>);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    }</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// Note: The below check is skipped.</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// Strings outside identifiers shall only contain characters that are</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">// permitted within URLs according to RFC 1738.</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;std::string GetSegmentName(<span class="keyword">const</span> std::string&amp; segment_template,</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                           uint64_t segment_start_time,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                           uint32_t segment_index,</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                           uint32_t bandwidth) {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  DCHECK(ValidateSegmentTemplate(segment_template));</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  std::vector&lt;std::string&gt; splits = base::SplitString(</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      segment_template, <span class="stringliteral">&quot;$&quot;</span>, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// &quot;$&quot; always appears in pairs, so there should be odd number of splits.</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  DCHECK_EQ(1u, splits.size() % 2);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  std::string segment_name;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; splits.size(); ++i) {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="comment">// Every second substring in split output should be an identifier.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="comment">// Simply copy the non-identifier part.</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">if</span> (i % 2 == 0) {</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      segment_name += splits[i];</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    }</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">if</span> (splits[i].empty()) {</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="comment">// &quot;$$&quot; is an escape sequence, replaced with a single &quot;$&quot;.</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      segment_name += <span class="stringliteral">&quot;$&quot;</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    }</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keywordtype">size_t</span> format_pos = splits[i].find(<span class="charliteral">&#39;%&#39;</span>);</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    std::string identifier = splits[i].substr(0, format_pos);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    DCHECK(identifier == <span class="stringliteral">&quot;Number&quot;</span> || identifier == <span class="stringliteral">&quot;Time&quot;</span> ||</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;           identifier == <span class="stringliteral">&quot;Bandwidth&quot;</span>);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    std::string format_tag;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">if</span> (format_pos != std::string::npos) {</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      format_tag = splits[i].substr(format_pos);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;      DCHECK(ValidateFormatTag(format_tag));</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="comment">// Replace %d formatting to correctly format uint64_t.</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      format_tag = format_tag.substr(0, format_tag.size() - 1) + PRIu64;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      <span class="comment">// Default format tag &quot;%01d&quot;, modified to format uint64_t correctly.</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;      format_tag = <span class="stringliteral">&quot;%01&quot;</span> PRIu64;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    }</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Number&quot;</span>) {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      <span class="comment">// SegmentNumber starts from 1.</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;      segment_name += base::StringPrintf(</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;          format_tag.c_str(), <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(segment_index + 1));</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Time&quot;</span>) {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      segment_name +=</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;          base::StringPrintf(format_tag.c_str(), segment_start_time);</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Bandwidth&quot;</span>) {</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      segment_name += base::StringPrintf(format_tag.c_str(),</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                                         <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(bandwidth));</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    }</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  }</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordflow">return</span> segment_name;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;}</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">if</span> (has_number &amp;&amp; has_time) {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">return</span> Status(</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        <span class="stringliteral">&quot;In segment templates $Number$ and $Time$ should not co-exist.&quot;</span>);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">if</span> (!has_number &amp;&amp; !has_time) {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> Status(error::INVALID_ARGUMENT,</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                  <span class="stringliteral">&quot;In segment templates $Number$ or $Time$ should exist.&quot;</span>);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// Note: The below check is skipped.</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// Strings outside identifiers shall only contain characters that are</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// permitted within URLs according to RFC 1738.</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;std::string GetSegmentName(<span class="keyword">const</span> std::string&amp; segment_template,</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                           uint64_t segment_start_time,</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                           uint32_t segment_index,</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                           uint32_t bandwidth) {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  DCHECK_EQ(Status::OK, ValidateSegmentTemplate(segment_template));</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  std::vector&lt;std::string&gt; splits = base::SplitString(</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      segment_template, <span class="stringliteral">&quot;$&quot;</span>, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// &quot;$&quot; always appears in pairs, so there should be odd number of splits.</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  DCHECK_EQ(1u, splits.size() % 2);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  std::string segment_name;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; splits.size(); ++i) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="comment">// Every second substring in split output should be an identifier.</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="comment">// Simply copy the non-identifier part.</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keywordflow">if</span> (i % 2 == 0) {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      segment_name += splits[i];</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">if</span> (splits[i].empty()) {</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <span class="comment">// &quot;$$&quot; is an escape sequence, replaced with a single &quot;$&quot;.</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      segment_name += <span class="stringliteral">&quot;$&quot;</span>;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    }</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keywordtype">size_t</span> format_pos = splits[i].find(<span class="charliteral">&#39;%&#39;</span>);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    std::string identifier = splits[i].substr(0, format_pos);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    DCHECK(identifier == <span class="stringliteral">&quot;Number&quot;</span> || identifier == <span class="stringliteral">&quot;Time&quot;</span> ||</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;           identifier == <span class="stringliteral">&quot;Bandwidth&quot;</span>);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    std::string format_tag;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">if</span> (format_pos != std::string::npos) {</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;      format_tag = splits[i].substr(format_pos);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      DCHECK_EQ(Status::OK, ValidateFormatTag(format_tag));</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;      <span class="comment">// Replace %d formatting to correctly format uint64_t.</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;      format_tag = format_tag.substr(0, format_tag.size() - 1) + PRIu64;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      <span class="comment">// Default format tag &quot;%01d&quot;, modified to format uint64_t correctly.</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      format_tag = <span class="stringliteral">&quot;%01&quot;</span> PRIu64;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    }</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Number&quot;</span>) {</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      <span class="comment">// SegmentNumber starts from 1.</span></div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      segment_name += base::StringPrintf(</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;          format_tag.c_str(), <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(segment_index + 1));</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Time&quot;</span>) {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      segment_name +=</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;          base::StringPrintf(format_tag.c_str(), segment_start_time);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (identifier == <span class="stringliteral">&quot;Bandwidth&quot;</span>) {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      segment_name += base::StringPrintf(format_tag.c_str(),</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;                                         <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(bandwidth));</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  }</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">return</span> segment_name;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;}</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

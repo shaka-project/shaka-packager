@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Live &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DRM" href="drm.html" />
+    <link rel="prev" title="HLS" href="hls.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="drm.html" title="DRM"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="hls.html" title="HLS"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Live</a><ul>
+<li><a class="reference internal" href="#udp-file-options">UDP file options</a><ul>
+<li><a class="reference internal" href="#pipe-through-ffmpeg">Pipe through FFmpeg</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="hls.html"
+                        title="previous chapter">HLS</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="drm.html"
+                        title="next chapter">DRM</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/live.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="live">
+<h1>Live<a class="headerlink" href="#live" title="Permalink to this headline">¶</a></h1>
+<p>A typical live source is UDP multicast, which is the only live protocol
+packager supports directly right now.</p>
+<div class="section" id="udp-file-options">
+<h2>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h2>
+<p>UDP file is of the form udp://ip:port[?options]. Here is the list of supported
+options:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;, source=&lt;addr&gt;:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address is
+received.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="pipe-through-ffmpeg">
+<h3>Pipe through FFmpeg<a class="headerlink" href="#pipe-through-ffmpeg" title="Permalink to this headline">¶</a></h3>
+<p>For other unsupported protocols, you can use FFmpeg to pipe the input.
+See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">ffmpeg piping</span></a> for details.</p>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>The command is similar to the on-demand, see <a class="reference internal" href="dash.html"><span class="doc">DASH</span></a> and <a class="reference internal" href="hls.html"><span class="doc">HLS</span></a>.</p>
+<p>Here are some examples.</p>
+<ul>
+<li><p class="first">DASH:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=audio,init_segment=audio_init.mp4,segment_template=audio_$Number$.m4s&#39; \
+  &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=video,init_segment=h264_360p_init.mp4,segment_template=h264_360p_$Number$.m4s&#39; \
+  &#39;in=udp://225.1.1.8:8002?interface=172.29.46.122,stream=video,init_segment=h264_480p_init.mp4,segment_template=h264_480p_$Number$.m4s&#39; \
+  &#39;in=udp://225.1.1.8:8003?interface=172.29.46.122,stream=video,init_segment=h264_720p_init.mp4,segment_template=h264_720p_$Number$.m4s&#39; \
+  &#39;in=udp://225.1.1.8:8004?interface=172.29.46.122,stream=video,init_segment=h264_1080p_init.mp4,segment_template=h264_1080p_$Number$.m4s&#39; \
+  --mpd_output h264.mpd
+</pre></div>
+</div>
+</li>
+<li><p class="first">HLS:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=audio,init_segment=audio_init.mp4,segment_template=audio_$Number$.m4s,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH&#39; \
+  &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=video,init_segment=h264_360p_init.mp4,segment_template=h264_360p_$Number$.m4s,playlist_name=h264_360p.m3u8&#39; \
+  &#39;in=udp://225.1.1.8:8002?interface=172.29.46.122,stream=video,init_segment=h264_480p_init.mp4,segment_template=h264_480p_$Number$.m4s,playlist_name=h264_480p.m3u8&#39; \
+  &#39;in=udp://225.1.1.8:8003?interface=172.29.46.122,stream=video,init_segment=h264_720p_init.mp4,segment_template=h264_720p_$Number$.m4s,playlist_name=h264_720p.m3u8&#39; \
+  &#39;in=udp://225.1.1.8:8004?interface=172.29.46.122,stream=video,init_segment=h264_1080p_init.mp4,segment_template=h264_1080p_$Number$.m4s,playlist_name=h264_1080p.m3u8&#39; \
+  --hls_master_playlist_output h264_master.m3u8
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Packager does not support removing old segments internally. The user is
+resposible for setting up a cron job to do so.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="drm.html" title="DRM"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="hls.html" title="HLS"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

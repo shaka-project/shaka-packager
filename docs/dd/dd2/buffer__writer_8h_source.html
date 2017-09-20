@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/base/buffer_writer.h Source File</title>
+<title>Shaka Packager SDK: packager/media/base/buffer_writer.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_c6ada2450b25ab5438a4dba6c9b890af.html">base</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_e3bda0bde998a4d5063328245b9909be.html">base</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -134,7 +134,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">size_t</span> Size()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> buf_.size(); }</div>
 <div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ab3054a98a4ec27764c65511dc17a916d">   60</a></span>&#160;  <span class="keyword">const</span> uint8_t* <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ab3054a98a4ec27764c65511dc17a916d">Buffer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> buf_.data(); }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  Status <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d">WriteToFile</a>(File* file);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d">WriteToFile</a>(<a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* file);</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">// Internal implementation of multi-byte write.</span></div>
@@ -150,7 +150,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_BUFFER_WRITER_H_</span></div>
+<div class="ttc" id="classshaka_1_1File_html"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html">shaka::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00026">file.h:26</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_abd8854feedd8b45146eb04dacf7d5b2f"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">shaka::media::BufferWriter::AppendInt</a></div><div class="ttdeci">void AppendInt(uint8_t v)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00025">buffer_writer.cc:25</a></div></div>
+<div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">shaka::media::BufferWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00023">buffer_writer.h:23</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_ae44b09c03c9b8f0fbf58deb80355f299"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ae44b09c03c9b8f0fbf58deb80355f299">shaka::media::BufferWriter::AppendNBytes</a></div><div class="ttdeci">void AppendNBytes(uint64_t v, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00047">buffer_writer.cc:47</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_ab3054a98a4ec27764c65511dc17a916d"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ab3054a98a4ec27764c65511dc17a916d">shaka::media::BufferWriter::Buffer</a></div><div class="ttdeci">const uint8_t * Buffer() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00060">buffer_writer.h:60</a></div></div>
@@ -158,7 +160,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

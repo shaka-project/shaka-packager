@@ -1,0 +1,18 @@
+/* css fragment used by cloud_sptheme.ext.table_styling
+ * for themes which don't derive from base cloud theme
+ */
+table.docutils .left-align { text-align: left; }
+table.docutils .center-align { text-align: center; }
+table.docutils .right-align { text-align: right; }
+table.docutils .justify-align { text-align: justify; }
+table.docutils .nowrap { white-space: nowrap; }
+
+table.docutils .no-left-divider { border-left-width: 0; }
+table.docutils .single-left-divider { border-left-width: 2px; border-left-style: solid; }
+table.docutils .double-left-divider { border-left-width: 6px; border-left-style: double; }
+
+table.docutils .no-right-divider,
+table.docutils .single-right-divider,
+table.docutils .double-right-divider { border-right-width: 0; }
+table.docutils .single-right-divider:last-child { border-right-width: 2px; border-right-style: solid; }
+table.docutils .double-right-divider:last-child { border-right-width: 6px; border-right-style: double; }

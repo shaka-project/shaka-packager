@@ -2,6 +2,7 @@ var searchData=
 [
   ['bandwidthestimator',['BandwidthEstimator',['../d2/d6f/classBandwidthEstimator.html#aaae9573785ee9d62e0927f806537ea97',1,'BandwidthEstimator']]],
   ['bit_5fposition',['bit_position',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a6b7456b84d6b463767127b57cd0dc898',1,'shaka::media::BitReader']]],
+  ['bitrate',['Bitrate',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ab518406ca3fb7785e103ab0bdb06ade9',1,'shaka::hls::MediaPlaylist']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a264dbe3e94ba76214c1af75ab3877945',1,'shaka::media::BitReader']]],
   ['bits_5favailable',['bits_available',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a1c1e1225c2780383e72996137bb7f86a',1,'shaka::media::BitReader']]],
   ['box_5fsize',['box_size',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#ad0186e0f9301bd07c52a55a8b1db0419',1,'shaka::media::mp4::Box']]],
@@ -10,5 +11,7 @@ var searchData=
   ['buffer',['Buffer',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ab3054a98a4ec27764c65511dc17a916d',1,'shaka::media::BufferWriter']]],
   ['bufferreader',['BufferReader',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a94771befc54d444630ade726689b7bf7',1,'shaka::media::BufferReader']]],
   ['bufferwriter',['BufferWriter',['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a01d91524fd5c5491bafcc1cff16db916',1,'shaka::media::BufferWriter']]],
+  ['bytescached',['BytesCached',['../df/d4e/classshaka_1_1IoCache.html#a8033da711e62112877be7a6ac2186622',1,'shaka::IoCache']]],
+  ['bytesfree',['BytesFree',['../df/d4e/classshaka_1_1IoCache.html#a744559cbb0a3878027ca6fc2a12555c1',1,'shaka::IoCache']]],
   ['bytesleft',['BytesLeft',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#acf36e70bcb8c4ee7939835126ae9b98b',1,'shaka::media::mp4::BoxBuffer']]]
 ];

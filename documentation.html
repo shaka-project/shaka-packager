@@ -1,0 +1,591 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Packager Documentation &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="tutorials/tutorials.html" />
+    <link rel="prev" title="Welcome to Shaka Packager’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorials/tutorials.html" title="Tutorials"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Shaka Packager’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Packager Documentation</a><ul>
+<li><a class="reference internal" href="#getting-shaka-packager">Getting Shaka Packager</a></li>
+<li><a class="reference internal" href="#synopsis">Synopsis</a><ul>
+<li><a class="reference internal" href="#stream-descriptors">Stream descriptors</a></li>
+<li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
+<li><a class="reference internal" href="#chunking-options">Chunking options</a></li>
+<li><a class="reference internal" href="#mp4-output-options">MP4 output options</a></li>
+<li><a class="reference internal" href="#dash-options">DASH options</a></li>
+<li><a class="reference internal" href="#hls-options">HLS options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#encryption-decryption-options">Encryption / decryption options</a><ul>
+<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
+<li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
+<li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
+<li><a class="reference internal" href="#playready-encryption-options">Playready encryption options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Shaka Packager&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorials/tutorials.html"
+                        title="next chapter">Tutorials</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/documentation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="packager-documentation">
+<h1>Packager Documentation<a class="headerlink" href="#packager-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Shaka Packager is a tool and a media packaging SDK for DASH and HLS packaging
+and encryption. It can transmux input media files from one container to another
+container.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Shaka Packager does not do transcoding. Content must be pre-encoded before
+passing to packager.</p>
+</div>
+<p>Packager operates in <em>streams</em>, described by <em>stream_descriptor</em>. The streams
+can be read from the same &#8220;file&#8221; or different &#8220;files&#8221;, which can be regular
+files, pipes, udp streams, etc.</p>
+<p>This page is the documentation on using the <em>packager</em> tool. If you are
+interested in integrating <em>packager</em> library into your own tool, please see
+<a class="reference internal" href="library.html"><span class="doc">Shaka Packager Library</span></a>.</p>
+<div class="section" id="getting-shaka-packager">
+<h2>Getting Shaka Packager<a class="headerlink" href="#getting-shaka-packager" title="Permalink to this headline">¶</a></h2>
+<p>There are several ways you can get Shaka Packager.</p>
+<ul class="simple">
+<li>Using <a class="reference external" href="https://www.docker.com/whatisdocker">Docker</a>.
+Instructions are available at <a class="reference internal" href="docker_instructions.html"><span class="doc">Using Docker</span></a>.</li>
+<li>Get prebuilt binaries from
+<a class="reference external" href="https://github.com/google/shaka-packager/releases">release</a>.</li>
+<li>Built from source, see <a class="reference internal" href="build_instructions.html"><span class="doc">Build Instructions</span></a> for details.</li>
+</ul>
+</div>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager {stream_descriptor} [{stream_descriptor}] ... \
+           [--dump_stream_info] \
+           [Chunking Options] \
+           [MP4 Output Options] \
+           [encryption / decryption options] \
+           [DASH options] \
+           [HLS options]
+</pre></div>
+</div>
+<div class="section" id="stream-descriptors">
+<h3>Stream descriptors<a class="headerlink" href="#stream-descriptors" title="Permalink to this headline">¶</a></h3>
+<p>There can be multiple <em>stream_descriptor</em> with input from the same &#8220;file&#8221; or
+multiple different &#8220;files&#8221;.</p>
+<p>Stream is of the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">field</span><span class="p">}</span><span class="o">=</span><span class="p">{</span><span class="n">value</span><span class="p">}[,{</span><span class="n">field</span><span class="p">}</span><span class="o">=</span><span class="p">{</span><span class="n">value</span><span class="p">}]</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>These are the available fields:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">input (in):</th><td class="field-body">input/source media &#8220;file&#8221; path, which can be regular files, pipes, udp
+streams. See <a class="reference internal" href="options/udp_file_options.html"><span class="doc">UDP file options</span></a> on additional options for UDP
+files.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">stream_selector (stream):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Required field with value &#8216;audio&#8217;, &#8216;video&#8217;, &#8216;text&#8217; or stream number (zero
+based).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">output (out):</th><td class="field-body">Required output file path (single file).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">init_segment:</th><td class="field-body">initialization segment path (multiple file).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">segment_template (segment):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional value which specifies the naming  pattern for the segment files,
+and that the stream should be split into multiple files. Its presence should
+be consistent across streams. See
+<a class="reference internal" href="options/segment_template_formatting.html"><span class="doc">Segment template formatting</span></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">bandwidth (bw):</th><td class="field-body">Optional value which contains a user-specified content bit rate for the
+stream, in bits/sec. If specified, this value is propagated to (HLS)
+EXT-X-STREAM-INF:BANDWIDTH or (DASH) Representation&#64;bandwidth and the
+$Bandwidth$ template parameter for segment names. If not specified, the
+bandwidth value is estimated from content bitrate. Note that it only affects
+the generated manifests/playlists; it has no effect on the media content
+itself.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">language (lang):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional value which contains a user-specified language tag. If specified,
+this value overrides any language metadata in the input stream.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">output_format (format):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Optional value which specifies the format of the output files (MP4 or WebM).
+If not specified, it will be derived from the file extension of the output
+file.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">skip_encryption=0|1:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional. Defaults to 0 if not specified. If it is set to 1, no encryption
+of the stream will be made.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">trick_play_factor (tpf):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Optional value which specifies the trick play, a.k.a. trick mode, stream
+sampling rate among key frames. If specified, the output is a trick play
+stream.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="hls-specific-stream-descriptor-fields">
+<h3>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Required for audio when outputting HLS. name of the output stream. This is
+not (necessarily) the same as output. This is used as the NAME attribute for
+EXT-X-MEDIA.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Required for audio when outputting HLS. The group ID for the output stream.
+This is used as the GROUP-ID attribute for EXT-X-MEDIA.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Required for HLS output. Name of the playlist for the stream. Usually ends
+with &#8216;.m3u8&#8217;.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="chunking-options">
+<h3>Chunking options<a class="headerlink" href="#chunking-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--segment_duration <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Segment duration in seconds. If single_segment is specified, this parameter
+sets the duration of a subsegment; otherwise, this parameter sets the
+duration of a segment. Actual segment durations may not be exactly as
+requested.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--fragment_duration <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Fragment duration in seconds. Should not be larger than the segment
+duration. Actual fragment durations may not be exactly as requested.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--segment_sap_aligned</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Force segments to begin with stream access points. Default enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--fragment_sap_aligned</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Force fragments to begin with stream access points. This flag implies
+<em>segment_sap_aligned</em>. Default enabled.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="mp4-output-options">
+<h3>MP4 output options<a class="headerlink" href="#mp4-output-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--mp4_include_pssh_in_stream</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>MP4 only: include pssh in the encrypted stream. Default enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--mp4_use_decoding_timestamp_in_timeline</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If set, decoding timestamp instead of presentation timestamp will be used
+when generating media timeline, e.g. timestamps in sidx and mpd. This is
+to workaround a Chromium bug that decoding timestamp is used in buffered
+range, <a class="reference external" href="https://crbug.com/398130">https://crbug.com/398130</a>. Default false.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--num_subsegments_per_sidx <var>&lt;number&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Set the number of subsegments in each SIDX box. If 0, a single SIDX box is
+used per segment; if -1, no SIDX box is used; Otherwise, the muxer packs N
+subsegments in the root SIDX of the segment, with
+segment_duration/N/fragment_duration fragments per subsegment.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="dash-options">
+<h3>DASH options<a class="headerlink" href="#dash-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--generate_static_mpd</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If enabled, generates static mpd. If segment_template is specified in
+stream descriptors, shaka-packager generates dynamic mpd by default; if
+this flag is enabled, shaka-packager generates static mpd instead. Note
+that if segment_template is not specified, shaka-packager always generates
+static mpd regardless of the value of this flag.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--mpd_output <var>&lt;file_path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>MPD output file name.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--base_urls <var>&lt;comma separated url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Comma separated BaseURLs for the MPD. The values will be added  as &lt;BaseURL&gt;
+element(s) immediately under the &lt;MPD&gt; element.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--min_buffer_time <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specifies, in seconds, a common duration used in the definition of the MPD
+Representation data rate.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--minimum_update_period <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Indicates to the player how often to refresh the media presentation
+description in seconds. This value is used for dynamic MPD only.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
+presentations, in seconds.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--suggested_presentation_delay <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specifies a delay, in seconds, to be added to the media presentation time.
+This value is used for dynamic MPD only.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Any tracks tagged with this language will have &lt;Role ... value=&#8221;main&#8221; /&gt;
+in the manifest.  This allows the player to choose the correct default
+language for the content.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="hls-options">
+<h3>HLS options<a class="headerlink" href="#hls-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hls_master_playlist_output <var>&lt;file_path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Output path for the master playlist for HLS. This flag must be used to
+output HLS.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hls_base_url <var>&lt;url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The base URL for the Media Playlists and media files listed in the
+playlists. This is the prefix for the files.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hls_playlist_type <var>&lt;type&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>VOD, EVENT, or LIVE. This defines the EXT-X-PLAYLIST-TYPE in the HLS
+specification. For hls_playlist_type of LIVE, EXT-X-PLAYLIST-TYPE tag is
+omitted.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="encryption-decryption-options">
+<h2>Encryption / decryption options<a class="headerlink" href="#encryption-decryption-options" title="Permalink to this headline">¶</a></h2>
+<p>Shaka Packager supports three different types of key providers:</p>
+<ul class="simple">
+<li>Raw key (fixed key): keys are provided in command line</li>
+<li>Widevine: fetches keys from Widevine key server</li>
+<li>Playready: fetches keys from Playready key server</li>
+</ul>
+<p>Different key providers cannot be specified at the same time.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">--</span><span class="n">enable_widevine_encryption</span> <span class="p">{</span><span class="n">Widevine</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="p">}]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_widevine_decryption</span> <span class="p">{</span><span class="n">Widevine</span> <span class="n">Decryption</span> <span class="n">Options</span><span class="p">}]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_fixed_key_encryption</span> <span class="p">{</span><span class="n">Fixed</span> <span class="n">Key</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="p">}]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_fixed_key_decryption</span> <span class="p">{</span><span class="n">Fixed</span> <span class="n">Key</span> <span class="n">Decryption</span> <span class="n">Options</span><span class="p">}]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_playready_encryption</span> <span class="p">{</span><span class="n">Playready</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="p">}]</span>
+</pre></div>
+</div>
+<div class="section" id="general-encryption-options">
+<h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify a protection scheme, &#8216;cenc&#8217; or &#8216;cbc1&#8217; or pattern-based protection
+schemes &#8216;cens&#8217; or &#8216;cbcs&#8217;.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable / disable VP9 subsample encryption. Enabled by default.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="raw-key-encryption-options">
+<h3>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_fixed_key_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable encryption with fixed key.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_fixed_key_decryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable decryption with fixed key.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--key_id <var>&lt;32-digit hex string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The key id in hex string format.
+HEX.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--key <var>&lt;32-digit hex string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The key in hex string format.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>IV in hex string format. If not specified, a random IV will be generated.
+This flag should only be used for testing. IV must be either 8 bytes
+(16 digits HEX) or 16 bytes (32 digits in HEX).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If not specified,
+a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="widevine-encryption-options">
+<h3>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_widevine_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
+AES signing key (&#8211;aes_signing_key, &#8211;aes_signing_iv) or RSA signing key
+(&#8211;rsa_signing_key_path).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
+AES signing key (&#8211;aes_signing_key, &#8211;aes_signing_iv) or RSA signing key
+(&#8211;rsa_signing_key_path).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--include_common_pssh</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>When using Widevine encryption, include an additional v1 PSSH box for the
+common system ID that includes the key IDs. See <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Key server url. Required for Widevine encryption and decryption.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--content_id <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Content identifier that uniquely identifies the content.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--policy <var>&lt;policy&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The name of a stored policy, which specifies DRM content rights.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--max_sd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The video track is considered SD if its max pixels per frame is no higher
+than <em>max_sd_pixels</em>. Default: 442368 (768 x 576).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--max_hd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The video track is considered HD if its max pixels per frame is higher than
+<em>max_sd_pixels</em>, but no higher than <em>max_hd_pixels</em>. Default: 2073600
+(1920 x 1080).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--max_uhd1_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The video track is considered UHD1 if its max pixels per frame is higher
+than <em>max_hd_pixels</em>, but no higher than <em>max_uhd1_pixels</em>. Otherwise it is
+UHD2. Default: 8847360 (4096 x 2160).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--signer <var>&lt;signer&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The name of the signer.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--aes_signing_key <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>AES signing key in hex string. <em>aes_signing_iv</em> is required if
+<em>aes_signing_key</em> is specified. This option is exclusive with
+<em>rsa_signing_key_path</em>.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--aes_signing_iv <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>AES signing iv in hex string.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--rsa_signing_key_path <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to the file containing PKCS#1 RSA private key for request signing.
+This option is exclusive with <em>aes_signing_key</em>.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--crypto_period_duration <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Defines how often key rotates. If it is non-zero, key rotation is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--group_id <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Identifier for a group of licenses.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="playready-encryption-options">
+<h3>Playready encryption options<a class="headerlink" href="#playready-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_playready_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable encryption with playready key.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--playready_server_url <var>&lt;url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Playready packaging server url.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--program_identifier <var>&lt;program_identifier&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Program identifier for packaging request.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--playready_key_id <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Playready key id in hex.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--playready_key <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Playready key in hex.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--ca_file <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Absolute path to the certificate authority file for the server cert.
+PEM format.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--client_cert_file <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Absolute path to client certificate file.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--client_cert_private_key_file <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Absolute path to the private key file.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--client_cert_private_key_password <var>&lt;string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Password to the private key file.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorials/tutorials.html" title="Tutorials"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Shaka Packager’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

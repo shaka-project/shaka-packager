@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: app/packager_util.cc Source File</title>
+<title>Shaka Packager SDK: packager/app/packager_util.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_d422163b96683743ed3963d4aac17747.html">app</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_bf7f1d16febc509cca62cff27fb88644.html">app</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -275,7 +275,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordtype">size_t</span> num_handlers = handlers.size();</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  Status status;</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_handlers; ++i) {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    status.Update(handlers[i - 1]-&gt;AddHandler(handlers[i]));</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    status.<a class="code" href="../../d2/d20/classshaka_1_1Status.html#a073aa1a10d4d005af861079e7319d3fa">Update</a>(handlers[i - 1]-&gt;AddHandler(handlers[i]));</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  }</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;}</div>
@@ -284,13 +284,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1RsaRequestSigner_html_af6af635a7c0a01bb638befb71b88386c"><div class="ttname"><a href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">shaka::media::RsaRequestSigner::CreateSigner</a></div><div class="ttdeci">static RsaRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;pkcs1_rsa_key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00053">request_signer.cc:53</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AesRequestSigner_html_a8ae2058318e5894422acb95586e3c471"><div class="ttname"><a href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a8ae2058318e5894422acb95586e3c471">shaka::media::AesRequestSigner::CreateSigner</a></div><div class="ttdeci">static AesRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::vector&lt; uint8_t &gt; &amp;aes_key, const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00028">request_signer.cc:28</a></div></div>
+<div class="ttc" id="classshaka_1_1Status_html_a073aa1a10d4d005af861079e7319d3fa"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html#a073aa1a10d4d005af861079e7319d3fa">shaka::Status::Update</a></div><div class="ttdeci">void Update(const Status &amp;new_status)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00152">status.h:152</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_adeac90b9cff39bfa259f81ff3e93679c"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#adeac90b9cff39bfa259f81ff3e93679c">shaka::media::PlayReadyKeySource::SetCaFile</a></div><div class="ttdeci">void SetCaFile(const std::string &amp;ca_file)</div><div class="ttdoc">Sets the Certificate Authority file for validating self-signed certificates. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d00/playready__key__source_8h_source.html#l00062">playready_key_source.h:62</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_aebde54a272565d4b81a1139ea35fab63"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#aebde54a272565d4b81a1139ea35fab63">shaka::media::FixedKeySource::Create</a></div><div class="ttdeci">static std::unique_ptr&lt; FixedKeySource &gt; Create(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;pssh_boxes, const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00078">fixed_key_source.cc:78</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a76f18b778d83492e5b7ed90637124b2c"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a76f18b778d83492e5b7ed90637124b2c">shaka::media::PlayReadyKeySource::CreateFromKeyAndKeyId</a></div><div class="ttdeci">static std::unique_ptr&lt; PlayReadyKeySource &gt; CreateFromKeyAndKeyId(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00184">playready_key_source.cc:184</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

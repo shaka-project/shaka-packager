@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DASH options &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/options/dash_options.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dash-options">
+<h1>DASH options<a class="headerlink" href="#dash-options" title="Permalink to this headline">¶</a></h1>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--generate_static_mpd</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>If enabled, generates static mpd. If segment_template is specified in
+stream descriptors, shaka-packager generates dynamic mpd by default; if
+this flag is enabled, shaka-packager generates static mpd instead. Note
+that if segment_template is not specified, shaka-packager always generates
+static mpd regardless of the value of this flag.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--mpd_output <var>&lt;file_path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>MPD output file name.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--base_urls <var>&lt;comma separated url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Comma separated BaseURLs for the MPD. The values will be added  as &lt;BaseURL&gt;
+element(s) immediately under the &lt;MPD&gt; element.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--min_buffer_time <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specifies, in seconds, a common duration used in the definition of the MPD
+Representation data rate.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--minimum_update_period <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Indicates to the player how often to refresh the media presentation
+description in seconds. This value is used for dynamic MPD only.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
+presentations, in seconds.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--suggested_presentation_delay <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specifies a delay, in seconds, to be added to the media presentation time.
+This value is used for dynamic MPD only.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Any tracks tagged with this language will have &lt;Role ... value=&#8221;main&#8221; /&gt;
+in the manifest.  This allows the player to choose the correct default
+language for the content.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

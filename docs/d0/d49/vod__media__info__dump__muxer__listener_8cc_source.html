@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/event/vod_media_info_dump_muxer_listener.cc Source File</title>
+<title>Shaka Packager SDK: packager/media/event/vod_media_info_dump_muxer_listener.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_aa73376d632f252584a1c0dfbefab2c4.html">event</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_e329e4913ca1adf6e112c00fbb0d634f.html">event</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -188,17 +188,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  }</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  File* file = File::Open(output_file_path.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* file = <a class="code" href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">File::Open</a>(output_file_path.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">if</span> (!file) {</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to open &quot;</span> &lt;&lt; output_file_path;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">if</span> (file-&gt;Write(output_string.data(), output_string.size()) &lt;= 0) {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">if</span> (file-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a8c498531ecbd205fceb0be3478361801">Write</a>(output_string.data(), output_string.size()) &lt;= 0) {</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write MediaInfo to file.&quot;</span>;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    file-&gt;Close();</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    file-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a932666ed1d6a565bf387a9d8b39a8948">Close</a>();</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  }</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span> (!file-&gt;Close()) {</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span> (!file-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a932666ed1d6a565bf387a9d8b39a8948">Close</a>()) {</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to close &quot;</span> &lt;&lt; output_file_path;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
@@ -207,21 +207,25 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00057">stream_info.h:57</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_a8c498531ecbd205fceb0be3478361801"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a8c498531ecbd205fceb0be3478361801">shaka::File::Write</a></div><div class="ttdeci">virtual int64_t Write(const void *buffer, uint64_t length)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00058">stream_info.h:58</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a25fc470ed18733954876a4d4256aacf9"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a25fc470ed18733954876a4d4256aacf9">shaka::media::VodMediaInfoDumpMuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">void OnSampleDurationReady(uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00067">vod_media_info_dump_muxer_listener.cc:67</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html">shaka::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00026">file.h:26</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a36e979fe7b3cfa69dc257e5e439dca08"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a36e979fe7b3cfa69dc257e5e439dca08">shaka::media::VodMediaInfoDumpMuxerListener::OnNewSegment</a></div><div class="ttdeci">void OnNewSegment(const std::string &amp;file_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00086">vod_media_info_dump_muxer_listener.cc:86</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_ae8f6f65fbab9f301be5bb35f5b8d1cbc"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae8f6f65fbab9f301be5bb35f5b8d1cbc">shaka::media::VodMediaInfoDumpMuxerListener::OnEncryptionStart</a></div><div class="ttdeci">void OnEncryptionStart() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00065">vod_media_info_dump_muxer_listener.cc:65</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00020">muxer_options.h:20</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a4811b4ce8292f0f449a35a837aeab74f"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4811b4ce8292f0f449a35a837aeab74f">shaka::media::VodMediaInfoDumpMuxerListener::OnMediaStart</a></div><div class="ttdeci">void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00043">vod_media_info_dump_muxer_listener.cc:43</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_a932666ed1d6a565bf387a9d8b39a8948"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a932666ed1d6a565bf387a9d8b39a8948">shaka::File::Close</a></div><div class="ttdeci">virtual bool Close()=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_ae0a573e1c785164f40bfbfba2ced6a16"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae0a573e1c785164f40bfbfba2ced6a16">shaka::media::VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile</a></div><div class="ttdeci">static bool WriteMediaInfoToFile(const MediaInfo &amp;media_info, const std::string &amp;output_file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00092">vod_media_info_dump_muxer_listener.cc:92</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerListener_1_1MediaRanges_html"><div class="ttname"><a href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">shaka::media::MuxerListener::MediaRanges</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00044">muxer_listener.h:44</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_a68a15f623c2a1601879f291f93a1f464"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">shaka::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_ab2ab9bc34256f8016f0e827097b97ca1"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ab2ab9bc34256f8016f0e827097b97ca1">shaka::media::VodMediaInfoDumpMuxerListener::OnMediaEnd</a></div><div class="ttdeci">void OnMediaEnd(const MediaRanges &amp;media_ranges, float duration_seconds) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00075">vod_media_info_dump_muxer_listener.cc:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a683882564ac762e2e94795964f8be4b8"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a683882564ac762e2e94795964f8be4b8">shaka::media::VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady</a></div><div class="ttdeci">void OnEncryptionInfoReady(bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;default_key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; ProtectionSystemSpecificInfo &gt; &amp;key_system_info) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00028">vod_media_info_dump_muxer_listener.cc:28</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_ab98cfd28046fc5c52ab2a45dba1a339a"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ab98cfd28046fc5c52ab2a45dba1a339a">shaka::media::MuxerOptions::segment_template</a></div><div class="ttdeci">std::string segment_template</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00036">muxer_options.h:36</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

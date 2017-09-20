@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>HLS &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Live" href="live.html" />
+    <link rel="prev" title="DASH" href="dash.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="live.html" title="Live"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dash.html" title="DASH"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">HLS</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
+<li><a class="reference internal" href="#hls-options">HLS options</a></li>
+<li><a class="reference internal" href="#segment-template-formatting">Segment template formatting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dash.html"
+                        title="previous chapter">DASH</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="live.html"
+                        title="next chapter">Live</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/hls.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="hls">
+<h1>HLS<a class="headerlink" href="#hls" title="Permalink to this headline">¶</a></h1>
+<p>HTTP Live Streaming (also known as HLS) is an HTTP-based media streaming
+communications protocol implemented by Apple Inc. as part of its QuickTime,
+Safari, OS X, and iOS software. It resembles MPEG-DASH in that it works by
+breaking the overall stream into a sequence of small HTTP-based file downloads,
+each download loading one short chunk of an overall potentially unbounded
+transport stream. As the stream is played, the client may select from a number
+of different alternate streams containing the same material encoded at a variety
+of data rates, allowing the streaming session to adapt to the available data
+rate. At the start of the streaming session, HLS downloads an extended M3U
+playlist containing the metadata for the various sub-streams which are
+available.</p>
+<p>Shaka Packager supports HLS content packaging. This tutorial covers HLS
+packaging of VOD content without encryption. For live content packaging, see
+<a class="reference internal" href="live.html"><span class="doc">Live</span></a>; for content encryption, see <a class="reference internal" href="drm.html"><span class="doc">DRM</span></a>.</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager {stream_descriptor with HLS specific descriptors} \
+           [stream_descriptor with HLS specific descriptors] ... \
+  --hls_master_playlist_output {master playlist output path} \
+  [Other HLS options] \
+  [Other options, e.g. DRM options, DASH options]
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a> for the available HLS specific
+stream descriptor fields.</p>
+<p>See <a class="reference internal" href="#hls-options">HLS options</a> for the available HLS related options.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">DASH and HLS options can both be specified to output DASH and HLS manifests
+at the same time. Note that it works only for MP4 outputs.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The examples below uses the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
+<ul>
+<li><p class="first">TS output:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  &#39;in=h264_baseline_360p_600.mp4,stream=audio,output=audio_$Number$.ts,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH&#39; \
+  &#39;in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p_$Number$.ts,playlist_name=h264_360p.m3u8&#39; \
+  &#39;in=h264_main_480p_1000.mp4,stream=video,output=h264_480p_$Number$.ts,playlist_name=h264_480p.m3u8&#39; \
+  &#39;in=h264_main_720p_3000.mp4,stream=video,output=h264_720p_$Number$.ts,playlist_name=h264_720p.m3u8&#39; \
+  &#39;in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p_$Number$.ts,playlist_name=h264_1080p.m3u8&#39; \
+  --hls_master_playlist_output h264_master.m3u8
+</pre></div>
+</div>
+</li>
+</ul>
+<p>The above packaging command creates five single track TS streams
+(4 video, 1 audio) and a manifest, which describes the streams.</p>
+<ul>
+<li><p class="first">MP4 output is also supported:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  &#39;in=h264_baseline_360p_600.mp4,stream=audio,init_segment=audio_init.mp4,segment_template=audio_$Number$.m4s,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH&#39; \
+  &#39;in=h264_baseline_360p_600.mp4,stream=video,init_segment=h264_360p_init.mp4,segment_template=h264_360p_$Number$.m4s,playlist_name=h264_360p.m3u8&#39; \
+  &#39;in=h264_main_480p_1000.mp4,stream=video,init_segment=h264_480p_init.mp4,segment_template=h264_480p_$Number$.m4s,playlist_name=h264_480p.m3u8&#39; \
+  &#39;in=h264_main_720p_3000.mp4,stream=video,init_segment=h264_720p_init.mp4,segment_template=h264_720p_$Number$.m4s,playlist_name=h264_720p.m3u8&#39; \
+  &#39;in=h264_main_1080p_6000.mp4,stream=video,init_segment=h264_1080p_init.mp4,segment_template=h264_1080p_$Number$.m4s,playlist_name=h264_1080p.m3u8&#39; \
+  --hls_master_playlist_output h264_master.m3u8
+</pre></div>
+</div>
+</li>
+<li><p class="first">Single file MP4 output is also supported:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH \
+  in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,playlist_name=h264_360p.m3u8 \
+  in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,playlist_name=h264_480p.m3u8 \
+  in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4,playlist_name=h264_720p.m3u8 \
+  in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,playlist_name=h264_1080p.m3u8 \
+  --hls_master_playlist_output h264_master.m3u8
+</pre></div>
+</div>
+</li>
+</ul>
+<p>The above packaging command creates five groups of streams (each with an init
+segment and a series of media segments) and a manifest, which describes the
+streams.</p>
+<div class="section" id="hls-specific-stream-descriptor-fields">
+<h3>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Required for audio when outputting HLS. name of the output stream. This is
+not (necessarily) the same as output. This is used as the NAME attribute for
+EXT-X-MEDIA.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Required for audio when outputting HLS. The group ID for the output stream.
+This is used as the GROUP-ID attribute for EXT-X-MEDIA.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Required for HLS output. Name of the playlist for the stream. Usually ends
+with &#8216;.m3u8&#8217;.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="hls-options">
+<h3>HLS options<a class="headerlink" href="#hls-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hls_master_playlist_output <var>&lt;file_path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Output path for the master playlist for HLS. This flag must be used to
+output HLS.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hls_base_url <var>&lt;url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The base URL for the Media Playlists and media files listed in the
+playlists. This is the prefix for the files.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--hls_playlist_type <var>&lt;type&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>VOD, EVENT, or LIVE. This defines the EXT-X-PLAYLIST-TYPE in the HLS
+specification. For hls_playlist_type of LIVE, EXT-X-PLAYLIST-TYPE tag is
+omitted.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="segment-template-formatting">
+<h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
+<p>The implementation is based on <em>Template-based Segment URL construction</em>
+described in ISO/IEC 23009-1:2014.</p>
+<table border="1" class="styled-table docutils" id="id1">
+<caption><span class="caption-text">Supported identifiers</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="19%" />
+<col width="41%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="left-align head">$&lt;Identifier&gt;$</th>
+<th class="left-align head">Substitution parameter</th>
+<th class="left-align head">Format</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td class="left-align">$$</td>
+<td class="left-align">is an escape sequence, i.e.
+&#8220;$$&#8221; is replaced with a single
+&#8220;$&#8221;.</td>
+<td class="left-align">Not applicable.</td>
+</tr>
+<tr class="row-odd"><td class="left-align">$Number$</td>
+<td class="left-align">This identifier is substitued
+with the <em>number</em> of the
+corresponding Segment.</td>
+<td class="left-align"><p class="first">The format tag may be present.</p>
+<p class="last">If no format tag is present, a
+default format tag with
+<em>width</em>=1 shall be used.</p>
+</td>
+</tr>
+<tr class="row-even"><td class="left-align">$Time$</td>
+<td class="left-align">This identifier is substituted
+with the value of the
+<strong>SegmentTimeline&#64;t</strong>
+attribute for the Segment
+being accessed. Either
+$Number$ or $Time$ may be used
+but not both at the same time.</td>
+<td class="left-align"><p class="first">The format tag may be present.</p>
+<p class="last">If no format tag is present, a
+default format tag with
+<em>width</em>=1 shall be used.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
+version. Please file an <a class="reference external" href="https://github.com/google/shaka-packager/issues">issue</a> if you want it to be
+supported.</p>
+</div>
+<p>In each URL, the identifiers shall be replaced by the substitution parameter
+per the definition in the above table. Identifier matching is case-sensitive.</p>
+<p>Each identifier may be suffixed, within the enclosing &#8216;$&#8217; characters, with an
+additional format tag aligned with the <em>printf</em> format tag as defined in IEEE
+1003.1-2008 following this prototype:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>The <em>width</em> parameter is an unsigned integer that provides the minimum number
+of characters to be printed. If the value to be printed is shorter than this
+number, the result shall be padded with zeros. The value is not truncated even
+if the result is larger.</p>
+<p>Strings outside identifiers shall only contain characters that are permitted
+within URLs according to RFC 3986.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="live.html" title="Live"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dash.html" title="DASH"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

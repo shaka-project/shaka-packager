@@ -1,6 +1,7 @@
 var searchData=
 [
   ['ca_5ffile',['ca_file',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#a745d002043a10ae7c01983fe5fe93846',1,'shaka::PlayreadyEncryptionParams']]],
+  ['chunking_5fparams',['chunking_params',['../d5/de3/structshaka_1_1PackagingParams.html#ac992ff58f67ad9b737dfc62d517be8ed',1,'shaka::PackagingParams']]],
   ['clear_5flead_5fin_5fseconds',['clear_lead_in_seconds',['../dc/da0/structshaka_1_1EncryptionParams.html#a1ad46963dc926aa4b72813dccb3f6a45',1,'shaka::EncryptionParams']]],
   ['client_5fcert_5ffile',['client_cert_file',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#afdc9477270b8a626163940cddff4fa8c',1,'shaka::PlayreadyEncryptionParams']]],
   ['client_5fcert_5fprivate_5fkey_5ffile',['client_cert_private_key_file',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#af6f3b909425a27e17a7d6e473d7eb8ac',1,'shaka::PlayreadyEncryptionParams']]],

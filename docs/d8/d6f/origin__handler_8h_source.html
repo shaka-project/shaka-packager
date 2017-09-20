@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/origin/origin_handler.h Source File</title>
+<title>Shaka Packager SDK: packager/media/origin/origin_handler.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_6ca5d7200b4f75a249572dffb9651898.html">origin</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_7053349436b45d276056de3c928a6fc6.html">origin</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -113,7 +113,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="comment">// |Process|, run will take input from an alternative source. This call</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="comment">// is expect to be blocking. To exit a call to |Run|, |Cancel| should</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="comment">// be used.</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">virtual</span> Status Run() = 0;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> Run() = 0;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">// Non-blocking call to the handler, requesting that it exit the</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="comment">// current call to |Run|. The handler should stop processing data</span></div>
@@ -124,7 +124,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">OriginHandler</a>(<span class="keyword">const</span> <a class="code" href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">OriginHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">OriginHandler</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">OriginHandler</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  Status Process(std::unique_ptr&lt;StreamData&gt; stream_data) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> Process(std::unique_ptr&lt;StreamData&gt; stream_data) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;};</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}  <span class="comment">// namespace media</span></div>
@@ -132,11 +132,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_ORIGIN_ORIGIN_HANDLER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1OriginHandler_html"><div class="ttname"><a href="../../de/d85/classshaka_1_1media_1_1OriginHandler.html">shaka::media::OriginHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d6f/origin__handler_8h_source.html#l00018">origin_handler.h:18</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">shaka::media::MediaHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00074">media_handler.h:74</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaHandler_html"><div class="ttname"><a href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">shaka::media::MediaHandler</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d93/media__handler_8h_source.html#l00128">media_handler.h:128</a></div></div>
+<div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

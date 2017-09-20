@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/formats/mp4/multi_segment_segmenter.cc Source File</title>
+<title>Shaka Packager SDK: packager/media/formats/mp4/multi_segment_segmenter.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">DASH Media Packaging SDK
+   <div id="projectname">Shaka Packager SDK
    </div>
   </td>
  </tr>
@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_65f7acfa8cf3a5f1edc11faa2428b914.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_3e9291fd7a18fdecc763294cb2628910.html">mp4</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_3f8eec2fc361645de4b1ec14c19fffc7.html">packager</a></li><li class="navelem"><a class="el" href="../../dir_f99dae54fe7170f791f339b952d5067a.html">media</a></li><li class="navelem"><a class="el" href="../../dir_375ba2cfd8fd5b05c50b92d996b9d386.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_ae142483ff91a68c468a97c037f98d4d.html">mp4</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -142,20 +142,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">return</span> std::vector&lt;Range&gt;();</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;Status MultiSegmentSegmenter::DoInitialize() {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize() {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK(ftyp());</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  DCHECK(moov());</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// Generate the output file with init segment.</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  File* file = File::Open(options().output_file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="../../d3/d73/classshaka_1_1File.html">File</a>* file = <a class="code" href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">File::Open</a>(options().output_file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (file == NULL) {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a>(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                  <span class="stringliteral">&quot;Cannot open file for write &quot;</span> + options().output_file_name);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  std::unique_ptr&lt;BufferWriter&gt; buffer(<span class="keyword">new</span> BufferWriter);</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  ftyp()-&gt;Write(buffer.get());</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  moov()-&gt;Write(buffer.get());</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  Status status = buffer-&gt;WriteToFile(file);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">if</span> (!file-&gt;Close()) {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> status = buffer-&gt;WriteToFile(file);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">if</span> (!file-&gt;<a class="code" href="../../d3/d73/classshaka_1_1File.html#a932666ed1d6a565bf387a9d8b39a8948">Close</a>()) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to close the file properly: &quot;</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                 &lt;&lt; options().output_file_name;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  }</div>
@@ -239,7 +239,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">if</span> (options().segment_template.empty()) {</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="comment">// Append the segment to output file if segment template is not specified.</span></div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    file_name = options().output_file_name.c_str();</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    file = File::Open(file_name.c_str(), <span class="stringliteral">&quot;a&quot;</span>);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    file = <a class="code" href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">File::Open</a>(file_name.c_str(), <span class="stringliteral">&quot;a&quot;</span>);</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">if</span> (file == NULL) {</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <span class="keywordflow">return</span> Status(</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;          error::FILE_FAILURE,</div>
@@ -249,7 +249,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    file_name = GetSegmentName(options().segment_template,</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;                               sidx()-&gt;earliest_presentation_time,</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                               num_segments_++, options().bandwidth);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    file = File::Open(file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    file = <a class="code" href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">File::Open</a>(file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">if</span> (file == NULL) {</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;                    <span class="stringliteral">&quot;Cannot open file for write &quot;</span> + file_name);</div>
@@ -295,18 +295,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a4cb75da6ff50d6403da18ea8dcc04265"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_afd8bb3584c984c711615800ad93642a3"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#afd8bb3584c984c711615800ad93642a3">shaka::media::mp4::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00225">segmenter.cc:225</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_adea4bf88a29660bd8612ae3bc5048068"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#adea4bf88a29660bd8612ae3bc5048068">shaka::media::mp4::Segmenter::SetComplete</a></div><div class="ttdeci">void SetComplete()</div><div class="ttdoc">Set progress to 100%. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00241">segmenter.cc:241</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_afd8bb3584c984c711615800ad93642a3"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#afd8bb3584c984c711615800ad93642a3">shaka::media::mp4::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00224">segmenter.cc:224</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_adea4bf88a29660bd8612ae3bc5048068"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#adea4bf88a29660bd8612ae3bc5048068">shaka::media::mp4::Segmenter::SetComplete</a></div><div class="ttdeci">void SetComplete()</div><div class="ttdoc">Set progress to 100%. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00240">segmenter.cc:240</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ad54aef6c349082d996a436ebea11eff2"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
+<div class="ttc" id="classshaka_1_1File_html"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html">shaka::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00026">file.h:26</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_aeed8f5be9d9d7266afd017e0e5692d8d"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#aeed8f5be9d9d7266afd017e0e5692d8d">shaka::media::mp4::Segmenter::sample_duration</a></div><div class="ttdeci">uint32_t sample_duration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00100">segmenter.h:100</a></div></div>
+<div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MultiSegmentSegmenter_html_a15f78aada048b15472d485b80875e838"><div class="ttname"><a href="../../d8/db7/classshaka_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html#a15f78aada048b15472d485b80875e838">shaka::media::mp4::MultiSegmentSegmenter::GetInitRange</a></div><div class="ttdeci">bool GetInitRange(size_t *offset, size_t *size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d00/mp4_2multi__segment__segmenter_8cc_source.html#l00040">multi_segment_segmenter.cc:40</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MultiSegmentSegmenter_html_acd917150490f8e5721fad28904422eca"><div class="ttname"><a href="../../d8/db7/classshaka_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html#acd917150490f8e5721fad28904422eca">shaka::media::mp4::MultiSegmentSegmenter::GetIndexRange</a></div><div class="ttdeci">bool GetIndexRange(size_t *offset, size_t *size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d00/mp4_2multi__segment__segmenter_8cc_source.html#l00046">multi_segment_segmenter.cc:46</a></div></div>
+<div class="ttc" id="classshaka_1_1File_html_a932666ed1d6a565bf387a9d8b39a8948"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a932666ed1d6a565bf387a9d8b39a8948">shaka::File::Close</a></div><div class="ttdeci">virtual bool Close()=0</div></div>
+<div class="ttc" id="classshaka_1_1File_html_a68a15f623c2a1601879f291f93a1f464"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a68a15f623c2a1601879f291f93a1f464">shaka::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
 <div class="ttc" id="structshaka_1_1media_1_1mp4_1_1Box_html_a15bd0622fdb129d921287e690f117bde"><div class="ttname"><a href="../../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a15bd0622fdb129d921287e690f117bde">shaka::media::mp4::Box::Write</a></div><div class="ttdeci">void Write(BufferWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00025">box.cc:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_a868dba843fcf923dd140fdda859a3a6d"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d">shaka::media::BufferWriter::WriteToFile</a></div><div class="ttdeci">Status WriteToFile(File *file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00066">buffer_writer.cc:66</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 31 2017 01:17:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Sep 19 2017 19:34:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

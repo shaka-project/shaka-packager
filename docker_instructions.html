@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using Docker &#8212; Shaka Packager  documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/table_styling.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Shaka Packager Library (Continued)" href="library_details.html" />
+    <link rel="prev" title="Build Instructions" href="build_instructions.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="library_details.html" title="Shaka Packager Library (Continued)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="build_instructions.html" title="Build Instructions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using Docker</a><ul>
+<li><a class="reference internal" href="#get-shaka-packager-from-dockerhub">Get Shaka Packager from Dockerhub</a></li>
+<li><a class="reference internal" href="#run-the-container">Run the container</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="build_instructions.html"
+                        title="previous chapter">Build Instructions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="library_details.html"
+                        title="next chapter">Shaka Packager Library (Continued)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/docker_instructions.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-docker">
+<span id="using-docker"></span><h1>Using Docker<a class="headerlink" href="#using-docker" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://www.docker.com/whatisdocker">Docker</a> is a tool that can package an
+application and its dependencies in a virtual container to run on different
+host operating systems.</p>
+<div class="section" id="get-shaka-packager-from-dockerhub">
+<span id="get-shaka-packager-from-dockerhub"></span><h2>Get Shaka Packager from Dockerhub<a class="headerlink" href="#get-shaka-packager-from-dockerhub" title="Permalink to this headline">¶</a></h2>
+<p>To pull latest Shaka Packager:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ docker pull google/shaka-packager
+</pre></div>
+</div>
+<p>You can pull a specific version, e.g. v1.6.2:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ docker pull google/shaka-packager:release-v1.6.2
+</pre></div>
+</div>
+<p>The full list of tags is available
+<a class="reference external" href="https://hub.docker.com/r/google/shaka-packager/tags/">here</a>.</p>
+</div>
+<div class="section" id="run-the-container">
+<span id="run-the-container"></span><h2>Run the container<a class="headerlink" href="#run-the-container" title="Permalink to this headline">¶</a></h2>
+<p>Assume you have your media files stored in <code class="docutils literal"><span class="pre">host_media_path</span></code> in the host
+machine.</p>
+<p>This runs the container and maps <code class="docutils literal"><span class="pre">host_media_path</span></code> to <code class="docutils literal"><span class="pre">media</span></code> in the container:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ docker run -v /host_media_path/:/media -it --rm google/shaka-packager
+</pre></div>
+</div>
+<p>Then in the container, run the packager command, e.g.:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager <span class="nv">input</span><span class="o">=</span>/media/example.mp4,stream<span class="o">=</span>audio,output<span class="o">=</span>/media/audio.mp4 <span class="se">\</span>
+           <span class="nv">input</span><span class="o">=</span>/media/example.mp4,stream<span class="o">=</span>video,output<span class="o">=</span>/media/video.mp4 <span class="se">\</span>
+           --mpd_output /media/example.mpd
+</pre></div>
+</div>
+<p>Outputs are available in the host&#8217;s media folder <code class="docutils literal"><span class="pre">host_media_path</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="library_details.html" title="Shaka Packager Library (Continued)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="build_instructions.html" title="Build Instructions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Shaka Packager  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Google.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>
