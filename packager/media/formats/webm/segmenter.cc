@@ -157,7 +157,7 @@ Status Segmenter::Finalize() {
 }
 
 Status Segmenter::AddSample(const MediaSample& source_sample) {
-  std::shared_ptr<MediaSample> sample = MediaSample::CopyFrom(source_sample);
+  std::shared_ptr<MediaSample> sample(source_sample.Clone());
 
   if (sample_duration_ == 0) {
     first_timestamp_ = sample->pts();

@@ -258,8 +258,7 @@ Status EncryptionHandler::ProcessMediaSample(
   // Now that we know that this sample must be encrypted, make a copy of
   // the sample first so that all the encryption operations can be done
   // in-place.
-  std::shared_ptr<MediaSample> cipher_sample =
-      MediaSample::CopyFrom(*clear_sample);
+  std::shared_ptr<MediaSample> cipher_sample(clear_sample->Clone());
   // |cipher_sample| above still contains the old clear sample data. We will
   // use |cipher_sample_data| to hold cipher sample data then transfer it to
   // |cipher_sample| after encryption.

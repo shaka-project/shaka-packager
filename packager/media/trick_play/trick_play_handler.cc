@@ -164,7 +164,7 @@ Status TrickPlayHandler::OnTrickFrame(const MediaSample& sample) {
   total_trick_frames_++;
 
   // Make a message we can store until later.
-  previous_trick_frame_ = MediaSample::CopyFrom(sample);
+  previous_trick_frame_ = sample.Clone();
 
   // Add the message to our queue so that it will be ready to go out.
   delayed_messages_.push_back(

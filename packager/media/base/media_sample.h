@@ -45,10 +45,6 @@ class MediaSample {
                                                size_t side_data_size,
                                                bool is_key_frame);
 
-  /// Make a copy of MediaSample.
-  /// @param media_sample is the source MediaSample to copy from.
-  static std::shared_ptr<MediaSample> CopyFrom(const MediaSample& media_sample);
-
   /// Create a MediaSample object from metadata.
   /// Unlike other factory methods, this cannot be a key frame. It must be only
   /// for metadata.
@@ -67,6 +63,9 @@ class MediaSample {
   static std::shared_ptr<MediaSample> CreateEOSBuffer();
 
   virtual ~MediaSample();
+
+  /// Clone the object and return a new MediaSample.
+  std::shared_ptr<MediaSample> Clone() const;
 
   /// Transfer data to this media sample. No data copying is involved.
   /// @param data points to the data to be transferred.
