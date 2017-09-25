@@ -420,6 +420,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.generate_static_live_mpd = FLAGS_generate_static_mpd;
   mpd_params.generate_dash_if_iop_compliant_mpd =
       FLAGS_generate_dash_if_iop_compliant_mpd;
+  mpd_params.allow_approximate_segment_timeline =
+      FLAGS_allow_approximate_segment_timeline;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {

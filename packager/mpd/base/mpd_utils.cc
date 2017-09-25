@@ -58,8 +58,7 @@ bool HasVODOnlyFields(const MediaInfo& media_info) {
 
 bool HasLiveOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_segment_url() ||
-         media_info.has_segment_template_url() ||
-         media_info.has_segment_duration_seconds();
+         media_info.has_segment_template_url();
 }
 
 void RemoveDuplicateAttributes(

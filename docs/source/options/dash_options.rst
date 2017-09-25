@@ -48,3 +48,17 @@ DASH options
     Any audio/text tracks tagged with this language will have
     <Role ... value=\"main\" /> in the manifest.  This allows the player to
     choose the correct default language for the content.
+
+--allow_approximate_segment_timeline
+
+    For live profile only.
+
+    If enabled, segments with close duration (i.e. with difference less than
+    one sample) are considered to have the same duration. This enables
+    MPD generator to generate less SegmentTimeline entries. If all segments
+    are of the same duration except the last one, we will do further
+    optimization to use SegmentTemplate@duration instead and omit
+    SegmentTimeline completely.
+
+    Ignored if $Time$ is used in segment template, since $Time$ requires
+    accurate Segment Timeline.

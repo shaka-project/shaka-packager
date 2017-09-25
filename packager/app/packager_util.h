@@ -45,7 +45,9 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
     const DecryptionParams& decryption_params);
 
 /// @return MpdOptions from provided inputs.
-MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params);
+MpdOptions GetMpdOptions(bool on_demand_profile,
+                         const MpdParams& mpd_params,
+                         double target_segment_duration);
 
 }  // namespace media
 }  // namespace shaka

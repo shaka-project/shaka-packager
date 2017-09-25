@@ -8,6 +8,8 @@
 
 #include <gflags/gflags.h>
 
+#include <algorithm>
+
 #include "packager/base/logging.h"
 #include "packager/file/file.h"
 #include "packager/media/base/muxer_util.h"
@@ -115,9 +117,12 @@ Representation::Representation(
       id_(id),
       bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
       mpd_options_(mpd_options),
-      start_number_(1),
       state_change_listener_(std::move(state_change_listener)),
-      output_suppression_flags_(0) {}
+      allow_approximate_segment_timeline_(
+          // TODO(kqyang): Need a better check. $Time is legitimate but not a
+          // template.
+          media_info.segment_template().find("$Time") == std::string::npos &&
+          mpd_options_.mpd_params.allow_approximate_segment_timeline) {}
 
 Representation::Representation(
     const Representation& representation,
@@ -200,12 +205,8 @@ void Representation::AddNewSegment(uint64_t start_time,
 
   if (state_change_listener_)
     state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
-  if (IsContiguous(start_time, duration, size)) {
-    ++segment_infos_.back().repeat;
-  } else {
-    SegmentInfo s = {start_time, duration, /* Not repeat. */ 0};
-    segment_infos_.push_back(s);
-  }
+
+  AddSegmentInfo(start_time, duration);
 
   bandwidth_estimator_.AddBlock(
       size, static_cast<double>(duration) / media_info_.reference_time_scale());
@@ -214,12 +215,17 @@ void Representation::AddNewSegment(uint64_t start_time,
   DCHECK_GE(segment_infos_.size(), 1u);
 }
 
-void Representation::SetSampleDuration(uint32_t sample_duration) {
+void Representation::SetSampleDuration(uint32_t frame_duration) {
+  // Sample duration is used to generate approximate SegmentTimeline.
+  // Text is required to have exactly the same segment duration.
+  if (media_info_.has_audio_info() || media_info_.has_video_info())
+    frame_duration_ = frame_duration;
+
   if (media_info_.has_video_info()) {
-    media_info_.mutable_video_info()->set_frame_duration(sample_duration);
+    media_info_.mutable_video_info()->set_frame_duration(frame_duration);
     if (state_change_listener_) {
       state_change_listener_->OnSetFrameRateForRepresentation(
-          sample_duration, media_info_.video_info().time_scale());
+          frame_duration, media_info_.video_info().time_scale());
     }
   }
 }
@@ -344,55 +350,87 @@ bool Representation::HasRequiredMediaInfoFields() const {
   return true;
 }
 
-bool Representation::IsContiguous(uint64_t start_time,
-                                  uint64_t duration,
-                                  uint64_t size) const {
-  if (segment_infos_.empty())
-    return false;
+void Representation::AddSegmentInfo(uint64_t start_time, uint64_t duration) {
+  const uint64_t kNoRepeat = 0;
+  const uint64_t adjusted_duration = AdjustDuration(duration);
 
-  // Contiguous segment.
-  const SegmentInfo& previous = segment_infos_.back();
-  const uint64_t previous_segment_end_time =
-      previous.start_time + previous.duration * (previous.repeat + 1);
-  if (previous_segment_end_time == start_time &&
-      segment_infos_.back().duration == duration) {
-    return true;
+  if (!segment_infos_.empty()) {
+    // Contiguous segment.
+    const SegmentInfo& previous = segment_infos_.back();
+    const uint64_t previous_segment_end_time =
+        previous.start_time + previous.duration * (previous.repeat + 1);
+    // Make it continuous if the segment start time is close to previous segment
+    // end time.
+    if (ApproximiatelyEqual(previous_segment_end_time, start_time)) {
+      const uint64_t segment_end_time_for_same_duration =
+          previous_segment_end_time + previous.duration;
+      const uint64_t actual_segment_end_time = start_time + duration;
+      // Consider the segments having identical duration if the segment end time
+      // is close to calculated segment end time by assuming identical duration.
+      if (ApproximiatelyEqual(segment_end_time_for_same_duration,
+                              actual_segment_end_time)) {
+        ++segment_infos_.back().repeat;
+      } else {
+        segment_infos_.push_back(
+            {previous_segment_end_time,
+             actual_segment_end_time - previous_segment_end_time, kNoRepeat});
+      }
+      return;
+    }
+
+    // A gap since previous.
+    const uint64_t kRoundingErrorGrace = 5;
+    if (previous_segment_end_time + kRoundingErrorGrace < start_time) {
+      LOG(WARNING) << "Found a gap of size "
+                   << (start_time - previous_segment_end_time)
+                   << " > kRoundingErrorGrace (" << kRoundingErrorGrace
+                   << "). The new segment starts at " << start_time
+                   << " but the previous segment ends at "
+                   << previous_segment_end_time << ".";
+    }
+
+    // No overlapping segments.
+    if (start_time < previous_segment_end_time - kRoundingErrorGrace) {
+      LOG(WARNING)
+          << "Segments should not be overlapping. The new segment starts at "
+          << start_time << " but the previous segment ends at "
+          << previous_segment_end_time << ".";
+    }
   }
 
-  // No out of order segments.
-  const uint64_t previous_segment_start_time =
-      previous.start_time + previous.duration * previous.repeat;
-  if (previous_segment_start_time >= start_time) {
-    LOG(ERROR) << "Segments should not be out of order segment. Adding segment "
-                  "with start_time == "
-               << start_time << " but the previous segment starts at "
-               << previous_segment_start_time << ".";
-    return false;
-  }
+  segment_infos_.push_back({start_time, adjusted_duration, kNoRepeat});
+}
 
-  // A gap since previous.
-  const uint64_t kRoundingErrorGrace = 5;
-  if (previous_segment_end_time + kRoundingErrorGrace < start_time) {
-    LOG(WARNING) << "Found a gap of size "
-                 << (start_time - previous_segment_end_time)
-                 << " > kRoundingErrorGrace (" << kRoundingErrorGrace
-                 << "). The new segment starts at " << start_time
-                 << " but the previous segment ends at "
-                 << previous_segment_end_time << ".";
-    return false;
-  }
+bool Representation::ApproximiatelyEqual(uint64_t time1, uint64_t time2) const {
+  if (!allow_approximate_segment_timeline_)
+    return time1 == time2;
 
-  // No overlapping segments.
-  if (start_time < previous_segment_end_time - kRoundingErrorGrace) {
-    LOG(WARNING)
-        << "Segments should not be overlapping. The new segment starts at "
-        << start_time << " but the previous segment ends at "
-        << previous_segment_end_time << ".";
-    return false;
-  }
+  // It is not always possible to align segment duration to target duration
+  // exactly. For example, for AAC with sampling rate of 44100, there are always
+  // 1024 audio samples per frame, so the frame duration is 1024/44100. For a
+  // target duration of 2 seconds, the closest segment duration would be 1.984
+  // or 2.00533.
 
-  // Within rounding error grace but technically not contiguous in terms of MPD.
-  return false;
+  // An arbitrary error threshold cap. This makes sure that the error is not too
+  // large for large samples.
+  const double kErrorThresholdSeconds = 0.05;
+
+  // So we consider two times equal if they differ by less than one sample.
+  const uint32_t error_threshold =
+      std::min(frame_duration_,
+               static_cast<uint32_t>(kErrorThresholdSeconds *
+                                     media_info_.reference_time_scale()));
+  return time1 < time2 + error_threshold && time2 < time1 + error_threshold;
+}
+
+uint64_t Representation::AdjustDuration(uint64_t duration) const {
+  if (!allow_approximate_segment_timeline_)
+    return duration;
+  const uint64_t scaled_target_duration =
+      mpd_options_.target_segment_duration * media_info_.reference_time_scale();
+  return ApproximiatelyEqual(scaled_target_duration, duration)
+             ? scaled_target_duration
+             : duration;
 }
 
 void Representation::SlideWindow() {

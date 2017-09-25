@@ -858,8 +858,10 @@ Status Packager::Initialize(
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();
-    const MpdOptions mpd_options =
-        media::GetMpdOptions(on_demand_dash_profile, mpd_params);
+    const double target_segment_duration =
+        packaging_params.chunking_params.segment_duration_in_seconds;
+    const MpdOptions mpd_options = media::GetMpdOptions(
+        on_demand_dash_profile, mpd_params, target_segment_duration);
     internal->mpd_notifier.reset(new SimpleMpdNotifier(mpd_options));
     if (!internal->mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";

@@ -178,11 +178,18 @@ class Representation {
   // Representation. Otherwise returns false.
   bool HasRequiredMediaInfoFields() const;
 
-  // Return false if the segment should be considered a new segment. True if the
-  // segment is contiguous.
-  bool IsContiguous(uint64_t start_time,
-                    uint64_t duration,
-                    uint64_t size) const;
+  // Add a SegmentInfo. This function may insert an adjusted SegmentInfo if
+  // |allow_approximate_segment_timeline_| is set.
+  void AddSegmentInfo(uint64_t start_time, uint64_t duration);
+
+  // Check if two timestamps are approximately equal if
+  // |allow_approximate_segment_timeline_| is set; Otherwise check whether the
+  // two times match.
+  bool ApproximiatelyEqual(uint64_t time1, uint64_t time2) const;
+
+  // Return adjusted duration if |allow_aproximate_segment_timeline_or_duration|
+  // is set; otherwise duration is returned without adjustment.
+  uint64_t AdjustDuration(uint64_t duration) const;
 
   // Remove elements from |segment_infos_| for dynamic live profile. Increments
   // |start_number_| by the number of segments removed.
@@ -216,14 +223,21 @@ class Representation {
 
   // startNumber attribute for SegmentTemplate.
   // Starts from 1.
-  uint32_t start_number_;
+  uint32_t start_number_ = 1;
 
   // If this is not null, then Representation is responsible for calling the
   // right methods at right timings.
   std::unique_ptr<RepresentationStateChangeListener> state_change_listener_;
 
   // Bit vector for tracking witch attributes should not be output.
-  int output_suppression_flags_;
+  int output_suppression_flags_ = 0;
+
+  // When set to true, allows segments to have slightly different durations (up
+  // to one sample).
+  const bool allow_approximate_segment_timeline_ = false;
+  // Segments with duration difference less than one frame duration are
+  // considered to have the same duration.
+  uint32_t frame_duration_ = 0;
 };
 
 }  // namespace shaka

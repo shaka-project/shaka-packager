@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
@@ -15,6 +16,8 @@
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/mpd/test/xml_compare.h"
+
+DECLARE_bool(segment_template_constant_duration);
 
 namespace shaka {
 namespace xml {
@@ -189,6 +192,174 @@ TEST(XmlNodeTest, AddEC3AudioInfo) {
           "    \"tag:dolby.com,2014:dash:audio_channel_configuration:2011\"\n"
           "   value=\"F801\"/>\n"
           "</Representation>\n"));
+}
+
+class LiveSegmentTimelineTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    FLAGS_segment_template_constant_duration = true;
+    media_info_.set_segment_template_url("$Number$.m4s");
+  }
+
+  void TearDown() override { FLAGS_segment_template_constant_duration = false; }
+
+  MediaInfo media_info_;
+};
+
+TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
+  const uint32_t kStartNumber = 1;
+  const uint64_t kStartTime = 0;
+  const uint64_t kDuration = 100;
+  const uint64_t kRepeat = 9;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartTime, kDuration, kRepeat},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual("<Representation>"
+                   "  <SegmentTemplate media=\"$Number$.m4s\" "
+                   "                   startNumber=\"1\" duration=\"100\"/>"
+                   "</Representation>"));
+}
+
+TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
+  const uint32_t kStartNumber = 1;
+  const uint64_t kNonZeroStartTime = 500;
+  const uint64_t kDuration = 100;
+  const uint64_t kRepeat = 9;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kNonZeroStartTime, kDuration, kRepeat},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+
+  EXPECT_THAT(representation.GetRawPtr(),
+              XmlNodeEqual(
+                  "<Representation>"
+                  "  <SegmentTemplate media=\"$Number$.m4s\" startNumber=\"1\">"
+                  "    <SegmentTimeline>"
+                  "      <S t=\"500\" d=\"100\" r=\"9\"/>"
+                  "    </SegmentTimeline>"
+                  "  </SegmentTemplate>"
+                  "</Representation>"));
+}
+
+TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
+  const uint32_t kStartNumber = 6;
+  const uint64_t kNonZeroStartTime = 500;
+  const uint64_t kDuration = 100;
+  const uint64_t kRepeat = 9;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kNonZeroStartTime, kDuration, kRepeat},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual("<Representation>"
+                   "  <SegmentTemplate media=\"$Number$.m4s\" "
+                   "                   startNumber=\"6\" duration=\"100\"/>"
+                   "</Representation>"));
+}
+
+TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
+  const uint32_t kStartNumber = 1;
+
+  const uint64_t kStartTime1 = 0;
+  const uint64_t kDuration1 = 100;
+  const uint64_t kRepeat1 = 9;
+
+  const uint64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const uint64_t kDuration2 = 200;
+  const uint64_t kRepeat2 = 0;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartTime1, kDuration1, kRepeat1},
+      {kStartTime2, kDuration2, kRepeat2},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual("<Representation>"
+                   "  <SegmentTemplate media=\"$Number$.m4s\" "
+                   "                   startNumber=\"1\" duration=\"100\"/>"
+                   "</Representation>"));
+}
+
+TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
+  const uint32_t kStartNumber = 1;
+
+  const uint64_t kStartTime1 = 0;
+  const uint64_t kDuration1 = 100;
+  const uint64_t kRepeat1 = 9;
+
+  const uint64_t kStartTime2 = kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const uint64_t kDuration2 = 200;
+  const uint64_t kRepeat2 = 1;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartTime1, kDuration1, kRepeat1},
+      {kStartTime2, kDuration2, kRepeat2},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+
+  EXPECT_THAT(representation.GetRawPtr(),
+              XmlNodeEqual(
+                  "<Representation>"
+                  "  <SegmentTemplate media=\"$Number$.m4s\" startNumber=\"1\">"
+                  "    <SegmentTimeline>"
+                  "      <S t=\"0\" d=\"100\" r=\"9\"/>"
+                  "      <S t=\"1000\" d=\"200\" r=\"1\"/>"
+                  "    </SegmentTimeline>"
+                  "  </SegmentTemplate>"
+                  "</Representation>"));
+}
+
+TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
+  const uint32_t kStartNumber = 1;
+
+  const uint64_t kStartTime1 = 0;
+  const uint64_t kDuration1 = 100;
+  const uint64_t kRepeat1 = 9;
+
+  const uint64_t kGap = 100;
+  const uint64_t kStartTime2 = kGap + kStartTime1 + (kRepeat1 + 1) * kDuration1;
+  const uint64_t kDuration2 = 200;
+  const uint64_t kRepeat2 = 0;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartTime1, kDuration1, kRepeat1},
+      {kStartTime2, kDuration2, kRepeat2},
+  };
+  RepresentationXmlNode representation;
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+
+  EXPECT_THAT(representation.GetRawPtr(),
+              XmlNodeEqual(
+                  "<Representation>"
+                  "  <SegmentTemplate media=\"$Number$.m4s\" startNumber=\"1\">"
+                  "    <SegmentTimeline>"
+                  "      <S t=\"0\" d=\"100\" r=\"9\"/>"
+                  "      <S t=\"1100\" d=\"200\"/>"
+                  "    </SegmentTimeline>"
+                  "  </SegmentTemplate>"
+                  "</Representation>"));
 }
 
 }  // namespace xml

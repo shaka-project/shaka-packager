@@ -151,7 +151,7 @@ message MediaInfo {
   // This value is the user input “segment duration”.
   // This value is not necessarily the same as the value passed to
   // MpdNotifier::NotifyNewSegment().
-  optional float segment_duration_seconds = 12;
+  optional float segment_duration_seconds = 12 [deprecated = true];
   // END LIVE only.
 
   // URL fields for the corresponding file_name fields above.

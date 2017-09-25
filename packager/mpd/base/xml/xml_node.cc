@@ -6,6 +6,8 @@
 
 #include "packager/mpd/base/xml/xml_node.h"
 
+#include <gflags/gflags.h>
+
 #include <limits>
 #include <set>
 
@@ -16,6 +18,11 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/segment_info.h"
+
+DEFINE_bool(segment_template_constant_duration,
+            false,
+            "Generates SegmentTemplate@duration if all segments except the "
+            "last one has the same duration if this flag is set to true.");
 
 namespace shaka {
 
@@ -31,16 +38,42 @@ std::string RangeToString(const Range& range) {
          base::Uint64ToString(range.end());
 }
 
+// Check if segments are continuous and all segments except the last one are of
+// the same duration.
+bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
+                                uint32_t start_number) {
+  if (!FLAGS_segment_template_constant_duration)
+    return false;
+
+  DCHECK(!segment_infos.empty());
+  if (segment_infos.size() > 2)
+    return false;
+
+  const SegmentInfo& first_segment = segment_infos.front();
+  if (first_segment.start_time != first_segment.duration * (start_number - 1))
+    return false;
+
+  if (segment_infos.size() == 1)
+    return true;
+
+  const SegmentInfo& last_segment = segment_infos.back();
+  if (last_segment.repeat != 0)
+    return false;
+
+  const uint64_t expected_last_segment_start_time =
+      first_segment.start_time +
+      first_segment.duration * (first_segment.repeat + 1);
+  return expected_last_segment_start_time == last_segment.start_time;
+}
+
 bool PopulateSegmentTimeline(const std::list<SegmentInfo>& segment_infos,
                              XmlNode* segment_timeline) {
-  for (std::list<SegmentInfo>::const_iterator it = segment_infos.begin();
-       it != segment_infos.end();
-       ++it) {
+  for (const SegmentInfo& segment_info : segment_infos) {
     XmlNode s_element("S");
-    s_element.SetIntegerAttribute("t", it->start_time);
-    s_element.SetIntegerAttribute("d", it->duration);
-    if (it->repeat > 0)
-      s_element.SetIntegerAttribute("r", it->repeat);
+    s_element.SetIntegerAttribute("t", segment_info.start_time);
+    s_element.SetIntegerAttribute("d", segment_info.duration);
+    if (segment_info.repeat > 0)
+      s_element.SetIntegerAttribute("r", segment_info.repeat);
 
     CHECK(segment_timeline->AddChild(s_element.PassScopedPtr()));
   }
@@ -347,12 +380,21 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     segment_template.SetIntegerAttribute("startNumber", start_number);
   }
 
-  // TODO(rkuroiwa): Find out when a live MPD doesn't require SegmentTimeline.
-  XmlNode segment_timeline("SegmentTimeline");
-
-  return PopulateSegmentTimeline(segment_infos, &segment_timeline) &&
-         segment_template.AddChild(segment_timeline.PassScopedPtr()) &&
-         AddChild(segment_template.PassScopedPtr());
+  if (!segment_infos.empty()) {
+    // Don't use SegmentTimeline if all segments except the last one are of
+    // the same duration.
+    if (IsTimelineConstantDuration(segment_infos, start_number)) {
+      segment_template.SetIntegerAttribute("duration",
+                                           segment_infos.front().duration);
+    } else {
+      XmlNode segment_timeline("SegmentTimeline");
+      if (!PopulateSegmentTimeline(segment_infos, &segment_timeline) ||
+          !segment_template.AddChild(segment_timeline.PassScopedPtr())) {
+        return false;
+      }
+    }
+  }
+  return AddChild(segment_template.PassScopedPtr());
 }
 
 bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {

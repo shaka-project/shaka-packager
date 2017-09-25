@@ -59,6 +59,16 @@ struct MpdParams {
   bool generate_static_live_mpd = false;
   /// Try to generate DASH-IF IOP compliant MPD.
   bool generate_dash_if_iop_compliant_mpd = true;
+  /// For live profile only.
+  /// If enabled, segments with close duration (i.e. with difference less than
+  /// one sample) are considered to have the same duration. This enables
+  /// MPD generator to generate less SegmentTimeline entries. If all segments
+  /// are of the same duration except the last one, we will do further
+  /// optimization to use SegmentTemplate@duration instead and omit
+  /// SegmentTimeline completely.
+  /// Ignored if $Time$ is used in segment template, since $Time$ requires
+  /// accurate Segment Timeline.
+  bool allow_approximate_segment_timeline = false;
 };
 
 }  // namespace shaka

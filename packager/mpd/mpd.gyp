@@ -104,6 +104,7 @@
         '../media/test/media_test.gyp:run_tests_with_atexit_manager',
         '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
+        '../third_party/gflags/gflags.gyp:gflags',
         'mpd_builder',
         'mpd_mocks',
         'mpd_util',
