@@ -17,6 +17,10 @@
 namespace shaka {
 namespace media {
 namespace {
+const size_t kInputCount = 1;
+const size_t kOutputCount = 1;
+const size_t kInputIndex = 0;
+const size_t kOutputIndex = 0;
 const size_t kStreamIndex = 0;
 
 // This value does not matter as trick play does not use it, but it is needed
@@ -46,23 +50,14 @@ MATCHER_P2(IsTrickPlaySample, timestamp, duration, "") {
          arg->media_sample->is_key_frame();
 }
 
-// Creates a structure of [input]->[trick play]->[output] where all
-// interactions are with input and output.
 class TrickPlayHandlerTest : public MediaHandlerTestBase {
  protected:
   void SetUpAndInitializeGraph(uint32_t factor) {
-    input_ = std::make_shared<FakeInputMediaHandler>();
-    trick_play_ = std::make_shared<TrickPlayHandler>(factor);
-    output_ = std::make_shared<MockOutputMediaHandler>();
-
-    ASSERT_OK(input_->AddHandler(trick_play_));
-    ASSERT_OK(trick_play_->AddHandler(output_));
-
-    ASSERT_OK(input_->Initialize());
+    ASSERT_OK(MediaHandlerTestBase::SetUpAndInitializeGraph(
+        std::make_shared<TrickPlayHandler>(factor),
+        kInputCount,
+        kOutputCount));
   }
-
-  FakeInputMediaHandler* input() { return input_.get(); }
-  MockOutputMediaHandler* output() { return output_.get(); }
 
   // Create a series of samples where each sample has the same duration and ever
   // sample that is an even multiple of |key_frame_frequency| will be a key
@@ -84,11 +79,6 @@ class TrickPlayHandlerTest : public MediaHandlerTestBase {
 
     return samples;
   }
-
- private:
-  std::shared_ptr<FakeInputMediaHandler> input_;
-  std::shared_ptr<MediaHandler> trick_play_;
-  std::shared_ptr<MockOutputMediaHandler> output_;
 };
 
 // This test makes sure that audio streams are rejected by trick play handlers.
@@ -96,8 +86,9 @@ TEST_F(TrickPlayHandlerTest, RejectsAudio) {
   const uint32_t kTrickPlayFactor = 1u;
   SetUpAndInitializeGraph(kTrickPlayFactor);
 
-  Status status = input()->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetAudioStreamInfo(kTimescale)));
+  Status status = Input(kInputIndex)
+                      ->Dispatch(StreamData::FromStreamInfo(
+                          kStreamIndex, GetAudioStreamInfo(kTimescale)));
   EXPECT_EQ(error::TRICK_PLAY_ERROR, status.error_code());
 }
 
@@ -114,14 +105,15 @@ TEST_F(TrickPlayHandlerTest, TrickTrackNoSamples) {
 
   {
     testing::InSequence s;
-    EXPECT_CALL(*output(),
+    EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
-    EXPECT_CALL(*output(), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetVideoStreamInfo(kTimescale))));
-  ASSERT_OK(input()->FlushAllDownstreams());
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromStreamInfo(
+                    kStreamIndex, GetVideoStreamInfo(kTimescale))));
+  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
 // This test makes sure that when the trick play handler is initialized using
@@ -142,28 +134,31 @@ TEST_F(TrickPlayHandlerTest, TrickTrackWithSamplesOnlyGetsKeyFrames) {
   // handler.
   {
     testing::InSequence s;
-    EXPECT_CALL(*output(),
+    EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
     for (int i = 0; i < 3; i++) {
-      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
-                                 kStartTime + i * kTrickPlaySampleDuration,
-                                 kTrickPlaySampleDuration)));
+      EXPECT_CALL(
+          *Output(kOutputIndex),
+          OnProcess(IsTrickPlaySample(kStartTime + i * kTrickPlaySampleDuration,
+                                      kTrickPlaySampleDuration)));
     }
-    EXPECT_CALL(*output(), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
 
   std::vector<std::shared_ptr<MediaSample>> samples =
       CreateSamples(9 /* sample count */, kStartTime, kDuration, kKeyFrameRate);
 
-  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetVideoStreamInfo(kTimescale))));
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromStreamInfo(
+                    kStreamIndex, GetVideoStreamInfo(kTimescale))));
 
   for (const auto& sample : samples) {
     ASSERT_OK(
-        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+        Input(kInputIndex)
+            ->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
   }
 
-  ASSERT_OK(input()->FlushAllDownstreams());
+  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
 // This test makes sure that when the trick play handler is initialized using
@@ -184,28 +179,31 @@ TEST_F(TrickPlayHandlerTest, TrickTrackWithSamples) {
   // handler.
   {
     testing::InSequence s;
-    EXPECT_CALL(*output(),
+    EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
     for (int i = 0; i < 2; i++) {
-      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
-                                 kStartTime + i * kTrickPlaySampleDuration,
-                                 kTrickPlaySampleDuration)));
+      EXPECT_CALL(
+          *Output(kOutputIndex),
+          OnProcess(IsTrickPlaySample(kStartTime + i * kTrickPlaySampleDuration,
+                                      kTrickPlaySampleDuration)));
     }
-    EXPECT_CALL(*output(), OnFlush(0u));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(0u));
   }
 
   std::vector<std::shared_ptr<MediaSample>> samples =
       CreateSamples(8 /* sample count */, kStartTime, kDuration, kKeyFrameRate);
 
-  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetVideoStreamInfo(kTimescale))));
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromStreamInfo(
+                    kStreamIndex, GetVideoStreamInfo(kTimescale))));
 
   for (const auto& sample : samples) {
     ASSERT_OK(
-        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+        Input(kInputIndex)
+            ->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
   }
 
-  ASSERT_OK(input()->FlushAllDownstreams());
+  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
 TEST_F(TrickPlayHandlerTest, TrickTrackWithSamplesAndSegments) {
@@ -223,30 +221,33 @@ TEST_F(TrickPlayHandlerTest, TrickTrackWithSamplesAndSegments) {
   // handler.
   {
     testing::InSequence s;
-    EXPECT_CALL(*output(),
+    EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTrickPlayVideoStream(kTrickPlayFactor, kPlayRate)));
 
     // Segment One
     for (int i = 0; i < 2; i++) {
-      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
-                                 kStartTime + kTrickPlaySampleDuration * i,
-                                 kTrickPlaySampleDuration)));
+      EXPECT_CALL(
+          *Output(kOutputIndex),
+          OnProcess(IsTrickPlaySample(kStartTime + kTrickPlaySampleDuration * i,
+                                      kTrickPlaySampleDuration)));
     }
-    EXPECT_CALL(*output(),
+    EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsSegmentInfo(kStreamIndex, kStartTime, 4 * kDuration,
                                         !kSubSegment, !kEncrypted)));
 
     // Segment Two
     for (int i = 2; i < 4; i++) {
-      EXPECT_CALL(*output(), OnProcess(IsTrickPlaySample(
-                                 kStartTime + kTrickPlaySampleDuration * i,
-                                 kTrickPlaySampleDuration)));
+      EXPECT_CALL(
+          *Output(kOutputIndex),
+          OnProcess(IsTrickPlaySample(kStartTime + kTrickPlaySampleDuration * i,
+                                      kTrickPlaySampleDuration)));
     }
-    EXPECT_CALL(*output(), OnProcess(IsSegmentInfo(
-                               kStreamIndex, kStartTime + 4 * kDuration,
-                               4 * kDuration, !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTime + 4 * kDuration,
+                                4 * kDuration, !kSubSegment, !kEncrypted)));
 
-    EXPECT_CALL(*output(), OnFlush(0u));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(0u));
   }
 
   std::vector<std::shared_ptr<MediaSample>> segment_one_samples =
@@ -256,27 +257,33 @@ TEST_F(TrickPlayHandlerTest, TrickTrackWithSamplesAndSegments) {
       CreateSamples(4 /* sample count */, kStartTime + 4 * kDuration, kDuration,
                     kKeyFrameRate);
 
-  ASSERT_OK(input()->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetVideoStreamInfo(kTimescale))));
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromStreamInfo(
+                    kStreamIndex, GetVideoStreamInfo(kTimescale))));
 
   // Segment One
   for (const auto& sample : segment_one_samples) {
     ASSERT_OK(
-        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+        Input(kInputIndex)
+            ->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
   }
-  ASSERT_OK(input()->Dispatch(StreamData::FromSegmentInfo(
-      kStreamIndex, GetSegmentInfo(kStartTime, kDuration * 4, !kEncrypted))));
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromSegmentInfo(
+                    kStreamIndex,
+                    GetSegmentInfo(kStartTime, kDuration * 4, !kEncrypted))));
 
   // Segment Two
   for (const auto& sample : segment_two_samples) {
     ASSERT_OK(
-        input()->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
+        Input(kInputIndex)
+            ->Dispatch(StreamData::FromMediaSample(kStreamIndex, sample)));
   }
-  ASSERT_OK(input()->Dispatch(StreamData::FromSegmentInfo(
-      kStreamIndex,
-      GetSegmentInfo(kStartTime + 4 * kDuration, 4 * kDuration, !kEncrypted))));
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromSegmentInfo(
+                    kStreamIndex, GetSegmentInfo(kStartTime + 4 * kDuration,
+                                                 4 * kDuration, !kEncrypted))));
 
-  ASSERT_OK(input()->FlushAllDownstreams());
+  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
 }  // namespace media

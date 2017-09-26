@@ -206,6 +206,71 @@ std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
 
   return sample;
 }
+
+Status MediaHandlerTestBase::SetUpAndInitializeGraph(
+    std::shared_ptr<MediaHandler> handler,
+    size_t input_count,
+    size_t output_count) {
+  DCHECK(handler);
+  DCHECK_EQ(nullptr, handler_);
+  DCHECK(inputs_.empty());
+  DCHECK(outputs_.empty());
+
+  handler_ = std::move(handler);
+
+  Status status;
+
+  // Add and connect all the requested inputs.
+  for (size_t i = 0; i < input_count; i++) {
+    inputs_.emplace_back(new FakeInputMediaHandler);
+  }
+
+  for (auto& input : inputs_) {
+    status.Update(input->AddHandler(handler_));
+  }
+
+  if (!status.ok()) {
+    return status;
+  }
+
+  // Add and connect all the requested outputs.
+  for (size_t i = 0; i < output_count; i++) {
+    outputs_.emplace_back(new MockOutputMediaHandler);
+  }
+
+  for (auto& output : outputs_) {
+    status.Update(handler_->AddHandler(output));
+  }
+
+  if (!status.ok()) {
+    return status;
+  }
+
+  // Initialize the graph.
+  for (auto& input : inputs_) {
+    status.Update(input->Initialize());
+  }
+
+  // In the case that there are no inputs, the start of the graph
+  // is at |handler_| so it needs to be initialized or else the graph
+  // won't be initialized.
+  if (inputs_.empty()) {
+    status.Update(handler_->Initialize());
+  }
+
+  return status;
+}
+
+FakeInputMediaHandler* MediaHandlerTestBase::Input(size_t index) {
+  DCHECK_LT(index, inputs_.size());
+  return inputs_[index].get();
+}
+
+MockOutputMediaHandler* MediaHandlerTestBase::Output(size_t index) {
+  DCHECK_LT(index, outputs_.size());
+  return outputs_[index].get();
+}
+
 MediaHandlerGraphTestBase::MediaHandlerGraphTestBase()
     : next_handler_(new FakeMediaHandler),
       some_handler_(new FakeMediaHandler) {}

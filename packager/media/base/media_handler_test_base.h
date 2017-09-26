@@ -171,9 +171,27 @@ class MediaHandlerTestBase : public ::testing::Test {
                                             uint64_t end,
                                             const std::string& payload) const;
 
+  // Connect and initialize all handlers.
+  Status SetUpAndInitializeGraph(std::shared_ptr<MediaHandler> handler,
+                                 size_t input_count,
+                                 size_t output_count);
+
+  // Get the input handler at |index|. The values of |index| will match the
+  // call to |AddInput|.
+  FakeInputMediaHandler* Input(size_t index);
+
+  // Get the output handler at |index|. The values of |index| will match the
+  // call to |AddOutput|.
+  MockOutputMediaHandler* Output(size_t index);
+
  private:
   MediaHandlerTestBase(const MediaHandlerTestBase&) = delete;
   MediaHandlerTestBase& operator=(const MediaHandlerTestBase&) = delete;
+
+  std::shared_ptr<MediaHandler> handler_;
+
+  std::vector<std::shared_ptr<FakeInputMediaHandler>> inputs_;
+  std::vector<std::shared_ptr<MockOutputMediaHandler>> outputs_;
 };
 
 class MediaHandlerGraphTestBase : public MediaHandlerTestBase {
