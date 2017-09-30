@@ -6,6 +6,8 @@
 
 #include "packager/packager.h"
 
+#include <algorithm>
+
 #include "packager/app/libcrypto_threading.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/stream_descriptor.h"
@@ -22,6 +24,7 @@
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
+#include "packager/media/base/language_utils.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/chunking/chunking_handler.h"
@@ -208,30 +211,24 @@ Status ValidateParams(const PackagingParams& packaging_params,
   return Status::OK;
 }
 
-class StreamDescriptorCompareFn {
- public:
-  bool operator()(const StreamDescriptor& a, const StreamDescriptor& b) {
-    if (a.input == b.input) {
-      if (a.stream_selector == b.stream_selector) {
-        // The MPD notifier requires that the main track comes first, so make
-        // sure that happens.
-        if (a.trick_play_factor == 0 || b.trick_play_factor == 0) {
-          return a.trick_play_factor == 0;
-        } else {
-          return a.trick_play_factor > b.trick_play_factor;
-        }
+bool StreamDescriptorCompareFn(const StreamDescriptor& a,
+                               const StreamDescriptor& b) {
+  if (a.input == b.input) {
+    if (a.stream_selector == b.stream_selector) {
+      // The MPD notifier requires that the main track comes first, so make
+      // sure that happens.
+      if (a.trick_play_factor == 0 || b.trick_play_factor == 0) {
+        return a.trick_play_factor == 0;
       } else {
-        return a.stream_selector < b.stream_selector;
+        return a.trick_play_factor > b.trick_play_factor;
       }
+    } else {
+      return a.stream_selector < b.stream_selector;
     }
-
-    return a.input < b.input;
   }
-};
 
-/// Sorted list of StreamDescriptor.
-typedef std::multiset<StreamDescriptor, StreamDescriptorCompareFn>
-    StreamDescriptorList;
+  return a.input < b.input;
+}
 
 // A fake clock that always return time 0 (epoch). Should only be used for
 // testing.
@@ -440,15 +437,13 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   return std::make_shared<EncryptionHandler>(encryption_params, key_source);
 }
 
-Status CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
+Status CreateRemuxJobs(const std::vector<StreamDescriptor> stream_descriptors,
                        const PackagingParams& packaging_params,
                        FakeClock* fake_clock,
                        KeySource* encryption_key_source,
                        MpdNotifier* mpd_notifier,
                        hls::HlsNotifier* hls_notifier,
                        std::vector<std::unique_ptr<Job>>* jobs) {
-  // No notifiers OR (mpd_notifier XOR hls_notifier); which is NAND.
-  DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(jobs);
 
   // Demuxers are shared among all streams with the same input.
@@ -737,29 +732,34 @@ Status Packager::Initialize(
         master_playlist_name.AsUTF8Unsafe()));
   }
 
-  media::StreamDescriptorList stream_descriptor_list;
-  for (const StreamDescriptor& descriptor : stream_descriptors) {
-    if (internal->buffer_callback_params.read_func ||
-        internal->buffer_callback_params.write_func) {
-      StreamDescriptor descriptor_copy = descriptor;
-      if (internal->buffer_callback_params.read_func) {
-        descriptor_copy.input = File::MakeCallbackFileName(
-            internal->buffer_callback_params, descriptor.input);
+  std::vector<StreamDescriptor> stream_descriptors_copy = stream_descriptors;
+  std::sort(stream_descriptors_copy.begin(), stream_descriptors_copy.end(),
+            media::StreamDescriptorCompareFn);
+  for (StreamDescriptor& descriptor : stream_descriptors_copy) {
+    if (internal->buffer_callback_params.read_func) {
+      descriptor.input = File::MakeCallbackFileName(
+          internal->buffer_callback_params, descriptor.input);
+    }
+    if (internal->buffer_callback_params.write_func) {
+      descriptor.output = File::MakeCallbackFileName(
+          internal->buffer_callback_params, descriptor.output);
+      descriptor.segment_template = File::MakeCallbackFileName(
+          internal->buffer_callback_params, descriptor.segment_template);
+    }
+
+    // Update language to ISO_639_2 code if set.
+    if (!descriptor.language.empty()) {
+      descriptor.language = LanguageToISO_639_2(descriptor.language);
+      if (descriptor.language == "und") {
+        return Status(
+            error::INVALID_ARGUMENT,
+            "Unknown/invalid language specified: " + descriptor.language);
       }
-      if (internal->buffer_callback_params.write_func) {
-        descriptor_copy.output = File::MakeCallbackFileName(
-            internal->buffer_callback_params, descriptor.output);
-        descriptor_copy.segment_template = File::MakeCallbackFileName(
-            internal->buffer_callback_params, descriptor.segment_template);
-      }
-      stream_descriptor_list.insert(descriptor_copy);
-    } else {
-      stream_descriptor_list.insert(descriptor);
     }
   }
 
   Status status = media::CreateRemuxJobs(
-      stream_descriptor_list, packaging_params, &internal->fake_clock,
+      stream_descriptors_copy, packaging_params, &internal->fake_clock,
       internal->encryption_key_source.get(), internal->mpd_notifier.get(),
       internal->hls_notifier.get(), &internal->jobs);
 

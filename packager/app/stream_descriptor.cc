@@ -9,7 +9,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
-#include "packager/media/base/language_utils.h"
 
 namespace shaka {
 
@@ -107,13 +106,7 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         break;
       }
       case kLanguageField: {
-        // TODO(kqyang): Move to packager.cc.
-        std::string language = LanguageToISO_639_2(iter->second);
-        if (language == "und") {
-          LOG(ERROR) << "Unknown/invalid language specified: " << iter->second;
-          return base::nullopt;
-        }
-        descriptor.language = language;
+        descriptor.language = iter->second;
         break;
       }
       case kOutputFormatField: {
