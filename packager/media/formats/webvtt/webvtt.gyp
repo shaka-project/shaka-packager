@@ -49,7 +49,7 @@
         'webvtt_parser_unittest.cc',
         'webvtt_sample_converter_unittest.cc',
         'webvtt_segmenter_unittest.cc',
-        'webvtt_timestamp_unittest.cc',
+        'webvtt_pipeline_unittest.cc',
         'webvtt_timestamp_unittest.cc',
         'webvtt_to_mp4_handler_unittest.cc',
       ],
@@ -57,6 +57,7 @@
         '../../../testing/gmock.gyp:gmock',
         '../../../testing/gtest.gyp:gtest',
         '../../base/media_base.gyp:media_handler_test_base',
+        '../../event/media_event.gyp:mock_muxer_listener',
         '../../test/media_test.gyp:media_test_support',
         'webvtt',
       ]
