@@ -39,7 +39,7 @@ class WebMVideoClient : public WebMParserClient {
 
   /// Extracts VPCodecConfigurationRecord parsed from codec private data and
   /// Colour element.
-  const VPCodecConfigurationRecord& GetVpCodecConfig(
+  VPCodecConfigurationRecord GetVpCodecConfig(
       const std::vector<uint8_t>& codec_private);
 
  private:
@@ -50,22 +50,26 @@ class WebMVideoClient : public WebMParserClient {
   bool OnBinary(int id, const uint8_t* data, int size) override;
   bool OnFloat(int id, double val) override;
 
-  int64_t pixel_width_;
-  int64_t pixel_height_;
-  int64_t crop_bottom_;
-  int64_t crop_top_;
-  int64_t crop_left_;
-  int64_t crop_right_;
-  int64_t display_width_;
-  int64_t display_height_;
-  int64_t display_unit_;
-  int64_t alpha_mode_;
+  int64_t pixel_width_ = -1;
+  int64_t pixel_height_ = -1;
+  int64_t crop_bottom_ = -1;
+  int64_t crop_top_ = -1;
+  int64_t crop_left_ = -1;
+  int64_t crop_right_ = -1;
+  int64_t display_width_ = -1;
+  int64_t display_height_ = -1;
+  int64_t display_unit_ = -1;
+  int64_t alpha_mode_ = -1;
 
-  VPCodecConfigurationRecord vp_config_;
-  int64_t chroma_subsampling_horz_;
-  int64_t chroma_subsampling_vert_;
-  int64_t chroma_siting_horz_;
-  int64_t chroma_siting_vert_;
+  int64_t matrix_coefficients_ = -1;
+  int64_t bits_per_channel_ = -1;
+  int64_t chroma_subsampling_horz_ = -1;
+  int64_t chroma_subsampling_vert_ = -1;
+  int64_t chroma_siting_horz_ = -1;
+  int64_t chroma_siting_vert_ = -1;
+  int64_t color_range_ = -1;
+  int64_t transfer_characteristics_ = -1;
+  int64_t color_primaries_ = -1;
 
   DISALLOW_COPY_AND_ASSIGN(WebMVideoClient);
 };

@@ -27,12 +27,9 @@ int64_t GetGreatestCommonDivisor(int64_t a, int64_t b) {
 namespace shaka {
 namespace media {
 
-WebMVideoClient::WebMVideoClient() {
-  Reset();
-}
+WebMVideoClient::WebMVideoClient() {}
 
-WebMVideoClient::~WebMVideoClient() {
-}
+WebMVideoClient::~WebMVideoClient() {}
 
 void WebMVideoClient::Reset() {
   pixel_width_ = -1;
@@ -46,11 +43,15 @@ void WebMVideoClient::Reset() {
   display_unit_ = -1;
   alpha_mode_ = -1;
 
-  vp_config_ = VPCodecConfigurationRecord();
+  matrix_coefficients_ = -1;
+  bits_per_channel_ = -1;
   chroma_subsampling_horz_ = -1;
   chroma_subsampling_vert_ = -1;
   chroma_siting_horz_ = -1;
   chroma_siting_vert_ = -1;
+  color_range_ = -1;
+  transfer_characteristics_ = -1;
+  color_primaries_ = -1;
 }
 
 std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
@@ -119,17 +120,37 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
       sar_y, 0, 0, std::string(), is_encrypted);
 }
 
-const VPCodecConfigurationRecord& WebMVideoClient::GetVpCodecConfig(
+VPCodecConfigurationRecord WebMVideoClient::GetVpCodecConfig(
     const std::vector<uint8_t>& codec_private) {
-  vp_config_.ParseWebM(codec_private);
+  VPCodecConfigurationRecord vp_config;
+  vp_config.ParseWebM(codec_private);
+  if (matrix_coefficients_ != -1) {
+    vp_config.set_matrix_coefficients(matrix_coefficients_);
+  }
+  if (bits_per_channel_ != -1) {
+    vp_config.set_bit_depth(bits_per_channel_);
+  }
   if (chroma_subsampling_horz_ != -1 && chroma_subsampling_vert_ != -1) {
-    vp_config_.SetChromaSubsampling(chroma_subsampling_horz_,
-                                    chroma_subsampling_vert_);
+    vp_config.SetChromaSubsampling(chroma_subsampling_horz_,
+                                   chroma_subsampling_vert_);
   }
   if (chroma_siting_horz_ != -1 && chroma_siting_vert_ != -1) {
-    vp_config_.SetChromaLocation(chroma_siting_horz_, chroma_siting_vert_);
+    vp_config.SetChromaLocation(chroma_siting_horz_, chroma_siting_vert_);
   }
-  return vp_config_;
+  if (color_range_ != -1) {
+    if (color_range_ == 0)
+      vp_config.set_video_full_range_flag(false);
+    else if (color_range_ == 1)
+      vp_config.set_video_full_range_flag(true);
+    // Ignore for other values.
+  }
+  if (transfer_characteristics_ != -1) {
+    vp_config.set_transfer_characteristics(transfer_characteristics_);
+  }
+  if (color_primaries_ != -1) {
+    vp_config.set_color_primaries(color_primaries_);
+  }
+  return vp_config;
 }
 
 WebMParserClient* WebMVideoClient::OnListStart(int id) {
@@ -141,8 +162,7 @@ bool WebMVideoClient::OnListEnd(int id) {
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {
-  VPCodecConfigurationRecord vp_config;
-  int64_t* dst = NULL;
+  int64_t* dst = nullptr;
 
   switch (id) {
     case kWebMIdPixelWidth:
@@ -176,10 +196,10 @@ bool WebMVideoClient::OnUInt(int id, int64_t val) {
       dst = &alpha_mode_;
       break;
     case kWebMIdColorMatrixCoefficients:
-      vp_config.set_matrix_coefficients(static_cast<uint8_t>(val));
+      dst = &matrix_coefficients_;
       break;
     case kWebMIdColorBitsPerChannel:
-      vp_config.set_bit_depth(static_cast<uint8_t>(val));
+      dst = &bits_per_channel_;
       break;
     case kWebMIdColorChromaSubsamplingHorz:
       dst = &chroma_subsampling_horz_;
@@ -194,17 +214,13 @@ bool WebMVideoClient::OnUInt(int id, int64_t val) {
       dst = &chroma_siting_vert_;
       break;
     case kWebMIdColorRange:
-      if (val == 0)
-        vp_config.set_video_full_range_flag(false);
-      else if (val == 1)
-        vp_config.set_video_full_range_flag(true);
-      // Ignore for other values of val.
+      dst = &color_range_;
       break;
     case kWebMIdColorTransferCharacteristics:
-      vp_config.set_transfer_characteristics(static_cast<uint8_t>(val));
+      dst = &transfer_characteristics_;
       break;
     case kWebMIdColorPrimaries:
-      vp_config.set_color_primaries(static_cast<uint8_t>(val));
+      dst = &color_primaries_;
       break;
     case kWebMIdColorMaxCLL:
     case kWebMIdColorMaxFALL:

@@ -42,10 +42,8 @@ struct PackagingParams {
   /// Chunking (segmentation) related parameters.
   ChunkingParams chunking_params;
 
-  /// Manifest generation related parameters. Right now only one of
-  /// `output_media_info`, `mpd_params` and `hls_params` should be set. Create a
-  /// human readable format of MediaInfo. The output file name will be the name
-  /// specified by output flag, suffixed with `.media_info`.
+  /// Create a human readable format of MediaInfo. The output file name will be
+  /// the name specified by output flag, suffixed with `.media_info`.
   bool output_media_info = false;
   /// DASH MPD related parameters.
   MpdParams mpd_params;
