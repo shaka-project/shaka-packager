@@ -275,7 +275,15 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   std::unique_ptr<MediaPlaylist> media_playlist =
       media_playlist_factory_->Create(playlist_type(), time_shift_buffer_depth_,
                                       playlist_name, name, group_id);
-  if (!media_playlist->SetMediaInfo(media_info)) {
+
+  // Update init_segment_name to be relative to playlist path if needed.
+  MediaInfo media_info_copy = media_info;
+  if (media_info_copy.has_init_segment_name()) {
+    media_info_copy.set_init_segment_name(
+        GenerateSegmentUrl(media_info_copy.init_segment_name(), prefix_,
+                           output_dir_, media_playlist->file_name()));
+  }
+  if (!media_playlist->SetMediaInfo(media_info_copy)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
   }

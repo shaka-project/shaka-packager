@@ -24,6 +24,7 @@ namespace hls {
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Mock;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
 using ::testing::_;
@@ -156,7 +157,9 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
   EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
-  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_media_playlist,
+              SetMediaInfo(Property(&MediaInfo::init_segment_name, StrEq(""))))
+      .WillOnce(Return(true));
 
   // Verify that the common prefix is stripped for AddSegment().
   EXPECT_CALL(
@@ -184,6 +187,43 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
                                         kAnySize));
 }
 
+TEST_F(SimpleHlsNotifierTest, RebaseInitSegmentUrl) {
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
+
+  // Verify that the common prefix is stripped in init segment.
+  EXPECT_CALL(
+      *mock_media_playlist,
+      SetMediaInfo(Property(&MediaInfo::init_segment_name,
+                            StrEq("http://testprefix.com/path/to/init.mp4"))))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
+                                   StrEq("video_playlist.m3u8"), StrEq("name"),
+                                   StrEq("groupid")))
+      .WillOnce(Return(mock_media_playlist));
+
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kAnyOutputDir, kMasterPlaylistName);
+
+  InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &notifier);
+
+  EXPECT_TRUE(notifier.Init());
+  MediaInfo media_info;
+  media_info.set_init_segment_name("anything/path/to/init.mp4");
+  uint32_t stream_id;
+  EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
+                                       "name", "groupid", &stream_id));
+}
+
 TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
@@ -195,11 +235,15 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
       new MockMediaPlaylist(kVodPlaylist, "video/playlist.m3u8", "", "");
   EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
-  EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
+  // Verify that the init segment URL is relative to playlist path.
+  EXPECT_CALL(*mock_media_playlist,
+              SetMediaInfo(Property(&MediaInfo::init_segment_name,
+                                    StrEq("path/to/init.mp4"))))
+      .WillOnce(Return(true));
 
   // Verify that the segment URL is relative to playlist path.
   EXPECT_CALL(*mock_media_playlist,
-              AddSegment(StrEq("path/to/media1.ts"), _, _, _, _));
+              AddSegment(StrEq("path/to/media1.m4s"), _, _, _, _));
   EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
                                    StrEq("video/playlist.m3u8"), StrEq("name"),
                                    StrEq("groupid")))
@@ -213,11 +257,12 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
 
   EXPECT_TRUE(notifier.Init());
   MediaInfo media_info;
+  media_info.set_init_segment_name("anything/video/path/to/init.mp4");
   uint32_t stream_id;
   EXPECT_TRUE(notifier.NotifyNewStream(media_info, "video/playlist.m3u8",
                                        "name", "groupid", &stream_id));
   EXPECT_TRUE(
-      notifier.NotifyNewSegment(stream_id, "anything/video/path/to/media1.ts",
+      notifier.NotifyNewSegment(stream_id, "anything/video/path/to/media1.m4s",
                                 kAnyStartTime, kAnyDuration, 0, kAnySize));
 }
 
