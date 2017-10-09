@@ -62,13 +62,25 @@ Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
               key->key.begin() + (crypto_period_index % key->key.size()),
               key->key.end());
 
-  for (size_t i = 0; i < key->key_system_info.size(); i++) {
-    std::vector<uint8_t> pssh_data = key->key_system_info[i].pssh_data();
+  for (auto& key_system : key->key_system_info) {
+    std::vector<uint8_t> pssh_data = key_system.pssh_data();
     if (!pssh_data.empty()) {
       std::rotate(pssh_data.begin(),
                   pssh_data.begin() + (crypto_period_index % pssh_data.size()),
                   pssh_data.end());
-      key->key_system_info[i].set_pssh_data(pssh_data);
+      key_system.set_pssh_data(pssh_data);
+    }
+
+    // Rotate the key_ids in pssh as well if exists.
+    // Save a local copy of the key ids before clearing the key ids in
+    // |key_system|. The key ids will be updated and added back later.
+    std::vector<std::vector<uint8_t>> key_ids_copy = key_system.key_ids();
+    key_system.clear_key_ids();
+    for (std::vector<uint8_t>& key_id : key_ids_copy) {
+      std::rotate(key_id.begin(),
+                  key_id.begin() + (crypto_period_index % key_id.size()),
+                  key_id.end());
+      key_system.add_key_id(key_id);
     }
   }
 
