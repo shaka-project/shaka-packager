@@ -283,6 +283,11 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
         GenerateSegmentUrl(media_info_copy.init_segment_name(), prefix_,
                            output_dir_, media_playlist->file_name()));
   }
+  if (media_info_copy.has_media_file_name()) {
+    media_info_copy.set_media_file_name(
+        GenerateSegmentUrl(media_info_copy.media_file_name(), prefix_,
+                           output_dir_, media_playlist->file_name()));
+  }
   if (!media_playlist->SetMediaInfo(media_info_copy)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
