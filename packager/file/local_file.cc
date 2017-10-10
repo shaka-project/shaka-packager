@@ -105,8 +105,21 @@ bool LocalFile::Tell(uint64_t* position) {
 LocalFile::~LocalFile() {}
 
 bool LocalFile::Open() {
-  internal_file_ = base::OpenFile(base::FilePath::FromUTF8Unsafe(file_name()),
-                                  file_mode_.c_str());
+  base::FilePath file_path(base::FilePath::FromUTF8Unsafe(file_name()));
+
+  // Create upper level directories for write mode.
+  if (file_mode_.find("w") != std::string::npos) {
+    base::File::Error error;
+    // The function returns success if the directories already exist.
+    if (!base::CreateDirectoryAndGetError(file_path.DirName(), &error)) {
+      LOG(ERROR) << "Failed to create directories for file '"
+                 << file_path.AsUTF8Unsafe()
+                 << "'. Error: " << base::File::ErrorToString(error);
+      return false;
+    }
+  }
+
+  internal_file_ = base::OpenFile(file_path, file_mode_.c_str());
   return (internal_file_ != NULL);
 }
 

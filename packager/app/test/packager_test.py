@@ -63,6 +63,7 @@ class PackagerAppTest(unittest.TestCase):
                   language_override=None,
                   output_format=None,
                   live=False,
+                  hls=False,
                   test_files=None):
     if test_files is None:
       test_files = ['bear-640x360.mp4']
@@ -85,10 +86,8 @@ class PackagerAppTest(unittest.TestCase):
 
         if live:
           if output_format == 'ts':
-            stream = ('input=%s,stream=%s,segment_template=%s-$Number$.ts,'
-                      'playlist_name=%s.m3u8' % (test_file, stream_descriptor,
-                                                 output_prefix,
-                                                 stream_descriptor))
+            stream = ('input=%s,stream=%s,segment_template=%s-$Number$.ts' %
+                      (test_file, stream_descriptor, output_prefix))
           else:
             stream = (
                 'input=%s,stream=%s,init_segment=%s-init.mp4,'
@@ -106,6 +105,8 @@ class PackagerAppTest(unittest.TestCase):
           stream += ',format=%s' % output_format
         if language_override:
           stream += ',lang=%s' % language_override
+        if hls:
+          stream += ',playlist_name=%s.m3u8' % stream_descriptor
         streams.append(stream)
     return streams
 
@@ -417,10 +418,12 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testPackageAvcTs(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'],
-                         output_format='ts',
-                         live=True,
-                         test_files=['bear-640x360.ts']),
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            test_files=['bear-640x360.ts']),
         self._GetFlags(output_hls=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-golden',
@@ -441,6 +444,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['audio', 'video'],
             output_format='ts',
             live=True,
+            hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(
             output_hls=True,
@@ -467,6 +471,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['audio', 'video'],
             output_format='ts',
             live=True,
+            hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(
             encryption=True,
@@ -495,6 +500,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['audio', 'video'],
             output_format='ts',
             live=True,
+            hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(
             output_hls=True,
@@ -680,10 +686,12 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testPackageAvcTsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'],
-                         output_format='ts',
-                         live=True,
-                         test_files=['bear-640x360.ts']),
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            test_files=['bear-640x360.ts']),
         self._GetFlags(encryption=True, output_hls=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-enc-golden',
@@ -708,6 +716,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['video'],
             output_format='ts',
             live=True,
+            hls=True,
             test_files=['sintel-1024x436.mp4']),
         self._GetFlags(
             encryption=True,
@@ -843,6 +852,49 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffMediaInfoGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffMediaInfoGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+
+  def testPackageWithHlsSingleSegmentMp4Encrypted(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], hls=True),
+        self._GetFlags(encryption=True, output_hls=True))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-mp4-master-cenc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-a-mp4-cenc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-mp4-cenc-golden.m3u8')
+
+  # Test HLS with multi-segment mp4 and content in subdirectories.
+  def testPackageWithHlsMultiSegmentMp4WithCustomPath(self):
+    test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
+    # {tmp}/audio/audio-init.mp4, {tmp}/audio/audio-1.m4s etc.
+    audio_output_prefix = os.path.join(self.tmp_dir, 'audio', 'audio')
+    # {tmp}/video/video-init.mp4, {tmp}/video/video-1.m4s etc.
+    video_output_prefix = os.path.join(self.tmp_dir, 'video', 'video')
+    self.assertPackageSuccess(
+        [
+            'input=%s,stream=audio,init_segment=%s-init.mp4,'
+            'segment_template=%s-$Number$.m4s,playlist_name=audio/audio.m3u8' %
+            (test_file, audio_output_prefix, audio_output_prefix),
+            'input=%s,stream=video,init_segment=%s-init.mp4,'
+            'segment_template=%s-$Number$.m4s,playlist_name=video/video.m3u8' %
+            (test_file, video_output_prefix, video_output_prefix),
+        ],
+        self._GetFlags(output_hls=True))
+    self._DiffLiveGold(audio_output_prefix, 'bear-640x360-a-live-golden')
+    self._DiffLiveGold(video_output_prefix, 'bear-640x360-v-live-golden')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-mp4-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio', 'audio.m3u8'),
+        'bear-640x360-a-mp4-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video', 'video.m3u8'),
+        'bear-640x360-v-mp4-golden.m3u8')
 
   def testPackageWithLiveProfile(self):
     self.assertPackageSuccess(
