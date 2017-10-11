@@ -279,8 +279,7 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
     const std::string& program_identifier) {
   std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
   HttpKeyFetcher key_fetcher(kHttpFetchTimeout);
-  if (!client_cert_file_.empty() && !client_cert_private_key_file_.empty() &&
-      !client_cert_private_key_password_.empty()) {
+  if (!client_cert_file_.empty() && !client_cert_private_key_file_.empty()) {
     key_fetcher.SetClientCertInfo(client_cert_file_,
                                   client_cert_private_key_file_,
                                   client_cert_private_key_password_);

@@ -55,11 +55,11 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       const WidevineEncryptionParams& widevine = encryption_params.widevine;
       if (widevine.key_server_url.empty()) {
         LOG(ERROR) << "'key_server_url' should not be empty.";
-        return std::unique_ptr<KeySource>();
+        return nullptr;
       }
       if (widevine.content_id.empty()) {
         LOG(ERROR) << "'content_id' should not be empty.";
-        return std::unique_ptr<KeySource>();
+        return nullptr;
       }
       std::unique_ptr<WidevineKeySource> widevine_key_source(
           new WidevineKeySource(widevine.key_server_url,
@@ -69,7 +69,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         std::unique_ptr<RequestSigner> request_signer(
             CreateSigner(widevine.signer));
         if (!request_signer)
-          return std::unique_ptr<KeySource>();
+          return nullptr;
         widevine_key_source->set_signer(std::move(request_signer));
       }
       widevine_key_source->set_group_id(widevine.group_id);
@@ -79,7 +79,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       if (!status.ok()) {
         LOG(ERROR) << "Widevine encryption key source failed to fetch keys: "
                    << status.ToString();
-        return std::unique_ptr<KeySource>();
+        return nullptr;
       }
       encryption_key_source = std::move(widevine_key_source);
       break;
@@ -95,15 +95,31 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
     }
     case KeyProvider::kPlayready: {
       const PlayreadyEncryptionParams& playready = encryption_params.playready;
-      if (!playready.key_id.empty() && !playready.key.empty()) {
+      if (!playready.key_id.empty() || !playready.key.empty()) {
+        if (playready.key_id.empty() || playready.key.empty()) {
+          LOG(ERROR) << "Either playready key_id or key is not set.";
+          return nullptr;
+        }
         encryption_key_source = PlayReadyKeySource::CreateFromKeyAndKeyId(
             playready.key_id, playready.key);
-      } else if (!playready.key_server_url.empty() &&
+      } else if (!playready.key_server_url.empty() ||
                  !playready.program_identifier.empty()) {
+        if (playready.key_server_url.empty() ||
+            playready.program_identifier.empty()) {
+          LOG(ERROR) << "Either playready key_server_url or program_identifier "
+                        "is not set.";
+          return nullptr;
+        }
         std::unique_ptr<PlayReadyKeySource> playready_key_source;
-        if (!playready.client_cert_file.empty() &&
-            !playready.client_cert_private_key_file.empty() &&
-            !playready.client_cert_private_key_password.empty()) {
+        // private_key_password is allowed to be empty for unencrypted key.
+        if (!playready.client_cert_file.empty() ||
+            !playready.client_cert_private_key_file.empty()) {
+          if (playready.client_cert_file.empty() ||
+              playready.client_cert_private_key_file.empty()) {
+            LOG(ERROR) << "Either playready client_cert_file or "
+                          "client_cert_private_key_file is not set.";
+            return nullptr;
+          }
           playready_key_source.reset(new PlayReadyKeySource(
               playready.key_server_url, playready.client_cert_file,
               playready.client_cert_private_key_file,
@@ -120,7 +136,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         encryption_key_source = std::move(playready_key_source);
       } else {
         LOG(ERROR) << "Error creating PlayReady key source.";
-        return std::unique_ptr<KeySource>();
+        return nullptr;
       }
       break;
     }

@@ -120,15 +120,15 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, AppendToString);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
 
-  if (!client_cert_private_key_file_.empty() &&
-      !client_cert_private_key_password_.empty() &&
-      !client_cert_file_.empty()) {
+  if (!client_cert_private_key_file_.empty() && !client_cert_file_.empty()) {
     // Some PlayReady packaging servers only allow connects via HTTPS with
     // client certificates.
     curl_easy_setopt(curl, CURLOPT_SSLKEY,
                      client_cert_private_key_file_.data());
-    curl_easy_setopt(curl, CURLOPT_KEYPASSWD,
-                     client_cert_private_key_password_.data());
+    if (!client_cert_private_key_password_.empty()) {
+      curl_easy_setopt(curl, CURLOPT_KEYPASSWD,
+                       client_cert_private_key_password_.data());
+    }
     curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
     curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
     curl_easy_setopt(curl, CURLOPT_SSLCERT, client_cert_file_.data());
