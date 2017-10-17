@@ -8,12 +8,12 @@
 #include <iostream>
 
 #include "packager/app/crypto_flags.h"
-#include "packager/app/fixed_key_encryption_flags.h"
 #include "packager/app/hls_flags.h"
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/playready_key_encryption_flags.h"
+#include "packager/app/raw_key_encryption_flags.h"
 #include "packager/app/stream_descriptor.h"
 #include "packager/app/vlog_flags.h"
 #include "packager/app/widevine_encryption_flags.h"
@@ -232,14 +232,14 @@ base::Optional<PackagingParams> GetPackagingParams() {
     encryption_params.key_provider = KeyProvider::kPlayready;
     ++num_key_providers;
   }
-  if (FLAGS_enable_fixed_key_encryption) {
+  if (FLAGS_enable_raw_key_encryption) {
     encryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
   if (num_key_providers > 1) {
     LOG(ERROR) << "Only one of --enable_widevine_encryption, "
                   "--enable_playready_encryption, "
-                  "--enable_fixed_key_encryption can be enabled.";
+                  "--enable_raw_key_encryption can be enabled.";
     return base::nullopt;
   }
 
@@ -296,13 +296,13 @@ base::Optional<PackagingParams> GetPackagingParams() {
     decryption_params.key_provider = KeyProvider::kWidevine;
     ++num_key_providers;
   }
-  if (FLAGS_enable_fixed_key_decryption) {
+  if (FLAGS_enable_raw_key_decryption) {
     decryption_params.key_provider = KeyProvider::kRawKey;
     ++num_key_providers;
   }
   if (num_key_providers > 1) {
     LOG(ERROR) << "Only one of --enable_widevine_decryption, "
-                  "--enable_fixed_key_decryption can be enabled.";
+                  "--enable_raw_key_decryption can be enabled.";
     return base::nullopt;
   }
   switch (decryption_params.key_provider) {
@@ -384,7 +384,7 @@ int PackagerMain(int argc, char** argv) {
     return kSuccess;
   }
 
-  if (!ValidateWidevineCryptoFlags() || !ValidateFixedCryptoFlags() ||
+  if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
       !ValidatePRCryptoFlags()) {
     return kArgumentValidationFailed;
   }

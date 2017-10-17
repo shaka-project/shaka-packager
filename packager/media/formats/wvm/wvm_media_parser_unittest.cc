@@ -12,8 +12,8 @@
 #include "packager/base/bind_helpers.h"
 #include "packager/base/logging.h"
 #include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/timestamp.h"
@@ -47,7 +47,7 @@ using ::testing::SetArgPointee;
 namespace shaka {
 namespace media {
 
-class MockKeySource : public FixedKeySource {
+class MockKeySource : public RawKeySource {
  public:
   MockKeySource() {}
   ~MockKeySource() override {}

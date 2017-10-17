@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_BASE_FIXED_KEY_SOURCE_H_
-#define MEDIA_BASE_FIXED_KEY_SOURCE_H_
+#ifndef PACKAGER_MEDIA_BASE_RAW_KEY_SOURCE_H_
+#define PACKAGER_MEDIA_BASE_RAW_KEY_SOURCE_H_
 
 #include <memory>
 #include <string>
@@ -30,10 +30,10 @@ const uint8_t kFairplaySystemId[] = {0x29, 0x70, 0x1F, 0xE4, 0x3C, 0xC7,
                                      0x4A, 0x34, 0x8C, 0x5B, 0xAE, 0x90,
                                      0xC7, 0x43, 0x9A, 0x47};
 
-/// A key source that uses fixed keys for encryption.
-class FixedKeySource : public KeySource {
+/// A key source that uses raw keys for encryption.
+class RawKeySource : public KeySource {
  public:
-  ~FixedKeySource() override;
+  ~RawKeySource() override;
 
   /// @name KeySource implementation overrides.
   /// @{
@@ -47,21 +47,21 @@ class FixedKeySource : public KeySource {
                             EncryptionKey* key) override;
   /// @}
 
-  /// Creates a new FixedKeySource from the given data.  Returns null
+  /// Creates a new RawKeySource from the given data.  Returns null
   /// if the parameter is malformed.
   /// @param raw_key contains parameters to setup the key source.
-  static std::unique_ptr<FixedKeySource> Create(const RawKeyParams& raw_key);
+  static std::unique_ptr<RawKeySource> Create(const RawKeyParams& raw_key);
 
  protected:
   // Allow default constructor for mock key sources.
-  FixedKeySource();
+  RawKeySource();
 
  private:
   typedef std::map<std::string, std::unique_ptr<EncryptionKey>>
       EncryptionKeyMap;
-  explicit FixedKeySource(EncryptionKeyMap&& encryption_key_map);
-  FixedKeySource(const FixedKeySource&) = delete;
-  FixedKeySource& operator=(const FixedKeySource&) = delete;
+  explicit RawKeySource(EncryptionKeyMap&& encryption_key_map);
+  RawKeySource(const RawKeySource&) = delete;
+  RawKeySource& operator=(const RawKeySource&) = delete;
 
   EncryptionKeyMap encryption_key_map_;
 };
@@ -69,4 +69,4 @@ class FixedKeySource : public KeySource {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_FIXED_KEY_SOURCE_H_
+#endif  // PACKAGER_MEDIA_BASE_RAW_KEY_SOURCE_H_

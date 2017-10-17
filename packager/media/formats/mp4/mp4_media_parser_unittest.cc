@@ -9,8 +9,8 @@
 
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/mp4/mp4_media_parser.h"
@@ -29,7 +29,7 @@ const char kKey[] =
     "\xeb\xdd\x62\xf1\x68\x14\xd2\x7b\x68\xef\x12\x2a\xfc\xe4\xae\x3c";
 const char kKeyId[] = "0123456789012345";
 
-class MockKeySource : public FixedKeySource {
+class MockKeySource : public RawKeySource {
  public:
   MOCK_METHOD2(FetchKeys,
                Status(EmeInitDataType init_data_type,

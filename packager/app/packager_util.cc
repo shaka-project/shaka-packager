@@ -10,10 +10,10 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/file/file.h"
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/playready_key_source.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/chunking/chunking_handler.h"
@@ -85,7 +85,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      encryption_key_source = FixedKeySource::Create(encryption_params.raw_key);
+      encryption_key_source = RawKeySource::Create(encryption_params.raw_key);
       break;
     }
     case KeyProvider::kPlayready: {
@@ -166,7 +166,7 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      decryption_key_source = FixedKeySource::Create(decryption_params.raw_key);
+      decryption_key_source = RawKeySource::Create(decryption_params.raw_key);
       break;
     }
     case KeyProvider::kNone:

@@ -16,7 +16,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/cluster_builder.h"
 #include "packager/media/formats/webm/webm_constants.h"
@@ -177,7 +177,7 @@ const uint8_t kVP9Frame[] = {
     0xe1, 0xe6, 0xef, 0xff, 0xfd, 0xf7, 0x4f, 0x0f,
 };
 
-class MockKeySource : public FixedKeySource {
+class MockKeySource : public RawKeySource {
  public:
   MOCK_METHOD2(GetKey,
                Status(const std::vector<uint8_t>& key_id, EncryptionKey* key));

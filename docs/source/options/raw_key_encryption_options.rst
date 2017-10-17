@@ -1,13 +1,13 @@
 Raw key encryption options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
---enable_fixed_key_encryption
+--enable_raw_key_encryption
 
-    Enable encryption with fixed key.
+    Enable encryption with raw key (keys provided in command line)).
 
---enable_fixed_key_decryption
+--enable_raw_key_decryption
 
-    Enable decryption with fixed key.
+    Enable decryption with raw key (keys provided in command line).
 
 --keys <key_info_string[,key_info_string][,key_info_string]...>
 

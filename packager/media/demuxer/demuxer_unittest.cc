@@ -9,8 +9,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_handler_test_base.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/test/test_data_util.h"
 #include "packager/status_test_util.h"
 
@@ -22,7 +22,7 @@ using ::testing::_;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
-class MockKeySource : public FixedKeySource {
+class MockKeySource : public RawKeySource {
  public:
   MOCK_METHOD2(GetKey,
                Status(const std::vector<uint8_t>& key_id, EncryptionKey* key));

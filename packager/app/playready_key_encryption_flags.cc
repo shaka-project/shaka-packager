@@ -53,16 +53,16 @@ bool ValidatePRCryptoFlags() {
                     playready_enabled, true, playready_label)) {
     success = false;
   }
-  bool use_fixed_key = !FLAGS_playready_key_id_bytes.empty() &&
-                       !FLAGS_playready_key_bytes.empty();
+  bool use_raw_key = !FLAGS_playready_key_id_bytes.empty() &&
+                     !FLAGS_playready_key_bytes.empty();
 
-  if (playready_enabled && !use_packaging && !use_fixed_key) {
+  if (playready_enabled && !use_packaging && !use_raw_key) {
     PrintError("combination of --playready_server_url and "
         "--program_identifier or --playready_key_id and playready_key are "
         "required");
     success = false;
   }
-  if (use_packaging && use_fixed_key) {
+  if (use_packaging && use_raw_key) {
     PrintError("combination of --playready_server_url, --program_identifier, "
         "--playready_key_id, and playready_key is not valid");
     success = false;

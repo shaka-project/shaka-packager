@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/status_test_util.h"
 
 #define EXPECT_HEX_EQ(expected, actual)                         \
@@ -59,7 +59,7 @@ std::vector<uint8_t> HexStringToVector(const std::string& str) {
 }
 }  // namespace
 
-TEST(FixedKeySourceTest, Success) {
+TEST(RawKeySourceTest, Success) {
   RawKeyParams raw_key_params;
   raw_key_params.key_map[kDrmLabel].key_id = HexStringToVector(kKeyIdHex);
   raw_key_params.key_map[kDrmLabel].key = HexStringToVector(kKeyHex);
@@ -68,8 +68,8 @@ TEST(FixedKeySourceTest, Success) {
   raw_key_params.iv = HexStringToVector(kIvHex);
   raw_key_params.pssh =
       HexStringToVector(std::string(kPsshBox1Hex) + kPsshBox2Hex);
-  std::unique_ptr<FixedKeySource> key_source =
-      FixedKeySource::Create(raw_key_params);
+  std::unique_ptr<RawKeySource> key_source =
+      RawKeySource::Create(raw_key_params);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key_from_drm_label;
@@ -102,7 +102,7 @@ TEST(FixedKeySourceTest, Success) {
                 key_from_drm_label.key_system_info[1].CreateBox());
 }
 
-TEST(FixedKeySourceTest, EmptyPssh) {
+TEST(RawKeySourceTest, EmptyPssh) {
   RawKeyParams raw_key_params;
   raw_key_params.key_map[kDrmLabel].key_id = HexStringToVector(kKeyIdHex);
   raw_key_params.key_map[kDrmLabel].key = HexStringToVector(kKeyHex);
@@ -110,8 +110,8 @@ TEST(FixedKeySourceTest, EmptyPssh) {
       HexStringToVector(kKeyId2Hex);
   raw_key_params.key_map[kAnotherDrmLabel].key = HexStringToVector(kKey2Hex);
   raw_key_params.iv = HexStringToVector(kIvHex);
-  std::unique_ptr<FixedKeySource> key_source =
-      FixedKeySource::Create(raw_key_params);
+  std::unique_ptr<RawKeySource> key_source =
+      RawKeySource::Create(raw_key_params);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
@@ -123,7 +123,7 @@ TEST(FixedKeySourceTest, EmptyPssh) {
   EXPECT_HEX_EQ(kDefaultPsshBoxHex, key.key_system_info[0].CreateBox());
 }
 
-TEST(FixedKeySourceTest, Failure) {
+TEST(RawKeySourceTest, Failure) {
   // Invalid key id size.
   RawKeyParams raw_key_params;
   raw_key_params.key_map[kEmptyDrmLabel].key_id =
@@ -131,14 +131,14 @@ TEST(FixedKeySourceTest, Failure) {
   raw_key_params.key_map[kEmptyDrmLabel].key = HexStringToVector(kKeyHex);
   raw_key_params.pssh = HexStringToVector(kPsshBox1Hex);
   raw_key_params.iv = HexStringToVector(kIvHex);
-  std::unique_ptr<FixedKeySource> key_source =
-      FixedKeySource::Create(raw_key_params);
+  std::unique_ptr<RawKeySource> key_source =
+      RawKeySource::Create(raw_key_params);
   EXPECT_EQ(nullptr, key_source);
 
   // Invalid pssh box.
   raw_key_params.key_map[kEmptyDrmLabel].key_id = HexStringToVector(kKeyIdHex);
   raw_key_params.pssh = HexStringToVector("000102030405");
-  key_source = FixedKeySource::Create(raw_key_params);
+  key_source = RawKeySource::Create(raw_key_params);
   EXPECT_EQ(nullptr, key_source);
 }
 

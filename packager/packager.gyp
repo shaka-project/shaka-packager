@@ -58,8 +58,6 @@
       'sources': [
         'app/crypto_flags.cc',
         'app/crypto_flags.h',
-        'app/fixed_key_encryption_flags.cc',
-        'app/fixed_key_encryption_flags.h',
         'app/gflags_hex_bytes.cc',
         'app/gflags_hex_bytes.h',
         'app/hls_flags.cc',
@@ -71,6 +69,8 @@
         'app/packager_main.cc',
         'app/playready_key_encryption_flags.cc',
         'app/playready_key_encryption_flags.h',
+        'app/raw_key_encryption_flags.cc',
+        'app/raw_key_encryption_flags.h',
         'app/retired_flags.cc',
         'app/retired_flags.h',
         'app/stream_descriptor.cc',

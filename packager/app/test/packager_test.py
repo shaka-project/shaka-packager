@@ -152,7 +152,7 @@ class PackagerAppTest(unittest.TestCase):
       ]
     elif encryption:
       flags += [
-          '--enable_fixed_key_encryption',
+          '--enable_raw_key_encryption',
           '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
                                                     self.encryption_key),
           '--clear_lead={0}'.format(clear_lead)
@@ -167,7 +167,7 @@ class PackagerAppTest(unittest.TestCase):
 
     if decryption:
       flags += [
-          '--enable_fixed_key_decryption',
+          '--enable_raw_key_decryption',
           '--keys=label=:key_id={0}:key={1}'.format(self.encryption_key_id,
                                                     self.encryption_key)
       ]
@@ -571,13 +571,28 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
+  # Test deprecated flag --enable_fixed_key_encryption, which is still
+  # supported currently.
+  def testPackageWithEncryptionUsingFixedKey(self):
+    flags = self._GetFlags() + [
+        '--enable_fixed_key_encryption', '--key_id={0}'.format(
+            self.encryption_key_id), '--key={0}'.format(self.encryption_key),
+        '--clear_lead={0}'.format(1), '--iv={0}'.format(self.encryption_iv)
+    ]
+    self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
   def testPackageWithEncryptionMultiKeys(self):
     audio_key_id = '10111213141516171819202122232425'
     audio_key = '11121314151617181920212223242526'
     video_key_id = '20212223242526272829303132333435'
     video_key = '21222324252627282930313233343536'
     flags = self._GetFlags() + [
-        '--enable_fixed_key_encryption',
+        '--enable_raw_key_encryption',
         '--keys=label=AUDIO:key_id={0}:key={1},label=SD:key_id={2}:key={3}'.
         format(audio_key_id, audio_key, video_key_id, video_key),
         '--clear_lead={0}'.format(1), '--iv={0}'.format(self.encryption_iv)
@@ -597,7 +612,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     video_key_id = '10111213141516171819202122232425'
     video_key = '11121314151617181920212223242526'
     flags = self._GetFlags() + [
-        '--enable_fixed_key_encryption',
+        '--enable_raw_key_encryption',
         '--keys=label=MyAudio:key_id={0}:key={1},label=:key_id={2}:key={3}'.
         format(audio_key_id, audio_key, video_key_id, video_key),
         '--clear_lead={0}'.format(1), '--iv={0}'.format(self.encryption_iv)

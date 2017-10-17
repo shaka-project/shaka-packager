@@ -16,8 +16,8 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 

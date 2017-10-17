@@ -11,8 +11,8 @@
 
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_handler_test_base.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
 #include "packager/status_test_util.h"
@@ -54,7 +54,7 @@ const uint8_t kKeyRotationDefaultKeyId[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-class MockKeySource : public FixedKeySource {
+class MockKeySource : public RawKeySource {
  public:
   MOCK_METHOD2(GetKey,
                Status(const std::string& stream_label, EncryptionKey* key));

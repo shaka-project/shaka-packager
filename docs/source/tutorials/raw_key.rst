@@ -9,7 +9,7 @@ Synopsis
 ::
 
     $ packager {stream_descriptor} [stream_descriptor] ... \
-      --enable_fixed_key_encryption \
+      --enable_raw_key_encryption \
       --keys <key_info_string[,key_info_string][,key_info_string]...> \
       [--pssh <concatenated PSSHs>] \
       [Other options, e.g. DASH options, HLS options]
@@ -35,7 +35,7 @@ Common PSSH (one key for all streams)::
       in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
       in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4 \
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4 \
-      --enable_fixed_key_encryption \
+      --enable_raw_key_encryption \
       --keys label=:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392 \
       --mpd_output h264.mpd
 
@@ -47,7 +47,7 @@ Common PSSH (different keys for different streams)::
       in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,drm_label=SD \
       in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4,drm_label=HD \
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
-      --enable_fixed_key_encryption \
+      --enable_raw_key_encryption \
       --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
       --mpd_output h264.mpd
 
@@ -59,7 +59,7 @@ Widevine PSSH (different keys for different streams)::
       in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,drm_label=SD \
       in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4,drm_label=HD \
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
-      --enable_fixed_key_encryption \
+      --enable_raw_key_encryption \
       --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
       --pssh 000000407073736800000000edef8ba979d64acea3c827dcd51d21ed000000201a0d7769646576696e655f74657374220f7465737420636f6e74656e74206964 \
       --mpd_output h264.mpd

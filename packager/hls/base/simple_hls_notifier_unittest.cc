@@ -13,8 +13,8 @@
 #include "packager/base/files/file_path.h"
 #include "packager/hls/base/mock_media_playlist.h"
 #include "packager/hls/base/simple_hls_notifier.h"
-#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/widevine_key_source.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
@@ -579,7 +579,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
       widevine_system_id_, iv, pssh_box));
 }
 
-TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFixedKey) {
+TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateIdentifyKey) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
