@@ -85,14 +85,13 @@ const char kUsage[] =
     "  - trick_play_factor (tpf): Optional value which specifies the trick\n"
     "    play, a.k.a. trick mode, stream sampling rate among key frames.\n"
     "    If specified, the output is a trick play stream.\n"
-    "  - hls_name: Required for audio when outputting HLS.\n"
-    "    name of the output stream. This is not (necessarily) the same as\n"
-    "    output. This is used as the NAME attribute for EXT-X-MEDIA.\n"
-    "  - hls_group_id: Required for audio when outputting HLS.\n"
-    "    The group ID for the output stream. This is used as the GROUP-ID\n"
-    "    attribute for EXT-X-MEDIA.\n"
-    "  - playlist_name: Required for HLS output.\n"
-    "    Name of the playlist for the stream. Usually ends with '.m3u8'.\n";
+    "  - hls_name: Used for HLS audio to set the NAME attribute for\n"
+    "    EXT-X-MEDIA. Defaults to the base of the playlist name.\n"
+    "  - hls_group_id: Used for HLS audio to set the GROUP-ID attribute for\n"
+    "    EXT-X-MEDIA. Defaults to 'audio' if not specified.\n"
+    "  - playlist_name: Used for HLS to name the playlist for the stream.\n"
+    "    Usually ends with '.m3u8'. If unspecified, defaults to something of\n"
+    "    the form 'stream_0.m3u8', 'stream_1.m3u8', 'stream_2.m3u8', etc.\n";
 
 enum ExitStatus {
   kSuccess = 0,
