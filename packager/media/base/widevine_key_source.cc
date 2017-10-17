@@ -558,6 +558,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
     std::string stream_label;
     RCHECK(track_dict->GetString("type", &stream_label));
     RCHECK(encryption_key_map.find(stream_label) == encryption_key_map.end());
+    VLOG(2) << "drm label:" << stream_label;
 
     std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
 

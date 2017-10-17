@@ -182,10 +182,14 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
     auto& key_info = raw_key->key_map[drm_label];
     if (value_map[kKeyIdLabel].empty() ||
         !base::HexStringToBytes(value_map[kKeyIdLabel], &key_info.key_id)) {
+      LOG(ERROR) << "Empty key id or invalid hex string for key id: "
+                 << value_map[kKeyIdLabel];
       return false;
     }
     if (value_map[kKeyLabel].empty() ||
         !base::HexStringToBytes(value_map[kKeyLabel], &key_info.key)) {
+      LOG(ERROR) << "Empty key or invalid hex string for key: "
+                 << value_map[kKeyLabel];
       return false;
     }
   }

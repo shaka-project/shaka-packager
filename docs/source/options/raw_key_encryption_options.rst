@@ -23,14 +23,6 @@ Raw key encryption options
 
     *key_id* and *key* should be 32-digit hex strings.
 
---key_id <32-digit hex string>
-
-    The key id in hex string format. Deprecated. Use --keys instead.
-
---key <32-digit hex string>
-
-    The key in hex string format. Deprecated. Use --keys instead.
-
 --iv <16-digit or 32-digit hex string>
 
     IV in hex string format. If not specified, a random IV will be generated.
