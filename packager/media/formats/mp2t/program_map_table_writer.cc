@@ -12,7 +12,6 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/formats/mp2t/continuity_counter.h"
 #include "packager/media/formats/mp2t/ts_packet_writer_util.h"
 
 namespace shaka {
@@ -119,65 +118,6 @@ uint32_t Crc32Mpeg2(const uint8_t* data, size_t data_size) {
   return crc;
 }
 
-// For all the pointer fields in the PMTs, they are not really part of the PMT
-// but it's there so that an extra buffer isn't required to prepend the 0x00
-// byte.
-
-// PMT for H264 clear segments.
-// Note that this is version 0, so it only works for clear lead or clear stream.
-const uint8_t kPmtH264[] = {
-    0x00,  // pointer field
-    kProgramMapTableId,
-    0xB0,  // assumes length is <= 256 bytes.
-    0x12,  // length of the rest of this array.
-    0x00, kProgramNumber,
-    0xC1,            // version 0, current next indicator 1.
-    0x00,            // section number
-    0x00,            // last section number.
-    0xE0,            // first 3 bits reserved.
-    // PCR PID is the elementary streams PID.
-    ProgramMapTableWriter::kElementaryPid,
-    0xF0,            // first 4 bits reserved.
-    0x00,            // No descriptor at this level.
-    // stream_type -> PID.
-    kStreamTypeH264, 0xE0, ProgramMapTableWriter::kElementaryPid,
-    0xF0, 0x00,                             // Es_info_length is 0.
-    // CRC32.
-    0x43, 0x49, 0x97, 0xBE,
-};
-
-// PMT for AAC clear segments.
-// Note that this is version 0, so it only works for clear lead or clear stream.
-const uint8_t kPmtAac[] = {
-    0x00,  // pointer field
-    0x02,  // table id must be 0x02.
-    0xB0,  // assumes length is <= 256 bytes.
-    0x12,  // length of the rest of this array.
-    0x00, kProgramNumber,
-    0xC1,            // version 0, current next indicator 1.
-    0x00,            // section number
-    0x00,            // last section number.
-    0xE0,            // first 3 bits reserved.
-    // PCR PID is the elementary streams PID.
-    ProgramMapTableWriter::kElementaryPid,
-    0xF0,            // first 4 bits reserved.
-    0x00,            // No descriptor at this level.
-    // stream_type -> PID.
-    kStreamTypeAdtsAac, 0xE0, ProgramMapTableWriter::kElementaryPid,
-    0xF0, 0x00,                                // Es_info_length is 0.
-    // CRC32.
-    0xE0, 0x6F, 0x1A, 0x31,
-};
-
-// private_data_indicator for SAMPLE-AES H264. This is the same for all H264
-// streams.
-const uint8_t kPrivateDataIndicatorDescriptorEncryptedH264[] = {
-    0x0F,        // descriptor_tag.
-    0x04,        // Length of the rest of this descriptor.
-    // 'zavc'.
-    0x7A, 0x61, 0x76, 0x63,
-};
-
 void WritePmtToBuffer(const uint8_t* pmt,
                       size_t pmt_size,
                       ContinuityCounter* continuity_counter,
@@ -261,8 +201,7 @@ void WritePmtWithParameters(uint8_t stream_type,
                             int current_next_indicator,
                             const uint8_t* descriptors,
                             size_t descriptors_size,
-                            ContinuityCounter* continuity_counter,
-                            BufferWriter* output) {
+                            BufferWriter* pmt) {
   DCHECK(current_next_indicator == kCurrent || current_next_indicator == kNext);
   // Body starting from program number.
   BufferWriter pmt_body;
@@ -291,106 +230,135 @@ void WritePmtWithParameters(uint8_t stream_type,
 
   // 4 reserved bits followed by ES_info_length.
   pmt_body.AppendInt(static_cast<uint16_t>(0xF000 | descriptors_size));
-  pmt_body.AppendArray(descriptors, descriptors_size);
+  if (descriptors_size > 0) {
+    DCHECK(descriptors);
+    pmt_body.AppendArray(descriptors, descriptors_size);
+  }
 
-  // The whole PMT has 3 bytes before the body and 4 more bytes for CRC. This
-  // also includes pointer field (1 byte) so + 8 in total.
-  BufferWriter pmt(pmt_body.Size() + 8);
-  // Pointer field.
-  pmt.AppendInt(static_cast<uint8_t>(0x00));
-  // PMT table ID is always 2.
-  pmt.AppendInt(static_cast<uint8_t>(0x02));
+  pmt->Clear();
+  // Pointer field is not really part of the PMT but it's there so that an extra
+  // buffer isn't required to prepend the 0x00 byte.
+  const uint8_t kPointerField = 0;
+  pmt->AppendInt(kPointerField);
+  pmt->AppendInt(kProgramMapTableId);
   // First four bits must be '1011'. +4 for CRC.
-  pmt.AppendInt(static_cast<uint16_t>(0xB000 | (pmt_body.Size() + 4)));
-  pmt.AppendBuffer(pmt_body);
+  pmt->AppendInt(static_cast<uint16_t>(0xB000 | (pmt_body.Size() + 4)));
+  pmt->AppendBuffer(pmt_body);
 
   // Don't include the pointer field.
-  const uint32_t crc = Crc32Mpeg2(pmt.Buffer() + 1, pmt.Size() - 1);
-  pmt.AppendInt(crc);
-  WritePmtToBuffer(pmt.Buffer(), pmt.Size(), continuity_counter, output);
+  const uint32_t crc = Crc32Mpeg2(pmt->Buffer() + 1, pmt->Size() - 1);
+  pmt->AppendInt(crc);
 }
 
 }  // namespace
 
-ProgramMapTableWriter::ProgramMapTableWriter() {}
-ProgramMapTableWriter::~ProgramMapTableWriter() {}
+ProgramMapTableWriter::ProgramMapTableWriter(Codec codec) : codec_(codec) {}
 
-H264ProgramMapTableWriter::H264ProgramMapTableWriter(
-    ContinuityCounter* continuity_counter)
-    : continuity_counter_(continuity_counter) {
-  DCHECK(continuity_counter);
-}
+bool ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
+  uint8_t stream_type;
+  switch (codec_) {
+    case kCodecH264:
+      stream_type = kStreamTypeEncryptedH264;
+      break;
+    case kCodecAAC:
+      stream_type = kStreamTypeEncryptedAdtsAac;
+      break;
+    default:
+      LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
+      return false;
+  }
 
-H264ProgramMapTableWriter::~H264ProgramMapTableWriter() {}
+  if (encrypted_pmt_.Size() == 0) {
+    BufferWriter descriptors;
+    if (!WriteDescriptors(&descriptors))
+      return false;
 
-bool H264ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
-  WritePmtWithParameters(
-      kStreamTypeEncryptedH264, has_clear_lead_ ? kVersion1 : kVersion0,
-      kCurrent, kPrivateDataIndicatorDescriptorEncryptedH264,
-      arraysize(kPrivateDataIndicatorDescriptorEncryptedH264),
-      continuity_counter_, writer);
+    const bool has_clear_lead = clear_pmt_.Size() > 0;
+    WritePmtWithParameters(stream_type, has_clear_lead ? kVersion1 : kVersion0,
+                           kCurrent, descriptors.Buffer(), descriptors.Size(),
+                           &encrypted_pmt_);
+    DCHECK_NE(encrypted_pmt_.Size(), 0u);
+  }
+  WritePmtToBuffer(encrypted_pmt_.Buffer(), encrypted_pmt_.Size(),
+                   &continuity_counter_, writer);
   return true;
 }
 
-bool H264ProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
-  has_clear_lead_ = true;
-  WritePmtToBuffer(kPmtH264, arraysize(kPmtH264), continuity_counter_, writer);
-  // Cannot insert PMT for following encrypted segments because
-  // some players consider encrypted segments as "zavc" codec which is different
-  // from "avc1" codec, which causes problems.
+bool ProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
+  uint8_t stream_type;
+  switch (codec_) {
+    case kCodecH264:
+      stream_type = kStreamTypeH264;
+      break;
+    case kCodecAAC:
+      stream_type = kStreamTypeAdtsAac;
+      break;
+    default:
+      LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
+      return false;
+  }
+
+  if (clear_pmt_.Size() == 0) {
+    WritePmtWithParameters(stream_type, kVersion0, kCurrent, nullptr, 0,
+                           &clear_pmt_);
+    DCHECK_NE(clear_pmt_.Size(), 0u);
+  }
+  WritePmtToBuffer(clear_pmt_.Buffer(), clear_pmt_.Size(), &continuity_counter_,
+                   writer);
   return true;
 }
 
-AacProgramMapTableWriter::AacProgramMapTableWriter(
-    const std::vector<uint8_t>& aac_audio_specific_config,
-    ContinuityCounter* continuity_counter)
-    : aac_audio_specific_config_(aac_audio_specific_config),
-      continuity_counter_(continuity_counter) {
-  DCHECK(!aac_audio_specific_config.empty());
-  DCHECK(continuity_counter_);
-}
+VideoProgramMapTableWriter::VideoProgramMapTableWriter(Codec codec)
+    : ProgramMapTableWriter(codec) {}
 
-AacProgramMapTableWriter::~AacProgramMapTableWriter() {}
-
-// TODO(rkuroiwa): Cache the PMT for encrypted segments, it doesn't need to
-// be recalculated.
-bool AacProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
-  // Version 1 and current.
-  return EncryptedSegmentPmtWithParameters(
-      has_clear_lead_ ? kVersion1 : kVersion0, kCurrent, writer);
-}
-
-bool AacProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
-  has_clear_lead_ = true;
-  WritePmtToBuffer(kPmtAac, arraysize(kPmtAac), continuity_counter_, writer);
+bool VideoProgramMapTableWriter::WriteDescriptors(
+    BufferWriter* descriptors) const {
+  FourCC fourcc;
+  switch (codec()) {
+    case kCodecH264:
+      fourcc = FOURCC_zavc;
+      break;
+    default:
+      LOG(ERROR) << "Codec " << codec() << " is not supported in TS yet.";
+      return false;
+  }
+  WritePrivateDataIndicatorDescriptor(fourcc, descriptors);
   return true;
 }
 
-bool AacProgramMapTableWriter::EncryptedSegmentPmtWithParameters(
-    int version,
-    int current_next_indicator,
-    BufferWriter* writer) {
+AudioProgramMapTableWriter::AudioProgramMapTableWriter(
+    Codec codec,
+    const std::vector<uint8_t>& audio_specific_config)
+    : ProgramMapTableWriter(codec),
+      audio_specific_config_(audio_specific_config) {
+  DCHECK(!audio_specific_config.empty());
+}
+
+bool AudioProgramMapTableWriter::WriteDescriptors(
+    BufferWriter* descriptors) const {
+  FourCC fourcc;
+  switch (codec()) {
+    case kCodecAAC:
+      fourcc = FOURCC_aacd;
+      break;
+    default:
+      LOG(ERROR) << "Codec " << codec() << " is not supported in TS yet.";
+      return false;
+  }
+  WritePrivateDataIndicatorDescriptor(fourcc, descriptors);
+
   // -12 because there are 12 bytes between 'descriptor_length' in
   // registration_descriptor and 'setup_data_length' in audio_setup_information.
-  if (aac_audio_specific_config_.size() >
+  if (audio_specific_config_.size() >
       std::numeric_limits<uint8_t>::max() - 12U) {
     LOG(ERROR) << "AACAudioSpecificConfig of size: "
-               << aac_audio_specific_config_.size()
+               << audio_specific_config_.size()
                << " will not fit in the descriptor.";
     return false;
   }
-  BufferWriter descriptors;
-  WritePrivateDataIndicatorDescriptor(FOURCC_aacd, &descriptors);
-  if (!WriteRegistrationDescriptorForEncryptedAudio(
-          aac_audio_specific_config_.data(), aac_audio_specific_config_.size(),
-          &descriptors)) {
-    return false;
-  }
-
-  WritePmtWithParameters(
-      kStreamTypeEncryptedAdtsAac, version, current_next_indicator,
-      descriptors.Buffer(), descriptors.Size(), continuity_counter_, writer);
-  return true;
+  return WriteRegistrationDescriptorForEncryptedAudio(
+      audio_specific_config_.data(), audio_specific_config_.size(),
+      descriptors);
 }
 
 }  // namespace mp2t

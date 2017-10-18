@@ -173,23 +173,14 @@ bool TsWriter::Initialize(const StreamInfo& stream_info) {
   if (stream_info.stream_type() == StreamType::kStreamVideo) {
     const VideoStreamInfo& video_stream_info =
         static_cast<const VideoStreamInfo&>(stream_info);
-    if (video_stream_info.codec() != Codec::kCodecH264) {
-      LOG(ERROR) << "TsWriter cannot handle video codec "
-                 << video_stream_info.codec() << " yet.";
-      return false;
-    }
-    pmt_writer_.reset(new H264ProgramMapTableWriter(&pmt_continuity_counter_));
+    pmt_writer_.reset(
+        new VideoProgramMapTableWriter(video_stream_info.codec()));
   } else {
     DCHECK_EQ(stream_type, StreamType::kStreamAudio);
     const AudioStreamInfo& audio_stream_info =
         static_cast<const AudioStreamInfo&>(stream_info);
-    if (audio_stream_info.codec() != Codec::kCodecAAC) {
-      LOG(ERROR) << "TsWriter cannot handle audio codec "
-                 << audio_stream_info.codec() << " yet.";
-      return false;
-    }
-    pmt_writer_.reset(new AacProgramMapTableWriter(
-        audio_stream_info.codec_config(), &pmt_continuity_counter_));
+    pmt_writer_.reset(new AudioProgramMapTableWriter(
+        audio_stream_info.codec(), audio_stream_info.codec_config()));
   }
 
   return true;

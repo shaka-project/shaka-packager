@@ -58,11 +58,18 @@ const uint8_t kAacBasicProfileExtraData[] = {0x12, 0x10};
 
 class MockProgramMapTableWriter : public ProgramMapTableWriter {
  public:
-  MockProgramMapTableWriter() {}
+  MockProgramMapTableWriter() : ProgramMapTableWriter(kUnknownCodec) {}
   ~MockProgramMapTableWriter() override {}
 
   MOCK_METHOD1(EncryptedSegmentPmt, bool(BufferWriter* writer));
   MOCK_METHOD1(ClearSegmentPmt, bool(BufferWriter* writer));
+
+ private:
+  MockProgramMapTableWriter(const MockProgramMapTableWriter&) = delete;
+  MockProgramMapTableWriter& operator=(const MockProgramMapTableWriter&) =
+      delete;
+
+  bool WriteDescriptors(BufferWriter* writer) const override { return true; }
 };
 
 // This is not a real TS Packet. But is used to check that the result from the
@@ -165,15 +172,6 @@ TEST_F(TsWriterTest, InitializeVideoH264) {
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 }
 
-TEST_F(TsWriterTest, InitializeVideoNonH264) {
-  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, Codec::kCodecVP9,
-      H26xStreamFormat::kUnSpecified, kCodecString, kExtraData,
-      arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
-  EXPECT_FALSE(ts_writer_.Initialize(*stream_info));
-}
-
 TEST_F(TsWriterTest, InitializeAudioAac) {
   std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacCodec, kCodecString, kExtraData,
@@ -181,15 +179,6 @@ TEST_F(TsWriterTest, InitializeAudioAac) {
       kSeekPreroll, kCodecDelay, kMaxBitrate, kAverageBitrate, kLanguage,
       kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
-}
-
-TEST_F(TsWriterTest, InitializeAudioNonAac) {
-  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
-      kTrackId, kTimeScale, kDuration, Codec::kCodecOpus, kCodecString,
-      kExtraData, arraysize(kExtraData), kSampleBits, kNumChannels,
-      kSamplingFrequency, kSeekPreroll, kCodecDelay, kMaxBitrate,
-      kAverageBitrate, kLanguage, kIsEncrypted));
-  EXPECT_FALSE(ts_writer_.Initialize(*stream_info));
 }
 
 // Verify that PAT and PMT are correct for clear segment.
@@ -305,6 +294,22 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
                       kTsPacketSize));
 }
 
+TEST_F(TsWriterTest, ClearSegmentPmtFailure) {
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+      new MockProgramMapTableWriter());
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(false));
+
+  std::shared_ptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
+      kTrackId, kTimeScale, kDuration, kAacCodec, kCodecString,
+      kAacBasicProfileExtraData, arraysize(kAacBasicProfileExtraData),
+      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
+      kMaxBitrate, kAverageBitrate, kLanguage, kIsEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
+
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
+  EXPECT_FALSE(ts_writer_.NewSegment(test_file_name_));
+}
+
 // Check the encrypted segments' PMT (after clear lead).
 TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
   std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
@@ -336,6 +341,28 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
 
   EXPECT_EQ(0, memcmp(kMockPmtWriterData, content.data() + kTsPacketSize,
                       kTsPacketSize));
+}
+
+TEST_F(TsWriterTest, EncryptedSegmentPmtFailure) {
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+      new MockProgramMapTableWriter());
+  InSequence s;
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_pmt_writer, EncryptedSegmentPmt(_)).WillOnce(Return(false));
+
+  std::shared_ptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+      kTrackId, kTimeScale, kDuration, kH264Codec,
+      H26xStreamFormat::kAnnexbByteStream, kCodecString, kExtraData,
+      arraysize(kExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayFactor, kNaluLengthSize, kLanguage, kIsEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
+
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
+  EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
+  EXPECT_TRUE(ts_writer_.FinalizeSegment());
+
+  ts_writer_.SignalEncrypted();
+  EXPECT_FALSE(ts_writer_.NewSegment(test_file_name_));
 }
 
 // Same as ClearLeadH264Pmt but for AAC.

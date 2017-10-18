@@ -11,7 +11,10 @@
 
 #include <vector>
 
-#include "packager/base/macros.h"
+#include "packager/media/base/buffer_writer.h"
+// TODO(kqyang): Move codec to codec.h.
+#include "packager/media/base/stream_info.h"
+#include "packager/media/formats/mp2t/continuity_counter.h"
 
 namespace shaka {
 namespace media {
@@ -20,20 +23,19 @@ class BufferWriter;
 
 namespace mp2t {
 
-class ContinuityCounter;
-
 /// Puts PMT into TS packets and writes them to buffer.
-/// Note that this does not currently allow encryption without clear lead.
 class ProgramMapTableWriter {
  public:
-  ProgramMapTableWriter();
-  virtual ~ProgramMapTableWriter();
+  explicit ProgramMapTableWriter(Codec codec);
+  virtual ~ProgramMapTableWriter() = default;
 
   /// Writes TS packets with PMT for encrypted segments.
-  virtual bool EncryptedSegmentPmt(BufferWriter* writer) = 0;
+  // Virtual for testing.
+  virtual bool EncryptedSegmentPmt(BufferWriter* writer);
 
   /// Writes TS packets with PMT for clear segments.
-  virtual bool ClearSegmentPmt(BufferWriter* writer) = 0;
+  // Virtual for testing.
+  virtual bool ClearSegmentPmt(BufferWriter* writer);
 
   // The pid can be 13 bits long but 8 bits is sufficient for this library.
   // This is the minimum PID that can be used for PMT.
@@ -41,53 +43,54 @@ class ProgramMapTableWriter {
 
   // This is arbitrary number that is not reserved by the spec.
   static const uint8_t kElementaryPid = 0x50;
-};
 
-/// <em>This is not a general purpose PMT writer. This is intended to be used by
-/// TsWriter.</em>
-class H264ProgramMapTableWriter : public ProgramMapTableWriter {
- public:
-  explicit H264ProgramMapTableWriter(ContinuityCounter* continuity_counter);
-  ~H264ProgramMapTableWriter() override;
-
-  bool EncryptedSegmentPmt(BufferWriter* writer) override;
-  bool ClearSegmentPmt(BufferWriter* writer) override;
+ protected:
+  /// @return the underlying codec.
+  Codec codec() const { return codec_; }
 
  private:
-  ContinuityCounter* const continuity_counter_;
-  // Set to true if ClearLeadSegmentPmt() has been called. This determines the
-  // version number set in EncryptedSegmentPmt().
-  bool has_clear_lead_ = false;
+  ProgramMapTableWriter(const ProgramMapTableWriter&) = delete;
+  ProgramMapTableWriter& operator=(const ProgramMapTableWriter&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(H264ProgramMapTableWriter);
+  // Writes descriptors for PMT (only needed for encrypted PMT).
+  virtual bool WriteDescriptors(BufferWriter* writer) const = 0;
+
+  const Codec codec_;
+  ContinuityCounter continuity_counter_;
+  BufferWriter clear_pmt_;
+  BufferWriter encrypted_pmt_;
 };
 
-// TODO(rkuroiwa): For now just handle AAC, we would want AudioProgramMapTable
-// later when we support other audio codecs.
-/// <em>This is not a general purpose PMT writer. This is intended to be used by
-/// TsWriter.</em>
-class AacProgramMapTableWriter : public ProgramMapTableWriter {
+/// ProgramMapTableWriter for video codecs.
+class VideoProgramMapTableWriter : public ProgramMapTableWriter {
  public:
-  AacProgramMapTableWriter(
-      const std::vector<uint8_t>& aac_audio_specific_config,
-      ContinuityCounter* continuity_counter);
-  ~AacProgramMapTableWriter() override;
-
-  bool EncryptedSegmentPmt(BufferWriter* writer) override;
-  bool ClearSegmentPmt(BufferWriter* writer) override;
+  explicit VideoProgramMapTableWriter(Codec codec);
+  ~VideoProgramMapTableWriter() override = default;
 
  private:
-  bool EncryptedSegmentPmtWithParameters(int version,
-                                         int current_next_indicator,
-                                         BufferWriter* writer);
+  VideoProgramMapTableWriter(const VideoProgramMapTableWriter&) = delete;
+  VideoProgramMapTableWriter& operator=(const VideoProgramMapTableWriter&) =
+      delete;
 
-  const std::vector<uint8_t> aac_audio_specific_config_;
-  ContinuityCounter* const continuity_counter_;
-  // Set to true if ClearLeadSegmentPmt() has been called. This determines the
-  // version number set in EncryptedSegmentPmt().
-  bool has_clear_lead_ = false;
+  bool WriteDescriptors(BufferWriter* writer) const override;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(AacProgramMapTableWriter);
+/// ProgramMapTableWriter for video codecs.
+class AudioProgramMapTableWriter : public ProgramMapTableWriter {
+ public:
+  AudioProgramMapTableWriter(Codec codec,
+                             const std::vector<uint8_t>& audio_specific_config);
+  ~AudioProgramMapTableWriter() override = default;
+
+ private:
+  AudioProgramMapTableWriter(const AudioProgramMapTableWriter&) = delete;
+  AudioProgramMapTableWriter& operator=(const AudioProgramMapTableWriter&) =
+      delete;
+
+  // Writers descriptors for PMT (only needed for encrypted PMT).
+  bool WriteDescriptors(BufferWriter* descriptors) const override;
+
+  const std::vector<uint8_t> audio_specific_config_;
 };
 
 }  // namespace mp2t

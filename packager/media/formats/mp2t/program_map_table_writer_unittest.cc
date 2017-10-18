@@ -49,8 +49,7 @@ class ProgramMapTableWriterTest : public ::testing::Test {
 };
 
 TEST_F(ProgramMapTableWriterTest, ClearH264) {
-  ContinuityCounter counter;
-  H264ProgramMapTableWriter writer(&counter);
+  VideoProgramMapTableWriter writer(kCodecH264);
   BufferWriter buffer;
   writer.ClearSegmentPmt(&buffer);
 
@@ -91,8 +90,7 @@ TEST_F(ProgramMapTableWriterTest, ClearH264) {
 // Verify that PSI for encrypted segments after clear lead is generated
 // correctly.
 TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadH264) {
-  ContinuityCounter counter;
-  H264ProgramMapTableWriter writer(&counter);
+  VideoProgramMapTableWriter writer(kCodecH264);
   BufferWriter buffer;
   writer.ClearSegmentPmt(&buffer);
   buffer.Clear();
@@ -136,8 +134,7 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadH264) {
 
 // Verify that PMT for encrypted segments can be generated (without clear lead).
 TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsH264Pmt) {
-  ContinuityCounter counter;
-  H264ProgramMapTableWriter writer(&counter);
+  VideoProgramMapTableWriter writer(kCodecH264);
   BufferWriter buffer;
   writer.EncryptedSegmentPmt(&buffer);
 
@@ -179,11 +176,10 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsH264Pmt) {
 }
 
 TEST_F(ProgramMapTableWriterTest, ClearAac) {
-  ContinuityCounter counter;
   const std::vector<uint8_t> aac_audio_specific_config(
-      kAacBasicProfileExtraData,
-      kAacBasicProfileExtraData + arraysize(kAacBasicProfileExtraData));
-  AacProgramMapTableWriter writer(aac_audio_specific_config, &counter);
+      std::begin(kAacBasicProfileExtraData),
+      std::end(kAacBasicProfileExtraData));
+  AudioProgramMapTableWriter writer(kCodecAAC, aac_audio_specific_config);
   BufferWriter buffer;
   writer.ClearSegmentPmt(&buffer);
 
@@ -222,11 +218,10 @@ TEST_F(ProgramMapTableWriterTest, ClearAac) {
 // Verify that PSI for encrypted segments after clear lead is generated
 // correctly.
 TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadAac) {
-  ContinuityCounter counter;
   const std::vector<uint8_t> aac_audio_specific_config(
-      kAacBasicProfileExtraData,
-      kAacBasicProfileExtraData + arraysize(kAacBasicProfileExtraData));
-  AacProgramMapTableWriter writer(aac_audio_specific_config, &counter);
+      std::begin(kAacBasicProfileExtraData),
+      std::end(kAacBasicProfileExtraData));
+  AudioProgramMapTableWriter writer(kCodecAAC, aac_audio_specific_config);
   BufferWriter buffer;
   writer.ClearSegmentPmt(&buffer);
 
@@ -283,11 +278,10 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAfterClearLeadAac) {
 
 // Verify that PMT for encrypted segments can be generated (without clear lead).
 TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAacPmt) {
-  ContinuityCounter counter;
   const std::vector<uint8_t> aac_audio_specific_config(
-      kAacBasicProfileExtraData,
-      kAacBasicProfileExtraData + arraysize(kAacBasicProfileExtraData));
-  AacProgramMapTableWriter writer(aac_audio_specific_config, &counter);
+      std::begin(kAacBasicProfileExtraData),
+      std::end(kAacBasicProfileExtraData));
+  AudioProgramMapTableWriter writer(kCodecAAC, aac_audio_specific_config);
   BufferWriter buffer;
   writer.EncryptedSegmentPmt(&buffer);
 
