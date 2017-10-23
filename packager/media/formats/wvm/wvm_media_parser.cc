@@ -48,7 +48,6 @@ const uint32_t kPesStreamIdVideo = 0xE0;
 const uint32_t kPesStreamIdAudioMask = 0xE0;
 const uint32_t kPesStreamIdAudio = 0xC0;
 const uint32_t kVersion4 = 4;
-const size_t kAdtsHeaderMinSize = 7;
 const uint8_t kAacSampleSizeBits = 16;
 // Applies to all video streams.
 const uint8_t kNaluLengthSize = 4;  // unit is bytes.
@@ -904,17 +903,15 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
     } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
         kPesStreamIdAudio) {
       // Set data on the audio stream.
-      int frame_size = static_cast<int>(mp2t::AdtsHeader::GetAdtsFrameSize(
-          sample_data_.data(), kAdtsHeaderMinSize));
       mp2t::AdtsHeader adts_header;
       const uint8_t* frame_ptr = sample_data_.data();
-      if (!adts_header.Parse(frame_ptr, frame_size)) {
+      if (!adts_header.Parse(frame_ptr, sample_data_.size())) {
         LOG(ERROR) << "Could not parse ADTS header";
         return false;
       }
-      size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
-                                                         frame_size);
-      media_sample_->SetData(frame_ptr + header_size, frame_size - header_size);
+      media_sample_->SetData(
+          frame_ptr + adts_header.GetHeaderSize(),
+          adts_header.GetFrameSize() - adts_header.GetHeaderSize());
       if (!is_initialized_) {
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
           if (stream_infos_[i]->stream_type() == kStreamAudio &&
@@ -927,10 +924,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
               audio_stream_info->set_sampling_frequency(
                   adts_header.GetSamplingFrequency());
               std::vector<uint8_t> audio_specific_config;
-              if (!adts_header.GetAudioSpecificConfig(&audio_specific_config)) {
-                LOG(ERROR) << "Could not compute AACAudiospecificconfig";
-                return false;
-              }
+              adts_header.GetAudioSpecificConfig(&audio_specific_config);
               audio_stream_info->set_codec_config(audio_specific_config);
               audio_stream_info->set_codec_string(
                   AudioStreamInfo::GetCodecString(

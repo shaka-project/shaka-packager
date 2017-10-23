@@ -7,6 +7,7 @@
 #include "packager/media/formats/mp2t/adts_header.h"
 
 #include "packager/media/base/bit_reader.h"
+#include "packager/media/base/bit_writer.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 #include "packager/media/formats/mpeg/adts_constants.h"
 
@@ -14,32 +15,19 @@ namespace shaka {
 namespace media {
 namespace mp2t {
 
-AdtsHeader::AdtsHeader()
-    : valid_config_(false),
-      profile_(0),
-      sampling_frequency_index_(0),
-      channel_configuration_(0) {}
-
-size_t AdtsHeader::GetAdtsFrameSize(const uint8_t* data, size_t num_bytes) {
-  if (num_bytes < 6)
-    return 0;
-  return ((static_cast<int>(data[5]) >> 5) |
-          (static_cast<int>(data[4]) << 3) |
-          ((static_cast<int>(data[3]) & 0x3) << 11));
+bool AdtsHeader::IsSyncWord(const uint8_t* buf) const {
+  return (buf[0] == 0xff) && ((buf[1] & 0xf6) == 0xf0);
 }
 
-size_t AdtsHeader::GetAdtsHeaderSize(const uint8_t* data, size_t num_bytes) {
-  if (num_bytes < 2)
-    return 0;
-  if (data[1] & 0x01)
-    return kAdtsHeaderMinSize;
-  return kAdtsHeaderMinSize + sizeof(uint16_t);  // Header + CRC.
+size_t AdtsHeader::GetMinFrameSize() const {
+  return kAdtsHeaderMinSize + 1;
 }
 
 bool AdtsHeader::Parse(const uint8_t* adts_frame, size_t adts_frame_size) {
   CHECK(adts_frame);
 
-  valid_config_ = false;
+  if (adts_frame_size < kAdtsHeaderMinSize)
+    return false;
 
   BitReader frame(adts_frame, adts_frame_size);
   // Verify frame starts with sync bits (0xfff).
@@ -48,26 +36,18 @@ bool AdtsHeader::Parse(const uint8_t* adts_frame, size_t adts_frame_size) {
   RCHECK(sync == 0xfff);
   // Skip MPEG version and layer.
   RCHECK(frame.SkipBits(3));
-  // Get "protection absent" flag.
-  uint8_t protection_absent;
-  RCHECK(frame.ReadBits(1, &protection_absent));
-  // Get profile.
+  RCHECK(frame.ReadBits(1, &protection_absent_));
   RCHECK(frame.ReadBits(2, &profile_));
-  // Get sampling frequency.
   RCHECK(frame.ReadBits(4, &sampling_frequency_index_));
   RCHECK(sampling_frequency_index_ < kAdtsFrequencyTableSize);
   // Skip private stream bit.
   RCHECK(frame.SkipBits(1));
-  // Get number of audio channels.
   RCHECK(frame.ReadBits(3, &channel_configuration_));
   RCHECK((channel_configuration_ > 0) &&
          (channel_configuration_ < kAdtsNumChannelsTableSize));
   // Skip originality, home and copyright info.
   RCHECK(frame.SkipBits(4));
-  // Verify that the frame size matches input parameters.
-  uint16_t frame_size;
-  RCHECK(frame.ReadBits(13, &frame_size));
-  RCHECK(frame_size == adts_frame_size);
+  RCHECK(frame.ReadBits(13, &frame_size_));
   // Skip buffer fullness indicator.
   RCHECK(frame.SkipBits(11));
   uint8_t num_blocks_minus_1;
@@ -77,21 +57,26 @@ bool AdtsHeader::Parse(const uint8_t* adts_frame, size_t adts_frame_size) {
                         "not supported.";
     return false;
   }
-
-  valid_config_ = true;
   return true;
 }
 
-bool AdtsHeader::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
-  DCHECK(buffer);
-  if (!valid_config_)
-    return false;
+size_t AdtsHeader::GetHeaderSize() const {
+  const size_t kCrcSize = sizeof(uint16_t);
+  return kAdtsHeaderMinSize + (protection_absent_ ? 0 : kCrcSize);
+}
 
-  buffer->resize(2);
-  (*buffer)[0] = ((profile_ + 1) << 3) | (sampling_frequency_index_ >> 1);
-  (*buffer)[1] = ((sampling_frequency_index_ & 1) << 7) |
-      (channel_configuration_ << 3);
-  return true;
+size_t AdtsHeader::GetFrameSize() const {
+  return frame_size_;
+}
+
+void AdtsHeader::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
+  DCHECK(buffer);
+  buffer->clear();
+  BitWriter config(buffer);
+  config.WriteBits(GetObjectType(), 5);
+  config.WriteBits(sampling_frequency_index_, 4);
+  config.WriteBits(channel_configuration_, 4);
+  config.Flush();
 }
 
 uint8_t AdtsHeader::GetObjectType() const {

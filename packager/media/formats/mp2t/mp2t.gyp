@@ -15,6 +15,7 @@
       'sources': [
         'adts_header.cc',
         'adts_header.h',
+        'audio_header.h',
         'continuity_counter.cc',
         'continuity_counter.h',
         'es_parser_adts.cc',

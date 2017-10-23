@@ -22,6 +22,8 @@ class BitReader;
 
 namespace mp2t {
 
+class AudioHeader;
+
 class EsParserAdts : public EsParser {
  public:
   EsParserAdts(uint32_t pid,
@@ -41,12 +43,13 @@ class EsParserAdts : public EsParser {
   typedef std::list<EsPts> EsPtsList;
 
   // Signal any audio configuration change (if any).
-  // Return false if the current audio config is not
-  // a supported ADTS audio config.
-  bool UpdateAudioConfiguration(const uint8_t* adts_frame, size_t frame_size);
+  // Return false if the current audio config is not a supported audio config.
+  bool UpdateAudioConfiguration(const AudioHeader& audio_header);
 
   // Discard some bytes from the ES stream.
   void DiscardEs(int nbytes);
+
+  std::unique_ptr<AudioHeader> audio_header_;
 
   // Callbacks:
   // - to signal a new audio configuration,

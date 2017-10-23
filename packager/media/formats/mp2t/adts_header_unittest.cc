@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/formats/mp2t/adts_header.h"
@@ -50,16 +49,19 @@ class AdtsHeaderTest : public testing::Test {
 };
 
 TEST_F(AdtsHeaderTest, ParseSuccess) {
+  const size_t kExpectedHeaderSize(7);
   const uint8_t kExpectedObjectType(2);
   const uint32_t kExpectedSamplingFrequency(44100);
   const uint8_t kExpectedNumChannels(2);
   AdtsHeader adts_header;
-  EXPECT_TRUE(adts_header.Parse(adts_frame_.data(), adts_frame_.size()));
+  ASSERT_TRUE(adts_header.Parse(adts_frame_.data(), adts_frame_.size()));
+  EXPECT_EQ(adts_frame_.size(), adts_header.GetFrameSize());
+  EXPECT_EQ(kExpectedHeaderSize, adts_header.GetHeaderSize());
   EXPECT_EQ(kExpectedObjectType, adts_header.GetObjectType());
   EXPECT_EQ(kExpectedSamplingFrequency, adts_header.GetSamplingFrequency());
   EXPECT_EQ(kExpectedNumChannels, adts_header.GetNumChannels());
   std::vector<uint8_t> audio_specific_config;
-  ASSERT_TRUE(adts_header.GetAudioSpecificConfig(&audio_specific_config));
+  adts_header.GetAudioSpecificConfig(&audio_specific_config);
   EXPECT_EQ(arraysize(kExpectedAudioSpecificConfig),
             audio_specific_config.size());
   EXPECT_EQ(std::vector<uint8_t>(kExpectedAudioSpecificConfig,
@@ -68,25 +70,21 @@ TEST_F(AdtsHeaderTest, ParseSuccess) {
             audio_specific_config);
 }
 
-TEST_F(AdtsHeaderTest, ParseFailFrameSize) {
-
+TEST_F(AdtsHeaderTest, ParseVariousDataSize) {
   AdtsHeader adts_header;
-  EXPECT_FALSE(adts_header.Parse(adts_frame_.data(), adts_frame_.size() - 1));
-  EXPECT_FALSE(adts_header.Parse(adts_frame_.data(), adts_frame_.size() + 1));
+
+  // Parse succeeds as long as the full header is provided.
+  EXPECT_TRUE(adts_header.Parse(adts_frame_.data(), adts_frame_.size() - 1));
+  const size_t header_size = adts_header.GetHeaderSize();
+  EXPECT_EQ(adts_frame_.size(), adts_header.GetFrameSize());
+
+  EXPECT_TRUE(adts_header.Parse(adts_frame_.data(), header_size));
+  EXPECT_EQ(adts_frame_.size(), adts_header.GetFrameSize());
+  EXPECT_EQ(header_size, adts_header.GetHeaderSize());
+
+  // Parse fails if there is not enough data (no full header).
   EXPECT_FALSE(adts_header.Parse(adts_frame_.data(), 1));
-}
-
-TEST_F(AdtsHeaderTest, GetFrameSizeSuccess) {
-   EXPECT_EQ(adts_frame_.size(),
-             AdtsHeader::GetAdtsFrameSize(adts_frame_.data(),
-                                          adts_frame_.size()));
-}
-
-TEST_F(AdtsHeaderTest, GetHeaderSizeSuccess) {
-   const size_t kExpectedHeaderSize(7);
-   EXPECT_EQ(kExpectedHeaderSize,
-             AdtsHeader::GetAdtsHeaderSize(adts_frame_.data(),
-                                           adts_frame_.size()));
+  EXPECT_FALSE(adts_header.Parse(adts_frame_.data(), header_size - 1));
 }
 
 }  // Namespace mp2t
