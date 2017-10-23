@@ -429,7 +429,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(self.output[2], 'subtitle-english-golden.vtt')
     self._DiffGold(self.mpd_output, 'bear-640x360-avt-golden.mpd')
 
-  def testPackageAvcTs(self):
+  def testPackageAvcAacTs(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -451,6 +451,46 @@ class PackagerFunctionalTest(PackagerAppTest):
         os.path.join(self.tmp_dir, 'audio.m3u8'), 'bear-640x360-a-golden.m3u8')
     self._DiffGold(
         os.path.join(self.tmp_dir, 'video.m3u8'), 'bear-640x360-v-golden.m3u8')
+
+  def testPackageAvcAc3Ts(self):
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            test_files=['bear-640x360-ac3.ts']),
+        self._GetFlags(output_hls=True))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-ac3-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-ac3-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-ac3-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'), 'bear-640x360-v-golden.m3u8')
+
+  def testPackageAvcAc3TsToMp4(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'], hls=True, test_files=['bear-640x360-ac3.ts']),
+        self._GetFlags(output_hls=True))
+    self._DiffGold(self.output[0], 'bear-640x360-ac3-from-ts-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-from-ts-golden.mp4')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-ac3-ts-to-mp4-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-ac3-ts-to-mp4-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-ts-to-mp4-golden.m3u8')
 
   def testPackageAvcTsLivePlaylist(self):
     self.assertPackageSuccess(
@@ -805,6 +845,31 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(
         os.path.join(self.tmp_dir, 'video.m3u8'),
         'bear-640x360-v-fairplay-enc-golden.m3u8')
+
+  def testPackageAvcAc3TsWithEncryption(self):
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            test_files=['bear-640x360-ac3.ts']),
+        self._GetFlags(encryption=True, output_hls=True))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-ac3-enc-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-enc-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-ac3-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-ac3-enc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-enc-golden.m3u8')
 
   def testPackageAvcTsWithEncryptionExerciseEmulationPrevention(self):
     self.encryption_key = 'ad7e9786def9159db6724be06dfcde7a'
