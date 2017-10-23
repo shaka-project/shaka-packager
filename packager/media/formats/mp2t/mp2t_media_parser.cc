@@ -9,7 +9,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/formats/mp2t/es_parser.h"
-#include "packager/media/formats/mp2t/es_parser_adts.h"
+#include "packager/media/formats/mp2t/es_parser_audio.h"
 #include "packager/media/formats/mp2t/es_parser_h264.h"
 #include "packager/media/formats/mp2t/es_parser_h265.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
@@ -308,14 +308,11 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
             base::Bind(&Mp2tMediaParser::OnEmitSample,
                        base::Unretained(this))));
   } else if (stream_type == kStreamTypeAAC) {
-    es_parser.reset(
-        new EsParserAdts(
-            pes_pid,
-            base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
-                       base::Unretained(this)),
-            base::Bind(&Mp2tMediaParser::OnEmitSample,
-                       base::Unretained(this)),
-            sbr_in_mimetype_));
+    es_parser.reset(new EsParserAudio(
+        pes_pid,
+        base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
+        base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this)),
+        sbr_in_mimetype_));
     is_audio = true;
   } else {
     VLOG(1) << "Ignore unsupported stream type 0x" << std::hex << stream_type

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/mp2t/es_parser_adts.h"
+#include "packager/media/formats/mp2t/es_parser_audio.h"
 
 #include <stdint.h>
 
@@ -77,23 +77,22 @@ static bool LookForSyncWord(const uint8_t* raw_es,
   return false;
 }
 
-EsParserAdts::EsParserAdts(uint32_t pid,
-                           const NewStreamInfoCB& new_stream_info_cb,
-                           const EmitSampleCB& emit_sample_cb,
-                           bool sbr_in_mimetype)
+EsParserAudio::EsParserAudio(uint32_t pid,
+                             const NewStreamInfoCB& new_stream_info_cb,
+                             const EmitSampleCB& emit_sample_cb,
+                             bool sbr_in_mimetype)
     : EsParser(pid),
       audio_header_(new AdtsHeader),
       new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
       sbr_in_mimetype_(sbr_in_mimetype) {}
 
-EsParserAdts::~EsParserAdts() {
-}
+EsParserAudio::~EsParserAudio() {}
 
-bool EsParserAdts::Parse(const uint8_t* buf,
-                         int size,
-                         int64_t pts,
-                         int64_t dts) {
+bool EsParserAudio::Parse(const uint8_t* buf,
+                          int size,
+                          int64_t pts,
+                          int64_t dts) {
   int raw_es_size;
   const uint8_t* raw_es;
 
@@ -129,8 +128,7 @@ bool EsParserAdts::Parse(const uint8_t* buf,
       return false;
 
     // Get the PTS & the duration of this access unit.
-    while (!pts_list_.empty() &&
-           pts_list_.front().first <= es_position) {
+    while (!pts_list_.empty() && pts_list_.front().first <= es_position) {
       audio_timestamp_helper_->SetBaseTimestamp(pts_list_.front().second);
       pts_list_.pop_front();
     }
@@ -164,16 +162,15 @@ bool EsParserAdts::Parse(const uint8_t* buf,
   return true;
 }
 
-void EsParserAdts::Flush() {
-}
+void EsParserAudio::Flush() {}
 
-void EsParserAdts::Reset() {
+void EsParserAudio::Reset() {
   es_byte_queue_.Reset();
   pts_list_.clear();
   last_audio_decoder_config_ = std::shared_ptr<AudioStreamInfo>();
 }
 
-bool EsParserAdts::UpdateAudioConfiguration(const AudioHeader& audio_header) {
+bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
   const uint8_t kAacSampleSizeBits(16);
 
   std::vector<uint8_t> audio_specific_config;
@@ -195,9 +192,9 @@ bool EsParserAdts::UpdateAudioConfiguration(const AudioHeader& audio_header) {
   int samples_per_second = audio_header.GetSamplingFrequency();
   // TODO(kqyang): Review if it makes sense to have |sbr_in_mimetype_| in
   // es_parser.
-  int extended_samples_per_second = sbr_in_mimetype_
-      ? std::min(2 * samples_per_second, 48000)
-      : samples_per_second;
+  int extended_samples_per_second =
+      sbr_in_mimetype_ ? std::min(2 * samples_per_second, 48000)
+                       : samples_per_second;
 
   const Codec codec = kCodecAAC;
   last_audio_decoder_config_ = std::make_shared<AudioStreamInfo>(
@@ -230,7 +227,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const AudioHeader& audio_header) {
   return true;
 }
 
-void EsParserAdts::DiscardEs(int nbytes) {
+void EsParserAudio::DiscardEs(int nbytes) {
   DCHECK_GE(nbytes, 0);
   if (nbytes <= 0)
     return;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_MP2T_ES_PARSER_ADTS_H_
-#define MEDIA_FORMATS_MP2T_ES_PARSER_ADTS_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_AUDIO_H_
+#define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_AUDIO_H_
 
 #include <list>
 #include <memory>
@@ -24,13 +24,13 @@ namespace mp2t {
 
 class AudioHeader;
 
-class EsParserAdts : public EsParser {
+class EsParserAudio : public EsParser {
  public:
-  EsParserAdts(uint32_t pid,
-               const NewStreamInfoCB& new_stream_info_cb,
-               const EmitSampleCB& emit_sample_cb,
-               bool sbr_in_mimetype);
-  ~EsParserAdts() override;
+  EsParserAudio(uint32_t pid,
+                const NewStreamInfoCB& new_stream_info_cb,
+                const EmitSampleCB& emit_sample_cb,
+                bool sbr_in_mimetype);
+  ~EsParserAudio() override;
 
   // EsParser implementation.
   bool Parse(const uint8_t* buf, int size, int64_t pts, int64_t dts) override;
@@ -38,6 +38,9 @@ class EsParserAdts : public EsParser {
   void Reset() override;
 
  private:
+  EsParserAudio(const EsParserAudio&) = delete;
+  EsParserAudio& operator=(const EsParserAudio&) = delete;
+
   // Used to link a PTS with a byte position in the ES stream.
   typedef std::pair<int, int64_t> EsPts;
   typedef std::list<EsPts> EsPtsList;
@@ -71,12 +74,10 @@ class EsParserAdts : public EsParser {
   std::unique_ptr<AudioTimestampHelper> audio_timestamp_helper_;
 
   std::shared_ptr<StreamInfo> last_audio_decoder_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserAdts);
 };
 
 }  // namespace mp2t
 }  // namespace media
 }  // namespace shaka
 
-#endif
+#endif  // PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_AUDIO_H_
