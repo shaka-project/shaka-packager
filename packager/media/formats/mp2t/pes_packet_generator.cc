@@ -25,7 +25,8 @@ namespace mp2t {
 
 namespace {
 const uint8_t kVideoStreamId = 0xE0;
-const uint8_t kAudioStreamId = 0xC0;
+const uint8_t kAacAudioStreamId = 0xC0;
+const uint8_t kAc3AudioStreamId = 0xBD;  // AC3 uses private stream 1 id.
 const double kTsTimescale = 90000.0;
 }  // namespace
 
@@ -51,14 +52,19 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
   } else if (stream_type_ == kStreamAudio) {
     const AudioStreamInfo& audio_stream_info =
         static_cast<const AudioStreamInfo&>(stream_info);
-    if (audio_stream_info.codec() != Codec::kCodecAAC) {
-      NOTIMPLEMENTED() << "Audio codec " << audio_stream_info.codec()
-                       << " is not supported yet.";
-      return false;
-    }
     timescale_scale_ = kTsTimescale / audio_stream_info.time_scale();
-    adts_converter_.reset(new AACAudioSpecificConfig());
-    return adts_converter_->Parse(audio_stream_info.codec_config());
+    if (audio_stream_info.codec() == Codec::kCodecAAC) {
+      audio_stream_id_ = kAacAudioStreamId;
+      adts_converter_.reset(new AACAudioSpecificConfig());
+      return adts_converter_->Parse(audio_stream_info.codec_config());
+    } else if (audio_stream_info.codec() == Codec::kCodecAC3) {
+      audio_stream_id_ = kAc3AudioStreamId;
+      // No converter needed for AC3.
+      return true;
+    }
+    NOTIMPLEMENTED() << "Audio codec " << audio_stream_info.codec()
+                     << " is not supported yet.";
+    return false;
   }
 
   NOTIMPLEMENTED() << "Stream type: " << stream_type_ << " not implemented.";
@@ -91,22 +97,24 @@ bool PesPacketGenerator::PushSample(const MediaSample& sample) {
     return true;
   }
   DCHECK_EQ(stream_type_, kStreamAudio);
-  DCHECK(adts_converter_);
 
-  std::vector<uint8_t> aac_frame(sample.data(),
-                                 sample.data() + sample.data_size());
+  std::vector<uint8_t> audio_frame(sample.data(),
+                                   sample.data() + sample.data_size());
 
-  // TODO(rkuroiwa): ConvertToADTS() makes another copy of aac_frame internally.
-  // Optimize copying in this function, possibly by adding a method on
-  // AACAudioSpecificConfig that takes {pointer, length} pair and returns a
-  // vector that has the ADTS header.
-  if (!adts_converter_->ConvertToADTS(&aac_frame))
-    return false;
+  // AAC is carried in ADTS.
+  if (adts_converter_) {
+    // TODO(rkuroiwa): ConvertToADTS() makes another copy of audio_frame
+    // internally. Optimize copying in this function, possibly by adding a
+    // method on AACAudioSpecificConfig that takes {pointer, length} pair and
+    // returns a vector that has the ADTS header.
+    if (!adts_converter_->ConvertToADTS(&audio_frame))
+      return false;
+  }
 
   // TODO(rkuriowa): Put multiple samples in the PES packet to reduce # of PES
   // packets.
-  current_processing_pes_->mutable_data()->swap(aac_frame);
-  current_processing_pes_->set_stream_id(kAudioStreamId);
+  current_processing_pes_->mutable_data()->swap(audio_frame);
+  current_processing_pes_->set_stream_id(audio_stream_id_);
   pes_packets_.push_back(std::move(current_processing_pes_));
   return true;
 }

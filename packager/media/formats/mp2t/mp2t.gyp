@@ -13,6 +13,8 @@
       'target_name': 'mp2t',
       'type': '<(component)',
       'sources': [
+        'ac3_header.cc',
+        'ac3_header.h',
         'adts_header.cc',
         'adts_header.h',
         'audio_header.h',
@@ -51,6 +53,7 @@
         'ts_section_psi.h',
         'ts_segmenter.cc',
         'ts_segmenter.h',
+        'ts_stream_type.h',
         'ts_writer.cc',
         'ts_writer.h',
       ],
@@ -64,6 +67,7 @@
       'target_name': 'mp2t_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'ac3_header_unittest.cc',
         'adts_header_unittest.cc',
         'es_parser_h264_unittest.cc',
         'es_parser_h26x_unittest.cc',

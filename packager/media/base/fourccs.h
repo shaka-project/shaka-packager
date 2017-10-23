@@ -20,6 +20,7 @@ enum FourCC : uint32_t {
 
   FOURCC_aacd = 0x61616364,
   FOURCC_ac_3 = 0x61632d33,  // "ac-3"
+  FOURCC_ac3d = 0x61633364,
   FOURCC_apad = 0x61706164,
   FOURCC_avc1 = 0x61766331,
   FOURCC_avc3 = 0x61766333,
@@ -50,6 +51,7 @@ enum FourCC : uint32_t {
   FOURCC_dtsm = 0x6474732d,  // "dts-"
   FOURCC_dtsp = 0x6474732b,  // "dts+"
   FOURCC_ec_3 = 0x65632d33,  // "ec-3"
+  FOURCC_ec3d = 0x65633364,
   FOURCC_edts = 0x65647473,
   FOURCC_elst = 0x656c7374,
   FOURCC_enca = 0x656e6361,
@@ -145,9 +147,11 @@ enum FourCC : uint32_t {
   FOURCC_wide = 0x77696465,
   FOURCC_wvtt = 0x77767474,
   FOURCC_zaac = 0x7A616163,
+  FOURCC_zac3 = 0x7A616333,
   FOURCC_zach = 0x7A616368,
   FOURCC_zacp = 0x7A616370,
   FOURCC_zavc = 0x7A617663,
+  FOURCC_zec3 = 0x7A656333,
 };
 
 const FourCC kAppleSampleAesProtectionScheme = FOURCC_cbca;

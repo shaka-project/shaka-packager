@@ -198,8 +198,12 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
     pes_packet_length = static_cast<int>(bit_reader.bits_available()) / 8;
 
   // Ignore the PES for unknown stream IDs.
+  // ATSC Standard A/52:2012 3. GENERIC IDENTIFICATION OF AN AC-3 STREAM.
+  // AC3/E-AC3 stream uses private stream id.
+  const int kPrivateStream1 = 0xBD;
   // See ITU H.222 Table 2-22 "Stream_id assignments"
-  bool is_audio_stream_id = ((stream_id & 0xe0) == 0xc0);
+  bool is_audio_stream_id =
+      ((stream_id & 0xe0) == 0xc0) || stream_id == kPrivateStream1;
   bool is_video_stream_id = ((stream_id & 0xf0) == 0xe0);
   if (!is_audio_stream_id && !is_video_stream_id)
     return true;

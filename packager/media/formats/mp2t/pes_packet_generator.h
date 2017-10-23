@@ -73,6 +73,8 @@ class PesPacketGenerator {
   // This can be used to create a PES from multiple audio samples.
   std::unique_ptr<PesPacket> current_processing_pes_;
 
+  // Audio stream id PES packet is codec dependent.
+  uint8_t audio_stream_id_ = 0;
   std::list<std::unique_ptr<PesPacket>> pes_packets_;
 
   DISALLOW_COPY_AND_ASSIGN(PesPacketGenerator);

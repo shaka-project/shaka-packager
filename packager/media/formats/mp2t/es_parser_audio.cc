@@ -15,8 +15,10 @@
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
+#include "packager/media/formats/mp2t/ac3_header.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mp2t/ts_stream_type.h"
 #include "packager/media/formats/mpeg/adts_constants.h"
 
 namespace shaka {
@@ -78,14 +80,22 @@ static bool LookForSyncWord(const uint8_t* raw_es,
 }
 
 EsParserAudio::EsParserAudio(uint32_t pid,
+                             TsStreamType stream_type,
                              const NewStreamInfoCB& new_stream_info_cb,
                              const EmitSampleCB& emit_sample_cb,
                              bool sbr_in_mimetype)
     : EsParser(pid),
-      audio_header_(new AdtsHeader),
+      stream_type_(stream_type),
       new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
-      sbr_in_mimetype_(sbr_in_mimetype) {}
+      sbr_in_mimetype_(sbr_in_mimetype) {
+  if (stream_type == TsStreamType::kAc3) {
+    audio_header_.reset(new Ac3Header);
+  } else {
+    DCHECK_EQ(stream_type, TsStreamType::kAdtsAac);
+    audio_header_.reset(new AdtsHeader);
+  }
+}
 
 EsParserAudio::~EsParserAudio() {}
 
@@ -196,7 +206,8 @@ bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
       sbr_in_mimetype_ ? std::min(2 * samples_per_second, 48000)
                        : samples_per_second;
 
-  const Codec codec = kCodecAAC;
+  const Codec codec =
+      stream_type_ == TsStreamType::kAc3 ? kCodecAC3 : kCodecAAC;
   last_audio_decoder_config_ = std::make_shared<AudioStreamInfo>(
       pid(), kMpeg2Timescale, kInfiniteDuration, codec,
       AudioStreamInfo::GetCodecString(codec, audio_header.GetObjectType()),

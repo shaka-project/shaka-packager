@@ -13,6 +13,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/aac_audio_specific_config.h"
 #include "packager/media/formats/mp2t/ts_packet_writer_util.h"
+#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {
@@ -31,14 +32,6 @@ const int kNext= 0;
 // Program number is 16 bits but 8 bits is sufficient.
 const uint8_t kProgramNumber = 0x01;
 const uint8_t kProgramMapTableId = 0x02;
-
-// Stream types.
-// Clear.
-const uint8_t kStreamTypeH264 = 0x1B;
-const uint8_t kStreamTypeAdtsAac = 0x0F;
-// Encrypted.
-const uint8_t kStreamTypeEncryptedH264 = 0xDB;
-const uint8_t kStreamTypeEncryptedAdtsAac = 0xCF;
 
 // Table for CRC32/MPEG2.
 const uint32_t kCrcTable[] = {
@@ -137,60 +130,86 @@ void WritePrivateDataIndicatorDescriptor(FourCC fourcc, BufferWriter* output) {
   output->AppendInt(fourcc);
 }
 
-bool WriteAacAudioSetupInformation(const uint8_t* aac_audio_specific_config,
-                                   size_t aac_audio_specific_config_size,
-                                   BufferWriter* audio_setup_information) {
-  AACAudioSpecificConfig config;
-  const bool result = config.Parse(std::vector<uint8_t>(
-      aac_audio_specific_config,
-      aac_audio_specific_config + aac_audio_specific_config_size));
-  if (!result) {
-    LOG(WARNING) << "Failed to parse config. Assuming AAC-LC.";
-    return false;
-  }
+bool WriteAudioSetupInformation(Codec codec,
+                                const uint8_t* audio_specific_config,
+                                size_t audio_specific_config_size,
+                                BufferWriter* audio_setup_information) {
+  uint32_t audio_type = FOURCC_NULL;
+  switch (codec) {
+    case kCodecAAC: {
+      AACAudioSpecificConfig config;
+      const bool result = config.Parse(std::vector<uint8_t>(
+          audio_specific_config,
+          audio_specific_config + audio_specific_config_size));
 
-  auto audio_object_type = config.GetAudioObjectType();
-  switch (audio_object_type) {
-    case AACAudioSpecificConfig::AOT_AAC_LC:
-      audio_setup_information->AppendInt(FOURCC_zaac);
+      AACAudioSpecificConfig::AudioObjectType audio_object_type;
+      if (!result) {
+        LOG(WARNING) << "Failed to parse config. Assuming AAC-LC.";
+        audio_object_type = AACAudioSpecificConfig::AOT_AAC_LC;
+      } else {
+        audio_object_type = config.GetAudioObjectType();
+      }
+
+      switch (audio_object_type) {
+        case AACAudioSpecificConfig::AOT_AAC_LC:
+          audio_type = FOURCC_zaac;
+          break;
+        case AACAudioSpecificConfig::AOT_SBR:
+          audio_type = FOURCC_zach;
+          break;
+        case AACAudioSpecificConfig::AOT_PS:
+          audio_type = FOURCC_zacp;
+          break;
+        default:
+          LOG(ERROR) << "Unknown object type for aac " << audio_object_type;
+          return false;
+      }
+    } break;
+    case kCodecAC3:
+      audio_type = FOURCC_zac3;
       break;
-    case AACAudioSpecificConfig::AOT_SBR:
-      audio_setup_information->AppendInt(FOURCC_zach);
-      break;
-    case AACAudioSpecificConfig::AOT_PS:
-      audio_setup_information->AppendInt(FOURCC_zacp);
+    case kCodecEAC3:
+      audio_type = FOURCC_zec3;
       break;
     default:
-      LOG(ERROR) << "Unknown object type for aac " << audio_object_type;
+      LOG(ERROR) << "Codec " << codec << " is not supported in encrypted TS.";
       return false;
   }
 
+  DCHECK_NE(audio_type, FOURCC_NULL);
+  audio_setup_information->AppendInt(audio_type);
   // Priming. Since no info from encoder, set it to 0x0000.
   audio_setup_information->AppendInt(static_cast<uint16_t>(0x0000));
   // Version is always 0x01.
   audio_setup_information->AppendInt(static_cast<uint8_t>(0x01));
   audio_setup_information->AppendInt(
-      static_cast<uint8_t>(aac_audio_specific_config_size));
-  audio_setup_information->AppendArray(aac_audio_specific_config,
-                                       aac_audio_specific_config_size);
+      static_cast<uint8_t>(audio_specific_config_size));
+  audio_setup_information->AppendArray(audio_specific_config,
+                                       audio_specific_config_size);
   return true;
 }
 
-bool WriteRegistrationDescriptorForEncryptedAudio(const uint8_t* setup_data,
+bool WriteRegistrationDescriptorForEncryptedAudio(Codec codec,
+                                                  const uint8_t* setup_data,
                                                   size_t setup_data_size,
                                                   BufferWriter* output) {
   const uint8_t kRegistrationDescriptor = 5;
   BufferWriter audio_setup_information;
-  if (!WriteAacAudioSetupInformation(setup_data, setup_data_size,
-                                     &audio_setup_information)) {
+  if (!WriteAudioSetupInformation(codec, setup_data, setup_data_size,
+                                  &audio_setup_information)) {
+    return false;
+  }
+
+  const size_t registration_descriptor_size =
+      audio_setup_information.Size() + sizeof(FOURCC_apad);
+  if (registration_descriptor_size > std::numeric_limits<uint8_t>::max()) {
+    LOG(ERROR) << "Audio setup data of size: " << setup_data_size
+               << " will not fit in the descriptor.";
     return false;
   }
 
   output->AppendInt(kRegistrationDescriptor);
-  // Length of the rest of this descriptor is size of audio_setup_information +
-  // 4 bytes (for 'apad').
-  output->AppendInt(static_cast<uint8_t>(audio_setup_information.Size() +
-                                         sizeof(FOURCC_apad)));
+  output->AppendInt(static_cast<uint8_t>(registration_descriptor_size));
   output->AppendInt(FOURCC_apad);
   output->AppendBuffer(audio_setup_information);
   return true;
@@ -256,13 +275,19 @@ ProgramMapTableWriter::ProgramMapTableWriter(Codec codec) : codec_(codec) {}
 
 bool ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
   if (encrypted_pmt_.Size() == 0) {
-    uint8_t stream_type;
+    TsStreamType stream_type;
     switch (codec_) {
       case kCodecH264:
-        stream_type = kStreamTypeEncryptedH264;
+        stream_type = TsStreamType::kEncryptedAvc;
         break;
       case kCodecAAC:
-        stream_type = kStreamTypeEncryptedAdtsAac;
+        stream_type = TsStreamType::kEncryptedAdtsAac;
+        break;
+      case kCodecAC3:
+        stream_type = TsStreamType::kEncryptedAc3;
+        break;
+      case kCodecEAC3:
+        stream_type = TsStreamType::kEncryptedEac3;
         break;
       default:
         LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
@@ -274,8 +299,9 @@ bool ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
       return false;
 
     const bool has_clear_lead = clear_pmt_.Size() > 0;
-    WritePmtWithParameters(stream_type, has_clear_lead ? kVersion1 : kVersion0,
-                           kCurrent, descriptors.Buffer(), descriptors.Size(),
+    WritePmtWithParameters(static_cast<uint8_t>(stream_type),
+                           has_clear_lead ? kVersion1 : kVersion0, kCurrent,
+                           descriptors.Buffer(), descriptors.Size(),
                            &encrypted_pmt_);
     DCHECK_NE(encrypted_pmt_.Size(), 0u);
   }
@@ -286,21 +312,27 @@ bool ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
 
 bool ProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
   if (clear_pmt_.Size() == 0) {
-    uint8_t stream_type;
+    TsStreamType stream_type;
     switch (codec_) {
       case kCodecH264:
-        stream_type = kStreamTypeH264;
+        stream_type = TsStreamType::kAvc;
         break;
       case kCodecAAC:
-        stream_type = kStreamTypeAdtsAac;
+        stream_type = TsStreamType::kAdtsAac;
+        break;
+      case kCodecAC3:
+        stream_type = TsStreamType::kAc3;
+        break;
+      case kCodecEAC3:
+        stream_type = TsStreamType::kEac3;
         break;
       default:
         LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
         return false;
     }
 
-    WritePmtWithParameters(stream_type, kVersion0, kCurrent, nullptr, 0,
-                           &clear_pmt_);
+    WritePmtWithParameters(static_cast<uint8_t>(stream_type), kVersion0,
+                           kCurrent, nullptr, 0, &clear_pmt_);
     DCHECK_NE(clear_pmt_.Size(), 0u);
   }
   WritePmtToBuffer(clear_pmt_.Buffer(), clear_pmt_.Size(), &continuity_counter_,
@@ -341,23 +373,37 @@ bool AudioProgramMapTableWriter::WriteDescriptors(
     case kCodecAAC:
       fourcc = FOURCC_aacd;
       break;
+    case kCodecAC3:
+      fourcc = FOURCC_ac3d;
+      break;
+    case kCodecEAC3:
+      fourcc = FOURCC_ec3d;
+      break;
     default:
       LOG(ERROR) << "Codec " << codec() << " is not supported in TS yet.";
       return false;
   }
   WritePrivateDataIndicatorDescriptor(fourcc, descriptors);
 
-  // -12 because there are 12 bytes between 'descriptor_length' in
-  // registration_descriptor and 'setup_data_length' in audio_setup_information.
-  if (audio_specific_config_.size() >
-      std::numeric_limits<uint8_t>::max() - 12U) {
-    LOG(ERROR) << "AACAudioSpecificConfig of size: "
-               << audio_specific_config_.size()
-               << " will not fit in the descriptor.";
-    return false;
-  }
+  // NOTE: There are two specifications of carrying AC-3 bit stream in MPEG-2
+  // transport stream (ISO/IEC 13818-1):
+  //   System A used by ATSC (TS 102 366 Digital Audio Compression Standard)
+  //     stream_type: 0x81
+  //     system_id:   0xBD (private_stream_1)
+  //     Requires Registration_descriptor, AC-3_audio_stream_descriptor.
+  //     Optional ISO_639_language_code descriptor.
+  //   System B used by DVB (TS 101 154 DVB specification for ... based on the
+  //                         MPEG-2 Transport Stream)
+  //     stream_type: 0x06 (private data)
+  //     stream_id:   0xBD (private_stream_1)
+  //     Requires AC-3_descriptor (not the same as AC-3_audio_stream_descriptor
+  //     in ATSC)
+  //     Optional ISO_639_language_code descriptor.
+  // We follow "System A" but not strictly as we do not include Registration
+  // descriptor and AC-3_audio_stream_descriptor right now.
+
   return WriteRegistrationDescriptorForEncryptedAudio(
-      audio_specific_config_.data(), audio_specific_config_.size(),
+      codec(), audio_specific_config_.data(), audio_specific_config_.size(),
       descriptors);
 }
 

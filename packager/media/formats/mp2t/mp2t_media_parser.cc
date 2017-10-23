@@ -18,18 +18,11 @@
 #include "packager/media/formats/mp2t/ts_section_pat.h"
 #include "packager/media/formats/mp2t/ts_section_pes.h"
 #include "packager/media/formats/mp2t/ts_section_pmt.h"
+#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {
 namespace mp2t {
-
-enum StreamType {
-  // ISO-13818.1 / ITU H.222 Table 2.34 "Stream type assignments"
-  kStreamTypeMpeg1Audio = 0x3,
-  kStreamTypeAAC = 0xf,
-  kStreamTypeAVC = 0x1b,
-  kStreamTypeHEVC = 0x24,
-};
 
 class PidState {
  public:
@@ -291,33 +284,32 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   // Create a stream parser corresponding to the stream type.
   bool is_audio = false;
   std::unique_ptr<EsParser> es_parser;
-  if (stream_type == kStreamTypeAVC) {
-    es_parser.reset(
-        new EsParserH264(
-            pes_pid,
-            base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
-                       base::Unretained(this)),
-            base::Bind(&Mp2tMediaParser::OnEmitSample,
-                       base::Unretained(this))));
-  } else if (stream_type == kStreamTypeHEVC) {
-    es_parser.reset(
-        new EsParserH265(
-            pes_pid,
-            base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
-                       base::Unretained(this)),
-            base::Bind(&Mp2tMediaParser::OnEmitSample,
-                       base::Unretained(this))));
-  } else if (stream_type == kStreamTypeAAC) {
-    es_parser.reset(new EsParserAudio(
-        pes_pid,
-        base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
-        base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this)),
-        sbr_in_mimetype_));
-    is_audio = true;
-  } else {
-    VLOG(1) << "Ignore unsupported stream type 0x" << std::hex << stream_type
-            << std::dec;
-    return;
+  switch (static_cast<TsStreamType>(stream_type)) {
+    case TsStreamType::kAvc:
+      es_parser.reset(new EsParserH264(
+          pes_pid,
+          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
+          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
+      break;
+    case TsStreamType::kHevc:
+      es_parser.reset(new EsParserH265(
+          pes_pid,
+          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
+          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
+      break;
+    case TsStreamType::kAdtsAac:
+    case TsStreamType::kAc3:
+      es_parser.reset(new EsParserAudio(
+          pes_pid, static_cast<TsStreamType>(stream_type),
+          base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
+          base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this)),
+          sbr_in_mimetype_));
+      is_audio = true;
+      break;
+    default:
+      VLOG(1) << "Ignore unsupported stream type 0x" << std::hex << stream_type
+              << std::dec;
+      return;
   }
 
   // Create the PES state here.

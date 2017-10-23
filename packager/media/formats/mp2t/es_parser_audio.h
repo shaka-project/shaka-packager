@@ -14,6 +14,7 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/formats/mp2t/es_parser.h"
+#include "packager/media/formats/mp2t/ts_stream_type.h"
 
 namespace shaka {
 namespace media {
@@ -27,6 +28,7 @@ class AudioHeader;
 class EsParserAudio : public EsParser {
  public:
   EsParserAudio(uint32_t pid,
+                TsStreamType stream_type,
                 const NewStreamInfoCB& new_stream_info_cb,
                 const EmitSampleCB& emit_sample_cb,
                 bool sbr_in_mimetype);
@@ -52,6 +54,7 @@ class EsParserAudio : public EsParser {
   // Discard some bytes from the ES stream.
   void DiscardEs(int nbytes);
 
+  const TsStreamType stream_type_;
   std::unique_ptr<AudioHeader> audio_header_;
 
   // Callbacks:
