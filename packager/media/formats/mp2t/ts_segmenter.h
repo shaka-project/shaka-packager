@@ -80,6 +80,10 @@ class TsSegmenter {
   const MuxerOptions& muxer_options_;
   MuxerListener* const listener_;
 
+  // Codec for the stream.
+  Codec codec_ = kUnknownCodec;
+  std::vector<uint8_t> audio_codec_config_;
+
   // Scale used to scale the input stream to TS's timesccale (which is 90000).
   // Used for calculating the duration in seconds fo the current segment.
   double timescale_scale_ = 1.0;

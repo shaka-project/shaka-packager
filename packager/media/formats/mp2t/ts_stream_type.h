@@ -21,7 +21,8 @@ enum class TsStreamType {
   // ATSC Standard A/52.
   kAc3 = 0x81,
   kEac3 = 0x87,
-  // Encrypted: https://goo.gl/N7Tvqi.
+  // MPEG-2 Stream Encryption Format for HTTP Live Streaming:
+  // https://goo.gl/N7Tvqi.
   kEncryptedAc3 = 0xC1,
   kEncryptedEac3 = 0xC2,
   kEncryptedAdtsAac = 0xCF,

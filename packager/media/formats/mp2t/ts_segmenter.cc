@@ -8,8 +8,12 @@
 
 #include <memory>
 
+#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/muxer_util.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/media/formats/mp2t/pes_packet.h"
+#include "packager/media/formats/mp2t/program_map_table_writer.h"
 #include "packager/status.h"
 
 namespace shaka {
@@ -18,24 +22,42 @@ namespace mp2t {
 
 namespace {
 const double kTsTimescale = 90000;
+
+bool IsAudioCodec(Codec codec) {
+  return codec >= kCodecAudio && codec < kCodecAudioMaxPlusOne;
+}
+
+bool IsVideoCodec(Codec codec) {
+  return codec >= kCodecVideo && codec < kCodecVideoMaxPlusOne;
+}
+
 }  // namespace
 
 TsSegmenter::TsSegmenter(const MuxerOptions& options, MuxerListener* listener)
     : muxer_options_(options),
       listener_(listener),
-      ts_writer_(new TsWriter()),
       pes_packet_generator_(new PesPacketGenerator()) {}
 TsSegmenter::~TsSegmenter() {}
 
 Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
   if (muxer_options_.segment_template.empty())
     return Status(error::MUXER_FAILURE, "Segment template not specified.");
-  if (!ts_writer_->Initialize(stream_info))
-    return Status(error::MUXER_FAILURE, "Failed to initialize TsWriter.");
   if (!pes_packet_generator_->Initialize(stream_info)) {
     return Status(error::MUXER_FAILURE,
                   "Failed to initialize PesPacketGenerator.");
   }
+
+  const StreamType stream_type = stream_info.stream_type();
+  if (stream_type != StreamType::kStreamVideo &&
+      stream_type != StreamType::kStreamAudio) {
+    LOG(ERROR) << "TsWriter cannot handle stream type " << stream_type
+               << " yet.";
+    return Status(error::MUXER_FAILURE, "Unsupported stream type.");
+  }
+
+  codec_ = stream_info.codec();
+  if (stream_type == StreamType::kStreamAudio)
+    audio_codec_config_ = stream_info.codec_config();
 
   timescale_scale_ = kTsTimescale / stream_info.time_scale();
   return Status::OK;
@@ -46,6 +68,33 @@ Status TsSegmenter::Finalize() {
 }
 
 Status TsSegmenter::AddSample(const MediaSample& sample) {
+  if (!ts_writer_) {
+    std::unique_ptr<ProgramMapTableWriter> pmt_writer;
+    if (codec_ == kCodecAC3) {
+      // https://goo.gl/N7Tvqi MPEG-2 Stream Encryption Format for HTTP Live
+      // Streaming 2.3.2.2 AC-3 Setup: For AC-3, the setup_data in the
+      // audio_setup_information is the first 10 bytes of the audio data (the
+      // syncframe()).
+      // For unencrypted AC3, the setup_data is not used, so what is in there
+      // does not matter.
+      const size_t kSetupDataSize = 10u;
+      if (sample.data_size() < kSetupDataSize) {
+        LOG(ERROR) << "Sample is too small for AC3: " << sample.data_size();
+        return Status(error::MUXER_FAILURE, "Sample is too small for AC3.");
+      }
+      const std::vector<uint8_t> setup_data(sample.data(),
+                                            sample.data() + kSetupDataSize);
+      pmt_writer.reset(new AudioProgramMapTableWriter(codec_, setup_data));
+    } else if (IsAudioCodec(codec_)) {
+      pmt_writer.reset(
+          new AudioProgramMapTableWriter(codec_, audio_codec_config_));
+    } else {
+      DCHECK(IsVideoCodec(codec_));
+      pmt_writer.reset(new VideoProgramMapTableWriter(codec_));
+    }
+    ts_writer_.reset(new TsWriter(std::move(pmt_writer)));
+  }
+
   if (sample.is_encrypted())
     ts_writer_->SignalEncrypted();
 
