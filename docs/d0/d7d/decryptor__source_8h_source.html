@@ -109,31 +109,34 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">DecryptorSource</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">DecryptorSource</a>(<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* key_source);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  ~<a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">DecryptorSource</a>();</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">bool</span> DecryptSampleBuffer(<span class="keyword">const</span> <a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a>* decrypt_config,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                           uint8_t* buffer,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                           <span class="keywordtype">size_t</span> buffer_size);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* key_source_;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  std::map&lt;std::vector&lt;uint8_t&gt;, std::unique_ptr&lt;AesCryptor&gt;&gt; decryptor_map_;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">DecryptorSource</a>);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DECRYPTOR_SOURCE_H_</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html#a045c97bdeb9996d6003ac926849880c8">DecryptorSource</a>(<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* key_source);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  ~<a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">DecryptorSource</a>();</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html#a8a1bd6a5a63b3f3c54028b43dfc67a6d">DecryptSampleBuffer</a>(<span class="keyword">const</span> <a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a>* decrypt_config,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                           <span class="keyword">const</span> uint8_t* encrypted_buffer,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                           <span class="keywordtype">size_t</span> buffer_size,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                           uint8_t* decrypted_buffer);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* key_source_;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  std::map&lt;std::vector&lt;uint8_t&gt;, std::unique_ptr&lt;AesCryptor&gt;&gt; decryptor_map_;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">DecryptorSource</a>);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DECRYPTOR_SOURCE_H_</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecryptorSource_html_a045c97bdeb9996d6003ac926849880c8"><div class="ttname"><a href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html#a045c97bdeb9996d6003ac926849880c8">shaka::media::DecryptorSource::DecryptorSource</a></div><div class="ttdeci">DecryptorSource(KeySource *key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d2a/decryptor__source_8cc_source.html#l00028">decryptor_source.cc:28</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">shaka::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00040">decrypt_config.h:40</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecryptorSource_html_a8a1bd6a5a63b3f3c54028b43dfc67a6d"><div class="ttname"><a href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html#a8a1bd6a5a63b3f3c54028b43dfc67a6d">shaka::media::DecryptorSource::DecryptSampleBuffer</a></div><div class="ttdeci">bool DecryptSampleBuffer(const DecryptConfig *decrypt_config, const uint8_t *encrypted_buffer, size_t buffer_size, uint8_t *decrypted_buffer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d2a/decryptor__source_8cc_source.html#l00034">decryptor_source.cc:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptorSource_html"><div class="ttname"><a href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">shaka::media::DecryptorSource</a></div><div class="ttdoc">DecryptorSource wraps KeySource and is responsible for decryptor management. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d7d/decryptor__source_8h_source.html#l00022">decryptor_source.h:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

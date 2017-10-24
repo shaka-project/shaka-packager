@@ -368,81 +368,80 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keyword">const</span> std::string&amp; program_identifier) {</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  std::unique_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> EncryptionKey);</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  HttpKeyFetcher key_fetcher(kHttpFetchTimeout);</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="keywordflow">if</span> (!client_cert_file_.empty() &amp;&amp; !client_cert_private_key_file_.empty() &amp;&amp;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      !client_cert_private_key_password_.empty()) {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    key_fetcher.SetClientCertInfo(client_cert_file_,</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;                                  client_cert_private_key_file_,</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                                  client_cert_private_key_password_);</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  }</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keywordflow">if</span> (!ca_file_.empty()) {</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    key_fetcher.SetCaFile(ca_file_);</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  }</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  std::string acquire_license_request = kAcquireLicenseRequest;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  base::ReplaceFirstSubstringAfterOffset(</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      &amp;acquire_license_request, 0, <span class="stringliteral">&quot;$0&quot;</span>, program_identifier);</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  std::string acquire_license_response;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  Status status = key_fetcher.FetchKeys(server_url_, acquire_license_request,</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                                        &amp;acquire_license_response);</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Server response: &quot;</span> &lt;&lt; acquire_license_response;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  }</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  status = SetKeyInformationFromServerResponse(acquire_license_response,</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                                               encryption_key.get());</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  encryption_key_ = std::move(encryption_key);</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;}</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
-<div class="line"><a name="l00307"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">  307</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">PlayReadyKeySource::FetchKeys</a>(EmeInitDataType init_data_type,</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                                     <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; init_data) {</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="comment">// Do nothing for playready encryption/decryption.</span></div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;}</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
-<div class="line"><a name="l00313"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">  313</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">PlayReadyKeySource::GetKey</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                                  <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="comment">// TODO(robinconnell): Currently all tracks are encrypted using the same</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="comment">// key_id and key.  Add the ability to encrypt each stream_label using a</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="comment">// different key_id and key.</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  DCHECK(key);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  *key = *encryption_key_;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;}</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
-<div class="line"><a name="l00324"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a41c393f477ff4b723aa448b35e9ee896">  324</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">PlayReadyKeySource::GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                                  <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="comment">// TODO(robinconnell): Currently all tracks are encrypted using the same</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="comment">// key_id and key.  Add the ability to encrypt using multiple key_id/keys.</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  DCHECK(key);</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  *key = *encryption_key_;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;}</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
-<div class="line"><a name="l00334"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">  334</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">PlayReadyKeySource::GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;                                              <span class="keyword">const</span> std::string&amp; stream_label,</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;                                              <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="comment">// TODO(robinconnell): Implement key rotation.</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  *key = *encryption_key_;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a0d2e038e477a5a2bc903292977fc65bd"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">shaka::media::PlayReadyKeySource::GetKey</a></div><div class="ttdeci">Status GetKey(const std::string &amp;stream_label, EncryptionKey *key) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00313">playready_key_source.cc:313</a></div></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="keywordflow">if</span> (!client_cert_file_.empty() &amp;&amp; !client_cert_private_key_file_.empty()) {</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    key_fetcher.SetClientCertInfo(client_cert_file_,</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                                  client_cert_private_key_file_,</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;                                  client_cert_private_key_password_);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  }</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="keywordflow">if</span> (!ca_file_.empty()) {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    key_fetcher.SetCaFile(ca_file_);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  std::string acquire_license_request = kAcquireLicenseRequest;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  base::ReplaceFirstSubstringAfterOffset(</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;      &amp;acquire_license_request, 0, <span class="stringliteral">&quot;$0&quot;</span>, program_identifier);</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  std::string acquire_license_response;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  Status status = key_fetcher.FetchKeys(server_url_, acquire_license_request,</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                                        &amp;acquire_license_response);</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Server response: &quot;</span> &lt;&lt; acquire_license_response;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  }</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  status = SetKeyInformationFromServerResponse(acquire_license_response,</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                                               encryption_key.get());</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  encryption_key_ = std::move(encryption_key);</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;}</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;</div>
+<div class="line"><a name="l00306"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">  306</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">PlayReadyKeySource::FetchKeys</a>(EmeInitDataType init_data_type,</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                                     <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; init_data) {</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <span class="comment">// Do nothing for playready encryption/decryption.</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;}</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
+<div class="line"><a name="l00312"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">  312</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">PlayReadyKeySource::GetKey</a>(<span class="keyword">const</span> std::string&amp; stream_label,</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                                  <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="comment">// TODO(robinconnell): Currently all tracks are encrypted using the same</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="comment">// key_id and key.  Add the ability to encrypt each stream_label using a</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="comment">// different key_id and key.</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  DCHECK(key);</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  *key = *encryption_key_;</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;}</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a41c393f477ff4b723aa448b35e9ee896">  323</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">PlayReadyKeySource::GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;                                  <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="comment">// TODO(robinconnell): Currently all tracks are encrypted using the same</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="comment">// key_id and key.  Add the ability to encrypt using multiple key_id/keys.</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  DCHECK(key);</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  *key = *encryption_key_;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;}</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
+<div class="line"><a name="l00333"></a><span class="lineno"><a class="line" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">  333</a></span>&#160;<a class="code" href="../../d2/d20/classshaka_1_1Status.html">Status</a> <a class="code" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">PlayReadyKeySource::GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                                              <span class="keyword">const</span> std::string&amp; stream_label,</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;                                              <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="comment">// TODO(robinconnell): Implement key rotation.</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  *key = *encryption_key_;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;}</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a0d2e038e477a5a2bc903292977fc65bd"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">shaka::media::PlayReadyKeySource::GetKey</a></div><div class="ttdeci">Status GetKey(const std::string &amp;stream_label, EncryptionKey *key) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00312">playready_key_source.cc:312</a></div></div>
 <div class="ttc" id="classshaka_1_1Status_html_a5b9c6f6e38d23dc6839bd275b0d15500"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html#a5b9c6f6e38d23dc6839bd275b0d15500">shaka::Status::ToString</a></div><div class="ttdeci">std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../da/dc3/status_8cc_source.html#l00067">status.cc:67</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a2d85b64ad09aec73b84a26071a9c059e"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a2d85b64ad09aec73b84a26071a9c059e">shaka::media::PlayReadyKeySource::PlayReadyKeySource</a></div><div class="ttdeci">PlayReadyKeySource(const std::string &amp;server_url)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00160">playready_key_source.cc:160</a></div></div>
 <div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_af53a97f0812b07e766c83e128b807c01"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">shaka::media::PlayReadyKeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">Status GetCryptoPeriodKey(uint32_t crypto_period_index, const std::string &amp;stream_label, EncryptionKey *key) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00334">playready_key_source.cc:334</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_af53a97f0812b07e766c83e128b807c01"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">shaka::media::PlayReadyKeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">Status GetCryptoPeriodKey(uint32_t crypto_period_index, const std::string &amp;stream_label, EncryptionKey *key) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00333">playready_key_source.cc:333</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">shaka::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00034">key_source.h:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ProtectionSystemSpecificInfo_html"><div class="ttname"><a href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">shaka::media::ProtectionSystemSpecificInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d59/protection__system__specific__info_8h_source.html#l00019">protection_system_specific_info.h:19</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a6311482a3f3ddec70da595f0dc1580ae"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">shaka::media::PlayReadyKeySource::FetchKeys</a></div><div class="ttdeci">Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00307">playready_key_source.cc:307</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a6311482a3f3ddec70da595f0dc1580ae"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">shaka::media::PlayReadyKeySource::FetchKeys</a></div><div class="ttdeci">Status FetchKeys(EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00306">playready_key_source.cc:306</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1PlayReadyKeySource_html_a76f18b778d83492e5b7ed90637124b2c"><div class="ttname"><a href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a76f18b778d83492e5b7ed90637124b2c">shaka::media::PlayReadyKeySource::CreateFromKeyAndKeyId</a></div><div class="ttdeci">static std::unique_ptr&lt; PlayReadyKeySource &gt; CreateFromKeyAndKeyId(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd0/playready__key__source_8cc_source.html#l00184">playready_key_source.cc:184</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

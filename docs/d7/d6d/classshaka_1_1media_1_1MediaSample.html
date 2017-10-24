@@ -89,6 +89,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="../../df/d1c/classshaka_1_1media_1_1MediaSample-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::MediaSample Class Reference</div>  </div>
@@ -102,9 +103,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5ce916afdefd3d1410f8e003d7118f8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ce916afdefd3d1410f8e003d7118f8b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MediaSample</b> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
-<tr class="separator:a5ce916afdefd3d1410f8e003d7118f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b055c68dd0b2425ec5ba524b8a05b73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b055c68dd0b2425ec5ba524b8a05b73"></a>
+std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a6b055c68dd0b2425ec5ba524b8a05b73">Clone</a> () const </td></tr>
+<tr class="memdesc:a6b055c68dd0b2425ec5ba524b8a05b73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the object and return a new <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a>. <br/></td></tr>
+<tr class="separator:a6b055c68dd0b2425ec5ba524b8a05b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5402405ad4abb5102078d047972a56fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a5402405ad4abb5102078d047972a56fa">TransferData</a> (std::shared_ptr&lt; uint8_t &gt; data, size_t data_size)</td></tr>
+<tr class="separator:a5402405ad4abb5102078d047972a56fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9be744240871d88cd76d04adbd2d702"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ab9be744240871d88cd76d04adbd2d702">SetData</a> (const uint8_t *data, size_t data_size)</td></tr>
+<tr class="separator:ab9be744240871d88cd76d04adbd2d702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3cbd9fee3a228403c3128be5141a614"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">ToString</a> () const </td></tr>
+<tr class="separator:aa3cbd9fee3a228403c3128be5141a614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52a0b18aec839de422c4e3e2df9734c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52a0b18aec839de422c4e3e2df9734c9"></a>
 int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>dts</b> () const </td></tr>
 <tr class="separator:a52a0b18aec839de422c4e3e2df9734c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,9 +140,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_encrypted</b> () c
 <tr class="memitem:a27439e29f5da14831623e21a1f052948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27439e29f5da14831623e21a1f052948"></a>
 const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () const </td></tr>
 <tr class="separator:a27439e29f5da14831623e21a1f052948"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaab63d221349ecf4c0565d09f3b081f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaab63d221349ecf4c0565d09f3b081f"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>writable_data</b> ()</td></tr>
-<tr class="separator:aaaab63d221349ecf4c0565d09f3b081f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af33286b61bff7af2a34ac999dcb66dda"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af33286b61bff7af2a34ac999dcb66dda"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>data_size</b> () const </td></tr>
 <tr class="separator:af33286b61bff7af2a34ac999dcb66dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,12 +152,6 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>side_data_size</b> 
 <tr class="memitem:a9ca652d922f5af1b74e36fe46950b8c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ca652d922f5af1b74e36fe46950b8c7"></a>
 const <a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>decrypt_config</b> () const </td></tr>
 <tr class="separator:a9ca652d922f5af1b74e36fe46950b8c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34de7f4cc638cdc6b8a383ebff78d7ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34de7f4cc638cdc6b8a383ebff78d7ca"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_data</b> (const uint8_t *data, const size_t data_size)</td></tr>
-<tr class="separator:a34de7f4cc638cdc6b8a383ebff78d7ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99730eda92b89bbca7a8cd26b6b71b12"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a99730eda92b89bbca7a8cd26b6b71b12"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>resize_data</b> (const size_t data_size)</td></tr>
-<tr class="separator:a99730eda92b89bbca7a8cd26b6b71b12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ffbe5854478e1acd3f324b91801091"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a99ffbe5854478e1acd3f324b91801091"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_key_frame</b> (bool value)</td></tr>
 <tr class="separator:a99ffbe5854478e1acd3f324b91801091"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,8 +170,6 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>co
 <tr class="memitem:a6217d289829ab91c85be82d8f8bdfbab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6217d289829ab91c85be82d8f8bdfbab"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_config_id</b> (const std::string &amp;config_id)</td></tr>
 <tr class="separator:a6217d289829ab91c85be82d8f8bdfbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3cbd9fee3a228403c3128be5141a614"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#aa3cbd9fee3a228403c3128be5141a614">ToString</a> () const </td></tr>
-<tr class="separator:aa3cbd9fee3a228403c3128be5141a614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -182,9 +179,6 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a910e68f46b9464e4ea36cf9cd5116b55"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a910e68f46b9464e4ea36cf9cd5116b55">CopyFrom</a> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
 <tr class="separator:a910e68f46b9464e4ea36cf9cd5116b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a311a7302af6405531ebafa04d877d160"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a311a7302af6405531ebafa04d877d160">CopyFrom</a> (const <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &amp;media_sample)</td></tr>
-<tr class="separator:a311a7302af6405531ebafa04d877d160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c70ae863851c7a1066923cf387fb178"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a8c70ae863851c7a1066923cf387fb178">FromMetadata</a> (const uint8_t *metadata, size_t metadata_size)</td></tr>
 <tr class="separator:a8c70ae863851c7a1066923cf387fb178"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,6 +190,12 @@ static std::shared_ptr<br class="typebreak"/>
 <tr class="memitem:a236e80a98d7f22ec585bbbf2e91397f5"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a236e80a98d7f22ec585bbbf2e91397f5">CreateEOSBuffer</a> ()</td></tr>
 <tr class="separator:a236e80a98d7f22ec585bbbf2e91397f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a5fde40524f29d01ad947604b56e193b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5fde40524f29d01ad947604b56e193b6"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MediaSample</b> (const uint8_t *data, size_t data_size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
+<tr class="separator:a5fde40524f29d01ad947604b56e193b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class to hold a media sample. </p>
@@ -249,7 +249,7 @@ static std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00042">42</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -314,40 +314,7 @@ static std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a311a7302af6405531ebafa04d877d160"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; shaka::media::MediaSample::CopyFrom </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &amp;&#160;</td>
-          <td class="paramname"><em>media_sample</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Make a copy of <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">media_sample</td><td>is the source <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> to copy from. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -373,7 +340,7 @@ static std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Create a <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> indicating we've reached end of stream. Calling any method other than end_of_stream() on the resulting buffer is disallowed. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00105">105</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00076">76</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -417,7 +384,43 @@ static std::shared_ptr<br class="typebreak"/>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00093">93</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00064">64</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab9be744240871d88cd76d04adbd2d702"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::MediaSample::SetData </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>data_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the data in this media sample. Note that this method involves data copying. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>points to the data to be copied. </td></tr>
+    <tr><td class="paramname">data_size</td><td>is the size of the data to be copied. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00109">109</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -435,7 +438,43 @@ static std::shared_ptr<br class="typebreak"/>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a human-readable string describing |*this|. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00109">109</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00116">116</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5402405ad4abb5102078d047972a56fa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::MediaSample::TransferData </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>data_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Transfer data to this media sample. No data copying is involved. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>points to the data to be transferred. </td></tr>
+    <tr><td class="paramname">data_size</td><td>is the size of the data to be transferred. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00103">103</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -446,7 +485,7 @@ static std::shared_ptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:10 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:16 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

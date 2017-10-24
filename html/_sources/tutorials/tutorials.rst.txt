@@ -9,3 +9,4 @@ Tutorials
    hls.md
    live.md
    drm.rst
+   ffmpeg_piping.rst

@@ -180,15 +180,15 @@ streams.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Required for audio when outputting HLS. name of the output stream. This is
-not (necessarily) the same as output. This is used as the NAME attribute for
-EXT-X-MEDIA.</td>
+<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Used for HLS audio to set the NAME attribute for EXT-X-MEDIA.
+Defaults to the base of the playlist name.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Required for audio when outputting HLS. The group ID for the output stream.
-This is used as the GROUP-ID attribute for EXT-X-MEDIA.</td>
+<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
+Defaults to &#8216;audio&#8217; if not specified.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Required for HLS output. Name of the playlist for the stream. Usually ends
-with &#8216;.m3u8&#8217;.</td>
+<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Used for HLS to name the playlist for the stream. Usually ends
+with &#8216;.m3u8&#8217;. If unspecified, defaults to something of the form
+&#8216;stream_0.m3u8&#8217;, &#8216;stream_1.m3u8&#8217;, &#8216;stream_2.m3u8&#8217;, etc.</td>
 </tr>
 </tbody>
 </table>

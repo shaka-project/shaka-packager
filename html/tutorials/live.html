@@ -53,9 +53,9 @@
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Live</a><ul>
-<li><a class="reference internal" href="#udp-file-options">UDP file options</a><ul>
-<li><a class="reference internal" href="#pipe-through-ffmpeg">Pipe through FFmpeg</a></li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#udp-file-options">UDP file options</a></li>
+<li><a class="reference internal" href="#segment-template-formatting">Segment template formatting</a></li>
 </ul>
 </li>
 </ul>
@@ -97,32 +97,10 @@
 <h1>Live<a class="headerlink" href="#live" title="Permalink to this headline">¶</a></h1>
 <p>A typical live source is UDP multicast, which is the only live protocol
 packager supports directly right now.</p>
-<div class="section" id="udp-file-options">
-<h2>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h2>
-<p>UDP file is of the form udp://ip:port[?options]. Here is the list of supported
-options:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;, source=&lt;addr&gt;:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address is
-received.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
-</tr>
-</tbody>
-</table>
-<div class="section" id="pipe-through-ffmpeg">
-<h3>Pipe through FFmpeg<a class="headerlink" href="#pipe-through-ffmpeg" title="Permalink to this headline">¶</a></h3>
 <p>For other unsupported protocols, you can use FFmpeg to pipe the input.
-See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">ffmpeg piping</span></a> for details.</p>
-</div>
+See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FFmpeg piping</span></a> for details.</p>
 <div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The command is similar to the on-demand, see <a class="reference internal" href="dash.html"><span class="doc">DASH</span></a> and <a class="reference internal" href="hls.html"><span class="doc">HLS</span></a>.</p>
 <p>Here are some examples.</p>
 <ul>
@@ -154,6 +132,96 @@ See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">ff
 <p class="last">Packager does not support removing old segments internally. The user is
 resposible for setting up a cron job to do so.</p>
 </div>
+<div class="section" id="udp-file-options">
+<h3>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h3>
+<p>UDP file is of the form udp://ip:port[?options]. Here is the list of supported
+options:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;, source=&lt;addr&gt;:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address is
+received.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="segment-template-formatting">
+<h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
+<p>The implementation is based on <em>Template-based Segment URL construction</em>
+described in ISO/IEC 23009-1:2014.</p>
+<table border="1" class="styled-table docutils" id="id1">
+<caption><span class="caption-text">Supported identifiers</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="19%" />
+<col width="41%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="left-align head">$&lt;Identifier&gt;$</th>
+<th class="left-align head">Substitution parameter</th>
+<th class="left-align head">Format</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td class="left-align">$$</td>
+<td class="left-align">is an escape sequence, i.e.
+&#8220;$$&#8221; is replaced with a single
+&#8220;$&#8221;.</td>
+<td class="left-align">Not applicable.</td>
+</tr>
+<tr class="row-odd"><td class="left-align">$Number$</td>
+<td class="left-align">This identifier is substitued
+with the <em>number</em> of the
+corresponding Segment.</td>
+<td class="left-align"><p class="first">The format tag may be present.</p>
+<p class="last">If no format tag is present, a
+default format tag with
+<em>width</em>=1 shall be used.</p>
+</td>
+</tr>
+<tr class="row-even"><td class="left-align">$Time$</td>
+<td class="left-align">This identifier is substituted
+with the value of the
+<strong>SegmentTimeline&#64;t</strong>
+attribute for the Segment
+being accessed. Either
+$Number$ or $Time$ may be used
+but not both at the same time.</td>
+<td class="left-align"><p class="first">The format tag may be present.</p>
+<p class="last">If no format tag is present, a
+default format tag with
+<em>width</em>=1 shall be used.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
+version. Please file an <a class="reference external" href="https://github.com/google/shaka-packager/issues">issue</a> if you want it to be
+supported.</p>
+</div>
+<p>In each URL, the identifiers shall be replaced by the substitution parameter
+per the definition in the above table. Identifier matching is case-sensitive.</p>
+<p>Each identifier may be suffixed, within the enclosing &#8216;$&#8217; characters, with an
+additional format tag aligned with the <em>printf</em> format tag as defined in IEEE
+1003.1-2008 following this prototype:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>The <em>width</em> parameter is an unsigned integer that provides the minimum number
+of characters to be printed. If the value to be printed is shorter than this
+number, the result shall be padded with zeros. The value is not truncated even
+if the result is larger.</p>
+<p>Strings outside identifiers shall only contain characters that are permitted
+within URLs according to RFC 3986.</p>
 </div>
 </div>
 </div>

@@ -142,16 +142,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                    playready_enabled, <span class="keyword">true</span>, playready_label)) {</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    success = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">bool</span> use_fixed_key = !FLAGS_playready_key_id_bytes.empty() &amp;&amp;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                       !FLAGS_playready_key_bytes.empty();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">bool</span> use_raw_key = !FLAGS_playready_key_id_bytes.empty() &amp;&amp;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                     !FLAGS_playready_key_bytes.empty();</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">if</span> (playready_enabled &amp;&amp; !use_packaging &amp;&amp; !use_fixed_key) {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">if</span> (playready_enabled &amp;&amp; !use_packaging &amp;&amp; !use_raw_key) {</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(<span class="stringliteral">&quot;combination of --playready_server_url and &quot;</span></div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="stringliteral">&quot;--program_identifier or --playready_key_id and playready_key are &quot;</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="stringliteral">&quot;required&quot;</span>);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    success = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span> (use_packaging &amp;&amp; use_fixed_key) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span> (use_packaging &amp;&amp; use_raw_key) {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(<span class="stringliteral">&quot;combination of --playready_server_url, --program_identifier, &quot;</span></div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="stringliteral">&quot;--playready_key_id, and playready_key is not valid&quot;</span>);</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    success = <span class="keyword">false</span>;</div>
@@ -161,12 +161,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="namespaceshaka_html_a54fadd9c7ef14b39cd0355a5c269c772"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">shaka::PrintError</a></div><div class="ttdeci">void PrintError(const std::string &amp;error_message)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dad/validate__flag_8cc_source.html#l00015">validate_flag.cc:15</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a952293a7213f285843f28b7363ee14d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">shaka::ValidateFlag</a></div><div class="ttdeci">bool ValidateFlag(const char *flag_name, const FlagType &amp;flag_value, bool condition, bool optional, const char *label)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d22/validate__flag_8h_source.html#l00033">validate_flag.h:33</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a952293a7213f285843f28b7363ee14d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">shaka::ValidateFlag</a></div><div class="ttdeci">bool ValidateFlag(const char *flag_name, const FlagType &amp;flag_value, bool condition, bool optional, const char *label)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d22/validate__flag_8h_source.html#l00037">validate_flag.h:37</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a8b6212ccc4b98e5fdb72f84acf252c6b"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">shaka::ValidatePRCryptoFlags</a></div><div class="ttdeci">bool ValidatePRCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00033">playready_key_encryption_flags.cc:33</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

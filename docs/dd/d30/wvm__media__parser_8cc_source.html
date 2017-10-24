@@ -905,7 +905,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;</div>
 <div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Output(<span class="keywordtype">bool</span> output_encrypted_sample) {</div>
 <div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;  <span class="keywordflow">if</span> (output_encrypted_sample) {</div>
-<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;    media_sample_-&gt;set_data(sample_data_.data(), sample_data_.size());</div>
+<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;    media_sample_-&gt;SetData(sample_data_.data(), sample_data_.size());</div>
 <div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;    media_sample_-&gt;set_is_encrypted(<span class="keyword">true</span>);</div>
 <div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;    <span class="keywordflow">if</span> ((prev_pes_stream_id_ &amp; kPesStreamIdVideoMask) == kPesStreamIdVideo) {</div>
@@ -916,7 +916,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not convert h.264 byte stream sample&quot;</span>;</div>
 <div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;      }</div>
-<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;      media_sample_-&gt;set_data(nal_unit_stream.data(), nal_unit_stream.size());</div>
+<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;      media_sample_-&gt;SetData(nal_unit_stream.data(), nal_unit_stream.size());</div>
 <div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;      <span class="keywordflow">if</span> (!is_initialized_) {</div>
 <div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;        <span class="comment">// Set extra data for video stream from AVC Decoder Config Record.</span></div>
 <div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;        <span class="comment">// Also, set codec string from the AVC Decoder Config Record.</span></div>
@@ -1003,276 +1003,275 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;      }</div>
 <div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;      <span class="keywordtype">size_t</span> header_size = adts_header.GetAdtsHeaderSize(frame_ptr,</div>
 <div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;                                                         frame_size);</div>
-<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;      media_sample_-&gt;set_data(frame_ptr + header_size,</div>
-<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;                              frame_size - header_size);</div>
-<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;      <span class="keywordflow">if</span> (!is_initialized_) {</div>
-<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;        <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
-<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == kStreamAudio &amp;&amp;</div>
-<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;              stream_infos_[i]-&gt;codec_string().empty()) {</div>
-<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;            AudioStreamInfo* audio_stream_info =</div>
-<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>AudioStreamInfo*<span class="keyword">&gt;</span>(stream_infos_[i].get());</div>
-<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;            <span class="keywordflow">if</span> (audio_stream_info-&gt;codec_config().empty()) {</div>
-<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the ADTS</span></div>
-<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;              <span class="comment">// header.</span></div>
-<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;              audio_stream_info-&gt;set_sampling_frequency(</div>
-<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;                  adts_header.GetSamplingFrequency());</div>
-<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;              std::vector&lt;uint8_t&gt; audio_specific_config;</div>
-<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;              <span class="keywordflow">if</span> (!adts_header.GetAudioSpecificConfig(&amp;audio_specific_config)) {</div>
-<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not compute AACAudiospecificconfig&quot;</span>;</div>
-<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;              }</div>
-<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;              audio_stream_info-&gt;set_codec_config(audio_specific_config);</div>
-<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
-<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">AudioStreamInfo::GetCodecString</a>(</div>
-<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;                      kCodecAAC, adts_header.GetObjectType()));</div>
-<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the</span></div>
-<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;              <span class="comment">// AACAudioSpecificConfig record.</span></div>
-<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;              AACAudioSpecificConfig aac_config;</div>
-<div class="line"><a name="l00943"></a><span class="lineno">  943</span>&#160;              <span class="keywordflow">if</span> (!aac_config.Parse(stream_infos_[i]-&gt;codec_config())) {</div>
-<div class="line"><a name="l00944"></a><span class="lineno">  944</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not parse AACAudioSpecificconfig&quot;</span>;</div>
-<div class="line"><a name="l00945"></a><span class="lineno">  945</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00946"></a><span class="lineno">  946</span>&#160;              }</div>
-<div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;              audio_stream_info-&gt;set_sampling_frequency(</div>
-<div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;                  aac_config.GetSamplesPerSecond());</div>
-<div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
-<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">AudioStreamInfo::GetCodecString</a>(</div>
-<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;                      kCodecAAC, aac_config.GetAudioObjectType()));</div>
-<div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;            }</div>
-<div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;          }</div>
-<div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160;        }</div>
-<div class="line"><a name="l00955"></a><span class="lineno">  955</span>&#160;      }</div>
-<div class="line"><a name="l00956"></a><span class="lineno">  956</span>&#160;    }</div>
-<div class="line"><a name="l00957"></a><span class="lineno">  957</span>&#160;  }</div>
-<div class="line"><a name="l00958"></a><span class="lineno">  958</span>&#160;</div>
-<div class="line"><a name="l00959"></a><span class="lineno">  959</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_) {</div>
-<div class="line"><a name="l00960"></a><span class="lineno">  960</span>&#160;    <span class="keywordtype">bool</span> all_streams_have_config = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00961"></a><span class="lineno">  961</span>&#160;    <span class="comment">// Check if all collected stream infos have codec_config set.</span></div>
-<div class="line"><a name="l00962"></a><span class="lineno">  962</span>&#160;    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
-<div class="line"><a name="l00963"></a><span class="lineno">  963</span>&#160;      <span class="keywordflow">if</span> (stream_infos_[i]-&gt;codec_string().empty()) {</div>
-<div class="line"><a name="l00964"></a><span class="lineno">  964</span>&#160;        all_streams_have_config = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00965"></a><span class="lineno">  965</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00966"></a><span class="lineno">  966</span>&#160;      }</div>
-<div class="line"><a name="l00967"></a><span class="lineno">  967</span>&#160;    }</div>
-<div class="line"><a name="l00968"></a><span class="lineno">  968</span>&#160;    <span class="keywordflow">if</span> (all_streams_have_config) {</div>
-<div class="line"><a name="l00969"></a><span class="lineno">  969</span>&#160;      init_cb_.Run(stream_infos_);</div>
-<div class="line"><a name="l00970"></a><span class="lineno">  970</span>&#160;      is_initialized_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;    }</div>
-<div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;  }</div>
-<div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;</div>
-<div class="line"><a name="l00974"></a><span class="lineno">  974</span>&#160;  DCHECK_GT(media_sample_-&gt;data_size(), 0UL);</div>
-<div class="line"><a name="l00975"></a><span class="lineno">  975</span>&#160;  std::string key =  base::UintToString(current_program_id_).append(<span class="stringliteral">&quot;:&quot;</span>)</div>
-<div class="line"><a name="l00976"></a><span class="lineno">  976</span>&#160;      .append(base::UintToString(prev_pes_stream_id_));</div>
-<div class="line"><a name="l00977"></a><span class="lineno">  977</span>&#160;  std::map&lt;std::string, uint32_t&gt;::iterator it =</div>
-<div class="line"><a name="l00978"></a><span class="lineno">  978</span>&#160;      program_demux_stream_map_.find(key);</div>
-<div class="line"><a name="l00979"></a><span class="lineno">  979</span>&#160;  <span class="keywordflow">if</span> (it == program_demux_stream_map_.end()) {</div>
-<div class="line"><a name="l00980"></a><span class="lineno">  980</span>&#160;    <span class="comment">// TODO(ramjic): Log error message here and in other error cases through</span></div>
-<div class="line"><a name="l00981"></a><span class="lineno">  981</span>&#160;    <span class="comment">// this method.</span></div>
-<div class="line"><a name="l00982"></a><span class="lineno">  982</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00983"></a><span class="lineno">  983</span>&#160;  }</div>
-<div class="line"><a name="l00984"></a><span class="lineno">  984</span>&#160;  DemuxStreamIdMediaSample demux_stream_media_sample;</div>
-<div class="line"><a name="l00985"></a><span class="lineno">  985</span>&#160;  demux_stream_media_sample.parsed_audio_or_video_stream_id =</div>
-<div class="line"><a name="l00986"></a><span class="lineno">  986</span>&#160;      prev_pes_stream_id_;</div>
-<div class="line"><a name="l00987"></a><span class="lineno">  987</span>&#160;  demux_stream_media_sample.demux_stream_id = (*it).second;</div>
-<div class="line"><a name="l00988"></a><span class="lineno">  988</span>&#160;  demux_stream_media_sample.media_sample = media_sample_;</div>
-<div class="line"><a name="l00989"></a><span class="lineno">  989</span>&#160;  <span class="comment">// Check if sample can be emitted.</span></div>
-<div class="line"><a name="l00990"></a><span class="lineno">  990</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_) {</div>
-<div class="line"><a name="l00991"></a><span class="lineno">  991</span>&#160;    media_sample_queue_.push_back(demux_stream_media_sample);</div>
-<div class="line"><a name="l00992"></a><span class="lineno">  992</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00993"></a><span class="lineno">  993</span>&#160;    <span class="comment">// flush the sample queue and emit all queued samples.</span></div>
-<div class="line"><a name="l00994"></a><span class="lineno">  994</span>&#160;    <span class="keywordflow">while</span> (!media_sample_queue_.empty()) {</div>
-<div class="line"><a name="l00995"></a><span class="lineno">  995</span>&#160;      <span class="keywordflow">if</span> (!EmitPendingSamples())</div>
-<div class="line"><a name="l00996"></a><span class="lineno">  996</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00997"></a><span class="lineno">  997</span>&#160;    }</div>
-<div class="line"><a name="l00998"></a><span class="lineno">  998</span>&#160;    <span class="comment">// Emit current sample.</span></div>
-<div class="line"><a name="l00999"></a><span class="lineno">  999</span>&#160;    <span class="keywordflow">if</span> (!EmitSample(prev_pes_stream_id_, (*it).second, media_sample_, <span class="keyword">false</span>))</div>
-<div class="line"><a name="l01000"></a><span class="lineno"> 1000</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01001"></a><span class="lineno"> 1001</span>&#160;  }</div>
-<div class="line"><a name="l01002"></a><span class="lineno"> 1002</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01003"></a><span class="lineno"> 1003</span>&#160;}</div>
-<div class="line"><a name="l01004"></a><span class="lineno"> 1004</span>&#160;</div>
-<div class="line"><a name="l01005"></a><span class="lineno"> 1005</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,</div>
-<div class="line"><a name="l01006"></a><span class="lineno"> 1006</span>&#160;                                uint32_t stream_id,</div>
-<div class="line"><a name="l01007"></a><span class="lineno"> 1007</span>&#160;                                <span class="keyword">const</span> std::shared_ptr&lt;MediaSample&gt;&amp; new_sample,</div>
-<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;                                <span class="keywordtype">bool</span> isLastSample) {</div>
-<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;  DCHECK(new_sample);</div>
-<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;  <span class="keywordflow">if</span> (isLastSample) {</div>
-<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;    <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdVideoMask) ==</div>
-<div class="line"><a name="l01012"></a><span class="lineno"> 1012</span>&#160;        kPesStreamIdVideo) {</div>
-<div class="line"><a name="l01013"></a><span class="lineno"> 1013</span>&#160;      new_sample-&gt;set_duration(prev_media_sample_data_.video_sample_duration);</div>
-<div class="line"><a name="l01014"></a><span class="lineno"> 1014</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdAudioMask) ==</div>
-<div class="line"><a name="l01015"></a><span class="lineno"> 1015</span>&#160;               kPesStreamIdAudio) {</div>
-<div class="line"><a name="l01016"></a><span class="lineno"> 1016</span>&#160;      new_sample-&gt;set_duration(prev_media_sample_data_.audio_sample_duration);</div>
-<div class="line"><a name="l01017"></a><span class="lineno"> 1017</span>&#160;    }</div>
-<div class="line"><a name="l01018"></a><span class="lineno"> 1018</span>&#160;    <span class="keywordflow">if</span> (!new_sample_cb_.Run(stream_id, new_sample)) {</div>
-<div class="line"><a name="l01019"></a><span class="lineno"> 1019</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the last sample.&quot;</span>;</div>
-<div class="line"><a name="l01020"></a><span class="lineno"> 1020</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01021"></a><span class="lineno"> 1021</span>&#160;    }</div>
-<div class="line"><a name="l01022"></a><span class="lineno"> 1022</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01023"></a><span class="lineno"> 1023</span>&#160;  }</div>
-<div class="line"><a name="l01024"></a><span class="lineno"> 1024</span>&#160;</div>
-<div class="line"><a name="l01025"></a><span class="lineno"> 1025</span>&#160;  <span class="comment">// Cannot emit current sample.  Compute duration first and then,</span></div>
-<div class="line"><a name="l01026"></a><span class="lineno"> 1026</span>&#160;  <span class="comment">// emit previous sample.</span></div>
-<div class="line"><a name="l01027"></a><span class="lineno"> 1027</span>&#160;  <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdVideoMask) ==</div>
-<div class="line"><a name="l01028"></a><span class="lineno"> 1028</span>&#160;      kPesStreamIdVideo) {</div>
-<div class="line"><a name="l01029"></a><span class="lineno"> 1029</span>&#160;    <span class="keywordflow">if</span> (prev_media_sample_data_.video_sample == NULL) {</div>
-<div class="line"><a name="l01030"></a><span class="lineno"> 1030</span>&#160;      prev_media_sample_data_.video_sample = new_sample;</div>
-<div class="line"><a name="l01031"></a><span class="lineno"> 1031</span>&#160;      prev_media_sample_data_.video_stream_id = stream_id;</div>
-<div class="line"><a name="l01032"></a><span class="lineno"> 1032</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01033"></a><span class="lineno"> 1033</span>&#160;    }</div>
-<div class="line"><a name="l01034"></a><span class="lineno"> 1034</span>&#160;    prev_media_sample_data_.video_sample-&gt;set_duration(</div>
-<div class="line"><a name="l01035"></a><span class="lineno"> 1035</span>&#160;        new_sample-&gt;dts() - prev_media_sample_data_.video_sample-&gt;dts());</div>
-<div class="line"><a name="l01036"></a><span class="lineno"> 1036</span>&#160;    prev_media_sample_data_.video_sample_duration =</div>
-<div class="line"><a name="l01037"></a><span class="lineno"> 1037</span>&#160;        prev_media_sample_data_.video_sample-&gt;duration();</div>
-<div class="line"><a name="l01038"></a><span class="lineno"> 1038</span>&#160;    <span class="keywordflow">if</span> (!new_sample_cb_.Run(prev_media_sample_data_.video_stream_id,</div>
-<div class="line"><a name="l01039"></a><span class="lineno"> 1039</span>&#160;                            prev_media_sample_data_.video_sample)) {</div>
-<div class="line"><a name="l01040"></a><span class="lineno"> 1040</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the video sample.&quot;</span>;</div>
-<div class="line"><a name="l01041"></a><span class="lineno"> 1041</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01042"></a><span class="lineno"> 1042</span>&#160;    }</div>
-<div class="line"><a name="l01043"></a><span class="lineno"> 1043</span>&#160;    prev_media_sample_data_.video_sample = new_sample;</div>
-<div class="line"><a name="l01044"></a><span class="lineno"> 1044</span>&#160;    prev_media_sample_data_.video_stream_id = stream_id;</div>
-<div class="line"><a name="l01045"></a><span class="lineno"> 1045</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdAudioMask) ==</div>
-<div class="line"><a name="l01046"></a><span class="lineno"> 1046</span>&#160;             kPesStreamIdAudio) {</div>
-<div class="line"><a name="l01047"></a><span class="lineno"> 1047</span>&#160;    <span class="keywordflow">if</span> (prev_media_sample_data_.audio_sample == NULL) {</div>
-<div class="line"><a name="l01048"></a><span class="lineno"> 1048</span>&#160;      prev_media_sample_data_.audio_sample = new_sample;</div>
-<div class="line"><a name="l01049"></a><span class="lineno"> 1049</span>&#160;      prev_media_sample_data_.audio_stream_id = stream_id;</div>
-<div class="line"><a name="l01050"></a><span class="lineno"> 1050</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01051"></a><span class="lineno"> 1051</span>&#160;    }</div>
-<div class="line"><a name="l01052"></a><span class="lineno"> 1052</span>&#160;    prev_media_sample_data_.audio_sample-&gt;set_duration(</div>
-<div class="line"><a name="l01053"></a><span class="lineno"> 1053</span>&#160;        new_sample-&gt;dts() - prev_media_sample_data_.audio_sample-&gt;dts());</div>
-<div class="line"><a name="l01054"></a><span class="lineno"> 1054</span>&#160;    prev_media_sample_data_.audio_sample_duration =</div>
-<div class="line"><a name="l01055"></a><span class="lineno"> 1055</span>&#160;        prev_media_sample_data_.audio_sample-&gt;duration();</div>
-<div class="line"><a name="l01056"></a><span class="lineno"> 1056</span>&#160;    <span class="keywordflow">if</span> (!new_sample_cb_.Run(prev_media_sample_data_.audio_stream_id,</div>
-<div class="line"><a name="l01057"></a><span class="lineno"> 1057</span>&#160;                            prev_media_sample_data_.audio_sample)) {</div>
-<div class="line"><a name="l01058"></a><span class="lineno"> 1058</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the audio sample.&quot;</span>;</div>
-<div class="line"><a name="l01059"></a><span class="lineno"> 1059</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01060"></a><span class="lineno"> 1060</span>&#160;    }</div>
-<div class="line"><a name="l01061"></a><span class="lineno"> 1061</span>&#160;    prev_media_sample_data_.audio_sample = new_sample;</div>
-<div class="line"><a name="l01062"></a><span class="lineno"> 1062</span>&#160;    prev_media_sample_data_.audio_stream_id = stream_id;</div>
-<div class="line"><a name="l01063"></a><span class="lineno"> 1063</span>&#160;  }</div>
-<div class="line"><a name="l01064"></a><span class="lineno"> 1064</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01065"></a><span class="lineno"> 1065</span>&#160;}</div>
-<div class="line"><a name="l01066"></a><span class="lineno"> 1066</span>&#160;</div>
-<div class="line"><a name="l01067"></a><span class="lineno"> 1067</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::GetAssetKey(<span class="keyword">const</span> uint8_t* asset_id,</div>
-<div class="line"><a name="l01068"></a><span class="lineno"> 1068</span>&#160;                                 EncryptionKey* encryption_key) {</div>
-<div class="line"><a name="l01069"></a><span class="lineno"> 1069</span>&#160;  DCHECK(decryption_key_source_);</div>
-<div class="line"><a name="l01070"></a><span class="lineno"> 1070</span>&#160;  Status status = decryption_key_source_-&gt;FetchKeys(</div>
-<div class="line"><a name="l01071"></a><span class="lineno"> 1071</span>&#160;      EmeInitDataType::WIDEVINE_CLASSIC,</div>
-<div class="line"><a name="l01072"></a><span class="lineno"> 1072</span>&#160;      std::vector&lt;uint8_t&gt;(asset_id, asset_id + <span class="keyword">sizeof</span>(uint32_t)));</div>
-<div class="line"><a name="l01073"></a><span class="lineno"> 1073</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l01074"></a><span class="lineno"> 1074</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Fetch Key(s) failed for AssetID = &quot;</span></div>
-<div class="line"><a name="l01075"></a><span class="lineno"> 1075</span>&#160;               &lt;&lt; ntohlFromBuffer(asset_id) &lt;&lt; <span class="stringliteral">&quot;, error = &quot;</span> &lt;&lt; status;</div>
-<div class="line"><a name="l01076"></a><span class="lineno"> 1076</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01077"></a><span class="lineno"> 1077</span>&#160;  }</div>
-<div class="line"><a name="l01078"></a><span class="lineno"> 1078</span>&#160;</div>
-<div class="line"><a name="l01079"></a><span class="lineno"> 1079</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> kHdStreamLabel[] = <span class="stringliteral">&quot;HD&quot;</span>;</div>
-<div class="line"><a name="l01080"></a><span class="lineno"> 1080</span>&#160;  status = decryption_key_source_-&gt;GetKey(kHdStreamLabel, encryption_key);</div>
-<div class="line"><a name="l01081"></a><span class="lineno"> 1081</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l01082"></a><span class="lineno"> 1082</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Fetch Key(s) failed for AssetID = &quot;</span></div>
-<div class="line"><a name="l01083"></a><span class="lineno"> 1083</span>&#160;               &lt;&lt; ntohlFromBuffer(asset_id) &lt;&lt; <span class="stringliteral">&quot;, error = &quot;</span> &lt;&lt; status;</div>
-<div class="line"><a name="l01084"></a><span class="lineno"> 1084</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01085"></a><span class="lineno"> 1085</span>&#160;  }</div>
-<div class="line"><a name="l01086"></a><span class="lineno"> 1086</span>&#160;</div>
-<div class="line"><a name="l01087"></a><span class="lineno"> 1087</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01088"></a><span class="lineno"> 1088</span>&#160;}</div>
-<div class="line"><a name="l01089"></a><span class="lineno"> 1089</span>&#160;</div>
-<div class="line"><a name="l01090"></a><span class="lineno"> 1090</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::ProcessEcm() {</div>
-<div class="line"><a name="l01091"></a><span class="lineno"> 1091</span>&#160;  <span class="comment">// An error will be returned later if the samples need to be decrypted.</span></div>
-<div class="line"><a name="l01092"></a><span class="lineno"> 1092</span>&#160;  <span class="keywordflow">if</span> (!decryption_key_source_)</div>
-<div class="line"><a name="l01093"></a><span class="lineno"> 1093</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01094"></a><span class="lineno"> 1094</span>&#160;</div>
-<div class="line"><a name="l01095"></a><span class="lineno"> 1095</span>&#160;  <span class="keywordflow">if</span> (current_program_id_ &gt; 0) {</div>
-<div class="line"><a name="l01096"></a><span class="lineno"> 1096</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01097"></a><span class="lineno"> 1097</span>&#160;  }</div>
-<div class="line"><a name="l01098"></a><span class="lineno"> 1098</span>&#160;  <span class="keywordflow">if</span> (ecm_.size() != kEcmSizeBytes) {</div>
-<div class="line"><a name="l01099"></a><span class="lineno"> 1099</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected ECM size = &quot;</span> &lt;&lt; ecm_.size()</div>
-<div class="line"><a name="l01100"></a><span class="lineno"> 1100</span>&#160;               &lt;&lt; <span class="stringliteral">&quot;, expected size = &quot;</span> &lt;&lt; kEcmSizeBytes;</div>
-<div class="line"><a name="l01101"></a><span class="lineno"> 1101</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01102"></a><span class="lineno"> 1102</span>&#160;  }</div>
-<div class="line"><a name="l01103"></a><span class="lineno"> 1103</span>&#160;  <span class="keyword">const</span> uint8_t* ecm_data = ecm_.data();</div>
-<div class="line"><a name="l01104"></a><span class="lineno"> 1104</span>&#160;  DCHECK(ecm_data);</div>
-<div class="line"><a name="l01105"></a><span class="lineno"> 1105</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// old version field - skip.</span></div>
-<div class="line"><a name="l01106"></a><span class="lineno"> 1106</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// clear lead - skip.</span></div>
-<div class="line"><a name="l01107"></a><span class="lineno"> 1107</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// system id(includes ECM version) - skip.</span></div>
-<div class="line"><a name="l01108"></a><span class="lineno"> 1108</span>&#160;  EncryptionKey encryption_key;</div>
-<div class="line"><a name="l01109"></a><span class="lineno"> 1109</span>&#160;  <span class="keywordflow">if</span> (!GetAssetKey(ecm_data, &amp;encryption_key)) {</div>
-<div class="line"><a name="l01110"></a><span class="lineno"> 1110</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01111"></a><span class="lineno"> 1111</span>&#160;  }</div>
-<div class="line"><a name="l01112"></a><span class="lineno"> 1112</span>&#160;  <span class="keywordflow">if</span> (encryption_key.key.size() &lt; kAssetKeySizeBytes) {</div>
-<div class="line"><a name="l01113"></a><span class="lineno"> 1113</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Asset Key size of &quot;</span> &lt;&lt; encryption_key.key.size()</div>
-<div class="line"><a name="l01114"></a><span class="lineno"> 1114</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; for AssetID = &quot;</span> &lt;&lt; ntohlFromBuffer(ecm_data)</div>
-<div class="line"><a name="l01115"></a><span class="lineno"> 1115</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; is less than minimum asset key size.&quot;</span>;</div>
-<div class="line"><a name="l01116"></a><span class="lineno"> 1116</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01117"></a><span class="lineno"> 1117</span>&#160;  }</div>
-<div class="line"><a name="l01118"></a><span class="lineno"> 1118</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// asset_id.</span></div>
-<div class="line"><a name="l01119"></a><span class="lineno"> 1119</span>&#160;  <span class="comment">// Legacy WVM content may have asset keys &gt; 16 bytes.</span></div>
-<div class="line"><a name="l01120"></a><span class="lineno"> 1120</span>&#160;  <span class="comment">// Use only the first 16 bytes of the asset key to get</span></div>
-<div class="line"><a name="l01121"></a><span class="lineno"> 1121</span>&#160;  <span class="comment">// the content key.</span></div>
-<div class="line"><a name="l01122"></a><span class="lineno"> 1122</span>&#160;  std::vector&lt;uint8_t&gt; asset_key(</div>
-<div class="line"><a name="l01123"></a><span class="lineno"> 1123</span>&#160;      encryption_key.key.begin(),</div>
-<div class="line"><a name="l01124"></a><span class="lineno"> 1124</span>&#160;      encryption_key.key.begin() + kAssetKeySizeBytes);</div>
-<div class="line"><a name="l01125"></a><span class="lineno"> 1125</span>&#160;  <span class="comment">// WVM format always uses all zero IV.</span></div>
-<div class="line"><a name="l01126"></a><span class="lineno"> 1126</span>&#160;  std::vector&lt;uint8_t&gt; zero_iv(kInitializationVectorSizeBytes, 0);</div>
-<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  AesCbcDecryptor asset_decryptor(kCtsPadding, AesCryptor::kUseConstantIv);</div>
-<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;  <span class="keywordflow">if</span> (!asset_decryptor.InitializeWithIv(asset_key, zero_iv)) {</div>
-<div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize asset_decryptor.&quot;</span>;</div>
-<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;  }</div>
-<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;</div>
-<div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> content_key_buffer_size =</div>
-<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +</div>
-<div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;      kEcmPaddingSizeBytes;  <span class="comment">// flags + contentKey + padding.</span></div>
-<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;  std::vector&lt;uint8_t&gt; content_key_buffer(content_key_buffer_size);</div>
-<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;  CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,</div>
-<div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;                              content_key_buffer.data()));</div>
-<div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;</div>
-<div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;  std::vector&lt;uint8_t&gt; decrypted_content_key_vec(</div>
-<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;      content_key_buffer.begin() + 4,</div>
-<div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;      content_key_buffer.begin() + 20);</div>
-<div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;  std::unique_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
-<div class="line"><a name="l01144"></a><span class="lineno"> 1144</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));</div>
-<div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;  <span class="keywordflow">if</span> (!content_decryptor-&gt;InitializeWithIv(decrypted_content_key_vec,</div>
-<div class="line"><a name="l01146"></a><span class="lineno"> 1146</span>&#160;                                           zero_iv)) {</div>
-<div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize content decryptor.&quot;</span>;</div>
-<div class="line"><a name="l01148"></a><span class="lineno"> 1148</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01149"></a><span class="lineno"> 1149</span>&#160;  }</div>
-<div class="line"><a name="l01150"></a><span class="lineno"> 1150</span>&#160;</div>
-<div class="line"><a name="l01151"></a><span class="lineno"> 1151</span>&#160;  content_decryptor_ = std::move(content_decryptor);</div>
-<div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01153"></a><span class="lineno"> 1153</span>&#160;}</div>
-<div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;</div>
-<div class="line"><a name="l01155"></a><span class="lineno"> 1155</span>&#160;DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :</div>
-<div class="line"><a name="l01156"></a><span class="lineno"> 1156</span>&#160;  demux_stream_id(0),</div>
-<div class="line"><a name="l01157"></a><span class="lineno"> 1157</span>&#160;  parsed_audio_or_video_stream_id(0) {}</div>
-<div class="line"><a name="l01158"></a><span class="lineno"> 1158</span>&#160;</div>
-<div class="line"><a name="l01159"></a><span class="lineno"> 1159</span>&#160;DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}</div>
-<div class="line"><a name="l01160"></a><span class="lineno"> 1160</span>&#160;</div>
-<div class="line"><a name="l01161"></a><span class="lineno"> 1161</span>&#160;PrevSampleData::PrevSampleData() {</div>
-<div class="line"><a name="l01162"></a><span class="lineno"> 1162</span>&#160;  Reset();</div>
-<div class="line"><a name="l01163"></a><span class="lineno"> 1163</span>&#160;}</div>
-<div class="line"><a name="l01164"></a><span class="lineno"> 1164</span>&#160;</div>
-<div class="line"><a name="l01165"></a><span class="lineno"> 1165</span>&#160;PrevSampleData::~PrevSampleData() {}</div>
-<div class="line"><a name="l01166"></a><span class="lineno"> 1166</span>&#160;</div>
-<div class="line"><a name="l01167"></a><span class="lineno"> 1167</span>&#160;<span class="keywordtype">void</span> PrevSampleData::Reset() {</div>
-<div class="line"><a name="l01168"></a><span class="lineno"> 1168</span>&#160;  audio_sample = NULL;</div>
-<div class="line"><a name="l01169"></a><span class="lineno"> 1169</span>&#160;  video_sample = NULL;</div>
-<div class="line"><a name="l01170"></a><span class="lineno"> 1170</span>&#160;  audio_stream_id = 0;</div>
-<div class="line"><a name="l01171"></a><span class="lineno"> 1171</span>&#160;  video_stream_id = 0;</div>
-<div class="line"><a name="l01172"></a><span class="lineno"> 1172</span>&#160;  audio_sample_duration = 0;</div>
-<div class="line"><a name="l01173"></a><span class="lineno"> 1173</span>&#160;  video_sample_duration = 0;</div>
-<div class="line"><a name="l01174"></a><span class="lineno"> 1174</span>&#160;}</div>
-<div class="line"><a name="l01175"></a><span class="lineno"> 1175</span>&#160;</div>
-<div class="line"><a name="l01176"></a><span class="lineno"> 1176</span>&#160;}  <span class="comment">// namespace wvm</span></div>
-<div class="line"><a name="l01177"></a><span class="lineno"> 1177</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l01178"></a><span class="lineno"> 1178</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a4a7f8d79f9ec3cd3df9a395eef71f0c6"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">shaka::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00100">media_sample.cc:100</a></div></div>
+<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;      media_sample_-&gt;SetData(frame_ptr + header_size, frame_size - header_size);</div>
+<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;      <span class="keywordflow">if</span> (!is_initialized_) {</div>
+<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;        <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
+<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == kStreamAudio &amp;&amp;</div>
+<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;              stream_infos_[i]-&gt;codec_string().empty()) {</div>
+<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;            AudioStreamInfo* audio_stream_info =</div>
+<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>AudioStreamInfo*<span class="keyword">&gt;</span>(stream_infos_[i].get());</div>
+<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;            <span class="keywordflow">if</span> (audio_stream_info-&gt;codec_config().empty()) {</div>
+<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the ADTS</span></div>
+<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;              <span class="comment">// header.</span></div>
+<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;              audio_stream_info-&gt;set_sampling_frequency(</div>
+<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;                  adts_header.GetSamplingFrequency());</div>
+<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;              std::vector&lt;uint8_t&gt; audio_specific_config;</div>
+<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;              <span class="keywordflow">if</span> (!adts_header.GetAudioSpecificConfig(&amp;audio_specific_config)) {</div>
+<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not compute AACAudiospecificconfig&quot;</span>;</div>
+<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;              }</div>
+<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;              audio_stream_info-&gt;set_codec_config(audio_specific_config);</div>
+<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
+<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">AudioStreamInfo::GetCodecString</a>(</div>
+<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;                      kCodecAAC, adts_header.GetObjectType()));</div>
+<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the</span></div>
+<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;              <span class="comment">// AACAudioSpecificConfig record.</span></div>
+<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;              AACAudioSpecificConfig aac_config;</div>
+<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;              <span class="keywordflow">if</span> (!aac_config.Parse(stream_infos_[i]-&gt;codec_config())) {</div>
+<div class="line"><a name="l00943"></a><span class="lineno">  943</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not parse AACAudioSpecificconfig&quot;</span>;</div>
+<div class="line"><a name="l00944"></a><span class="lineno">  944</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00945"></a><span class="lineno">  945</span>&#160;              }</div>
+<div class="line"><a name="l00946"></a><span class="lineno">  946</span>&#160;              audio_stream_info-&gt;set_sampling_frequency(</div>
+<div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;                  aac_config.GetSamplesPerSecond());</div>
+<div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
+<div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">AudioStreamInfo::GetCodecString</a>(</div>
+<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;                      kCodecAAC, aac_config.GetAudioObjectType()));</div>
+<div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;            }</div>
+<div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;          }</div>
+<div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;        }</div>
+<div class="line"><a name="l00954"></a><span class="lineno">  954</span>&#160;      }</div>
+<div class="line"><a name="l00955"></a><span class="lineno">  955</span>&#160;    }</div>
+<div class="line"><a name="l00956"></a><span class="lineno">  956</span>&#160;  }</div>
+<div class="line"><a name="l00957"></a><span class="lineno">  957</span>&#160;</div>
+<div class="line"><a name="l00958"></a><span class="lineno">  958</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_) {</div>
+<div class="line"><a name="l00959"></a><span class="lineno">  959</span>&#160;    <span class="keywordtype">bool</span> all_streams_have_config = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00960"></a><span class="lineno">  960</span>&#160;    <span class="comment">// Check if all collected stream infos have codec_config set.</span></div>
+<div class="line"><a name="l00961"></a><span class="lineno">  961</span>&#160;    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
+<div class="line"><a name="l00962"></a><span class="lineno">  962</span>&#160;      <span class="keywordflow">if</span> (stream_infos_[i]-&gt;codec_string().empty()) {</div>
+<div class="line"><a name="l00963"></a><span class="lineno">  963</span>&#160;        all_streams_have_config = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00964"></a><span class="lineno">  964</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00965"></a><span class="lineno">  965</span>&#160;      }</div>
+<div class="line"><a name="l00966"></a><span class="lineno">  966</span>&#160;    }</div>
+<div class="line"><a name="l00967"></a><span class="lineno">  967</span>&#160;    <span class="keywordflow">if</span> (all_streams_have_config) {</div>
+<div class="line"><a name="l00968"></a><span class="lineno">  968</span>&#160;      init_cb_.Run(stream_infos_);</div>
+<div class="line"><a name="l00969"></a><span class="lineno">  969</span>&#160;      is_initialized_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00970"></a><span class="lineno">  970</span>&#160;    }</div>
+<div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;  }</div>
+<div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;</div>
+<div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;  DCHECK_GT(media_sample_-&gt;data_size(), 0UL);</div>
+<div class="line"><a name="l00974"></a><span class="lineno">  974</span>&#160;  std::string key =  base::UintToString(current_program_id_).append(<span class="stringliteral">&quot;:&quot;</span>)</div>
+<div class="line"><a name="l00975"></a><span class="lineno">  975</span>&#160;      .append(base::UintToString(prev_pes_stream_id_));</div>
+<div class="line"><a name="l00976"></a><span class="lineno">  976</span>&#160;  std::map&lt;std::string, uint32_t&gt;::iterator it =</div>
+<div class="line"><a name="l00977"></a><span class="lineno">  977</span>&#160;      program_demux_stream_map_.find(key);</div>
+<div class="line"><a name="l00978"></a><span class="lineno">  978</span>&#160;  <span class="keywordflow">if</span> (it == program_demux_stream_map_.end()) {</div>
+<div class="line"><a name="l00979"></a><span class="lineno">  979</span>&#160;    <span class="comment">// TODO(ramjic): Log error message here and in other error cases through</span></div>
+<div class="line"><a name="l00980"></a><span class="lineno">  980</span>&#160;    <span class="comment">// this method.</span></div>
+<div class="line"><a name="l00981"></a><span class="lineno">  981</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00982"></a><span class="lineno">  982</span>&#160;  }</div>
+<div class="line"><a name="l00983"></a><span class="lineno">  983</span>&#160;  DemuxStreamIdMediaSample demux_stream_media_sample;</div>
+<div class="line"><a name="l00984"></a><span class="lineno">  984</span>&#160;  demux_stream_media_sample.parsed_audio_or_video_stream_id =</div>
+<div class="line"><a name="l00985"></a><span class="lineno">  985</span>&#160;      prev_pes_stream_id_;</div>
+<div class="line"><a name="l00986"></a><span class="lineno">  986</span>&#160;  demux_stream_media_sample.demux_stream_id = (*it).second;</div>
+<div class="line"><a name="l00987"></a><span class="lineno">  987</span>&#160;  demux_stream_media_sample.media_sample = media_sample_;</div>
+<div class="line"><a name="l00988"></a><span class="lineno">  988</span>&#160;  <span class="comment">// Check if sample can be emitted.</span></div>
+<div class="line"><a name="l00989"></a><span class="lineno">  989</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_) {</div>
+<div class="line"><a name="l00990"></a><span class="lineno">  990</span>&#160;    media_sample_queue_.push_back(demux_stream_media_sample);</div>
+<div class="line"><a name="l00991"></a><span class="lineno">  991</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00992"></a><span class="lineno">  992</span>&#160;    <span class="comment">// flush the sample queue and emit all queued samples.</span></div>
+<div class="line"><a name="l00993"></a><span class="lineno">  993</span>&#160;    <span class="keywordflow">while</span> (!media_sample_queue_.empty()) {</div>
+<div class="line"><a name="l00994"></a><span class="lineno">  994</span>&#160;      <span class="keywordflow">if</span> (!EmitPendingSamples())</div>
+<div class="line"><a name="l00995"></a><span class="lineno">  995</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00996"></a><span class="lineno">  996</span>&#160;    }</div>
+<div class="line"><a name="l00997"></a><span class="lineno">  997</span>&#160;    <span class="comment">// Emit current sample.</span></div>
+<div class="line"><a name="l00998"></a><span class="lineno">  998</span>&#160;    <span class="keywordflow">if</span> (!EmitSample(prev_pes_stream_id_, (*it).second, media_sample_, <span class="keyword">false</span>))</div>
+<div class="line"><a name="l00999"></a><span class="lineno">  999</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01000"></a><span class="lineno"> 1000</span>&#160;  }</div>
+<div class="line"><a name="l01001"></a><span class="lineno"> 1001</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01002"></a><span class="lineno"> 1002</span>&#160;}</div>
+<div class="line"><a name="l01003"></a><span class="lineno"> 1003</span>&#160;</div>
+<div class="line"><a name="l01004"></a><span class="lineno"> 1004</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,</div>
+<div class="line"><a name="l01005"></a><span class="lineno"> 1005</span>&#160;                                uint32_t stream_id,</div>
+<div class="line"><a name="l01006"></a><span class="lineno"> 1006</span>&#160;                                <span class="keyword">const</span> std::shared_ptr&lt;MediaSample&gt;&amp; new_sample,</div>
+<div class="line"><a name="l01007"></a><span class="lineno"> 1007</span>&#160;                                <span class="keywordtype">bool</span> isLastSample) {</div>
+<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;  DCHECK(new_sample);</div>
+<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;  <span class="keywordflow">if</span> (isLastSample) {</div>
+<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;    <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdVideoMask) ==</div>
+<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;        kPesStreamIdVideo) {</div>
+<div class="line"><a name="l01012"></a><span class="lineno"> 1012</span>&#160;      new_sample-&gt;set_duration(prev_media_sample_data_.video_sample_duration);</div>
+<div class="line"><a name="l01013"></a><span class="lineno"> 1013</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdAudioMask) ==</div>
+<div class="line"><a name="l01014"></a><span class="lineno"> 1014</span>&#160;               kPesStreamIdAudio) {</div>
+<div class="line"><a name="l01015"></a><span class="lineno"> 1015</span>&#160;      new_sample-&gt;set_duration(prev_media_sample_data_.audio_sample_duration);</div>
+<div class="line"><a name="l01016"></a><span class="lineno"> 1016</span>&#160;    }</div>
+<div class="line"><a name="l01017"></a><span class="lineno"> 1017</span>&#160;    <span class="keywordflow">if</span> (!new_sample_cb_.Run(stream_id, new_sample)) {</div>
+<div class="line"><a name="l01018"></a><span class="lineno"> 1018</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the last sample.&quot;</span>;</div>
+<div class="line"><a name="l01019"></a><span class="lineno"> 1019</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01020"></a><span class="lineno"> 1020</span>&#160;    }</div>
+<div class="line"><a name="l01021"></a><span class="lineno"> 1021</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01022"></a><span class="lineno"> 1022</span>&#160;  }</div>
+<div class="line"><a name="l01023"></a><span class="lineno"> 1023</span>&#160;</div>
+<div class="line"><a name="l01024"></a><span class="lineno"> 1024</span>&#160;  <span class="comment">// Cannot emit current sample.  Compute duration first and then,</span></div>
+<div class="line"><a name="l01025"></a><span class="lineno"> 1025</span>&#160;  <span class="comment">// emit previous sample.</span></div>
+<div class="line"><a name="l01026"></a><span class="lineno"> 1026</span>&#160;  <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdVideoMask) ==</div>
+<div class="line"><a name="l01027"></a><span class="lineno"> 1027</span>&#160;      kPesStreamIdVideo) {</div>
+<div class="line"><a name="l01028"></a><span class="lineno"> 1028</span>&#160;    <span class="keywordflow">if</span> (prev_media_sample_data_.video_sample == NULL) {</div>
+<div class="line"><a name="l01029"></a><span class="lineno"> 1029</span>&#160;      prev_media_sample_data_.video_sample = new_sample;</div>
+<div class="line"><a name="l01030"></a><span class="lineno"> 1030</span>&#160;      prev_media_sample_data_.video_stream_id = stream_id;</div>
+<div class="line"><a name="l01031"></a><span class="lineno"> 1031</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01032"></a><span class="lineno"> 1032</span>&#160;    }</div>
+<div class="line"><a name="l01033"></a><span class="lineno"> 1033</span>&#160;    prev_media_sample_data_.video_sample-&gt;set_duration(</div>
+<div class="line"><a name="l01034"></a><span class="lineno"> 1034</span>&#160;        new_sample-&gt;dts() - prev_media_sample_data_.video_sample-&gt;dts());</div>
+<div class="line"><a name="l01035"></a><span class="lineno"> 1035</span>&#160;    prev_media_sample_data_.video_sample_duration =</div>
+<div class="line"><a name="l01036"></a><span class="lineno"> 1036</span>&#160;        prev_media_sample_data_.video_sample-&gt;duration();</div>
+<div class="line"><a name="l01037"></a><span class="lineno"> 1037</span>&#160;    <span class="keywordflow">if</span> (!new_sample_cb_.Run(prev_media_sample_data_.video_stream_id,</div>
+<div class="line"><a name="l01038"></a><span class="lineno"> 1038</span>&#160;                            prev_media_sample_data_.video_sample)) {</div>
+<div class="line"><a name="l01039"></a><span class="lineno"> 1039</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the video sample.&quot;</span>;</div>
+<div class="line"><a name="l01040"></a><span class="lineno"> 1040</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01041"></a><span class="lineno"> 1041</span>&#160;    }</div>
+<div class="line"><a name="l01042"></a><span class="lineno"> 1042</span>&#160;    prev_media_sample_data_.video_sample = new_sample;</div>
+<div class="line"><a name="l01043"></a><span class="lineno"> 1043</span>&#160;    prev_media_sample_data_.video_stream_id = stream_id;</div>
+<div class="line"><a name="l01044"></a><span class="lineno"> 1044</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((parsed_audio_or_video_stream_id &amp; kPesStreamIdAudioMask) ==</div>
+<div class="line"><a name="l01045"></a><span class="lineno"> 1045</span>&#160;             kPesStreamIdAudio) {</div>
+<div class="line"><a name="l01046"></a><span class="lineno"> 1046</span>&#160;    <span class="keywordflow">if</span> (prev_media_sample_data_.audio_sample == NULL) {</div>
+<div class="line"><a name="l01047"></a><span class="lineno"> 1047</span>&#160;      prev_media_sample_data_.audio_sample = new_sample;</div>
+<div class="line"><a name="l01048"></a><span class="lineno"> 1048</span>&#160;      prev_media_sample_data_.audio_stream_id = stream_id;</div>
+<div class="line"><a name="l01049"></a><span class="lineno"> 1049</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01050"></a><span class="lineno"> 1050</span>&#160;    }</div>
+<div class="line"><a name="l01051"></a><span class="lineno"> 1051</span>&#160;    prev_media_sample_data_.audio_sample-&gt;set_duration(</div>
+<div class="line"><a name="l01052"></a><span class="lineno"> 1052</span>&#160;        new_sample-&gt;dts() - prev_media_sample_data_.audio_sample-&gt;dts());</div>
+<div class="line"><a name="l01053"></a><span class="lineno"> 1053</span>&#160;    prev_media_sample_data_.audio_sample_duration =</div>
+<div class="line"><a name="l01054"></a><span class="lineno"> 1054</span>&#160;        prev_media_sample_data_.audio_sample-&gt;duration();</div>
+<div class="line"><a name="l01055"></a><span class="lineno"> 1055</span>&#160;    <span class="keywordflow">if</span> (!new_sample_cb_.Run(prev_media_sample_data_.audio_stream_id,</div>
+<div class="line"><a name="l01056"></a><span class="lineno"> 1056</span>&#160;                            prev_media_sample_data_.audio_sample)) {</div>
+<div class="line"><a name="l01057"></a><span class="lineno"> 1057</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the audio sample.&quot;</span>;</div>
+<div class="line"><a name="l01058"></a><span class="lineno"> 1058</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01059"></a><span class="lineno"> 1059</span>&#160;    }</div>
+<div class="line"><a name="l01060"></a><span class="lineno"> 1060</span>&#160;    prev_media_sample_data_.audio_sample = new_sample;</div>
+<div class="line"><a name="l01061"></a><span class="lineno"> 1061</span>&#160;    prev_media_sample_data_.audio_stream_id = stream_id;</div>
+<div class="line"><a name="l01062"></a><span class="lineno"> 1062</span>&#160;  }</div>
+<div class="line"><a name="l01063"></a><span class="lineno"> 1063</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01064"></a><span class="lineno"> 1064</span>&#160;}</div>
+<div class="line"><a name="l01065"></a><span class="lineno"> 1065</span>&#160;</div>
+<div class="line"><a name="l01066"></a><span class="lineno"> 1066</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::GetAssetKey(<span class="keyword">const</span> uint8_t* asset_id,</div>
+<div class="line"><a name="l01067"></a><span class="lineno"> 1067</span>&#160;                                 EncryptionKey* encryption_key) {</div>
+<div class="line"><a name="l01068"></a><span class="lineno"> 1068</span>&#160;  DCHECK(decryption_key_source_);</div>
+<div class="line"><a name="l01069"></a><span class="lineno"> 1069</span>&#160;  Status status = decryption_key_source_-&gt;FetchKeys(</div>
+<div class="line"><a name="l01070"></a><span class="lineno"> 1070</span>&#160;      EmeInitDataType::WIDEVINE_CLASSIC,</div>
+<div class="line"><a name="l01071"></a><span class="lineno"> 1071</span>&#160;      std::vector&lt;uint8_t&gt;(asset_id, asset_id + <span class="keyword">sizeof</span>(uint32_t)));</div>
+<div class="line"><a name="l01072"></a><span class="lineno"> 1072</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l01073"></a><span class="lineno"> 1073</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Fetch Key(s) failed for AssetID = &quot;</span></div>
+<div class="line"><a name="l01074"></a><span class="lineno"> 1074</span>&#160;               &lt;&lt; ntohlFromBuffer(asset_id) &lt;&lt; <span class="stringliteral">&quot;, error = &quot;</span> &lt;&lt; status;</div>
+<div class="line"><a name="l01075"></a><span class="lineno"> 1075</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01076"></a><span class="lineno"> 1076</span>&#160;  }</div>
+<div class="line"><a name="l01077"></a><span class="lineno"> 1077</span>&#160;</div>
+<div class="line"><a name="l01078"></a><span class="lineno"> 1078</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> kHdStreamLabel[] = <span class="stringliteral">&quot;HD&quot;</span>;</div>
+<div class="line"><a name="l01079"></a><span class="lineno"> 1079</span>&#160;  status = decryption_key_source_-&gt;GetKey(kHdStreamLabel, encryption_key);</div>
+<div class="line"><a name="l01080"></a><span class="lineno"> 1080</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l01081"></a><span class="lineno"> 1081</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Fetch Key(s) failed for AssetID = &quot;</span></div>
+<div class="line"><a name="l01082"></a><span class="lineno"> 1082</span>&#160;               &lt;&lt; ntohlFromBuffer(asset_id) &lt;&lt; <span class="stringliteral">&quot;, error = &quot;</span> &lt;&lt; status;</div>
+<div class="line"><a name="l01083"></a><span class="lineno"> 1083</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01084"></a><span class="lineno"> 1084</span>&#160;  }</div>
+<div class="line"><a name="l01085"></a><span class="lineno"> 1085</span>&#160;</div>
+<div class="line"><a name="l01086"></a><span class="lineno"> 1086</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01087"></a><span class="lineno"> 1087</span>&#160;}</div>
+<div class="line"><a name="l01088"></a><span class="lineno"> 1088</span>&#160;</div>
+<div class="line"><a name="l01089"></a><span class="lineno"> 1089</span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::ProcessEcm() {</div>
+<div class="line"><a name="l01090"></a><span class="lineno"> 1090</span>&#160;  <span class="comment">// An error will be returned later if the samples need to be decrypted.</span></div>
+<div class="line"><a name="l01091"></a><span class="lineno"> 1091</span>&#160;  <span class="keywordflow">if</span> (!decryption_key_source_)</div>
+<div class="line"><a name="l01092"></a><span class="lineno"> 1092</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01093"></a><span class="lineno"> 1093</span>&#160;</div>
+<div class="line"><a name="l01094"></a><span class="lineno"> 1094</span>&#160;  <span class="keywordflow">if</span> (current_program_id_ &gt; 0) {</div>
+<div class="line"><a name="l01095"></a><span class="lineno"> 1095</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01096"></a><span class="lineno"> 1096</span>&#160;  }</div>
+<div class="line"><a name="l01097"></a><span class="lineno"> 1097</span>&#160;  <span class="keywordflow">if</span> (ecm_.size() != kEcmSizeBytes) {</div>
+<div class="line"><a name="l01098"></a><span class="lineno"> 1098</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected ECM size = &quot;</span> &lt;&lt; ecm_.size()</div>
+<div class="line"><a name="l01099"></a><span class="lineno"> 1099</span>&#160;               &lt;&lt; <span class="stringliteral">&quot;, expected size = &quot;</span> &lt;&lt; kEcmSizeBytes;</div>
+<div class="line"><a name="l01100"></a><span class="lineno"> 1100</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01101"></a><span class="lineno"> 1101</span>&#160;  }</div>
+<div class="line"><a name="l01102"></a><span class="lineno"> 1102</span>&#160;  <span class="keyword">const</span> uint8_t* ecm_data = ecm_.data();</div>
+<div class="line"><a name="l01103"></a><span class="lineno"> 1103</span>&#160;  DCHECK(ecm_data);</div>
+<div class="line"><a name="l01104"></a><span class="lineno"> 1104</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// old version field - skip.</span></div>
+<div class="line"><a name="l01105"></a><span class="lineno"> 1105</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// clear lead - skip.</span></div>
+<div class="line"><a name="l01106"></a><span class="lineno"> 1106</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// system id(includes ECM version) - skip.</span></div>
+<div class="line"><a name="l01107"></a><span class="lineno"> 1107</span>&#160;  EncryptionKey encryption_key;</div>
+<div class="line"><a name="l01108"></a><span class="lineno"> 1108</span>&#160;  <span class="keywordflow">if</span> (!GetAssetKey(ecm_data, &amp;encryption_key)) {</div>
+<div class="line"><a name="l01109"></a><span class="lineno"> 1109</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01110"></a><span class="lineno"> 1110</span>&#160;  }</div>
+<div class="line"><a name="l01111"></a><span class="lineno"> 1111</span>&#160;  <span class="keywordflow">if</span> (encryption_key.key.size() &lt; kAssetKeySizeBytes) {</div>
+<div class="line"><a name="l01112"></a><span class="lineno"> 1112</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Asset Key size of &quot;</span> &lt;&lt; encryption_key.key.size()</div>
+<div class="line"><a name="l01113"></a><span class="lineno"> 1113</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; for AssetID = &quot;</span> &lt;&lt; ntohlFromBuffer(ecm_data)</div>
+<div class="line"><a name="l01114"></a><span class="lineno"> 1114</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; is less than minimum asset key size.&quot;</span>;</div>
+<div class="line"><a name="l01115"></a><span class="lineno"> 1115</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01116"></a><span class="lineno"> 1116</span>&#160;  }</div>
+<div class="line"><a name="l01117"></a><span class="lineno"> 1117</span>&#160;  ecm_data += <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// asset_id.</span></div>
+<div class="line"><a name="l01118"></a><span class="lineno"> 1118</span>&#160;  <span class="comment">// Legacy WVM content may have asset keys &gt; 16 bytes.</span></div>
+<div class="line"><a name="l01119"></a><span class="lineno"> 1119</span>&#160;  <span class="comment">// Use only the first 16 bytes of the asset key to get</span></div>
+<div class="line"><a name="l01120"></a><span class="lineno"> 1120</span>&#160;  <span class="comment">// the content key.</span></div>
+<div class="line"><a name="l01121"></a><span class="lineno"> 1121</span>&#160;  std::vector&lt;uint8_t&gt; asset_key(</div>
+<div class="line"><a name="l01122"></a><span class="lineno"> 1122</span>&#160;      encryption_key.key.begin(),</div>
+<div class="line"><a name="l01123"></a><span class="lineno"> 1123</span>&#160;      encryption_key.key.begin() + kAssetKeySizeBytes);</div>
+<div class="line"><a name="l01124"></a><span class="lineno"> 1124</span>&#160;  <span class="comment">// WVM format always uses all zero IV.</span></div>
+<div class="line"><a name="l01125"></a><span class="lineno"> 1125</span>&#160;  std::vector&lt;uint8_t&gt; zero_iv(kInitializationVectorSizeBytes, 0);</div>
+<div class="line"><a name="l01126"></a><span class="lineno"> 1126</span>&#160;  AesCbcDecryptor asset_decryptor(kCtsPadding, AesCryptor::kUseConstantIv);</div>
+<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  <span class="keywordflow">if</span> (!asset_decryptor.InitializeWithIv(asset_key, zero_iv)) {</div>
+<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize asset_decryptor.&quot;</span>;</div>
+<div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;  }</div>
+<div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;</div>
+<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> content_key_buffer_size =</div>
+<div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +</div>
+<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;      kEcmPaddingSizeBytes;  <span class="comment">// flags + contentKey + padding.</span></div>
+<div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;  std::vector&lt;uint8_t&gt; content_key_buffer(content_key_buffer_size);</div>
+<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;  CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,</div>
+<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;                              content_key_buffer.data()));</div>
+<div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;</div>
+<div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;  std::vector&lt;uint8_t&gt; decrypted_content_key_vec(</div>
+<div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;      content_key_buffer.begin() + 4,</div>
+<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;      content_key_buffer.begin() + 20);</div>
+<div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;  std::unique_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
+<div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));</div>
+<div class="line"><a name="l01144"></a><span class="lineno"> 1144</span>&#160;  <span class="keywordflow">if</span> (!content_decryptor-&gt;InitializeWithIv(decrypted_content_key_vec,</div>
+<div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;                                           zero_iv)) {</div>
+<div class="line"><a name="l01146"></a><span class="lineno"> 1146</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize content decryptor.&quot;</span>;</div>
+<div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01148"></a><span class="lineno"> 1148</span>&#160;  }</div>
+<div class="line"><a name="l01149"></a><span class="lineno"> 1149</span>&#160;</div>
+<div class="line"><a name="l01150"></a><span class="lineno"> 1150</span>&#160;  content_decryptor_ = std::move(content_decryptor);</div>
+<div class="line"><a name="l01151"></a><span class="lineno"> 1151</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;}</div>
+<div class="line"><a name="l01153"></a><span class="lineno"> 1153</span>&#160;</div>
+<div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :</div>
+<div class="line"><a name="l01155"></a><span class="lineno"> 1155</span>&#160;  demux_stream_id(0),</div>
+<div class="line"><a name="l01156"></a><span class="lineno"> 1156</span>&#160;  parsed_audio_or_video_stream_id(0) {}</div>
+<div class="line"><a name="l01157"></a><span class="lineno"> 1157</span>&#160;</div>
+<div class="line"><a name="l01158"></a><span class="lineno"> 1158</span>&#160;DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}</div>
+<div class="line"><a name="l01159"></a><span class="lineno"> 1159</span>&#160;</div>
+<div class="line"><a name="l01160"></a><span class="lineno"> 1160</span>&#160;PrevSampleData::PrevSampleData() {</div>
+<div class="line"><a name="l01161"></a><span class="lineno"> 1161</span>&#160;  Reset();</div>
+<div class="line"><a name="l01162"></a><span class="lineno"> 1162</span>&#160;}</div>
+<div class="line"><a name="l01163"></a><span class="lineno"> 1163</span>&#160;</div>
+<div class="line"><a name="l01164"></a><span class="lineno"> 1164</span>&#160;PrevSampleData::~PrevSampleData() {}</div>
+<div class="line"><a name="l01165"></a><span class="lineno"> 1165</span>&#160;</div>
+<div class="line"><a name="l01166"></a><span class="lineno"> 1166</span>&#160;<span class="keywordtype">void</span> PrevSampleData::Reset() {</div>
+<div class="line"><a name="l01167"></a><span class="lineno"> 1167</span>&#160;  audio_sample = NULL;</div>
+<div class="line"><a name="l01168"></a><span class="lineno"> 1168</span>&#160;  video_sample = NULL;</div>
+<div class="line"><a name="l01169"></a><span class="lineno"> 1169</span>&#160;  audio_stream_id = 0;</div>
+<div class="line"><a name="l01170"></a><span class="lineno"> 1170</span>&#160;  video_stream_id = 0;</div>
+<div class="line"><a name="l01171"></a><span class="lineno"> 1171</span>&#160;  audio_sample_duration = 0;</div>
+<div class="line"><a name="l01172"></a><span class="lineno"> 1172</span>&#160;  video_sample_duration = 0;</div>
+<div class="line"><a name="l01173"></a><span class="lineno"> 1173</span>&#160;}</div>
+<div class="line"><a name="l01174"></a><span class="lineno"> 1174</span>&#160;</div>
+<div class="line"><a name="l01175"></a><span class="lineno"> 1175</span>&#160;}  <span class="comment">// namespace wvm</span></div>
+<div class="line"><a name="l01176"></a><span class="lineno"> 1176</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l01177"></a><span class="lineno"> 1177</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a4a7f8d79f9ec3cd3df9a395eef71f0c6"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a4a7f8d79f9ec3cd3df9a395eef71f0c6">shaka::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00071">media_sample.cc:71</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1AdtsHeader_html_a149fb9c7fa2718d719008af2dce8157f"><div class="ttname"><a href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">shaka::media::mp2t::AdtsHeader::GetAdtsFrameSize</a></div><div class="ttdeci">static size_t GetAdtsFrameSize(const uint8_t *data, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d5b/adts__header_8cc_source.html#l00023">adts_header.cc:23</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00099">audio_stream_info.cc:99</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:09 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

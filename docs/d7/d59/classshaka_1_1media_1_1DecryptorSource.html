@@ -101,25 +101,109 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a045c97bdeb9996d6003ac926849880c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a045c97bdeb9996d6003ac926849880c8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DecryptorSource</b> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *key_source)</td></tr>
+<tr class="memitem:a045c97bdeb9996d6003ac926849880c8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html#a045c97bdeb9996d6003ac926849880c8">DecryptorSource</a> (<a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *key_source)</td></tr>
 <tr class="separator:a045c97bdeb9996d6003ac926849880c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab090b9fc090267c3466c76baffbd8208"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab090b9fc090267c3466c76baffbd8208"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>DecryptSampleBuffer</b> (const <a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a> *decrypt_config, uint8_t *buffer, size_t buffer_size)</td></tr>
-<tr class="separator:ab090b9fc090267c3466c76baffbd8208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a1bd6a5a63b3f3c54028b43dfc67a6d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html#a8a1bd6a5a63b3f3c54028b43dfc67a6d">DecryptSampleBuffer</a> (const <a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a> *decrypt_config, const uint8_t *encrypted_buffer, size_t buffer_size, uint8_t *decrypted_buffer)</td></tr>
+<tr class="separator:a8a1bd6a5a63b3f3c54028b43dfc67a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html" title="DecryptorSource wraps KeySource and is responsible for decryptor management. ">DecryptorSource</a> wraps <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> and is responsible for decryptor management. </p>
 
 <p>Definition at line <a class="el" href="../../d0/d7d/decryptor__source_8h_source.html#l00022">22</a> of file <a class="el" href="../../d0/d7d/decryptor__source_8h_source.html">decryptor_source.h</a>.</p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a045c97bdeb9996d6003ac926849880c8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">shaka::media::DecryptorSource::DecryptorSource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *&#160;</td>
+          <td class="paramname"><em>key_source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructs a <a class="el" href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html" title="DecryptorSource wraps KeySource and is responsible for decryptor management. ">DecryptorSource</a> object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_source</td><td>points to the key source that contains the keys. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d1/d2a/decryptor__source_8cc_source.html#l00028">28</a> of file <a class="el" href="../../d1/d2a/decryptor__source_8cc_source.html">decryptor_source.cc</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a8a1bd6a5a63b3f3c54028b43dfc67a6d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::media::DecryptorSource::DecryptSampleBuffer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html">DecryptConfig</a> *&#160;</td>
+          <td class="paramname"><em>decrypt_config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>encrypted_buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>buffer_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>decrypted_buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Decrypt encrypted buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">decrypt_config</td><td>contains decrypt configuration, e.g. protection scheme, subsample information etc. </td></tr>
+    <tr><td class="paramname">encrypted_buffer</td><td>points to the encrypted buffer that is to be decrypted. It should not overlap with <em>decrypted_buffer</em>. </td></tr>
+    <tr><td class="paramname">buffer_size</td><td>is the size of encrypted buffer and decrypted buffer. </td></tr>
+    <tr><td class="paramname">decrypted_buffer</td><td>points to the decrypted buffer. It should not overlap with <em>encrypted_buffer</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d1/d2a/decryptor__source_8cc_source.html#l00034">34</a> of file <a class="el" href="../../d1/d2a/decryptor__source_8cc_source.html">decryptor_source.cc</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>packager/media/base/<a class="el" href="../../d0/d7d/decryptor__source_8h_source.html">decryptor_source.h</a></li>
 <li>packager/media/base/<a class="el" href="../../d1/d2a/decryptor__source_8cc_source.html">decryptor_source.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:09 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:14 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

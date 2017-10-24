@@ -134,17 +134,14 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html">PlayreadyEncryptionParams</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html">RawKeyEncryptionParams</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw key encryption parameters, i.e. with key parameters provided.  <a href="../../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/db4/structshaka_1_1RawKeyParams.html">RawKeyParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw key encryption/decryption parameters, i.e. with key parameters provided.  <a href="../../d0/db4/structshaka_1_1RawKeyParams.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html">EncryptionParams</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encryption parameters.  <a href="../../dc/da0/structshaka_1_1EncryptionParams.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d48/structshaka_1_1WidevineDecryptionParams.html">WidevineDecryptionParams</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Widevine decryption parameters.  <a href="../../d8/d48/structshaka_1_1WidevineDecryptionParams.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da8/structshaka_1_1RawKeyDecryptionParams.html">RawKeyDecryptionParams</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw key decryption parameters, i.e. with key parameters provided.  <a href="../../d9/da8/structshaka_1_1RawKeyDecryptionParams.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d4f/structshaka_1_1DecryptionParams.html">DecryptionParams</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decryption parameters.  <a href="../../d1/d4f/structshaka_1_1DecryptionParams.html#details">More...</a><br/></td></tr>
@@ -246,17 +243,19 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abc3f498491fb895860ebdee359935d93"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#abc3f498491fb895860ebdee359935d93">ValidateFixedCryptoFlags</a> ()</td></tr>
-<tr class="separator:abc3f498491fb895860ebdee359935d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0716b27e9bc27f752b3c2bfbc3209787"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0716b27e9bc27f752b3c2bfbc3209787"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>ValidateHexString</b> (const char *flagname, const std::string &amp;value, std::vector&lt; uint8_t &gt; *value_bytes)</td></tr>
 <tr class="separator:a0716b27e9bc27f752b3c2bfbc3209787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b6212ccc4b98e5fdb72f84acf252c6b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a8b6212ccc4b98e5fdb72f84acf252c6b">ValidatePRCryptoFlags</a> ()</td></tr>
 <tr class="separator:a8b6212ccc4b98e5fdb72f84acf252c6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab611f8e843f4834b9d7c30db212a946e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#ab611f8e843f4834b9d7c30db212a946e">ValidateRawKeyCryptoFlags</a> ()</td></tr>
+<tr class="separator:ab611f8e843f4834b9d7c30db212a946e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d03e8120932485c8fa0c686e1e32dac"><td class="memItemLeft" align="right" valign="top">base::Optional&lt; <a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html">StreamDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a8d03e8120932485c8fa0c686e1e32dac">ParseStreamDescriptor</a> (const std::string &amp;descriptor_string)</td></tr>
 <tr class="separator:a8d03e8120932485c8fa0c686e1e32dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54fadd9c7ef14b39cd0355a5c269c772"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a> (const std::string &amp;error_message)</td></tr>
 <tr class="separator:a54fadd9c7ef14b39cd0355a5c269c772"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42273d2ca4220d3de00a759a711e385e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a42273d2ca4220d3de00a759a711e385e">PrintWarning</a> (const std::string &amp;warning_message)</td></tr>
+<tr class="separator:a42273d2ca4220d3de00a759a711e385e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a952293a7213f285843f28b7363ee14d6"><td class="memTemplParams" colspan="2">template&lt;class FlagType &gt; </td></tr>
 <tr class="memitem:a952293a7213f285843f28b7363ee14d6"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">ValidateFlag</a> (const char *flag_name, const FlagType &amp;flag_value, bool condition, bool optional, const char *label)</td></tr>
 <tr class="separator:a952293a7213f285843f28b7363ee14d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -604,7 +603,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. May print error messages. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d0/da6/stream__descriptor_8cc_source.html#l00074">74</a> of file <a class="el" href="../../d0/da6/stream__descriptor_8cc_source.html">stream_descriptor.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/da6/stream__descriptor_8cc_source.html#l00076">76</a> of file <a class="el" href="../../d0/da6/stream__descriptor_8cc_source.html">stream_descriptor.cc</a>.</p>
 
 </div>
 </div>
@@ -630,6 +629,31 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 </dl>
 
 <p>Definition at line <a class="el" href="../../de/dad/validate__flag_8cc_source.html#l00015">15</a> of file <a class="el" href="../../de/dad/validate__flag_8cc_source.html">validate_flag.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a42273d2ca4220d3de00a759a711e385e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::PrintWarning </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>warning_message</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Format and print warning message. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">warning_message</td><td>specifies the warning message. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../de/dad/validate__flag_8cc_source.html#l00019">19</a> of file <a class="el" href="../../de/dad/validate__flag_8cc_source.html">validate_flag.cc</a>.</p>
 
 </div>
 </div>
@@ -667,25 +691,6 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
 <p>Definition at line <a class="el" href="../../d1/d2b/file__util_8cc_source.html#l00030">30</a> of file <a class="el" href="../../d1/d2b/file__util_8cc_source.html">file_util.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="abc3f498491fb895860ebdee359935d93"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::ValidateFixedCryptoFlags </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Validate fixed encryption/decryption flags. </p>
-<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
-
-<p>Definition at line <a class="el" href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html#l00035">35</a> of file <a class="el" href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html">fixed_key_encryption_flags.cc</a>.</p>
 
 </div>
 </div>
@@ -744,7 +749,7 @@ template&lt;class FlagType &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d22/validate__flag_8h_source.html#l00033">33</a> of file <a class="el" href="../../df/d22/validate__flag_8h_source.html">validate_flag.h</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d22/validate__flag_8h_source.html#l00037">37</a> of file <a class="el" href="../../df/d22/validate__flag_8h_source.html">validate_flag.h</a>.</p>
 
 </div>
 </div>
@@ -764,6 +769,25 @@ template&lt;class FlagType &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
 <p>Definition at line <a class="el" href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00033">33</a> of file <a class="el" href="../../df/dfc/playready__key__encryption__flags_8cc_source.html">playready_key_encryption_flags.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab611f8e843f4834b9d7c30db212a946e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::ValidateRawKeyCryptoFlags </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Validate raw encryption/decryption flags. </p>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dc/d08/raw__key__encryption__flags_8cc_source.html#l00051">51</a> of file <a class="el" href="../../dc/d08/raw__key__encryption__flags_8cc_source.html">raw_key_encryption_flags.cc</a>.</p>
 
 </div>
 </div>
@@ -825,7 +849,7 @@ template&lt;class FlagType &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:09 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

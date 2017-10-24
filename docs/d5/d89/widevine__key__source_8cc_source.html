@@ -102,11 +102,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/json/json_reader.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/json/json_writer.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/fixed_key_source.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/http_key_fetcher.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/network_util.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/producer_consumer_queue.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/protection_system_specific_info.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/http_key_fetcher.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/network_util.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/producer_consumer_queue.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/protection_system_specific_info.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/raw_key_source.h&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/request_signer.h&quot;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/widevine_pssh_data.pb.h&quot;</span></div>
@@ -647,79 +647,80 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;    std::string stream_label;</div>
 <div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;    RCHECK(track_dict-&gt;GetString(<span class="stringliteral">&quot;type&quot;</span>, &amp;stream_label));</div>
 <div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;    RCHECK(encryption_key_map.find(stream_label) == encryption_key_map.end());</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;    std::unique_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> EncryptionKey());</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;</div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;    <span class="keywordflow">if</span> (!GetKeyFromTrack(*track_dict, &amp;encryption_key-&gt;key))</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;    <span class="comment">// Get key ID and PSSH data for CENC content only.</span></div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;    <span class="keywordflow">if</span> (!widevine_classic) {</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;      <span class="keywordflow">if</span> (!GetKeyIdFromTrack(*track_dict, &amp;encryption_key-&gt;key_id))</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;      ProtectionSystemSpecificInfo info;</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;      info.add_key_id(encryption_key-&gt;key_id);</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;      info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;      info.set_pssh_box_version(0);</div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;      std::vector&lt;uint8_t&gt; pssh_data;</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;      <span class="keywordflow">if</span> (!GetPsshDataFromTrack(*track_dict, &amp;pssh_data))</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;      info.set_pssh_data(pssh_data);</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;      encryption_key-&gt;key_system_info.push_back(info);</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;    }</div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;    encryption_key_map[stream_label] = std::move(encryption_key);</div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;  }</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <span class="comment">// If the flag exists, create a common system ID PSSH box that contains the</span></div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  <span class="comment">// key IDs of all the keys.</span></div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;  <span class="keywordflow">if</span> (add_common_pssh_ &amp;&amp; !widevine_classic) {</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;    std::set&lt;std::vector&lt;uint8_t&gt;&gt; key_ids;</div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> EncryptionKeyMap::value_type&amp; pair : encryption_key_map) {</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;      key_ids.insert(pair.second-&gt;key_id);</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;    }</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;    <span class="comment">// Create a common system PSSH box.</span></div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;    ProtectionSystemSpecificInfo info;</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    info.set_system_id(kCommonSystemId, arraysize(kCommonSystemId));</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;    info.set_pssh_box_version(1);</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id : key_ids) {</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;      info.add_key_id(key_id);</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;    }</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> EncryptionKeyMap::value_type&amp; pair : encryption_key_map) {</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;      pair.second-&gt;key_system_info.push_back(info);</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;    }</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;  }</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;  DCHECK(!encryption_key_map.empty());</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;  <span class="keywordflow">if</span> (!enable_key_rotation) {</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;    <span class="comment">// Merge with previously requested keys.</span></div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; pair : encryption_key_map)</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;      encryption_key_map_[pair.first] = std::move(pair.second);</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;  }</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;  <span class="keywordflow">return</span> PushToKeyPool(&amp;encryption_key_map);</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;}</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;<span class="keywordtype">bool</span> WidevineKeySource::PushToKeyPool(</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    EncryptionKeyMap* encryption_key_map) {</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;  DCHECK(key_pool_);</div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  DCHECK(encryption_key_map);</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;  <span class="keyword">auto</span> encryption_key_map_shared = std::make_shared&lt;EncryptionKeyMap&gt;();</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;  encryption_key_map_shared-&gt;swap(*encryption_key_map);</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;  Status status = key_pool_-&gt;Push(encryption_key_map_shared, kInfiniteTimeout);</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    DCHECK_EQ(error::STOPPED, status.error_code());</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;  }</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;}</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;    VLOG(2) &lt;&lt; <span class="stringliteral">&quot;drm label:&quot;</span> &lt;&lt; stream_label;</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;    std::unique_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> EncryptionKey());</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;    <span class="keywordflow">if</span> (!GetKeyFromTrack(*track_dict, &amp;encryption_key-&gt;key))</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;    <span class="comment">// Get key ID and PSSH data for CENC content only.</span></div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;    <span class="keywordflow">if</span> (!widevine_classic) {</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;      <span class="keywordflow">if</span> (!GetKeyIdFromTrack(*track_dict, &amp;encryption_key-&gt;key_id))</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;      ProtectionSystemSpecificInfo info;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;      info.add_key_id(encryption_key-&gt;key_id);</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;      info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));</div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;      info.set_pssh_box_version(0);</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;</div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;      std::vector&lt;uint8_t&gt; pssh_data;</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;      <span class="keywordflow">if</span> (!GetPsshDataFromTrack(*track_dict, &amp;pssh_data))</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;      info.set_pssh_data(pssh_data);</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;      encryption_key-&gt;key_system_info.push_back(info);</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;    }</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;    encryption_key_map[stream_label] = std::move(encryption_key);</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;  }</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  <span class="comment">// If the flag exists, create a common system ID PSSH box that contains the</span></div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;  <span class="comment">// key IDs of all the keys.</span></div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;  <span class="keywordflow">if</span> (add_common_pssh_ &amp;&amp; !widevine_classic) {</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;    std::set&lt;std::vector&lt;uint8_t&gt;&gt; key_ids;</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> EncryptionKeyMap::value_type&amp; pair : encryption_key_map) {</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;      key_ids.insert(pair.second-&gt;key_id);</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;    }</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;    <span class="comment">// Create a common system PSSH box.</span></div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    ProtectionSystemSpecificInfo info;</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;    info.set_system_id(kCommonSystemId, arraysize(kCommonSystemId));</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    info.set_pssh_box_version(1);</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id : key_ids) {</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;      info.add_key_id(key_id);</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;    }</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> EncryptionKeyMap::value_type&amp; pair : encryption_key_map) {</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;      pair.second-&gt;key_system_info.push_back(info);</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    }</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;  }</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;  DCHECK(!encryption_key_map.empty());</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;  <span class="keywordflow">if</span> (!enable_key_rotation) {</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    <span class="comment">// Merge with previously requested keys.</span></div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; pair : encryption_key_map)</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;      encryption_key_map_[pair.first] = std::move(pair.second);</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;  }</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;  <span class="keywordflow">return</span> PushToKeyPool(&amp;encryption_key_map);</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;}</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;<span class="keywordtype">bool</span> WidevineKeySource::PushToKeyPool(</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;    EncryptionKeyMap* encryption_key_map) {</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  DCHECK(key_pool_);</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;  DCHECK(encryption_key_map);</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;  <span class="keyword">auto</span> encryption_key_map_shared = std::make_shared&lt;EncryptionKeyMap&gt;();</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;  encryption_key_map_shared-&gt;swap(*encryption_key_map);</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;  Status status = key_pool_-&gt;Push(encryption_key_map_shared, kInfiniteTimeout);</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;    DCHECK_EQ(error::STOPPED, status.error_code());</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;  }</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;}</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1HttpKeyFetcher_html"><div class="ttname"><a href="../../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html">shaka::media::HttpKeyFetcher</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/d71/http__key__fetcher_8h_source.html#l00026">http_key_fetcher.h:26</a></div></div>
 <div class="ttc" id="classshaka_1_1Status_html"><div class="ttname"><a href="../../d2/d20/classshaka_1_1Status.html">shaka::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00110">status.h:110</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1ProducerConsumerQueue_html"><div class="ttname"><a href="../../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html">shaka::media::ProducerConsumerQueue</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d15/producer__consumer__queue_8h_source.html#l00028">producer_consumer_queue.h:28</a></div></div>
@@ -735,7 +736,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

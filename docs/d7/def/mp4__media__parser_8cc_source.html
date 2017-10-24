@@ -797,77 +797,92 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;  }</div>
 <div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;</div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  std::shared_ptr&lt;MediaSample&gt; stream_sample(</div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;      <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">MediaSample::CopyFrom</a>(buf, runs_-&gt;sample_size(), runs_-&gt;is_keyframe()));</div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;  <span class="keywordflow">if</span> (runs_-&gt;is_encrypted()) {</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;    std::unique_ptr&lt;DecryptConfig&gt; decrypt_config = runs_-&gt;GetDecryptConfig();</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    <span class="keywordflow">if</span> (!decrypt_config) {</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;      *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Missing decrypt config.&quot;</span>;</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    }</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    <span class="keywordflow">if</span> (!decryptor_source_) {</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;      <span class="comment">// If the demuxer does not have the decryptor_source_, store</span></div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;      <span class="comment">// decrypt_config so that the demuxed sample can be decrypted later.</span></div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;      stream_sample-&gt;set_decrypt_config(std::move(decrypt_config));</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      stream_sample-&gt;set_is_encrypted(<span class="keyword">true</span>);</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!decryptor_source_-&gt;DecryptSampleBuffer(</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;                   decrypt_config.get(), stream_sample-&gt;writable_data(),</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;                   stream_sample-&gt;data_size())) {</div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;      *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot decrypt samples.&quot;</span>;</div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;    }</div>
-<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;  }</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;  stream_sample-&gt;set_dts(runs_-&gt;dts());</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;  stream_sample-&gt;set_pts(runs_-&gt;cts());</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;  stream_sample-&gt;set_duration(runs_-&gt;duration());</div>
-<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;</div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;  DVLOG(3) &lt;&lt; <span class="stringliteral">&quot;Pushing frame: &quot;</span></div>
-<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, key=&quot;</span> &lt;&lt; runs_-&gt;is_keyframe()</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dur=&quot;</span> &lt;&lt; runs_-&gt;duration()</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; runs_-&gt;dts()</div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, cts=&quot;</span> &lt;&lt; runs_-&gt;cts()</div>
-<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; runs_-&gt;sample_size();</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;</div>
-<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;  <span class="keywordflow">if</span> (!new_sample_cb_.Run(runs_-&gt;track_id(), stream_sample)) {</div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    *err = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the sample.&quot;</span>;</div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;  }</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;  runs_-&gt;AdvanceSample();</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;}</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;<span class="keywordtype">bool</span> MP4MediaParser::ReadAndDiscardMDATsUntil(<span class="keyword">const</span> int64_t offset) {</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;  <span class="keywordtype">bool</span> err = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;  <span class="keywordflow">while</span> (mdat_tail_ &lt; offset) {</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;    <span class="keyword">const</span> uint8_t* buf;</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    <span class="keywordtype">int</span> size;</div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;    queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(mdat_tail_, &amp;buf, &amp;size);</div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;</div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    FourCC type;</div>
-<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    uint64_t box_sz;</div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">BoxReader::StartBox</a>(buf, size, &amp;type, &amp;box_sz, &amp;err))</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    mdat_tail_ += box_sz;</div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;  }</div>
-<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;  queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">Trim</a>(std::min(mdat_tail_, offset));</div>
-<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;  <span class="keywordflow">return</span> !err;</div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;}</div>
-<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;</div>
-<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;<span class="keywordtype">void</span> MP4MediaParser::ChangeState(State new_state) {</div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;  DVLOG(2) &lt;&lt; <span class="stringliteral">&quot;Changing state: &quot;</span> &lt;&lt; new_state;</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;  state_ = new_state;</div>
-<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;}</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;</div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;  <span class="keyword">const</span> uint8_t* media_data = buf;</div>
+<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> media_data_size = runs_-&gt;sample_size();</div>
+<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;  <span class="comment">// Use a dummy data size of 0 to avoid copying overhead.</span></div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;  <span class="comment">// Actual media data is set later.</span></div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kDummyDataSize = 0;</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;  std::shared_ptr&lt;MediaSample&gt; stream_sample(</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;      <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">MediaSample::CopyFrom</a>(media_data, kDummyDataSize, runs_-&gt;is_keyframe()));</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;  <span class="keywordflow">if</span> (runs_-&gt;is_encrypted()) {</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    std::shared_ptr&lt;uint8_t&gt; decrypted_media_data(</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;        <span class="keyword">new</span> uint8_t[media_data_size], std::default_delete&lt;uint8_t[]&gt;());</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;    std::unique_ptr&lt;DecryptConfig&gt; decrypt_config = runs_-&gt;GetDecryptConfig();</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    <span class="keywordflow">if</span> (!decrypt_config) {</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;      *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Missing decrypt config.&quot;</span>;</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;    }</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;    <span class="keywordflow">if</span> (!decryptor_source_) {</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;      stream_sample-&gt;SetData(media_data, media_data_size);</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;      <span class="comment">// If the demuxer does not have the decryptor_source_, store</span></div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;      <span class="comment">// decrypt_config so that the demuxed sample can be decrypted later.</span></div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;      stream_sample-&gt;set_decrypt_config(std::move(decrypt_config));</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;      stream_sample-&gt;set_is_encrypted(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;      <span class="keywordflow">if</span> (!decryptor_source_-&gt;DecryptSampleBuffer(decrypt_config.get(),</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;                                                  media_data, media_data_size,</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;                                                  decrypted_media_data.get())) {</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;        *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot decrypt samples.&quot;</span>;</div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;      }</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;      stream_sample-&gt;TransferData(std::move(decrypted_media_data),</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;                                  media_data_size);</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    }</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    stream_sample-&gt;SetData(media_data, media_data_size);</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;  }</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;  stream_sample-&gt;set_dts(runs_-&gt;dts());</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;  stream_sample-&gt;set_pts(runs_-&gt;cts());</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;  stream_sample-&gt;set_duration(runs_-&gt;duration());</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;  DVLOG(3) &lt;&lt; <span class="stringliteral">&quot;Pushing frame: &quot;</span></div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, key=&quot;</span> &lt;&lt; runs_-&gt;is_keyframe()</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dur=&quot;</span> &lt;&lt; runs_-&gt;duration()</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, dts=&quot;</span> &lt;&lt; runs_-&gt;dts()</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, cts=&quot;</span> &lt;&lt; runs_-&gt;cts()</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;           &lt;&lt; <span class="stringliteral">&quot;, size=&quot;</span> &lt;&lt; runs_-&gt;sample_size();</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;  <span class="keywordflow">if</span> (!new_sample_cb_.Run(runs_-&gt;track_id(), stream_sample)) {</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    *err = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to process the sample.&quot;</span>;</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;  }</div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;</div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;  runs_-&gt;AdvanceSample();</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;}</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;</div>
+<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;<span class="keywordtype">bool</span> MP4MediaParser::ReadAndDiscardMDATsUntil(<span class="keyword">const</span> int64_t offset) {</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;  <span class="keywordtype">bool</span> err = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;  <span class="keywordflow">while</span> (mdat_tail_ &lt; offset) {</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;    <span class="keyword">const</span> uint8_t* buf;</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;    <span class="keywordtype">int</span> size;</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;    queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">PeekAt</a>(mdat_tail_, &amp;buf, &amp;size);</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;    FourCC type;</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;    uint64_t box_sz;</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#a6bafd9cd95a97c4c1475d1806d602ae2">BoxReader::StartBox</a>(buf, size, &amp;type, &amp;box_sz, &amp;err))</div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;    mdat_tail_ += box_sz;</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;  }</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;  queue_.<a class="code" href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a77b9a12145dad80df95845bd2b66b6a8">Trim</a>(std::min(mdat_tail_, offset));</div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;  <span class="keywordflow">return</span> !err;</div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;}</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;<span class="keywordtype">void</span> MP4MediaParser::ChangeState(State new_state) {</div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;  DVLOG(2) &lt;&lt; <span class="stringliteral">&quot;Changing state: &quot;</span> &lt;&lt; new_state;</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;  state_ = new_state;</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;}</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;</div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a1dfd11c891dd3b3171002cbc484eacdd"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a1dfd11c891dd3b3171002cbc484eacdd">shaka::media::OffsetByteQueue::head</a></div><div class="ttdeci">int64_t head()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d34/offset__byte__queue_8h_source.html#l00052">offset_byte_queue.h:52</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1OffsetByteQueue_html_a68832e85b25a9b543e54033bb70c4df6"><div class="ttname"><a href="../../d9/df9/classshaka_1_1media_1_1OffsetByteQueue.html#a68832e85b25a9b543e54033bb70c4df6">shaka::media::OffsetByteQueue::PeekAt</a></div><div class="ttdeci">void PeekAt(int64_t offset, const uint8_t **buf, int *size)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1a/offset__byte__queue_8cc_source.html#l00041">offset_byte_queue.cc:41</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_a6f26e0d76aeda601fa87190901de27ea"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#a6f26e0d76aeda601fa87190901de27ea">shaka::media::mp4::MP4MediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00132">mp4_media_parser.cc:132</a></div></div>
@@ -877,7 +892,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1File_html_a0a50526352bd6e946c4f33d3e8431b2d"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a0a50526352bd6e946c4f33d3e8431b2d">shaka::File::OpenWithNoBuffering</a></div><div class="ttdeci">static File * OpenWithNoBuffering(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00187">file.cc:187</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00099">audio_stream_info.cc:99</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_af0ec1b44528a2997c0d548bee47862cf"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#af0ec1b44528a2997c0d548bee47862cf">shaka::media::mp4::MP4MediaParser::LoadMoov</a></div><div class="ttdeci">bool LoadMoov(const std::string &amp;file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00173">mp4_media_parser.cc:173</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_ad8975dbb21747ff32c8604f5489bf5c9"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_ad8975dbb21747ff32c8604f5489bf5c9"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#ad8975dbb21747ff32c8604f5489bf5c9">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static std::shared_ptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00042">media_sample.cc:42</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00045">key_source.h:45</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4MediaParser_html_acc87b9752a7f6e8c739109acbc02b69d"><div class="ttname"><a href="../../d7/dd5/classshaka_1_1media_1_1mp4_1_1MP4MediaParser.html#acc87b9752a7f6e8c739109acbc02b69d">shaka::media::mp4::MP4MediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/def/mp4__media__parser_8cc_source.html#l00109">mp4_media_parser.cc:109</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecryptorSource_html"><div class="ttname"><a href="../../d7/d59/classshaka_1_1media_1_1DecryptorSource.html">shaka::media::DecryptorSource</a></div><div class="ttdoc">DecryptorSource wraps KeySource and is responsible for decryptor management. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d7d/decryptor__source_8h_source.html#l00022">decryptor_source.h:22</a></div></div>
@@ -886,7 +901,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

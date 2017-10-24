@@ -109,7 +109,7 @@
 <dl class="member">
 <dt id="_CPPv2N5shaka15PackagingParams17output_media_infoE">
 <span id="shaka::PackagingParams::output_media_info__b"></span><span class="target" id="shakad5/de3/structshaka_1_1PackagingParams_1a9206160a0fb92a9e9ee27fd8e9725ea1"></span>bool <code class="descname">output_media_info</code> = false<a class="headerlink" href="#_CPPv2N5shaka15PackagingParams17output_media_infoE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Manifest generation related parameters. Right now only one of <code class="docutils literal"><span class="pre">output_media_info</span></code>, <code class="docutils literal"><span class="pre">mpd_params</span></code> and <code class="docutils literal"><span class="pre">hls_params</span></code> should be set. Create a human readable format of MediaInfo. The output file name will be the name specified by output flag, suffixed with <code class="docutils literal"><span class="pre">.media_info</span></code>. </p>
+<dd><p>Create a human readable format of MediaInfo. The output file name will be the name specified by output flag, suffixed with <code class="docutils literal"><span class="pre">.media_info</span></code>. </p>
 </dd></dl>
 
 <dl class="member">
@@ -179,6 +179,12 @@
 <dt id="_CPPv2N5shaka16StreamDescriptor15skip_encryptionE">
 <span id="shaka::StreamDescriptor::skip_encryption__b"></span><span class="target" id="shakad2/d7b/structshaka_1_1StreamDescriptor_1abbaf07b1faa84803478f89bc6dd8cb4a"></span>bool <code class="descname">skip_encryption</code> = false<a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor15skip_encryptionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>If set to true, the stream will not be encrypted. This is useful, e.g. to encrypt only video streams. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka16StreamDescriptor9drm_labelE">
+<span id="shaka::StreamDescriptor::drm_label__ss"></span><span class="target" id="shakad2/d7b/structshaka_1_1StreamDescriptor_1a8f2a517450433cf69bbc87cef17d05cf"></span>std::string <code class="descname">drm_label</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor9drm_labelE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Specifies a custom DRM stream label, which can be a DRM label defined by the DRM system. Typically values include AUDIO, SD, HD, UHD1, UHD2. If not provided, the DRM stream label is derived from stream type (video, audio), resolutions etc. </p>
 </dd></dl>
 
 <dl class="member">
@@ -533,7 +539,7 @@
 <dl class="class">
 <dt id="_CPPv2N5shaka25PlayreadyEncryptionParamsE">
 <span id="shaka::PlayreadyEncryptionParams"></span><span class="target" id="shakad3/df5/structshaka_1_1PlayreadyEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">PlayreadyEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Playready encryption parameters. Two different modes of playready key acquisition is supported: (1) Fetch from a key server. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. (2) Provide the raw key directly. Both <code class="docutils literal"><span class="pre">key_id</span></code> and <code class="docutils literal"><span class="pre">key</span></code> are required. We are planning to merge this mode with <code class="docutils literal"><a class="reference internal" href="#shakad0/d5d/structshaka_1_1RawKeyEncryptionParams"><span class="std std-ref"><span class="pre">RawKeyEncryptionParams</span></span></a></code>. </p>
+<dd><p>Playready encryption parameters. Two different modes of playready key acquisition is supported: (1) Fetch from a key server. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. (2) Provide the raw key directly. Both <code class="docutils literal"><span class="pre">key_id</span></code> and <code class="docutils literal"><span class="pre">key</span></code> are required. We are planning to merge this mode with <code class="docutils literal"><span class="pre">RawKeyParams</span></code>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
@@ -587,38 +593,14 @@
 </div>
 </dd></dl>
 
-<dl class="class">
-<dt id="_CPPv2N5shaka22RawKeyEncryptionParamsE">
-<span id="shaka::RawKeyEncryptionParams"></span><span class="target" id="shakad0/d5d/structshaka_1_1RawKeyEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">RawKeyEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Raw key encryption parameters, i.e. with key parameters provided. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
-<dl class="member">
-<dt id="_CPPv2N5shaka22RawKeyEncryptionParams2ivE">
-<span id="shaka::RawKeyEncryptionParams::iv__std::vector:uint8_t:"></span><span class="target" id="shakad0/d5d/structshaka_1_1RawKeyEncryptionParams_1a2b8b36d5dd357a6b354de194bc3fb702"></span>std::vector&lt;uint8_t&gt; <code class="descname">iv</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyEncryptionParams2ivE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>An optional initialization vector. If not provided, a random <code class="docutils literal"><span class="pre">iv</span></code> will be generated. Note that this parameter should only be used during testing. </p>
-</dd></dl>
-
-<dl class="member">
-<dt id="_CPPv2N5shaka22RawKeyEncryptionParams4psshE">
-<span id="shaka::RawKeyEncryptionParams::pssh__std::vector:uint8_t:"></span><span class="target" id="shakad0/d5d/structshaka_1_1RawKeyEncryptionParams_1add60228a75eee66b051e2cc7ceeb4b01"></span>std::vector&lt;uint8_t&gt; <code class="descname">pssh</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyEncryptionParams4psshE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Inject a custom <code class="docutils literal"><span class="pre">pssh</span></code> or multiple concatenated <code class="docutils literal"><span class="pre">psshs</span></code>. If not provided, a common system pssh will be generated. </p>
-</dd></dl>
-
-<dl class="member">
-<dt id="_CPPv2N5shaka22RawKeyEncryptionParams7key_mapE">
-<span id="shaka::RawKeyEncryptionParams::key_map__std::map:StreamLabel.KeyPair:"></span><span class="target" id="shakad0/d5d/structshaka_1_1RawKeyEncryptionParams_1a70893a2ff3b6fc74fd53e9b00f2a023d"></span>std::map&lt;StreamLabel, <a class="reference internal" href="#_CPPv2N5shaka22RawKeyEncryptionParams7KeyPairE" title="shaka::RawKeyEncryptionParams::KeyPair">KeyPair</a>&gt; <code class="descname">key_map</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyEncryptionParams7key_mapE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Defines the <a class="reference internal" href="#shakadf/d5d/structshaka_1_1RawKeyEncryptionParams_1_1KeyPair"><span class="std std-ref">KeyPair</span></a> for the streams. An empty <code class="docutils literal"><span class="pre">StreamLabel</span></code> indicates the default <code class="docutils literal"><a class="reference internal" href="#shakadf/d5d/structshaka_1_1RawKeyEncryptionParams_1_1KeyPair"><span class="std std-ref"><span class="pre">KeyPair</span></span></a></code>, which applies to all the <code class="docutils literal"><span class="pre">StreamLabels</span></code> not present in <code class="docutils literal"><span class="pre">key_map</span></code>. </p>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">doxygenstruct: Cannot find class &#8220;shaka::RawKeyEncryptionParams&#8221; in doxygen xml output for project &#8220;shaka&#8221; from directory: ../../out/doxygen/xml</p>
 </div>
-</dd></dl>
-
-<dl class="class">
-<dt id="_CPPv2N5shaka22RawKeyEncryptionParams7KeyPairE">
-<span id="shaka::RawKeyEncryptionParams::KeyPair"></span><span class="target" id="shakadf/d5d/structshaka_1_1RawKeyEncryptionParams_1_1KeyPair"></span><em class="property">struct </em><code class="descclassname">shaka::RawKeyEncryptionParams::</code><code class="descname">KeyPair</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyEncryptionParams7KeyPairE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">doxygenstruct: Cannot find class &#8220;shaka::RawKeyEncryptionParams::KeyPair&#8221; in doxygen xml output for project &#8220;shaka&#8221; from directory: ../../out/doxygen/xml</p>
+</div>
 <dl class="class">
 <dt id="_CPPv2N5shaka16EncryptionParamsE">
 <span id="shaka::EncryptionParams"></span><span class="target" id="shakadc/da0/structshaka_1_1EncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">EncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
@@ -694,26 +676,14 @@
 </div>
 </dd></dl>
 
-<dl class="class">
-<dt id="_CPPv2N5shaka22RawKeyDecryptionParamsE">
-<span id="shaka::RawKeyDecryptionParams"></span><span class="target" id="shakad9/da8/structshaka_1_1RawKeyDecryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">RawKeyDecryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyDecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Raw key decryption parameters, i.e. with key parameters provided. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Members</p>
-<dl class="member">
-<dt id="_CPPv2N5shaka22RawKeyDecryptionParams7key_mapE">
-<span id="shaka::RawKeyDecryptionParams::key_map__std::map:StreamLabel.KeyPair:"></span><span class="target" id="shakad9/da8/structshaka_1_1RawKeyDecryptionParams_1a1ed59af3d5fe891e05acb4ee59ff6dc1"></span>std::map&lt;StreamLabel, <a class="reference internal" href="#_CPPv2N5shaka22RawKeyDecryptionParams7KeyPairE" title="shaka::RawKeyDecryptionParams::KeyPair">KeyPair</a>&gt; <code class="descname">key_map</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyDecryptionParams7key_mapE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Defines the <a class="reference internal" href="#shakad8/d8b/structshaka_1_1RawKeyDecryptionParams_1_1KeyPair"><span class="std std-ref">KeyPair</span></a> for the streams. An empty <code class="docutils literal"><span class="pre">StreamLabel</span></code> indicates the default <code class="docutils literal"><a class="reference internal" href="#shakad8/d8b/structshaka_1_1RawKeyDecryptionParams_1_1KeyPair"><span class="std std-ref"><span class="pre">KeyPair</span></span></a></code>, which applies to all the <code class="docutils literal"><span class="pre">StreamLabels</span></code> not present in <code class="docutils literal"><span class="pre">key_map</span></code>. </p>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">doxygenstruct: Cannot find class &#8220;shaka::RawKeyDecryptionParams&#8221; in doxygen xml output for project &#8220;shaka&#8221; from directory: ../../out/doxygen/xml</p>
 </div>
-</dd></dl>
-
-<dl class="class">
-<dt id="_CPPv2N5shaka22RawKeyDecryptionParams7KeyPairE">
-<span id="shaka::RawKeyDecryptionParams::KeyPair"></span><span class="target" id="shakad8/d8b/structshaka_1_1RawKeyDecryptionParams_1_1KeyPair"></span><em class="property">struct </em><code class="descclassname">shaka::RawKeyDecryptionParams::</code><code class="descname">KeyPair</code><a class="headerlink" href="#_CPPv2N5shaka22RawKeyDecryptionParams7KeyPairE" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">doxygenstruct: Cannot find class &#8220;shaka::RawKeyDecryptionParams::KeyPair&#8221; in doxygen xml output for project &#8220;shaka&#8221; from directory: ../../out/doxygen/xml</p>
+</div>
 <dl class="class">
 <dt id="_CPPv2N5shaka16DecryptionParamsE">
 <span id="shaka::DecryptionParams"></span><span class="target" id="shakad1/d4f/structshaka_1_1DecryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">DecryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka16DecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>

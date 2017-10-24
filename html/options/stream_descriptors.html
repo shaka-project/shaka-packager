@@ -44,6 +44,7 @@
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Stream descriptors</a></li>
+<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
 <li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
 </ul>
 
@@ -76,7 +77,7 @@
 <h1>Stream descriptors<a class="headerlink" href="#stream-descriptors" title="Permalink to this headline">¶</a></h1>
 <p>There can be multiple <em>stream_descriptor</em> with input from the same &#8220;file&#8221; or
 multiple different &#8220;files&#8221;.</p>
-<p>Stream is of the form:</p>
+<p>Stream descriptor is of the form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">field</span><span class="p">}</span><span class="o">=</span><span class="p">{</span><span class="n">value</span><span class="p">}[,{</span><span class="n">field</span><span class="p">}</span><span class="o">=</span><span class="p">{</span><span class="n">value</span><span class="p">}]</span><span class="o">...</span>
 </pre></div>
 </div>
@@ -120,14 +121,29 @@ this value overrides any language metadata in the input stream.</td>
 If not specified, it will be derived from the file extension of the output
 file.</td>
 </tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">trick_play_factor (tpf):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional value which specifies the trick play, a.k.a. trick mode, stream
+sampling rate among key frames. If specified, the output is a trick play
+stream.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="drm-related-stream-descriptor-fields">
+<h1>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
 <tr class="field-odd field"><th class="field-name" colspan="2">skip_encryption=0|1:</th></tr>
 <tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional. Defaults to 0 if not specified. If it is set to 1, no encryption
 of the stream will be made.</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">trick_play_factor (tpf):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">Optional value which specifies the trick play, a.k.a. trick mode, stream
-sampling rate among key frames. If specified, the output is a trick play
-stream.</td>
+<tr class="field-even field"><th class="field-name">drm_label:</th><td class="field-body">Optional value for custom DRM label, which defines the encryption key
+applied to the stream. Typically values include AUDIO, SD, HD, UHD1, UHD2.
+For raw key, it should be a label defined in &#8211;keys. If not provided, the
+DRM label is derived from stream type (video, audio), resolutions, etc.
+Note that it is case sensitive.</td>
 </tr>
 </tbody>
 </table>
@@ -138,15 +154,15 @@ stream.</td>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Required for audio when outputting HLS. name of the output stream. This is
-not (necessarily) the same as output. This is used as the NAME attribute for
-EXT-X-MEDIA.</td>
+<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Used for HLS audio to set the NAME attribute for EXT-X-MEDIA.
+Defaults to the base of the playlist name.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Required for audio when outputting HLS. The group ID for the output stream.
-This is used as the GROUP-ID attribute for EXT-X-MEDIA.</td>
+<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
+Defaults to &#8216;audio&#8217; if not specified.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Required for HLS output. Name of the playlist for the stream. Usually ends
-with &#8216;.m3u8&#8217;.</td>
+<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Used for HLS to name the playlist for the stream. Usually ends
+with &#8216;.m3u8&#8217;. If unspecified, defaults to something of the form
+&#8216;stream_0.m3u8&#8217;, &#8216;stream_1.m3u8&#8217;, &#8216;stream_2.m3u8&#8217;, etc.</td>
 </tr>
 </tbody>
 </table>

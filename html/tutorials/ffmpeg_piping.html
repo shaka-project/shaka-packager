@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>ffmpeg piping &#8212; Shaka Packager  documentation</title>
+    <title>FFmpeg piping &#8212; Shaka Packager  documentation</title>
     
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,7 +28,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Media Encoding" href="encoding.html" /> 
+    <link rel="next" title="Shaka Packager Library" href="../library.html" />
+    <link rel="prev" title="Playready" href="playready.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,27 +39,37 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="encoding.html" title="Media Encoding"
+          <a href="../library.html" title="Shaka Packager Library"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="playready.html" title="Playready"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" accesskey="U">Tutorials</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">ffmpeg piping</a><ul>
-<li><a class="reference internal" href="#ffmpeg-camera-capture">ffmpeg camera capture</a></li>
-<li><a class="reference internal" href="#create-pipe">Create pipe</a></li>
-<li><a class="reference internal" href="#encoding-capture-command">Encoding / capture command</a></li>
-<li><a class="reference internal" href="#packaging-command-dash">Packaging command (DASH)</a></li>
+<li><a class="reference internal" href="#">FFmpeg piping</a><ul>
+<li><a class="reference internal" href="#piping-data-to-packager">Piping data to packager</a></li>
+<li><a class="reference internal" href="#encoding-capture-command">Encoding / capture command</a><ul>
+<li><a class="reference internal" href="#camera-capture">Camera capture</a></li>
+<li><a class="reference internal" href="#rtp-input">RTP input</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-packaging-command-in-dash">Example packaging command in DASH</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="encoding.html"
-                        title="previous chapter">Media Encoding</a></p>
+  <p class="topless"><a href="playready.html"
+                        title="previous chapter">Playready</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../library.html"
+                        title="next chapter">Shaka Packager Library</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -85,30 +96,57 @@
           <div class="body" role="main">
             
   <div class="section" id="ffmpeg-piping">
-<h1>ffmpeg piping<a class="headerlink" href="#ffmpeg-piping" title="Permalink to this headline">¶</a></h1>
-<p>We can use <em>ffmpeg</em> to redirect / pipe input not supported by <em>packager</em>
-to <em>packager</em>, for example, input from webcam devices. The example below uses
-webcam input device. The concept depicted here can be applied to
-other <em>ffmpeg</em> supported capture device.</p>
-<div class="section" id="ffmpeg-camera-capture">
-<h2>ffmpeg camera capture<a class="headerlink" href="#ffmpeg-camera-capture" title="Permalink to this headline">¶</a></h2>
-<p>Refer to <a class="reference external" href="https://trac.ffmpeg.org/wiki/Capture/Webcam">ffmpeg Capture/Webcam</a>
-on how to use <em>ffmpeg</em> to capture webmcam inputs.</p>
-<p>The examples below assumes Mac OS X 10.7 (Lion) or later. It is similar on
-other platforms. Refer to the above link for details.</p>
-</div>
-<div class="section" id="create-pipe">
-<h2>Create pipe<a class="headerlink" href="#create-pipe" title="Permalink to this headline">¶</a></h2>
-<p>We use pipe to connect <em>ffmpeg</em> and <em>packager</em>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ mkfifo pipe1
+<h1>FFmpeg piping<a class="headerlink" href="#ffmpeg-piping" title="Permalink to this headline">¶</a></h1>
+<p>We can use <em>FFmpeg</em> to redirect / pipe input not supported by <em>packager</em>
+to <em>packager</em>, for example, input from webcam devices, or rtp input. The concept
+depicted here can be applied to other <em>FFmpeg</em> supported device or protocols.</p>
+<div class="section" id="piping-data-to-packager">
+<h2>Piping data to packager<a class="headerlink" href="#piping-data-to-packager" title="Permalink to this headline">¶</a></h2>
+<p>There are two options to pipe data to packager.</p>
+<ul>
+<li><p class="first">UDP socket</p>
+<blockquote>
+<div><p><em>FFmpeg</em> supports writing to a UDP socket and <em>packager</em> supports reading
+from UDP sockets:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &#39;input=udp://127.0.0.1:40000,...&#39; ...
+$ ffmpeg ... -f mpegts udp://127.0.0.1:40000
 </pre></div>
+</div>
+<p>VP9 cannot be carried in mpegts. Another container, e.g. webm needs to be
+used when outputs VP9. In this case, transcoding has to be started after
+starting packager as the initialization segment is only transmitted in the
+beginning of WebM output.</p>
+</div></blockquote>
+</li>
+<li><p class="first">pipe</p>
+<blockquote>
+<div><p>Similarily, pipe is also supported in both <em>FFmpeg</em> and <em>packager</em>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ mkfifo pipe1
+$ packager &#39;input=pipe1,...&#39; ... --io_block_size 65536
+$ ffmpeg ... -f mpegts pipe: &gt; pipe1
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Option -io_block_size 65536 tells packager to use an io_block_size of 65K
+for threaded io file. This is necessary when using pipe as reading from pipe
+blocks until the specified number of bytes, which is specified in
+io_block_size for threaded io file, thus the value of io_block_size cannot
+be too large.</p>
 </div>
 </div>
 <div class="section" id="encoding-capture-command">
 <h2>Encoding / capture command<a class="headerlink" href="#encoding-capture-command" title="Permalink to this headline">¶</a></h2>
-<p>The below command captures from the default audio / video devices on the
-machine:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -f avfoundation -i &quot;default&quot; -f mpegts pipe: &gt; pipe1
+<div class="section" id="camera-capture">
+<h3>Camera capture<a class="headerlink" href="#camera-capture" title="Permalink to this headline">¶</a></h3>
+<p>Refer to <a class="reference external" href="https://trac.ffmpeg.org/wiki/Capture/Webcam">FFmpeg Capture/Webcam</a>
+on how to use <em>FFmpeg</em> to capture webmcam inputs.</p>
+<p>The example assumes Mac OS X 10.7 (Lion) or later. It captures from the default
+audio / video devices on the machine:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -f avfoundation -i &quot;default&quot; -f mpegts udp://127.0.0.1:40000
 </pre></div>
 </div>
 <p>The command starts only after packager starts.</p>
@@ -118,21 +156,36 @@ machine:</p>
 1x and above. If not, adjust the encoding parameters to recude it.</p>
 </div>
 </div>
-<div class="section" id="packaging-command-dash">
-<h2>Packaging command (DASH)<a class="headerlink" href="#packaging-command-dash" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
-  &#39;in=pipe1,stream=audio,init_segment=live_cam_audio.mp4,segment_template=live_cam_audio_$Number$.m4s&#39; \
-  &#39;in=pipe1,stream=video,init_segment=live_cam_video.mp4,segment_template=live_cam_video_$Number$.m4s&#39; \
-  --mpd_output live_cam.mpd \
-  --io_block_size 65536
+<div class="section" id="rtp-input">
+<h3>RTP input<a class="headerlink" href="#rtp-input" title="Permalink to this headline">¶</a></h3>
+<p>Assume there is an RTP input described by <cite>saved_sdp_file</cite>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -protocol_whitelist &quot;file,rtp,udp&quot; -i saved_sdp_file -vcodec h264 \
+  -tune zerolatency -f mpegts udp://127.0.0.1:40000
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Option -io_block_size 65536 tells packager to use an io_block_size of 65K
-for threaded io file. This is necessary as reading from pipe blocks until
-the specified number of bytes, which is specified in io_block_size for
-threaded io file, thus the value of io_block_size cannot be too large.</p>
+<p>For testing, you can generate an RTP input from a static media file:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -re -stream_loop 100 -i &lt;static.mp4&gt; -vcodec copy -an \
+  -f rtp rtp://239.255.0.1:1234 -sdp_file saved_sdp_file
+</pre></div>
+</div>
+</div>
+<p>The command starts only after packager starts.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">After encoding starts, monitor encoding speed carefully. It should always be
+1x and above. If not, adjust the encoding parameters to recude it.</p>
+</div>
+</div>
+</div>
+<div class="section" id="example-packaging-command-in-dash">
+<h2>Example packaging command in DASH<a class="headerlink" href="#example-packaging-command-in-dash" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  &#39;in=udp://127.0.0.1:40000,stream=audio,init_segment=live_cam_audio.mp4,segment_template=live_cam_audio_$Number$.m4s&#39; \
+  &#39;in=udp://127.0.0.1:40000,stream=video,init_segment=live_cam_video.mp4,segment_template=live_cam_video_$Number$.m4s&#39; \
+  --mpd_output live_cam.mpd
+</pre></div>
 </div>
 </div>
 </div>
@@ -150,9 +203,13 @@ threaded io file, thus the value of io_block_size cannot be too large.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="encoding.html" title="Media Encoding"
+          <a href="../library.html" title="Shaka Packager Library"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="playready.html" title="Playready"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

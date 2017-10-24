@@ -106,37 +106,40 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(<span class="keyword">const</span> std::string&amp; error_message);</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">//         and cannot be empty; If condition is false, then this flag should</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">//         not be set.</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">class</span> FlagType&gt;</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">   33</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">ValidateFlag</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* flag_name,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                  <span class="keyword">const</span> FlagType&amp; flag_value,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                  <span class="keywordtype">bool</span> condition,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                  <span class="keywordtype">bool</span> optional,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                  <span class="keyword">const</span> <span class="keywordtype">char</span>* label) {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">if</span> (flag_value.empty()) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">if</span> (!optional &amp;&amp; condition) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;          base::StringPrintf(<span class="stringliteral">&quot;--%s is required if %s.&quot;</span>, flag_name, label));</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!condition) {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(base::StringPrintf(</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="stringliteral">&quot;--%s should be specified only if %s.&quot;</span>, flag_name, label));</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif  // APP_VALIDATE_FLAG_H_</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a42273d2ca4220d3de00a759a711e385e">PrintWarning</a>(<span class="keyword">const</span> std::string&amp; warning_message);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">//         and cannot be empty; If condition is false, then this flag should</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">//         not be set.</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">class</span> FlagType&gt;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">   37</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">ValidateFlag</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* flag_name,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                  <span class="keyword">const</span> FlagType&amp; flag_value,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                  <span class="keywordtype">bool</span> condition,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                  <span class="keywordtype">bool</span> optional,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                  <span class="keyword">const</span> <span class="keywordtype">char</span>* label) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">if</span> (flag_value.empty()) {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">if</span> (!optional &amp;&amp; condition) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;          base::StringPrintf(<span class="stringliteral">&quot;--%s is required if %s.&quot;</span>, flag_name, label));</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!condition) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">PrintError</a>(base::StringPrintf(</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="stringliteral">&quot;--%s should be specified only if %s.&quot;</span>, flag_name, label));</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif  // APP_VALIDATE_FLAG_H_</span></div>
 <div class="ttc" id="namespaceshaka_html_a54fadd9c7ef14b39cd0355a5c269c772"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a54fadd9c7ef14b39cd0355a5c269c772">shaka::PrintError</a></div><div class="ttdeci">void PrintError(const std::string &amp;error_message)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dad/validate__flag_8cc_source.html#l00015">validate_flag.cc:15</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a952293a7213f285843f28b7363ee14d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">shaka::ValidateFlag</a></div><div class="ttdeci">bool ValidateFlag(const char *flag_name, const FlagType &amp;flag_value, bool condition, bool optional, const char *label)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d22/validate__flag_8h_source.html#l00033">validate_flag.h:33</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a952293a7213f285843f28b7363ee14d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a952293a7213f285843f28b7363ee14d6">shaka::ValidateFlag</a></div><div class="ttdeci">bool ValidateFlag(const char *flag_name, const FlagType &amp;flag_value, bool condition, bool optional, const char *label)</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d22/validate__flag_8h_source.html#l00037">validate_flag.h:37</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a42273d2ca4220d3de00a759a711e385e"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a42273d2ca4220d3de00a759a711e385e">shaka::PrintWarning</a></div><div class="ttdeci">void PrintWarning(const std::string &amp;warning_message)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dad/validate__flag_8cc_source.html#l00019">validate_flag.cc:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

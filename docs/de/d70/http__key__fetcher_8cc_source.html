@@ -209,15 +209,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, AppendToString);</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordflow">if</span> (!client_cert_private_key_file_.empty() &amp;&amp;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      !client_cert_private_key_password_.empty() &amp;&amp;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      !client_cert_file_.empty()) {</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="comment">// Some PlayReady packaging servers only allow connects via HTTPS with</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="comment">// client certificates.</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    curl_easy_setopt(curl, CURLOPT_SSLKEY,</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                     client_cert_private_key_file_.data());</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    curl_easy_setopt(curl, CURLOPT_KEYPASSWD,</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                     client_cert_private_key_password_.data());</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordflow">if</span> (!client_cert_private_key_file_.empty() &amp;&amp; !client_cert_file_.empty()) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="comment">// Some PlayReady packaging servers only allow connects via HTTPS with</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="comment">// client certificates.</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    curl_easy_setopt(curl, CURLOPT_SSLKEY,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                     client_cert_private_key_file_.data());</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keywordflow">if</span> (!client_cert_private_key_password_.empty()) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      curl_easy_setopt(curl, CURLOPT_KEYPASSWD,</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                       client_cert_private_key_password_.data());</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    }</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, <span class="stringliteral">&quot;PEM&quot;</span>);</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, <span class="stringliteral">&quot;PEM&quot;</span>);</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    curl_easy_setopt(curl, CURLOPT_SSLCERT, client_cert_file_.data());</div>
@@ -266,7 +266,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

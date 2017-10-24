@@ -73,22 +73,27 @@
 <col class="description" />
 <tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_fixed_key_encryption</span></kbd></td>
+<kbd><span class="option">--enable_raw_key_encryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable encryption with fixed key.</td></tr>
+<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)).</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_fixed_key_decryption</span></kbd></td>
+<kbd><span class="option">--enable_raw_key_decryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable decryption with fixed key.</td></tr>
+<tr><td>&#160;</td><td>Enable decryption with raw key (keys provided in command line).</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--key_id <var>&lt;32-digit hex string&gt;</var></span></kbd></td>
+<kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]...&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>The key id in hex string format.
-HEX.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--key <var>&lt;32-digit hex string&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The key in hex string format.</td></tr>
+<tr><td>&#160;</td><td><p class="first"><strong>key_info_string</strong> is of the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=</span><span class="p">{</span><span class="n">label</span><span class="p">}:</span><span class="n">key_id</span><span class="o">=</span><span class="p">{</span><span class="n">key_id</span><span class="p">}:</span><span class="n">key</span><span class="o">=</span><span class="p">{</span><span class="n">key</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><em>label</em> can be an arbitrary string or a predefined DRM label like AUDIO,
+SD, HD, etc. Label with an empty string indicates the default key and
+key_id. The <em>drm_label</em> in <a class="reference internal" href="stream_descriptors.html"><span class="doc">Stream descriptors</span></a>,
+which can be implicit, determines which key info is applied to the stream
+by matching the <em>drm_label</em> with the <em>label</em> in key info.</p>
+<p class="last"><em>key_id</em> and <em>key</em> should be 32-digit hex strings.</p>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></td>
 </tr>

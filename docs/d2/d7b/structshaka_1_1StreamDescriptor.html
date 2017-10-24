@@ -117,6 +117,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:a025d9a9a1612654da2b0c99fe81378db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbaf07b1faa84803478f89bc6dd8cb4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#abbaf07b1faa84803478f89bc6dd8cb4a">skip_encryption</a> = false</td></tr>
 <tr class="separator:abbaf07b1faa84803478f89bc6dd8cb4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f2a517450433cf69bbc87cef17d05cf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a8f2a517450433cf69bbc87cef17d05cf">drm_label</a></td></tr>
+<tr class="separator:a8f2a517450433cf69bbc87cef17d05cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cc00f367691729460e0b75b8ec6c512"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a5cc00f367691729460e0b75b8ec6c512">trick_play_factor</a> = 0</td></tr>
 <tr class="separator:a5cc00f367691729460e0b75b8ec6c512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bcce2ca86a33f41803f7a6417a2758c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a9bcce2ca86a33f41803f7a6417a2758c">bandwidth</a> = 0</td></tr>
@@ -133,7 +135,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines a single input/output stream. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00067">67</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00065">65</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a9bcce2ca86a33f41803f7a6417a2758c"></a>
 <div class="memitem">
@@ -146,7 +148,22 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Optional user-specified content bit rate for the stream, in bits/sec. If specified, this value is propagated to the <code>$Bandwidth$</code> template parameter for segment names. If not specified, its value may be estimated. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00094">94</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00097">97</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8f2a517450433cf69bbc87cef17d05cf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string shaka::StreamDescriptor::drm_label</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Specifies a custom DRM stream label, which can be a DRM label defined by the DRM system. Typically values include AUDIO, SD, HD, UHD1, UHD2. If not provided, the DRM stream label is derived from stream type (video, audio), resolutions etc. </p>
+
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00089">89</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -161,7 +178,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Required for audio when outputting HLS. It defines the group ID for the output stream. This is used as the GROUP-ID attribute for EXT-X-MEDIA. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00104">104</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00107">107</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -176,7 +193,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Required for audio when outputting HLS. It defines the name of the output stream, which is not necessarily the same as output. This is used as the <code>NAME</code> attribute for EXT-X-MEDIA. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00101">101</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00104">104</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -191,7 +208,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Required for HLS output. It defines the name of the playlist for the stream. Usually ends with <code>.m3u8</code>. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00107">107</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00110">110</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -206,7 +223,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Optional value which contains a user-specified language tag. If specified, this value overrides any language metadata in the input stream. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00097">97</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00100">100</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -221,7 +238,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Specifies output file path or init segment path (if segment template is specified). Can be empty for self initialization media segments. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00077">77</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00075">75</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -236,7 +253,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Optional value which specifies output container format, e.g. "mp4". If not specified, will detect from output / segment template name. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00083">83</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00081">81</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -251,7 +268,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>If set to true, the stream will not be encrypted. This is useful, e.g. to encrypt only video streams. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00086">86</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00084">84</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -266,7 +283,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Stream selector, can be <code>audio</code>, <code>video</code>, <code>text</code> or a zero based stream index. Required. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00073">73</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00071">71</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -281,7 +298,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>If set to a non-zero value, will generate a trick play / trick mode stream with frames sampled from the key frames in the original stream. <code>trick_play_factor</code> defines the sampling rate. </p>
 
-<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00090">90</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00093">93</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -291,7 +308,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 19 2017 20:22:06 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 24 2017 15:50:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

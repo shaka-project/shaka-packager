@@ -1,8 +1,8 @@
 var searchData=
 [
   ['range',['Range',['../d9/de0/structshaka_1_1media_1_1Range.html',1,'shaka::media']]],
-  ['rawkeydecryptionparams',['RawKeyDecryptionParams',['../d9/da8/structshaka_1_1RawKeyDecryptionParams.html',1,'shaka']]],
-  ['rawkeyencryptionparams',['RawKeyEncryptionParams',['../d0/d5d/structshaka_1_1RawKeyEncryptionParams.html',1,'shaka']]],
+  ['rawkeyparams',['RawKeyParams',['../d0/db4/structshaka_1_1RawKeyParams.html',1,'shaka']]],
+  ['rawkeysource',['RawKeySource',['../db/dd0/classshaka_1_1media_1_1RawKeySource.html',1,'shaka::media']]],
   ['read',['Read',['../dd/d40/classshaka_1_1CallbackFile.html#a867e0c5eaf81a41902e1370deb912617',1,'shaka::CallbackFile::Read()'],['../d3/d73/classshaka_1_1File.html#a6e1ecb2904b609554d332290f20fde0a',1,'shaka::File::Read()'],['../df/d4e/classshaka_1_1IoCache.html#a7cc144c2f848725db08b3ca175475fc2',1,'shaka::IoCache::Read()'],['../d7/dbd/classshaka_1_1LocalFile.html#a27c3bf51fe18ebc10bf42ebcec20c9cb',1,'shaka::LocalFile::Read()'],['../de/dad/classshaka_1_1MemoryFile.html#aeacb3b7f72e0c412bd0cba8a6f1ed62f',1,'shaka::MemoryFile::Read()'],['../dd/d0c/classshaka_1_1ThreadedIoFile.html#af45702d95d4e46e93b1f4a897844212e',1,'shaka::ThreadedIoFile::Read()'],['../d4/dcb/classshaka_1_1UdpFile.html#a74d352b51d543905abd4a12687e1bb98',1,'shaka::UdpFile::Read()']]],
   ['read1',['Read1',['../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05',1,'shaka::media::BufferReader']]],
   ['read_5ffunc',['read_func',['../d9/da8/structshaka_1_1BufferCallbackParams.html#a6e6e97682ba2be686a2d1e9b62d26e13',1,'shaka::BufferCallbackParams']]],
@@ -23,6 +23,7 @@ var searchData=
   ['readysamplessize',['ReadySamplesSize',['../de/ddd/classshaka_1_1media_1_1WebVttSampleConverter.html#a3b0e60f307c5ea57d232216eced6af76',1,'shaka::media::WebVttSampleConverter']]],
   ['release',['Release',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ae5cb2c3000ccbd53c0a1867db0b8a2d0',1,'shaka::xml::XmlNode']]],
   ['reopen',['Reopen',['../df/d4e/classshaka_1_1IoCache.html#ac2c7cbec6d771de00fe0cfe0b7d0e454',1,'shaka::IoCache']]],
+  ['replicator',['Replicator',['../d3/d1a/classshaka_1_1media_1_1Replicator.html',1,'shaka::media']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb',1,'shaka::Representation']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html',1,'shaka']]],
   ['representationbasexmlnode',['RepresentationBaseXmlNode',['../dd/db9/classshaka_1_1xml_1_1RepresentationBaseXmlNode.html',1,'shaka::xml']]],

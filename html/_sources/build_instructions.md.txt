@@ -190,7 +190,7 @@ After a successful build, you can find build artifacts including the main
 `packager` binary in build output directory (`out/Release` or `out/Release_x64`
 for release build).
 
-See [Shaka Packager Documentation](https://google.github.io/shaka-packager/)
+See [Shaka Packager Documentation](https://google.github.io/shaka-packager/html/)
 on how to use `Shaka Packager`.
 
 ### Update your checkout
