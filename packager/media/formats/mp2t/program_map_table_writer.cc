@@ -255,20 +255,20 @@ void WritePmtWithParameters(uint8_t stream_type,
 ProgramMapTableWriter::ProgramMapTableWriter(Codec codec) : codec_(codec) {}
 
 bool ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
-  uint8_t stream_type;
-  switch (codec_) {
-    case kCodecH264:
-      stream_type = kStreamTypeEncryptedH264;
-      break;
-    case kCodecAAC:
-      stream_type = kStreamTypeEncryptedAdtsAac;
-      break;
-    default:
-      LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
-      return false;
-  }
-
   if (encrypted_pmt_.Size() == 0) {
+    uint8_t stream_type;
+    switch (codec_) {
+      case kCodecH264:
+        stream_type = kStreamTypeEncryptedH264;
+        break;
+      case kCodecAAC:
+        stream_type = kStreamTypeEncryptedAdtsAac;
+        break;
+      default:
+        LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
+        return false;
+    }
+
     BufferWriter descriptors;
     if (!WriteDescriptors(&descriptors))
       return false;
@@ -285,20 +285,20 @@ bool ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
 }
 
 bool ProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
-  uint8_t stream_type;
-  switch (codec_) {
-    case kCodecH264:
-      stream_type = kStreamTypeH264;
-      break;
-    case kCodecAAC:
-      stream_type = kStreamTypeAdtsAac;
-      break;
-    default:
-      LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
-      return false;
-  }
-
   if (clear_pmt_.Size() == 0) {
+    uint8_t stream_type;
+    switch (codec_) {
+      case kCodecH264:
+        stream_type = kStreamTypeH264;
+        break;
+      case kCodecAAC:
+        stream_type = kStreamTypeAdtsAac;
+        break;
+      default:
+        LOG(ERROR) << "Codec " << codec_ << " is not supported in TS yet.";
+        return false;
+    }
+
     WritePmtWithParameters(stream_type, kVersion0, kCurrent, nullptr, 0,
                            &clear_pmt_);
     DCHECK_NE(clear_pmt_.Size(), 0u);
