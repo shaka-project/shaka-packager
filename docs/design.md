@@ -1,4 +1,4 @@
-#Design overview#
+# Design overview #
 
 Major modules are described below:
 
@@ -27,7 +27,7 @@ specified in ISO/IEC 23009-1 DASH MPD spec.
 
 API document is available at https://google.github.io/shaka-packager/docs.
 
-##Creating Demuxer##
+## Creating Demuxer ##
 
 ```C++
 // Create a demuxer from |input_media_file|.
@@ -38,14 +38,14 @@ API document is available at https://google.github.io/shaka-packager/docs.
 Demuxer demuxer(input_media_file);
 ```
 
-##Creating KeySource for source content decryption##
+## Creating KeySource for source content decryption ##
 
 ```C++
 // A KeySource is required if the source content is encrypted, since the media
 // must be decrytped prior to further processing.
 ```
 
-###WidevineKeySource###
+### WidevineKeySource ###
 
 ```C++
 // Users may use WidevineKeySource to fetch keys from Widevine
@@ -65,7 +65,7 @@ muxer->SetKeySource(widevine_decryption_key_source.Pass());
 ```
 
 
-##Creating MpdBuilder##
+## Creating MpdBuilder ##
 
 ```C++
 // |mpd_type| indicates whether the mpd should be for VOD or live profile.
@@ -117,7 +117,7 @@ for (size_t i = 0; i < n; ++i)
 mpd_writer.WriteMpdToFile("output_file_name.mpd");
 ```
 
-##Creating Muxer##
+## Creating Muxer ##
 
 ```C++
 // See below for muxer options.
@@ -177,14 +177,14 @@ muxer_options.temp_dir = …;
 muxer_options.bandwidth = 0;
 ```
 
-##Creating KeySource for content encryption##
+## Creating KeySource for content encryption ##
 
 ```C++
 // A KeySource is optional. The stream won’t be encrypted if an
 // KeySource is not provided.
 ```
 
-###WidevineKeySource###
+### WidevineKeySource ###
 
 ```C++
 // Users may use WidevineKeySource to fetch keys from Widevine
@@ -215,7 +215,7 @@ muxer->SetKeySource(
     clear_lead, crypto_period_duration);
 ```
 
-##Connecting Demuxer and Muxer##
+## Connecting Demuxer and Muxer ##
 
 ```C++
   // Initialize the demuxer.
@@ -230,7 +230,7 @@ muxer->SetKeySource(
   if (!status.ok()) { … }
 ```
 
-##Starting Remuxing##
+## Starting Remuxing ##
 
 ```C++
   // Starts remuxing process. It runs until completion or abort due to error.
