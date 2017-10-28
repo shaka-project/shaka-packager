@@ -62,7 +62,7 @@ Download the
 [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
 and extract it somewhere.
 
-*** note
+***Note***  
 **Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
 this will not extract the hidden “.git” folder which is necessary for
 depot_tools to autoupdate itself. You can use “Extract all…” from the context
@@ -70,10 +70,10 @@ menu though.
 ***
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
-Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
-
+Python). Assuming you unzipped the bundle to `C:\src\depot_tools`, open:
+```
 Control Panel → System and Security → System → Advanced system settings
-
+```
 If you have Administrator access, Modify the PATH system variable and
 put `C:\src\depot_tools` at the front (or at least in front of any directory
 that might already have a copy of Python or Git).
@@ -82,9 +82,9 @@ If you don't have Administrator access, you can add a user-level PATH
 environment variable and put `C:\src\depot_tools` at the front, but
 if your system PATH has a Python in it, you will be out of luck.
 
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
+Also, add a `DEPOT_TOOLS_WIN_TOOLCHAIN` system variable in the same way, and set
 it to 0. This tells depot_tools to use your locally installed version of Visual
-Studio (by default, depot_tools will try to use a google-internal version).
+Studio (by default, depot_tools` will try to use a google-internal version).
 
 From a cmd.exe shell, run the command gclient (without arguments). On first
 run, gclient will install all the Windows-specific bits needed to work with
@@ -115,7 +115,7 @@ $ gclient config https://www.github.com/google/shaka-packager.git --name=src --u
 $ gclient sync
 ```
 
-To sync to a particular commit or version, add the '-r \<revision\>' flag to
+To sync to a particular commit or version, add the `-r \<revision\>` flag to
 `gclient sync`, e.g.
 
 ```shell
@@ -142,7 +142,7 @@ $ cd src
 #### Linux and Mac
 
 Shaka Packager uses [Ninja](https://ninja-build.org) as its main build tool,
-which is bundled in depot_tools.
+which is bundled in `depot_tools.
 
 To build the code, run `ninja` command:
 
