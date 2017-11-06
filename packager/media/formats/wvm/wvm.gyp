@@ -20,7 +20,6 @@
         '../../base/media_base.gyp:media_base',
         '../../codecs/codecs.gyp:codecs',
         '../../formats/mp2t/mp2t.gyp:mp2t',
-        '../mpeg/mpeg.gyp:mpeg',
       ],
     },
     {

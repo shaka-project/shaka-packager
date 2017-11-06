@@ -28,6 +28,7 @@ class Ac3Header : public AudioHeader {
   /// @{
   bool IsSyncWord(const uint8_t* buf) const override;
   size_t GetMinFrameSize() const override;
+  size_t GetSamplesPerFrame() const override;
   bool Parse(const uint8_t* adts_frame, size_t adts_frame_size) override;
   size_t GetHeaderSize() const override;
   size_t GetFrameSize() const override;

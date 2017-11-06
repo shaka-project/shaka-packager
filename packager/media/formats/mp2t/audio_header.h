@@ -29,6 +29,9 @@ class AudioHeader {
   /// @return The minium frame size.
   virtual size_t GetMinFrameSize() const = 0;
 
+  /// @return Number of audio samples per frame.
+  virtual size_t GetSamplesPerFrame() const = 0;
+
   /// Parse a partial audio frame, extracting the fields within. Only audio
   /// frame header / metadata is parsed. The audio_frame_size must contain the
   /// full header / metadata.

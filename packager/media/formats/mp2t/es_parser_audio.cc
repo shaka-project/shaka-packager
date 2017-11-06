@@ -19,7 +19,6 @@
 #include "packager/media/formats/mp2t/adts_header.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 #include "packager/media/formats/mp2t/ts_stream_type.h"
-#include "packager/media/formats/mpeg/adts_constants.h"
 
 namespace shaka {
 namespace media {
@@ -144,8 +143,8 @@ bool EsParserAudio::Parse(const uint8_t* buf,
     }
 
     int64_t current_pts = audio_timestamp_helper_->GetTimestamp();
-    int64_t frame_duration =
-        audio_timestamp_helper_->GetFrameDuration(kSamplesPerAACFrame);
+    int64_t frame_duration = audio_timestamp_helper_->GetFrameDuration(
+        audio_header_->GetSamplesPerFrame());
 
     // Emit an audio frame.
     bool is_key_frame = true;
@@ -160,7 +159,7 @@ bool EsParserAudio::Parse(const uint8_t* buf,
     emit_sample_cb_.Run(pid(), sample);
 
     // Update the PTS of the next frame.
-    audio_timestamp_helper_->AddFrames(kSamplesPerAACFrame);
+    audio_timestamp_helper_->AddFrames(audio_header_->GetSamplesPerFrame());
 
     // Skip the current frame.
     es_position += static_cast<int>(audio_header_->GetFrameSize());

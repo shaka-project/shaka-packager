@@ -25,6 +25,11 @@ const char kValidPartialAc3Frame[] =
     "000000000000000000001DDDDDDE3C78DB6DB6DB6F9F35AD6B5AD6B5AD6B5AD6B5AD6B5AD6"
     "9800000000000F1B6DB6DB6DE3C78F1DDD";
 
+const char kValidPartialAc3FrameSixChannels[] =
+    "0B77A3B35E40EBF8403EFF9DF0C3F8430FE1FC155755DF3E7CFA33E7CF9F3E7CF9F3E7CF9F"
+    "3ECDFF3ABE7CF9F3E7CF9F3E7CF9F3E7CF9F3E7CF9F3E7CF9F3E7CF9F3E7CF9F3E7CF9F3E7"
+    "CF9F3E7CF9F3E7CF9F3E7C31F3E7CF9F3E7C7FCEAF9F3E7CF9F3";
+
 }  // anonymous namespace
 
 namespace shaka {
@@ -35,10 +40,13 @@ class Ac3HeaderTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(base::HexStringToBytes(kValidPartialAc3Frame, &ac3_frame_));
+    ASSERT_TRUE(base::HexStringToBytes(kValidPartialAc3FrameSixChannels,
+                                       &ac3_frame_six_channels_));
   }
 
  protected:
   std::vector<uint8_t> ac3_frame_;
+  std::vector<uint8_t> ac3_frame_six_channels_;
 };
 
 TEST_F(Ac3HeaderTest, ParseSuccess) {
@@ -51,6 +59,31 @@ TEST_F(Ac3HeaderTest, ParseSuccess) {
 
   Ac3Header ac3_header;
   ASSERT_TRUE(ac3_header.Parse(ac3_frame_.data(), ac3_frame_.size()));
+  EXPECT_EQ(kExpectedFrameSize, ac3_header.GetFrameSize());
+  EXPECT_EQ(kExpectedHeaderSize, ac3_header.GetHeaderSize());
+  EXPECT_EQ(kExpectedObjectType, ac3_header.GetObjectType());
+  EXPECT_EQ(kExpectedSamplingFrequency, ac3_header.GetSamplingFrequency());
+  EXPECT_EQ(kExpectedNumChannels, ac3_header.GetNumChannels());
+  std::vector<uint8_t> audio_specific_config;
+  ac3_header.GetAudioSpecificConfig(&audio_specific_config);
+  EXPECT_EQ(arraysize(kExpectedAudioSpecificConfig),
+            audio_specific_config.size());
+  EXPECT_EQ(std::vector<uint8_t>(std::begin(kExpectedAudioSpecificConfig),
+                                 std::end(kExpectedAudioSpecificConfig)),
+            audio_specific_config);
+}
+
+TEST_F(Ac3HeaderTest, ParseMultiChannelSuccess) {
+  const size_t kExpectedFrameSize(1950);
+  const size_t kExpectedHeaderSize(0);
+  const uint8_t kExpectedObjectType(0);
+  const uint32_t kExpectedSamplingFrequency(44100);
+  const uint8_t kExpectedNumChannels(6);
+  const uint8_t kExpectedAudioSpecificConfig[] = {0x50, 0x3D, 0xE0};
+
+  Ac3Header ac3_header;
+  ASSERT_TRUE(ac3_header.Parse(ac3_frame_six_channels_.data(),
+                               ac3_frame_six_channels_.size()));
   EXPECT_EQ(kExpectedFrameSize, ac3_header.GetFrameSize());
   EXPECT_EQ(kExpectedHeaderSize, ac3_header.GetHeaderSize());
   EXPECT_EQ(kExpectedObjectType, ac3_header.GetObjectType());

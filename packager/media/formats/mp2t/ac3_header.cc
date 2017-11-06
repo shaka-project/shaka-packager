@@ -43,6 +43,7 @@ const size_t kFrameSizeCodeTable[][3] = {
 
 bool Ac3Header::IsSyncWord(const uint8_t* buf) const {
   DCHECK(buf);
+  // ATSC Standard A/52:2012 5.4.1 syncinfo: Synchronization Information.
   return buf[0] == 0x0B && buf[1] == 0x77;
 }
 
@@ -50,6 +51,13 @@ size_t Ac3Header::GetMinFrameSize() const {
   // Arbitrary. Actual frame size starts with 96 words.
   const size_t kMinAc3FrameSize = 10u;
   return kMinAc3FrameSize;
+}
+
+size_t Ac3Header::GetSamplesPerFrame() const {
+  // ATSC Standard A/52:2012
+  // Annex A: AC-3 Elementary Streams in the MPEG-2 Multiplex.
+  const size_t kSamplesPerAc3Frame = 1536;
+  return kSamplesPerAc3Frame;
 }
 
 bool Ac3Header::Parse(const uint8_t* audio_frame, size_t audio_frame_size) {
@@ -127,7 +135,7 @@ uint32_t Ac3Header::GetSamplingFrequency() const {
 
 uint8_t Ac3Header::GetNumChannels() const {
   DCHECK_LT(acmod_, arraysize(kAc3NumChannelsTable));
-  return kAc3NumChannelsTable[acmod_];
+  return kAc3NumChannelsTable[acmod_] + (lfeon_ ? 1 : 0);
 }
 
 }  // namespace mp2t

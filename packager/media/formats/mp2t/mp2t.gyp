@@ -83,7 +83,6 @@
         '../../codecs/codecs.gyp:codecs',
         '../../event/media_event.gyp:mock_muxer_listener',
         '../../test/media_test.gyp:media_test_support',
-        '../mpeg/mpeg.gyp:mpeg',
         'mp2t',
       ]
     },
