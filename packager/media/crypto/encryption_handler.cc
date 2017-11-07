@@ -280,10 +280,20 @@ Status EncryptionHandler::ProcessMediaSample(
     }
     DCHECK_EQ(decrypt_config->GetTotalSizeOfSubsamples(),
               clear_sample->data_size());
+  } else if (codec_ == kCodecEAC3 &&
+             protection_scheme_ == kAppleSampleAesProtectionScheme) {
+    if (!SampleAesEncryptEac3Frame(clear_sample->data(),
+                                   clear_sample->data_size(),
+                                   &cipher_sample_data.get()[0])) {
+      return Status(error::ENCRYPTION_FAILURE,
+                    "Failed to encrypt E-AC3 frame.");
+    }
   } else {
     memcpy(&cipher_sample_data.get()[0], clear_sample->data(),
            std::min(clear_sample->data_size(), leading_clear_bytes_size_));
     if (clear_sample->data_size() > leading_clear_bytes_size_) {
+      // The residual block is left unecrypted (copied without encryption). No
+      // need to do special handling here.
       EncryptBytes(clear_sample->data() + leading_clear_bytes_size_,
                    clear_sample->data_size() - leading_clear_bytes_size_,
                    &cipher_sample_data.get()[leading_clear_bytes_size_]);
@@ -320,6 +330,7 @@ Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
         case kCodecAAC:
           FALLTHROUGH_INTENDED;
         case kCodecAC3:
+        case kCodecEAC3:
           // Audio is whole sample encrypted. We could not use a
           // crypto_byte_block_ of 1 here as if there is one crypto block
           // remaining, it need not be encrypted for video but it needs to be
@@ -327,11 +338,12 @@ Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
           crypt_byte_block_ = 0u;
           skip_byte_block_ = 0u;
           leading_clear_bytes_size_ = kAudioLeadingClearBytesSize;
-          min_protected_data_size_ = leading_clear_bytes_size_ + 1u;
+          min_protected_data_size_ = leading_clear_bytes_size_ + 15u;
           break;
         default:
-          return Status(error::ENCRYPTION_FAILURE,
-                        "Only AAC/AC3 and H264 are supported in Sample AES.");
+          return Status(
+              error::ENCRYPTION_FAILURE,
+              "Only AAC/AC3/EAC3 and H264 are supported in Sample AES.");
       }
       break;
     }
@@ -388,8 +400,17 @@ bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
       break;
     case kAppleSampleAesProtectionScheme:
       if (crypt_byte_block_ == 0 && skip_byte_block_ == 0) {
-        encryptor.reset(
-            new AesCbcEncryptor(kNoPadding, AesCryptor::kUseConstantIv));
+        auto constant_iv_flag = AesCryptor::kUseConstantIv;
+        if (codec_ == kCodecEAC3) {
+          // MPEG-2 Stream Encryption Format for HTTP Live Streaming 2.3.1.3
+          // Enhanced AC-3: Within an Enhanced AC-3 audio frame, the AES-128
+          // cipher block chaining (CBC) initialization vector (IV) is not reset
+          // at syncframe boundaries. The IV is reset at the beginning of each
+          // audio frame.
+          // We'll manage the reset of IV outside of AesCryptor.
+          constant_iv_flag = AesCryptor::kDontUseConstantIv;
+        }
+        encryptor.reset(new AesCbcEncryptor(kNoPadding, constant_iv_flag));
       } else {
         encryptor.reset(new AesPatternCryptor(
             crypt_byte_block_, skip_byte_block_,
@@ -547,6 +568,35 @@ bool EncryptionHandler::EncryptNalFrame(const uint8_t* source,
   return true;
 }
 
+bool EncryptionHandler::SampleAesEncryptEac3Frame(const uint8_t* source,
+                                                  size_t source_size,
+                                                  uint8_t* dest) {
+  DCHECK(source);
+  DCHECK(dest);
+
+  std::vector<size_t> syncframe_sizes;
+  if (!ExtractEac3SyncframeSizes(source, source_size, &syncframe_sizes))
+    return false;
+
+  // MPEG-2 Stream Encryption Format for HTTP Live Streaming 2.3.1.3 Enhanced
+  // AC-3: The IV is reset at the beginning of each audio frame.
+  encryptor_->SetIv(encryptor_->iv());
+
+  for (size_t syncframe_size : syncframe_sizes) {
+    memcpy(dest, source, std::min(syncframe_size, leading_clear_bytes_size_));
+    if (syncframe_size > leading_clear_bytes_size_) {
+      // The residual block is left unecrypted (copied without encryption). No
+      // need to do special handling here.
+      EncryptBytes(source + leading_clear_bytes_size_,
+                   syncframe_size - leading_clear_bytes_size_,
+                   dest + leading_clear_bytes_size_);
+    }
+    source += syncframe_size;
+    dest += syncframe_size;
+  }
+  return true;
+}
+
 void EncryptionHandler::EncryptBytes(const uint8_t* source,
                                      size_t source_size,
                                      uint8_t* dest) {
@@ -554,6 +604,48 @@ void EncryptionHandler::EncryptBytes(const uint8_t* source,
   DCHECK(dest);
   DCHECK(encryptor_);
   CHECK(encryptor_->Crypt(source, source_size, dest));
+}
+
+bool EncryptionHandler::ExtractEac3SyncframeSizes(
+    const uint8_t* source,
+    size_t source_size,
+    std::vector<size_t>* syncframe_sizes) {
+  DCHECK(source);
+  DCHECK(syncframe_sizes);
+
+  syncframe_sizes->clear();
+  BufferReader frame(source, source_size);
+  // ASTC Standard A/52:2012 Annex E: Enhanced AC-3.
+  while (frame.HasBytes(1)) {
+    uint16_t syncword;
+    if (!frame.Read2(&syncword)) {
+      LOG(ERROR) << "Not enough bytes for syncword.";
+      return false;
+    }
+    if (syncword != 0x0B77) {
+      LOG(ERROR) << "Invalid E-AC3 frame. Seeing 0x" << std::hex << syncword
+                 << std::dec
+                 << ". The sync frame does not start with "
+                    "the valid syncword 0x0B77.";
+      return false;
+    }
+    uint16_t stream_type_and_syncframe_size;
+    if (!frame.Read2(&stream_type_and_syncframe_size)) {
+      LOG(ERROR) << "Not enough bytes for syncframe size.";
+      return false;
+    }
+    // frmsiz = least significant 11 bits. syncframe_size is (frmsiz + 1) * 2.
+    const size_t syncframe_size =
+        ((stream_type_and_syncframe_size & 0x7FF) + 1) * 2;
+    if (!frame.SkipBytes(syncframe_size - sizeof(syncword) -
+                         sizeof(stream_type_and_syncframe_size))) {
+      LOG(ERROR) << "Not enough bytes for syncframe. Expecting "
+                 << syncframe_size << " bytes.";
+      return false;
+    }
+    syncframe_sizes->push_back(syncframe_size);
+  }
+  return true;
 }
 
 void EncryptionHandler::InjectVpxParserForTesting(

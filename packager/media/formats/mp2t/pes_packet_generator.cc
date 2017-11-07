@@ -57,9 +57,10 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
       audio_stream_id_ = kAacAudioStreamId;
       adts_converter_.reset(new AACAudioSpecificConfig());
       return adts_converter_->Parse(audio_stream_info.codec_config());
-    } else if (audio_stream_info.codec() == Codec::kCodecAC3) {
+    } else if (audio_stream_info.codec() == Codec::kCodecAC3 ||
+               audio_stream_info.codec() == Codec::kCodecEAC3) {
       audio_stream_id_ = kAc3AudioStreamId;
-      // No converter needed for AC3.
+      // No converter needed for AC3 and E-AC3.
       return true;
     }
     NOTIMPLEMENTED() << "Audio codec " << audio_stream_info.codec()

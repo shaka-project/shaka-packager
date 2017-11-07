@@ -60,9 +60,21 @@ class EncryptionHandler : public MediaHandler {
                        size_t source_size,
                        uint8_t* dest,
                        DecryptConfig* decrypt_config);
+  // Encrypt an E-AC3 frame with size |source_size| according to SAMPLE-AES
+  // specification. |dest| should have at least |source_size| bytes.
+  bool SampleAesEncryptEac3Frame(const uint8_t* source,
+                                 size_t source_size,
+                                 uint8_t* dest);
   // Encrypt an array with size |source_size|. |dest| should have at
   // least |source_size| bytes.
   void EncryptBytes(const uint8_t* source, size_t source_size, uint8_t* dest);
+
+  // An E-AC3 frame comprises of one or more syncframes. This function extracts
+  // the syncframe sizes from the source bytes.
+  // Returns false if the frame is not well formed.
+  bool ExtractEac3SyncframeSizes(const uint8_t* source,
+                                 size_t source_size,
+                                 std::vector<size_t>* syncframe_sizes);
 
   // Testing injections.
   void InjectVpxParserForTesting(std::unique_ptr<VPxParser> vpx_parser);
@@ -82,7 +94,9 @@ class EncryptionHandler : public MediaHandler {
   uint8_t nalu_length_size_ = 0;
   // For Sample AES, 32 bytes for Video and 16 bytes for audio.
   size_t leading_clear_bytes_size_ = 0;
-  // For Sample AES, 48+1 bytes for video NAL and 16+1 bytes for audio.
+  // For Sample AES, if the data size is less than this value, none of the bytes
+  // are encrypted. The size is 48+1 bytes for video NAL and 16+15 bytes for
+  // audio according to MPEG-2 Stream Encryption Format for HTTP Live Streaming.
   size_t min_protected_data_size_ = 0;
   // Remaining clear lead in the stream's time scale.
   int64_t remaining_clear_lead_ = 0;
