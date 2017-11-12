@@ -45,12 +45,16 @@ class SimpleHlsNotifier : public HlsNotifier {
   ///        shifting buffer, only for live HLS.
   /// @param prefix is the used as the prefix for MediaPlaylist URIs. May be
   ///        empty for relative URI from the playlist.
+  /// @param key_uri defines the key uri for "identity" and
+  ///        "com.apple.streamingkeydelivery" key formats. Ignored if the
+  ///        playlist is not encrypted or not using the above key formats.
   /// @param output_dir is the output directory of the playlists. May be empty
   ///        to write to current directory.
   /// @param master_playlist_name is the name of the master playlist.
   SimpleHlsNotifier(HlsPlaylistType playlist_type,
                     double time_shift_buffer_depth,
                     const std::string& prefix,
+                    const std::string& key_uri,
                     const std::string& output_dir,
                     const std::string& master_playlist_name);
   ~SimpleHlsNotifier() override;
@@ -88,6 +92,7 @@ class SimpleHlsNotifier : public HlsNotifier {
 
   const double time_shift_buffer_depth_ = 0;
   const std::string prefix_;
+  const std::string key_uri_;
   const std::string output_dir_;
   uint32_t target_duration_ = 0;
 

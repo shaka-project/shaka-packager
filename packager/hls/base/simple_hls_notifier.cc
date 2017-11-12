@@ -250,11 +250,13 @@ std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
 SimpleHlsNotifier::SimpleHlsNotifier(HlsPlaylistType playlist_type,
                                      double time_shift_buffer_depth,
                                      const std::string& prefix,
+                                     const std::string& key_uri,
                                      const std::string& output_dir,
                                      const std::string& master_playlist_name)
     : HlsNotifier(playlist_type),
       time_shift_buffer_depth_(time_shift_buffer_depth),
       prefix_(prefix),
+      key_uri_(key_uri),
       output_dir_(output_dir),
       media_playlist_factory_(new MediaPlaylistFactory()),
       master_playlist_(new MasterPlaylist(master_playlist_name)) {}
@@ -389,31 +391,39 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
                                     key_id, iv, protection_system_specific_data,
                                     media_playlist.get());
   }
+
+  // Key Id does not need to be specified with "identity" and "sdk".
+  const std::vector<uint8_t> empty_key_id;
+
   if (IsCommonSystemId(system_id)) {
-    // Use key_id as the key_uri. The player needs to have custom logic to
-    // convert it to the actual key url.
-    std::string key_uri_data = VectorToString(key_id);
-    std::string key_uri_data_base64 =
-        Base64EncodeData(kUriBase64Prefix, key_uri_data);
-    NotifyEncryptionToMediaPlaylist(encryption_method,
-                                    key_uri_data_base64, std::vector<uint8_t>(),
+    std::string key_uri;
+    if (!key_uri_.empty()) {
+      key_uri = key_uri_;
+    } else {
+      // Use key_id as the key_uri. The player needs to have custom logic to
+      // convert it to the actual key uri.
+      std::string key_uri_data = VectorToString(key_id);
+      key_uri = Base64EncodeData(kUriBase64Prefix, key_uri_data);
+    }
+    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
                                     iv, "identity", "", media_playlist.get());
     return true;
-  }
-
-  if (IsFairplaySystemId(system_id)) {
-    // Use key_id as the key_uri. The player needs to have custom logic to
-    // convert it to the actual key url.
-    std::string key_uri_data = VectorToString(key_id);
-    std::string key_uri_data_base64 =
-        Base64EncodeData(kUriFairplayPrefix, key_uri_data);
+  } else if (IsFairplaySystemId(system_id)) {
+    std::string key_uri;
+    if (!key_uri_.empty()) {
+      key_uri = key_uri_;
+    } else {
+      // Use key_id as the key_uri. The player needs to have custom logic to
+      // convert it to the actual key uri.
+      std::string key_uri_data = VectorToString(key_id);
+      key_uri = Base64EncodeData(kUriFairplayPrefix, key_uri_data);
+    }
 
     // Fairplay defines IV to be carried with the key, not the playlist.
-    NotifyEncryptionToMediaPlaylist(encryption_method,
-                                    key_uri_data_base64, std::vector<uint8_t>(),
-                                    std::vector<uint8_t>(),
-                                    "com.apple.streamingkeydelivery", "1",
-                                    media_playlist.get());
+    const std::vector<uint8_t> empty_iv;
+    NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
+                                    empty_iv, "com.apple.streamingkeydelivery",
+                                    "1", media_playlist.get());
     return true;
   }
 

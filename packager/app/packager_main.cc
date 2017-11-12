@@ -356,6 +356,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   }
   hls_params.master_playlist_output = FLAGS_hls_master_playlist_output;
   hls_params.base_url = FLAGS_hls_base_url;
+  hls_params.key_uri = FLAGS_hls_key_uri;
   hls_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
 
   TestParams& test_params = packaging_params.test_params;

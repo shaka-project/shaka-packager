@@ -122,6 +122,7 @@ class PackagerAppTest(unittest.TestCase):
   def _GetFlags(self,
                 strip_parameter_set_nalus=True,
                 encryption=False,
+                fairplay=False,
                 clear_lead=1,
                 protection_scheme=None,
                 vp9_subsample_encryption=True,
@@ -160,6 +161,15 @@ class PackagerAppTest(unittest.TestCase):
 
       if not random_iv:
         flags.append('--iv=' + self.encryption_iv)
+
+      if fairplay:
+        fairplay_pssh = ('000000207073736800000000'
+                         '29701FE43CC74A348C5BAE90C7439A4700000000')
+        fairplay_key_uri = ('skd://www.license.com/'
+                            'getkey?KeyId=31323334-3536-3738-3930-313233343536')
+        flags += [
+            '--pssh=' + fairplay_pssh, '--hls_key_uri=' + fairplay_key_uri
+        ]
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
     if not vp9_subsample_encryption:
@@ -770,6 +780,31 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(
         os.path.join(self.tmp_dir, 'video.m3u8'),
         'bear-640x360-v-enc-golden.m3u8')
+
+  def testPackageAvcTsWithEncryptionAndFairplay(self):
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(encryption=True, output_hls=True, fairplay=True))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-enc-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-enc-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-a-fairplay-enc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-fairplay-enc-golden.m3u8')
 
   def testPackageAvcTsWithEncryptionExerciseEmulationPrevention(self):
     self.encryption_key = 'ad7e9786def9159db6724be06dfcde7a'

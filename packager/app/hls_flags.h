@@ -11,6 +11,7 @@
 
 DECLARE_string(hls_master_playlist_output);
 DECLARE_string(hls_base_url);
+DECLARE_string(hls_key_uri);
 DECLARE_string(hls_playlist_type);
 
 #endif  // PACKAGER_APP_HLS_FLAGS_H_

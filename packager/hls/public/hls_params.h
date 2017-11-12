@@ -31,6 +31,10 @@ struct HlsParams {
   /// Defines the live window, or the guaranteed duration of the time shifting
   /// buffer for 'live' playlists.
   double time_shift_buffer_depth = 0;
+  /// Defines the key uri for "identity" and "com.apple.streamingkeydelivery"
+  /// key formats. Ignored if the playlist is not encrypted or not using the
+  /// above key formats.
+  std::string key_uri;
 };
 
 }  // namespace shaka

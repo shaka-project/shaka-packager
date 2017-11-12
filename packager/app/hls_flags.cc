@@ -14,6 +14,11 @@ DEFINE_string(hls_base_url,
               "",
               "The base URL for the Media Playlists and media files listed in "
               "the playlists. This is the prefix for the files.");
+DEFINE_string(hls_key_uri,
+              "",
+              "The key uri for 'identity' and 'com.apple.streamingkeydelivery' "
+              "key formats. Ignored if the playlist is not encrypted or not "
+              "using the above key formats.");
 DEFINE_string(hls_playlist_type,
               "VOD",
               "VOD, EVENT, or LIVE. This defines the EXT-X-PLAYLIST-TYPE in "

@@ -1,0 +1,14 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:0.975,
+output_audio-1.ts
+#EXTINF:0.998,
+output_audio-2.ts
+#EXT-X-DISCONTINUITY
+#EXT-X-KEY:METHOD=SAMPLE-AES,URI="skd://www.license.com/getkey?KeyId=31323334-3536-3738-3930-313233343536",KEYFORMATVERSIONS="1",KEYFORMAT="com.apple.streamingkeydelivery"
+#EXTINF:0.789,
+output_audio-3.ts
+#EXT-X-ENDLIST
