@@ -25,6 +25,18 @@ enum class StreamDataType {
   kMediaSample,
   kTextSample,
   kSegmentInfo,
+  kScte35Event,
+};
+
+// Scte35Event represents cuepoint markers in input streams. It will be used
+// to represent out of band cuepoint markers too.
+struct Scte35Event {
+  std::string id;
+  // Segmentation type id from SCTE35 segmentation descriptor.
+  int type = 0;
+  int64_t start_time = 0;
+  int64_t duration = 0;
+  std::string cue_data;
 };
 
 struct SegmentInfo {
@@ -47,6 +59,7 @@ struct StreamData {
   std::shared_ptr<const MediaSample> media_sample;
   std::shared_ptr<const TextSample> text_sample;
   std::shared_ptr<const SegmentInfo> segment_info;
+  std::shared_ptr<const Scte35Event> scte35_event;
 
   static std::unique_ptr<StreamData> FromStreamInfo(
       size_t stream_index, std::shared_ptr<const StreamInfo> stream_info) {
@@ -81,6 +94,16 @@ struct StreamData {
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kSegmentInfo;
     stream_data->segment_info = std::move(segment_info);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromScte35Event(
+      size_t stream_index,
+      std::shared_ptr<const Scte35Event> scte35_event) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kScte35Event;
+    stream_data->scte35_event = std::move(scte35_event);
     return stream_data;
   }
 };
@@ -165,6 +188,12 @@ class MediaHandler {
   Status DispatchSegmentInfo(
       size_t stream_index, std::shared_ptr<const SegmentInfo> segment_info) {
     return Dispatch(StreamData::FromSegmentInfo(stream_index, segment_info));
+  }
+
+  /// Dispatch the scte35 event to downstream handlers.
+  Status DispatchScte35Event(size_t stream_index,
+                             std::shared_ptr<const Scte35Event> scte35_event) {
+    return Dispatch(StreamData::FromScte35Event(stream_index, scte35_event));
   }
 
   /// Flush the downstream connected at the specified output stream index.

@@ -55,6 +55,8 @@
       'target_name': 'packager',
       'type': 'executable',
       'sources': [
+        'app/ad_cue_generator_flags.cc',
+        'app/ad_cue_generator_flags.h',
         'app/crypto_flags.cc',
         'app/crypto_flags.h',
         'app/gflags_hex_bytes.cc',
