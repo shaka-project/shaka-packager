@@ -11,8 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "packager/hls/public/hls_params.h"
 #include "packager/file/public/buffer_callback_params.h"
+#include "packager/hls/public/hls_params.h"
+#include "packager/media/public/ad_cue_generator_params.h"
 #include "packager/media/public/chunking_params.h"
 #include "packager/media/public/crypto_params.h"
 #include "packager/media/public/mp4_output_params.h"
@@ -41,6 +42,9 @@ struct PackagingParams {
   Mp4OutputParams mp4_output_params;
   /// Chunking (segmentation) related parameters.
   ChunkingParams chunking_params;
+
+  /// Out of band cuepoint parameters.
+  AdCueGeneratorParams ad_cue_generator_params;
 
   /// Create a human readable format of MediaInfo. The output file name will be
   /// the name specified by output flag, suffixed with `.media_info`.

@@ -7,6 +7,7 @@
 #include <gflags/gflags.h>
 #include <iostream>
 
+#include "packager/app/ad_cue_generator_flags.h"
 #include "packager/app/crypto_flags.h"
 #include "packager/app/hls_flags.h"
 #include "packager/app/mpd_flags.h"
@@ -213,8 +214,54 @@ bool GetRawKeyParams(RawKeyParams* raw_key) {
   return true;
 }
 
+bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
+  // Track if optional field is supplied consistently across all cue points.
+  size_t duration_count = 0;
+
+  for (const std::string& ad_cue : base::SplitString(
+           ad_cues, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    Cuepoint cuepoint;
+    auto split_ad_cue = base::SplitString(ad_cue, ",", base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_NONEMPTY);
+    if (split_ad_cue.size() > 2) {
+      LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
+                 << " Each ad cue must contain no more than 2 components.";
+    }
+    if (!base::StringToDouble(split_ad_cue.front(),
+                              &cuepoint.start_time_in_seconds)) {
+      LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
+                 << " Start time component must be of type double.";
+      return false;
+    }
+    if (split_ad_cue.size() > 1) {
+      duration_count++;
+      if (!base::StringToDouble(split_ad_cue[1],
+                                &cuepoint.duration_in_seconds)) {
+        LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
+                   << " Duration component must be of type double.";
+        return false;
+      }
+    }
+    cuepoints->push_back(cuepoint);
+  }
+
+  if (duration_count > 0 && duration_count != cuepoints->size()) {
+    LOG(ERROR) << "Failed to parse --ad_cues " << ad_cues
+               << " Duration component is optional. However if it is supplied,"
+               << " it must be supplied consistently across all cuepoints.";
+    return false;
+  }
+  return true;
+}
+
 base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
+
+  AdCueGeneratorParams& ad_cue_generator_params =
+      packaging_params.ad_cue_generator_params;
+  if (!ParseAdCues(FLAGS_ad_cues, &ad_cue_generator_params.cue_points)) {
+    return base::nullopt;
+  }
 
   ChunkingParams& chunking_params = packaging_params.chunking_params;
   chunking_params.segment_duration_in_seconds = FLAGS_segment_duration;
