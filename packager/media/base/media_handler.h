@@ -26,6 +26,7 @@ enum class StreamDataType {
   kTextSample,
   kSegmentInfo,
   kScte35Event,
+  kCueEvent,
 };
 
 // Scte35Event represents cuepoint markers in input streams. It will be used
@@ -36,6 +37,16 @@ struct Scte35Event {
   int type = 0;
   int64_t start_time = 0;
   int64_t duration = 0;
+  std::string cue_data;
+};
+
+enum class CueEventType { kCueIn, kCueOut, kCuePoint };
+
+// In server-based model, Chunking Handler consolidates SCTE-35 events and
+// generates CueEvent before an ad is about to be inserted.
+struct CueEvent {
+  int64_t timestamp = 0;
+  CueEventType type = CueEventType::kCuePoint;
   std::string cue_data;
 };
 
@@ -60,6 +71,7 @@ struct StreamData {
   std::shared_ptr<const TextSample> text_sample;
   std::shared_ptr<const SegmentInfo> segment_info;
   std::shared_ptr<const Scte35Event> scte35_event;
+  std::shared_ptr<const CueEvent> cue_event;
 
   static std::unique_ptr<StreamData> FromStreamInfo(
       size_t stream_index, std::shared_ptr<const StreamInfo> stream_info) {
@@ -104,6 +116,16 @@ struct StreamData {
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kScte35Event;
     stream_data->scte35_event = std::move(scte35_event);
+    return stream_data;
+  }
+
+  static std::unique_ptr<StreamData> FromCueEvent(
+      size_t stream_index,
+      std::shared_ptr<const CueEvent> cue_event) {
+    std::unique_ptr<StreamData> stream_data(new StreamData);
+    stream_data->stream_index = stream_index;
+    stream_data->stream_data_type = StreamDataType::kCueEvent;
+    stream_data->cue_event = std::move(cue_event);
     return stream_data;
   }
 };
@@ -194,6 +216,12 @@ class MediaHandler {
   Status DispatchScte35Event(size_t stream_index,
                              std::shared_ptr<const Scte35Event> scte35_event) {
     return Dispatch(StreamData::FromScte35Event(stream_index, scte35_event));
+  }
+
+  /// Dispatch the cue event to downstream handlers.
+  Status DispatchCueEvent(size_t stream_index,
+                          std::shared_ptr<const CueEvent> cue_event) {
+    return Dispatch(StreamData::FromCueEvent(stream_index, cue_event));
   }
 
   /// Flush the downstream connected at the specified output stream index.
