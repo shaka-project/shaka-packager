@@ -444,18 +444,11 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
 }
 
 Status CreateTextJobs(
-    int first_stream_number,
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
     MpdNotifier* mpd_notifier,
     std::vector<std::unique_ptr<Job>>* jobs) {
-  // -1 so that it will be back at |first_stream_number| on the first
-  // iteration.
-  int stream_number = first_stream_number - 1;
-
   for (const StreamDescriptor& stream : streams) {
-    stream_number += 1;
-
     const MediaContainerName output_format = GetOutputFormat(stream);
 
     if (output_format == CONTAINER_MOV) {
@@ -650,14 +643,12 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   std::sort(audio_video_streams.begin(), audio_video_streams.end(),
             media::StreamDescriptorCompareFn);
 
-  int stream_number = 0;
-
   Status status;
 
-  status.Update(CreateTextJobs(stream_number, text_streams, packaging_params,
-                               mpd_notifier, jobs));
+  status.Update(
+      CreateTextJobs(text_streams, packaging_params, mpd_notifier, jobs));
 
-  stream_number += text_streams.size();
+  int stream_number = text_streams.size();
 
   status.Update(CreateAudioVideoJobs(
       stream_number, audio_video_streams, packaging_params, fake_clock,
