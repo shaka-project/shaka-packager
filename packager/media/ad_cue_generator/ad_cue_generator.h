@@ -23,6 +23,9 @@ class AdCueGenerator : public MediaHandler {
   AdCueGenerator(const AdCueGenerator&) = delete;
   AdCueGenerator& operator=(const AdCueGenerator&) = delete;
 
+  Status InitializeInternal() override;
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
+
   const AdCueGeneratorParams ad_cue_generator_params_;
 };
 

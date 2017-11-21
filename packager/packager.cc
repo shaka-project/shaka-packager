@@ -21,6 +21,7 @@
 #include "packager/file/file.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/simple_hls_notifier.h"
+#include "packager/media/ad_cue_generator/ad_cue_generator.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
@@ -495,6 +496,8 @@ Status CreateAudioVideoJobs(
 
   // Demuxers are shared among all streams with the same input.
   std::shared_ptr<Demuxer> demuxer;
+  // AdCueGenerator is shared among all streams.
+  std::shared_ptr<AdCueGenerator> ad_cue_generator;
   // Replicators are shared among all streams with the same input and stream
   // selector.
   std::shared_ptr<MediaHandler> replicator;
@@ -505,6 +508,11 @@ Status CreateAudioVideoJobs(
   // -1 so that it will be back at |first_stream_number| on the first
   // iteration.
   int stream_number = first_stream_number - 1;
+
+  if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
+    ad_cue_generator = std::make_shared<AdCueGenerator>(
+        packaging_params.ad_cue_generator_params);
+  }
 
   for (const StreamDescriptor& stream : streams) {
     stream_number += 1;
@@ -555,16 +563,17 @@ Status CreateAudioVideoJobs(
           packaging_params, stream, encryption_key_source);
 
       Status status;
-
-      // The path is different if there is encryption. Even though there are
-      // common elements, it is easier to understand the path if they are
-      // expressed independently of each other.
-      if (encryptor) {
+      if (ad_cue_generator) {
+        status.Update(
+            demuxer->SetHandler(stream.stream_selector, ad_cue_generator));
+        status.Update(ad_cue_generator->AddHandler(chunker));
+      } else {
         status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
+      }
+      if (encryptor) {
         status.Update(chunker->AddHandler(encryptor));
         status.Update(encryptor->AddHandler(replicator));
       } else {
-        status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
         status.Update(chunker->AddHandler(replicator));
       }
 
