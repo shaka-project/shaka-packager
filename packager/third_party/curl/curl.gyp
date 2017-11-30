@@ -91,11 +91,11 @@
             'source/lib/system_win32.c',
             'source/lib/system_win32.h',
           ],
-          'defines': [
-            'BUILDING_LIBCURL',
-          ],
           'msvs_disabled_warnings': [ 4267, ],
         }],
+      ],
+      'defines': [
+        'BUILDING_LIBCURL',
       ],
       'variables': {
         'clang_warning_flags': [
@@ -184,6 +184,7 @@
         'source/lib/md4.c',
         'source/lib/md5.c',
         'source/lib/memdebug.c',
+        'source/lib/mime.c',
         'source/lib/mprintf.c',
         'source/lib/multi.c',
         'source/lib/netrc.c',
@@ -197,7 +198,7 @@
         'source/lib/pipeline.c',
         'source/lib/pop3.c',
         'source/lib/progress.c',
-        'source/lib/rawstr.c',
+        'source/lib/rand.c',
         'source/lib/rtsp.c',
         'source/lib/security.c',
         'source/lib/select.c',
@@ -212,8 +213,8 @@
         'source/lib/speedcheck.c',
         'source/lib/splay.c',
         'source/lib/ssh.c',
+        'source/lib/strcase.c',
         'source/lib/strdup.c',
-        'source/lib/strequal.c',
         'source/lib/strerror.c',
         'source/lib/strtok.c',
         'source/lib/strtoofft.c',

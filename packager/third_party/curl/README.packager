@@ -26,10 +26,20 @@ Description of source tree.
         A dummy manual required to build curl command line tool.
 
     config/linux/curl_config.h
-        An *auto-generated* configuration file by running "source/configure
-        --with-ssl --without-ca-bundle --without-ca-path --without-zlib
-        --without-libidn --without-librtmp" on linux platform, with a few
-        features disabled to build correctly on a fresh linux box.
+        An *auto-generated* configuration file by running bash commands:
+
+          cd source
+          ./buildconf
+          cd ..
+          source/configure --with-ssl --without-ca-bundle --without-ca-path \
+          --without-zlib --without-libidn --without-librtmp
+          cp lib/curl_config.h config/linux/curl_config.h
+
+        on linux platform, with a few features disabled to build correctly on a
+        fresh linux box.
+
+    config/mac/curl_config.h
+        Similar as above, but run in Mac instead.
 
     config/linux/find_curl_ca_bundle.sh
         A script used to find the path to curl_ca_bundle in the target system.

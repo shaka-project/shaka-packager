@@ -39,7 +39,7 @@ deps = {
     Var("github") + "/google/boringssl@fc9c67599d9bdeb2e0467085133b81a8e28f77a4",
 
   "src/packager/third_party/curl/source":
-    Var("github") + "/curl/curl@79e63a53bb9598af863b0afe49ad662795faeef4",  #7.50.0
+    Var("github") + "/curl/curl@c514af5a4f5ac3ce724065cc6a8e009373436f78",  #7.56.1
 
   "src/packager/third_party/gflags/src":
     Var("chromium_git") + "/external/github.com/gflags/gflags@03bebcb065c83beff83d50ae025a55a4bf94dfca",
