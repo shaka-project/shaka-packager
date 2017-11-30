@@ -257,12 +257,22 @@ bool MP4MediaParser::ParseBox(bool* err) {
     return false;
 
   if (reader->type() == FOURCC_mdat) {
-    // The code ends up here only if a MOOV box is not yet seen.
-    DCHECK(!moov_);
-
-    NOTIMPLEMENTED() << " Files with MDAT before MOOV is not supported yet.";
-    *err = true;
-    return false;
+    if (!moov_) {
+      // For seekable files, we seek to the 'moov' and load the 'moov' first
+      // then seek back (see LoadMoov function for details); we do not support
+      // having 'mdat' before 'moov' for non-seekable files. The code ends up
+      // here only if it is a non-seekable file.
+      NOTIMPLEMENTED() << " Non-seekable Files with 'mdat' box before 'moov' "
+                          "box is not supported.";
+      *err = true;
+      return false;
+    } else {
+      // This can happen if there are unused 'mdat' boxes, which is unusual
+      // but allowed by the spec. Ignore the 'mdat' and proceed.
+      LOG(INFO)
+          << "Ignore unused 'mdat' box - this could be as a result of extra "
+             "not usable 'mdat' or 'mdat' associated with unrecognized track.";
+    }
   }
 
   // Set up mdat offset for ReadMDATsUntil().

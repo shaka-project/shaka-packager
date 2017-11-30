@@ -36,6 +36,7 @@ bear-640x360.mp4  - Same as above, but in a different resolution.
 bear-640x360-hevc.mp4  - Same content, but encoded with HEVC.
 bear-320x180.mp4  - Same as above, but in a different resolution.
 bear-640x360-trailing-moov.mp4  - Same content, but with moov box in the end.
+bear-640x360-trailing-moov-additional-mdat.mp4  - Same content, but with moov box in the end and an additional unused mdat, which should be ignored.
 bear-640x360-av_frag.mp4  - Same content, but in fragmented mp4.
 bear-640x360-aac_lc-silent_right.mp4  - Audio only, stereo, but right channel is silent, with AAC-LC profile.
 bear-640x360-aac_he-silent_right.mp4  - Same as above, but with AAC-HE profile.

@@ -188,6 +188,15 @@ TEST_F(MP4MediaParserTest, TrailingMoov) {
   EXPECT_EQ(201u, num_samples_);
 }
 
+TEST_F(MP4MediaParserTest, TrailingMoovAndAdditionalMdat) {
+  // The additional mdat should just be ignored, so the parse is still
+  // successful with the same result.
+  EXPECT_TRUE(
+      ParseMP4File("bear-640x360-trailing-moov-additional-mdat.mp4", 1024));
+  EXPECT_EQ(2u, num_streams_);
+  EXPECT_EQ(201u, num_samples_);
+}
+
 TEST_F(MP4MediaParserTest, Flush) {
   // Flush while reading sample data, then start a new stream.
   InitializeParser(NULL);
