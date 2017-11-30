@@ -14,10 +14,10 @@
 
 namespace {
 const char kExpectedConfigRecord[] =
-    "01016000000300900000030000f000fcfdf8f800000303a10001002e42010101600000"
-    "030090000003000003005da0028080241f265999a4932bffc0d5c0d640400000030040"
-    "00000602a2000100074401c172b46240a00001001840010c01ffff0160000003009000"
-    "0003000003005d999809";
+    "01016000000300900000030000f000fcfdf8f800000303a00001001840010c01ffff01"
+    "600000030090000003000003005d999809a10001002e42010101600000030090000003"
+    "000003005da0028080241f265999a4932bffc0d5c0d64040000003004000000602a200"
+    "0100074401c172b46240";
 }
 
 namespace shaka {
@@ -50,11 +50,11 @@ TEST(H265ByteToUnitStreamConverter, StripParameterSetsNalu) {
   // Double-check that it can be parsed.
   HEVCDecoderConfigurationRecord config;
   ASSERT_TRUE(config.Parse(decoder_config));
-  // The order is SPS, PPS, VPS.
+  // The order is VPS, SPS, PPS.
   ASSERT_EQ(3u, config.nalu_count());
-  EXPECT_EQ(Nalu::H265_SPS, config.nalu(0).type());
-  EXPECT_EQ(Nalu::H265_PPS, config.nalu(1).type());
-  EXPECT_EQ(Nalu::H265_VPS, config.nalu(2).type());
+  EXPECT_EQ(Nalu::H265_VPS, config.nalu(0).type());
+  EXPECT_EQ(Nalu::H265_SPS, config.nalu(1).type());
+  EXPECT_EQ(Nalu::H265_PPS, config.nalu(2).type());
 }
 
 TEST(H265ByteToUnitStreamConverter, KeepParameterSetsNalu) {

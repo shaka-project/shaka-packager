@@ -73,8 +73,14 @@ bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   buffer.AppendInt(static_cast<uint8_t>(kUnitStreamNaluLengthSize - 1));
   buffer.AppendInt(static_cast<uint8_t>(3) /* numOfArrays */);
 
-  // SPS
+  // VPS
   const uint8_t kArrayCompleteness = 0x80;
+  buffer.AppendInt(static_cast<uint8_t>(kArrayCompleteness | Nalu::H265_VPS));
+  buffer.AppendInt(static_cast<uint16_t>(1) /* numNalus */);
+  buffer.AppendInt(static_cast<uint16_t>(last_vps_.size()));
+  buffer.AppendVector(last_vps_);
+
+  // SPS
   buffer.AppendInt(static_cast<uint8_t>(kArrayCompleteness | Nalu::H265_SPS));
   buffer.AppendInt(static_cast<uint16_t>(1) /* numNalus */);
   buffer.AppendInt(static_cast<uint16_t>(last_sps_.size()));
@@ -85,12 +91,6 @@ bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   buffer.AppendInt(static_cast<uint16_t>(1) /* numNalus */);
   buffer.AppendInt(static_cast<uint16_t>(last_pps_.size()));
   buffer.AppendVector(last_pps_);
-
-  // VPS
-  buffer.AppendInt(static_cast<uint8_t>(kArrayCompleteness | Nalu::H265_VPS));
-  buffer.AppendInt(static_cast<uint16_t>(1) /* numNalus */);
-  buffer.AppendInt(static_cast<uint16_t>(last_vps_.size()));
-  buffer.AppendVector(last_vps_);
 
   buffer.SwapBuffer(decoder_config);
   return true;
