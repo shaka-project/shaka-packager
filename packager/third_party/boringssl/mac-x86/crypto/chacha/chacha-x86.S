@@ -1,5 +1,4 @@
 #if defined(__i386__)
-.file	"chacha-x86.S"
 .text
 .globl	_ChaCha20_ctr32
 .private_extern	_ChaCha20_ctr32

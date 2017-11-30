@@ -13,13 +13,14 @@ import sys
 
 
 SCRIPT_PATH = os.path.abspath(__file__)
-SRC_PATH = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_PATH)))
+SRC_PATH = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_PATH))))
 DEPS_PATH = os.path.join(SRC_PATH, 'DEPS')
-BORINGSSL_PATH = os.path.join(SRC_PATH, 'third_party', 'boringssl')
+BORINGSSL_PATH = os.path.join(SRC_PATH, 'packager', 'third_party', 'boringssl')
 BORINGSSL_SRC_PATH = os.path.join(BORINGSSL_PATH, 'src')
 
 if not os.path.isfile(DEPS_PATH) or not os.path.isdir(BORINGSSL_SRC_PATH):
-  raise Exception('Could not find Chromium checkout')
+  raise Exception('Could not find packager checkout')
 
 # Pull OS_ARCH_COMBOS out of the BoringSSL script.
 sys.path.append(os.path.join(BORINGSSL_SRC_PATH, 'util'))
@@ -63,7 +64,7 @@ def main():
     return 1
 
   if not IsPristine(SRC_PATH):
-    print >>sys.stderr, 'Chromium checkout not pristine.'
+    print >>sys.stderr, 'Packager checkout not pristine.'
     return 0
   if not IsPristine(BORINGSSL_SRC_PATH):
     print >>sys.stderr, 'BoringSSL checkout not pristine.'

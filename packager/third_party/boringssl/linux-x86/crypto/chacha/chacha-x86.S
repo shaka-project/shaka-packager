@@ -1,5 +1,4 @@
 #if defined(__i386__)
-.file	"chacha-x86.S"
 .text
 .globl	ChaCha20_ctr32
 .hidden	ChaCha20_ctr32
