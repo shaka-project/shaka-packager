@@ -496,8 +496,6 @@ Status CreateAudioVideoJobs(
 
   // Demuxers are shared among all streams with the same input.
   std::shared_ptr<Demuxer> demuxer;
-  // AdCueGenerator is shared among all streams.
-  std::shared_ptr<AdCueGenerator> ad_cue_generator;
   // Replicators are shared among all streams with the same input and stream
   // selector.
   std::shared_ptr<MediaHandler> replicator;
@@ -508,11 +506,6 @@ Status CreateAudioVideoJobs(
   // -1 so that it will be back at |first_stream_number| on the first
   // iteration.
   int stream_number = first_stream_number - 1;
-
-  if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
-    ad_cue_generator = std::make_shared<AdCueGenerator>(
-        packaging_params.ad_cue_generator_params);
-  }
 
   for (const StreamDescriptor& stream : streams) {
     stream_number += 1;
@@ -554,6 +547,12 @@ Status CreateAudioVideoJobs(
     }
 
     if (new_source) {
+      std::shared_ptr<MediaHandler> ad_cue_generator;
+      if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
+        ad_cue_generator = std::make_shared<AdCueGenerator>(
+            packaging_params.ad_cue_generator_params);
+      }
+
       replicator = std::make_shared<Replicator>();
 
       std::shared_ptr<MediaHandler> chunker =

@@ -26,6 +26,9 @@ class AdCueGenerator : public MediaHandler {
   Status InitializeInternal() override;
   Status Process(std::unique_ptr<StreamData> stream_data) override;
 
+  // Dispatches SCTE35 events that are built from AdCueGenerator params.
+  Status DispatchScte35Events(size_t stream_index, uint32_t time_scale);
+
   const AdCueGeneratorParams ad_cue_generator_params_;
 };
 
