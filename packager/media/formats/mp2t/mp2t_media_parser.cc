@@ -306,10 +306,13 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
           sbr_in_mimetype_));
       is_audio = true;
       break;
-    default:
-      VLOG(1) << "Ignore unsupported stream type 0x" << std::hex << stream_type
-              << std::dec;
+    default: {
+      LOG_IF(ERROR, !stream_type_logged_once_[stream_type])
+          << "Ignore unsupported MPEG2TS stream type 0x" << std::hex
+          << stream_type << std::dec;
+      stream_type_logged_once_[stream_type] = true;
       return;
+    }
   }
 
   // Create the PES state here.
