@@ -535,7 +535,7 @@ Status CreateAudioVideoJobs(
       demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
     }
 
-    const bool new_source = previous_input != stream.input ||
+    const bool new_stream = previous_input != stream.input ||
                             previous_selector != stream.stream_selector;
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
@@ -546,7 +546,7 @@ Status CreateAudioVideoJobs(
       continue;
     }
 
-    if (new_source) {
+    if (new_stream) {
       std::shared_ptr<MediaHandler> ad_cue_generator;
       if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
         ad_cue_generator = std::make_shared<AdCueGenerator>(
