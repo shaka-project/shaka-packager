@@ -207,12 +207,6 @@ bool UdpFile::Open() {
     struct ip_mreq multicast_group;
     multicast_group.imr_multiaddr = local_in_addr;
 
-    if (options->interface_address().empty()) {
-      LOG(ERROR) << "Interface address is required for multicast, which can be "
-                    "specified in udp url, e.g. "
-                    "udp://ip:port?interface=interface_ip.";
-      return false;
-    }
     if (inet_pton(AF_INET, options->interface_address().c_str(),
                   &multicast_group.imr_interface) != 1) {
       LOG(ERROR) << "Malformed IPv4 interface address "

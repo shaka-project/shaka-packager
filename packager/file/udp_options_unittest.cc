@@ -25,7 +25,7 @@ TEST_F(UdpOptionsTest, AddressAndPort) {
   EXPECT_EQ(88u, options->port());
   // The below fields are not set.
   EXPECT_FALSE(options->reuse());
-  EXPECT_EQ("", options->interface_address());
+  EXPECT_EQ("0.0.0.0", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
 }
 
@@ -62,7 +62,7 @@ TEST_F(UdpOptionsTest, Reuse) {
   EXPECT_EQ("224.1.2.30", options->address());
   EXPECT_EQ(88u, options->port());
   EXPECT_TRUE(options->reuse());
-  EXPECT_EQ("", options->interface_address());
+  EXPECT_EQ("0.0.0.0", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
 }
 

@@ -11,7 +11,7 @@ options:
 :interface=<addr>, source=<addr>:
 
     Multicast group interface address. Only the packets sent to this address is
-    received.
+    received. Default to "0.0.0.0" if not specified.
 
 :timeout=<microseconds>:
 

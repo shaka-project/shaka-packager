@@ -31,12 +31,12 @@ class UdpOptions {
   UdpOptions() = default;
 
   /// IP Address.
-  std::string address_;
+  std::string address_ = "0.0.0.0";
   uint16_t port_ = 0;
   /// Allow or disallow reusing UDP sockets.
   bool reuse_ = false;
   // Address of the interface over which to receive UDP multicast streams.
-  std::string interface_address_;
+  std::string interface_address_ = "0.0.0.0";
   /// Timeout in microseconds. 0 to indicate unlimited timeout.
   unsigned timeout_us_ = 0;
 };
