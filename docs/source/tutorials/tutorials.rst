@@ -4,9 +4,9 @@ Tutorials
 .. toctree::
    :maxdepth: 2
 
-   basic_usage.md
+   basic_usage.rst
    dash.rst
-   hls.md
-   live.md
+   hls.rst
+   live.rst
    drm.rst
    ffmpeg_piping.rst
