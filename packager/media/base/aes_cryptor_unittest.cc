@@ -603,8 +603,9 @@ TEST_P(AesCbcCryptorVerificationTest, EncryptDecryptTest) {
 
   std::vector<uint8_t> plaintext;
   std::string plaintext_hex(GetParam().plaintext_hex);
-  if (!plaintext_hex.empty())
+  if (!plaintext_hex.empty()) {
     ASSERT_TRUE(base::HexStringToBytes(plaintext_hex, &plaintext));
+  }
 
   std::vector<uint8_t> expected_ciphertext;
   std::string expected_ciphertext_hex(GetParam().expected_ciphertext_hex);

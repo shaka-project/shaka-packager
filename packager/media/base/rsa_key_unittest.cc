@@ -86,8 +86,9 @@ TEST_P(RsaKeyTest, LoadPrivateKeyInPublicKey) {
 TEST_P(RsaKeyTest, EncryptAndDecrypt) {
   std::string encrypted_message;
   EXPECT_TRUE(public_key_->Encrypt(test_set_.test_message, &encrypted_message));
-  if (kIsFakePrngSupported)
+  if (kIsFakePrngSupported) {
     EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
+  }
 
   std::string decrypted_message;
   EXPECT_TRUE(private_key_->Decrypt(encrypted_message, &decrypted_message));
@@ -124,8 +125,9 @@ TEST_P(RsaKeyTest, SignAndVerify) {
   std::string signature;
   EXPECT_TRUE(
       private_key_->GenerateSignature(test_set_.test_message, &signature));
-  if (kIsFakePrngSupported)
+  if (kIsFakePrngSupported) {
     EXPECT_EQ(test_set_.signature, signature);
+  }
   EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message, signature));
 }
 

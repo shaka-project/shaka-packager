@@ -175,8 +175,9 @@ TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegment) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    if (i == 5)
+    if (i == 5) {
       ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
+    }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
@@ -199,8 +200,9 @@ TEST_F(SingleSegmentSegmenterTest, IgnoresSubsegment) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    if (i == 5)
+    if (i == 5) {
       ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment));
+    }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));

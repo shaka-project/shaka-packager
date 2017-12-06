@@ -56,8 +56,11 @@ if __name__ == '__main__':
   if [arg.endswith('.gyp') for arg in args].count(True) == 0:
     args.append(os.path.join(src_dir, 'packager.gyp'))
 
-  # Always include common.gypi.
-  args.extend(['-I' + os.path.join(src_dir, 'build', 'common.gypi')])
+  # Always include Chromium's common.gypi and our common.gypi.
+  args.extend([
+      '-I' + os.path.join(src_dir, 'build', 'common.gypi'),
+      '-I' + os.path.join(src_dir, 'common.gypi')
+  ])
 
   # Set these default GYP_DEFINES if user does not set the value explicitly.
   _DEFAULT_DEFINES = {'test_isolation_mode': 'noop',

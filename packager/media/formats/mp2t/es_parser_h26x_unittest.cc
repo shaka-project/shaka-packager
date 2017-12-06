@@ -166,8 +166,9 @@ class EsParserH26xTest : public testing::Test {
   void EmitSample(uint32_t pid, const std::shared_ptr<MediaSample>& sample) {
     size_t sample_id = sample_count_;
     sample_count_++;
-    if (sample_count_ == 1)
+    if (sample_count_ == 1) {
       EXPECT_TRUE(sample->is_key_frame());
+    }
 
     ASSERT_GT(samples_.size(), sample_id);
     const std::vector<uint8_t> sample_data(

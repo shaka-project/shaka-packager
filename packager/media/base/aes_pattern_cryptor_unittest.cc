@@ -112,8 +112,9 @@ class AesPatternCryptorVerificationTest
 TEST_P(AesPatternCryptorVerificationTest, PatternTest) {
   std::vector<uint8_t> text;
   std::string text_hex(GetParam().text_hex);
-  if (!text_hex.empty())
+  if (!text_hex.empty()) {
     ASSERT_TRUE(base::HexStringToBytes(text_hex, &text));
+  }
   std::vector<uint8_t> expected_crypt_text;
   std::string expected_crypt_text_hex(GetParam().expected_crypt_text_hex);
   if (!expected_crypt_text_hex.empty()) {

@@ -18,6 +18,8 @@ const int kSumAscending1 = 45;
 const int kAudioScale = 48000;
 const int kVideoScale = 25;
 
+const uint8_t kFullSampleEncryptionFlag = 0;
+
 const uint8_t kDefaultCryptByteBlock = 2;
 const uint8_t kDefaultSkipByteBlock = 8;
 
@@ -478,8 +480,7 @@ TEST_F(TrackRunIteratorTest,
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
-  AddSampleEncryption(!SampleEncryption::kUseSubsampleEncryption,
-                      &moof.tracks[1]);
+  AddSampleEncryption(kFullSampleEncryptionFlag, &moof.tracks[1]);
 
   ASSERT_TRUE(iter_->Init(moof));
   // The run for track 2 will be the second, which is parsed according to
@@ -552,8 +553,7 @@ TEST_F(TrackRunIteratorTest,
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
-  AddSampleEncryptionWithConstantIv(!SampleEncryption::kUseSubsampleEncryption,
-                                    &moof.tracks[1]);
+  AddSampleEncryptionWithConstantIv(kFullSampleEncryptionFlag, &moof.tracks[1]);
 
   ASSERT_TRUE(iter_->Init(moof));
   // The run for track 2 will be the second, which is parsed according to

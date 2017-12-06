@@ -224,8 +224,9 @@ TEST_F(EncryptedSegmenterTest, BasicSupport) {
   // There should be 2 segments with the first segment in clear and the second
   // segment encrypted.
   for (int i = 0; i < 5; i++) {
-    if (i == 3)
+    if (i == 3) {
       ASSERT_OK(segmenter_->FinalizeSegment(0, 3 * kDuration, !kSubsegment));
+    }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     if (i >= 3) {

@@ -7,9 +7,9 @@
 # GYP file for any MPD generation targets.
 
 {
-  'includes': [
-    '../common.gypi',
-  ],
+  'variables': {
+    'shaka_code': 1,
+  },
   'targets': [
     {
       'target_name': 'media_info_proto',

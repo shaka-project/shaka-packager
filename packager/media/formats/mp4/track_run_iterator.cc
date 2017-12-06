@@ -191,10 +191,12 @@ bool TrackRunIterator::Init() {
 
     // Check that total number of samples match.
     DCHECK_EQ(num_samples, decoding_time.NumSamples());
-    if (has_composition_offset)
+    if (has_composition_offset) {
       DCHECK_EQ(num_samples, composition_offset.NumSamples());
-    if (num_chunks > 0)
+    }
+    if (num_chunks > 0) {
       DCHECK_EQ(num_samples, chunk_info.NumSamples(1, num_chunks));
+    }
     DCHECK_GE(num_chunks, chunk_info.LastFirstChunk());
 
     if (num_samples > 0) {
