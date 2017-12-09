@@ -432,6 +432,22 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetLanguage) {
   EXPECT_EQ("apa", media_playlist_.GetLanguage());  // no short form exists
 }
 
+TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns 0 by default if not audio.
+  EXPECT_EQ(0, media_playlist_.GetNumChannels());
+
+  media_info.mutable_audio_info()->set_num_channels(2);
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
+  EXPECT_EQ(2, media_playlist_.GetNumChannels());
+
+  media_info.mutable_audio_info()->set_num_channels(8);
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
+  EXPECT_EQ(8, media_playlist_.GetNumChannels());
+}
+
 TEST_F(MediaPlaylistMultiSegmentTest, InitSegment) {
   valid_video_media_info_.set_reference_time_scale(90000);
   valid_video_media_info_.set_init_segment_name("init_segment.mp4");

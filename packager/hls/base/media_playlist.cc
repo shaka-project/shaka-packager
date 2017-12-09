@@ -434,6 +434,10 @@ std::string MediaPlaylist::GetLanguage() const {
   return LanguageToShortestForm(lang);
 }
 
+int MediaPlaylist::GetNumChannels() const {
+  return media_info_.audio_info().num_channels();
+}
+
 bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
                                          uint32_t* height) const {
   DCHECK(width);

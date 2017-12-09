@@ -20,6 +20,26 @@ namespace hls {
 
 namespace {
 
+void AppendMediaTag(const std::string& base_url,
+                    const std::string& group_id,
+                    const MediaPlaylist* audio_playlist,
+                    std::string* out) {
+  DCHECK(audio_playlist);
+  DCHECK(out);
+
+  out->append("#EXT-X-MEDIA:TYPE=AUDIO");
+  base::StringAppendF(out, ",URI=\"%s\"",
+                      (base_url + audio_playlist->file_name()).c_str());
+  base::StringAppendF(out, ",GROUP-ID=\"%s\"", group_id.c_str());
+  std::string language = audio_playlist->GetLanguage();
+  if (!language.empty())
+    base::StringAppendF(out, ",LANGUAGE=\"%s\"", language.c_str());
+  base::StringAppendF(out, ",NAME=\"%s\"", audio_playlist->name().c_str());
+  base::StringAppendF(out, ",CHANNELS=\"%d\"",
+                      audio_playlist->GetNumChannels());
+  out->append("\n");
+}
+
 void AppendStreamInfoTag(uint64_t bitrate,
                          const std::string& codecs,
                          uint32_t width,
@@ -81,21 +101,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
 
     uint64_t max_audio_bitrate = 0;
     for (const MediaPlaylist* audio_playlist : audio_playlists) {
-      base::StringAppendF(
-          &audio_output,
-          "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"%s\",NAME=\"%s\",",
-          group_id.c_str(), audio_playlist->name().c_str());
-      std::string language = audio_playlist->GetLanguage();
-      if (!language.empty()) {
-        base::StringAppendF(
-            &audio_output,
-            "LANGUAGE=\"%s\",",
-            language.c_str());
-      }
-      base::StringAppendF(
-          &audio_output,
-          "URI=\"%s\"\n",
-          (base_url + audio_playlist->file_name()).c_str());
+      AppendMediaTag(base_url, group_id, audio_playlist, &audio_output);
       const uint64_t audio_bitrate = audio_playlist->Bitrate();
       if (audio_bitrate > max_audio_bitrate)
         max_audio_bitrate = audio_bitrate;

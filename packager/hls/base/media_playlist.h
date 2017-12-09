@@ -155,6 +155,9 @@ class MediaPlaylist {
   ///         form.  May be an empty string for video.
   virtual std::string GetLanguage() const;
 
+  /// @return number of channels for audio. 0 is returned for video.
+  virtual int GetNumChannels() const;
+
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.
   virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;
