@@ -66,8 +66,19 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
       time_scales_[stream_data->stream_index] = time_scale;
       break;
     }
+    case StreamDataType::kScte35Event: {
+      DCHECK_NE(main_stream_index_, kInvalidStreamIndex)
+          << "kStreamInfo should arrive before kScte35Event";
+      const auto stream_index = stream_data->stream_index;
+      if (stream_index != main_stream_index_) {
+        VLOG(3) << "Dropping scte35 event from non main stream.";
+        return Status::OK;
+      }
+      scte35_events_.push(std::move(stream_data));
+      return Status::OK;
+    }
     case StreamDataType::kSegmentInfo:
-      VLOG(3) << "Drop existing segment info.";
+      VLOG(3) << "Droppping existing segment info.";
       return Status::OK;
     case StreamDataType::kMediaSample: {
       const size_t stream_index = stream_data->stream_index;

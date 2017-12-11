@@ -8,7 +8,9 @@
 #define PACKAGER_MEDIA_CHUNKING_CHUNKING_HANDLER_
 
 #include <atomic>
+#include <queue>
 
+#include "packager/base/logging.h"
 #include "packager/media/base/media_handler.h"
 #include "packager/media/public/chunking_params.h"
 
@@ -99,6 +101,24 @@ class ChunkingHandler : public MediaHandler {
   std::vector<uint32_t> time_scales_;
   // The end timestamp of the last dispatched sample.
   std::vector<int64_t> last_sample_end_timestamps_;
+
+  struct Scte35EventComparator {
+    bool operator()(const std::shared_ptr<StreamData>& lhs,
+                    const std::shared_ptr<StreamData>& rhs) const {
+      DCHECK(lhs);
+      DCHECK(rhs);
+      DCHECK(lhs->scte35_event);
+      return lhs->scte35_event->start_time > rhs->scte35_event->start_time;
+    }
+  };
+
+  // Captures all incoming SCTE35 events to identify chunking points. Events
+  // will be removed from this queue one at a time as soon as the correct
+  // chunking point is identified in the incoming samples.
+  std::priority_queue<std::shared_ptr<StreamData>,
+                      std::vector<std::shared_ptr<StreamData>>,
+                      Scte35EventComparator>
+      scte35_events_;
 };
 
 }  // namespace media
