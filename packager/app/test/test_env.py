@@ -28,11 +28,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--test_update_golden_files', default=0, type=int)
 
-parser.add_argument('--static_libpackager',
-                    dest='static_libpackager', action='store_true')
-parser.add_argument('--shared_libpackager',
-                    dest='static_libpackager', action='store_false')
-parser.set_defaults(static_libpackager=True)
+parser.add_argument('--libpackager_type', default='static_library')
 
 parser.add_argument('--v')
 parser.add_argument('--vmodule')

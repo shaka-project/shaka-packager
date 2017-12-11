@@ -9,6 +9,9 @@ configuration:
 environment:
   matrix:
     - language: cpp
+      libpackager_type: static_library
+    - language: cpp
+      libpackager_type: shared_library
 
 clone_folder: c:\projects\shaka-packager\src
 
@@ -18,7 +21,7 @@ install:
 before_build:
   - cd ..
   - depot_tools\gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
-  - set GYP_DEFINES='target_arch="%PLATFORM%"'
+  - set GYP_DEFINES="target_arch=%PLATFORM% libpackager_type=%LIBPACKAGER_TYPE%"
   - depot_tools\gclient sync
   - if [%PLATFORM%] == [x64] (
       set "output_directory=%CONFIGURATION%_x64"
@@ -29,14 +32,25 @@ before_build:
 build_script:
   - cd src
   - ..\depot_tools\ninja -C "out\%OUTPUT_DIRECTORY%" -k 100
-  - copy "out\%OUTPUT_DIRECTORY%\packager.exe" packager-win.exe
 
 test_script:
   - for %%f in ("out\%OUTPUT_DIRECTORY%\*_*test.exe") do (%%f || exit /b 666)
-  - python "out\%OUTPUT_DIRECTORY%\packager_test.py" -v
+  - python "out\%OUTPUT_DIRECTORY%\packager_test.py" -v --libpackager_type="%LIBPACKAGER_TYPE%"
+
+after_build:
+  - if exist deploy rmdir /s /q deploy
+  - mkdir deploy
+  - if [%LIBPACKAGER_TYPE%] == ["shared_library"] (
+      copy "out\%OUTPUT_DIRECTORY%\packager.dll" deploy\packager-win.dll
+    ) else (
+      copy "out\%OUTPUT_DIRECTORY%\packager.exe" deploy\packager-win.exe
+    )
+  - if NOT [%LIBPACKAGER_TYPE%] == ["shared_library"] (
+      copy "out\%OUTPUT_DIRECTORY%\mpd_generator.exe" deploy\mpd_generator-win.exe
+    )
 
 artifacts:
-  - path: packager-win.exe
+  - path: 'deploy\*'
 
 deploy:
   provider: GitHub

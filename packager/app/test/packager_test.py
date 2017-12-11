@@ -885,7 +885,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   # TODO(kqyang): Fix shared_library not supporting strip_parameter_set_nalus
   # problem.
   @unittest.skipUnless(
-      test_env.options.static_libpackager,
+      test_env.options.libpackager_type == 'static_library',
       'libpackager shared_library does not support '
       '--strip_parameter_set_nalus flag.'
   )

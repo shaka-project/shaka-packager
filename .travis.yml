@@ -5,8 +5,10 @@ os:
   - osx
 
 env:
-  - BUILD_TYPE=Debug
-  - BUILD_TYPE=Release
+  - BUILD_TYPE=Debug LIBPACKAGER_TYPE=static_library
+  - BUILD_TYPE=Debug LIBPACKAGER_TYPE=shared_library
+  - BUILD_TYPE=Release LIBPACKAGER_TYPE=static_library
+  - BUILD_TYPE=Release LIBPACKAGER_TYPE=shared_library
 
 before_install:
   - test -n $CC  && unset CC
@@ -21,22 +23,39 @@ before_script:
   - shopt -s extglob dotglob
   - mv !(src) src
   - gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+  - export GYP_DEFINES="libpackager_type=${LIBPACKAGER_TYPE}"
   - gclient sync
   - cd src
   - ninja -C out/${BUILD_TYPE} -k 100
 
 script:
+  - if [ ${LIBPACKAGER_TYPE} == "shared_library" ] && [ ${TRAVIS_OS_NAME} == "osx" ]; then
+      export DYLD_FALLBACK_LIBRARY_PATH=./out/${BUILD_TYPE};
+    fi
   - ( find out/${BUILD_TYPE} -name "*_*test" | while read i ; do $i || exit ; done )
-  - out/${BUILD_TYPE}/packager_test.py -v
+  - out/${BUILD_TYPE}/packager_test.py -v --libpackager_type=${LIBPACKAGER_TYPE}
 
 before_deploy:
-  - mv out/${BUILD_TYPE}/packager out/${BUILD_TYPE}/packager-${TRAVIS_OS_NAME}
+  - rm -rf deploy
+  - mkdir deploy
+  - |
+    if [ ${LIBPACKAGER_TYPE} == "shared_library" ]; then
+      if [ ${TRAVIS_OS_NAME} == "linux" ]; then
+        mv out/${BUILD_TYPE}/lib/libpackager.so deploy/libpackager-${TRAVIS_OS_NAME}.so
+      else
+        mv out/${BUILD_TYPE}/libpackager.dylib deploy/libpackager-${TRAVIS_OS_NAME}.dylib
+      fi
+    else
+      mv out/${BUILD_TYPE}/packager deploy/packager-${TRAVIS_OS_NAME}
+      mv out/${BUILD_TYPE}/mpd_generator deploy/mpd_generator-${TRAVIS_OS_NAME}
+    fi
 
 deploy:
   provider: releases
   api_key:
     secure: PbhquzRnY1BkGkM/6LmVSZjhUd8jWnj77QjxAKA8REnFhbAuzqwDYuytRmUsBFMtgatUEgTuh/1duZaIl0yXGvRZdNeGk7BgtguUy6vraWObjjNUSlQ6Njm4y/hMgaUIOhA9I2b8gokWU1PA0sDJOF/FoZaAxFpKXcW4d8Z2C0s=
-  file: out/${BUILD_TYPE}/packager-${TRAVIS_OS_NAME}
+  file_glob: true
+  file: deploy/*
   skip_cleanup: true
   on:
     tags: true
