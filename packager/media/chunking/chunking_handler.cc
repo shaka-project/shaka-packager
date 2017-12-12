@@ -157,6 +157,17 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
       current_subsegment_index_ = 0;
       new_segment = true;
     }
+    // We use 'while' instead of 'if' to make sure to pop off multiple SCTE35
+    // events that may be very close to each other.
+    while (!scte35_events_.empty() &&
+           (scte35_events_.top()->scte35_event->start_time <= timestamp)) {
+      if (!new_segment) {
+        // Reset subsegment index but don't change current_segment_index_.
+        current_subsegment_index_ = 0;
+        new_segment = true;
+      }
+      scte35_events_.pop();
+    }
   }
   if (!new_segment && subsegment_duration_ > 0 &&
       (is_key_frame || !chunking_params_.subsegment_sap_aligned)) {
