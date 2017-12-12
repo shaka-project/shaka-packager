@@ -13,13 +13,15 @@
       'target_name': 'libpackager',
       'type': '<(libpackager_type)',
       'sources': [
-        'packager.cc',
-        'packager.h',
         # TODO(kqyang): Clean up the file path.
+        'app/job_manager.cc',
+        'app/job_manager.h',
         'app/libcrypto_threading.cc',
         'app/libcrypto_threading.h',
         'app/packager_util.cc',
         'app/packager_util.h',
+        'packager.cc',
+        'packager.h',
       ],
       'dependencies': [
         'file/file.gyp:file',
