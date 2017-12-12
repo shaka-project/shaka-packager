@@ -69,7 +69,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/tutorials/basic_usage.md.txt"
+      <li><a href="../_sources/tutorials/basic_usage.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -92,60 +92,60 @@
           <div class="body" role="main">
             
   <div class="section" id="basic-usage">
-<span id="basic-usage"></span><h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="getting-help">
-<span id="getting-help"></span><h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager --help
+<h2>Getting help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager --help
 </pre></div>
 </div>
 </div>
 <div class="section" id="media-file-analysis">
-<span id="media-file-analysis"></span><h2>Media file analysis<a class="headerlink" href="#media-file-analysis" title="Permalink to this headline">¶</a></h2>
+<h2>Media file analysis<a class="headerlink" href="#media-file-analysis" title="Permalink to this headline">¶</a></h2>
 <p>Shaka Packager can be used to inspect the content of a media file and dump basic
-stream information.</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager <span class="nv">input</span><span class="o">=</span>some_content.mp4 --dump_stream_info
+stream information:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager input=some_content.mp4 --dump_stream_info
 </pre></div>
 </div>
 <p>The output looks like:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>File <span class="s2">&quot;some_content.mp4&quot;</span>:
-Found <span class="m">2</span> stream<span class="o">(</span>s<span class="o">)</span>.
-Stream <span class="o">[</span><span class="m">0</span><span class="o">]</span> type: Video
- codec_string: avc1.4d001e
- time_scale: <span class="m">24000</span>
- duration: <span class="m">3002000</span> <span class="o">(</span><span class="m">125</span>.1 seconds<span class="o">)</span>
- is_encrypted: <span class="nb">false</span>
- codec: H264
- width: <span class="m">720</span>
- height: <span class="m">360</span>
- pixel_aspect_ratio: <span class="m">8</span>:9
- trick_play_factor: <span class="m">0</span>
- nalu_length_size: <span class="m">4</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">File</span> <span class="s2">&quot;some_content.mp4&quot;</span><span class="p">:</span>
+<span class="n">Found</span> <span class="mi">2</span> <span class="n">stream</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span>
+<span class="n">Stream</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Video</span>
+ <span class="n">codec_string</span><span class="p">:</span> <span class="n">avc1</span><span class="o">.</span><span class="mi">4</span><span class="n">d001e</span>
+ <span class="n">time_scale</span><span class="p">:</span> <span class="mi">24000</span>
+ <span class="n">duration</span><span class="p">:</span> <span class="mi">3002000</span> <span class="p">(</span><span class="mf">125.1</span> <span class="n">seconds</span><span class="p">)</span>
+ <span class="n">is_encrypted</span><span class="p">:</span> <span class="n">false</span>
+ <span class="n">codec</span><span class="p">:</span> <span class="n">H264</span>
+ <span class="n">width</span><span class="p">:</span> <span class="mi">720</span>
+ <span class="n">height</span><span class="p">:</span> <span class="mi">360</span>
+ <span class="n">pixel_aspect_ratio</span><span class="p">:</span> <span class="mi">8</span><span class="p">:</span><span class="mi">9</span>
+ <span class="n">trick_play_factor</span><span class="p">:</span> <span class="mi">0</span>
+ <span class="n">nalu_length_size</span><span class="p">:</span> <span class="mi">4</span>
 
-Stream <span class="o">[</span><span class="m">1</span><span class="o">]</span> type: Audio
- codec_string: mp4a.40.2
- time_scale: <span class="m">44100</span>
- duration: <span class="m">5517311</span> <span class="o">(</span><span class="m">125</span>.1 seconds<span class="o">)</span>
- is_encrypted: <span class="nb">false</span>
- codec: AAC
- sample_bits: <span class="m">16</span>
- num_channels: <span class="m">2</span>
- sampling_frequency: <span class="m">44100</span>
- language: eng
+<span class="n">Stream</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Audio</span>
+ <span class="n">codec_string</span><span class="p">:</span> <span class="n">mp4a</span><span class="o">.</span><span class="mf">40.2</span>
+ <span class="n">time_scale</span><span class="p">:</span> <span class="mi">44100</span>
+ <span class="n">duration</span><span class="p">:</span> <span class="mi">5517311</span> <span class="p">(</span><span class="mf">125.1</span> <span class="n">seconds</span><span class="p">)</span>
+ <span class="n">is_encrypted</span><span class="p">:</span> <span class="n">false</span>
+ <span class="n">codec</span><span class="p">:</span> <span class="n">AAC</span>
+ <span class="n">sample_bits</span><span class="p">:</span> <span class="mi">16</span>
+ <span class="n">num_channels</span><span class="p">:</span> <span class="mi">2</span>
+ <span class="n">sampling_frequency</span><span class="p">:</span> <span class="mi">44100</span>
+ <span class="n">language</span><span class="p">:</span> <span class="n">eng</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="basic-transmuxing">
-<span id="basic-transmuxing"></span><h2>Basic transmuxing<a class="headerlink" href="#basic-transmuxing" title="Permalink to this headline">¶</a></h2>
+<h2>Basic transmuxing<a class="headerlink" href="#basic-transmuxing" title="Permalink to this headline">¶</a></h2>
 <p>Shaka Packager can be used to extract streams, optionally transmuxes the streams
 from one container format to another container format.</p>
 <p>Here is a simple command that extracts video and audio from the input file:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager <span class="nv">in</span><span class="o">=</span>some_content.mp4,stream<span class="o">=</span>video,out<span class="o">=</span>video.mp4 <span class="se">\</span>
-           <span class="nv">in</span><span class="o">=</span>some_content.mp4,stream<span class="o">=</span>audio,out<span class="o">=</span>audio.mp4
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager in=some_content.mp4,stream=video,out=video.mp4 \
+           in=some_content.mp4,stream=audio,out=audio.mp4
 </pre></div>
 </div>
 <p>Shaka Packager is also capable of more complex tasks, such as applying
-encryption, packaging contents to DASH or HLS formats, etc. Refer
-:doc:<code class="docutils literal"><span class="pre">tutorials</span></code>.</p>
+encryption, packaging contents to DASH or HLS formats, etc. Refer to
+<a class="reference internal" href="tutorials.html"><span class="doc">Tutorials</span></a>.</p>
 </div>
 </div>
 

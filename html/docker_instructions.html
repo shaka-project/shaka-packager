@@ -115,6 +115,12 @@ machine.</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ docker run -v /host_media_path/:/media -it --rm google/shaka-packager
 </pre></div>
 </div>
+<p>Note that the networking in the container is containerized by default, so if
+you want to access UDP multicast in the host network, you will need to configure
+the network explicitly. You may do this with <code class="docutils literal"><span class="pre">--net=host</span></code> option, i.e.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ docker run -v /host_media_path/:/media -it --net<span class="o">=</span>host --rm google/shaka-packager
+</pre></div>
+</div>
 <p>Then in the container, run the packager command, e.g.:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ packager <span class="nv">input</span><span class="o">=</span>/media/example.mp4,stream<span class="o">=</span>audio,output<span class="o">=</span>/media/audio.mp4 <span class="se">\</span>
            <span class="nv">input</span><span class="o">=</span>/media/example.mp4,stream<span class="o">=</span>video,output<span class="o">=</span>/media/video.mp4 <span class="se">\</span>

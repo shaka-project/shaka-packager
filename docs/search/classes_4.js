@@ -13,7 +13,7 @@ var searchData=
   ['encryptionparams',['EncryptionParams',['../dc/da0/structshaka_1_1EncryptionParams.html',1,'shaka']]],
   ['esdescriptor',['ESDescriptor',['../d5/d13/classshaka_1_1media_1_1ESDescriptor.html',1,'shaka::media']]],
   ['esparser',['EsParser',['../da/d10/classshaka_1_1media_1_1mp2t_1_1EsParser.html',1,'shaka::media::mp2t']]],
-  ['esparseradts',['EsParserAdts',['../d6/dcf/classshaka_1_1media_1_1mp2t_1_1EsParserAdts.html',1,'shaka::media::mp2t']]],
+  ['esparseraudio',['EsParserAudio',['../dc/d8a/classshaka_1_1media_1_1mp2t_1_1EsParserAudio.html',1,'shaka::media::mp2t']]],
   ['esparserh264',['EsParserH264',['../d5/db9/classshaka_1_1media_1_1mp2t_1_1EsParserH264.html',1,'shaka::media::mp2t']]],
   ['esparserh265',['EsParserH265',['../d5/d63/classshaka_1_1media_1_1mp2t_1_1EsParserH265.html',1,'shaka::media::mp2t']]],
   ['esparserh26x',['EsParserH26x',['../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html',1,'shaka::media::mp2t']]]

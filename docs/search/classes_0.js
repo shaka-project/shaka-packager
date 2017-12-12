@@ -1,10 +1,12 @@
 var searchData=
 [
   ['aacaudiospecificconfig',['AACAudioSpecificConfig',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html',1,'shaka::media']]],
-  ['aacprogrammaptablewriter',['AacProgramMapTableWriter',['../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html',1,'shaka::media::mp2t']]],
+  ['ac3header',['Ac3Header',['../dc/d21/classshaka_1_1media_1_1mp2t_1_1Ac3Header.html',1,'shaka::media::mp2t']]],
   ['ac3specific',['AC3Specific',['../d4/dfa/structshaka_1_1media_1_1mp4_1_1AC3Specific.html',1,'shaka::media::mp4']]],
   ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html',1,'shaka']]],
   ['adaptationsetxmlnode',['AdaptationSetXmlNode',['../d1/de7/classshaka_1_1xml_1_1AdaptationSetXmlNode.html',1,'shaka::xml']]],
+  ['adcuegenerator',['AdCueGenerator',['../de/de4/classshaka_1_1media_1_1AdCueGenerator.html',1,'shaka::media']]],
+  ['adcuegeneratorparams',['AdCueGeneratorParams',['../dd/dfd/structshaka_1_1AdCueGeneratorParams.html',1,'shaka']]],
   ['adtsheader',['AdtsHeader',['../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html',1,'shaka::media::mp2t']]],
   ['aescbcdecryptor',['AesCbcDecryptor',['../df/d2d/classshaka_1_1media_1_1AesCbcDecryptor.html',1,'shaka::media']]],
   ['aescbcencryptor',['AesCbcEncryptor',['../d4/d20/classshaka_1_1media_1_1AesCbcEncryptor.html',1,'shaka::media']]],
@@ -13,6 +15,8 @@ var searchData=
   ['aesencryptor',['AesEncryptor',['../d3/d75/classshaka_1_1media_1_1AesEncryptor.html',1,'shaka::media']]],
   ['aespatterncryptor',['AesPatternCryptor',['../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html',1,'shaka::media']]],
   ['aesrequestsigner',['AesRequestSigner',['../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html',1,'shaka::media']]],
+  ['audioheader',['AudioHeader',['../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html',1,'shaka::media::mp2t']]],
+  ['audioprogrammaptablewriter',['AudioProgramMapTableWriter',['../dc/d1c/classshaka_1_1media_1_1mp2t_1_1AudioProgramMapTableWriter.html',1,'shaka::media::mp2t']]],
   ['audiorollrecoveryentry',['AudioRollRecoveryEntry',['../da/d6e/structshaka_1_1media_1_1mp4_1_1AudioRollRecoveryEntry.html',1,'shaka::media::mp4']]],
   ['audiosampleentry',['AudioSampleEntry',['../d8/d5b/structshaka_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'shaka::media::mp4']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html',1,'shaka::media']]],

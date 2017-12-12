@@ -1,10 +1,7 @@
 var searchData=
 [
-  ['ca_5ffile',['ca_file',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#a745d002043a10ae7c01983fe5fe93846',1,'shaka::PlayreadyEncryptionParams']]],
-  ['chunking_5fparams',['chunking_params',['../d5/de3/structshaka_1_1PackagingParams.html#ac992ff58f67ad9b737dfc62d517be8ed',1,'shaka::PackagingParams']]],
-  ['clear_5flead_5fin_5fseconds',['clear_lead_in_seconds',['../dc/da0/structshaka_1_1EncryptionParams.html#a1ad46963dc926aa4b72813dccb3f6a45',1,'shaka::EncryptionParams']]],
-  ['client_5fcert_5ffile',['client_cert_file',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#afdc9477270b8a626163940cddff4fa8c',1,'shaka::PlayreadyEncryptionParams']]],
-  ['client_5fcert_5fprivate_5fkey_5ffile',['client_cert_private_key_file',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#af6f3b909425a27e17a7d6e473d7eb8ac',1,'shaka::PlayreadyEncryptionParams']]],
-  ['client_5fcert_5fprivate_5fkey_5fpassword',['client_cert_private_key_password',['../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html#a2d492f0c28b5d291ef512aa0248dc8ba',1,'shaka::PlayreadyEncryptionParams']]],
-  ['content_5fid',['content_id',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a6b9770524a9507d0a9a3606ceef23075',1,'shaka::WidevineEncryptionParams']]]
+  ['bandwidth',['bandwidth',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a930587b1f3a3e38cf1e7974f01d8ce1e',1,'shaka::media::MuxerOptions::bandwidth()'],['../d2/d7b/structshaka_1_1StreamDescriptor.html#a9bcce2ca86a33f41803f7a6417a2758c',1,'shaka::StreamDescriptor::bandwidth()']]],
+  ['base_5furl',['base_url',['../d0/da8/structshaka_1_1HlsParams.html#a546dcdf68c8a0a5e188f84b5c9fca9dd',1,'shaka::HlsParams']]],
+  ['base_5furls',['base_urls',['../df/ddc/structshaka_1_1MpdParams.html#a9fe508f9c56a6424fd857d43a4a69e7c',1,'shaka::MpdParams']]],
+  ['buffer_5fcallback_5fparams',['buffer_callback_params',['../d5/de3/structshaka_1_1PackagingParams.html#aaaf233248e46b6ff3285bbac87857f81',1,'shaka::PackagingParams']]]
 ];

@@ -98,8 +98,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6bee605be771538f78633e2ecfc979c6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a6bee605be771538f78633e2ecfc979c6">Initialize</a> (const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info)</td></tr>
-<tr class="separator:a6bee605be771538f78633e2ecfc979c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c32ccd7cdce25a5cf7d14cce9f2a339"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c32ccd7cdce25a5cf7d14cce9f2a339"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TsWriter</b> (std::unique_ptr&lt; <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html">ProgramMapTableWriter</a> &gt; pmt_writer)</td></tr>
+<tr class="separator:a5c32ccd7cdce25a5cf7d14cce9f2a339"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ba30b9cc1e4ae2992735709ae987c64"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a9ba30b9cc1e4ae2992735709ae987c64">NewSegment</a> (const std::string &amp;file_name)</td></tr>
 <tr class="separator:a9ba30b9cc1e4ae2992735709ae987c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc47f61bce7cd4f8f6a6ea0ec2c96d4c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc47f61bce7cd4f8f6a6ea0ec2c96d4c"></a>
@@ -110,15 +111,11 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="separator:ae9979f940d7a07127709576aa1f766a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19a7699df7ac129aedfdff074a8a18a3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a19a7699df7ac129aedfdff074a8a18a3">AddPesPacket</a> (std::unique_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; pes_packet)</td></tr>
 <tr class="separator:a19a7699df7ac129aedfdff074a8a18a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6eeeadf8e60dc09378b5df7c62eb2bf0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6eeeadf8e60dc09378b5df7c62eb2bf0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a6eeeadf8e60dc09378b5df7c62eb2bf0">SetProgramMapTableWriterForTesting</a> (std::unique_ptr&lt; <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html">ProgramMapTableWriter</a> &gt; table_writer)</td></tr>
-<tr class="memdesc:a6eeeadf8e60dc09378b5df7c62eb2bf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
-<tr class="separator:a6eeeadf8e60dc09378b5df7c62eb2bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class takes PesPackets, encapsulates them into TS packets, and write the data to file. This also creates PSI from <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html" title="Abstract class holds stream information. ">StreamInfo</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d8/dca/ts__writer_8h_source.html#l00030">30</a> of file <a class="el" href="../../d8/dca/ts__writer_8h_source.html">ts_writer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/dca/ts__writer_8h_source.html#l00028">28</a> of file <a class="el" href="../../d8/dca/ts__writer_8h_source.html">ts_writer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a19a7699df7ac129aedfdff074a8a18a3"></a>
 <div class="memitem">
@@ -150,7 +147,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00237">237</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00205">205</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -177,41 +174,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <p>Flush all the pending PesPackets that have not been written to file and close the file. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00233">233</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6bee605be771538f78633e2ecfc979c6"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::mp2t::TsWriter::Initialize </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;&#160;</td>
-          <td class="paramname"><em>stream_info</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>This must be called before calling other methods. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">stream_info</td><td>is the information about this stream. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
-
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00164">164</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00201">201</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -246,7 +209,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00198">198</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00166">166</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -257,7 +220,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 24 2017 15:50:26 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 11 2017 18:14:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

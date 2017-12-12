@@ -167,6 +167,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:ae912291a5be66ae6256006654cc04dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21037c9ddcd8d5a2e5a048582e17bf33"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a21037c9ddcd8d5a2e5a048582e17bf33">GetLanguage</a> () const </td></tr>
 <tr class="separator:a21037c9ddcd8d5a2e5a048582e17bf33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a971834b98828cab3093e094e97c73b16"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a971834b98828cab3093e094e97c73b16">GetNumChannels</a> () const </td></tr>
+<tr class="separator:a971834b98828cab3093e094e97c73b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41e21fbf8da59e6c7a7cc273428a43bb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">GetDisplayResolution</a> (uint32_t *width, uint32_t *height) const </td></tr>
 <tr class="separator:a41e21fbf8da59e6c7a7cc273428a43bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -428,7 +430,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if |width| and |height| have been set with a valid resolution values. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00437">437</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00441">441</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -481,6 +483,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <dl class="section return"><dt>Returns</dt><dd>the longest segment’s duration. This will return 0 if no segments have been added. </dd></dl>
 
 <p>Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00407">407</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a971834b98828cab3093e094e97c73b16"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int shaka::hls::MediaPlaylist::GetNumChannels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>number of channels for audio. 0 is returned for video. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00437">437</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -592,7 +620,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 24 2017 15:50:12 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 11 2017 18:13:50 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

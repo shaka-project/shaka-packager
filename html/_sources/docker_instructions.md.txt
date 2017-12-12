@@ -32,6 +32,14 @@ This runs the container and maps `host_media_path` to `media` in the container:
 $ docker run -v /host_media_path/:/media -it --rm google/shaka-packager
 ```
 
+Note that the networking in the container is containerized by default, so if
+you want to access UDP multicast in the host network, you will need to configure
+the network explicitly. You may do this with `--net=host` option, i.e.
+
+```shell
+$ docker run -v /host_media_path/:/media -it --net=host --rm google/shaka-packager
+```
+
 Then in the container, run the packager command, e.g.:
 
 ```shell

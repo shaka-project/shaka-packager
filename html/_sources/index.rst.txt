@@ -13,6 +13,7 @@ source code repository: https://github.com/google/shaka-packager
 
    documentation.rst
    tutorials/tutorials.rst
+   design.rst
    library.rst
 
 .. include a hidden TOC to avoid sphinx complaint.
@@ -20,7 +21,6 @@ source code repository: https://github.com/google/shaka-packager
     :hidden:
 
     build_instructions.md
-    design.rst
     docker_instructions.md
     library_details.rst
     tutorials/encoding.rst

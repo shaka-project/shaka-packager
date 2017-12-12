@@ -22,8 +22,10 @@ var searchData=
   ['contentprotectionelement',['ContentProtectionElement',['../da/d43/structshaka_1_1ContentProtectionElement.html',1,'shaka']]],
   ['continuitycounter',['ContinuityCounter',['../d8/dd6/classshaka_1_1media_1_1mp2t_1_1ContinuityCounter.html',1,'shaka::media::mp2t']]],
   ['cue',['Cue',['../dd/dce/structshaka_1_1media_1_1Cue.html',1,'shaka::media']]],
+  ['cueevent',['CueEvent',['../da/d93/structshaka_1_1media_1_1CueEvent.html',1,'shaka::media']]],
   ['cueidbox',['CueIDBox',['../d5/d09/structshaka_1_1media_1_1mp4_1_1CueIDBox.html',1,'shaka::media::mp4']]],
   ['cuepayloadbox',['CuePayloadBox',['../d2/d7f/structshaka_1_1media_1_1mp4_1_1CuePayloadBox.html',1,'shaka::media::mp4']]],
+  ['cuepoint',['Cuepoint',['../de/deb/structshaka_1_1Cuepoint.html',1,'shaka']]],
   ['cuesettingsbox',['CueSettingsBox',['../d0/dd0/structshaka_1_1media_1_1mp4_1_1CueSettingsBox.html',1,'shaka::media::mp4']]],
   ['cuesourceidbox',['CueSourceIDBox',['../d9/d3e/structshaka_1_1media_1_1mp4_1_1CueSourceIDBox.html',1,'shaka::media::mp4']]],
   ['cuetimebox',['CueTimeBox',['../d8/dc3/structshaka_1_1media_1_1mp4_1_1CueTimeBox.html',1,'shaka::media::mp4']]]

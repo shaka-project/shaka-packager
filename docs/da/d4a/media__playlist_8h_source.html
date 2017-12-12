@@ -186,52 +186,55 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a21037c9ddcd8d5a2e5a048582e17bf33">GetLanguage</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">GetDisplayResolution</a>(uint32_t* width, uint32_t* height) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="comment">// Remove elements from |entries_| for live profile. Increments</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="comment">// |sequence_number_| by the number of segments removed.</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="keywordtype">void</span> SlideWindow();</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">HlsPlaylistType</a> playlist_type_;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> time_shift_buffer_depth_;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="comment">// Mainly for MasterPlaylist to use these values.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keyword">const</span> std::string file_name_;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keyword">const</span> std::string name_;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keyword">const</span> std::string group_id_;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  MediaInfo media_info_;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  MediaPlaylistStreamType stream_type_ =</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      MediaPlaylistStreamType::kPlaylistUnknown;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  std::string codec_;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <span class="keywordtype">int</span> media_sequence_number_ = 0;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  <span class="keywordtype">bool</span> inserted_discontinuity_tag_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keywordtype">int</span> discontinuity_sequence_number_ = 0;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordtype">double</span> longest_segment_duration_ = 0.0;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  uint32_t time_scale_ = 0;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a971834b98828cab3093e094e97c73b16">GetNumChannels</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">GetDisplayResolution</a>(uint32_t* width, uint32_t* height) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="comment">// Remove elements from |entries_| for live profile. Increments</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="comment">// |sequence_number_| by the number of segments removed.</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordtype">void</span> SlideWindow();</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">HlsPlaylistType</a> playlist_type_;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> time_shift_buffer_depth_;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">// Mainly for MasterPlaylist to use these values.</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keyword">const</span> std::string file_name_;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keyword">const</span> std::string name_;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keyword">const</span> std::string group_id_;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  MediaInfo media_info_;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  MediaPlaylistStreamType stream_type_ =</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;      MediaPlaylistStreamType::kPlaylistUnknown;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  std::string codec_;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordtype">int</span> media_sequence_number_ = 0;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordtype">bool</span> inserted_discontinuity_tag_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="keywordtype">int</span> discontinuity_sequence_number_ = 0;</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  uint64_t max_bitrate_ = 0;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="comment">// Cache the previous calls AddSegment() end offset. This is used to construct</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="comment">// SegmentInfoEntry.</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  uint64_t previous_segment_end_offset_ = 0;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">// See SetTargetDuration() comments.</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="keywordtype">bool</span> target_duration_set_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  uint32_t target_duration_ = 0;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  std::list&lt;std::unique_ptr&lt;HlsEntry&gt;&gt; entries_;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html">MediaPlaylist</a>);</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;};</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keywordtype">double</span> longest_segment_duration_ = 0.0;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  uint32_t time_scale_ = 0;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  uint64_t max_bitrate_ = 0;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="comment">// Cache the previous calls AddSegment() end offset. This is used to construct</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">// SegmentInfoEntry.</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  uint64_t previous_segment_end_offset_ = 0;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="comment">// See SetTargetDuration() comments.</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordtype">bool</span> target_duration_set_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  uint32_t target_duration_ = 0;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  std::list&lt;std::unique_ptr&lt;HlsEntry&gt;&gt; entries_;</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;}  <span class="comment">// namespace hls</span></div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html">MediaPlaylist</a>);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;};</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="preprocessor">#endif  // PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;}  <span class="comment">// namespace hls</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor">#endif  // PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_</span></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_addf814db99ec827ae17c8973c2f4c87f"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#addf814db99ec827ae17c8973c2f4c87f">shaka::hls::MediaPlaylist::MediaPlaylist</a></div><div class="ttdeci">MediaPlaylist(HlsPlaylistType playlist_type, double time_shift_buffer_depth, const std::string &amp;file_name, const std::string &amp;name, const std::string &amp;group_id)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00280">media_playlist.cc:280</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a2ab66ed311668017fd62d04db0476e79"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a2ab66ed311668017fd62d04db0476e79">shaka::hls::MediaPlaylist::SetStreamTypeForTesting</a></div><div class="ttdeci">void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type)</div><div class="ttdoc">For testing only. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00293">media_playlist.cc:293</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1HlsEntry_html"><div class="ttname"><a href="../../d5/d76/classshaka_1_1hls_1_1HlsEntry.html">shaka::hls::HlsEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d4a/media__playlist_8h_source.html#l00024">media_playlist.h:24</a></div></div>
+<div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a971834b98828cab3093e094e97c73b16"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a971834b98828cab3093e094e97c73b16">shaka::hls::MediaPlaylist::GetNumChannels</a></div><div class="ttdeci">virtual int GetNumChannels() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00437">media_playlist.cc:437</a></div></div>
 <div class="ttc" id="namespaceshaka_html_ab63a3c00cdbf61cfb6dd7a2497b26f8d"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">shaka::HlsPlaylistType</a></div><div class="ttdeci">HlsPlaylistType</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d47/hls__params_8h_source.html#l00016">hls_params.h:16</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_ab518406ca3fb7785e103ab0bdb06ade9"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ab518406ca3fb7785e103ab0bdb06ade9">shaka::hls::MediaPlaylist::Bitrate</a></div><div class="ttdeci">virtual uint64_t Bitrate() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00401">media_playlist.cc:401</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_ae912291a5be66ae6256006654cc04dd6"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ae912291a5be66ae6256006654cc04dd6">shaka::hls::MediaPlaylist::SetTargetDuration</a></div><div class="ttdeci">virtual void SetTargetDuration(uint32_t target_duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00411">media_playlist.cc:411</a></div></div>
@@ -240,14 +243,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html">shaka::hls::MediaPlaylist</a></div><div class="ttdoc">Methods are virtual for mocking. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d4a/media__playlist_8h_source.html#l00044">media_playlist.h:44</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_ad69a0d67cfe55584efeaaf18f82b0bdc"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ad69a0d67cfe55584efeaaf18f82b0bdc">shaka::hls::MediaPlaylist::GetLongestSegmentDuration</a></div><div class="ttdeci">virtual double GetLongestSegmentDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00407">media_playlist.cc:407</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a32d145d5e7d2fe9fed9c8a0a55e047ab"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a32d145d5e7d2fe9fed9c8a0a55e047ab">shaka::hls::MediaPlaylist::AddSegment</a></div><div class="ttdeci">virtual void AddSegment(const std::string &amp;file_name, uint64_t start_time, uint64_t duration, uint64_t start_byte_offset, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00325">media_playlist.cc:325</a></div></div>
-<div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a41e21fbf8da59e6c7a7cc273428a43bb"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">shaka::hls::MediaPlaylist::GetDisplayResolution</a></div><div class="ttdeci">virtual bool GetDisplayResolution(uint32_t *width, uint32_t *height) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00437">media_playlist.cc:437</a></div></div>
+<div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a41e21fbf8da59e6c7a7cc273428a43bb"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">shaka::hls::MediaPlaylist::GetDisplayResolution</a></div><div class="ttdeci">virtual bool GetDisplayResolution(uint32_t *width, uint32_t *height) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00441">media_playlist.cc:441</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a4aaa21da07864789895048e8558ab816"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a4aaa21da07864789895048e8558ab816">shaka::hls::MediaPlaylist::AddEncryptionInfo</a></div><div class="ttdeci">virtual void AddEncryptionInfo(EncryptionMethod method, const std::string &amp;url, const std::string &amp;key_id, const std::string &amp;iv, const std::string &amp;key_format, const std::string &amp;key_format_versions)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00358">media_playlist.cc:358</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a182ca5726d4fb7d3053f76b515042440"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a182ca5726d4fb7d3053f76b515042440">shaka::hls::MediaPlaylist::WriteToFile</a></div><div class="ttdeci">virtual bool WriteToFile(const std::string &amp;file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00375">media_playlist.cc:375</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_aad5c985ef4bbdbe7c8f38494114abdf7"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#aad5c985ef4bbdbe7c8f38494114abdf7">shaka::hls::MediaPlaylist::SetCodecForTesting</a></div><div class="ttdeci">void SetCodecForTesting(const std::string &amp;codec)</div><div class="ttdoc">For testing only. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00298">media_playlist.cc:298</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 11 2017 18:13:46 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

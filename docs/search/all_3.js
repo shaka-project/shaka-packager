@@ -27,9 +27,9 @@ var searchData=
   ['demuxer',['Demuxer',['../dd/d17/classshaka_1_1media_1_1Demuxer.html',1,'shaka::media']]],
   ['demuxstreamidmediasample',['DemuxStreamIdMediaSample',['../d1/da1/structshaka_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample.html',1,'shaka::media::wvm']]],
   ['dispatch',['Dispatch',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#accd62dd4def920571f95f4e1a98ab7ca',1,'shaka::media::MediaHandler']]],
-  ['dispatchmediaevent',['DispatchMediaEvent',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a1c4c8b216cb4f902e522f0abd4571b86',1,'shaka::media::MediaHandler']]],
+  ['dispatchcueevent',['DispatchCueEvent',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a6aa5cdf6732f0a0fc19559ec408a9318',1,'shaka::media::MediaHandler']]],
   ['dispatchmediasample',['DispatchMediaSample',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a96d8a53afdeeb838218b981e7b2d71eb',1,'shaka::media::MediaHandler']]],
-  ['dispatchperiodinfo',['DispatchPeriodInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aadccc177c1ca19a3d112484d78d4ee28',1,'shaka::media::MediaHandler']]],
+  ['dispatchscte35event',['DispatchScte35Event',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#aac0bb4f2b49054ae6cc706517efc71b9',1,'shaka::media::MediaHandler']]],
   ['dispatchsegmentinfo',['DispatchSegmentInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ab0ed6c81bd68250d84f6b04453472c00',1,'shaka::media::MediaHandler']]],
   ['dispatchstreaminfo',['DispatchStreamInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#af0c7b537e9745a0eb49b4561dbc89f55',1,'shaka::media::MediaHandler']]],
   ['dispatchtextsample',['DispatchTextSample',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a65d965532a6488eab28551aca51a1a2a',1,'shaka::media::MediaHandler']]],
@@ -38,5 +38,6 @@ var searchData=
   ['dts',['dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a88111c4190e74c24c10f0a694e723cb8',1,'shaka::media::mp2t::PesPacket']]],
   ['dtsspecific',['DTSSpecific',['../dc/da0/structshaka_1_1media_1_1mp4_1_1DTSSpecific.html',1,'shaka::media::mp4']]],
   ['dump_5fstream_5finfo',['dump_stream_info',['../d6/d62/structshaka_1_1TestParams.html#a7a22e04cdfc14d73266397bf673fae6e',1,'shaka::TestParams']]],
-  ['duration',['Duration',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a9527abde0a2131605d06fdfa2859dc47',1,'shaka::media::mp4::DecodingTimeIterator']]]
+  ['duration',['Duration',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a9527abde0a2131605d06fdfa2859dc47',1,'shaka::media::mp4::DecodingTimeIterator']]],
+  ['duration_5fin_5fseconds',['duration_in_seconds',['../de/deb/structshaka_1_1Cuepoint.html#a31f0ed2c50901473e6b8ce3180c63793',1,'shaka::Cuepoint']]]
 ];

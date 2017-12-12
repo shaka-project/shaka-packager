@@ -87,8 +87,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="../../d1/d28/classshaka_1_1media_1_1mp2t_1_1AdtsHeader-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::mp2t::AdtsHeader Class Reference</div>  </div>
@@ -96,33 +94,46 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="../../d2/dfd/adts__header_8h_source.html">adts_header.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for shaka::media::mp2t::AdtsHeader:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.png" usemap="#shaka::media::mp2t::AdtsHeader_map" alt=""/>
+  <map id="shaka::media::mp2t::AdtsHeader_map" name="shaka::media::mp2t::AdtsHeader_map">
+<area href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html" alt="shaka::media::mp2t::AudioHeader" shape="rect" coords="0,0,197,24"/>
+</map>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2e154d7423498baf8cd8888c70dcfca9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a2e154d7423498baf8cd8888c70dcfca9">Parse</a> (const uint8_t *adts_frame, size_t adts_frame_size)</td></tr>
-<tr class="separator:a2e154d7423498baf8cd8888c70dcfca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ca14cc4eb4a28906fe832ab263ba5a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a5ca14cc4eb4a28906fe832ab263ba5a2">GetAudioSpecificConfig</a> (std::vector&lt; uint8_t &gt; *buffer) const </td></tr>
-<tr class="separator:a5ca14cc4eb4a28906fe832ab263ba5a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a156a3288ab974557e95dfaba72e6b479"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a156a3288ab974557e95dfaba72e6b479">GetObjectType</a> () const </td></tr>
-<tr class="separator:a156a3288ab974557e95dfaba72e6b479"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afda9a7656576556af8ddec599d5d8d3b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#afda9a7656576556af8ddec599d5d8d3b">GetSamplingFrequency</a> () const </td></tr>
-<tr class="separator:afda9a7656576556af8ddec599d5d8d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa01e3eb1ce9d4400aedd202b04f7160"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#aaa01e3eb1ce9d4400aedd202b04f7160">GetNumChannels</a> () const </td></tr>
-<tr class="separator:aaa01e3eb1ce9d4400aedd202b04f7160"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a149fb9c7fa2718d719008af2dce8157f"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">GetAdtsFrameSize</a> (const uint8_t *data, size_t num_bytes)</td></tr>
-<tr class="separator:a149fb9c7fa2718d719008af2dce8157f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a107e1269d5f826583c1940fb50c8cf92"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a107e1269d5f826583c1940fb50c8cf92">GetAdtsHeaderSize</a> (const uint8_t *data, size_t num_bytes)</td></tr>
-<tr class="separator:a107e1269d5f826583c1940fb50c8cf92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">AudioHeader implementation overrides.</div></td></tr>
+<tr class="memitem:ab7385cf2dfd15688dbd87f97706e3690"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#ab7385cf2dfd15688dbd87f97706e3690">IsSyncWord</a> (const uint8_t *buf) const override</td></tr>
+<tr class="separator:ab7385cf2dfd15688dbd87f97706e3690"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad35ff50f5159e663103613901eccb7a9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#ad35ff50f5159e663103613901eccb7a9">GetMinFrameSize</a> () const override</td></tr>
+<tr class="separator:ad35ff50f5159e663103613901eccb7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a606154feab4b731e1d51a56d21cb23e8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a606154feab4b731e1d51a56d21cb23e8">GetSamplesPerFrame</a> () const override</td></tr>
+<tr class="separator:a606154feab4b731e1d51a56d21cb23e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1cdf6cf0f3d4a7438ae4c4cc8fb0762"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#ac1cdf6cf0f3d4a7438ae4c4cc8fb0762">Parse</a> (const uint8_t *adts_frame, size_t adts_frame_size) override</td></tr>
+<tr class="separator:ac1cdf6cf0f3d4a7438ae4c4cc8fb0762"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadfb99a9a34a9684040e9b9aa000a402"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#aadfb99a9a34a9684040e9b9aa000a402">GetHeaderSize</a> () const override</td></tr>
+<tr class="separator:aadfb99a9a34a9684040e9b9aa000a402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12d18e7fcbff02121886ca4b459340d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#ae12d18e7fcbff02121886ca4b459340d">GetFrameSize</a> () const override</td></tr>
+<tr class="separator:ae12d18e7fcbff02121886ca4b459340d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97a2aae441248e718e056ac3559ecfd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a97a2aae441248e718e056ac3559ecfd9">GetAudioSpecificConfig</a> (std::vector&lt; uint8_t &gt; *buffer) const override</td></tr>
+<tr class="separator:a97a2aae441248e718e056ac3559ecfd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8d15d73650add3af331f847719efab6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#ad8d15d73650add3af331f847719efab6">GetObjectType</a> () const override</td></tr>
+<tr class="separator:ad8d15d73650add3af331f847719efab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b6c9af726bf95d296e478d350055f0"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#af4b6c9af726bf95d296e478d350055f0">GetSamplingFrequency</a> () const override</td></tr>
+<tr class="separator:af4b6c9af726bf95d296e478d350055f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6093f6f4a01414cef59347be4c2df5c6"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a6093f6f4a01414cef59347be4c2df5c6">GetNumChannels</a> () const override</td></tr>
+<tr class="separator:a6093f6f4a01414cef59347be4c2df5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Class which parses ADTS headers and synthesizes AudioSpecificConfig and audio mime type from ADTS header contents. </p>
+<div class="textblock"><p>Class which parses ADTS frame (header / metadata) and synthesizes AudioSpecificConfig from audio frame content. </p>
 
 <p>Definition at line <a class="el" href="../../d2/dfd/adts__header_8h_source.html#l00022">22</a> of file <a class="el" href="../../d2/dfd/adts__header_8h_source.html">adts_header.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a149fb9c7fa2718d719008af2dce8157f"></a>
+<a class="anchor" id="a97a2aae441248e718e056ac3559ecfd9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -130,102 +141,20 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t shaka::media::mp2t::AdtsHeader::GetAdtsFrameSize </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>num_bytes</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get the size of the ADTS frame from a partial or complete frame. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">data</td><td>is a pointer to the beginning of the ADTS frame. </td></tr>
-    <tr><td class="paramname">num_bytes</td><td>is the number of data bytes at <em>data</em>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Size of the ADTS frame (header + payload) if successful, or zero otherwise. </dd></dl>
-
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00023">23</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a107e1269d5f826583c1940fb50c8cf92"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t shaka::media::mp2t::AdtsHeader::GetAdtsHeaderSize </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>num_bytes</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get the size of the ADTS header from a partial or complete frame. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">data</td><td>is a pointer to the beginning of the ADTS frame. </td></tr>
-    <tr><td class="paramname">num_bytes</td><td>is the number of data bytes at <em>data</em>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Size of the ADTS header if successful, or zero otherwise. </dd></dl>
-
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00031">31</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a5ca14cc4eb4a28906fe832ab263ba5a2"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::mp2t::AdtsHeader::GetAudioSpecificConfig </td>
+          <td class="memname">void shaka::media::mp2t::AdtsHeader::GetAudioSpecificConfig </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; uint8_t &gt; *&#160;</td>
           <td class="paramname"><em>buffer</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p>Synthesize an AudioSpecificConfig record from the fields within the ADTS header. </p>
+<p>Synthesize an AudioSpecificConfig record from the fields within the audio header. Should only be called after a successful Parse. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">buffer</td><td>is a pointer to a vector to contain the AudioSpecificConfig. </td></tr>
@@ -234,13 +163,104 @@ Static Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00085">85</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a80da92426102c52da09690a7587d4272">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00092">92</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aaa01e3eb1ce9d4400aedd202b04f7160"></a>
+<a class="anchor" id="ae12d18e7fcbff02121886ca4b459340d"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::mp2t::AdtsHeader::GetFrameSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Should only be called after a successful Parse. </p>
+<dl class="section return"><dt>Returns</dt><dd>the size of frame (header + payload). </dd></dl>
+
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#af8acf05003d2c0dbd062a9f12a2140b3">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00088">88</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aadfb99a9a34a9684040e9b9aa000a402"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::mp2t::AdtsHeader::GetHeaderSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Should only be called after a successful Parse. </p>
+<dl class="section return"><dt>Returns</dt><dd>The size of audio header. </dd></dl>
+
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a60fce7a6810efa2fc0f40a8038805116">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00083">83</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad35ff50f5159e663103613901eccb7a9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::mp2t::AdtsHeader::GetMinFrameSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The minium frame size. </dd></dl>
+
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a95018a4488867e584338126922bf128a">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00037">37</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6093f6f4a01414cef59347be4c2df5c6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">uint8_t shaka::media::mp2t::AdtsHeader::GetNumChannels </td>
@@ -249,16 +269,27 @@ Static Public Member Functions</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Number of channels for this AAC config. </dd></dl>
+<p>Should only be called after a successful Parse. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of channels for this frame. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00106">106</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a47b7cff7bfced3a5e5d02a848627a0c8">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00111">111</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a156a3288ab974557e95dfaba72e6b479"></a>
+<a class="anchor" id="ad8d15d73650add3af331f847719efab6"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">uint8_t shaka::media::mp2t::AdtsHeader::GetObjectType </td>
@@ -267,16 +298,55 @@ Static Public Member Functions</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The audio profile for this ADTS frame. </dd></dl>
+<p>Should only be called after a successful Parse. </p>
+<dl class="section return"><dt>Returns</dt><dd>The audio profile for this frame. Only meaningful for AAC. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00097">97</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a9959124b369045fce424f845c50b9c02">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00102">102</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="afda9a7656576556af8ddec599d5d8d3b"></a>
+<a class="anchor" id="a606154feab4b731e1d51a56d21cb23e8"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::mp2t::AdtsHeader::GetSamplesPerFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Number of audio samples per frame. </dd></dl>
+
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#abe0df0b59f89036c9c39a2070875a6a7">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00041">41</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af4b6c9af726bf95d296e478d350055f0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">uint32_t shaka::media::mp2t::AdtsHeader::GetSamplingFrequency </td>
@@ -285,28 +355,75 @@ Static Public Member Functions</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The sampling frequency for this ADTS frame. </dd></dl>
+<p>Should only be called after a successful Parse. </p>
+<dl class="section return"><dt>Returns</dt><dd>The sampling frequency for this frame. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00101">101</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#aeb3121ddde96b3e6ca456586c8efdd8c">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00106">106</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a2e154d7423498baf8cd8888c70dcfca9"></a>
+<a class="anchor" id="ab7385cf2dfd15688dbd87f97706e3690"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::media::mp2t::AdtsHeader::IsSyncWord </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buf</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check if the leading word (2 bytes) is sync signal. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buf</td><td>points to the buffer to be checked. Must be at least 2 bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if corresponds to a syncword. </dd></dl>
+
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a1e5c41162d4a4ff75dc9760a4d12e496">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00033">33</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac1cdf6cf0f3d4a7438ae4c4cc8fb0762"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool shaka::media::mp2t::AdtsHeader::Parse </td>
           <td>(</td>
           <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>adts_frame</em>, </td>
+          <td class="paramname"><em>audio_frame</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>adts_frame_size</em>&#160;</td>
+          <td class="paramname"><em>audio_frame_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -314,18 +431,25 @@ Static Public Member Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p>Parse an ADTS header, extracting the fields within. </p>
+<p>Parse a partial audio frame, extracting the fields within. Only audio frame header / metadata is parsed. The audio_frame_size must contain the full header / metadata. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">adts_frame</td><td>is an input parameter pointing to the ADTS header of an ADTS-framed audio sample. </td></tr>
-    <tr><td class="paramname">adts_frame_size</td><td>is the size, in bytes of the input ADTS frame. </td></tr>
+    <tr><td class="paramname">audio_frame</td><td>is an input parameter pointing to an audio frame. </td></tr>
+    <tr><td class="paramname">audio_frame_size</td><td>is the size, in bytes of the input data. It can be smaller than the actual frame size, but it should not be smaller than the header size. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00039">39</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a334c1ceea413b309a5950cc06619853f">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p>Definition at line <a class="el" href="../../de/d5b/adts__header_8cc_source.html#l00046">46</a> of file <a class="el" href="../../de/d5b/adts__header_8cc_source.html">adts_header.cc</a>.</p>
 
 </div>
 </div>
@@ -336,7 +460,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 24 2017 15:50:23 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 11 2017 18:14:02 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

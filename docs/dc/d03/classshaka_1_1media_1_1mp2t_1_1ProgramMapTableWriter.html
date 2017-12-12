@@ -89,11 +89,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="../../de/d60/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::mp2t::ProgramMapTableWriter Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Puts PMT into TS packets and writes them to buffer.  
+ <a href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -102,21 +106,24 @@ Inheritance diagram for shaka::media::mp2t::ProgramMapTableWriter:</div>
  <div class="center">
   <img src="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.png" usemap="#shaka::media::mp2t::ProgramMapTableWriter_map" alt=""/>
   <map id="shaka::media::mp2t::ProgramMapTableWriter_map" name="shaka::media::mp2t::ProgramMapTableWriter_map">
-<area href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html" alt="shaka::media::mp2t::AacProgramMapTableWriter" shape="rect" coords="0,56,290,80"/>
-<area href="../../de/d27/classshaka_1_1media_1_1mp2t_1_1H264ProgramMapTableWriter.html" alt="shaka::media::mp2t::H264ProgramMapTableWriter" shape="rect" coords="300,56,590,80"/>
+<area href="../../dc/d1c/classshaka_1_1media_1_1mp2t_1_1AudioProgramMapTableWriter.html" title="ProgramMapTableWriter for video codecs. " alt="shaka::media::mp2t::AudioProgramMapTableWriter" shape="rect" coords="0,56,293,80"/>
+<area href="../../da/d6a/classshaka_1_1media_1_1mp2t_1_1VideoProgramMapTableWriter.html" title="ProgramMapTableWriter for video codecs. " alt="shaka::media::mp2t::VideoProgramMapTableWriter" shape="rect" coords="303,56,596,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7f40bf474758b80e57fede27c2610756"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f40bf474758b80e57fede27c2610756"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#a7f40bf474758b80e57fede27c2610756">EncryptedSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer)=0</td></tr>
-<tr class="memdesc:a7f40bf474758b80e57fede27c2610756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes TS packets with PMT for encrypted segments. <br/></td></tr>
-<tr class="separator:a7f40bf474758b80e57fede27c2610756"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaf3df0bbb1b6ff5655d04b828d2889b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abaf3df0bbb1b6ff5655d04b828d2889b"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#abaf3df0bbb1b6ff5655d04b828d2889b">ClearSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer)=0</td></tr>
-<tr class="memdesc:abaf3df0bbb1b6ff5655d04b828d2889b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes TS packets with PMT for clear segments. <br/></td></tr>
-<tr class="separator:abaf3df0bbb1b6ff5655d04b828d2889b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8f1c7d9848db912a81d919c61d1f1ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab8f1c7d9848db912a81d919c61d1f1ae"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ProgramMapTableWriter</b> (Codec <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#a5229f5ea763f4511b22aea0948b96690">codec</a>)</td></tr>
+<tr class="separator:ab8f1c7d9848db912a81d919c61d1f1ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a258bff0465507799b591006138698150"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a258bff0465507799b591006138698150"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#a258bff0465507799b591006138698150">EncryptedSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer)</td></tr>
+<tr class="memdesc:a258bff0465507799b591006138698150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes TS packets with PMT for encrypted segments. <br/></td></tr>
+<tr class="separator:a258bff0465507799b591006138698150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeab8da6e10fb156bd38dd9e47669c0f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abeab8da6e10fb156bd38dd9e47669c0f"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#abeab8da6e10fb156bd38dd9e47669c0f">ClearSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer)</td></tr>
+<tr class="memdesc:abeab8da6e10fb156bd38dd9e47669c0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes TS packets with PMT for clear segments. <br/></td></tr>
+<tr class="separator:abeab8da6e10fb156bd38dd9e47669c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -126,19 +133,51 @@ static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>kPmtP
 <tr class="memitem:a261e5dfb701ef80a24ef11d160abd330"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a261e5dfb701ef80a24ef11d160abd330"></a>
 static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>kElementaryPid</b> = 0x50</td></tr>
 <tr class="separator:a261e5dfb701ef80a24ef11d160abd330"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a5229f5ea763f4511b22aea0948b96690"><td class="memItemLeft" align="right" valign="top">Codec&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#a5229f5ea763f4511b22aea0948b96690">codec</a> () const </td></tr>
+<tr class="separator:a5229f5ea763f4511b22aea0948b96690"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Puts PMT into TS packets and writes them to buffer. Note that this does not currently allow encryption without clear lead. </p>
+<div class="textblock"><p>Puts PMT into TS packets and writes them to buffer. </p>
 
 <p>Definition at line <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html#l00027">27</a> of file <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a>.</p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a5229f5ea763f4511b22aea0948b96690"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Codec shaka::media::mp2t::ProgramMapTableWriter::codec </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the underlying codec. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html#l00049">49</a> of file <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>packager/media/formats/mp2t/<a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a></li>
 <li>packager/media/formats/mp2t/<a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html">program_map_table_writer.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 24 2017 15:50:25 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 11 2017 18:14:03 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

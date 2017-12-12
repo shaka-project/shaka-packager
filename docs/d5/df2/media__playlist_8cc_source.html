@@ -523,85 +523,90 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a5f657931280fdf63cae2ed8a8f891288">LanguageToShortestForm</a>(lang);</div>
 <div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;}</div>
 <div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
-<div class="line"><a name="l00437"></a><span class="lineno"><a class="line" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">  437</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">MediaPlaylist::GetDisplayResolution</a>(uint32_t* width,</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;                                         uint32_t* height)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  DCHECK(width);</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  DCHECK(height);</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  <span class="keywordflow">if</span> (media_info_.has_video_info()) {</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">double</span> pixel_aspect_ratio =</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        media_info_.video_info().pixel_height() &gt; 0</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;            ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(media_info_.video_info().pixel_width()) /</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;                  media_info_.video_info().pixel_height()</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;            : 1.0;</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    *width = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(media_info_.video_info().width() *</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;                                   pixel_aspect_ratio);</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;    *height = media_info_.video_info().height();</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  }</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;}</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;<span class="keywordtype">void</span> MediaPlaylist::SlideWindow() {</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  DCHECK(!entries_.empty());</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;  <span class="keywordflow">if</span> (time_shift_buffer_depth_ &lt;= 0.0 ||</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;      playlist_type_ != HlsPlaylistType::kLive) {</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  }</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  DCHECK_GT(time_scale_, 0u);</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  <span class="comment">// The start time of the latest segment is considered the current_play_time,</span></div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  <span class="comment">// and this should guarantee that the latest segment will stay in the list.</span></div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> current_play_time = LatestSegmentStartTime(entries_);</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;  <span class="keywordflow">if</span> (current_play_time &lt;= time_shift_buffer_depth_)</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> timeshift_limit = current_play_time - time_shift_buffer_depth_;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  <span class="comment">// Temporary list to hold the EXT-X-KEYs. For example, this allows us to</span></div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  <span class="comment">// remove &lt;3&gt; without removing &lt;1&gt; and &lt;2&gt; below (&lt;1&gt; and &lt;2&gt; are moved to the</span></div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="comment">// temporary list and added back later).</span></div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;  <span class="comment">//    #EXT-X-KEY   &lt;1&gt;</span></div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  <span class="comment">//    #EXT-X-KEY   &lt;2&gt;</span></div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  <span class="comment">//    #EXTINF      &lt;3&gt;</span></div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="comment">//    #EXTINF      &lt;4&gt;</span></div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  std::list&lt;std::unique_ptr&lt;HlsEntry&gt;&gt; ext_x_keys;</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  <span class="comment">// Consecutive key entries are either fully removed or not removed at all.</span></div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  <span class="comment">// Keep track of entry types so we know if it is consecutive key entries.</span></div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  HlsEntry::EntryType prev_entry_type = HlsEntry::EntryType::kExtInf;</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  std::list&lt;std::unique_ptr&lt;HlsEntry&gt;&gt;::iterator last = entries_.begin();</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="keywordtype">size_t</span> num_segments_removed = 0;</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  <span class="keywordflow">for</span> (; last != entries_.end(); ++last) {</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;    HlsEntry::EntryType entry_type = last-&gt;get()-&gt;type();</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;    <span class="keywordflow">if</span> (entry_type == HlsEntry::EntryType::kExtKey) {</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;      <span class="keywordflow">if</span> (prev_entry_type != HlsEntry::EntryType::kExtKey)</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;        ext_x_keys.clear();</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;      ext_x_keys.push_back(std::move(*last));</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (entry_type == HlsEntry::EntryType::kExtDiscontinuity) {</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;      ++discontinuity_sequence_number_;</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;      DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;      <span class="keyword">const</span> SegmentInfoEntry* segment_info =</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;          <span class="keyword">reinterpret_cast&lt;</span>SegmentInfoEntry*<span class="keyword">&gt;</span>(last-&gt;get());</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">double</span> last_segment_end_time =</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;          segment_info-&gt;start_time() + segment_info-&gt;duration();</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      <span class="keywordflow">if</span> (timeshift_limit &lt; last_segment_end_time)</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;      ++num_segments_removed;</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;    }</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    prev_entry_type = entry_type;</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  }</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;  entries_.erase(entries_.begin(), last);</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;  <span class="comment">// Add key entries back.</span></div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;  entries_.insert(entries_.begin(), std::make_move_iterator(ext_x_keys.begin()),</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;                  std::make_move_iterator(ext_x_keys.end()));</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  media_sequence_number_ += num_segments_removed;</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;}</div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;}  <span class="comment">// namespace hls</span></div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00437"></a><span class="lineno"><a class="line" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a971834b98828cab3093e094e97c73b16">  437</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a971834b98828cab3093e094e97c73b16">MediaPlaylist::GetNumChannels</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  <span class="keywordflow">return</span> media_info_.audio_info().num_channels();</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;}</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;</div>
+<div class="line"><a name="l00441"></a><span class="lineno"><a class="line" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">  441</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">MediaPlaylist::GetDisplayResolution</a>(uint32_t* width,</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;                                         uint32_t* height)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;  DCHECK(width);</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;  DCHECK(height);</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  <span class="keywordflow">if</span> (media_info_.has_video_info()) {</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">double</span> pixel_aspect_ratio =</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;        media_info_.video_info().pixel_height() &gt; 0</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;            ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(media_info_.video_info().pixel_width()) /</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;                  media_info_.video_info().pixel_height()</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;            : 1.0;</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;    *width = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(media_info_.video_info().width() *</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;                                   pixel_aspect_ratio);</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;    *height = media_info_.video_info().height();</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  }</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;}</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;<span class="keywordtype">void</span> MediaPlaylist::SlideWindow() {</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  DCHECK(!entries_.empty());</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  <span class="keywordflow">if</span> (time_shift_buffer_depth_ &lt;= 0.0 ||</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;      playlist_type_ != HlsPlaylistType::kLive) {</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  }</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  DCHECK_GT(time_scale_, 0u);</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;  <span class="comment">// The start time of the latest segment is considered the current_play_time,</span></div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  <span class="comment">// and this should guarantee that the latest segment will stay in the list.</span></div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> current_play_time = LatestSegmentStartTime(entries_);</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  <span class="keywordflow">if</span> (current_play_time &lt;= time_shift_buffer_depth_)</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> timeshift_limit = current_play_time - time_shift_buffer_depth_;</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  <span class="comment">// Temporary list to hold the EXT-X-KEYs. For example, this allows us to</span></div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  <span class="comment">// remove &lt;3&gt; without removing &lt;1&gt; and &lt;2&gt; below (&lt;1&gt; and &lt;2&gt; are moved to the</span></div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="comment">// temporary list and added back later).</span></div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  <span class="comment">//    #EXT-X-KEY   &lt;1&gt;</span></div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  <span class="comment">//    #EXT-X-KEY   &lt;2&gt;</span></div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  <span class="comment">//    #EXTINF      &lt;3&gt;</span></div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  <span class="comment">//    #EXTINF      &lt;4&gt;</span></div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  std::list&lt;std::unique_ptr&lt;HlsEntry&gt;&gt; ext_x_keys;</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  <span class="comment">// Consecutive key entries are either fully removed or not removed at all.</span></div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="comment">// Keep track of entry types so we know if it is consecutive key entries.</span></div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  HlsEntry::EntryType prev_entry_type = HlsEntry::EntryType::kExtInf;</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;  std::list&lt;std::unique_ptr&lt;HlsEntry&gt;&gt;::iterator last = entries_.begin();</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;  <span class="keywordtype">size_t</span> num_segments_removed = 0;</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  <span class="keywordflow">for</span> (; last != entries_.end(); ++last) {</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;    HlsEntry::EntryType entry_type = last-&gt;get()-&gt;type();</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    <span class="keywordflow">if</span> (entry_type == HlsEntry::EntryType::kExtKey) {</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;      <span class="keywordflow">if</span> (prev_entry_type != HlsEntry::EntryType::kExtKey)</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;        ext_x_keys.clear();</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;      ext_x_keys.push_back(std::move(*last));</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (entry_type == HlsEntry::EntryType::kExtDiscontinuity) {</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;      ++discontinuity_sequence_number_;</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;      DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      <span class="keyword">const</span> SegmentInfoEntry* segment_info =</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;          <span class="keyword">reinterpret_cast&lt;</span>SegmentInfoEntry*<span class="keyword">&gt;</span>(last-&gt;get());</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">double</span> last_segment_end_time =</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;          segment_info-&gt;start_time() + segment_info-&gt;duration();</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;      <span class="keywordflow">if</span> (timeshift_limit &lt; last_segment_end_time)</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;      ++num_segments_removed;</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;    }</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    prev_entry_type = entry_type;</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;  }</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  entries_.erase(entries_.begin(), last);</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  <span class="comment">// Add key entries back.</span></div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  entries_.insert(entries_.begin(), std::make_move_iterator(ext_x_keys.begin()),</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;                  std::make_move_iterator(ext_x_keys.end()));</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;  media_sequence_number_ += num_segments_removed;</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;}</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;}  <span class="comment">// namespace hls</span></div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_addf814db99ec827ae17c8973c2f4c87f"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#addf814db99ec827ae17c8973c2f4c87f">shaka::hls::MediaPlaylist::MediaPlaylist</a></div><div class="ttdeci">MediaPlaylist(HlsPlaylistType playlist_type, double time_shift_buffer_depth, const std::string &amp;file_name, const std::string &amp;name, const std::string &amp;group_id)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00280">media_playlist.cc:280</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a2ab66ed311668017fd62d04db0476e79"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a2ab66ed311668017fd62d04db0476e79">shaka::hls::MediaPlaylist::SetStreamTypeForTesting</a></div><div class="ttdeci">void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type)</div><div class="ttdoc">For testing only. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00293">media_playlist.cc:293</a></div></div>
+<div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a971834b98828cab3093e094e97c73b16"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a971834b98828cab3093e094e97c73b16">shaka::hls::MediaPlaylist::GetNumChannels</a></div><div class="ttdeci">virtual int GetNumChannels() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00437">media_playlist.cc:437</a></div></div>
 <div class="ttc" id="namespaceshaka_html_ab63a3c00cdbf61cfb6dd7a2497b26f8d"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">shaka::HlsPlaylistType</a></div><div class="ttdeci">HlsPlaylistType</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d47/hls__params_8h_source.html#l00016">hls_params.h:16</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_ab518406ca3fb7785e103ab0bdb06ade9"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ab518406ca3fb7785e103ab0bdb06ade9">shaka::hls::MediaPlaylist::Bitrate</a></div><div class="ttdeci">virtual uint64_t Bitrate() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00401">media_playlist.cc:401</a></div></div>
 <div class="ttc" id="namespaceshaka_html_a5f657931280fdf63cae2ed8a8f891288"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a5f657931280fdf63cae2ed8a8f891288">shaka::LanguageToShortestForm</a></div><div class="ttdeci">std::string LanguageToShortestForm(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00089">language_utils.cc:89</a></div></div>
@@ -611,14 +616,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_ad69a0d67cfe55584efeaaf18f82b0bdc"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ad69a0d67cfe55584efeaaf18f82b0bdc">shaka::hls::MediaPlaylist::GetLongestSegmentDuration</a></div><div class="ttdeci">virtual double GetLongestSegmentDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00407">media_playlist.cc:407</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a32d145d5e7d2fe9fed9c8a0a55e047ab"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a32d145d5e7d2fe9fed9c8a0a55e047ab">shaka::hls::MediaPlaylist::AddSegment</a></div><div class="ttdeci">virtual void AddSegment(const std::string &amp;file_name, uint64_t start_time, uint64_t duration, uint64_t start_byte_offset, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00325">media_playlist.cc:325</a></div></div>
 <div class="ttc" id="classshaka_1_1File_html_a4b5280fe058359b5991037f90dde2b77"><div class="ttname"><a href="../../d3/d73/classshaka_1_1File.html#a4b5280fe058359b5991037f90dde2b77">shaka::File::WriteFileAtomically</a></div><div class="ttdeci">static bool WriteFileAtomically(const char *file_name, const std::string &amp;contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00262">file.cc:262</a></div></div>
-<div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a41e21fbf8da59e6c7a7cc273428a43bb"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">shaka::hls::MediaPlaylist::GetDisplayResolution</a></div><div class="ttdeci">virtual bool GetDisplayResolution(uint32_t *width, uint32_t *height) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00437">media_playlist.cc:437</a></div></div>
+<div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a41e21fbf8da59e6c7a7cc273428a43bb"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a41e21fbf8da59e6c7a7cc273428a43bb">shaka::hls::MediaPlaylist::GetDisplayResolution</a></div><div class="ttdeci">virtual bool GetDisplayResolution(uint32_t *width, uint32_t *height) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00441">media_playlist.cc:441</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a4aaa21da07864789895048e8558ab816"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a4aaa21da07864789895048e8558ab816">shaka::hls::MediaPlaylist::AddEncryptionInfo</a></div><div class="ttdeci">virtual void AddEncryptionInfo(EncryptionMethod method, const std::string &amp;url, const std::string &amp;key_id, const std::string &amp;iv, const std::string &amp;key_format, const std::string &amp;key_format_versions)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00358">media_playlist.cc:358</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_a182ca5726d4fb7d3053f76b515042440"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a182ca5726d4fb7d3053f76b515042440">shaka::hls::MediaPlaylist::WriteToFile</a></div><div class="ttdeci">virtual bool WriteToFile(const std::string &amp;file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00375">media_playlist.cc:375</a></div></div>
 <div class="ttc" id="classshaka_1_1hls_1_1MediaPlaylist_html_aad5c985ef4bbdbe7c8f38494114abdf7"><div class="ttname"><a href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#aad5c985ef4bbdbe7c8f38494114abdf7">shaka::hls::MediaPlaylist::SetCodecForTesting</a></div><div class="ttdeci">void SetCodecForTesting(const std::string &amp;codec)</div><div class="ttdoc">For testing only. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/df2/media__playlist_8cc_source.html#l00298">media_playlist.cc:298</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 24 2017 15:50:08 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 11 2017 18:13:46 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
