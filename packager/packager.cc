@@ -34,9 +34,7 @@
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/demuxer/demuxer.h"
-#include "packager/media/event/combined_muxer_listener.h"
-#include "packager/media/event/hls_notify_muxer_listener.h"
-#include "packager/media/event/mpd_notify_muxer_listener.h"
+#include "packager/media/event/muxer_listener_factory.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/formats/webvtt/text_readers.h"
 #include "packager/media/formats/webvtt/webvtt_output_handler.h"
@@ -73,6 +71,16 @@ MuxerOptions CreateMuxerOptions(const StreamDescriptor& stream,
 
   return options;
 }
+
+MuxerListenerFactory::StreamData ToMuxerListenerData(
+    const StreamDescriptor& stream) {
+  MuxerListenerFactory::StreamData data;
+  data.media_info_output = stream.output;
+  data.hls_group_id = stream.hls_group_id;
+  data.hls_name = stream.hls_name;
+  data.hls_playlist_name = stream.hls_playlist_name;
+  return data;
+};
 
 // TODO(rkuroiwa): Write TTML and WebVTT parser (demuxing) for a better check
 // and for supporting live/segmenting (muxing).  With a demuxer and a muxer,
@@ -292,57 +300,6 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
-std::unique_ptr<MuxerListener> CreateHlsListener(const StreamDescriptor& stream,
-                                                 int stream_number,
-                                                 hls::HlsNotifier* notifier) {
-  DCHECK(notifier);
-  DCHECK_GE(stream_number, 0);
-
-  // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
-  // languages.
-  std::string group_id = stream.hls_group_id;
-  std::string name = stream.hls_name;
-  std::string hls_playlist_name = stream.hls_playlist_name;
-  if (group_id.empty())
-    group_id = "audio";
-  if (name.empty())
-    name = base::StringPrintf("stream_%d", stream_number);
-  if (hls_playlist_name.empty())
-    hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
-
-  return std::unique_ptr<MuxerListener>(
-      new HlsNotifyMuxerListener(hls_playlist_name, name, group_id, notifier));
-}
-
-std::unique_ptr<MuxerListener> CreateMuxerListener(
-    const StreamDescriptor& stream,
-    int stream_number,
-    bool output_media_info,
-    MpdNotifier* mpd_notifier,
-    hls::HlsNotifier* hls_notifier) {
-  std::unique_ptr<CombinedMuxerListener> combined_listener(
-      new CombinedMuxerListener);
-
-  if (output_media_info) {
-    std::unique_ptr<MuxerListener> listener(
-        new VodMediaInfoDumpMuxerListener(stream.output + kMediaInfoSuffix));
-    combined_listener->AddListener(std::move(listener));
-  }
-
-  if (mpd_notifier) {
-    std::unique_ptr<MuxerListener> listener(
-        new MpdNotifyMuxerListener(mpd_notifier));
-    combined_listener->AddListener(std::move(listener));
-  }
-
-  if (hls_notifier) {
-    combined_listener->AddListener(
-        CreateHlsListener(stream, stream_number, hls_notifier));
-  }
-
-  return std::move(combined_listener);
-}
-
 /// Create a new demuxer handler for the given stream. If a demuxer cannot be
 /// created, an error will be returned. If a demuxer can be created, this
 /// |new_demuxer| will be set and Status::OK will be returned.
@@ -408,12 +365,10 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   return std::make_shared<EncryptionHandler>(encryption_params, key_source);
 }
 
-Status CreateMp4ToMp4TextJob(int stream_number,
-                             const StreamDescriptor& stream,
+Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
                              const PackagingParams& packaging_params,
                              MuxerFactory* muxer_factory,
-                             MpdNotifier* mpd_notifier,
-                             hls::HlsNotifier* hls_notifier,
+                             MuxerListenerFactory* muxer_listener_factory,
                              std::shared_ptr<OriginHandler>* root) {
   Status status;
   std::shared_ptr<Demuxer> demuxer;
@@ -425,9 +380,8 @@ Status CreateMp4ToMp4TextJob(int stream_number,
 
   std::shared_ptr<MediaHandler> chunker(
       new ChunkingHandler(packaging_params.chunking_params));
-  std::unique_ptr<MuxerListener> muxer_listener = CreateMuxerListener(
-      stream, stream_number, packaging_params.output_media_info, mpd_notifier,
-      hls_notifier);
+  std::unique_ptr<MuxerListener> muxer_listener =
+      muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
   std::shared_ptr<Muxer> muxer =
       muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
@@ -439,12 +393,11 @@ Status CreateMp4ToMp4TextJob(int stream_number,
 }
 
 Status CreateHlsTextJob(const StreamDescriptor& stream,
-                        int stream_number,
                         const PackagingParams& packaging_params,
-                        hls::HlsNotifier* notifier,
+                        std::unique_ptr<MuxerListener> muxer_listener,
                         JobManager* job_manager) {
-  DCHECK(notifier);
-  DCHECK_GE(stream_number, 0);
+  DCHECK(muxer_listener);
+  DCHECK(job_manager);
 
   if (stream.segment_template.empty()) {
     return Status(error::INVALID_ARGUMENT,
@@ -462,9 +415,6 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   // value to something reasonable if it is missing.
   MuxerOptions muxer_options = CreateMuxerOptions(stream, packaging_params);
   muxer_options.bandwidth = stream.bandwidth ? stream.bandwidth : 256;
-
-  std::unique_ptr<MuxerListener> muxer_listener =
-      CreateHlsListener(stream, stream_number, notifier);
 
   std::shared_ptr<WebVttSegmentedOutputHandler> output(
       new WebVttSegmentedOutputHandler(muxer_options,
@@ -495,19 +445,19 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
 Status CreateTextJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
-    int* stream_number,
+    MuxerListenerFactory* muxer_listener_factory,
     MuxerFactory* muxer_factory,
     MpdNotifier* mpd_notifier,
-    hls::HlsNotifier* hls_notifier,
     JobManager* job_manager) {
+  DCHECK(muxer_listener_factory);
   DCHECK(job_manager);
   for (const StreamDescriptor& stream : streams) {
     // TODO(70990714): Support webvtt to mp4
     if (GetOutputFormat(stream) == CONTAINER_MOV) {
       std::shared_ptr<OriginHandler> root;
-      Status status = CreateMp4ToMp4TextJob((*stream_number)++, stream,
-                                            packaging_params, muxer_factory,
-                                            mpd_notifier, hls_notifier, &root);
+      Status status =
+          CreateMp4ToMp4TextJob(stream, packaging_params, muxer_factory,
+                                muxer_listener_factory, &root);
 
       if (!status.ok()) {
         return status;
@@ -515,12 +465,32 @@ Status CreateTextJobs(
 
       job_manager->Add("MP4 text job", std::move(root));
     } else {
+      std::unique_ptr<MuxerListener> hls_listener =
+          muxer_listener_factory->CreateHlsListener(
+              ToMuxerListenerData(stream));
+
+      // Check input to ensure that output is possible.
+      if (hls_listener) {
+        if (stream.segment_template.empty() || !stream.output.empty()) {
+          return Status(error::INVALID_ARGUMENT,
+                        "segment_template needs to be specified for HLS text "
+                        "output. Single file output is not supported yet.");
+        }
+      }
+
+      if (mpd_notifier && !stream.segment_template.empty()) {
+        return Status(error::INVALID_ARGUMENT,
+                      "Cannot create text output for MPD with segment output.");
+      }
+
       MediaInfo text_media_info;
       if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
         return Status(error::INVALID_ARGUMENT,
                       "Could not create media info for stream.");
       }
 
+      // If we are outputting to MPD, just add the input to the outputted
+      // manifest.
       if (mpd_notifier) {
         uint32_t unused;
         if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
@@ -531,10 +501,11 @@ Status CreateTextJobs(
         }
       }
 
-      if (hls_notifier) {
-        Status status =
-            CreateHlsTextJob(stream, (*stream_number)++, packaging_params,
-                             hls_notifier, job_manager);
+      // If we are outputting to HLS, then create the HLS test pipeline that
+      // will create segmented text output.
+      if (hls_listener) {
+        Status status = CreateHlsTextJob(stream, packaging_params,
+                                         std::move(hls_listener), job_manager);
         if (!status.ok()) {
           return status;
         }
@@ -553,12 +524,12 @@ Status CreateTextJobs(
 Status CreateAudioVideoJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
-    int* stream_number,
     KeySource* encryption_key_source,
+    MuxerListenerFactory* muxer_listener_factory,
     MuxerFactory* muxer_factory,
-    MpdNotifier* mpd_notifier,
-    hls::HlsNotifier* hls_notifier,
     JobManager* job_manager) {
+  DCHECK(muxer_listener_factory);
+  DCHECK(muxer_factory);
   DCHECK(job_manager);
 
   // Demuxers are shared among all streams with the same input.
@@ -636,9 +607,8 @@ Status CreateAudioVideoJobs(
     }
 
     // Create the muxer (output) for this track.
-    std::unique_ptr<MuxerListener> muxer_listener = CreateMuxerListener(
-        stream, (*stream_number)++, packaging_params.output_media_info,
-        mpd_notifier, hls_notifier);
+    std::unique_ptr<MuxerListener> muxer_listener =
+        muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
     std::shared_ptr<Muxer> muxer =
         muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
     muxer->SetMuxerListener(std::move(muxer_listener));
@@ -672,11 +642,13 @@ Status CreateAudioVideoJobs(
 
 Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
                      const PackagingParams& packaging_params,
-                     FakeClock* fake_clock,
-                     KeySource* encryption_key_source,
                      MpdNotifier* mpd_notifier,
-                     hls::HlsNotifier* hls_notifier,
+                     KeySource* encryption_key_source,
+                     MuxerListenerFactory* muxer_listener_factory,
+                     MuxerFactory* muxer_factory,
                      JobManager* job_manager) {
+  DCHECK(muxer_factory);
+  DCHECK(muxer_listener_factory);
   DCHECK(job_manager);
 
   // Group all streams based on which pipeline they will use.
@@ -700,20 +672,14 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   std::sort(audio_video_streams.begin(), audio_video_streams.end(),
             media::StreamDescriptorCompareFn);
 
-  MuxerFactory muxer_factory(packaging_params);
-  if (packaging_params.test_params.inject_fake_clock) {
-    muxer_factory.OverrideClock(fake_clock);
-  }
-
-  int stream_number = 0;
   Status status;
-  status.Update(CreateTextJobs(text_streams, packaging_params, &stream_number,
-                               &muxer_factory, mpd_notifier, hls_notifier,
-                               job_manager));
-  status.Update(CreateAudioVideoJobs(audio_video_streams, packaging_params,
-                                     &stream_number, encryption_key_source,
-                                     &muxer_factory, mpd_notifier, hls_notifier,
-                                     job_manager));
+  status.Update(CreateTextJobs(text_streams, packaging_params,
+                               muxer_listener_factory, muxer_factory,
+                               mpd_notifier, job_manager));
+  status.Update(CreateAudioVideoJobs(
+      audio_video_streams, packaging_params, encryption_key_source,
+      muxer_listener_factory, muxer_factory, job_manager));
+
   if (!status.ok()) {
     return status;
   }
@@ -776,7 +742,7 @@ Status Packager::Initialize(
   // Store callback params to make it available during packaging.
   internal->buffer_callback_params = packaging_params.buffer_callback_params;
 
-  // Update mpd output and hls output if callback param is specified.
+  // Update MPD output and HLS output if callback param is specified.
   MpdParams mpd_params = packaging_params.mpd_params;
   HlsParams hls_params = packaging_params.hls_params;
   if (internal->buffer_callback_params.write_func) {
@@ -842,10 +808,19 @@ Status Packager::Initialize(
     streams_for_jobs.push_back(copy);
   }
 
+  media::MuxerFactory muxer_factory(packaging_params);
+  if (packaging_params.test_params.inject_fake_clock) {
+    muxer_factory.OverrideClock(&internal->fake_clock);
+  }
+
+  media::MuxerListenerFactory muxer_listener_factory(
+      packaging_params.output_media_info, internal->mpd_notifier.get(),
+      internal->hls_notifier.get());
+
   Status status = media::CreateAllJobs(
-      streams_for_jobs, packaging_params, &internal->fake_clock,
-      internal->encryption_key_source.get(), internal->mpd_notifier.get(),
-      internal->hls_notifier.get(), &internal->job_manager);
+      streams_for_jobs, packaging_params, internal->mpd_notifier.get(),
+      internal->encryption_key_source.get(), &muxer_listener_factory,
+      &muxer_factory, &internal->job_manager);
 
   if (!status.ok()) {
     return status;
