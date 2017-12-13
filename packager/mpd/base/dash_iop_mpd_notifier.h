@@ -62,40 +62,18 @@ class DashIopMpdNotifier : public MpdNotifier {
   // Maps representation ID to Representation.
   typedef std::map<uint32_t, Representation*> RepresentationMap;
 
-  // Maps AdaptationSet ID to ProtectedContent.
-  typedef std::map<uint32_t, MediaInfo::ProtectedContent> ProtectedContentMap;
-
-  // Find reusable AdaptationSet, instead of creating a new AdaptationSet for
-  // the |media_info|. There are two cases that an |existing_adaptation_set|
-  // can be used:
-  // 1) The media info does not have protected content and there is an existing
-  // unprotected content AdapationSet.
-  // 2) The media info has protected content and there is an exisiting
-  // AdaptationSet, which has same MediaInfo::ProtectedContent protobuf.
-  // Returns the reusable AdaptationSet pointer if found, otherwise returns
-  // nullptr.
-  AdaptationSet* ReuseAdaptationSet(
-      const std::list<AdaptationSet*>& adaptation_sets,
-      const MediaInfo& media_info);
-
   // Checks the protected_content field of media_info and returns a non-null
   // AdaptationSet* for a new Representation.
   // This does not necessarily return a new AdaptationSet. If
   // media_info.protected_content completely matches with an existing
   // AdaptationSet, then it will return the pointer.
-  AdaptationSet* GetAdaptationSetForMediaInfo(const std::string& key,
-                                              const MediaInfo& media_info);
+  AdaptationSet* GetOrCreateAdaptationSet(const MediaInfo& media_info);
 
-  // Sets adaptation set switching. If adaptation set switching is already
-  // set, then this returns immediately.
-  void SetAdaptationSetSwitching(const std::string& key,
-                                 AdaptationSet* adaptation_set);
-
-  // Helper function to get a new AdaptationSet; registers the values
-  // to the fields (maps) of the instance.
-  // If the media is encrypted, registers data to protected_content_map_.
-  AdaptationSet* NewAdaptationSet(const MediaInfo& media_info,
-                                  std::list<AdaptationSet*>* adaptation_sets);
+  // Helper function to get a new AdaptationSet and set new AdaptationSet
+  // attributes.
+  AdaptationSet* NewAdaptationSet(
+      const MediaInfo& media_info,
+      const std::list<AdaptationSet*>& adaptation_sets);
 
   // Gets the original AdaptationSet which the trick play video belongs
   // to and returns the id of the original adapatation set.
@@ -119,8 +97,30 @@ class DashIopMpdNotifier : public MpdNotifier {
   std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
   RepresentationMap representation_map_;
 
-  // Used to check whether a Representation should be added to an AdaptationSet.
-  ProtectedContentMap protected_content_map_;
+  // Tracks ProtectedContent in AdaptationSet.
+  class ProtectedAdaptationSetMap {
+   public:
+    ProtectedAdaptationSetMap() = default;
+    // Register the |adaptation_set| with associated |media_info| in the map.
+    void Register(const AdaptationSet& adaptation_set,
+                  const MediaInfo& media_info);
+    // Check if the protected content associated with |adaptation_set| matches
+    // with the one in |media_info|.
+    bool Match(const AdaptationSet& adaptation_set,
+               const MediaInfo& media_info);
+    // Check if the two adaptation sets are switchable.
+    bool Switchable(const AdaptationSet& adaptation_set_a,
+                    const AdaptationSet& adaptation_set_b);
+
+   private:
+    ProtectedAdaptationSetMap(const ProtectedAdaptationSetMap&) = delete;
+    ProtectedAdaptationSetMap& operator=(const ProtectedAdaptationSetMap&) =
+        delete;
+
+    // Maps AdaptationSet ID to ProtectedContent.
+    std::map<uint32_t, MediaInfo::ProtectedContent> protected_content_map_;
+  };
+  ProtectedAdaptationSetMap protected_adaptation_set_map_;
 
   // MPD output path.
   std::string output_path_;

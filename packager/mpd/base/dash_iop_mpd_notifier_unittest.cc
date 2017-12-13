@@ -344,13 +344,13 @@ TEST_F(DashIopMpdNotifierTest,
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(hd_adaptation_set.get()));
-  // Called twice for the same reason as above.
-  EXPECT_CALL(*hd_adaptation_set, AddContentProtectionElement(_)).Times(2);
 
   // Add main Role here for both.
   EXPECT_CALL(*sd_adaptation_set, AddRole(AdaptationSet::kRoleMain));
   EXPECT_CALL(*hd_adaptation_set, AddRole(AdaptationSet::kRoleMain));
 
+  // Called twice for the same reason as above.
+  EXPECT_CALL(*hd_adaptation_set, AddContentProtectionElement(_)).Times(2);
   EXPECT_CALL(*hd_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(hd_representation.get()));
 
