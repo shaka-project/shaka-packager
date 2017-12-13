@@ -15,11 +15,14 @@
 #include <vector>
 
 #include "packager/base/synchronization/lock.h"
-#include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_options.h"
 
 namespace shaka {
+
+class AdaptationSet;
+class MpdBuilder;
+class Representation;
 
 /// This class is an MpdNotifier which will try its best to generate a
 /// DASH IF IOPv3 compliant MPD.

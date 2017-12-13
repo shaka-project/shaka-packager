@@ -11,8 +11,10 @@
 
 #include "packager/base/compiler_specific.h"
 #include "packager/base/synchronization/lock.h"
+#include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/representation.h"
 
 namespace shaka {
 

@@ -27,6 +27,8 @@
       'target_name': 'mpd_builder',
       'type': 'static_library',
       'sources': [
+        'base/adaptation_set.cc',
+        'base/adaptation_set.h',
         'base/bandwidth_estimator.cc',
         'base/bandwidth_estimator.h',
         'base/content_protection_element.cc',
@@ -41,6 +43,8 @@
         'base/mpd_options.h',
         'base/mpd_utils.cc',
         'base/mpd_utils.h',
+        'base/representation.cc',
+        'base/representation.h',
         'base/segment_info.h',
         'base/simple_mpd_notifier.cc',
         'base/simple_mpd_notifier.h',

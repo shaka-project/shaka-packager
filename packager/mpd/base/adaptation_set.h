@@ -1,0 +1,279 @@
+// Copyright 2017 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+/// All the methods that are virtual are virtual for mocking.
+
+#include <stdint.h>
+
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <vector>
+
+#include "packager/base/atomic_sequence_num.h"
+#include "packager/mpd/base/mpd_options.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+
+namespace shaka {
+
+class MediaInfo;
+class Representation;
+
+struct ContentProtectionElement;
+
+namespace xml {
+class XmlNode;
+}  // namespace xml
+
+/// AdaptationSet class provides methods to add Representations and
+/// <ContentProtection> elements to the AdaptationSet element.
+class AdaptationSet {
+ public:
+  // The role for this AdaptationSet. These values are used to add a Role
+  // element to the AdaptationSet with schemeIdUri=urn:mpeg:dash:role:2011.
+  // See ISO/IEC 23009-1:2012 section 5.8.5.5.
+  enum Role {
+    kRoleCaption,
+    kRoleSubtitle,
+    kRoleMain,
+    kRoleAlternate,
+    kRoleSupplementary,
+    kRoleCommentary,
+    kRoleDub
+  };
+
+  virtual ~AdaptationSet();
+
+  /// Create a Representation instance using @a media_info.
+  /// @param media_info is a MediaInfo object used to initialize the returned
+  ///        Representation instance. It may contain only one of VideoInfo,
+  ///        AudioInfo, or TextInfo, i.e. VideoInfo XOR AudioInfo XOR TextInfo.
+  /// @return On success, returns a pointer to Representation. Otherwise returns
+  ///         NULL. The returned pointer is owned by the AdaptationSet instance.
+  virtual Representation* AddRepresentation(const MediaInfo& media_info);
+
+  /// Add a ContenProtection element to the adaptation set.
+  /// AdaptationSet does not add <ContentProtection> elements
+  /// automatically to itself even if @a media_info.protected_content is
+  /// populated. This is because some MPDs should have the elements at
+  /// AdaptationSet level and some at Representation level.
+  /// @param element contains the ContentProtection element contents.
+  ///        If @a element has {value, schemeIdUri} set and has
+  ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
+  ///        then the former is used.
+  virtual void AddContentProtectionElement(
+      const ContentProtectionElement& element);
+
+  /// Update the 'cenc:pssh' element for @a drm_uuid ContentProtection element.
+  /// If the element does not exist, this will add one.
+  /// @param drm_uuid is the UUID of the DRM for encryption.
+  /// @param pssh is the content of <cenc:pssh> element.
+  ///        Note that DASH IF IOP mentions that this should be base64 encoded
+  ///        string of the whole pssh box.
+  /// @attention This might get removed once DASH IF IOP specification makes a
+  ///            a clear guideline on how to handle key rotation. Also to get
+  ///            this working with shaka-player, this method *DOES NOT* update
+  ///            the PSSH element. Instead, it removes the element regardless of
+  ///            the content of @a pssh.
+  virtual void UpdateContentProtectionPssh(const std::string& drm_uuid,
+                                           const std::string& pssh);
+
+  /// Set the Role element for this AdaptationSet.
+  /// The Role element's is schemeIdUri='urn:mpeg:dash:role:2011'.
+  /// See ISO/IEC 23009-1:2012 section 5.8.5.5.
+  /// @param role of this AdaptationSet.
+  virtual void AddRole(Role role);
+
+  /// Makes a copy of AdaptationSet xml element with its child Representation
+  /// and ContentProtection elements.
+  /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
+  ///         NULL scoped_xml_ptr.
+  xml::scoped_xml_ptr<xmlNode> GetXml();
+
+  /// Forces the (sub)segmentAlignment field to be set to @a segment_alignment.
+  /// Use this if you are certain that the (sub)segments are alinged/unaligned
+  /// for the AdaptationSet.
+  /// @param segment_alignment is the value used for (sub)segmentAlignment
+  ///        attribute.
+  virtual void ForceSetSegmentAlignment(bool segment_alignment);
+
+  /// Adds the id of the adaptation set this adaptation set can switch to.
+  /// @param adaptation_set_id is the id of the switchable adaptation set.
+  void AddAdaptationSetSwitching(uint32_t adaptation_set_id);
+
+  /// @return the ids of the adaptation sets this adaptation set can switch to.
+  const std::vector<uint32_t>& adaptation_set_switching_ids() const {
+    return adaptation_set_switching_ids_;
+  }
+
+  // Must be unique in the Period.
+  uint32_t id() const { return id_; }
+
+  /// Notifies the AdaptationSet instance that a new (sub)segment was added to
+  /// the Representation with @a representation_id.
+  /// This must be called every time a (sub)segment is added to a
+  /// Representation in this AdaptationSet.
+  /// If a Representation is constructed using AddRepresentation() this
+  /// is called automatically whenever Representation::AddNewSegment() is
+  /// is called.
+  /// @param representation_id is the id of the Representation with a new
+  ///        segment.
+  /// @param start_time is the start time of the new segment.
+  /// @param duration is the duration of the new segment.
+  void OnNewSegmentForRepresentation(uint32_t representation_id,
+                                     uint64_t start_time,
+                                     uint64_t duration);
+
+  /// Notifies the AdaptationSet instance that the sample duration for the
+  /// Representation was set.
+  /// The frame duration for a video Representation might not be specified when
+  /// a Representation is created (by calling AddRepresentation()).
+  /// This should be used to notify this instance that the frame rate for a
+  /// Represenatation has been set.
+  /// This method is called automatically when
+  /// Represenatation::SetSampleDuration() is called if the Represenatation
+  /// instance was created using AddRepresentation().
+  /// @param representation_id is the id of the Representation.
+  /// @frame_duration is the duration of a frame in the Representation.
+  /// @param timescale is the timescale of the Representation.
+  void OnSetFrameRateForRepresentation(uint32_t representation_id,
+                                       uint32_t frame_duration,
+                                       uint32_t timescale);
+
+  /// Add the id of the adaptation set this trick play adaptation set belongs
+  /// to.
+  /// @param id the id of the reference (or main) adapation set.
+  virtual void AddTrickPlayReferenceId(uint32_t id);
+
+ protected:
+  /// @param adaptation_set_id is an ID number for this AdaptationSet.
+  /// @param lang is the language of this AdaptationSet. Mainly relevant for
+  ///        audio.
+  /// @param mpd_options is the options for this MPD.
+  /// @param mpd_type is the type of this MPD.
+  /// @param representation_counter is a Counter for assigning ID numbers to
+  ///        Representation. It can not be NULL.
+  AdaptationSet(uint32_t adaptation_set_id,
+                const std::string& lang,
+                const MpdOptions& mpd_options,
+                base::AtomicSequenceNumber* representation_counter);
+
+ private:
+  AdaptationSet(const AdaptationSet&) = delete;
+  AdaptationSet& operator=(const AdaptationSet&) = delete;
+
+  friend class MpdBuilder;
+  template <DashProfile profile>
+  friend class MpdBuilderTest;
+
+  // kSegmentAlignmentUnknown means that it is uncertain if the
+  // (sub)segments are aligned or not.
+  // kSegmentAlignmentTrue means that it is certain that the all the (current)
+  // segments added to the adaptation set are aligned.
+  // kSegmentAlignmentFalse means that it is it is certain that some segments
+  // are not aligned. This is useful to disable the computation for
+  // segment alignment, once it is certain that some segments are not aligned.
+  enum SegmentAligmentStatus {
+    kSegmentAlignmentUnknown,
+    kSegmentAlignmentTrue,
+    kSegmentAlignmentFalse
+  };
+
+  // This maps Representations (IDs) to a list of start times of the segments.
+  // e.g.
+  // If Representation 1 has start time 0, 100, 200 and Representation 2 has
+  // start times 0, 200, 400, then the map contains:
+  // 1 -> [0, 100, 200]
+  // 2 -> [0, 200, 400]
+  typedef std::map<uint32_t, std::list<uint64_t>> RepresentationTimeline;
+
+  // Gets the earliest, normalized segment timestamp. Returns true if
+  // successful, false otherwise.
+  bool GetEarliestTimestamp(double* timestamp_seconds);
+
+  /// Called from OnNewSegmentForRepresentation(). Checks whether the segments
+  /// are aligned. Sets segments_aligned_.
+  /// This is only for Live. For VOD, CheckVodSegmentAlignment() should be used.
+  /// @param representation_id is the id of the Representation with a new
+  ///        segment.
+  /// @param start_time is the start time of the new segment.
+  /// @param duration is the duration of the new segment.
+  void CheckLiveSegmentAlignment(uint32_t representation_id,
+                                 uint64_t start_time,
+                                 uint64_t duration);
+
+  // Checks representation_segment_start_times_ and sets segments_aligned_.
+  // Use this for VOD, do not use for Live.
+  void CheckVodSegmentAlignment();
+
+  // Records the framerate of a Representation.
+  void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
+
+  std::list<ContentProtectionElement> content_protection_elements_;
+  std::list<std::unique_ptr<Representation>> representations_;
+
+  base::AtomicSequenceNumber* const representation_counter_;
+
+  const uint32_t id_;
+  const std::string lang_;
+  const MpdOptions& mpd_options_;
+
+  // The ids of the adaptation sets this adaptation set can switch to.
+  std::vector<uint32_t> adaptation_set_switching_ids_;
+
+  // Video widths and heights of Representations. Note that this is a set; if
+  // there is only 1 resolution, then @width & @height should be set, otherwise
+  // @maxWidth & @maxHeight should be set for DASH IOP.
+  std::set<uint32_t> video_widths_;
+  std::set<uint32_t> video_heights_;
+
+  // Video representations' frame rates.
+  // The frame rate notation for MPD is <integer>/<integer> (where the
+  // denominator is optional). This means the frame rate could be non-whole
+  // rational value, therefore the key is of type double.
+  // Value is <integer>/<integer> in string form.
+  // So, key == CalculatedValue(value)
+  std::map<double, std::string> video_frame_rates_;
+
+  // contentType attribute of AdaptationSet.
+  // Determined by examining the MediaInfo passed to AddRepresentation().
+  std::string content_type_;
+
+  // This does not have to be a set, it could be a list or vector because all we
+  // really care is whether there is more than one entry.
+  // Contains one entry if all the Representations have the same picture aspect
+  // ratio (@par attribute for AdaptationSet).
+  // There will be more than one entry if there are multiple picture aspect
+  // ratios.
+  // The @par attribute should only be set if there is exactly one entry
+  // in this set.
+  std::set<std::string> picture_aspect_ratio_;
+
+  // The roles of this AdaptationSet.
+  std::set<Role> roles_;
+
+  // True iff all the segments are aligned.
+  SegmentAligmentStatus segments_aligned_;
+  bool force_set_segment_alignment_;
+
+  // Keeps track of segment start times of Representations.
+  // For VOD, this will not be cleared, all the segment start times are
+  // stored in this. This should not out-of-memory for a reasonable length
+  // video and reasonable subsegment length.
+  // For Live, the entries are deleted (see CheckLiveSegmentAlignment()
+  // implementation comment) because storing the entire timeline is not
+  // reasonable and may cause an out-of-memory problem.
+  RepresentationTimeline representation_segment_start_times_;
+
+  // Record the reference id for the original adaptation sets the trick play
+  // stream belongs to. This is a set because the trick play streams may be for
+  // multiple AdaptationSets (e.g. SD and HD videos in different AdaptationSets
+  // can share the same trick play stream.)
+  std::set<uint32_t> trick_play_reference_ids_;
+};
+
+}  // namespace shaka

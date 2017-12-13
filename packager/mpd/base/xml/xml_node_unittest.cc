@@ -11,7 +11,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/mpd/test/xml_compare.h"
 

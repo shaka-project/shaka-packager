@@ -7,9 +7,11 @@
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 
 #include "packager/base/stl_util.h"
+#include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/base/representation.h"
 
 namespace shaka {
 

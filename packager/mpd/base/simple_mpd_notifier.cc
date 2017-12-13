@@ -8,9 +8,11 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
+#include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/base/representation.h"
 
 namespace shaka {
 

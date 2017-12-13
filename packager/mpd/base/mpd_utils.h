@@ -14,15 +14,11 @@
 #include <list>
 #include <string>
 
-#include "packager/base/base64.h"
-#include "packager/base/strings/string_util.h"
-#include "packager/mpd/base/content_protection_element.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_builder.h"
-
 namespace shaka {
 
+class AdaptationSet;
 class MediaInfo;
+class Representation;
 struct ContentProtectionElement;
 struct SegmentInfo;
 

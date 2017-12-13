@@ -8,8 +8,13 @@
 
 #include <libxml/tree.h>
 
+#include "packager/base/base64.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
+#include "packager/mpd/base/adaptation_set.h"
+#include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/representation.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace shaka {
