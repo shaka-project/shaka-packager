@@ -23,7 +23,6 @@ class MediaInfo;
 const char kFileNameVideoMediaInfo1[] = "video_media_info1.txt";
 const char kFileNameVideoMediaInfo2[] = "video_media_info2.txt";
 const char kFileNameAudioMediaInfo1[] = "audio_media_info1.txt";
-const char kFileNameEncytpedAudioMediaInfo[] = "encrypted_audio_media_info.txt";
 
 // These are the expected output files.
 const char kFileNameExpectedMpdOutputVideo1[] =
@@ -37,11 +36,6 @@ const char kFileNameExpectedMpdOutputAudio1[] =
 
 const char kFileNameExpectedMpdOutputAudio1AndVideo1[] =
     "audio_media_info1_video_media_info1_expected_mpd_output.txt";
-
-const char kFileNameExpectedMpdOutputEncryptedAudio[] =
-    "encrypted_audio_media_info_expected_output.txt";
-
-const char kFileNameExpectedMpdOutputDynamicNormal[] = "dynamic_normal_mpd.txt";
 
 // Returns the path to test data with |file_name|. Use constants above to get
 // path to the test files.
