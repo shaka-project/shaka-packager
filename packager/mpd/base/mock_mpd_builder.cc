@@ -13,6 +13,9 @@ const MpdOptions kDefaultMpdOptions;
 MockMpdBuilder::MockMpdBuilder() : MpdBuilder(kDefaultMpdOptions) {}
 MockMpdBuilder::~MockMpdBuilder() {}
 
+MockPeriod::MockPeriod()
+    : Period(kDefaultMpdOptions, &sequence_counter_, &sequence_counter_) {}
+
 MockAdaptationSet::MockAdaptationSet(uint32_t adaptation_set_id)
     : AdaptationSet(adaptation_set_id,
                     kEmptyLang,

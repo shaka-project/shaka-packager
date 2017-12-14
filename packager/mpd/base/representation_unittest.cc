@@ -11,6 +11,7 @@
 #include <inttypes.h>
 
 #include "packager/base/strings/stringprintf.h"
+#include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
 

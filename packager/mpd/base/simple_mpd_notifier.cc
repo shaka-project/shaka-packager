@@ -12,7 +12,12 @@
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/base/period.h"
 #include "packager/mpd/base/representation.h"
+
+namespace {
+const bool kContentProtectionInAdaptationSet = true;
+}  // namespace
 
 namespace shaka {
 
@@ -40,20 +45,16 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
     return false;
 
   base::AutoLock auto_lock(lock_);
+  if (!period_)
+    period_ = mpd_builder_->AddPeriod();
+  AdaptationSet* adaptation_set = period_->GetOrCreateAdaptationSet(
+      media_info, !kContentProtectionInAdaptationSet);
+  DCHECK(adaptation_set);
 
-  // TODO(kqyang): Consider adding a new method MpdBuilder::AddRepresentation.
-  // Most of the codes here can be moved inside.
-  std::string key = GetAdaptationSetKey(media_info);
-  std::string lang = GetLanguage(media_info);
-  AdaptationSet** adaptation_set = &adaptation_set_map_[key];
-  if (*adaptation_set == NULL)
-    *adaptation_set = mpd_builder_->AddAdaptationSet(lang);
-
-  DCHECK(*adaptation_set);
   MediaInfo adjusted_media_info(media_info);
   MpdBuilder::MakePathsRelativeToMpd(output_path_, &adjusted_media_info);
   Representation* representation =
-      (*adaptation_set)->AddRepresentation(adjusted_media_info);
+      adaptation_set->AddRepresentation(adjusted_media_info);
   if (representation == NULL)
     return false;
 

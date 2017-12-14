@@ -14,6 +14,7 @@
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/period.h"
 #include "packager/mpd/base/representation.h"
 
 namespace shaka {
@@ -23,8 +24,21 @@ class MockMpdBuilder : public MpdBuilder {
   MockMpdBuilder();
   ~MockMpdBuilder() override;
 
-  MOCK_METHOD1(AddAdaptationSet, AdaptationSet*(const std::string& lang));
+  MOCK_METHOD0(AddPeriod, Period*());
   MOCK_METHOD1(ToString, bool(std::string* output));
+};
+
+class MockPeriod : public Period {
+ public:
+  MockPeriod();
+
+  MOCK_METHOD2(GetOrCreateAdaptationSet,
+               AdaptationSet*(const MediaInfo& media_info,
+                              bool content_protection_in_adaptation_set));
+
+ private:
+  // Only for constructing the super class. Not used for testing.
+  base::AtomicSequenceNumber sequence_counter_;
 };
 
 class MockAdaptationSet : public AdaptationSet {

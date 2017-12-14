@@ -21,6 +21,7 @@ namespace shaka {
 
 class AdaptationSet;
 class MpdBuilder;
+class Period;
 class Representation;
 class SimpleMpdNotifierTest;
 
@@ -69,6 +70,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   // MPD output path.
   std::string output_path_;
   std::unique_ptr<MpdBuilder> mpd_builder_;
+  Period* period_ = nullptr;
   base::Lock lock_;
 
   typedef std::map<std::string, AdaptationSet*> AdaptationSetMap;

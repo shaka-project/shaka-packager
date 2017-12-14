@@ -12,6 +12,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/base/xml/xml_node.h"

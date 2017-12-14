@@ -8,6 +8,7 @@
 
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/period.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/version/version.h"
 
@@ -35,6 +36,11 @@ class MpdBuilderTest : public ::testing::Test {
   }
   ~MpdBuilderTest() override {}
 
+  void SetUp() override {
+    period_ = mpd_.AddPeriod();
+    ASSERT_TRUE(period_);
+  }
+
   MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
 
   void CheckMpd(const std::string& expected_output_file) {
@@ -50,7 +56,8 @@ class MpdBuilderTest : public ::testing::Test {
   // Creates a new AdaptationSet and adds a Representation element using
   // |media_info|.
   void AddRepresentation(const MediaInfo& media_info) {
-    AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
+    AdaptationSet* adaptation_set =
+        period_->GetOrCreateAdaptationSet(media_info, true);
     ASSERT_TRUE(adaptation_set);
 
     Representation* representation =
@@ -66,6 +73,7 @@ class MpdBuilderTest : public ::testing::Test {
   Representation* representation_;  // Owned by |mpd_|.
 
  private:
+  Period* period_ = nullptr;
   base::AtomicSequenceNumber representation_counter_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdBuilderTest);
@@ -110,13 +118,11 @@ TEST_F(OnDemandMpdBuilderTest, Video) {
 }
 
 TEST_F(OnDemandMpdBuilderTest, TwoVideosWithDifferentResolutions) {
-  AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
-
   MediaInfo media_info1 = GetTestMediaInfo(kFileNameVideoMediaInfo1);
-  ASSERT_TRUE(adaptation_set->AddRepresentation(media_info1));
-
   MediaInfo media_info2 = GetTestMediaInfo(kFileNameVideoMediaInfo2);
-  ASSERT_TRUE(adaptation_set->AddRepresentation(media_info2));
+  // The order matters here to check against expected output.
+  ASSERT_NO_FATAL_FAILURE(AddRepresentation(media_info1));
+  ASSERT_NO_FATAL_FAILURE(AddRepresentation(media_info2));
 
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputVideo1And2));
 }
@@ -125,21 +131,9 @@ TEST_F(OnDemandMpdBuilderTest, TwoVideosWithDifferentResolutions) {
 TEST_F(OnDemandMpdBuilderTest, VideoAndAudio) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   MediaInfo audio_media_info = GetTestMediaInfo(kFileNameAudioMediaInfo1);
-
   // The order matters here to check against expected output.
-  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
-  ASSERT_TRUE(video_adaptation_set);
-
-  AdaptationSet* audio_adaptation_set = mpd_.AddAdaptationSet("");
-  ASSERT_TRUE(audio_adaptation_set);
-
-  Representation* audio_representation =
-      audio_adaptation_set->AddRepresentation(audio_media_info);
-  ASSERT_TRUE(audio_representation);
-
-  Representation* video_representation =
-      video_adaptation_set->AddRepresentation(video_media_info);
-  ASSERT_TRUE(video_representation);
+  ASSERT_NO_FATAL_FAILURE(AddRepresentation(video_media_info));
+  ASSERT_NO_FATAL_FAILURE(AddRepresentation(audio_media_info));
 
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputAudio1AndVideo1));
 }
@@ -161,24 +155,23 @@ TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
 TEST_F(LiveMpdBuilderTest, DynamicCheckMpdAttributes) {
   static const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<!--Generated with https://github.com/google/shaka-packager "
-      "version <tag>-<hash>-<test>-->\n"
-      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-      "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-      "xsi:schemaLocation="
-      "\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
-      "xmlns:cenc=\"urn:mpeg:cenc:2013\" "
-      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
-      "minBufferTime=\"PT2S\" "
-      "type=\"dynamic\" "
-      "publishTime=\"2016-01-11T15:10:24Z\" "
-      "availabilityStartTime=\"2011-12-25T12:30:00\">\n"
-      "  <Period id=\"0\" start=\"PT0S\"/>\n"
-      "</MPD>\n";
+      "<!--Generated with https://github.com/google/shaka-packager"
+      " version <tag>-<hash>-<test>-->\n"
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-live:2011\""
+      " minBufferTime=\"PT2S\""
+      " type=\"dynamic\""
+      " publishTime=\"2016-01-11T15:10:24Z\""
+      " availabilityStartTime=\"2011-12-25T12:30:00\""
+      " minimumUpdatePeriod=\"PT2S\"/>\n";
 
   std::string mpd_doc;
   mutable_mpd_options()->mpd_type = MpdType::kDynamic;
+  mutable_mpd_options()->mpd_params.minimum_update_period = 2;
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));
   ASSERT_EQ(kExpectedOutput, mpd_doc);
 }
@@ -186,20 +179,17 @@ TEST_F(LiveMpdBuilderTest, DynamicCheckMpdAttributes) {
 TEST_F(LiveMpdBuilderTest, StaticCheckMpdAttributes) {
   static const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<!--Generated with https://github.com/google/shaka-packager "
-      "version <tag>-<hash>-<test>-->\n"
-      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-      "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-      "xsi:schemaLocation="
-      "\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
-      "xmlns:cenc=\"urn:mpeg:cenc:2013\" "
-      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
-      "minBufferTime=\"PT2S\" "
-      "type=\"static\" "
-      "mediaPresentationDuration=\"PT0S\">\n"
-      "  <Period id=\"0\"/>\n"
-      "</MPD>\n";
+      "<!--Generated with https://github.com/google/shaka-packager"
+      " version <tag>-<hash>-<test>-->\n"
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-live:2011\""
+      " minBufferTime=\"PT2S\""
+      " type=\"static\""
+      " mediaPresentationDuration=\"PT0S\"/>\n";
 
   std::string mpd_doc;
   mutable_mpd_options()->mpd_type = MpdType::kStatic;

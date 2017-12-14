@@ -9,7 +9,6 @@
 
 #include "packager/mpd/base/mpd_notifier.h"
 
-#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -22,6 +21,7 @@ namespace shaka {
 
 class AdaptationSet;
 class MpdBuilder;
+class Period;
 class Representation;
 
 /// This class is an MpdNotifier which will try its best to generate a
@@ -59,31 +59,6 @@ class DashIopMpdNotifier : public MpdNotifier {
  private:
   friend class DashIopMpdNotifierTest;
 
-  // Maps representation ID to Representation.
-  typedef std::map<uint32_t, Representation*> RepresentationMap;
-
-  // Checks the protected_content field of media_info and returns a non-null
-  // AdaptationSet* for a new Representation.
-  // This does not necessarily return a new AdaptationSet. If
-  // media_info.protected_content completely matches with an existing
-  // AdaptationSet, then it will return the pointer.
-  AdaptationSet* GetOrCreateAdaptationSet(const MediaInfo& media_info);
-
-  // Helper function to get a new AdaptationSet and set new AdaptationSet
-  // attributes.
-  AdaptationSet* NewAdaptationSet(
-      const MediaInfo& media_info,
-      const std::list<AdaptationSet*>& adaptation_sets);
-
-  // Gets the original AdaptationSet which the trick play video belongs
-  // to and returns the id of the original adapatation set.
-  // It is assumed that the corresponding AdaptationSet has been created before
-  // the trick play AdaptationSet.
-  // Returns true if main_adaptation_id is found, otherwise false;
-  bool FindOriginalAdaptationSetForTrickPlay(
-      const MediaInfo& media_info,
-      uint32_t* original_adaptation_set_id);
-
   // Testing only method. Returns a pointer to MpdBuilder.
   MpdBuilder* MpdBuilderForTesting() const {
     return mpd_builder_.get();
@@ -94,39 +69,14 @@ class DashIopMpdNotifier : public MpdNotifier {
     mpd_builder_ = std::move(mpd_builder);
   }
 
-  std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
-  RepresentationMap representation_map_;
-
-  // Tracks ProtectedContent in AdaptationSet.
-  class ProtectedAdaptationSetMap {
-   public:
-    ProtectedAdaptationSetMap() = default;
-    // Register the |adaptation_set| with associated |media_info| in the map.
-    void Register(const AdaptationSet& adaptation_set,
-                  const MediaInfo& media_info);
-    // Check if the protected content associated with |adaptation_set| matches
-    // with the one in |media_info|.
-    bool Match(const AdaptationSet& adaptation_set,
-               const MediaInfo& media_info);
-    // Check if the two adaptation sets are switchable.
-    bool Switchable(const AdaptationSet& adaptation_set_a,
-                    const AdaptationSet& adaptation_set_b);
-
-   private:
-    ProtectedAdaptationSetMap(const ProtectedAdaptationSetMap&) = delete;
-    ProtectedAdaptationSetMap& operator=(const ProtectedAdaptationSetMap&) =
-        delete;
-
-    // Maps AdaptationSet ID to ProtectedContent.
-    std::map<uint32_t, MediaInfo::ProtectedContent> protected_content_map_;
-  };
-  ProtectedAdaptationSetMap protected_adaptation_set_map_;
-
   // MPD output path.
   std::string output_path_;
   std::unique_ptr<MpdBuilder> mpd_builder_;
+  Period* period_ = nullptr;  // owned by |mpd_builder_|.
   base::Lock lock_;
 
+  // Maps representation ID to Representation.
+  std::map<uint32_t, Representation*> representation_map_;
   // Maps Representation ID to AdaptationSet. This is for updating the PSSH.
   std::map<uint32_t, AdaptationSet*> representation_id_to_adaptation_set_;
 };

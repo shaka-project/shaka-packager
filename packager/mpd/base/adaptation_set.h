@@ -6,6 +6,9 @@
 //
 /// All the methods that are virtual are virtual for mocking.
 
+#ifndef PACKAGER_MPD_BASE_ADAPTATION_SET_H_
+#define PACKAGER_MPD_BASE_ADAPTATION_SET_H_
+
 #include <stdint.h>
 
 #include <list>
@@ -15,7 +18,6 @@
 #include <vector>
 
 #include "packager/base/atomic_sequence_num.h"
-#include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace shaka {
@@ -24,6 +26,7 @@ class MediaInfo;
 class Representation;
 
 struct ContentProtectionElement;
+struct MpdOptions;
 
 namespace xml {
 class XmlNode;
@@ -166,7 +169,7 @@ class AdaptationSet {
   AdaptationSet(const AdaptationSet&) = delete;
   AdaptationSet& operator=(const AdaptationSet&) = delete;
 
-  friend class MpdBuilder;
+  friend class Period;
   friend class AdaptationSetTest;
 
   // kSegmentAlignmentUnknown means that it is uncertain if the
@@ -276,3 +279,5 @@ class AdaptationSet {
 };
 
 }  // namespace shaka
+
+#endif  // PACKAGER_MPD_BASE_ADAPTATION_SET_H_

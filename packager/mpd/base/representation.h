@@ -6,9 +6,11 @@
 //
 /// All the methods that are virtual are virtual for mocking.
 
+#ifndef PACKAGER_MPD_BASE_REPRESENTATION_H_
+#define PACKAGER_MPD_BASE_REPRESENTATION_H_
+
 #include "packager/mpd/base/bandwidth_estimator.h"
 #include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
@@ -20,6 +22,7 @@
 namespace shaka {
 
 struct ContentProtectionElement;
+struct MpdOptions;
 
 namespace xml {
 class XmlNode;
@@ -198,3 +201,5 @@ class Representation {
 };
 
 }  // namespace shaka
+
+#endif  // PACKAGER_MPD_BASE_REPRESENTATION_H_

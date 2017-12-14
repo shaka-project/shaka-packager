@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"

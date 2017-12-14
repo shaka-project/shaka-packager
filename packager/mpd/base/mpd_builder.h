@@ -28,6 +28,7 @@ namespace shaka {
 
 class AdaptationSet;
 class MediaInfo;
+class Period;
 
 namespace xml {
 class XmlNode;
@@ -45,11 +46,9 @@ class MpdBuilder {
   /// @param base_url URL for <BaseURL> entry.
   void AddBaseUrl(const std::string& base_url);
 
-  /// Adds <AdaptationSet> to the MPD.
-  /// @param lang is the language of the AdaptationSet. This can be empty for
-  ///        videos, for example.
-  /// @return The new adaptation set, which is owned by this instance.
-  virtual AdaptationSet* AddAdaptationSet(const std::string& lang);
+  /// Adds <Period> to the MPD.
+  /// @return The new period, which is owned by this instance.
+  virtual Period* AddPeriod();
 
   /// Writes the MPD to the given string.
   /// @param[out] output is an output string where the MPD gets written.
@@ -108,7 +107,7 @@ class MpdBuilder {
   bool GetEarliestTimestamp(double* timestamp_seconds);
 
   MpdOptions mpd_options_;
-  std::list<std::unique_ptr<AdaptationSet>> adaptation_sets_;
+  std::list<std::unique_ptr<Period>> periods_;
 
   std::list<std::string> base_urls_;
   std::string availability_start_time_;

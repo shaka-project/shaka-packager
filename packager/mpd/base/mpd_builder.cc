@@ -15,6 +15,7 @@
 #include "packager/base/time/time.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/base/period.h"
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/version/version.h"
 
@@ -139,18 +140,10 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
   base_urls_.push_back(base_url);
 }
 
-AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
-  std::unique_ptr<AdaptationSet> adaptation_set(
-      new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
-                        &representation_counter_));
-  DCHECK(adaptation_set);
-
-  if (!lang.empty() && lang == mpd_options_.mpd_params.default_language) {
-    adaptation_set->AddRole(AdaptationSet::kRoleMain);
-  }
-
-  adaptation_sets_.push_back(std::move(adaptation_set));
-  return adaptation_sets_.back().get();
+Period* MpdBuilder::AddPeriod() {
+  periods_.emplace_back(new Period(mpd_options_, &adaptation_set_counter_,
+                                   &representation_counter_));
+  return periods_.back().get();
 }
 
 bool MpdBuilder::ToString(std::string* output) {
@@ -158,7 +151,7 @@ bool MpdBuilder::ToString(std::string* output) {
   static LibXmlInitializer lib_xml_initializer;
 
   xml::scoped_xml_ptr<xmlDoc> doc(GenerateMpd());
-  if (!doc.get())
+  if (!doc)
     return false;
 
   static const int kNiceFormat = 1;
@@ -180,38 +173,20 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST kXmlVersion));
   XmlNode mpd("MPD");
 
-  // Iterate thru AdaptationSets and add them to one big Period element.
-  XmlNode period("Period");
-
-  // Always set id=0 for now. Since this class can only generate one Period
-  // at the moment, just use a constant.
-  // Required for 'dynamic' MPDs.
-  period.SetId(0);
-  for (const std::unique_ptr<AdaptationSet>& adaptation_set :
-       adaptation_sets_) {
-    xml::scoped_xml_ptr<xmlNode> child(adaptation_set->GetXml());
-    if (!child.get() || !period.AddChild(std::move(child)))
-      return NULL;
-  }
-
   // Add baseurls to MPD.
-  std::list<std::string>::const_iterator base_urls_it = base_urls_.begin();
-  for (; base_urls_it != base_urls_.end(); ++base_urls_it) {
-    XmlNode base_url("BaseURL");
-    base_url.SetContent(*base_urls_it);
+  for (const std::string& base_url : base_urls_) {
+    XmlNode xml_base_url("BaseURL");
+    xml_base_url.SetContent(base_url);
 
-    if (!mpd.AddChild(base_url.PassScopedPtr()))
-      return NULL;
+    if (!mpd.AddChild(xml_base_url.PassScopedPtr()))
+      return nullptr;
   }
 
-  // TODO(kqyang): Should we set @start unconditionally to 0?
-  if (mpd_options_.mpd_type == MpdType::kDynamic) {
-    // This is the only Period and it is a regular period.
-    period.SetStringAttribute("start", "PT0S");
+  for (const auto& period : periods_) {
+    xml::scoped_xml_ptr<xmlNode> period_node(period->GetXml());
+    if (!period_node || !mpd.AddChild(std::move(period_node)))
+      return nullptr;
   }
-
-  if (!mpd.AddChild(period.PassScopedPtr()))
-    return NULL;
 
   AddMpdNameSpaceInfo(&mpd);
 
@@ -331,15 +306,21 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
-  xmlNodePtr period_node = FindPeriodNode(mpd_node);
-  DCHECK(period_node) << "Period element must be a child of mpd_node.";
-  DCHECK(IsPeriodNode(period_node));
-
-  // TODO(kqyang): Verify if this works for static + live profile.
   // Attribute mediaPresentationDuration must be present for 'static' MPD. So
   // setting "PT0S" is required even if none of the representaions have duration
   // attribute.
   float max_duration = 0.0f;
+
+  xmlNodePtr period_node = FindPeriodNode(mpd_node);
+  if (!period_node) {
+    LOG(WARNING) << "No Period node found. Set MPD duration to 0.";
+    return 0.0f;
+  }
+
+  DCHECK(IsPeriodNode(period_node));
+  // TODO(kqyang): Why don't we iterate the C++ classes instead of iterating XML
+  // elements?
+  // TODO(kqyang): Verify if this works for static + live profile.
   for (xmlNodePtr adaptation_set = xmlFirstElementChild(period_node);
        adaptation_set; adaptation_set = xmlNextElementSibling(adaptation_set)) {
     for (xmlNodePtr representation = xmlFirstElementChild(adaptation_set);
@@ -361,21 +342,8 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
 
 bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
-
-  double earliest_timestamp(-1);
-  for (const std::unique_ptr<AdaptationSet>& adaptation_set :
-       adaptation_sets_) {
-    double timestamp;
-    if (adaptation_set->GetEarliestTimestamp(&timestamp) &&
-        ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
-      earliest_timestamp = timestamp;
-    }
-  }
-  if (earliest_timestamp < 0)
-    return false;
-
-  *timestamp_seconds = earliest_timestamp;
-  return true;
+  DCHECK(!periods_.empty());
+  return periods_.front()->GetEarliestTimestamp(timestamp_seconds);
 }
 
 void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
