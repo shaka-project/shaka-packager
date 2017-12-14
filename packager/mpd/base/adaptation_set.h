@@ -167,8 +167,7 @@ class AdaptationSet {
   AdaptationSet& operator=(const AdaptationSet&) = delete;
 
   friend class MpdBuilder;
-  template <DashProfile profile>
-  friend class MpdBuilderTest;
+  friend class AdaptationSetTest;
 
   // kSegmentAlignmentUnknown means that it is uncertain if the
   // (sub)segments are aligned or not.

@@ -84,9 +84,11 @@
       'target_name': 'mpd_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'base/adaptation_set_unittest.cc',
         'base/bandwidth_estimator_unittest.cc',
         'base/dash_iop_mpd_notifier_unittest.cc',
         'base/mpd_builder_unittest.cc',
+        'base/representation_unittest.cc',
         'base/simple_mpd_notifier_unittest.cc',
         'base/xml/xml_node_unittest.cc',
         'test/mpd_builder_test_helper.cc',

@@ -145,8 +145,7 @@ class Representation {
   Representation& operator=(const Representation&) = delete;
 
   friend class AdaptationSet;
-  template <DashProfile profile>
-  friend class MpdBuilderTest;
+  friend class RepresentationTest;
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 
