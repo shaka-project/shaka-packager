@@ -10,6 +10,7 @@
 #include <string>
 
 #include "packager/base/files/file_path.h"
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
 

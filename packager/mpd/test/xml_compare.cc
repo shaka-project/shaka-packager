@@ -10,7 +10,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace shaka {
 
@@ -154,7 +153,7 @@ bool XmlEqual(const std::string& xml1, xmlDocPtr xml2) {
 }
 
 bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2) {
-  if (!xml1|| !xml2) {
+  if (!xml1 || !xml2) {
     LOG(ERROR) << "xml1 and/or xml2 are not valid XML.";
     return false;
   }
@@ -165,6 +164,40 @@ bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2) {
     return xml1_root_element == xml2_root_element;
 
   return CompareNodes(xml1_root_element, xml2_root_element);
+}
+
+bool XmlEqual(const std::string& xml1, xmlNodePtr xml2) {
+  xml::scoped_xml_ptr<xmlDoc> xml1_doc(GetDocFromString(xml1));
+  if (!xml1_doc) {
+    LOG(ERROR) << "xml1 are not valid XML.";
+    return false;
+  }
+  xmlNodePtr xml1_root_element = xmlDocGetRootElement(xml1_doc.get());
+  if (!xml1_root_element)
+    return false;
+  return CompareNodes(xml1_root_element, xml2);
+}
+
+std::string XmlNodeToString(xmlNodePtr xml_node) {
+  // Create an xmlDoc from xmlNodePtr. The node is copied so ownership does not
+  // transfer.
+  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
+  xmlDocSetRootElement(doc.get(), xmlCopyNode(xml_node, true));
+
+  // Format the xmlDoc to string.
+  static const int kNiceFormat = 1;
+  int doc_str_size = 0;
+  xmlChar* doc_str = nullptr;
+  xmlDocDumpFormatMemoryEnc(doc.get(), &doc_str, &doc_str_size, "UTF-8",
+                            kNiceFormat);
+  std::string output(doc_str, doc_str + doc_str_size);
+  xmlFree(doc_str);
+
+  // Remove the first line from the formatted string:
+  //   <?xml version="" encoding="UTF-8"?>
+  const size_t first_newline_char_pos = output.find('\n');
+  DCHECK_NE(first_newline_char_pos, std::string::npos);
+  return output.substr(first_newline_char_pos + 1);
 }
 
 }  // namespace shaka

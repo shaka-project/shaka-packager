@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <libxml/tree.h>
 
@@ -32,59 +33,12 @@ void AddAttribute(const std::string& name,
   attribute->set_value(value);
 }
 
-std::string GetDocAsFlatString(xmlDocPtr doc) {
-  static const int kFlatFormat = 0;
-  int doc_str_size = 0;
-  xmlChar* doc_str = NULL;
-  xmlDocDumpFormatMemoryEnc(doc, &doc_str, &doc_str_size, "UTF-8", kFlatFormat);
-  DCHECK(doc_str);
-
-  std::string output(doc_str, doc_str + doc_str_size);
-  xmlFree(doc_str);
-  return output;
-}
-
-scoped_xml_ptr<xmlDoc> MakeDoc(scoped_xml_ptr<xmlNode> node) {
-  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
-  xmlDocSetRootElement(doc.get(), node.release());
-  return doc;
-}
-
 }  // namespace
 
-class RepresentationTest : public ::testing::Test {
- public:
-  RepresentationTest() {}
-  ~RepresentationTest() override {}
-
-  // Ownership transfers, IOW this function will release the resource for
-  // |node|. Returns |node| in string format.
-  // You should not call this function multiple times.
-  std::string GetStringFormat() {
-    xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
-
-    // Because you cannot easily get the string format of a xmlNodePtr, it gets
-    // attached to a temporary xml doc.
-    xmlDocSetRootElement(doc.get(), representation_.Release());
-    std::string doc_str = GetDocAsFlatString(doc.get());
-
-    // GetDocAsFlatString() adds
-    // <?xml version="" encoding="UTF-8"?>
-    // to the first line. So this removes the first line.
-    const size_t first_newline_char_pos = doc_str.find('\n');
-    DCHECK_NE(first_newline_char_pos, std::string::npos);
-    return doc_str.substr(first_newline_char_pos + 1);
-  }
-
- protected:
-  RepresentationXmlNode representation_;
-  std::list<SegmentInfo> segment_infos_;
-};
-
 // Make sure XmlEqual() is functioning correctly.
-// TODO(rkuroiwa): Move this to a separate file. This requires it to be TEST_F
+// TODO(rkuroiwa): Move this to a separate file. This requires it to be TEST
 // due to gtest /test
-TEST_F(RepresentationTest, MetaTestXmlElementsEqual) {
+TEST(XmlNodeTest, MetaTestXmlElementsEqual) {
   static const char kXml1[] =
       "<A>\n"
       "  <B\n"
@@ -173,7 +127,7 @@ TEST_F(RepresentationTest, MetaTestXmlElementsEqual) {
 // xmlNodeGetContent(<A>) (for both <A>s) will return "content1content2".
 // But if it is run on <B> for the first XML, it will return "content1", but
 // for second XML will return "c".
-TEST_F(RepresentationTest, MetaTestXmlEqualDifferentContent) {
+TEST(XmlNodeTest, MetaTestXmlEqualDifferentContent) {
   ASSERT_FALSE(XmlEqual(
       "<A><B>content1</B><B>content2</B></A>",
       "<A><B>c</B><B>ontent1content2</B></A>"));
@@ -184,7 +138,7 @@ TEST_F(RepresentationTest, MetaTestXmlEqualDifferentContent) {
 // namespaces without context, e.g. <cenc:pssh> element.
 // The MpdBuilderTests work because the MPD element has xmlns:cenc attribute.
 // Tests that have <cenc:pssh> is in mpd_builder_unittest.
-TEST_F(RepresentationTest, AddContentProtectionElements) {
+TEST(XmlNodeTest, AddContentProtectionElements) {
   std::list<ContentProtectionElement> content_protections;
   ContentProtectionElement content_protection_widevine;
   content_protection_widevine.scheme_id_uri =
@@ -201,59 +155,63 @@ TEST_F(RepresentationTest, AddContentProtectionElements) {
       "urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b";
   content_protections.push_back(content_protection_clearkey);
 
-  representation_.AddContentProtectionElements(content_protections);
-  scoped_xml_ptr<xmlDoc> doc(MakeDoc(representation_.PassScopedPtr()));
-  ASSERT_TRUE(XmlEqual(
-      "<Representation>\n"
-      " <ContentProtection\n"
-      "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\"\n"
-      "   value=\"SOME bogus Widevine DRM version\">\n"
-      "     <AnyElement>any content</AnyElement>\n"
-      " </ContentProtection>\n"
-      " <ContentProtection\n"
-      "   schemeIdUri=\"urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b\">"
-      " </ContentProtection>\n"
-      "</Representation>",
-      doc.get()));
+  RepresentationXmlNode representation;
+  representation.AddContentProtectionElements(content_protections);
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual(
+          "<Representation>\n"
+          " <ContentProtection\n"
+          "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\"\n"
+          "   value=\"SOME bogus Widevine DRM version\">\n"
+          "     <AnyElement>any content</AnyElement>\n"
+          " </ContentProtection>\n"
+          " <ContentProtection\n"
+          "   schemeIdUri=\"urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b\">"
+          " </ContentProtection>\n"
+          "</Representation>"));
 }
 
-TEST_F(RepresentationTest, AddEC3AudioInfo) {
+TEST(XmlNodeTest, AddEC3AudioInfo) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ec-3");
   audio_info.set_sampling_frequency(44100);
   audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
-  representation_.AddAudioInfo(audio_info);
-  scoped_xml_ptr<xmlDoc> doc(MakeDoc(representation_.PassScopedPtr()));
 
-  ASSERT_TRUE(XmlEqual(
-      "<Representation audioSamplingRate=\"44100\">\n"
-      "  <AudioChannelConfiguration\n"
-      "   schemeIdUri=\n"
-      "    \"tag:dolby.com,2014:dash:audio_channel_configuration:2011\"\n"
-      "   value=\"F801\"/>\n"
-      "</Representation>\n",
-      doc.get()));
+  RepresentationXmlNode representation;
+  representation.AddAudioInfo(audio_info);
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"44100\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dolby.com,2014:dash:audio_channel_configuration:2011\"\n"
+          "   value=\"F801\"/>\n"
+          "</Representation>\n"));
 }
 
 // Some template names cannot be used for init segment name.
-TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
+TEST(XmlNodeTest, InvalidLiveInitSegmentName) {
   MediaInfo media_info;
   const uint32_t kDefaultStartNumber = 1;
+  std::list<SegmentInfo> segment_infos;
+  RepresentationXmlNode representation;
 
   // $Number$ cannot be used for segment name.
   media_info.set_init_segment_name("$Number$.mp4");
-  ASSERT_FALSE(representation_.AddLiveOnlyInfo(
-      media_info, segment_infos_, kDefaultStartNumber));
+  ASSERT_FALSE(representation.AddLiveOnlyInfo(media_info, segment_infos,
+                                              kDefaultStartNumber));
 
   // $Time$ as well.
   media_info.set_init_segment_name("$Time$.mp4");
-  ASSERT_FALSE(representation_.AddLiveOnlyInfo(
-      media_info, segment_infos_, kDefaultStartNumber));
+  ASSERT_FALSE(representation.AddLiveOnlyInfo(media_info, segment_infos,
+                                              kDefaultStartNumber));
 
   // This should be valid.
   media_info.set_init_segment_name("some_non_template_name.mp4");
-  ASSERT_TRUE(representation_.AddLiveOnlyInfo(
-      media_info, segment_infos_, kDefaultStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info, segment_infos,
+                                             kDefaultStartNumber));
 }
 
 }  // namespace xml
