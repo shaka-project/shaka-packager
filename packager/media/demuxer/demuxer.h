@@ -26,7 +26,6 @@ class Decryptor;
 class KeySource;
 class MediaParser;
 class MediaSample;
-class MediaStream;
 class StreamInfo;
 
 /// Demuxer is responsible for extracting elementary stream samples from a

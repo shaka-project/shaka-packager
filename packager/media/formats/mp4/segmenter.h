@@ -50,7 +50,7 @@ class Segmenter {
   /// Initialize the segmenter.
   /// Calling other public methods of this class without this method returning
   /// Status::OK results in an undefined behavior.
-  /// @param streams contains the vector of MediaStreams to be segmented.
+  /// @param streams contains the vector of StreamInfos for initialization.
   /// @param muxer_listener receives muxer events. Can be NULL.
   /// @param progress_listener receives progress updates. Can be NULL.
   /// @return OK on success, an error status otherwise.
