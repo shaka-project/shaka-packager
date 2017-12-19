@@ -4,8 +4,8 @@
 //
 // This file contains an implementation of an H264 Annex-B video stream parser.
 
-#ifndef MEDIA_CODECS_H264_PARSER_H_
-#define MEDIA_CODECS_H264_PARSER_H_
+#ifndef PACKAGER_MEDIA_CODECS_H264_PARSER_H_
+#define PACKAGER_MEDIA_CODECS_H264_PARSER_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -339,4 +339,4 @@ class H264Parser {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_CODECS_H264_PARSER_H_
+#endif  // PACKAGER_MEDIA_CODECS_H264_PARSER_H_

@@ -5,8 +5,8 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 
-#ifndef MEDIA_BASE_TIMESTAMP_H_
-#define MEDIA_BASE_TIMESTAMP_H_
+#ifndef PACKAGER_MEDIA_BASE_TIMESTAMP_H_
+#define PACKAGER_MEDIA_BASE_TIMESTAMP_H_
 
 #include <stdint.h>
 
@@ -21,4 +21,4 @@ const int64_t kInfiniteDuration = std::numeric_limits<int64_t>::max();
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_TIMESTAMP_H_
+#endif  // PACKAGER_MEDIA_BASE_TIMESTAMP_H_

@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
-#define MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
+#ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
+#define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
 
 #include <stdint.h>
 
@@ -59,4 +59,4 @@ std::string CreateUUIDString(const std::vector<uint8_t>& data);
 }  // namespace internal
 }  // namespace media
 }  // namespace shaka
-#endif  // MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
+#endif  // PACKAGER_MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_

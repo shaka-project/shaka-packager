@@ -6,8 +6,8 @@
 //
 // Event handler for events fired by Muxer.
 
-#ifndef MEDIA_EVENT_MUXER_LISTENER_H_
-#define MEDIA_EVENT_MUXER_LISTENER_H_
+#ifndef PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_
+#define PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_
 
 #include <stdint.h>
 
@@ -134,4 +134,4 @@ class MuxerListener {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_EVENT_MUXER_LISTENER_H_
+#endif  // PACKAGER_MEDIA_EVENT_MUXER_LISTENER_H_

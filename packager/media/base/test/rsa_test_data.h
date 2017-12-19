@@ -6,8 +6,8 @@
 //
 // RSA test data generated using fake_prng for purposes of testing.
 
-#ifndef MEDIA_BASE_RSA_TEST_DATA_H_
-#define MEDIA_BASE_RSA_TEST_DATA_H_
+#ifndef PACKAGER_MEDIA_BASE_RSA_TEST_DATA_H_
+#define PACKAGER_MEDIA_BASE_RSA_TEST_DATA_H_
 
 #include <string>
 
@@ -47,4 +47,4 @@ class RsaTestData {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_RSA_TEST_DATA_H_
+#endif  // PACKAGER_MEDIA_BASE_RSA_TEST_DATA_H_

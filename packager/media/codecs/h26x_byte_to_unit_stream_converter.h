@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
-#define MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
+#ifndef PACKAGER_MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
+#define PACKAGER_MEDIA_CODECS_H26X_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
 #include <stdint.h>
 
@@ -84,4 +84,4 @@ class H26xByteToUnitStreamConverter {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_CODECS_H26x_BYTE_TO_UNIT_STREAM_CONVERTER_H_
+#endif  // PACKAGER_MEDIA_CODECS_H26x_BYTE_TO_UNIT_STREAM_CONVERTER_H_

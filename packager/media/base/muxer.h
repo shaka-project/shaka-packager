@@ -6,8 +6,8 @@
 //
 // Defines the muxer interface.
 
-#ifndef MEDIA_BASE_MUXER_H_
-#define MEDIA_BASE_MUXER_H_
+#ifndef PACKAGER_MEDIA_BASE_MUXER_H_
+#define PACKAGER_MEDIA_BASE_MUXER_H_
 
 #include <memory>
 #include <vector>
@@ -105,4 +105,4 @@ class Muxer : public MediaHandler {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_MUXER_H_
+#endif  // PACKAGER_MEDIA_BASE_MUXER_H_

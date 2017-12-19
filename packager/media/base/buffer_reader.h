@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_BASE_BUFFER_READER_H_
-#define MEDIA_BASE_BUFFER_READER_H_
+#ifndef PACKAGER_MEDIA_BASE_BUFFER_READER_H_
+#define PACKAGER_MEDIA_BASE_BUFFER_READER_H_
 
 #include <stdint.h>
 
@@ -82,4 +82,4 @@ class BufferReader {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_BUFFER_READER_H_
+#endif  // PACKAGER_MEDIA_BASE_BUFFER_READER_H_

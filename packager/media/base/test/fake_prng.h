@@ -6,8 +6,8 @@
 //
 // Fake, deterministic PRNG for OpenSSL to be used for unit testing.
 
-#ifndef MEDIA_BASE_FAKE_PRNG_H
-#define MEDIA_BASE_FAKE_PRNG_H
+#ifndef PACKAGER_MEDIA_BASE_FAKE_PRNG_H
+#define PACKAGER_MEDIA_BASE_FAKE_PRNG_H
 
 namespace shaka {
 namespace media {
@@ -24,4 +24,4 @@ void StopFakePrng();
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_FAKE_PRNG_H
+#endif  // PACKAGER_MEDIA_BASE_FAKE_PRNG_H

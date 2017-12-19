@@ -7,8 +7,8 @@
 // Declaration of classes representing RSA private and public keys used
 // for message signing, signature verification, encryption and decryption.
 
-#ifndef MEDIA_BASE_RSA_KEY_H_
-#define MEDIA_BASE_RSA_KEY_H_
+#ifndef PACKAGER_MEDIA_BASE_RSA_KEY_H_
+#define PACKAGER_MEDIA_BASE_RSA_KEY_H_
 
 #include <string>
 
@@ -81,4 +81,4 @@ class RsaPublicKey {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_RSA_KEY_H_
+#endif  // PACKAGER_MEDIA_BASE_RSA_KEY_H_

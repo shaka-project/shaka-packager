@@ -44,4 +44,4 @@ class TextSample {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_TEXT_SAMPLE_H_
+#endif  // PACKAGER_MEDIA_BASE_TEXT_SAMPLE_H_

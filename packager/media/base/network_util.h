@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_NETWORK_UTIL_H_
-#define MEDIA_BASE_NETWORK_UTIL_H_
+#ifndef PACKAGER_MEDIA_BASE_NETWORK_UTIL_H_
+#define PACKAGER_MEDIA_BASE_NETWORK_UTIL_H_
 
 #include <stdint.h>
 
@@ -17,4 +17,4 @@ uint64_t ntohllFromBuffer(const unsigned char* buf);
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_NETWORK_UTIL_H_
+#endif  // PACKAGER_MEDIA_BASE_NETWORK_UTIL_H_

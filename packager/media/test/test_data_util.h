@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_TEST_TEST_DATA_UTIL_H_
-#define MEDIA_TEST_TEST_DATA_UTIL_H_
+#ifndef PACKAGER_MEDIA_TEST_TEST_DATA_UTIL_H_
+#define PACKAGER_MEDIA_TEST_TEST_DATA_UTIL_H_
 
 #include <stdint.h>
 
@@ -26,4 +26,4 @@ std::vector<uint8_t> ReadTestDataFile(const std::string& name);
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_TEST_TEST_DATA_UTIL_H_
+#endif  // PACKAGER_MEDIA_TEST_TEST_DATA_UTIL_H_

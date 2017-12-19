@@ -6,8 +6,8 @@
 //
 // Enhanced AC3 audio utility functions.
 
-#ifndef MEDIA_CODECS_EC3_AUDIO_UTIL_H_
-#define MEDIA_CODECS_EC3_AUDIO_UTIL_H_
+#ifndef PACKAGER_MEDIA_CODECS_EC3_AUDIO_UTIL_H_
+#define PACKAGER_MEDIA_CODECS_EC3_AUDIO_UTIL_H_
 
 #include <stdint.h>
 #include <vector>
@@ -24,4 +24,4 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_CODECS_EC3_AUDIO_UTIL_H_
+#endif  // PACKAGER_MEDIA_CODECS_EC3_AUDIO_UTIL_H_

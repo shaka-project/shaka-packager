@@ -6,8 +6,8 @@
 //
 // Overloads operator== for mp4 boxes, mainly used for testing.
 
-#ifndef MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
-#define MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
+#define PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 
 #include "packager/media/formats/mp4/box_definitions.h"
 
@@ -499,4 +499,4 @@ inline bool operator==(const VTTCueBox& lhs,
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
+#endif  // PACKAGER_MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
