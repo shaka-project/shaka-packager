@@ -13,7 +13,6 @@
 #include "packager/base/files/file_path.h"
 #include "packager/base/files/file_util.h"
 #include "packager/file/file.h"
-#include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier.h"
 #include "packager/mpd/base/mpd_utils.h"
@@ -29,17 +28,6 @@ namespace shaka {
 
 namespace {
 
-// Factory that creates DashIopMpdNotifier instances.
-class DashIopMpdNotifierFactory : public MpdNotifierFactory {
- public:
-  DashIopMpdNotifierFactory() {}
-  ~DashIopMpdNotifierFactory() override {}
-
-  std::unique_ptr<MpdNotifier> Create(const MpdOptions& mpd_options) override {
-    return std::unique_ptr<MpdNotifier>(new DashIopMpdNotifier(mpd_options));
-  }
-};
-
 // Factory that creates SimpleMpdNotifier instances.
 class SimpleMpdNotifierFactory : public MpdNotifierFactory {
  public:
@@ -53,12 +41,7 @@ class SimpleMpdNotifierFactory : public MpdNotifierFactory {
 
 }  // namespace
 
-MpdWriter::MpdWriter()
-    : notifier_factory_(FLAGS_generate_dash_if_iop_compliant_mpd
-                            ? static_cast<MpdNotifierFactory*>(
-                                  new DashIopMpdNotifierFactory())
-                            : static_cast<MpdNotifierFactory*>(
-                                  new SimpleMpdNotifierFactory())) {}
+MpdWriter::MpdWriter() : notifier_factory_(new SimpleMpdNotifierFactory()) {}
 MpdWriter::~MpdWriter() {}
 
 bool MpdWriter::AddFile(const std::string& media_info_path,
@@ -90,6 +73,8 @@ bool MpdWriter::WriteMpdToFile(const char* file_name) {
   MpdOptions mpd_options;
   mpd_options.mpd_params.base_urls = base_urls_;
   mpd_options.mpd_params.mpd_output = file_name;
+  mpd_options.mpd_params.generate_dash_if_iop_compliant_mpd =
+      FLAGS_generate_dash_if_iop_compliant_mpd;
   std::unique_ptr<MpdNotifier> notifier =
       notifier_factory_->Create(mpd_options);
   if (!notifier->Init()) {

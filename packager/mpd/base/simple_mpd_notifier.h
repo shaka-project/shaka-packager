@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/gtest_prod_util.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/mpd/base/mpd_notifier.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
@@ -23,7 +22,6 @@ class AdaptationSet;
 class MpdBuilder;
 class Period;
 class Representation;
-class SimpleMpdNotifierTest;
 
 struct MpdOptions;
 
@@ -34,6 +32,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   explicit SimpleMpdNotifier(const MpdOptions& mpd_options);
   ~SimpleMpdNotifier() override;
 
+  /// None of the methods write out the MPD file until Flush() is called.
   /// @name MpdNotifier implemetation overrides.
   /// @{
   bool Init() override;
@@ -48,19 +47,17 @@ class SimpleMpdNotifier : public MpdNotifier {
                               const std::string& drm_uuid,
                               const std::vector<uint8_t>& new_key_id,
                               const std::vector<uint8_t>& new_pssh) override;
-  bool AddContentProtectionElement(
-      uint32_t id,
-      const ContentProtectionElement& content_protection_element) override;
   bool Flush() override;
   /// @}
 
  private:
+  SimpleMpdNotifier(const SimpleMpdNotifier&) = delete;
+  SimpleMpdNotifier& operator=(const SimpleMpdNotifier&) = delete;
+
   friend class SimpleMpdNotifierTest;
 
   // Testing only method. Returns a pointer to MpdBuilder.
-  MpdBuilder* MpdBuilderForTesting() const {
-    return mpd_builder_.get();
-  }
+  MpdBuilder* MpdBuilderForTesting() const { return mpd_builder_.get(); }
 
   // Testing only method. Sets mpd_builder_.
   void SetMpdBuilderForTesting(std::unique_ptr<MpdBuilder> mpd_builder) {
@@ -70,16 +67,14 @@ class SimpleMpdNotifier : public MpdNotifier {
   // MPD output path.
   std::string output_path_;
   std::unique_ptr<MpdBuilder> mpd_builder_;
-  Period* period_ = nullptr;
+  Period* period_ = nullptr;  // owned by |mpd_builder_|.
+  bool content_protection_in_adaptation_set_ = true;
   base::Lock lock_;
 
-  typedef std::map<std::string, AdaptationSet*> AdaptationSetMap;
-  AdaptationSetMap adaptation_set_map_;
-
-  typedef std::map<uint32_t, Representation*> RepresentationMap;
-  RepresentationMap representation_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleMpdNotifier);
+  // Maps Representation ID to Representation.
+  std::map<uint32_t, Representation*> representation_map_;
+  // Maps Representation ID to AdaptationSet. This is for updating the PSSH.
+  std::map<uint32_t, AdaptationSet*> representation_id_to_adaptation_set_;
 };
 
 }  // namespace shaka

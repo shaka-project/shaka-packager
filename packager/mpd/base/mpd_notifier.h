@@ -85,16 +85,6 @@ class MpdNotifier {
                                       const std::vector<uint8_t>& new_key_id,
                                       const std::vector<uint8_t>& new_pssh) = 0;
 
-  /// Adds content protection information to the MPD.
-  /// @param container_id is the nummeric container ID obtained from calling
-  ///        NotifyNewContainer().
-  /// @param content_protection_element New ContentProtection element
-  ///        specification.
-  /// @return true on success, false otherwise.
-  virtual bool AddContentProtectionElement(
-      uint32_t container_id,
-      const ContentProtectionElement& content_protection_element) = 0;
-
   /// Call this method to force a flush. Implementations might not write out
   /// the MPD to a stream (file, stdout, etc.) when the MPD is updated, this
   /// forces a flush.

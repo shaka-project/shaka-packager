@@ -33,8 +33,6 @@
         'base/bandwidth_estimator.h',
         'base/content_protection_element.cc',
         'base/content_protection_element.h',
-        'base/dash_iop_mpd_notifier.cc',
-        'base/dash_iop_mpd_notifier.h',
         'base/mpd_builder.cc',
         'base/mpd_builder.h',
         'base/mpd_notifier_util.cc',
@@ -88,7 +86,6 @@
       'sources': [
         'base/adaptation_set_unittest.cc',
         'base/bandwidth_estimator_unittest.cc',
-        'base/dash_iop_mpd_notifier_unittest.cc',
         'base/mpd_builder_unittest.cc',
         'base/period_unittest.cc',
         'base/representation_unittest.cc',

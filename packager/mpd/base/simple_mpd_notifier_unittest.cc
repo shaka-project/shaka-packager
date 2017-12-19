@@ -103,8 +103,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainer) {
   EXPECT_CALL(*mock_mpd_builder, AddPeriod())
       .WillOnce(Return(default_mock_period_.get()));
   EXPECT_CALL(*default_mock_period_,
-              GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_),
-                                       Eq(!kContentProtectionInAdaptationSet)))
+              GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_), _))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_,
               AddRepresentation(EqualsProto(valid_media_info1_)))
@@ -157,7 +156,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
   uint32_t container_id;
   EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
   const uint32_t kAnySampleDuration = 1000;
-  EXPECT_TRUE(notifier.NotifySampleDuration(container_id,  kAnySampleDuration));
+  EXPECT_TRUE(notifier.NotifySampleDuration(container_id, kAnySampleDuration));
   EXPECT_TRUE(notifier.Flush());
 }
 
@@ -191,33 +190,13 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
                                         kSegmentDuration, kSegmentSize));
 }
 
-TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
-  SimpleMpdNotifier notifier(empty_mpd_option_);
+TEST_F(SimpleMpdNotifierTest,
+       ContentProtectionInAdaptationSetUpdateEncryption) {
+  MpdOptions mpd_options = empty_mpd_option_;
+  mpd_options.mpd_params.generate_dash_if_iop_compliant_mpd =
+      kContentProtectionInAdaptationSet;
+  SimpleMpdNotifier notifier(mpd_options);
 
-  const uint32_t kRepresentationId = 0u;
-  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
-  std::unique_ptr<MockRepresentation> mock_representation(
-      new MockRepresentation(kRepresentationId));
-
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
-      .WillOnce(Return(default_mock_period_.get()));
-  EXPECT_CALL(*default_mock_period_, GetOrCreateAdaptationSet(_, _))
-      .WillOnce(Return(default_mock_adaptation_set_.get()));
-  EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
-      .WillOnce(Return(mock_representation.get()));
-
-  uint32_t container_id;
-  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
-  EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
-  EXPECT_EQ(kRepresentationId, container_id);
-
-  ContentProtectionElement element;
-  EXPECT_CALL(*mock_representation, AddContentProtectionElement(_));
-  EXPECT_TRUE(notifier.AddContentProtectionElement(kRepresentationId, element));
-}
-
-TEST_F(SimpleMpdNotifierTest, UpdateEncryption) {
-  SimpleMpdNotifier notifier(empty_mpd_option_);
   const uint32_t kRepresentationId = 447834u;
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(
@@ -225,7 +204,52 @@ TEST_F(SimpleMpdNotifierTest, UpdateEncryption) {
 
   EXPECT_CALL(*mock_mpd_builder, AddPeriod())
       .WillOnce(Return(default_mock_period_.get()));
-  EXPECT_CALL(*default_mock_period_, GetOrCreateAdaptationSet(_, _))
+  EXPECT_CALL(
+      *default_mock_period_,
+      GetOrCreateAdaptationSet(_, Eq(kContentProtectionInAdaptationSet)))
+      .WillOnce(Return(default_mock_adaptation_set_.get()));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
+      .WillOnce(Return(mock_representation.get()));
+
+  uint32_t container_id;
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
+  EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
+
+  ::testing::Mock::VerifyAndClearExpectations(
+      default_mock_adaptation_set_.get());
+
+  // "psshsomethingelse" as uint8 array.
+  const uint8_t kBogusNewPssh[] = {0x70, 0x73, 0x73, 0x68, 0x73, 0x6f,
+                                   0x6d, 0x65, 0x74, 0x68, 0x69, 0x6e,
+                                   0x67, 0x65, 0x6c, 0x73, 0x65};
+  const std::vector<uint8_t> kBogusNewPsshVector(
+      kBogusNewPssh, kBogusNewPssh + arraysize(kBogusNewPssh));
+  const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
+
+  EXPECT_CALL(*default_mock_adaptation_set_,
+              UpdateContentProtectionPssh(StrEq("myuuid"),
+                                          StrEq(kBogusNewPsshInBase64)));
+  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
+      container_id, "myuuid", std::vector<uint8_t>(), kBogusNewPsshVector));
+}
+
+TEST_F(SimpleMpdNotifierTest,
+       ContentProtectionNotInAdaptationSetUpdateEncryption) {
+  MpdOptions mpd_options = empty_mpd_option_;
+  mpd_options.mpd_params.generate_dash_if_iop_compliant_mpd =
+      !kContentProtectionInAdaptationSet;
+  SimpleMpdNotifier notifier(mpd_options);
+
+  const uint32_t kRepresentationId = 447834u;
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
+  std::unique_ptr<MockRepresentation> mock_representation(
+      new MockRepresentation(kRepresentationId));
+
+  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
+      .WillOnce(Return(default_mock_period_.get()));
+  EXPECT_CALL(
+      *default_mock_period_,
+      GetOrCreateAdaptationSet(_, Eq(!kContentProtectionInAdaptationSet)))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));

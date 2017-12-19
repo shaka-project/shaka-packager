@@ -9,7 +9,6 @@
 
 #include "packager/base/files/file_util.h"
 #include "packager/base/path_service.h"
-#include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mock_mpd_notifier.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"

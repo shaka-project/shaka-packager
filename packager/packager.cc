@@ -41,7 +41,6 @@
 #include "packager/media/formats/webm/webm_muxer.h"
 #include "packager/media/replicator/replicator.h"
 #include "packager/media/trick_play/trick_play_handler.h"
-#include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
@@ -702,13 +701,9 @@ Status Packager::Initialize(
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();
-    MpdOptions mpd_options =
+    const MpdOptions mpd_options =
         media::GetMpdOptions(on_demand_dash_profile, mpd_params);
-    if (mpd_params.generate_dash_if_iop_compliant_mpd) {
-      internal->mpd_notifier.reset(new DashIopMpdNotifier(mpd_options));
-    } else {
-      internal->mpd_notifier.reset(new SimpleMpdNotifier(mpd_options));
-    }
+    internal->mpd_notifier.reset(new SimpleMpdNotifier(mpd_options));
     if (!internal->mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";
       return Status(error::INVALID_ARGUMENT,
