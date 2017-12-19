@@ -27,7 +27,6 @@ namespace shaka {
 namespace {
 const uint32_t kDefaultAdaptationSetId = 0u;
 const uint32_t kTrickPlayAdaptationSetId = 1u;
-const bool kContentProtectionInAdaptationSet = true;
 
 bool ElementEqual(const Element& lhs, const Element& rhs) {
   const bool all_equal_except_sublement_check =
@@ -92,7 +91,7 @@ class TestablePeriod : public Period {
 
 }  // namespace
 
-class PeriodTest : public ::testing::Test {
+class PeriodTest : public ::testing::TestWithParam<bool> {
  public:
   PeriodTest()
       : testable_period_(mpd_options_),
@@ -100,16 +99,19 @@ class PeriodTest : public ::testing::Test {
             new StrictMock<MockAdaptationSet>(kDefaultAdaptationSetId)),
         default_adaptation_set_ptr_(default_adaptation_set_.get()) {}
 
+  void SetUp() override { content_protection_in_adaptation_set_ = GetParam(); }
+
  protected:
   MpdOptions mpd_options_;
   TestablePeriod testable_period_;
+  bool content_protection_in_adaptation_set_ = true;
 
   // Default mock that can be used for the tests.
   std::unique_ptr<StrictMock<MockAdaptationSet>> default_adaptation_set_;
   StrictMock<MockAdaptationSet>* default_adaptation_set_ptr_;
 };
 
-TEST_F(PeriodTest, GetXml) {
+TEST_P(PeriodTest, GetXml) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -128,7 +130,7 @@ TEST_F(PeriodTest, GetXml) {
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVideoMediaInfo),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
 
   const char kExpectedXml[] =
       "<Period id=\"0\">"
@@ -139,7 +141,7 @@ TEST_F(PeriodTest, GetXml) {
   EXPECT_THAT(testable_period_.GetXml().get(), XmlNodeEqual(kExpectedXml));
 }
 
-TEST_F(PeriodTest, DynamicMpdGetXml) {
+TEST_P(PeriodTest, DynamicMpdGetXml) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -159,7 +161,7 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVideoMediaInfo),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
 
   const char kExpectedXml[] =
       "<Period id=\"0\" start=\"PT0S\">"
@@ -171,7 +173,7 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
 }
 
 // Verify ForceSetSegmentAlignment is called.
-TEST_F(PeriodTest, Text) {
+TEST_P(PeriodTest, Text) {
   const char kTextMediaInfo[] =
       "text_info {\n"
       "  format: 'ttml'\n"
@@ -186,11 +188,11 @@ TEST_F(PeriodTest, Text) {
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kTextMediaInfo),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
 }
 
 // Verify AddTrickPlayReferenceId is called.
-TEST_F(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
+TEST_P(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -229,15 +231,15 @@ TEST_F(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVideoMediaInfo),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
   ASSERT_EQ(trick_play_adaptation_set_ptr,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kTrickPlayMediaInfo),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
 }
 
 // Verify no AdaptationSet is returned on trickplay media info.
-TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
+TEST_P(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -272,16 +274,18 @@ TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVideoMediaInfo),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
   // A nullptr is returned if it is not able to find matching AdaptationSet.
   ASSERT_FALSE(testable_period_.GetOrCreateAdaptationSet(
       ConvertToMediaInfo(kVp9TrickPlayMediaInfo),
-      kContentProtectionInAdaptationSet));
+      content_protection_in_adaptation_set_));
 }
 
-// Verify with different MediaInfo::ProtectedContent, two AdaptationSets should
-// be created. AdaptationSets with different DRM won't be switchable.
-TEST_F(PeriodTest, DifferentProtectedContent) {
+// With content_protection_adaptation_set_ == true, verify with different
+// MediaInfo::ProtectedContent, two AdaptationSets should be created.
+// AdaptationSets with different DRM won't be switchable.
+// Otherwise, only one AdaptationSet is created.
+TEST_P(PeriodTest, DifferentProtectedContent) {
   // Note they both have different (bogus) pssh, like real use case.
   // default Key ID = _default_key_id_
   const char kSdProtectedContent[] =
@@ -303,7 +307,6 @@ TEST_F(PeriodTest, DifferentProtectedContent) {
       "  default_key_id: '_default_key_id_'\n"
       "}\n"
       "container_type: 1\n";
-
   // default Key ID = .default.key.id.
   const char kHdProtectedContent[] =
       "video_info {\n"
@@ -358,39 +361,40 @@ TEST_F(PeriodTest, DifferentProtectedContent) {
   EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(sd_adaptation_set))));
 
-  EXPECT_CALL(
-      *sd_adaptation_set_ptr,
-      AddContentProtectionElement(ContentProtectionElementEq(mp4_protection)));
-  EXPECT_CALL(
-      *sd_adaptation_set_ptr,
-      AddContentProtectionElement(ContentProtectionElementEq(sd_my_drm)));
+  if (content_protection_in_adaptation_set_) {
+    EXPECT_CALL(*sd_adaptation_set_ptr,
+                AddContentProtectionElement(
+                    ContentProtectionElementEq(mp4_protection)));
+    EXPECT_CALL(
+        *sd_adaptation_set_ptr,
+        AddContentProtectionElement(ContentProtectionElementEq(sd_my_drm)));
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
-      .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+        .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
 
-  // Add main Role here for both.
-  EXPECT_CALL(*sd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
-  EXPECT_CALL(*hd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+    // Add main Role here for both.
+    EXPECT_CALL(*sd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+    EXPECT_CALL(*hd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
 
-  // Called twice for the same reason as above.
-  EXPECT_CALL(*hd_adaptation_set_ptr, AddContentProtectionElement(_)).Times(2);
+    // Called twice for the same reason as above.
+    EXPECT_CALL(*hd_adaptation_set_ptr, AddContentProtectionElement(_))
+        .Times(2);
+  }
 
   ASSERT_EQ(sd_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
                                        ConvertToMediaInfo(kSdProtectedContent),
-                                       kContentProtectionInAdaptationSet));
-  ASSERT_EQ(hd_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                       ConvertToMediaInfo(kHdProtectedContent),
-                                       kContentProtectionInAdaptationSet));
-
-  EXPECT_THAT(sd_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre());
-  EXPECT_THAT(hd_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre());
+                                       content_protection_in_adaptation_set_));
+  ASSERT_EQ(content_protection_in_adaptation_set_ ? hd_adaptation_set_ptr
+                                                  : sd_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kHdProtectedContent),
+                content_protection_in_adaptation_set_));
 }
 
 // Verify with the same MediaInfo::ProtectedContent, only one AdaptationSets
-// should be created.
-TEST_F(PeriodTest, SameProtectedContent) {
+// should be created regardless of the value of
+// content_protection_in_adaptation_set_.
+TEST_P(PeriodTest, SameProtectedContent) {
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
       "video_info {\n"
@@ -411,7 +415,6 @@ TEST_F(PeriodTest, SameProtectedContent) {
       "  default_key_id: '.DEFAULT.KEY.ID.'\n"
       "}\n"
       "container_type: 1\n";
-
   const char kHdProtectedContent[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -453,37 +456,37 @@ TEST_F(PeriodTest, SameProtectedContent) {
   EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
-  EXPECT_CALL(
-      *default_adaptation_set_ptr_,
-      AddContentProtectionElement(ContentProtectionElementEq(mp4_protection)));
-  EXPECT_CALL(*default_adaptation_set_ptr_,
-              AddContentProtectionElement(ContentProtectionElementEq(my_drm)));
+  if (content_protection_in_adaptation_set_) {
+    EXPECT_CALL(*default_adaptation_set_ptr_,
+                AddContentProtectionElement(
+                    ContentProtectionElementEq(mp4_protection)));
+    EXPECT_CALL(
+        *default_adaptation_set_ptr_,
+        AddContentProtectionElement(ContentProtectionElementEq(my_drm)));
+  }
 
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kSdProtectedContent),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kHdProtectedContent),
-                kContentProtectionInAdaptationSet));
-
-  // No adaptation set switching if there is only one AdaptationSet.
-  EXPECT_THAT(default_adaptation_set_ptr_->adaptation_set_switching_ids(),
-              ElementsAre());
+                content_protection_in_adaptation_set_));
 }
 
-// Default Key IDs are different but if the content protection UUIDs match, then
-// the AdaptationSet they belong to should be switchable.
-// This is a long test.
-// Basically this
-// 1. Add an SD protected content. This should make an AdaptationSet.
-// 2. Add an HD protected content. This should make another AdaptationSet that
-//    is different from the SD version. SD AdaptationSet and HD AdaptationSet
-//    should be switchable.
-// 3. Add a 4k protected content. This should also make a new AdaptationSet.
-//    It should be switchable with SD/HD AdaptationSet.
-TEST_F(PeriodTest, SetAdaptationSetSwitching) {
+// With content_protection_in_adaptation_set_ == true,
+//   Default Key IDs are different but if the content protection UUIDs match,
+//   then the AdaptationSet they belong to should be switchable. This is a long
+//   test. Basically this
+//   1. Add an SD protected content. This should make an AdaptationSet.
+//   2. Add an HD protected content. This should make another AdaptationSet that
+//      is different from the SD version. SD AdaptationSet and HD AdaptationSet
+//      should be switchable.
+//   3. Add a 4k protected content. This should also make a new AdaptationSet.
+//      It should be switchable with SD/HD AdaptationSet.
+// Otherwise only one AdaptationSet is created.
+TEST_P(PeriodTest, SetAdaptationSetSwitching) {
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
       "video_info {\n"
@@ -504,7 +507,6 @@ TEST_F(PeriodTest, SetAdaptationSetSwitching) {
       "  default_key_id: '_default_key_id_'\n"
       "}\n"
       "container_type: 1\n";
-
   const char kHdProtectedContent[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -539,28 +541,34 @@ TEST_F(PeriodTest, SetAdaptationSetSwitching) {
   EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(sd_adaptation_set))));
 
-  EXPECT_CALL(*sd_adaptation_set_ptr, AddContentProtectionElement(_)).Times(2);
+  if (content_protection_in_adaptation_set_) {
+    EXPECT_CALL(*sd_adaptation_set_ptr, AddContentProtectionElement(_))
+        .Times(2);
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
-      .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+        .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
 
-  // Add main Role here for both.
-  EXPECT_CALL(*sd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
-  EXPECT_CALL(*hd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+    // Add main Role here for both.
+    EXPECT_CALL(*sd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+    EXPECT_CALL(*hd_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
 
-  EXPECT_CALL(*hd_adaptation_set_ptr, AddContentProtectionElement(_)).Times(2);
+    EXPECT_CALL(*hd_adaptation_set_ptr, AddContentProtectionElement(_))
+        .Times(2);
+
+    EXPECT_CALL(*sd_adaptation_set_ptr,
+                AddAdaptationSetSwitching(kHdAdaptationSetId));
+    EXPECT_CALL(*hd_adaptation_set_ptr,
+                AddAdaptationSetSwitching(kSdAdaptationSetId));
+  }
 
   ASSERT_EQ(sd_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
                                        ConvertToMediaInfo(kSdProtectedContent),
-                                       kContentProtectionInAdaptationSet));
-  ASSERT_EQ(hd_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                       ConvertToMediaInfo(kHdProtectedContent),
-                                       kContentProtectionInAdaptationSet));
-
-  EXPECT_THAT(sd_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre(kHdAdaptationSetId));
-  EXPECT_THAT(hd_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre(kSdAdaptationSetId));
+                                       content_protection_in_adaptation_set_));
+  ASSERT_EQ(content_protection_in_adaptation_set_ ? hd_adaptation_set_ptr
+                                                  : sd_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kHdProtectedContent),
+                content_protection_in_adaptation_set_));
 
   // Add another content that has the same protected content and make sure that
   // adaptation set switching is set correctly.
@@ -589,29 +597,34 @@ TEST_F(PeriodTest, SetAdaptationSetSwitching) {
       new StrictMock<MockAdaptationSet>(k4kAdaptationSetId));
   auto* fourk_adaptation_set_ptr = fourk_adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
-      .WillOnce(Return(ByMove(std::move(fourk_adaptation_set))));
+  if (content_protection_in_adaptation_set_) {
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+        .WillOnce(Return(ByMove(std::move(fourk_adaptation_set))));
 
-  EXPECT_CALL(*fourk_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
-  EXPECT_CALL(*fourk_adaptation_set_ptr, AddContentProtectionElement(_))
-      .Times(2);
+    EXPECT_CALL(*fourk_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+    EXPECT_CALL(*fourk_adaptation_set_ptr, AddContentProtectionElement(_))
+        .Times(2);
 
-  ASSERT_EQ(fourk_adaptation_set_ptr,
+    EXPECT_CALL(*sd_adaptation_set_ptr,
+                AddAdaptationSetSwitching(k4kAdaptationSetId));
+    EXPECT_CALL(*fourk_adaptation_set_ptr,
+                AddAdaptationSetSwitching(kSdAdaptationSetId));
+    EXPECT_CALL(*hd_adaptation_set_ptr,
+                AddAdaptationSetSwitching(k4kAdaptationSetId));
+    EXPECT_CALL(*fourk_adaptation_set_ptr,
+                AddAdaptationSetSwitching(kHdAdaptationSetId));
+  }
+
+  ASSERT_EQ(content_protection_in_adaptation_set_ ? fourk_adaptation_set_ptr
+                                                  : sd_adaptation_set_ptr,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(k4kProtectedContent),
-                kContentProtectionInAdaptationSet));
-
-  EXPECT_THAT(sd_adaptation_set_ptr->adaptation_set_switching_ids(),
-              UnorderedElementsAre(kHdAdaptationSetId, k4kAdaptationSetId));
-  EXPECT_THAT(hd_adaptation_set_ptr->adaptation_set_switching_ids(),
-              UnorderedElementsAre(kSdAdaptationSetId, k4kAdaptationSetId));
-  EXPECT_THAT(fourk_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre(kSdAdaptationSetId, kHdAdaptationSetId));
+                content_protection_in_adaptation_set_));
 }
 
 // Even if the UUIDs match, video and audio AdaptationSets should not be
 // switchable.
-TEST_F(PeriodTest, DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
+TEST_P(PeriodTest, DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
   // These have the same default key ID and PSSH.
   const char kVideoContent[] =
       "video_info {\n"
@@ -664,29 +677,30 @@ TEST_F(PeriodTest, DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
 
   EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(video_adaptation_set))));
-  EXPECT_CALL(*video_adaptation_set_ptr, AddContentProtectionElement(_))
-      .Times(2);
+  if (content_protection_in_adaptation_set_) {
+    EXPECT_CALL(*video_adaptation_set_ptr, AddContentProtectionElement(_))
+        .Times(2);
+  }
 
   EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(audio_adaptation_set))));
-  EXPECT_CALL(*audio_adaptation_set_ptr, AddContentProtectionElement(_))
-      .Times(2);
+  if (content_protection_in_adaptation_set_) {
+    EXPECT_CALL(*audio_adaptation_set_ptr, AddContentProtectionElement(_))
+        .Times(2);
+  }
 
-  ASSERT_EQ(video_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                          ConvertToMediaInfo(kVideoContent),
-                                          kContentProtectionInAdaptationSet));
-  ASSERT_EQ(audio_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                          ConvertToMediaInfo(kAudioContent),
-                                          kContentProtectionInAdaptationSet));
-
-  EXPECT_THAT(video_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre());
-  EXPECT_THAT(audio_adaptation_set_ptr->adaptation_set_switching_ids(),
-              ElementsAre());
+  ASSERT_EQ(video_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVideoContent),
+                content_protection_in_adaptation_set_));
+  ASSERT_EQ(audio_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kAudioContent),
+                content_protection_in_adaptation_set_));
 }
 
 // Don't put different audio languages or codecs in the same AdaptationSet.
-TEST_F(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
+TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
   const char kAacEnglishAudioContent[] =
       "audio_info {\n"
       "  codec: 'mp4a.40.2'\n"
@@ -754,20 +768,24 @@ TEST_F(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
   ASSERT_EQ(aac_eng_adaptation_set_ptr,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kAacEnglishAudioContent),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
   ASSERT_EQ(aac_ger_adaptation_set_ptr,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kAacGermanAudioContent),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
   ASSERT_EQ(vorbis_german_adaptation_set_ptr,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVorbisGermanAudioContent1),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
   // The same AdaptationSet is returned.
   ASSERT_EQ(vorbis_german_adaptation_set_ptr,
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVorbisGermanAudioContent2),
-                kContentProtectionInAdaptationSet));
+                content_protection_in_adaptation_set_));
 }
+
+INSTANTIATE_TEST_CASE_P(ContentProtectionInAdaptationSet,
+                        PeriodTest,
+                        ::testing::Bool());
 
 }  // namespace shaka

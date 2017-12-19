@@ -106,12 +106,7 @@ class AdaptationSet {
 
   /// Adds the id of the adaptation set this adaptation set can switch to.
   /// @param adaptation_set_id is the id of the switchable adaptation set.
-  void AddAdaptationSetSwitching(uint32_t adaptation_set_id);
-
-  /// @return the ids of the adaptation sets this adaptation set can switch to.
-  const std::vector<uint32_t>& adaptation_set_switching_ids() const {
-    return adaptation_set_switching_ids_;
-  }
+  virtual void AddAdaptationSetSwitching(uint32_t adaptation_set_id);
 
   // Must be unique in the Period.
   uint32_t id() const { return id_; }

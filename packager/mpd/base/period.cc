@@ -79,8 +79,8 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
     for (AdaptationSet* adaptation_set : adaptation_sets) {
       if (protected_adaptation_set_map_.Switchable(*adaptation_set,
                                                    *new_adaptation_set)) {
-        new_adaptation_set->AddAdaptationSetSwitching(adaptation_set->id());
         adaptation_set->AddAdaptationSetSwitching(new_adaptation_set->id());
+        new_adaptation_set->AddAdaptationSetSwitching(adaptation_set->id());
       }
     }
   }

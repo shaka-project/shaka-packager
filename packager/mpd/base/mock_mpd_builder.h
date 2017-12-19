@@ -54,6 +54,7 @@ class MockAdaptationSet : public AdaptationSet {
                void(const std::string& drm_uuid, const std::string& pssh));
   MOCK_METHOD1(AddRole, void(AdaptationSet::Role role));
   MOCK_METHOD1(ForceSetSegmentAlignment, void(bool segment_alignment));
+  MOCK_METHOD1(AddAdaptationSetSwitching, void(uint32_t adaptation_set_id));
   MOCK_METHOD1(AddTrickPlayReferenceId, void(uint32_t id));
 
  private:
