@@ -13,6 +13,7 @@ HLS specific stream descriptor fields
 
 :playlist_name:
 
-    Used for HLS to name the playlist for the stream. Usually ends
-    with '.m3u8'. If unspecified, defaults to something of the form
-    'stream_0.m3u8', 'stream_1.m3u8', 'stream_2.m3u8', etc.
+    The HLS playlist file to create. Usually ends with '.m3u8', and is
+    relative to hls_master_playlist_output (see below). If unspecified,
+    defaults to something of the form 'stream_0.m3u8', 'stream_1.m3u8',
+    'stream_2.m3u8', etc.
