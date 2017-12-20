@@ -6,8 +6,8 @@
 //
 // Funtions used by MpdBuilder class to generate an MPD file.
 
-#ifndef MEDIA_BASE_LANGUAGE_UTILS_H_
-#define MEDIA_BASE_LANGUAGE_UTILS_H_
+#ifndef PACKAGER_MEDIA_BASE_LANGUAGE_UTILS_H_
+#define PACKAGER_MEDIA_BASE_LANGUAGE_UTILS_H_
 
 #include <string>
 
@@ -28,4 +28,4 @@ std::string LanguageToISO_639_2(const std::string& language);
 
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_LANGUAGE_UTILS_H_
+#endif  // PACKAGER_MEDIA_BASE_LANGUAGE_UTILS_H_

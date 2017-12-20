@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FORMATS_MP4_FRAGMENTER_H_
-#define MEDIA_FORMATS_MP4_FRAGMENTER_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
+#define PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_
 
 #include <memory>
 #include <vector>
@@ -123,4 +123,4 @@ bool Fragmenter::OptimizeSampleEntries(std::vector<T>* entries,
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FORMATS_MP4_FRAGMENTER_H_
+#endif  // PACKAGER_MEDIA_FORMATS_MP4_FRAGMENTER_H_

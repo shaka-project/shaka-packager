@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_CONTAINER_NAMES_H_
-#define MEDIA_BASE_CONTAINER_NAMES_H_
+#ifndef PACKAGER_MEDIA_BASE_CONTAINER_NAMES_H_
+#define PACKAGER_MEDIA_BASE_CONTAINER_NAMES_H_
 
 #include <stdint.h>
 
@@ -73,4 +73,4 @@ MediaContainerName DetermineContainerFromFileName(const std::string& file_name);
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_CONTAINER_NAMES_H_
+#endif  // PACKAGER_MEDIA_BASE_CONTAINER_NAMES_H_

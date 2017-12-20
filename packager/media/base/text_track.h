@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_TEXT_TRACK_H_
-#define MEDIA_BASE_TEXT_TRACK_H_
+#ifndef PACKAGER_MEDIA_BASE_TEXT_TRACK_H_
+#define PACKAGER_MEDIA_BASE_TEXT_TRACK_H_
 
 #include <memory>
 #include <string>
@@ -41,4 +41,4 @@ typedef base::Callback<std::unique_ptr<TextTrack>(TextKind kind,
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_TEXT_TRACK_H_
+#endif  // PACKAGER_MEDIA_BASE_TEXT_TRACK_H_

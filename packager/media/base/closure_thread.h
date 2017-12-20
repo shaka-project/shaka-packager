@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_BASE_CLOSURE_THREAD_H_
-#define MEDIA_BASE_CLOSURE_THREAD_H_
+#ifndef PACKAGER_MEDIA_BASE_CLOSURE_THREAD_H_
+#define PACKAGER_MEDIA_BASE_CLOSURE_THREAD_H_
 
 #include "packager/base/callback.h"
 #include "packager/base/threading/simple_thread.h"
@@ -46,4 +46,4 @@ class ClosureThread : public base::SimpleThread {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_CLOSURE_THREAD_H_
+#endif  // PACKAGER_MEDIA_BASE_CLOSURE_THREAD_H_

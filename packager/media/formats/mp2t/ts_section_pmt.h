@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
-#define MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
+#define PACKAGER_MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"

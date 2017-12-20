@@ -8,8 +8,8 @@
 // protobuf and dumps it to a file.
 // This is specifically for VOD.
 
-#ifndef MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
-#define MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
+#ifndef PACKAGER_MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
+#define PACKAGER_MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 
 #include <memory>
 #include <string>
@@ -77,4 +77,4 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
+#endif  // PACKAGER_MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_

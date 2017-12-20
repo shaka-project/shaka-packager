@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_CODECS_VP8_PARSER_H_
-#define MEDIA_CODECS_VP8_PARSER_H_
+#ifndef PACKAGER_MEDIA_CODECS_VP8_PARSER_H_
+#define PACKAGER_MEDIA_CODECS_VP8_PARSER_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -52,4 +52,4 @@ class VP8Parser : public VPxParser {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_CODECS_VP8_PARSER_H_
+#endif  // PACKAGER_MEDIA_CODECS_VP8_PARSER_H_

@@ -4,8 +4,8 @@
 
 // Contains limit definition constants for the media subsystem.
 
-#ifndef MEDIA_BASE_LIMITS_H_
-#define MEDIA_BASE_LIMITS_H_
+#ifndef PACKAGER_MEDIA_BASE_LIMITS_H_
+#define PACKAGER_MEDIA_BASE_LIMITS_H_
 
 namespace shaka {
 namespace media {
@@ -48,4 +48,4 @@ enum {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_LIMITS_H_
+#endif  // PACKAGER_MEDIA_BASE_LIMITS_H_

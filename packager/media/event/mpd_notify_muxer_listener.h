@@ -6,8 +6,8 @@
 //
 // Implementation of MuxerListener that deals with MpdNotifier.
 
-#ifndef MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
-#define MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
+#ifndef PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
+#define PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
 #include <list>
 #include <memory>
@@ -83,4 +83,4 @@ class MpdNotifyMuxerListener : public MuxerListener {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
+#endif  // PACKAGER_MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_

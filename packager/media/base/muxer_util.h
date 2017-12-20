@@ -6,8 +6,8 @@
 //
 // Muxer utility functions.
 
-#ifndef MEDIA_BASE_MUXER_UTIL_H_
-#define MEDIA_BASE_MUXER_UTIL_H_
+#ifndef PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
+#define PACKAGER_MEDIA_BASE_MUXER_UTIL_H_
 
 #include <stdint.h>
 
@@ -42,4 +42,4 @@ std::string GetSegmentName(const std::string& segment_template,
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_MUXER_UTIL_H_
+#endif  // PACKAGER_MEDIA_BASE_MUXER_UTIL_H_

@@ -6,8 +6,8 @@
 //
 // AES Encryptor implementation using openssl.
 
-#ifndef MEDIA_BASE_AES_ENCRYPTOR_H_
-#define MEDIA_BASE_AES_ENCRYPTOR_H_
+#ifndef PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_
+#define PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_
 
 #include <string>
 #include <vector>
@@ -112,4 +112,4 @@ class AesCbcEncryptor : public AesEncryptor {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_AES_ENCRYPTOR_H_
+#endif  // PACKAGER_MEDIA_BASE_AES_ENCRYPTOR_H_

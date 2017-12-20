@@ -8,8 +8,8 @@
 ///       curl_global_cleanup to be called at static initialization /
 ///       deinitialization time.
 
-#ifndef MEDIA_BASE_HTTP_KEY_FETCHER_H_
-#define MEDIA_BASE_HTTP_KEY_FETCHER_H_
+#ifndef PACKAGER_MEDIA_BASE_HTTP_KEY_FETCHER_H_
+#define PACKAGER_MEDIA_BASE_HTTP_KEY_FETCHER_H_
 
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/key_fetcher.h"
@@ -94,4 +94,4 @@ class HttpKeyFetcher : public KeyFetcher {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_BASE_HTTP_KEY_FETCHER_H_
+#endif  // PACKAGER_MEDIA_BASE_HTTP_KEY_FETCHER_H_

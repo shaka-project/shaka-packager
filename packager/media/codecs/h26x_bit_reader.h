@@ -4,8 +4,8 @@
 //
 // This file contains an implementation of an H264 Annex-B video stream parser.
 
-#ifndef MEDIA_CODECS_H264_BIT_READER_H_
-#define MEDIA_CODECS_H264_BIT_READER_H_
+#ifndef PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_
+#define PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -98,4 +98,4 @@ class H26xBitReader {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_CODECS_H264_BIT_READER_H_
+#endif  // PACKAGER_MEDIA_CODECS_H264_BIT_READER_H_

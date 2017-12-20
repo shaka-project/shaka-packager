@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FORMATS_MP4_BOX_H_
-#define MEDIA_FORMATS_MP4_BOX_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP4_BOX_H_
+#define PACKAGER_MEDIA_FORMATS_MP4_BOX_H_
 
 #include <stdint.h>
 
@@ -101,4 +101,4 @@ struct FullBox : Box {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FORMATS_MP4_BOX_H_
+#endif  // PACKAGER_MEDIA_FORMATS_MP4_BOX_H_

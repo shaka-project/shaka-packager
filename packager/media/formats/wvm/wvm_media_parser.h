@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 // Media parser for a Widevine Media Format (WVM) file.
 
-#ifndef MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
-#define MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
+#ifndef PACKAGER_MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
+#define PACKAGER_MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 
 #include <deque>
 #include <map>
@@ -260,4 +260,4 @@ class WvmMediaParser : public MediaParser {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
+#endif  // PACKAGER_MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_

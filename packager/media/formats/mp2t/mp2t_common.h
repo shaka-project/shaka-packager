@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_MP2T_MP2T_COMMON_H_
-#define MEDIA_FORMATS_MP2T_MP2T_COMMON_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP2T_MP2T_COMMON_H_
+#define PACKAGER_MEDIA_FORMATS_MP2T_MP2T_COMMON_H_
 
 #define LOG_LEVEL_TS  5
 #define LOG_LEVEL_PES 4

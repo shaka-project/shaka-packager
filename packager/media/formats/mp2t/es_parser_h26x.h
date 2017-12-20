@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
-#define MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
+#ifndef PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
+#define PACKAGER_MEDIA_FORMATS_MP2T_ES_PARSER_H26x_H_
 
 #include <stdint.h>
 
