@@ -21,3 +21,8 @@ HLS options
     VOD, EVENT, or LIVE. This defines the EXT-X-PLAYLIST-TYPE in the HLS
     specification. For hls_playlist_type of LIVE, EXT-X-PLAYLIST-TYPE tag is
     omitted.
+
+--time_shift_buffer_depth <seconds>
+
+    Guaranteed duration of the time shifting buffer for LIVE playlist, in
+    seconds.

@@ -96,9 +96,10 @@ const char kUsage[] =
     "    EXT-X-MEDIA. Defaults to the base of the playlist name.\n"
     "  - hls_group_id: Used for HLS audio to set the GROUP-ID attribute for\n"
     "    EXT-X-MEDIA. Defaults to 'audio' if not specified.\n"
-    "  - playlist_name: Used for HLS video. The name of the playlist to create.\n"
-    "    Usually ends with '.m3u8'. If unspecified, defaults to something of\n"
-    "    the form 'stream_0.m3u8', 'stream_1.m3u8', 'stream_2.m3u8', etc.\n";
+    "  - playlist_name: The HLS playlist file to create. Usually ends with\n"
+    "    '.m3u8', and is relative to --hls_master_playlist_output. If\n"
+    "    unspecified, defaults to something of the form 'stream_0.m3u8',\n"
+    "    'stream_1.m3u8', 'stream_2.m3u8', etc.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";
