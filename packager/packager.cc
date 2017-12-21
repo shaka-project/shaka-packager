@@ -102,6 +102,73 @@ MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
   return output_format;
 }
 
+// To make it easier to create muxers, this factory allows for all
+// configuration to be set at the factory level so that when a function
+// needs a muxer, it can easily create one with local information.
+class MuxerFactory {
+ public:
+  MuxerFactory(const PackagingParams& packaging_params)
+      : packaging_params_(packaging_params) {}
+
+  // For testing, if you need to replace the clock that muxers work with
+  // this will replace the clock for all muxers created after this call.
+  void OverrideClock(base::Clock* clock) { clock_ = clock; }
+
+  // Create a new muxer using the factory's settings for the given
+  // stream. |listener| is optional.
+  std::shared_ptr<Muxer> CreateMuxer(const StreamDescriptor& stream,
+                                     std::unique_ptr<MuxerListener> listener) {
+    const MediaContainerName format = GetOutputFormat(stream);
+
+    MuxerOptions options;
+    options.mp4_params = packaging_params_.mp4_output_params;
+    options.temp_dir = packaging_params_.temp_dir;
+    options.bandwidth = stream.bandwidth;
+    options.output_file_name = stream.output;
+    options.segment_template = stream.segment_template;
+
+    std::shared_ptr<Muxer> muxer;
+
+    switch (format) {
+      case CONTAINER_WEBM:
+        muxer = std::make_shared<webm::WebMMuxer>(options);
+        break;
+      case CONTAINER_MPEG2TS:
+        muxer = std::make_shared<mp2t::TsMuxer>(options);
+        break;
+      case CONTAINER_MOV:
+        muxer = std::make_shared<mp4::MP4Muxer>(options);
+        break;
+      default:
+        LOG(ERROR) << "Cannot support muxing to " << format;
+        break;
+    }
+
+    if (!muxer) {
+      return nullptr;
+    }
+
+    // We successfully created a muxer, then there is a couple settings
+    // we should set before returning it.
+    if (clock_) {
+      muxer->set_clock(clock_);
+    }
+
+    if (listener) {
+      muxer->SetMuxerListener(std::move(listener));
+    }
+
+    return muxer;
+  }
+
+ private:
+  MuxerFactory(const MuxerFactory&) = delete;
+  MuxerFactory& operator=(const MuxerFactory&) = delete;
+
+  PackagingParams packaging_params_;
+  base::Clock* clock_ = nullptr;
+};
+
 Status ValidateStreamDescriptor(bool dump_stream_info,
                                 const StreamDescriptor& stream) {
   if (stream.input.empty()) {
@@ -318,51 +385,28 @@ std::unique_ptr<MuxerListener> CreateMuxerListener(
   return std::move(combined_listener);
 }
 
-std::shared_ptr<Muxer> CreateMuxer(const PackagingParams& packaging_params,
-                                   const StreamDescriptor& stream,
-                                   base::Clock* clock,
-                                   std::unique_ptr<MuxerListener> listener) {
-  const MediaContainerName format = GetOutputFormat(stream);
+/// Create a new demuxer handler for the given stream. If a demuxer cannot be
+/// created, an error will be returned. If a demuxer can be created, this
+/// |new_demuxer| will be set and Status::OK will be returned.
+Status CreateDemuxer(const StreamDescriptor& stream,
+                     const PackagingParams& packaging_params,
+                     std::shared_ptr<Demuxer>* new_demuxer) {
+  std::shared_ptr<Demuxer> demuxer = std::make_shared<Demuxer>(stream.input);
+  demuxer->set_dump_stream_info(packaging_params.test_params.dump_stream_info);
 
-  MuxerOptions options;
-  options.mp4_params = packaging_params.mp4_output_params;
-  options.temp_dir = packaging_params.temp_dir;
-  options.bandwidth = stream.bandwidth;
-  options.output_file_name = stream.output;
-  options.segment_template = stream.segment_template;
-
-  std::shared_ptr<Muxer> muxer;
-
-  switch (format) {
-    case CONTAINER_WEBM:
-      muxer = std::make_shared<webm::WebMMuxer>(options);
-      break;
-    case CONTAINER_MPEG2TS:
-      muxer = std::make_shared<mp2t::TsMuxer>(options);
-      break;
-    case CONTAINER_MOV:
-      muxer = std::make_shared<mp4::MP4Muxer>(options);
-      break;
-    default:
-      LOG(ERROR) << "Cannot support muxing to " << format;
-      break;
+  if (packaging_params.decryption_params.key_provider != KeyProvider::kNone) {
+    std::unique_ptr<KeySource> decryption_key_source(
+        CreateDecryptionKeySource(packaging_params.decryption_params));
+    if (!decryption_key_source) {
+      return Status(
+          error::INVALID_ARGUMENT,
+          "Must define decryption key source when defining key provider");
+    }
+    demuxer->SetKeySource(std::move(decryption_key_source));
   }
 
-  if (!muxer) {
-    return nullptr;
-  }
-
-  // We successfully created a muxer, then there is a couple settings
-  // we should set before returning it.
-  if (clock) {
-    muxer->set_clock(clock);
-  }
-
-  if (listener) {
-    muxer->SetMuxerListener(std::move(listener));
-  }
-
-  return muxer;
+  *new_demuxer = std::move(demuxer);
+  return Status::OK;
 }
 
 std::shared_ptr<MediaHandler> CreateEncryptionHandler(
@@ -406,20 +450,59 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   return std::make_shared<EncryptionHandler>(encryption_params, key_source);
 }
 
+Status CreateMp4ToMp4TextJob(int stream_number,
+                             const StreamDescriptor& stream,
+                             const PackagingParams& packaging_params,
+                             MuxerFactory* muxer_factory,
+                             MpdNotifier* mpd_notifier,
+                             hls::HlsNotifier* hls_notifier,
+                             std::shared_ptr<OriginHandler>* root) {
+  Status status;
+  std::shared_ptr<Demuxer> demuxer;
+
+  status.Update(CreateDemuxer(stream, packaging_params, &demuxer));
+  if (!stream.language.empty()) {
+    demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
+  }
+
+  std::shared_ptr<MediaHandler> chunker(
+      new ChunkingHandler(packaging_params.chunking_params));
+  std::unique_ptr<MuxerListener> muxer_listener = CreateMuxerListener(
+      stream, stream_number, packaging_params.output_media_info, mpd_notifier,
+      hls_notifier);
+  std::shared_ptr<Muxer> muxer =
+      muxer_factory->CreateMuxer(stream, std::move(muxer_listener));
+
+  status.Update(chunker->AddHandler(std::move(muxer)));
+  status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
+
+  return status;
+}
+
 Status CreateTextJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
+    int* stream_number,
+    MuxerFactory* muxer_factory,
     MpdNotifier* mpd_notifier,
+    hls::HlsNotifier* hls_notifier,
     JobManager* job_manager) {
   DCHECK(job_manager);
-
   for (const StreamDescriptor& stream : streams) {
     const MediaContainerName output_format = GetOutputFormat(stream);
 
+    // TODO(70990714): Support webvtt to mp4
     if (output_format == CONTAINER_MOV) {
-      // TODO(vaage): Complete this part of the text pipeline. This path will
-      // be similar to the audio/video pipeline but with some components
-      // removed (e.g. trick play).
+      std::shared_ptr<OriginHandler> root;
+      Status status = CreateMp4ToMp4TextJob((*stream_number)++, stream,
+                                            packaging_params, muxer_factory,
+                                            mpd_notifier, hls_notifier, &root);
+
+      if (!status.ok()) {
+        return status;
+      }
+
+      job_manager->Add("MP4 text job", std::move(root));
     } else {
       MediaInfo text_media_info;
       if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
@@ -448,11 +531,11 @@ Status CreateTextJobs(
 }
 
 Status CreateAudioVideoJobs(
-    int first_stream_number,
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
-    FakeClock* fake_clock,
+    int* stream_number,
     KeySource* encryption_key_source,
+    MuxerFactory* muxer_factory,
     MpdNotifier* mpd_notifier,
     hls::HlsNotifier* hls_notifier,
     JobManager* job_manager) {
@@ -467,29 +550,12 @@ Status CreateAudioVideoJobs(
   std::string previous_input;
   std::string previous_selector;
 
-  // -1 so that it will be back at |first_stream_number| on the first
-  // iteration.
-  int stream_number = first_stream_number - 1;
-
   for (const StreamDescriptor& stream : streams) {
-    stream_number += 1;
-
     // If we changed our input files, we need a new demuxer.
     if (previous_input != stream.input) {
-      demuxer = std::make_shared<Demuxer>(stream.input);
-
-      demuxer->set_dump_stream_info(
-          packaging_params.test_params.dump_stream_info);
-      if (packaging_params.decryption_params.key_provider !=
-          KeyProvider::kNone) {
-        std::unique_ptr<KeySource> decryption_key_source(
-            CreateDecryptionKeySource(packaging_params.decryption_params));
-        if (!decryption_key_source) {
-          return Status(
-              error::INVALID_ARGUMENT,
-              "Must define decryption key source when defining key provider");
-        }
-        demuxer->SetKeySource(std::move(decryption_key_source));
+      Status status = CreateDemuxer(stream, packaging_params, &demuxer);
+      if (!status.ok()) {
+        return status;
       }
 
       job_manager->Add("RemuxJob", demuxer);
@@ -551,12 +617,10 @@ Status CreateAudioVideoJobs(
 
     // Create the muxer (output) for this track.
     std::unique_ptr<MuxerListener> muxer_listener = CreateMuxerListener(
-        stream, stream_number, packaging_params.output_media_info, mpd_notifier,
-        hls_notifier);
-    std::shared_ptr<Muxer> muxer = CreateMuxer(
-        packaging_params, stream,
-        packaging_params.test_params.inject_fake_clock ? fake_clock : nullptr,
-        std::move(muxer_listener));
+        stream, (*stream_number)++, packaging_params.output_media_info,
+        mpd_notifier, hls_notifier);
+    std::shared_ptr<Muxer> muxer =
+        muxer_factory->CreateMuxer(stream, std::move(muxer_listener));
 
     if (!muxer) {
       return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +
@@ -615,17 +679,20 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   std::sort(audio_video_streams.begin(), audio_video_streams.end(),
             media::StreamDescriptorCompareFn);
 
+  MuxerFactory muxer_factory(packaging_params);
+  if (packaging_params.test_params.inject_fake_clock) {
+    muxer_factory.OverrideClock(fake_clock);
+  }
+
+  int stream_number = 0;
   Status status;
-
-  status.Update(CreateTextJobs(text_streams, packaging_params, mpd_notifier,
+  status.Update(CreateTextJobs(text_streams, packaging_params, &stream_number,
+                               &muxer_factory, mpd_notifier, hls_notifier,
                                job_manager));
-
-  int stream_number = text_streams.size();
-
-  status.Update(CreateAudioVideoJobs(
-      stream_number, audio_video_streams, packaging_params, fake_clock,
-      encryption_key_source, mpd_notifier, hls_notifier, job_manager));
-
+  status.Update(CreateAudioVideoJobs(audio_video_streams, packaging_params,
+                                     &stream_number, encryption_key_source,
+                                     &muxer_factory, mpd_notifier, hls_notifier,
+                                     job_manager));
   if (!status.ok()) {
     return status;
   }
