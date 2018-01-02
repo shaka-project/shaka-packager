@@ -60,13 +60,12 @@ TEST_F(WebVttSegmenterTest, CueEndingOnSegmentStart) {
     // Segment One
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
-    EXPECT_CALL(
-        *Output(kOutputIndex),
         OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
                                kNoSettings, kPayload[0])));
-
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
+                                kSegmentDuration, !kSubSegment, !kEncrypted)));
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
 
@@ -100,23 +99,23 @@ TEST_F(WebVttSegmenterTest, CreatesSegmentsForCues) {
     // Segment One
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
-    EXPECT_CALL(
-        *Output(kOutputIndex),
         OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
                                kNoSettings, kPayload[0])));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
+                                kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     // Segment Two
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsSegmentInfo(
-                    kStreamIndex, kStartTimeSigned + kSegmentDuration,
-                    kSegmentDuration, !kSubSegment, !kEncrypted)));
     EXPECT_CALL(
         *Output(kOutputIndex),
         OnProcess(IsTextSample(kId[1], kStartTime + kSegmentDuration,
                                kStartTime + kSegmentDuration + kSampleDuration,
                                kNoSettings, kPayload[1])));
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsSegmentInfo(
+                    kStreamIndex, kStartTimeSigned + kSegmentDuration,
+                    kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
@@ -154,25 +153,25 @@ TEST_F(WebVttSegmenterTest, SkipsEmptySegments) {
     // Segment One
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
-    EXPECT_CALL(
-        *Output(kOutputIndex),
         OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
                                kNoSettings, kPayload[0])));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
+                                kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     // There is no segment two
 
     // Segment Three
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsSegmentInfo(
-                    kStreamIndex, kStartTimeSigned + 2 * kSegmentDuration,
-                    kSegmentDuration, !kSubSegment, !kEncrypted)));
-    EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTextSample(
                     kId[1], kStartTime + 2 * kSegmentDuration,
                     kStartTime + 2 * kSegmentDuration + kSampleDuration,
                     kNoSettings, kPayload[1])));
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsSegmentInfo(
+                    kStreamIndex, kStartTimeSigned + 2 * kSegmentDuration,
+                    kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
@@ -211,22 +210,22 @@ TEST_F(WebVttSegmenterTest, CueCrossesSegments) {
     // Segment One
     EXPECT_CALL(
         *Output(kOutputIndex),
+        OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
+                               kNoSettings, kPayload[0])));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
         OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
                                 kSegmentDuration, !kSubSegment, !kEncrypted)));
+
+    // Segment Two
     EXPECT_CALL(
         *Output(kOutputIndex),
         OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
                                kNoSettings, kPayload[0])));
-
-    // Segment Two
     EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsSegmentInfo(
                     kStreamIndex, kStartTimeSigned + kSegmentDuration,
                     kSegmentDuration, !kSubSegment, !kEncrypted)));
-    EXPECT_CALL(
-        *Output(kOutputIndex),
-        OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
-                               kNoSettings, kPayload[0])));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }

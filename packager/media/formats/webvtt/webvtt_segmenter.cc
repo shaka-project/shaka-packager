@@ -85,16 +85,20 @@ Status WebVttSegmenter::OnSegmentEnd() {
 
   const uint64_t segment = samples_.top().segment;
 
-  std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
-  info->start_timestamp = segment * segment_duration_ms_;
-  info->duration = segment_duration_ms_;
-
-  Status status = DispatchSegmentInfo(kStreamIndex, std::move(info));
-
+  Status status;
   while (status.ok() && samples_.size() && samples_.top().segment == segment) {
     status.Update(
         DispatchTextSample(kStreamIndex, std::move(samples_.top().sample)));
     samples_.pop();
+  }
+
+  // Only send the segment info if all the samples were accepted.
+  if (status.ok()) {
+    std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
+    info->start_timestamp = segment * segment_duration_ms_;
+    info->duration = segment_duration_ms_;
+
+    status.Update(DispatchSegmentInfo(kStreamIndex, std::move(info)));
   }
 
   return status;
