@@ -10,6 +10,7 @@
 
 #include "packager/app/job_manager.h"
 #include "packager/app/libcrypto_threading.h"
+#include "packager/app/muxer_factory.h"
 #include "packager/app/packager_util.h"
 #include "packager/app/stream_descriptor.h"
 #include "packager/base/at_exit.h"
@@ -27,6 +28,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/language_utils.h"
+#include "packager/media/base/muxer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/chunking/chunking_handler.h"
@@ -36,9 +38,6 @@
 #include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
-#include "packager/media/formats/mp2t/ts_muxer.h"
-#include "packager/media/formats/mp4/mp4_muxer.h"
-#include "packager/media/formats/webm/webm_muxer.h"
 #include "packager/media/formats/webvtt/text_readers.h"
 #include "packager/media/formats/webvtt/webvtt_output_handler.h"
 #include "packager/media/formats/webvtt/webvtt_parser.h"
@@ -118,73 +117,6 @@ MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
   }
   return output_format;
 }
-
-// To make it easier to create muxers, this factory allows for all
-// configuration to be set at the factory level so that when a function
-// needs a muxer, it can easily create one with local information.
-class MuxerFactory {
- public:
-  MuxerFactory(const PackagingParams& packaging_params)
-      : packaging_params_(packaging_params) {}
-
-  // For testing, if you need to replace the clock that muxers work with
-  // this will replace the clock for all muxers created after this call.
-  void OverrideClock(base::Clock* clock) { clock_ = clock; }
-
-  // Create a new muxer using the factory's settings for the given
-  // stream. |listener| is optional.
-  std::shared_ptr<Muxer> CreateMuxer(const StreamDescriptor& stream,
-                                     std::unique_ptr<MuxerListener> listener) {
-    const MediaContainerName format = GetOutputFormat(stream);
-
-    MuxerOptions options;
-    options.mp4_params = packaging_params_.mp4_output_params;
-    options.temp_dir = packaging_params_.temp_dir;
-    options.bandwidth = stream.bandwidth;
-    options.output_file_name = stream.output;
-    options.segment_template = stream.segment_template;
-
-    std::shared_ptr<Muxer> muxer;
-
-    switch (format) {
-      case CONTAINER_WEBM:
-        muxer = std::make_shared<webm::WebMMuxer>(options);
-        break;
-      case CONTAINER_MPEG2TS:
-        muxer = std::make_shared<mp2t::TsMuxer>(options);
-        break;
-      case CONTAINER_MOV:
-        muxer = std::make_shared<mp4::MP4Muxer>(options);
-        break;
-      default:
-        LOG(ERROR) << "Cannot support muxing to " << format;
-        break;
-    }
-
-    if (!muxer) {
-      return nullptr;
-    }
-
-    // We successfully created a muxer, then there is a couple settings
-    // we should set before returning it.
-    if (clock_) {
-      muxer->set_clock(clock_);
-    }
-
-    if (listener) {
-      muxer->SetMuxerListener(std::move(listener));
-    }
-
-    return muxer;
-  }
-
- private:
-  MuxerFactory(const MuxerFactory&) = delete;
-  MuxerFactory& operator=(const MuxerFactory&) = delete;
-
-  PackagingParams packaging_params_;
-  base::Clock* clock_ = nullptr;
-};
 
 Status ValidateStreamDescriptor(bool dump_stream_info,
                                 const StreamDescriptor& stream) {
@@ -497,7 +429,8 @@ Status CreateMp4ToMp4TextJob(int stream_number,
       stream, stream_number, packaging_params.output_media_info, mpd_notifier,
       hls_notifier);
   std::shared_ptr<Muxer> muxer =
-      muxer_factory->CreateMuxer(stream, std::move(muxer_listener));
+      muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
+  muxer->SetMuxerListener(std::move(muxer_listener));
 
   status.Update(chunker->AddHandler(std::move(muxer)));
   status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
@@ -569,10 +502,8 @@ Status CreateTextJobs(
     JobManager* job_manager) {
   DCHECK(job_manager);
   for (const StreamDescriptor& stream : streams) {
-    const MediaContainerName output_format = GetOutputFormat(stream);
-
     // TODO(70990714): Support webvtt to mp4
-    if (output_format == CONTAINER_MOV) {
+    if (GetOutputFormat(stream) == CONTAINER_MOV) {
       std::shared_ptr<OriginHandler> root;
       Status status = CreateMp4ToMp4TextJob((*stream_number)++, stream,
                                             packaging_params, muxer_factory,
@@ -709,7 +640,8 @@ Status CreateAudioVideoJobs(
         stream, (*stream_number)++, packaging_params.output_media_info,
         mpd_notifier, hls_notifier);
     std::shared_ptr<Muxer> muxer =
-        muxer_factory->CreateMuxer(stream, std::move(muxer_listener));
+        muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
+    muxer->SetMuxerListener(std::move(muxer_listener));
 
     if (!muxer) {
       return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +

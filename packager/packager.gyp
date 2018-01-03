@@ -16,6 +16,8 @@
         # TODO(kqyang): Clean up the file path.
         'app/job_manager.cc',
         'app/job_manager.h',
+        'app/muxer_factory.cc',
+        'app/muxer_factory.h',
         'app/libcrypto_threading.cc',
         'app/libcrypto_threading.h',
         'app/packager_util.cc',
