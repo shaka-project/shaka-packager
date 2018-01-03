@@ -52,6 +52,16 @@ class RepresentationTest : public ::testing::Test {
                            std::move(state_change_listener)));
   }
 
+  std::unique_ptr<Representation> CopyRepresentation(
+      const Representation& representation,
+      uint64_t presentation_time_offset,
+      std::unique_ptr<RepresentationStateChangeListener>
+          state_change_listener) {
+    return std::unique_ptr<Representation>(
+        new Representation(representation, presentation_time_offset,
+                           std::move(state_change_listener)));
+  }
+
   std::unique_ptr<RepresentationStateChangeListener> NoListener() {
     return std::unique_ptr<RepresentationStateChangeListener>();
   }
@@ -482,6 +492,35 @@ TEST_F(SegmentTemplateTest, OneSegmentNormal) {
       "  </SegmentTemplate>\n"
       "</Representation>\n";
   EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(kExpectedXml));
+}
+
+TEST_F(SegmentTemplateTest, RepresentationClone) {
+  MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
+  media_info.set_segment_template("$Number$.mp4");
+  representation_ =
+      CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
+  ASSERT_TRUE(representation_->Init());
+
+  const uint64_t kStartTime = 0;
+  const uint64_t kDuration = 10;
+  const uint64_t kSize = 128;
+  AddSegments(kStartTime, kDuration, kSize, 0);
+
+  const uint64_t kPresentationTimeOffset = 100;
+  auto cloned_representation = CopyRepresentation(
+      *representation_, kPresentationTimeOffset, NoListener());
+  const char kExpectedXml[] =
+      "<Representation id=\"1\" bandwidth=\"0\" "
+      " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
+      " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
+      "  <SegmentTemplate presentationTimeOffset=\"100\" timescale=\"1000\" "
+      "   initialization=\"init.mp4\" media=\"$Number$.mp4\" "
+      "   startNumber=\"2\">\n"
+      "    <SegmentTimeline/>\n"
+      "  </SegmentTemplate>\n"
+      "</Representation>\n";
+  EXPECT_THAT(cloned_representation->GetXml().get(),
+              XmlNodeEqual(kExpectedXml));
 }
 
 TEST_F(SegmentTemplateTest, GetEarliestTimestamp) {

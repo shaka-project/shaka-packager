@@ -41,32 +41,17 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   if (content_type == kContentTypeUnknown)
     return false;
 
-  base::AutoLock auto_lock(lock_);
-  if (!period_)
-    period_ = mpd_builder_->AddPeriod();
-  AdaptationSet* adaptation_set = period_->GetOrCreateAdaptationSet(
-      media_info, content_protection_in_adaptation_set_);
-  DCHECK(adaptation_set);
-
   MediaInfo adjusted_media_info(media_info);
   MpdBuilder::MakePathsRelativeToMpd(output_path_, &adjusted_media_info);
-  Representation* representation =
-      adaptation_set->AddRepresentation(adjusted_media_info);
+  const Representation* kNoOriginalRepresentation = nullptr;
+  const double kPeriodStartTimeSeconds = 0.0;
+
+  base::AutoLock auto_lock(lock_);
+  const Representation* representation = AddRepresentationToPeriod(
+      adjusted_media_info, kNoOriginalRepresentation, kPeriodStartTimeSeconds);
   if (!representation)
     return false;
-
-  if (content_protection_in_adaptation_set_) {
-    // ContentProtection elements are already added to AdaptationSet above.
-    // Use RepresentationId to AdaptationSet map to update ContentProtection
-    // in AdaptationSet in NotifyEncryptionUpdate.
-    representation_id_to_adaptation_set_[representation->id()] = adaptation_set;
-  } else {
-    AddContentProtectionElements(media_info, representation);
-  }
-
   *container_id = representation->id();
-  DCHECK(!ContainsKey(representation_map_, representation->id()));
-  representation_map_[representation->id()] = representation;
   return true;
 }
 
@@ -98,8 +83,30 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
 
 bool SimpleMpdNotifier::NotifyCueEvent(uint32_t container_id,
                                        uint64_t timestamp) {
-  NOTIMPLEMENTED();
-  return false;
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  Representation* original_representation = it->second;
+  AdaptationSet* original_adaptation_set =
+      representation_id_to_adaptation_set_[container_id];
+
+  const MediaInfo& media_info = original_representation->GetMediaInfo();
+  const double period_start_time_seconds =
+      static_cast<double>(timestamp) / media_info.reference_time_scale();
+  const Representation* new_representation = AddRepresentationToPeriod(
+      media_info, original_representation, period_start_time_seconds);
+  if (!new_representation)
+    return false;
+
+  // TODO(kqyang): Pass the ID to GetOrCreateAdaptationSet instead?
+  AdaptationSet* new_adaptation_set =
+      representation_id_to_adaptation_set_[container_id];
+  DCHECK(new_adaptation_set);
+  new_adaptation_set->set_id(original_adaptation_set->id());
+  return true;
 }
 
 bool SimpleMpdNotifier::NotifyEncryptionUpdate(
@@ -129,6 +136,40 @@ bool SimpleMpdNotifier::NotifyEncryptionUpdate(
 bool SimpleMpdNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
   return WriteMpdToFile(output_path_, mpd_builder_.get());
+}
+
+Representation* SimpleMpdNotifier::AddRepresentationToPeriod(
+    const MediaInfo& media_info,
+    const Representation* original_representation,
+    double period_start_time_seconds) {
+  Period* period = mpd_builder_->GetOrCreatePeriod(period_start_time_seconds);
+  DCHECK(period);
+
+  AdaptationSet* adaptation_set = period->GetOrCreateAdaptationSet(
+      media_info, content_protection_in_adaptation_set_);
+  DCHECK(adaptation_set);
+
+  Representation* representation = nullptr;
+  if (original_representation) {
+    representation = adaptation_set->CopyRepresentationWithTimeOffset(
+        *original_representation,
+        period->start_time_in_seconds() * media_info.reference_time_scale());
+  } else {
+    representation = adaptation_set->AddRepresentation(media_info);
+  }
+  if (!representation)
+    return nullptr;
+
+  if (content_protection_in_adaptation_set_) {
+    // ContentProtection elements are already added to AdaptationSet above.
+    // Use RepresentationId to AdaptationSet map to update ContentProtection
+    // in AdaptationSet in NotifyEncryptionUpdate.
+    representation_id_to_adaptation_set_[representation->id()] = adaptation_set;
+  } else {
+    AddContentProtectionElements(media_info, representation);
+  }
+  representation_map_[representation->id()] = representation;
+  return representation;
 }
 
 }  // namespace shaka

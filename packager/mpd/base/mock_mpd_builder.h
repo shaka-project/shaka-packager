@@ -24,13 +24,13 @@ class MockMpdBuilder : public MpdBuilder {
   MockMpdBuilder();
   ~MockMpdBuilder() override;
 
-  MOCK_METHOD0(AddPeriod, Period*());
+  MOCK_METHOD1(GetOrCreatePeriod, Period*(double start_time_in_seconds));
   MOCK_METHOD1(ToString, bool(std::string* output));
 };
 
 class MockPeriod : public Period {
  public:
-  MockPeriod();
+  MockPeriod(uint32_t period_id, double start_time_in_seconds);
 
   MOCK_METHOD2(GetOrCreateAdaptationSet,
                AdaptationSet*(const MediaInfo& media_info,
@@ -48,6 +48,9 @@ class MockAdaptationSet : public AdaptationSet {
   ~MockAdaptationSet() override;
 
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
+  MOCK_METHOD2(CopyRepresentationWithTimeOffset,
+               Representation*(const Representation& representation,
+                               uint64_t presentation_time_offset));
   MOCK_METHOD1(AddContentProtectionElement,
                void(const ContentProtectionElement& element));
   MOCK_METHOD2(UpdateContentProtectionPssh,
@@ -75,6 +78,7 @@ class MockRepresentation : public Representation {
   MOCK_METHOD3(AddNewSegment,
                void(uint64_t start_time, uint64_t duration, uint64_t size));
   MOCK_METHOD1(SetSampleDuration, void(uint32_t sample_duration));
+  MOCK_CONST_METHOD0(GetMediaInfo, const MediaInfo&());
 };
 
 }  // namespace shaka

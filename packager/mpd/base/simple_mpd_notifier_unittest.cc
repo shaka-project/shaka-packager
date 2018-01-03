@@ -20,11 +20,16 @@ namespace shaka {
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::Ref;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::StrEq;
 
 namespace {
+const uint32_t kDefaultPeriodId = 0u;
+const double kDefaultPeriodStartTime = 0.0;
 const uint32_t kDefaultAdaptationSetId = 0u;
+const uint32_t kDefaultTimeScale = 10;
 const bool kContentProtectionInAdaptationSet = true;
 
 MATCHER_P(EqualsProto, message, "") {
@@ -36,7 +41,8 @@ MATCHER_P(EqualsProto, message, "") {
 class SimpleMpdNotifierTest : public ::testing::Test {
  protected:
   SimpleMpdNotifierTest()
-      : default_mock_period_(new MockPeriod),
+      : default_mock_period_(
+            new MockPeriod(kDefaultPeriodId, kDefaultPeriodStartTime)),
         default_mock_adaptation_set_(
             new MockAdaptationSet(kDefaultAdaptationSetId)) {}
 
@@ -57,6 +63,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
         "}\n"
         "container_type: 1\n";
     valid_media_info1_ = ConvertToMediaInfo(kValidMediaInfo);
+    valid_media_info1_.set_reference_time_scale(kDefaultTimeScale);
     valid_media_info2_ = valid_media_info1_;
     valid_media_info2_.mutable_video_info()->set_width(960);
     valid_media_info3_ = valid_media_info1_;
@@ -100,7 +107,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewContainer) {
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
       .WillOnce(Return(default_mock_period_.get()));
   EXPECT_CALL(*default_mock_period_,
               GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_), _))
@@ -128,7 +135,7 @@ TEST_F(SimpleMpdNotifierTest, NotifySampleDuration) {
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
       .WillOnce(Return(default_mock_period_.get()));
   EXPECT_CALL(*default_mock_period_, GetOrCreateAdaptationSet(_, _))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -168,7 +175,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
       .WillOnce(Return(default_mock_period_.get()));
   EXPECT_CALL(*default_mock_period_, GetOrCreateAdaptationSet(_, _))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -190,6 +197,58 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
                                         kSegmentDuration, kSegmentSize));
 }
 
+TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {
+  SimpleMpdNotifier notifier(empty_mpd_option_);
+
+  const uint32_t kRepresentationId = 123u;
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
+  MockMpdBuilder* mock_mpd_builder_ptr = mock_mpd_builder.get();
+
+  std::unique_ptr<MockPeriod> mock_period(
+      new MockPeriod(kDefaultPeriodId, kDefaultPeriodStartTime));
+  std::unique_ptr<MockAdaptationSet> mock_adaptation_set(
+      new MockAdaptationSet(kDefaultAdaptationSetId));
+  std::unique_ptr<MockRepresentation> mock_representation(
+      new MockRepresentation(kRepresentationId));
+
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(Eq(0.0)))
+      .WillOnce(Return(mock_period.get()));
+  EXPECT_CALL(*mock_period,
+              GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_), _))
+      .WillOnce(Return(mock_adaptation_set.get()));
+  EXPECT_CALL(*mock_adaptation_set, AddRepresentation(_))
+      .WillOnce(Return(mock_representation.get()));
+
+  uint32_t container_id;
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
+  EXPECT_TRUE(notifier.NotifyNewContainer(valid_media_info1_, &container_id));
+  EXPECT_EQ(kRepresentationId, container_id);
+
+  const uint32_t kAnotherPeriodId = 2u;
+  const double kArbitraryPeriodStartTime = 100;  // Value does not matter.
+  std::unique_ptr<MockPeriod> mock_period2(
+      new MockPeriod(kAnotherPeriodId, kArbitraryPeriodStartTime));
+  std::unique_ptr<MockAdaptationSet> mock_adaptation_set2(
+      new MockAdaptationSet(kDefaultAdaptationSetId));
+  std::unique_ptr<MockRepresentation> mock_representation2(
+      new MockRepresentation(kRepresentationId));
+
+  const uint64_t kCueEventTimestamp = 1000;
+  EXPECT_CALL(*mock_representation, GetMediaInfo())
+      .WillOnce(ReturnRef(valid_media_info1_));
+  EXPECT_CALL(*mock_mpd_builder_ptr,
+              GetOrCreatePeriod(Eq(kCueEventTimestamp / kDefaultTimeScale)))
+      .WillOnce(Return(mock_period2.get()));
+  EXPECT_CALL(*mock_period2,
+              GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_), _))
+      .WillOnce(Return(mock_adaptation_set2.get()));
+  EXPECT_CALL(*mock_adaptation_set2,
+              CopyRepresentationWithTimeOffset(Ref(*mock_representation),
+                                               kCueEventTimestamp))
+      .WillOnce(Return(mock_representation2.get()));
+  EXPECT_TRUE(notifier.NotifyCueEvent(container_id, kCueEventTimestamp));
+}
+
 TEST_F(SimpleMpdNotifierTest,
        ContentProtectionInAdaptationSetUpdateEncryption) {
   MpdOptions mpd_options = empty_mpd_option_;
@@ -202,7 +261,7 @@ TEST_F(SimpleMpdNotifierTest,
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
       .WillOnce(Return(default_mock_period_.get()));
   EXPECT_CALL(
       *default_mock_period_,
@@ -245,7 +304,7 @@ TEST_F(SimpleMpdNotifierTest,
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
       .WillOnce(Return(default_mock_period_.get()));
   EXPECT_CALL(
       *default_mock_period_,
@@ -291,8 +350,9 @@ TEST_F(SimpleMpdNotifierTest, MultipleMediaInfo) {
   std::unique_ptr<MockRepresentation> representation3(
       new MockRepresentation(3));
 
-  EXPECT_CALL(*mock_mpd_builder, AddPeriod())
-      .WillOnce(Return(default_mock_period_.get()));
+  EXPECT_CALL(*mock_mpd_builder, GetOrCreatePeriod(_))
+      .Times(3)
+      .WillRepeatedly(Return(default_mock_period_.get()));
 
   EXPECT_CALL(*default_mock_period_,
               GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_), _))

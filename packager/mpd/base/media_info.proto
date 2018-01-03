@@ -133,6 +133,7 @@ message MediaInfo {
   // This is the reference time scale if there are multiple VideoInfo and/or
   // AudioInfo.
   optional uint32 reference_time_scale = 13;
+  optional uint64 presentation_time_offset = 16;
   optional ContainerType container_type = 14 [default = CONTAINER_UNKNOWN];
 
   // VOD only.

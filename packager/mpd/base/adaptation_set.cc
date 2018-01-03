@@ -188,43 +188,30 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   // will die before AdaptationSet.
   std::unique_ptr<RepresentationStateChangeListener> listener(
       new RepresentationStateChangeListenerImpl(representation_id, this));
-  std::unique_ptr<Representation> representation(new Representation(
+  std::unique_ptr<Representation> new_representation(new Representation(
       media_info, mpd_options_, representation_id, std::move(listener)));
 
-  if (!representation->Init()) {
+  if (!new_representation->Init()) {
     LOG(ERROR) << "Failed to initialize Representation.";
     return NULL;
   }
+  UpdateFromMediaInfo(media_info);
+  representations_.push_back(std::move(new_representation));
+  return representations_.back().get();
+}
 
-  // For videos, record the width, height, and the frame rate to calculate the
-  // max {width,height,framerate} required for DASH IOP.
-  if (media_info.has_video_info()) {
-    const MediaInfo::VideoInfo& video_info = media_info.video_info();
-    DCHECK(video_info.has_width());
-    DCHECK(video_info.has_height());
-    video_widths_.insert(video_info.width());
-    video_heights_.insert(video_info.height());
+Representation* AdaptationSet::CopyRepresentationWithTimeOffset(
+    const Representation& representation,
+    uint64_t presentation_time_offset) {
+  // Note that AdaptationSet outlive Representation, so this object
+  // will die before AdaptationSet.
+  std::unique_ptr<RepresentationStateChangeListener> listener(
+      new RepresentationStateChangeListenerImpl(representation.id(), this));
+  std::unique_ptr<Representation> new_representation(new Representation(
+      representation, presentation_time_offset, std::move(listener)));
 
-    if (video_info.has_time_scale() && video_info.has_frame_duration())
-      RecordFrameRate(video_info.frame_duration(), video_info.time_scale());
-
-    AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
-  }
-
-  if (media_info.has_video_info()) {
-    content_type_ = "video";
-  } else if (media_info.has_audio_info()) {
-    content_type_ = "audio";
-  } else if (media_info.has_text_info()) {
-    content_type_ = "text";
-
-    if (media_info.text_info().has_type() &&
-        (media_info.text_info().type() != MediaInfo::TextInfo::UNKNOWN)) {
-      roles_.insert(MediaInfoTextTypeToRole(media_info.text_info().type()));
-    }
-  }
-
-  representations_.push_back(std::move(representation));
+  UpdateFromMediaInfo(new_representation->GetMediaInfo());
+  representations_.push_back(std::move(new_representation));
   return representations_.back().get();
 }
 
@@ -394,6 +381,36 @@ const std::list<Representation*> AdaptationSet::GetRepresentations() const {
     representations.push_back(representation.get());
   }
   return representations;
+}
+
+void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
+  // For videos, record the width, height, and the frame rate to calculate the
+  // max {width,height,framerate} required for DASH IOP.
+  if (media_info.has_video_info()) {
+    const MediaInfo::VideoInfo& video_info = media_info.video_info();
+    DCHECK(video_info.has_width());
+    DCHECK(video_info.has_height());
+    video_widths_.insert(video_info.width());
+    video_heights_.insert(video_info.height());
+
+    if (video_info.has_time_scale() && video_info.has_frame_duration())
+      RecordFrameRate(video_info.frame_duration(), video_info.time_scale());
+
+    AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
+  }
+
+  if (media_info.has_video_info()) {
+    content_type_ = "video";
+  } else if (media_info.has_audio_info()) {
+    content_type_ = "audio";
+  } else if (media_info.has_text_info()) {
+    content_type_ = "text";
+
+    if (media_info.text_info().has_type() &&
+        (media_info.text_info().type() != MediaInfo::TextInfo::UNKNOWN)) {
+      roles_.insert(MediaInfoTextTypeToRole(media_info.text_info().type()));
+    }
+  }
 }
 
 // This implementation assumes that each representations' segments' are

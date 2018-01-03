@@ -53,13 +53,20 @@ class Period {
   /// @return The list of AdaptationSets in this Period.
   const std::list<AdaptationSet*> GetAdaptationSets() const;
 
+  /// @return The start time of this Period.
+  double start_time_in_seconds() const { return start_time_in_seconds_; }
+
  protected:
+  /// @param period_id is an ID number for this Period.
+  /// @param start_time_in_seconds is the start time for this Period.
   /// @param mpd_options is the options for this MPD.
   /// @param adaptation_set_counter is a counter for assigning ID numbers to
   ///        AdaptationSet. It can not be NULL.
   /// @param representation_counter is a counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
-  Period(const MpdOptions& mpd_options,
+  Period(uint32_t period_id,
+         double start_time_in_seconds,
+         const MpdOptions& mpd_options,
          base::AtomicSequenceNumber* adaptation_set_counter,
          base::AtomicSequenceNumber* representation_counter);
 
@@ -93,6 +100,8 @@ class Period {
       const MediaInfo& media_info,
       uint32_t* original_adaptation_set_id);
 
+  const uint32_t id_;
+  const double start_time_in_seconds_;
   const MpdOptions& mpd_options_;
   base::AtomicSequenceNumber* const adaptation_set_counter_;
   base::AtomicSequenceNumber* const representation_counter_;

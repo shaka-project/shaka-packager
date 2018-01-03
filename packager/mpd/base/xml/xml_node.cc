@@ -300,6 +300,11 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
                                        media_info.reference_time_scale());
     }
 
+    if (media_info.has_presentation_time_offset()) {
+      segment_base.SetIntegerAttribute("presentationTimeOffset",
+                                       media_info.presentation_time_offset());
+    }
+
     if (media_info.has_init_range()) {
       XmlNode initialization("Initialization");
       initialization.SetStringAttribute("range",
@@ -324,6 +329,11 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   if (media_info.has_reference_time_scale()) {
     segment_template.SetIntegerAttribute("timescale",
                                          media_info.reference_time_scale());
+  }
+
+  if (media_info.has_presentation_time_offset()) {
+    segment_template.SetIntegerAttribute("presentationTimeOffset",
+                                         media_info.presentation_time_offset());
   }
 
   if (media_info.has_init_segment_name()) {

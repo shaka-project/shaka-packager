@@ -28,7 +28,9 @@ bool XmlEqual(const std::string& xml1, xmlNodePtr xml2);
 std::string XmlNodeToString(xmlNodePtr xml_node);
 
 /// Match an xmlNodePtr with an xml in string representation.
-MATCHER_P(XmlNodeEqual, xml, "") {
+MATCHER_P(XmlNodeEqual,
+          xml,
+          std::string("xml node equal (ignore extra white spaces)\n") + xml) {
   *result_listener << "\n" << XmlNodeToString(arg);
   return XmlEqual(xml, arg);
 }

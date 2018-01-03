@@ -20,7 +20,6 @@ namespace shaka {
 
 class AdaptationSet;
 class MpdBuilder;
-class Period;
 class Representation;
 
 struct MpdOptions;
@@ -39,7 +38,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   bool NotifyNewContainer(const MediaInfo& media_info, uint32_t* id) override;
   bool NotifySampleDuration(uint32_t container_id,
                             uint32_t sample_duration) override;
-  bool NotifyNewSegment(uint32_t id,
+  bool NotifyNewSegment(uint32_t container_id,
                         uint64_t start_time,
                         uint64_t duration,
                         uint64_t size) override;
@@ -57,6 +56,17 @@ class SimpleMpdNotifier : public MpdNotifier {
 
   friend class SimpleMpdNotifierTest;
 
+  // Add a new representation. If |original_representation| is not nullptr, the
+  // new Representation will clone from it; otherwise the new Representation is
+  // created from |media_info|.
+  // The new Representation will be added to Period with the specified start
+  // time.
+  // Returns the new Representation on success; otherwise a nullptr is returned.
+  Representation* AddRepresentationToPeriod(
+      const MediaInfo& media_info,
+      const Representation* original_representation,
+      double period_start_time_seconds);
+
   // Testing only method. Returns a pointer to MpdBuilder.
   MpdBuilder* MpdBuilderForTesting() const { return mpd_builder_.get(); }
 
@@ -68,7 +78,6 @@ class SimpleMpdNotifier : public MpdNotifier {
   // MPD output path.
   std::string output_path_;
   std::unique_ptr<MpdBuilder> mpd_builder_;
-  Period* period_ = nullptr;  // owned by |mpd_builder_|.
   bool content_protection_in_adaptation_set_ = true;
   base::Lock lock_;
 

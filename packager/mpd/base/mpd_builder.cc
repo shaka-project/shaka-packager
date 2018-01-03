@@ -119,9 +119,18 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
   base_urls_.push_back(base_url);
 }
 
-Period* MpdBuilder::AddPeriod() {
-  periods_.emplace_back(new Period(mpd_options_, &adaptation_set_counter_,
-                                   &representation_counter_));
+Period* MpdBuilder::GetOrCreatePeriod(double start_time_in_seconds) {
+  for (auto& period : periods_) {
+    const double kPeriodTimeDriftThresholdInSeconds = 1.0;
+    const bool match =
+        std::fabs(period->start_time_in_seconds() - start_time_in_seconds) <
+        kPeriodTimeDriftThresholdInSeconds;
+    if (match)
+      return period.get();
+  }
+  periods_.emplace_back(
+      new Period(period_counter_.GetNext(), start_time_in_seconds, mpd_options_,
+                 &adaptation_set_counter_, &representation_counter_));
   return periods_.back().get();
 }
 

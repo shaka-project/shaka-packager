@@ -34,10 +34,14 @@ std::set<std::string> GetUUIDs(
 
 }  // namespace
 
-Period::Period(const MpdOptions& mpd_options,
+Period::Period(uint32_t period_id,
+               double start_time_in_seconds,
+               const MpdOptions& mpd_options,
                base::AtomicSequenceNumber* adaptation_set_counter,
                base::AtomicSequenceNumber* representation_counter)
-    : mpd_options_(mpd_options),
+    : id_(period_id),
+      start_time_in_seconds_(start_time_in_seconds),
+      mpd_options_(mpd_options),
       adaptation_set_counter_(adaptation_set_counter),
       representation_counter_(representation_counter) {}
 
@@ -92,9 +96,8 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
 xml::scoped_xml_ptr<xmlNode> Period::GetXml() {
   xml::XmlNode period("Period");
 
-  // Always set id=0 for now.
   // Required for 'dynamic' MPDs.
-  period.SetId(0);
+  period.SetId(id_);
   // Iterate thru AdaptationSets and add them to one big Period element.
   for (const auto& adaptation_set : adaptation_sets_) {
     xml::scoped_xml_ptr<xmlNode> child(adaptation_set->GetXml());
@@ -102,10 +105,10 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml() {
       return nullptr;
   }
 
-  // TODO(kqyang): Should we set @start unconditionally to 0?
-  if (mpd_options_.mpd_type == MpdType::kDynamic) {
-    // This is the only Period and it is a regular period.
-    period.SetStringAttribute("start", "PT0S");
+  if (mpd_options_.mpd_type == MpdType::kDynamic ||
+      start_time_in_seconds_ != 0) {
+    period.SetStringAttribute("start",
+                              SecondsToXmlDuration(start_time_in_seconds_));
   }
   return period.PassScopedPtr();
 }

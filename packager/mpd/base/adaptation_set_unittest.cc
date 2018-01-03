@@ -120,6 +120,31 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetTextContentType) {
               AttributeEqual("contentType", "text"));
 }
 
+TEST_F(AdaptationSetTest, CopyRepresentationWithTimeOffset) {
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: CONTAINER_MP4\n";
+
+  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  Representation* representation =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
+
+  const uint64_t kPresentationTimeOffset = 80;
+  Representation* new_representation =
+      adaptation_set->CopyRepresentationWithTimeOffset(*representation,
+                                                       kPresentationTimeOffset);
+  EXPECT_EQ(kPresentationTimeOffset,
+            new_representation->GetMediaInfo().presentation_time_offset());
+}
+
 // Verify that language passed to the constructor sets the @lang field is set.
 TEST_F(AdaptationSetTest, CheckLanguageAttributeSet) {
   auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, "en");

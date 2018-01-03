@@ -59,6 +59,18 @@ class AdaptationSet {
   ///         NULL. The returned pointer is owned by the AdaptationSet instance.
   virtual Representation* AddRepresentation(const MediaInfo& media_info);
 
+  /// Copy a Representation instance from @a representation in another
+  /// AdaptationSet. One use case is to duplicate Representation in different
+  /// periods.
+  /// @param representation is an existing Representation to be cloned from.
+  /// @param presentation_time_offset is the presentation time offset for the
+  ///        new Representation instance.
+  /// @return On success, returns a pointer to Representation. Otherwise returns
+  ///         NULL. The returned pointer is owned by the AdaptationSet instance.
+  virtual Representation* CopyRepresentationWithTimeOffset(
+      const Representation& representation,
+      uint64_t presentation_time_offset);
+
   /// Add a ContenProtection element to the adaptation set.
   /// AdaptationSet does not add <ContentProtection> elements
   /// automatically to itself even if @a media_info.protected_content is
@@ -110,6 +122,10 @@ class AdaptationSet {
 
   // Must be unique in the Period.
   uint32_t id() const { return id_; }
+
+  /// Set AdaptationSet@id.
+  /// @param id is the new ID to be set.
+  void set_id(uint32_t id) { id_ = id; }
 
   /// Notifies the AdaptationSet instance that a new (sub)segment was added to
   /// the Representation with @a representation_id.
@@ -191,6 +207,9 @@ class AdaptationSet {
   // 2 -> [0, 200, 400]
   typedef std::map<uint32_t, std::list<uint64_t>> RepresentationTimeline;
 
+  // Update AdaptationSet attributes for new MediaInfo.
+  void UpdateFromMediaInfo(const MediaInfo& media_info);
+
   /// Called from OnNewSegmentForRepresentation(). Checks whether the segments
   /// are aligned. Sets segments_aligned_.
   /// This is only for Live. For VOD, CheckVodSegmentAlignment() should be used.
@@ -214,7 +233,7 @@ class AdaptationSet {
 
   base::AtomicSequenceNumber* const representation_counter_;
 
-  const uint32_t id_;
+  uint32_t id_;
   const std::string lang_;
   const MpdOptions& mpd_options_;
 

@@ -115,6 +115,24 @@ Representation::Representation(
       state_change_listener_(std::move(state_change_listener)),
       output_suppression_flags_(0) {}
 
+Representation::Representation(
+    const Representation& representation,
+    uint64_t presentation_time_offset,
+    std::unique_ptr<RepresentationStateChangeListener> state_change_listener)
+    : Representation(representation.media_info_,
+                     representation.mpd_options_,
+                     representation.id_,
+                     std::move(state_change_listener)) {
+  mime_type_ = representation.mime_type_;
+  codecs_ = representation.codecs_;
+
+  start_number_ = representation.start_number_;
+  for (const SegmentInfo& segment_info : representation.segment_infos_)
+    start_number_ += segment_info.repeat + 1;
+
+  media_info_.set_presentation_time_offset(presentation_time_offset);
+}
+
 Representation::~Representation() {}
 
 bool Representation::Init() {
@@ -203,6 +221,10 @@ void Representation::SetSampleDuration(uint32_t sample_duration) {
           sample_duration, media_info_.video_info().time_scale());
     }
   }
+}
+
+const MediaInfo& Representation::GetMediaInfo() const {
+  return media_info_;
 }
 
 // Uses info in |media_info_| and |content_protection_elements_| to create a

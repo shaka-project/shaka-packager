@@ -46,9 +46,13 @@ class MpdBuilder {
   /// @param base_url URL for <BaseURL> entry.
   void AddBaseUrl(const std::string& base_url);
 
-  /// Adds <Period> to the MPD.
-  /// @return The new period, which is owned by this instance.
-  virtual Period* AddPeriod();
+  /// Check the existing Periods, if there is one matching the provided
+  /// @a start_time_in_seconds, return it; otherwise a new Period is created and
+  /// returned.
+  /// @param start_time_in_seconds is the period start time.
+  /// @return the Period matching @a start_time_in_seconds if found; otherwise
+  ///         return a new Period.
+  virtual Period* GetOrCreatePeriod(double start_time_in_seconds);
 
   /// Writes the MPD to the given string.
   /// @param[out] output is an output string where the MPD gets written.
@@ -112,6 +116,7 @@ class MpdBuilder {
   std::list<std::string> base_urls_;
   std::string availability_start_time_;
 
+  base::AtomicSequenceNumber period_counter_;
   base::AtomicSequenceNumber adaptation_set_counter_;
   base::AtomicSequenceNumber representation_counter_;
 

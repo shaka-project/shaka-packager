@@ -37,7 +37,8 @@ class MpdBuilderTest : public ::testing::Test {
   ~MpdBuilderTest() override {}
 
   void SetUp() override {
-    period_ = mpd_.AddPeriod();
+    const double kPeriodStartTimeSeconds = 0.0;
+    period_ = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
     ASSERT_TRUE(period_);
   }
 
@@ -147,6 +148,26 @@ TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
 
   std::string mpd_doc;
   ASSERT_FALSE(mpd_.ToString(&mpd_doc));
+}
+
+TEST_F(LiveMpdBuilderTest, MultiplePeriodTest) {
+  const double kPeriodStartTimeSeconds = 1.0;
+  Period* period = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
+  ASSERT_TRUE(period);
+  ASSERT_EQ(kPeriodStartTimeSeconds, period->start_time_in_seconds());
+
+  const double kPeriodStartTimeSeconds2 = 1.1;
+  Period* period2 = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds2);
+  ASSERT_TRUE(period2);
+  // The old Period is re-used if they are closed to each other.
+  ASSERT_EQ(period, period2);
+  ASSERT_EQ(kPeriodStartTimeSeconds, period2->start_time_in_seconds());
+
+  const double kPeriodStartTimeSeconds3 = 5.0;
+  Period* period3 = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds3);
+  ASSERT_TRUE(period3);
+  ASSERT_NE(period, period3);
+  ASSERT_EQ(kPeriodStartTimeSeconds3, period3->start_time_in_seconds());
 }
 
 // Check whether the attributes are set correctly for dynamic <MPD> element.

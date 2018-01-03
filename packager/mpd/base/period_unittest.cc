@@ -25,6 +25,8 @@ using ::testing::UnorderedElementsAre;
 
 namespace shaka {
 namespace {
+const uint32_t kDefaultPeriodId = 9u;
+const double kDefaultPeriodStartTime = 5.6;
 const uint32_t kDefaultAdaptationSetId = 0u;
 const uint32_t kTrickPlayAdaptationSetId = 1u;
 
@@ -75,7 +77,11 @@ MATCHER_P(ContentProtectionElementEq, expected, "") {
 class TestablePeriod : public Period {
  public:
   TestablePeriod(const MpdOptions& mpd_options)
-      : Period(mpd_options, &sequence_number_, &sequence_number_) {}
+      : Period(kDefaultPeriodId,
+               kDefaultPeriodStartTime,
+               mpd_options,
+               &sequence_number_,
+               &sequence_number_) {}
 
   MOCK_METHOD4(NewAdaptationSet,
                std::unique_ptr<AdaptationSet>(
@@ -133,7 +139,7 @@ TEST_P(PeriodTest, GetXml) {
                 content_protection_in_adaptation_set_));
 
   const char kExpectedXml[] =
-      "<Period id=\"0\">"
+      "<Period id=\"9\" start=\"PT5.6S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
       "  <AdaptationSet id=\"0\" contentType=\"\"/>"
@@ -164,7 +170,7 @@ TEST_P(PeriodTest, DynamicMpdGetXml) {
                 content_protection_in_adaptation_set_));
 
   const char kExpectedXml[] =
-      "<Period id=\"0\" start=\"PT0S\">"
+      "<Period id=\"9\" start=\"PT5.6S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
       "  <AdaptationSet id=\"0\" contentType=\"\"/>"

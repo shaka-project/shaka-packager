@@ -112,6 +112,9 @@ class Representation {
   /// @param sample_duration is the duration of a sample.
   virtual void SetSampleDuration(uint32_t sample_duration);
 
+  /// @return MediaInfo for the Representation.
+  virtual const MediaInfo& GetMediaInfo() const;
+
   /// @return Copy of <Representation>.
   xml::scoped_xml_ptr<xmlNode> GetXml();
 
@@ -150,6 +153,16 @@ class Representation {
       uint32_t representation_id,
       std::unique_ptr<RepresentationStateChangeListener> state_change_listener);
 
+  /// @param representation points to the original Representation to be cloned.
+  /// @param presentation_time_offset is the presentation time offset for the
+  ///        new Representation.
+  /// @param state_change_listener is an event handler for state changes to
+  ///        the representation. If null, no event handler registered.
+  Representation(
+      const Representation& representation,
+      uint64_t presentation_time_offset,
+      std::unique_ptr<RepresentationStateChangeListener> state_change_listener);
+
  private:
   Representation(const Representation&) = delete;
   Representation& operator=(const Representation&) = delete;
@@ -181,6 +194,7 @@ class Representation {
   // any logic using this can assume only one set.
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
+  // TODO(kqyang): Address sliding window issue with multiple periods.
   std::list<SegmentInfo> segment_infos_;
 
   const uint32_t id_;
