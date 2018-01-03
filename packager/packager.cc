@@ -40,6 +40,7 @@
 #include "packager/media/formats/webvtt/webvtt_output_handler.h"
 #include "packager/media/formats/webvtt/webvtt_parser.h"
 #include "packager/media/formats/webvtt/webvtt_segmenter.h"
+#include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
 #include "packager/media/replicator/replicator.h"
 #include "packager/media/trick_play/trick_play_handler.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -367,8 +368,8 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
 
 Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
                              const PackagingParams& packaging_params,
+                             std::unique_ptr<MuxerListener> muxer_listener,
                              MuxerFactory* muxer_factory,
-                             MuxerListenerFactory* muxer_listener_factory,
                              std::shared_ptr<OriginHandler>* root) {
   Status status;
   std::shared_ptr<Demuxer> demuxer;
@@ -380,8 +381,6 @@ Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
 
   std::shared_ptr<MediaHandler> chunker(
       new ChunkingHandler(packaging_params.chunking_params));
-  std::unique_ptr<MuxerListener> muxer_listener =
-      muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
   std::shared_ptr<Muxer> muxer =
       muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
@@ -442,6 +441,36 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   return Status::OK;
 }
 
+Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
+                                const PackagingParams& packaging_params,
+                                std::unique_ptr<MuxerListener> muxer_listener,
+                                MuxerFactory* muxer_factory,
+                                std::shared_ptr<OriginHandler>* root) {
+  Status status;
+  std::unique_ptr<FileReader> reader;
+  status = FileReader::Open(stream.input, &reader);
+
+  if (!status.ok()) {
+    return status;
+  }
+
+  std::shared_ptr<OriginHandler> parser(new WebVttParser(std::move(reader)));
+  std::shared_ptr<MediaHandler> text_to_mp4(new WebVttToMp4Handler);
+  std::shared_ptr<MediaHandler> chunker(
+      new ChunkingHandler(packaging_params.chunking_params));
+  std::shared_ptr<Muxer> muxer =
+      muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
+  muxer->SetMuxerListener(std::move(muxer_listener));
+
+  status.Update(chunker->AddHandler(std::move(muxer)));
+  status.Update(text_to_mp4->AddHandler(std::move(chunker)));
+  status.Update(parser->AddHandler(std::move(text_to_mp4)));
+
+  *root = std::move(parser);
+
+  return status;
+}
+
 Status CreateTextJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
@@ -452,12 +481,32 @@ Status CreateTextJobs(
   DCHECK(muxer_listener_factory);
   DCHECK(job_manager);
   for (const StreamDescriptor& stream : streams) {
-    // TODO(70990714): Support webvtt to mp4
     if (GetOutputFormat(stream) == CONTAINER_MOV) {
+      std::unique_ptr<MuxerListener> muxer_listener =
+          muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
+
       std::shared_ptr<OriginHandler> root;
-      Status status =
-          CreateMp4ToMp4TextJob(stream, packaging_params, muxer_factory,
-                                muxer_listener_factory, &root);
+      Status status;
+
+      switch (DetermineContainerFromFileName(stream.input)) {
+        case CONTAINER_WEBVTT:
+          status.Update(CreateWebVttToMp4TextJob(stream, packaging_params,
+                                                 std::move(muxer_listener),
+                                                 muxer_factory, &root));
+          break;
+
+        case CONTAINER_MOV:
+          status.Update(CreateMp4ToMp4TextJob(stream, packaging_params,
+                                              std::move(muxer_listener),
+                                              muxer_factory, &root));
+          break;
+
+        default:
+          status.Update(
+              Status(error::INVALID_ARGUMENT,
+                     "Text output format is not support for " + stream.input));
+          break;
+      }
 
       if (!status.ok()) {
         return status;
