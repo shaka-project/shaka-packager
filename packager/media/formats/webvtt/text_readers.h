@@ -11,33 +11,57 @@
 #include <string>
 #include <vector>
 
+#include "packager/file/file_closer.h"
+#include "packager/status.h"
+
 namespace shaka {
+class File;
+
 namespace media {
 
-class CharReader {
+/// Class to read character-by-character from a file.
+class FileReader {
  public:
-  virtual bool Next(char* out) = 0;
-};
+  /// Create a new file reader by opening a file. If the file fails to open (in
+  /// readonly mode) a non-ok status will be returned. If the file successfully
+  /// opens, |out| will be set to a new FileReader and an ok status will be
+  /// returned.
+  static Status Open(const std::string& filename,
+                     std::unique_ptr<FileReader>* out);
 
-class PeekingCharReader : public CharReader {
- public:
-  explicit PeekingCharReader(std::unique_ptr<CharReader> source);
-
-  bool Next(char* out) override;
-  bool Peek(char* out);
+  /// Read the next character from the file. If there is a next character,
+  /// |out| will be set and true will be returned. If there is no next
+  /// character false will be returned.
+  bool Next(char* out);
 
  private:
-  PeekingCharReader(const PeekingCharReader&) = delete;
-  PeekingCharReader operator=(const PeekingCharReader&) = delete;
+  explicit FileReader(std::unique_ptr<File, FileCloser> file);
 
-  std::unique_ptr<CharReader> source_;
+  FileReader(const FileReader& reader) = delete;
+  FileReader operator=(const FileReader& reader) = delete;
+
+  std::unique_ptr<File, FileCloser> file_;
+};
+
+class PeekingReader {
+ public:
+  explicit PeekingReader(std::unique_ptr<FileReader> source);
+
+  bool Peek(char* out);
+  bool Next(char* out);
+
+ private:
+  PeekingReader(const PeekingReader&) = delete;
+  PeekingReader operator=(const PeekingReader&) = delete;
+
+  std::unique_ptr<FileReader> source_;
   char cached_next_ = 0;
   bool has_cached_next_ = false;
 };
 
 class LineReader {
  public:
-  explicit LineReader(std::unique_ptr<CharReader> source);
+  explicit LineReader(std::unique_ptr<FileReader> source);
 
   bool Next(std::string* out);
 
@@ -45,12 +69,12 @@ class LineReader {
   LineReader(const LineReader&) = delete;
   LineReader operator=(const LineReader&) = delete;
 
-  PeekingCharReader source_;
+  PeekingReader source_;
 };
 
 class BlockReader {
  public:
-  explicit BlockReader(std::unique_ptr<CharReader> source);
+  explicit BlockReader(std::unique_ptr<FileReader> source);
 
   bool Next(std::vector<std::string>* out);
 
@@ -59,20 +83,6 @@ class BlockReader {
   BlockReader operator=(const BlockReader&) = delete;
 
   LineReader source_;
-};
-
-class StringCharReader : public CharReader {
- public:
-  explicit StringCharReader(const std::string& str);
-
-  bool Next(char* out) override;
-
- private:
-  StringCharReader(const StringCharReader&) = delete;
-  StringCharReader& operator=(const StringCharReader&) = delete;
-
-  const std::string source_;
-  size_t pos_ = 0;
 };
 
 }  // namespace media

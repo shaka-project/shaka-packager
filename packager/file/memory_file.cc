@@ -77,6 +77,13 @@ int64_t MemoryFile::Read(void* buffer, uint64_t length) {
 }
 
 int64_t MemoryFile::Write(const void* buffer, uint64_t length) {
+  // If length is zero, we won't resize the buffer and it is possible for
+  // |position| to equal the length of the buffer. This will cause a segfault
+  // when indexing into the buffer for the memcpy.
+  if (length == 0) {
+    return 0;
+  }
+
   const uint64_t size = Size();
   if (size < position_ + length) {
     file_->resize(position_ + length);

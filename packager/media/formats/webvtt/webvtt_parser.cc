@@ -46,7 +46,7 @@ bool MaybeCueId(const std::string& line) {
 }
 }  // namespace
 
-WebVttParser::WebVttParser(std::unique_ptr<CharReader> source)
+WebVttParser::WebVttParser(std::unique_ptr<FileReader> source)
     : reader_(std::move(source)) {}
 
 Status WebVttParser::InitializeInternal() {

@@ -7,14 +7,43 @@
 #include "packager/media/formats/webvtt/text_readers.h"
 
 #include "packager/base/logging.h"
+#include "packager/file/file.h"
 
 namespace shaka {
 namespace media {
 
-PeekingCharReader::PeekingCharReader(std::unique_ptr<CharReader> source)
+Status FileReader::Open(const std::string& filename,
+                        std::unique_ptr<FileReader>* out) {
+  const char* kReadOnly = "r";
+
+  std::unique_ptr<File, FileCloser> file(
+      File::Open(filename.c_str(), kReadOnly));
+
+  if (!file) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Could not open input file " + filename);
+  }
+
+  *out = std::unique_ptr<FileReader>(new FileReader(std::move(file)));
+
+  return Status::OK;
+}
+
+bool FileReader::Next(char* out) {
+  // TODO(vaage): If file reading performance is poor, change this to buffer
+  //              data and read from the buffer.
+  return file_->Read(out, 1) == 1;
+}
+
+FileReader::FileReader(std::unique_ptr<File, FileCloser> file)
+    : file_(std::move(file)) {
+  DCHECK(file_);
+}
+
+PeekingReader::PeekingReader(std::unique_ptr<FileReader> source)
     : source_(std::move(source)) {}
 
-bool PeekingCharReader::Next(char* out) {
+bool PeekingReader::Next(char* out) {
   DCHECK(out);
   if (Peek(out)) {
     has_cached_next_ = false;
@@ -23,7 +52,7 @@ bool PeekingCharReader::Next(char* out) {
   return false;
 }
 
-bool PeekingCharReader::Peek(char* out) {
+bool PeekingReader::Peek(char* out) {
   DCHECK(out);
   if (!has_cached_next_ && source_->Next(&cached_next_)) {
     has_cached_next_ = true;
@@ -35,7 +64,7 @@ bool PeekingCharReader::Peek(char* out) {
   return false;
 }
 
-LineReader::LineReader(std::unique_ptr<CharReader> source)
+LineReader::LineReader(std::unique_ptr<FileReader> source)
     : source_(std::move(source)) {}
 
 // Split lines based on https://w3c.github.io/webvtt/#webvtt-line-terminator
@@ -63,7 +92,7 @@ bool LineReader::Next(std::string* out) {
   return read_something;
 }
 
-BlockReader::BlockReader(std::unique_ptr<CharReader> source)
+BlockReader::BlockReader(std::unique_ptr<FileReader> source)
     : source_(std::move(source)) {}
 
 bool BlockReader::Next(std::vector<std::string>* out) {
@@ -88,16 +117,6 @@ bool BlockReader::Next(std::vector<std::string>* out) {
   }
 
   return in_block;
-}
-
-StringCharReader::StringCharReader(const std::string& str) : source_(str) {}
-
-bool StringCharReader::Next(char* out) {
-  if (pos_ < source_.length()) {
-    *out = source_[pos_++];
-    return true;
-  }
-  return false;
 }
 }  // namespace media
 }  // namespace shaka

@@ -7,6 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "packager/file/file.h"
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/formats/webvtt/text_readers.h"
 #include "packager/media/formats/webvtt/webvtt_parser.h"
@@ -29,9 +30,18 @@ const char* kNoSettings = "";
 
 class WebVttParserTest : public MediaHandlerTestBase {
  protected:
-  void SetUpAndInitializeGraph(const std::string& text_input) {
-    parser_ = std::make_shared<WebVttParser>(
-        std::unique_ptr<StringCharReader>(new StringCharReader(text_input)));
+  void SetUpAndInitializeGraph(const char* text) {
+    const char* kFilename = "memory://test-file";
+
+    // Create the input file from the text passed to the test.
+    ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+    // Read from the file we just wrote.
+    std::unique_ptr<FileReader> reader;
+    ASSERT_OK(FileReader::Open(kFilename, &reader));
+
+    parser_ = std::make_shared<WebVttParser>(std::move(reader));
+
     ASSERT_OK(MediaHandlerTestBase::SetUpAndInitializeGraph(
         parser_, kInputCount, kOutputCount));
   }
@@ -40,7 +50,9 @@ class WebVttParserTest : public MediaHandlerTestBase {
 };
 
 TEST_F(WebVttParserTest, FailToParseEmptyFile) {
-  SetUpAndInitializeGraph("");
+  const char* text = "";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   EXPECT_CALL(*Output(kOutputIndex), OnProcess(testing::_)).Times(0);
   EXPECT_CALL(*Output(kOutputIndex), OnFlush(testing::_)).Times(0);
@@ -49,9 +61,11 @@ TEST_F(WebVttParserTest, FailToParseEmptyFile) {
 }
 
 TEST_F(WebVttParserTest, ParseOnlyHeader) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
-      "\n");
+      "\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -64,9 +78,11 @@ TEST_F(WebVttParserTest, ParseOnlyHeader) {
 }
 
 TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "\xFE\xFFWEBVTT\n"
-      "\n");
+      "\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -79,9 +95,11 @@ TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
 }
 
 TEST_F(WebVttParserTest, FailToParseHeaderWrongWord) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "NOT WEBVTT\n"
-      "\n");
+      "\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   EXPECT_CALL(*Output(kOutputIndex), OnProcess(testing::_)).Times(0);
   EXPECT_CALL(*Output(kOutputIndex), OnFlush(testing::_)).Times(0);
@@ -90,10 +108,12 @@ TEST_F(WebVttParserTest, FailToParseHeaderWrongWord) {
 }
 
 TEST_F(WebVttParserTest, FailToParseHeaderNotOneLine) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "WEBVTT\n"
-      "\n");
+      "\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   EXPECT_CALL(*Output(kOutputIndex), OnProcess(testing::_)).Times(0);
   EXPECT_CALL(*Output(kOutputIndex), OnFlush(testing::_)).Times(0);
@@ -104,14 +124,16 @@ TEST_F(WebVttParserTest, FailToParseHeaderNotOneLine) {
 // TODO: Add style blocks support to WebVttParser.
 // This test is disabled until WebVTT parses STYLE blocks.
 TEST_F(WebVttParserTest, DISABLED_ParseStyleBlocks) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "STYLE\n"
       "::cue {\n"
       "  background-image: linear-gradient(to bottom, dimgray, lightgray);\n"
       "  color: papayawhip;\n"
-      "}");
+      "}";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -124,11 +146,13 @@ TEST_F(WebVttParserTest, DISABLED_ParseStyleBlocks) {
 }
 
 TEST_F(WebVttParserTest, ParseOneCue) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "00:01:00.000 --> 01:00:00.000\n"
-      "subtitle\n");
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -144,23 +168,27 @@ TEST_F(WebVttParserTest, ParseOneCue) {
 }
 
 TEST_F(WebVttParserTest, FailToParseCueWithArrowInId) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "-->\n"
       "00:01:00.000 --> 01:00:00.000\n"
-      "subtitle\n");
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   ASSERT_NE(Status::OK, parser_->Run());
 }
 
 TEST_F(WebVttParserTest, ParseOneCueWithId) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "id\n"
       "00:01:00.000 --> 01:00:00.000\n"
-      "subtitle\n");
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -176,11 +204,13 @@ TEST_F(WebVttParserTest, ParseOneCueWithId) {
 }
 
 TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "00:01:00.000 --> 01:00:00.000 size:50%\n"
-      "subtitle\n");
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -197,7 +227,7 @@ TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
 
 // Verify that a typical case with mulitple cues work.
 TEST_F(WebVttParserTest, ParseMultipleCues) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "00:00:01.000 --> 00:00:05.200\n"
@@ -207,7 +237,9 @@ TEST_F(WebVttParserTest, ParseMultipleCues) {
       "subtitle B\n"
       "\n"
       "00:00:05.800 --> 00:00:08.000\n"
-      "subtitle C\n");
+      "subtitle C\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;
@@ -231,7 +263,7 @@ TEST_F(WebVttParserTest, ParseMultipleCues) {
 // Verify that a typical case with mulitple cues work even when comments are
 // present.
 TEST_F(WebVttParserTest, ParseWithComments) {
-  SetUpAndInitializeGraph(
+  const char* text =
       "WEBVTT\n"
       "\n"
       "NOTE This is a one line comment\n"
@@ -251,7 +283,9 @@ TEST_F(WebVttParserTest, ParseWithComments) {
       "NOTE\tThis is a comment that using a tab\n"
       "\n"
       "00:00:05.800 --> 00:00:08.000\n"
-      "subtitle C\n");
+      "subtitle C\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
 
   {
     testing::InSequence s;

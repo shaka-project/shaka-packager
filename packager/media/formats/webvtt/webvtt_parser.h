@@ -20,7 +20,7 @@ namespace media {
 // Used to parse a WebVTT source into Cues that will be sent downstream.
 class WebVttParser : public OriginHandler {
  public:
-  explicit WebVttParser(std::unique_ptr<CharReader> source);
+  explicit WebVttParser(std::unique_ptr<FileReader> source);
 
   Status Run() override;
   void Cancel() override;

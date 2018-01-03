@@ -6,31 +6,45 @@
 
 #include <gtest/gtest.h>
 
+#include "packager/file/file.h"
 #include "packager/media/formats/webvtt/text_readers.h"
+#include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {
+namespace {
+const char* kFilename = "memory://test-file";
+}  // namespace
 
 TEST(TextReadersTest, ReadWholeStream) {
-  const std::string input = "abcd";
-  StringCharReader source(input);
+  const char* text = "abcd";
+
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
 
   char c;
-  ASSERT_TRUE(source.Next(&c));
+  ASSERT_TRUE(source->Next(&c));
   ASSERT_EQ(c, 'a');
-  ASSERT_TRUE(source.Next(&c));
+  ASSERT_TRUE(source->Next(&c));
   ASSERT_EQ(c, 'b');
-  ASSERT_TRUE(source.Next(&c));
+  ASSERT_TRUE(source->Next(&c));
   ASSERT_EQ(c, 'c');
-  ASSERT_TRUE(source.Next(&c));
+  ASSERT_TRUE(source->Next(&c));
   ASSERT_EQ(c, 'd');
-  ASSERT_FALSE(source.Next(&c));
+  ASSERT_FALSE(source->Next(&c));
 }
 
 TEST(TextReadersTest, Peeking) {
-  const std::string input = "abc";
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
-  PeekingCharReader reader(std::move(source));
+  const char* text = "abc";
+
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
+  PeekingReader reader(std::move(source));
 
   char c;
   ASSERT_TRUE(reader.Peek(&c));
@@ -50,8 +64,13 @@ TEST(TextReadersTest, Peeking) {
 }
 
 TEST(TextReadersTest, ReadLinesWithNewLine) {
-  const std::string input = "a\nb\nc";
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  const char* text = "a\nb\nc";
+
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   LineReader reader(std::move(source));
 
   std::string s;
@@ -65,8 +84,13 @@ TEST(TextReadersTest, ReadLinesWithNewLine) {
 }
 
 TEST(TextReadersTest, ReadLinesWithReturnsAndNewLine) {
-  const std::string input = "a\r\nb\r\nc";
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  const char* text = "a\r\nb\r\nc";
+
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   LineReader reader(std::move(source));
 
   std::string s;
@@ -80,8 +104,13 @@ TEST(TextReadersTest, ReadLinesWithReturnsAndNewLine) {
 }
 
 TEST(TextReadersTest, ReadLinesWithNewLineAndReturns) {
-  const std::string input = "a\n\rb\n\rc";
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  const char* text = "a\n\rb\n\rc";
+
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   LineReader reader(std::move(source));
 
   std::string s;
@@ -99,8 +128,13 @@ TEST(TextReadersTest, ReadLinesWithNewLineAndReturns) {
 }
 
 TEST(TextReadersTest, ReadLinesWithReturnAtEnd) {
-  const std::string input = "a\r\nb\r\nc\r";
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  const char* text = "a\r\nb\r\nc\r";
+
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   LineReader reader(std::move(source));
 
   std::string s;
@@ -114,11 +148,15 @@ TEST(TextReadersTest, ReadLinesWithReturnAtEnd) {
 }
 
 TEST(TextReadersTest, ReadBlocksReadMultilineBlock) {
-  const std::string input =
+  const char* text =
       "block 1 - line 1\n"
       "block 1 - line 2";
 
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   BlockReader reader(std::move(source));
 
   std::vector<std::string> block;
@@ -132,7 +170,7 @@ TEST(TextReadersTest, ReadBlocksReadMultilineBlock) {
 }
 
 TEST(TextReadersTest, ReadBlocksSkipBlankLinesBeforeBlocks) {
-  const std::string input =
+  const char* text =
       "\n"
       "\n"
       "block 1\n"
@@ -140,7 +178,11 @@ TEST(TextReadersTest, ReadBlocksSkipBlankLinesBeforeBlocks) {
       "\n"
       "block 2\n";
 
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   BlockReader reader(std::move(source));
 
   std::vector<std::string> block;
@@ -157,9 +199,13 @@ TEST(TextReadersTest, ReadBlocksSkipBlankLinesBeforeBlocks) {
 }
 
 TEST(TextReadersTest, ReadBlocksWithOnlyBlankLines) {
-  const std::string input = "\n\n\n\n";
+  const char* text = "\n\n\n\n";
 
-  std::unique_ptr<CharReader> source(new StringCharReader(input));
+  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
+
+  std::unique_ptr<FileReader> source;
+  ASSERT_OK(FileReader::Open(kFilename, &source));
+
   BlockReader reader(std::move(source));
 
   std::vector<std::string> block;
