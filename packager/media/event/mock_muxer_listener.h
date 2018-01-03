@@ -61,6 +61,9 @@ class MockMuxerListener : public MuxerListener {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size));
+
+  MOCK_METHOD2(OnCueEvent,
+               void(uint64_t timestamp, const std::string& cue_data));
 };
 
 }  // namespace media

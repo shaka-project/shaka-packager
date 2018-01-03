@@ -31,6 +31,7 @@ class MockMpdNotifier : public MpdNotifier {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t size));
+  MOCK_METHOD2(NotifyCueEvent, bool(uint32_t container_id, uint64_t timestamp));
   MOCK_METHOD4(NotifyEncryptionUpdate,
                bool(uint32_t container_id,
                     const std::string& drm_uuid,

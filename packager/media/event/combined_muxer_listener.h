@@ -39,6 +39,7 @@ class CombinedMuxerListener : public MuxerListener {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size) override;
+  void OnCueEvent(uint64_t timestamp, const std::string& cue_data) override;
 
  private:
   std::list<std::unique_ptr<MuxerListener>> muxer_listeners_;

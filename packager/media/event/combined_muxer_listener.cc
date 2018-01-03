@@ -65,5 +65,12 @@ void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
   }
 }
 
+void CombinedMuxerListener::OnCueEvent(uint64_t timestamp,
+                                       const std::string& cue_data) {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnCueEvent(timestamp, cue_data);
+  }
+}
+
 }  // namespace media
 }  // namespace shaka

@@ -50,6 +50,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size) override;
+  void OnCueEvent(uint64_t timestamp, const std::string& cue_data) override;
   /// @}
 
   /// Write @a media_info to @a output_file_path in human readable format.

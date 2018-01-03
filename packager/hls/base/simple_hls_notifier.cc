@@ -367,6 +367,12 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   return true;
 }
 
+bool SimpleHlsNotifier::NotifyCueEvent(uint32_t container_id,
+                                       uint64_t timestamp) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     uint32_t stream_id,
     const std::vector<uint8_t>& key_id,

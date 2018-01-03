@@ -60,6 +60,30 @@ const uint8_t kData[]{
 namespace shaka {
 namespace media {
 
+std::string StreamDataTypeToString(StreamDataType stream_data_type) {
+  switch (stream_data_type) {
+    case StreamDataType::kStreamInfo:
+      return "stream info";
+    case StreamDataType::kMediaSample:
+      return "media sample";
+    case StreamDataType::kTextSample:
+      return "text sample";
+    case StreamDataType::kSegmentInfo:
+      return "segment info";
+    case StreamDataType::kScte35Event:
+      return "scte35 event";
+    case StreamDataType::kCueEvent:
+      return "cue event";
+    case StreamDataType::kUnknown:
+      return "unknown";
+  }
+  return "unknown";
+}
+
+std::string BoolToString(bool value) {
+  return value ? "true" : "false";
+}
+
 bool FakeInputMediaHandler::ValidateOutputStreamIndex(size_t index) const {
   return true;
 }
@@ -170,6 +194,7 @@ std::shared_ptr<MediaSample> MediaHandlerTestBase::GetMediaSample(
   std::shared_ptr<MediaSample> sample =
       MediaSample::CopyFrom(data, data_length, nullptr, 0, is_keyframe);
   sample->set_dts(timestamp);
+  sample->set_pts(timestamp);
   sample->set_duration(duration);
 
   return sample;

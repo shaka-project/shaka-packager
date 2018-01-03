@@ -149,6 +149,7 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
   // Check if we need to terminate the current (sub)segment.
   bool new_segment = false;
   bool new_subsegment = false;
+  std::shared_ptr<CueEvent> cue_event;
   if (is_key_frame || !chunking_params_.segment_sap_aligned) {
     const int64_t segment_index = timestamp / segment_duration_;
     if (segment_index != current_segment_index_) {
@@ -161,11 +162,16 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
     // events that may be very close to each other.
     while (!scte35_events_.empty() &&
            (scte35_events_.top()->scte35_event->start_time <= timestamp)) {
-      if (!new_segment) {
-        // Reset subsegment index but don't change current_segment_index_.
-        current_subsegment_index_ = 0;
-        new_segment = true;
-      }
+      // For simplicity, don't change |current_segment_index_|.
+      current_subsegment_index_ = 0;
+      new_segment = true;
+
+      cue_event = std::make_shared<CueEvent>();
+      // Use PTS instead of DTS for cue event timestamp.
+      cue_event->timestamp = sample->pts();
+      cue_event->cue_data = scte35_events_.top()->scte35_event->cue_data;
+      VLOG(1) << "Chunked at " << timestamp << " for Ad Cue.";
+
       scte35_events_.pop();
     }
   }
@@ -190,6 +196,9 @@ Status ChunkingHandler::ProcessMediaSample(const MediaSample* sample) {
   if (new_segment) {
     status.Update(DispatchSegmentInfoForAllStreams());
     segment_info_[main_stream_index_]->start_timestamp = timestamp;
+
+    if (cue_event)
+      status.Update(DispatchCueEventForAllStreams(std::move(cue_event)));
   }
   if (subsegment_duration_ > 0 && (new_segment || new_subsegment)) {
     status.Update(DispatchSubsegmentInfoForAllStreams());
@@ -269,6 +278,18 @@ Status ChunkingHandler::DispatchSubsegmentInfoForAllStreams() {
     }
     subsegment_info_[i].reset(new SegmentInfo);
     subsegment_info_[i]->is_subsegment = true;
+  }
+  return status;
+}
+
+Status ChunkingHandler::DispatchCueEventForAllStreams(
+    std::shared_ptr<CueEvent> cue_event) {
+  Status status;
+  for (size_t i = 0; i < segment_info_.size() && status.ok(); ++i) {
+    std::shared_ptr<CueEvent> new_cue_event(new CueEvent(*cue_event));
+    new_cue_event->timestamp = cue_event->timestamp * time_scales_[i] /
+                               time_scales_[main_stream_index_];
+    status.Update(DispatchCueEvent(i, std::move(new_cue_event)));
   }
   return status;
 }

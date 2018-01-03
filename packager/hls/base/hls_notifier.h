@@ -58,6 +58,11 @@ class HlsNotifier {
                                 uint64_t size) = 0;
 
   /// @param stream_id is the value set by NotifyNewStream().
+  /// @param timestamp is the timestamp of the CueEvent.
+  /// @return true on success, false otherwise.
+  virtual bool NotifyCueEvent(uint32_t stream_id, uint64_t timestamp) = 0;
+
+  /// @param stream_id is the value set by NotifyNewStream().
   /// @param key_id is the key ID for the stream.
   /// @param system_id is the DRM system ID in e.g. PSSH boxes. For example this
   ///        can be used to determine the KEYFORMAT attribute for EXT-X-KEY.

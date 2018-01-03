@@ -4,6 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#ifndef PACKAGER_MEDIA_BASE_MEDIA_HANDLER_TEST_BASE_H_
+#define PACKAGER_MEDIA_BASE_MEDIA_HANDLER_TEST_BASE_H_
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -13,16 +16,25 @@
 namespace shaka {
 namespace media {
 
+std::string StreamDataTypeToString(StreamDataType stream_data_type);
+std::string BoolToString(bool value);
+
 MATCHER_P(IsStreamInfo, stream_index, "") {
   return arg->stream_index == stream_index &&
          arg->stream_data_type == StreamDataType::kStreamInfo;
 }
 
 MATCHER_P3(IsStreamInfo, stream_index, time_scale, encrypted, "") {
-  *result_listener << "which is (" << stream_index << "," << time_scale << ","
-                   << (encrypted ? "encrypted" : "not encrypted") << ")";
+  if (arg->stream_data_type != StreamDataType::kStreamInfo) {
+    *result_listener << "which is "
+                     << StreamDataTypeToString(arg->stream_data_type);
+    return false;
+  }
+
+  *result_listener << "which is (" << arg->stream_index << ","
+                   << arg->stream_info->time_scale() << ","
+                   << BoolToString(arg->stream_info->is_encrypted()) << ")";
   return arg->stream_index == stream_index &&
-         arg->stream_data_type == StreamDataType::kStreamInfo &&
          arg->stream_info->time_scale() == time_scale &&
          arg->stream_info->is_encrypted() == encrypted;
 }
@@ -34,12 +46,18 @@ MATCHER_P5(IsSegmentInfo,
            subsegment,
            encrypted,
            "") {
-  *result_listener << "which is (" << stream_index << "," << start_timestamp
-                   << "," << duration << ","
-                   << (subsegment ? "subsegment" : "not subsegment") << ","
-                   << (encrypted ? "encrypted" : "not encrypted") << ")";
+  if (arg->stream_data_type != StreamDataType::kSegmentInfo) {
+    *result_listener << "which is "
+                     << StreamDataTypeToString(arg->stream_data_type);
+    return false;
+  }
+
+  *result_listener << "which is (" << arg->stream_index << ","
+                   << arg->segment_info->start_timestamp << ","
+                   << arg->segment_info->duration << ","
+                   << BoolToString(arg->segment_info->is_subsegment) << ","
+                   << BoolToString(arg->segment_info->is_encrypted) << ")";
   return arg->stream_index == stream_index &&
-         arg->stream_data_type == StreamDataType::kSegmentInfo &&
          arg->segment_info->start_timestamp == start_timestamp &&
          arg->segment_info->duration == duration &&
          arg->segment_info->is_subsegment == subsegment &&
@@ -54,12 +72,14 @@ MATCHER_P6(MatchEncryptionConfig,
            constant_iv,
            key_id,
            "") {
-  *result_listener << "which is (" << FourCCToString(protection_scheme) << ","
-                   << static_cast<int>(crypt_byte_block) << ","
-                   << static_cast<int>(skip_byte_block) << ","
-                   << static_cast<int>(per_sample_iv_size) << ","
-                   << base::HexEncode(constant_iv.data(), constant_iv.size())
-                   << "," << base::HexEncode(key_id.data(), key_id.size())
+  *result_listener << "which is (" << FourCCToString(arg.protection_scheme)
+                   << "," << static_cast<int>(arg.crypt_byte_block) << ","
+                   << static_cast<int>(arg.skip_byte_block) << ","
+                   << static_cast<int>(arg.per_sample_iv_size) << ","
+                   << base::HexEncode(arg.constant_iv.data(),
+                                      arg.constant_iv.size())
+                   << ","
+                   << base::HexEncode(arg.key_id.data(), arg.key_id.size())
                    << ")";
   return arg.protection_scheme == protection_scheme &&
          arg.crypt_byte_block == crypt_byte_block &&
@@ -69,23 +89,49 @@ MATCHER_P6(MatchEncryptionConfig,
 }
 
 MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
-  *result_listener << "which is (" << stream_index << "," << timestamp << ","
-                   << duration << ","
-                   << (encrypted ? "encrypted" : "not encrypted") << ")";
+  if (arg->stream_data_type != StreamDataType::kMediaSample) {
+    *result_listener << "which is "
+                     << StreamDataTypeToString(arg->stream_data_type);
+    return false;
+  }
+  *result_listener << "which is (" << stream_index << ","
+                   << arg->media_sample->dts() << ","
+                   << arg->media_sample->duration() << ","
+                   << BoolToString(arg->media_sample->is_encrypted()) << ")";
   return arg->stream_index == stream_index &&
-         arg->stream_data_type == StreamDataType::kMediaSample &&
          arg->media_sample->dts() == timestamp &&
          arg->media_sample->duration() == duration &&
          arg->media_sample->is_encrypted() == encrypted;
 }
 
 MATCHER_P5(IsTextSample, id, start_time, end_time, settings, payload, "") {
-  return arg->stream_data_type == StreamDataType::kTextSample &&
-         arg->text_sample->id() == id &&
+  if (arg->stream_data_type != StreamDataType::kTextSample) {
+    *result_listener << "which is "
+                     << StreamDataTypeToString(arg->stream_data_type);
+    return false;
+  }
+  *result_listener << "which is (" << arg->text_sample->id() << ","
+                   << arg->text_sample->start_time() << ","
+                   << arg->text_sample->EndTime() << ","
+                   << arg->text_sample->settings() << ","
+                   << arg->text_sample->payload() << ")";
+  return arg->text_sample->id() == id &&
          arg->text_sample->start_time() == start_time &&
          arg->text_sample->EndTime() == end_time &&
          arg->text_sample->settings() == settings &&
          arg->text_sample->payload() == payload;
+}
+
+MATCHER_P2(IsCueEvent, stream_index, timestamp, "") {
+  if (arg->stream_data_type != StreamDataType::kCueEvent) {
+    *result_listener << "which is "
+                     << StreamDataTypeToString(arg->stream_data_type);
+    return false;
+  }
+  *result_listener << "which is (" << arg->stream_index << ","
+                   << arg->cue_event->timestamp << ")";
+  return arg->stream_index == stream_index &&
+         arg->cue_event->timestamp == timestamp;
 }
 
 class FakeInputMediaHandler : public MediaHandler {
@@ -234,3 +280,5 @@ class MediaHandlerGraphTestBase : public MediaHandlerTestBase {
 
 }  // namespace media
 }  // namespace shaka
+
+#endif  // PACKAGER_MEDIA_BASE_MEDIA_HANDLER_TEST_BASE_H_

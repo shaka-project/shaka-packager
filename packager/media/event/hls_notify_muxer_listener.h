@@ -12,7 +12,6 @@
 #include "packager/base/macros.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/segment_info.h"
 
 namespace shaka {
 
@@ -59,9 +58,18 @@ class HlsNotifyMuxerListener : public MuxerListener {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size) override;
+  void OnCueEvent(uint64_t timestamp, const std::string& cue_data) override;
   /// @}
 
  private:
+  // This stores data passed into OnNewSegment() for VOD.
+  struct SubsegmentInfo {
+    uint64_t start_time;
+    uint64_t duration;
+    uint64_t segment_file_size;
+    bool cue_break;
+  };
+
   const std::string playlist_name_;
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
@@ -79,7 +87,9 @@ class HlsNotifyMuxerListener : public MuxerListener {
   // MediaInfo passed to Notifier::OnNewStream(). Mainly for single segment
   // playlists.
   MediaInfo media_info_;
-  std::vector<SegmentInfo> segment_infos_;
+  std::vector<SubsegmentInfo> subsegments_;
+  // Whether the next subsegment contains AdCue break.
+  bool next_subsegment_contains_cue_break_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(HlsNotifyMuxerListener);
 };

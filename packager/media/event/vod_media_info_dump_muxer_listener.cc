@@ -88,6 +88,11 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
                                                  uint64_t duration,
                                                  uint64_t segment_file_size) {}
 
+void VodMediaInfoDumpMuxerListener::OnCueEvent(uint64_t timestamp,
+                                               const std::string& cue_data) {
+  NOTIMPLEMENTED();
+}
+
 // static
 bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
     const MediaInfo& media_info,

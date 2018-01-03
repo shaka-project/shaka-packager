@@ -286,5 +286,43 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
   EXPECT_THAT(GetOutputStreamDataVector(), IsEmpty());
 }
 
+TEST_F(ChunkingHandlerTest, Scte35Event) {
+  ChunkingParams chunking_params;
+  chunking_params.segment_duration_in_seconds = 1;
+  chunking_params.subsegment_duration_in_seconds = 0.5;
+  SetUpChunkingHandler(1, chunking_params);
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex0, GetVideoStreamInfo(kTimeScale1))));
+
+  const int64_t kVideoStartTimestamp = 12345;
+
+  auto scte35_event = std::make_shared<Scte35Event>();
+  scte35_event->start_time = kVideoStartTimestamp + kDuration1;
+  ASSERT_OK(Process(StreamData::FromScte35Event(kStreamIndex0, scte35_event)));
+
+  for (int i = 0; i < 3; ++i) {
+    const bool is_key_frame = true;
+    ASSERT_OK(Process(StreamData::FromMediaSample(
+        kStreamIndex0, GetMediaSample(kVideoStartTimestamp + i * kDuration1,
+                                      kDuration1, is_key_frame))));
+  }
+  EXPECT_THAT(
+      GetOutputStreamDataVector(),
+      ElementsAre(
+          IsStreamInfo(kStreamIndex0, kTimeScale1, !kEncrypted),
+          IsMediaSample(kStreamIndex0, kVideoStartTimestamp, kDuration1,
+                        !kEncrypted),
+          // A new segment is created due to the existance of Cue.
+          IsSegmentInfo(kStreamIndex0, kVideoStartTimestamp, kDuration1,
+                        !kIsSubsegment, !kEncrypted),
+          IsCueEvent(kStreamIndex0,
+                     static_cast<double>(kVideoStartTimestamp + kDuration1)),
+          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 1,
+                        kDuration1, !kEncrypted),
+          IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 2,
+                        kDuration1, !kEncrypted)));
+}
+
 }  // namespace media
 }  // namespace shaka

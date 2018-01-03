@@ -127,6 +127,11 @@ class MuxerListener {
                             uint64_t duration,
                             uint64_t segment_file_size) = 0;
 
+  /// Called when there is a new Ad Cue, which should align with (sub)segments.
+  /// @param timestamp indicate the cue timestamp.
+  /// @param cue_data is the data of the cue.
+  virtual void OnCueEvent(uint64_t timestamp, const std::string& cue_data) = 0;
+
  protected:
   MuxerListener() {};
 };

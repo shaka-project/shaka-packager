@@ -40,6 +40,7 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     uint64_t duration,
                     uint64_t start_byte_offset,
                     uint64_t size));
+  MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, uint64_t timestamp));
   MOCK_METHOD5(
       NotifyEncryptionUpdate,
       bool(uint32_t stream_id,
@@ -322,7 +323,7 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaEnd) {
   listener_.OnMediaEnd(MuxerListener::MediaRanges(), 0);
 }
 
-TEST_F(HlsNotifyMuxerListenerTest, OnNewSegment) {
+TEST_F(HlsNotifyMuxerListenerTest, OnNewSegmentAndCueEvent) {
   ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
       .WillByDefault(Return(true));
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
@@ -336,9 +337,11 @@ TEST_F(HlsNotifyMuxerListenerTest, OnNewSegment) {
   const uint64_t kStartTime = 19283;
   const uint64_t kDuration = 98028;
   const uint64_t kFileSize = 756739;
+  EXPECT_CALL(mock_notifier_, NotifyCueEvent(_, kStartTime));
   EXPECT_CALL(mock_notifier_,
               NotifyNewSegment(_, StrEq("new_segment_name10.ts"), kStartTime,
                                kDuration, _, kFileSize));
+  listener_.OnCueEvent(kStartTime, "dummy cue data");
   listener_.OnNewSegment("new_segment_name10.ts", kStartTime, kDuration,
                          kFileSize);
 }
@@ -361,6 +364,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
   const uint64_t kDuration = 98028;
   const uint64_t kFileSize = 756739;
 
+  listener_.OnCueEvent(kStartTime, "dummy cue data");
   listener_.OnNewSegment("filename.mp4", kStartTime, kDuration,
                          kFileSize);
   MuxerListener::MediaRanges ranges;
@@ -380,6 +384,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
   ranges.index_range = index_range;
   ranges.subsegment_ranges = segment_ranges;
 
+  EXPECT_CALL(mock_notifier_, NotifyCueEvent(_, kStartTime));
   EXPECT_CALL(mock_notifier_,
               NotifyNewSegment(_, StrEq("filename.mp4"), kStartTime,
                                kDuration, kSegmentStartOffset, kFileSize));

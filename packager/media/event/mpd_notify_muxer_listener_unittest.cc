@@ -251,6 +251,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
   listener_->OnNewSegment("", kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnCueEvent(kStartTime2, "dummy cue data");
   listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
@@ -259,6 +260,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
                               ExpectMediaInfoEq(kExpectedDefaultMediaInfo), _));
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
+  EXPECT_CALL(*notifier_, NotifyCueEvent(_, kStartTime2));
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   EXPECT_CALL(*notifier_, Flush());
@@ -317,6 +319,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   // Flush should only be called once in OnMediaEnd.
   if (GetParam() == MpdType::kDynamic)
     EXPECT_CALL(*notifier_, Flush());
+  EXPECT_CALL(*notifier_, NotifyCueEvent(_, kStartTime2));
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   if (GetParam() == MpdType::kDynamic)
@@ -330,6 +333,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
   listener_->OnNewSegment("", kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnCueEvent(kStartTime2, "dummy cue data");
   listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 

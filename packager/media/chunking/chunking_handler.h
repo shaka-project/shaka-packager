@@ -71,6 +71,7 @@ class ChunkingHandler : public MediaHandler {
   // The (sub)segments are aligned and dispatched together.
   Status DispatchSegmentInfoForAllStreams();
   Status DispatchSubsegmentInfoForAllStreams();
+  Status DispatchCueEventForAllStreams(std::shared_ptr<CueEvent> cue_event);
 
   const ChunkingParams chunking_params_;
 

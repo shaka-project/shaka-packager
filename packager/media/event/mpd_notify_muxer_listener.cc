@@ -132,10 +132,13 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   mpd_notifier_->NotifyNewContainer(*media_info_, &id);
   // TODO(rkuroiwa): Use media_ranges.subsegment_ranges instead of caching the
   // subsegments.
-  for (std::list<SubsegmentInfo>::const_iterator it = subsegments_.begin();
-       it != subsegments_.end(); ++it) {
-    mpd_notifier_->NotifyNewSegment(id, it->start_time, it->duration,
-                                    it->segment_file_size);
+  for (const SubsegmentInfo& subsegment : subsegments_) {
+    if (subsegment.cue_break) {
+      mpd_notifier_->NotifyCueEvent(id, subsegment.start_time);
+    }
+    mpd_notifier_->NotifyNewSegment(id, subsegment.start_time,
+                                    subsegment.duration,
+                                    subsegment.segment_file_size);
   }
   subsegments_.clear();
   mpd_notifier_->Flush();
@@ -152,8 +155,20 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
     if (mpd_notifier_->mpd_type() == MpdType::kDynamic)
       mpd_notifier_->Flush();
   } else {
-    SubsegmentInfo subsegment = {start_time, duration, segment_file_size};
+    SubsegmentInfo subsegment = {start_time, duration, segment_file_size,
+                                 next_subsegment_contains_cue_break_};
+    next_subsegment_contains_cue_break_ = false;
     subsegments_.push_back(subsegment);
+  }
+}
+
+void MpdNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
+                                        const std::string& cue_data) {
+  // Not using |cue_data| at this moment.
+  if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
+    mpd_notifier_->NotifyCueEvent(notification_id_, timestamp);
+  } else {
+    next_subsegment_contains_cue_break_ = true;
   }
 }
 

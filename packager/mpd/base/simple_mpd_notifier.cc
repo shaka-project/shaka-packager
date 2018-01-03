@@ -96,6 +96,12 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyCueEvent(uint32_t container_id,
+                                       uint64_t timestamp) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool SimpleMpdNotifier::NotifyEncryptionUpdate(
     uint32_t container_id,
     const std::string& drm_uuid,

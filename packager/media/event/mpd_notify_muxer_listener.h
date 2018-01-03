@@ -51,6 +51,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size) override;
+  void OnCueEvent(uint64_t timestamp, const std::string& cue_data) override;
   /// @}
 
  private:
@@ -59,15 +60,16 @@ class MpdNotifyMuxerListener : public MuxerListener {
     uint64_t start_time;
     uint64_t duration;
     uint64_t segment_file_size;
+    bool cue_break;
   };
 
-  MpdNotifier* const mpd_notifier_;
-  uint32_t notification_id_;
+  MpdNotifier* const mpd_notifier_ = nullptr;
+  uint32_t notification_id_ = 0;
   std::unique_ptr<MediaInfo> media_info_;
 
-  bool is_encrypted_;
+  bool is_encrypted_ = false;
   // Storage for values passed to OnEncryptionInfoReady().
-  FourCC protection_scheme_;
+  FourCC protection_scheme_ = FOURCC_NULL;
   std::vector<uint8_t> default_key_id_;
   std::vector<ProtectionSystemSpecificInfo> key_system_info_;
 
@@ -76,6 +78,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
   // (in OnMediaEnd). This is not used for live because NotifyNewSegment() is
   // called immediately in OnNewSegment().
   std::list<SubsegmentInfo> subsegments_;
+  // Whether the next subsegment contains AdCue break.
+  bool next_subsegment_contains_cue_break_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MpdNotifyMuxerListener);
 };
