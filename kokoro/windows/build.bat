@@ -18,6 +18,10 @@ python %PACKAGERDIR%\kokoro\deps_replacer.py "https://github.com" "https://githu
 
 cd %PACKAGERDIR%\..
 
+:: Disable downloading google-internal version of WIN TOOLCHAIN. Use locally
+:: installed version instead.
+set DEPOT_TOOLS_WIN_TOOLCHAIN=0
+
 :: Note that gclient file is a batch script, so 'call' must be used to wait for
 :: the result.
 :: Also gclient turns off echo, so echo is re-enabled after the command.

@@ -27,22 +27,22 @@
           '.',
           '..',
         ],
-        'conditions': [
-          ['clang==1', {
-            'cflags': [
-              '-Wimplicit-fallthrough',
-            ],
-            # Revert the relevant settings in Chromium's common.gypi.
-            'cflags!': [
-              '-Wno-char-subscripts',
-              '-Wno-unneeded-internal-declaration',
-              '-Wno-covered-switch-default',
+        'variables': {
+          'clang_warning_flags': [
+            '-Wimplicit-fallthrough',
+          ],
+          # Revert the relevant settings in Chromium's common.gypi.
+          'clang_warning_flags_unset': [
+            '-Wno-char-subscripts',
+            '-Wno-unneeded-internal-declaration',
+            '-Wno-covered-switch-default',
 
-              # C++11-related flags:
-              '-Wno-c++11-narrowing',
-              '-Wno-reserved-user-defined-literal',
-            ],
-          }],
+            # C++11-related flags:
+            '-Wno-c++11-narrowing',
+            '-Wno-reserved-user-defined-literal',
+          ],
+        },
+        'conditions': [
           ['OS == "win"', {
             'msvs_settings': {
               'VCCLCompilerTool': {
@@ -53,9 +53,15 @@
           }],
         ],
       }, {
+        # We do not have control over non-shaka code. Disable some warnings to
+        # make build pass.
+        'variables': {
+          'clang_warning_flags': [
+            '-Wno-tautological-constant-compare',
+            '-Wno-unguarded-availability',
+          ],
+        },
         'conditions': [
-          # We do not have control over non-shaka code. Disable some warnings to
-          # make build pass.
           ['clang==0', {
             'cflags': [
               '-Wno-dangling-else',

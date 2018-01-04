@@ -39,7 +39,7 @@ deps = {
     Var("github") + "/google/boringssl@fc9c67599d9bdeb2e0467085133b81a8e28f77a4",
 
   "src/packager/third_party/curl/source":
-    Var("github") + "/curl/curl@c514af5a4f5ac3ce724065cc6a8e009373436f78",  #7.56.1
+    Var("github") + "/curl/curl@62c07b5743490ce373910f469abc8cdc759bec2b",  #7.57.0
 
   "src/packager/third_party/gflags/src":
     Var("chromium_git") + "/external/github.com/gflags/gflags@03bebcb065c83beff83d50ae025a55a4bf94dfca",
@@ -61,7 +61,7 @@ deps = {
     Var("chromium_git") + "/chromium/src/third_party/zlib@830b5c25b5fbe37e032ea09dd011d57042dd94df",  #408157
 
   "src/packager/tools/clang":
-    Var("chromium_git") + "/chromium/src/tools/clang@0b06ba9e49a0cba97f6accd71a974c1623d69e16",  #409802
+    Var("chromium_git") + "/chromium/src/tools/clang@723b25997f0aab45fe1776a0f74a14782e350f8f",  #513983
 
   "src/packager/tools/gyp":
     Var("chromium_git") + "/external/gyp@e7079f0e0e14108ab0dba58728ff219637458563",
@@ -109,7 +109,6 @@ hooks = [
   },
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
-    # Note: On Win, this should run after win_toolchain, as it may use it.
     "name": "clang",
     "pattern": ".",
     "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],

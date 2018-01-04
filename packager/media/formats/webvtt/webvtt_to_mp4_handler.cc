@@ -18,6 +18,8 @@ namespace media {
 class DisplayAction {
  public:
   DisplayAction(uint64_t id, uint64_t time) : id_(id), time_(time) {}
+  virtual ~DisplayAction() = default;
+
   uint64_t id() const { return id_; }
   uint64_t time() const { return time_; }
   virtual void ActOn(std::list<const TextSample*>* display) const = 0;

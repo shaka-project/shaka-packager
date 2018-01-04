@@ -220,6 +220,8 @@
               # trio_is_special_quantity and trio_is_negative are only
               # used with certain preprocessor defines set.
               '-Wno-unused-function',
+              # Comparison between xmlElementType and xmlXPathTypeVal.
+              '-Wno-enum-compare',
             ],
           },
           'include_dirs': [

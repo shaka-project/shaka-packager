@@ -21,6 +21,7 @@ install:
 before_build:
   - cd ..
   - depot_tools\gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
+  - set DEPOT_TOOLS_WIN_TOOLCHAIN=0
   - set GYP_DEFINES="target_arch=%PLATFORM% libpackager_type=%LIBPACKAGER_TYPE%"
   - depot_tools\gclient sync
   - if [%PLATFORM%] == [x64] (

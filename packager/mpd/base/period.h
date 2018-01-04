@@ -29,6 +29,8 @@ class XmlNode;
 /// AdaptationSets.
 class Period {
  public:
+  virtual ~Period() = default;
+
   /// Check the existing AdaptationSets, if there is one matching the provided
   /// @a media_info, return it; otherwise a new AdaptationSet is created and
   /// returned.

@@ -46,6 +46,8 @@
             'clang_warning_flags': [
               # protobuf-3 contains a few functions that are unused.
               '-Wno-unused-function',
+              '-Wno-enum-compare',
+              '-Wno-user-defined-warnings',
             ],
           },
           # Required for component builds. See http://crbug.com/172800.
@@ -75,6 +77,8 @@
             'clang_warning_flags': [
               # protobuf-3 contains a few functions that are unused.
               '-Wno-unused-function',
+              '-Wno-enum-compare',
+              '-Wno-user-defined-warnings',
             ],
           },
           'sources': [
@@ -399,6 +403,8 @@
             'clang_warning_flags': [
               # protobuf-3 contains a few functions that are unused.
               '-Wno-unused-function',
+              '-Wno-enum-compare',
+              '-Wno-user-defined-warnings',
             ],
           },
           'dependencies': [
