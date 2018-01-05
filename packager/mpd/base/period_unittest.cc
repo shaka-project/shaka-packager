@@ -712,7 +712,6 @@ TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
       "reference_time_scale: 50\n"
       "container_type: CONTAINER_MP4\n"
       "media_duration_seconds: 10.5\n";
-
   const char kAacGermanAudioContent[] =
       "audio_info {\n"
       "  codec: 'mp4a.40.2'\n"
@@ -724,7 +723,6 @@ TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
       "reference_time_scale: 50\n"
       "container_type: CONTAINER_MP4\n"
       "media_duration_seconds: 10.5\n";
-
   const char kVorbisGermanAudioContent1[] =
       "audio_info {\n"
       "  codec: 'vorbis'\n"
@@ -736,7 +734,6 @@ TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
       "reference_time_scale: 50\n"
       "container_type: CONTAINER_WEBM\n"
       "media_duration_seconds: 10.5\n";
-
   const char kVorbisGermanAudioContent2[] =
       "audio_info {\n"
       "  codec: 'vorbis'\n"
@@ -782,6 +779,57 @@ TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVorbisGermanAudioContent2),
                 content_protection_in_adaptation_set_));
+}
+
+TEST_P(PeriodTest, GetAdaptationSets) {
+  const char kAacEnglishAudioContent[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'eng'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  const char kAacGermanAudioContent[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+
+  std::unique_ptr<StrictMock<MockAdaptationSet>> aac_eng_adaptation_set(
+      new StrictMock<MockAdaptationSet>(1));
+  auto* aac_eng_adaptation_set_ptr = aac_eng_adaptation_set.get();
+  std::unique_ptr<StrictMock<MockAdaptationSet>> aac_ger_adaptation_set(
+      new StrictMock<MockAdaptationSet>(2));
+  auto* aac_ger_adaptation_set_ptr = aac_ger_adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+      .WillOnce(Return(ByMove(std::move(aac_eng_adaptation_set))))
+      .WillOnce(Return(ByMove(std::move(aac_ger_adaptation_set))));
+
+  ASSERT_EQ(aac_eng_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kAacEnglishAudioContent),
+                content_protection_in_adaptation_set_));
+  EXPECT_THAT(testable_period_.GetAdaptationSets(),
+              UnorderedElementsAre(aac_eng_adaptation_set_ptr));
+
+  ASSERT_EQ(aac_ger_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kAacGermanAudioContent),
+                content_protection_in_adaptation_set_));
+  EXPECT_THAT(testable_period_.GetAdaptationSets(),
+              UnorderedElementsAre(aac_eng_adaptation_set_ptr,
+                                   aac_ger_adaptation_set_ptr));
 }
 
 INSTANTIATE_TEST_CASE_P(ContentProtectionInAdaptationSet,

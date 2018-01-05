@@ -125,6 +125,13 @@ class Representation {
   /// This may be called multiple times to set different (or the same) flags.
   void SuppressOnce(SuppressFlag flag);
 
+  /// Gets the earliest, normalized segment timestamp.
+  /// @return true if successful, false otherwise.
+  bool GetEarliestTimestamp(double* timestamp_seconds) const;
+
+  /// @return The duration of the Representation in seconds.
+  float GetDurationSeconds() const;
+
   /// @return ID number for <Representation>.
   uint32_t id() const { return id_; }
 
@@ -150,8 +157,6 @@ class Representation {
   friend class AdaptationSet;
   friend class RepresentationTest;
 
-  bool AddLiveInfo(xml::RepresentationXmlNode* representation);
-
   // Returns true if |media_info_| has required fields to generate a valid
   // Representation. Otherwise returns false.
   bool HasRequiredMediaInfoFields();
@@ -171,10 +176,6 @@ class Representation {
   std::string GetVideoMimeType() const;
   std::string GetAudioMimeType() const;
   std::string GetTextMimeType() const;
-
-  // Gets the earliest, normalized segment timestamp. Returns true if
-  // successful, false otherwise.
-  bool GetEarliestTimestamp(double* timestamp_seconds);
 
   // Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So
   // any logic using this can assume only one set.

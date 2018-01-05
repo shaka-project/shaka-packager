@@ -50,6 +50,9 @@ class Period {
   ///         NULL scoped_xml_ptr.
   xml::scoped_xml_ptr<xmlNode> GetXml();
 
+  /// @return The list of AdaptationSets in this Period.
+  const std::list<AdaptationSet*> GetAdaptationSets() const;
+
  protected:
   /// @param mpd_options is the options for this MPD.
   /// @param adaptation_set_counter is a counter for assigning ID numbers to
@@ -66,10 +69,6 @@ class Period {
 
   friend class MpdBuilder;
   friend class PeriodTest;
-
-  // Gets the earliest, normalized segment timestamp. Returns true on success,
-  // false otherwise.
-  bool GetEarliestTimestamp(double* timestamp_seconds);
 
   // Calls AdaptationSet constructor. For mock injection.
   virtual std::unique_ptr<AdaptationSet> NewAdaptationSet(

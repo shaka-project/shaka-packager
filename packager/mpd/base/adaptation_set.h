@@ -147,6 +147,9 @@ class AdaptationSet {
   /// @param id the id of the reference (or main) adapation set.
   virtual void AddTrickPlayReferenceId(uint32_t id);
 
+  // Return the list of Representations in this AdaptationSet.
+  const std::list<Representation*> GetRepresentations() const;
+
  protected:
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param lang is the language of this AdaptationSet. Mainly relevant for
@@ -187,10 +190,6 @@ class AdaptationSet {
   // 1 -> [0, 100, 200]
   // 2 -> [0, 200, 400]
   typedef std::map<uint32_t, std::list<uint64_t>> RepresentationTimeline;
-
-  // Gets the earliest, normalized segment timestamp. Returns true if
-  // successful, false otherwise.
-  bool GetEarliestTimestamp(double* timestamp_seconds);
 
   /// Called from OnNewSegmentForRepresentation(). Checks whether the segments
   /// are aligned. Sets segments_aligned_.

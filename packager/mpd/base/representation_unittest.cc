@@ -484,6 +484,32 @@ TEST_F(SegmentTemplateTest, OneSegmentNormal) {
   EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(kExpectedXml));
 }
 
+TEST_F(SegmentTemplateTest, GetEarliestTimestamp) {
+  double earliest_timestamp;
+  // No segments.
+  EXPECT_FALSE(representation_->GetEarliestTimestamp(&earliest_timestamp));
+
+  const uint64_t kStartTime = 88;
+  const uint64_t kDuration = 10;
+  const uint64_t kSize = 128;
+  AddSegments(kStartTime, kDuration, kSize, 0);
+  AddSegments(kStartTime + kDuration, kDuration, kSize, 0);
+  ASSERT_TRUE(representation_->GetEarliestTimestamp(&earliest_timestamp));
+  EXPECT_EQ(static_cast<double>(kStartTime) / kDefaultTimeScale,
+            earliest_timestamp);
+}
+
+TEST_F(SegmentTemplateTest, GetDuration) {
+  const float kMediaDurationSeconds = 88.8f;
+  MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
+  media_info.set_media_duration_seconds(kMediaDurationSeconds);
+  representation_ =
+      CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
+  ASSERT_TRUE(representation_->Init());
+
+  EXPECT_EQ(kMediaDurationSeconds, representation_->GetDurationSeconds());
+}
+
 TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {
   const uint64_t kSize = 256;
   uint64_t start_time = 0;

@@ -16,6 +16,7 @@
 #include "packager/mpd/test/xml_compare.h"
 
 using ::testing::Not;
+using ::testing::UnorderedElementsAre;
 
 namespace shaka {
 
@@ -563,6 +564,43 @@ TEST_F(AdaptationSetTest, BubbleUpAttributesToAdaptationSet) {
   EXPECT_THAT(no_common_attributes.get(), Not(AttributeSet("frameRate")));
 }
 
+TEST_F(AdaptationSetTest, GetRepresentations) {
+  const char k480pMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 8\n"
+      "  pixel_height: 9\n"
+      "}\n"
+      "container_type: 1\n";
+  const char k360pMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 640\n"
+      "  height: 360\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+
+  Representation* representation_480p =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+  EXPECT_THAT(adaptation_set->GetRepresentations(),
+              UnorderedElementsAre(representation_480p));
+
+  Representation* representation_360p =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+  EXPECT_THAT(adaptation_set->GetRepresentations(),
+              UnorderedElementsAre(representation_360p, representation_480p));
+}
+
 // Verify that subsegmentAlignment is set to true if all the Representations'
 // segments are aligned and the DASH profile is OnDemand.
 // Also checking that not all Representations have to be added before calling
@@ -961,9 +999,7 @@ TEST_F(OnDemandAdaptationSetTest,
   const char kExpectedOutput[] =
       "<AdaptationSet id=\"1\" contentType=\"audio\">"
       "  <Representation id=\"0\" bandwidth=\"195857\" codecs=\"mp4a.40.2\""
-      "   mimeType=\"audio/mp4\" audioSamplingRate=\"44100\" "
-      // Temporary attribute. Will be removed when generating final mpd.
-      "   duration=\"24.0094\">"
+      "   mimeType=\"audio/mp4\" audioSamplingRate=\"44100\">"
       "    <AudioChannelConfiguration"
       "     schemeIdUri="
       "      \"urn:mpeg:dash:23003:3:audio_channel_configuration:2011\""
@@ -1011,9 +1047,7 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\""
       "   value=\"subtitle\"/>\n"
       "  <Representation id=\"0\" bandwidth=\"1000\""
-      "   mimeType=\"application/ttml+xml\" "
-      // Temporary attribute. Will be removed when generating final mpd.
-      "   duration=\"35\">"
+      "   mimeType=\"application/ttml+xml\">"
       "    <BaseURL>subtitle.xml</BaseURL>"
       "  </Representation>"
       "</AdaptationSet>";

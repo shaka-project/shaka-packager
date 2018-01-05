@@ -255,15 +255,6 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
     return xml::scoped_xml_ptr<xmlNode>();
   }
 
-  // Set media duration for static mpd.
-  if (mpd_options_.mpd_type == MpdType::kStatic &&
-      media_info_.has_media_duration_seconds()) {
-    // Adding 'duration' attribute, so that this information can be used when
-    // generating one MPD file. This should be removed from the final MPD.
-    representation.SetFloatingPointAttribute(
-        "duration", media_info_.media_duration_seconds());
-  }
-
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
     LOG(ERROR) << "Failed to add VOD segment info.";
@@ -285,6 +276,21 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
 
 void Representation::SuppressOnce(SuppressFlag flag) {
   output_suppression_flags_ |= flag;
+}
+
+bool Representation::GetEarliestTimestamp(double* timestamp_seconds) const {
+  DCHECK(timestamp_seconds);
+
+  if (segment_infos_.empty())
+    return false;
+
+  *timestamp_seconds = static_cast<double>(segment_infos_.begin()->start_time) /
+                       GetTimeScale(media_info_);
+  return true;
+}
+
+float Representation::GetDurationSeconds() const {
+  return media_info_.media_duration_seconds();
 }
 
 bool Representation::HasRequiredMediaInfoFields() {
@@ -451,17 +457,6 @@ std::string Representation::GetTextMimeType() const {
              << media_info_.text_info().format()
              << " container: " << media_info_.container_type();
   return "";
-}
-
-bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {
-  DCHECK(timestamp_seconds);
-
-  if (segment_infos_.empty())
-    return false;
-
-  *timestamp_seconds = static_cast<double>(segment_infos_.begin()->start_time) /
-                       GetTimeScale(media_info_);
-  return true;
 }
 
 }  // namespace shaka

@@ -110,24 +110,13 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml() {
   return period.PassScopedPtr();
 }
 
-bool Period::GetEarliestTimestamp(double* timestamp_seconds) {
-  DCHECK(timestamp_seconds);
-
-  double earliest_timestamp(-1);
+const std::list<AdaptationSet*> Period::GetAdaptationSets() const {
+  std::list<AdaptationSet*> adaptation_sets;
   for (const std::unique_ptr<AdaptationSet>& adaptation_set :
        adaptation_sets_) {
-    double timestamp;
-    if (adaptation_set->GetEarliestTimestamp(&timestamp) &&
-        (earliest_timestamp < 0 || timestamp < earliest_timestamp)) {
-      DCHECK_GE(timestamp, 0);
-      earliest_timestamp = timestamp;
-    }
+    adaptation_sets.push_back(adaptation_set.get());
   }
-  if (earliest_timestamp < 0)
-    return false;
-
-  *timestamp_seconds = earliest_timestamp;
-  return true;
+  return adaptation_sets;
 }
 
 std::unique_ptr<AdaptationSet> Period::NewAdaptationSet(

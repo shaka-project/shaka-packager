@@ -387,23 +387,13 @@ void AdaptationSet::AddTrickPlayReferenceId(uint32_t id) {
   trick_play_reference_ids_.insert(id);
 }
 
-bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
-  DCHECK(timestamp_seconds);
-
-  double earliest_timestamp(-1);
+const std::list<Representation*> AdaptationSet::GetRepresentations() const {
+  std::list<Representation*> representations;
   for (const std::unique_ptr<Representation>& representation :
        representations_) {
-    double timestamp;
-    if (representation->GetEarliestTimestamp(&timestamp) &&
-        ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
-      earliest_timestamp = timestamp;
-    }
+    representations.push_back(representation.get());
   }
-  if (earliest_timestamp < 0)
-    return false;
-
-  *timestamp_seconds = earliest_timestamp;
-  return true;
+  return representations;
 }
 
 // This implementation assumes that each representations' segments' are

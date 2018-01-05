@@ -16,6 +16,7 @@
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/period.h"
+#include "packager/mpd/base/representation.h"
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/version/version.h"
 
@@ -42,28 +43,6 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
   mpd->SetStringAttribute("xmlns:xlink", kXmlNamespaceXlink);
   mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
   mpd->SetStringAttribute("xmlns:cenc", kCencNamespace);
-}
-
-bool IsPeriodNode(xmlNodePtr node) {
-  DCHECK(node);
-  int kEqual = 0;
-  return xmlStrcmp(node->name, reinterpret_cast<const xmlChar*>("Period")) ==
-         kEqual;
-}
-
-// Find the first <Period> element. This does not recurse down the tree,
-// only checks direct children. Returns the pointer to Period element on
-// success, otherwise returns false.
-// As noted here, we must traverse.
-// http://www.xmlsoft.org/tutorial/ar01s04.html
-xmlNodePtr FindPeriodNode(XmlNode* xml_node) {
-  for (xmlNodePtr node = xml_node->GetRawPtr()->xmlChildrenNode; node != NULL;
-       node = node->next) {
-    if (IsPeriodNode(node))
-      return node;
-  }
-
-  return NULL;
 }
 
 bool Positive(double d) {
@@ -306,44 +285,46 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
+  if (periods_.empty()) {
+    LOG(WARNING) << "No Period found. Set MPD duration to 0.";
+    return 0.0f;
+  }
+
   // Attribute mediaPresentationDuration must be present for 'static' MPD. So
   // setting "PT0S" is required even if none of the representaions have duration
   // attribute.
   float max_duration = 0.0f;
 
-  xmlNodePtr period_node = FindPeriodNode(mpd_node);
-  if (!period_node) {
-    LOG(WARNING) << "No Period node found. Set MPD duration to 0.";
-    return 0.0f;
-  }
-
-  DCHECK(IsPeriodNode(period_node));
-  // TODO(kqyang): Why don't we iterate the C++ classes instead of iterating XML
-  // elements?
-  // TODO(kqyang): Verify if this works for static + live profile.
-  for (xmlNodePtr adaptation_set = xmlFirstElementChild(period_node);
-       adaptation_set; adaptation_set = xmlNextElementSibling(adaptation_set)) {
-    for (xmlNodePtr representation = xmlFirstElementChild(adaptation_set);
-         representation;
-         representation = xmlNextElementSibling(representation)) {
-      float duration = 0.0f;
-      if (GetDurationAttribute(representation, &duration)) {
-        max_duration = max_duration > duration ? max_duration : duration;
-
-        // 'duration' attribute is there only to help generate MPD, not
-        // necessary for MPD, remove the attribute.
-        xmlUnsetProp(representation, BAD_CAST "duration");
-      }
+  // TODO(kqyang): Right now all periods contain the duration for the whole MPD.
+  // Simply get the duration from the first period. Ideally the period duration
+  // should only count the (sub)segments in that period.
+  for (const auto* adaptation_set : periods_.front()->GetAdaptationSets()) {
+    for (const auto* representation : adaptation_set->GetRepresentations()) {
+      max_duration =
+          std::max(representation->GetDurationSeconds(), max_duration);
     }
   }
-
   return max_duration;
 }
 
 bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
   DCHECK(!periods_.empty());
-  return periods_.front()->GetEarliestTimestamp(timestamp_seconds);
+  double timestamp = 0;
+  double earliest_timestamp = -1;
+  // The first period should have the earliest timestamp.
+  for (const auto* adaptation_set : periods_.front()->GetAdaptationSets()) {
+    for (const auto* representation : adaptation_set->GetRepresentations()) {
+      if (representation->GetEarliestTimestamp(&timestamp) &&
+          (earliest_timestamp < 0 || timestamp < earliest_timestamp)) {
+        earliest_timestamp = timestamp;
+      }
+    }
+  }
+  if (earliest_timestamp < 0)
+    return false;
+  *timestamp_seconds = earliest_timestamp;
+  return true;
 }
 
 void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
