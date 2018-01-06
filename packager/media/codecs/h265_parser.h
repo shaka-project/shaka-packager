@@ -131,7 +131,11 @@ struct H265Sps {
   int video_parameter_set_id = 0;
   int max_sub_layers_minus1 = 0;
   bool temporal_id_nesting_flag = false;
-  // Ignored: profile_tier_level(...)
+
+  // general_profile_space (2), general_tier_flag (1), general_profile_idc (5),
+  // general_profile_compatibility_flags (32),
+  // general_constraint_indicator_flags (48), general_level_idc (8).
+  int general_profile_tier_level_data[12] = {};
 
   int seq_parameter_set_id = 0;
 
@@ -334,9 +338,10 @@ class H265Parser {
                                    const H265SliceHeader& slice_header,
                                    H26xBitReader* br);
 
-  Result SkipProfileTierLevel(bool profile_present,
+  Result ReadProfileTierLevel(bool profile_present,
                               int max_num_sub_layers_minus1,
-                              H26xBitReader* br);
+                              H26xBitReader* br,
+                              H265Sps* sps);
 
   Result SkipScalingListData(H26xBitReader* br);
 

@@ -518,7 +518,8 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
   TRUE_OR_RETURN(br->ReadBits(3, &sps->max_sub_layers_minus1));
   TRUE_OR_RETURN(br->ReadBool(&sps->temporal_id_nesting_flag));
 
-  OK_OR_RETURN(SkipProfileTierLevel(true, sps->max_sub_layers_minus1, br));
+  OK_OR_RETURN(
+      ReadProfileTierLevel(true, sps->max_sub_layers_minus1, br, sps.get()));
 
   TRUE_OR_RETURN(br->ReadUE(&sps->seq_parameter_set_id));
   TRUE_OR_RETURN(br->ReadUE(&sps->chroma_format_idc));
@@ -947,24 +948,27 @@ H265Parser::Result H265Parser::SkipPredictionWeightTable(
   return kOk;
 }
 
-H265Parser::Result H265Parser::SkipProfileTierLevel(
+H265Parser::Result H265Parser::ReadProfileTierLevel(
     bool profile_present,
     int max_num_sub_layers_minus1,
-    H26xBitReader* br) {
+    H26xBitReader* br,
+    H265Sps* sps) {
   // Reads whole element, ignores it.
 
   if (profile_present) {
-    // general_profile_space, general_tier_flag, general_profile_idc
-    // general_profile_compativility_flag
-    // general_progressive_source_flag
-    // general_interlaced_source_flag
-    // general_non_packed_constraint_flag
-    // general_frame_only_constraint_flag
-    // 44-bits of other flags
-    TRUE_OR_RETURN(br->SkipBits(2 + 1 + 5 + 32 + 4 + 44));
+    // 11 bytes of general_profile_tier flags:
+    //   general_profile_space, general_tier_flag, general_profile_idc
+    //   general_profile_compativility_flag
+    //   general_progressive_source_flag
+    //   general_interlaced_source_flag
+    //   general_non_packed_constraint_flag
+    //   general_frame_only_constraint_flag
+    //   44-bits of other flags
+    for (int i = 0; i < 11; i++)
+      TRUE_OR_RETURN(br->ReadBits(8, &sps->general_profile_tier_level_data[i]));
   }
-
-  TRUE_OR_RETURN(br->SkipBits(8));  // general_level_idc
+  // general_level_idc
+  TRUE_OR_RETURN(br->ReadBits(8, &sps->general_profile_tier_level_data[11]));
 
   std::vector<bool> sub_layer_profile_present(max_num_sub_layers_minus1);
   std::vector<bool> sub_layer_level_present(max_num_sub_layers_minus1);

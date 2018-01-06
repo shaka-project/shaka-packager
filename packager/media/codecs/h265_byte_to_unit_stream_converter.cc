@@ -51,9 +51,8 @@ bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   // (4) general_profile_compatibility_flags
   // (6) general_constraint_indicator_flags
   // (1) general_level_idc
-  // Skip Nalu header (2) and the first byte of the SPS to get the
-  // profile_tier_level.
-  buffer.AppendArray(&last_sps_[2+1], 12);
+  for (int byte : sps->general_profile_tier_level_data)
+    buffer.AppendInt(static_cast<uint8_t>(byte));
 
   // The default value for this field is 0, which is Unknown.
   int min_spatial_segmentation_idc =
