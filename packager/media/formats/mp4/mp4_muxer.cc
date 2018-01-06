@@ -348,8 +348,15 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       break;
   }
 
-  audio.channelcount = audio_info->num_channels();
-  audio.samplesize = audio_info->sample_bits();
+  if (audio_info->codec() == kCodecAC3 || audio_info->codec() == kCodecEAC3) {
+    // AC3 and EC3 does not fill in actual channel count and sample size in
+    // sample description entry. Instead, two constants are used.
+    audio.channelcount = 2;
+    audio.samplesize = 16;
+  } else {
+    audio.channelcount = audio_info->num_channels();
+    audio.samplesize = audio_info->sample_bits();
+  }
   audio.samplerate = audio_info->sampling_frequency();
   SampleTable& sample_table = trak->media.information.sample_table;
   SampleDescription& sample_description = sample_table.description;

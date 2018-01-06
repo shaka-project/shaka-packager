@@ -21,7 +21,9 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/codecs/ac3_audio_util.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/ec3_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
@@ -438,12 +440,12 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           break;
         case FOURCC_ac_3:
           codec_config = entry.dac3.data;
-          num_channels = entry.channelcount;
+          num_channels = static_cast<uint8_t>(GetAc3NumChannels(codec_config));
           sampling_frequency = entry.samplerate;
           break;
         case FOURCC_ec_3:
           codec_config = entry.dec3.data;
-          num_channels = entry.channelcount;
+          num_channels = static_cast<uint8_t>(GetEc3NumChannels(codec_config));
           sampling_frequency = entry.samplerate;
           break;
         case FOURCC_Opus:

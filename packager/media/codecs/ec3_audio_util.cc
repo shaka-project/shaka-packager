@@ -4,9 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/media/codecs/ec3_audio_util.h"
+
+#include "packager/base/macros.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
-#include "packager/media/codecs/ec3_audio_util.h"
 
 namespace shaka {
 namespace media {
@@ -49,6 +52,13 @@ enum kEC3AudioChannelMap {
   kLFE2 = 0x2,
   kLFEScreen = 0x1
 };
+// Number of channels for the channel bit above. The first entry corresponds to
+// kLeft, which has one channel. All the XxxPairs bits have two channels.
+const size_t kChannelCountArray[] = {
+    1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 2, 1, 2, 1, 1,
+};
+static_assert(arraysize(kChannelCountArray) == 16u,
+              "Channel count array should have 16 entries.");
 
 // EC3 Audio coding mode map (acmod) to determine EC3 audio channel layout. The
 // value stands for the existence of Left, Center, Right, Left surround, and
@@ -118,13 +128,17 @@ bool ExtractEc3Data(const std::vector<uint8_t>& ec3_data,
 
 }  // namespace
 
-bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data, uint32_t* channel_map) {
+bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
+                            uint32_t* channel_map) {
   uint8_t audio_coding_mode;
   bool lfe_channel_on;
   uint16_t dependent_substreams_layout;
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
-                      &dependent_substreams_layout))
+                      &dependent_substreams_layout)) {
+    LOG(WARNING) << "Seeing invalid EC3 data: "
+                 << base::HexEncode(ec3_data.data(), ec3_data.size());
     return false;
+  }
 
   // Dependent substreams layout bit map:
   // Bit,    Location
@@ -149,6 +163,22 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data, uint32_t* chan
   if (lfe_channel_on)
     *channel_map |= kLFEScreen;
   return true;
+}
+
+size_t GetEc3NumChannels(const std::vector<uint8_t>& ec3_data) {
+  uint32_t channel_map;
+  if (!CalculateEC3ChannelMap(ec3_data, &channel_map))
+    return 0;
+
+  size_t num_channels = 0;
+  int bit = kLeft;
+  for (size_t channel_count : kChannelCountArray) {
+    if (channel_map & bit)
+      num_channels += channel_count;
+    bit >>= 1;
+  }
+  DCHECK_EQ(bit, 0);
+  return num_channels;
 }
 
 }  // namespace media

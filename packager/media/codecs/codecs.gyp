@@ -15,6 +15,8 @@
       'sources': [
         'aac_audio_specific_config.cc',
         'aac_audio_specific_config.h',
+        'ac3_audio_util.cc',
+        'ac3_audio_util.h',
         'avc_decoder_configuration_record.cc',
         'avc_decoder_configuration_record.h',
         'decoder_configuration_record.cc',
@@ -61,6 +63,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'aac_audio_specific_config_unittest.cc',
+        'ac3_audio_util_unittest.cc',
         'avc_decoder_configuration_record_unittest.cc',
         'ec3_audio_util_unittest.cc',
         'es_descriptor_unittest.cc',
