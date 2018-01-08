@@ -53,7 +53,7 @@ class MuxerListener {
     std::vector<Range> subsegment_ranges;
   };
 
-  virtual ~MuxerListener() {};
+  virtual ~MuxerListener() = default;
 
   /// Called when the media's encryption information is ready.
   /// OnEncryptionInfoReady with @a initial_encryption_info being true should be
@@ -134,7 +134,7 @@ class MuxerListener {
   virtual void OnCueEvent(uint64_t timestamp, const std::string& cue_data) = 0;
 
  protected:
-  MuxerListener() {};
+  MuxerListener() = default;
 };
 
 }  // namespace media
