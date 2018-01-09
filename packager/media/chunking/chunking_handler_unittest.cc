@@ -180,35 +180,32 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
   // Equivalent to 12345 in video timescale.
   const int64_t kAudioStartTimestamp = 9876;
   const int64_t kVideoStartTimestamp = 12345;
+  // Burst of audio and video samples. They will be properly ordered.
   for (int i = 0; i < 5; ++i) {
     ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex0,
-        GetMediaSample(
-            kAudioStartTimestamp + kDuration0 * i,
-            kDuration0,
-            true))));
+        kStreamIndex0, GetMediaSample(kAudioStartTimestamp + kDuration0 * i,
+                                      kDuration0, true))));
+  }
+  for (int i = 0; i < 5; ++i) {
     // Alternate key frame.
     const bool is_key_frame = (i % 2) == 1;
     ASSERT_OK(Process(StreamData::FromMediaSample(
-        kStreamIndex1,
-        GetMediaSample(
-            kVideoStartTimestamp + kDuration1 * i,
-            kDuration1,
-            is_key_frame))));
+        kStreamIndex1, GetMediaSample(kVideoStartTimestamp + kDuration1 * i,
+                                      kDuration1, is_key_frame))));
   }
 
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
           // The first samples @ kStartTimestamp is discarded - not key frame.
-          IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0,
-                        kDuration0, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1,
                         kDuration1, !kEncrypted),
-          IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 2,
+          IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0,
                         kDuration0, !kEncrypted),
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 2,
                         kDuration1, !kEncrypted),
+          IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 2,
+                        kDuration0, !kEncrypted),
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 3,
                         kDuration0, !kEncrypted),
           // The audio segment is terminated together with video stream.
@@ -220,9 +217,7 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
           IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 3,
                         kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 4,
-                        kDuration0, !kEncrypted),
-          IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 4,
-                        kDuration1, !kEncrypted)));
+                        kDuration0, !kEncrypted)));
   ClearOutputStreamDataVector();
 
   // The side comments below show the equivalent timestamp in video timescale.
@@ -250,6 +245,8 @@ TEST_F(ChunkingHandlerTest, AudioAndVideo) {
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
+          IsMediaSample(kStreamIndex1, kVideoStartTimestamp + kDuration1 * 4,
+                        kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kAudioStartTimestamp + kDuration0 * 5,
                         kDuration0, !kEncrypted),
           // Audio is terminated along with video below.

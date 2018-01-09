@@ -94,7 +94,7 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
                      << StreamDataTypeToString(arg->stream_data_type);
     return false;
   }
-  *result_listener << "which is (" << stream_index << ","
+  *result_listener << "which is (" << arg->stream_index << ","
                    << arg->media_sample->dts() << ","
                    << arg->media_sample->duration() << ","
                    << BoolToString(arg->media_sample->is_encrypted()) << ")";
