@@ -17,6 +17,7 @@
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/path_service.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
 #include "packager/base/time/clock.h"
@@ -583,6 +584,11 @@ Status CreateAudioVideoJobs(
 
   // Demuxers are shared among all streams with the same input.
   std::shared_ptr<Demuxer> demuxer;
+  // Chunkers can be shared among all streams with the same input (except for
+  // WVM files), which allows samples from the same input to be synced when
+  // doing chunking.
+  std::shared_ptr<MediaHandler> chunker;
+  bool is_wvm_file = false;
   // Replicators are shared among all streams with the same input and stream
   // selector.
   std::shared_ptr<MediaHandler> replicator;
@@ -592,21 +598,32 @@ Status CreateAudioVideoJobs(
 
   for (const StreamDescriptor& stream : streams) {
     // If we changed our input files, we need a new demuxer.
-    if (previous_input != stream.input) {
+    const bool new_input_file = stream.input != previous_input;
+    if (new_input_file) {
       Status status = CreateDemuxer(stream, packaging_params, &demuxer);
       if (!status.ok()) {
         return status;
       }
 
       job_manager->Add("RemuxJob", demuxer);
+
+      // Share chunkers among all streams with the same input except for WVM
+      // file, which may contain multiple video files and the samples may not be
+      // interleaved either.
+      is_wvm_file =
+          DetermineContainerFromFileName(stream.input) == CONTAINER_WVM;
+      if (!is_wvm_file) {
+        chunker =
+            std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
+      }
     }
 
     if (!stream.language.empty()) {
       demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
     }
 
-    const bool new_stream = previous_input != stream.input ||
-                            previous_selector != stream.stream_selector;
+    const bool new_stream =
+        new_input_file || previous_selector != stream.stream_selector;
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
 
@@ -623,13 +640,15 @@ Status CreateAudioVideoJobs(
             packaging_params.ad_cue_generator_params);
       }
 
-      replicator = std::make_shared<Replicator>();
-
-      std::shared_ptr<MediaHandler> chunker =
-          std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
+      if (is_wvm_file) {
+        chunker =
+            std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
+      }
 
       std::shared_ptr<MediaHandler> encryptor = CreateEncryptionHandler(
           packaging_params, stream, encryption_key_source);
+
+      replicator = std::make_shared<Replicator>();
 
       Status status;
       if (ad_cue_generator) {

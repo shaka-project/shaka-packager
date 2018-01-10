@@ -5,8 +5,8 @@
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXTINF:0.975,
 output_audio-1.ts
-#EXTINF:1.010,
+#EXTINF:0.975,
 output_audio-2.ts
-#EXTINF:0.801,
+#EXTINF:0.836,
 output_audio-3.ts
 #EXT-X-ENDLIST

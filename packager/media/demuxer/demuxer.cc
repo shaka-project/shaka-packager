@@ -14,6 +14,7 @@
 #include "packager/file/file.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/key_source.h"
+#include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
@@ -186,7 +187,14 @@ Status Demuxer::InitializeParser() {
     case CONTAINER_MPEG2TS:
       parser_.reset(new mp2t::Mp2tMediaParser());
       break;
+      // Widevine classic (WVM) is derived from MPEG2PS. We do not support
+      // non-WVM MPEG2PS file, thus we do not differentiate between the two.
+      // Every MPEG2PS file is assumed to be WVM file. If it turns out not the
+      // case, an error will be reported when trying to parse the file as WVM
+      // file.
     case CONTAINER_MPEG2PS:
+      FALLTHROUGH_INTENDED;
+    case CONTAINER_WVM:
       parser_.reset(new wvm::WvmMediaParser());
       break;
     case CONTAINER_WEBM:

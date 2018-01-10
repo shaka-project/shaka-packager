@@ -11,6 +11,7 @@ output_audio.mp4
 #EXTINF:0.998,
 #EXT-X-BYTERANGE:16674
 output_audio.mp4
+#EXT-X-PLACEMENT-OPPORTUNITY
 #EXTINF:0.766,
 #EXT-X-BYTERANGE:10632
 output_audio.mp4

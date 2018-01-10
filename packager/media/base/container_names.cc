@@ -1755,6 +1755,9 @@ MediaContainerName DetermineContainerFromFileName(
   } else if (base::EndsWith(file_name, ".ts",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return CONTAINER_MPEG2TS;
+  } else if (base::EndsWith(file_name, ".wvm",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_WVM;
   } else if (base::EndsWith(file_name, ".vtt",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return CONTAINER_WEBVTT;

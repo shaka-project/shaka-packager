@@ -3,9 +3,9 @@
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:EVENT
-#EXTINF:0.975,
+#EXTINF:0.952,
 output_audio-1.ts
 #EXTINF:0.998,
 output_audio-2.ts
-#EXTINF:0.789,
+#EXTINF:0.813,
 output_audio-3.ts
