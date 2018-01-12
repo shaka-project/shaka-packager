@@ -525,7 +525,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, SampleAesCenc) {
       "test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
-      "#EXT-X-KEY:METHOD=SAMPLE-AES-CENC,"
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,"
       "URI=\"http://example.com\",IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\","
       "KEYFORMAT=\"com.widevine\"\n"
       "#EXTINF:10.000,\n"

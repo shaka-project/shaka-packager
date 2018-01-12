@@ -212,7 +212,7 @@ std::string EncryptionInfoEntry::ToString() {
   } else if (method_ == MediaPlaylist::EncryptionMethod::kAes128) {
     method_attribute = "METHOD=AES-128";
   } else if (method_ == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
-    method_attribute = "METHOD=SAMPLE-AES-CENC";
+    method_attribute = "METHOD=SAMPLE-AES-CTR";
   } else {
     DCHECK(method_ == MediaPlaylist::EncryptionMethod::kNone);
     method_attribute = "METHOD=NONE";
