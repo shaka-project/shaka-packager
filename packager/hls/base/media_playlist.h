@@ -27,6 +27,7 @@ class HlsEntry {
     kExtInf,
     kExtKey,
     kExtDiscontinuity,
+    kExtPlacementOpportunity,
   };
   virtual ~HlsEntry();
 
@@ -120,6 +121,10 @@ class MediaPlaylist {
                                  const std::string& iv,
                                  const std::string& key_format,
                                  const std::string& key_format_versions);
+
+  /// Add #EXT-X-PLACEMENT-OPPORTUNITY for mid-roll ads. See
+  /// https://support.google.com/dfp_premium/answer/7295798?hl=en.
+  virtual void AddPlacementOpportunity();
 
   /// Write the playlist to |file_path|.
   /// This does not close the file.

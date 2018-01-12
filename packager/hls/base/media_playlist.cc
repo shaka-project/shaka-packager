@@ -121,13 +121,15 @@ class SegmentInfoEntry : public HlsEntry {
                    uint64_t start_byte_offset,
                    uint64_t segment_file_size,
                    uint64_t previous_segment_end_offset);
-  ~SegmentInfoEntry() override;
 
   std::string ToString() override;
   double start_time() const { return start_time_; }
   double duration() const { return duration_; }
 
  private:
+  SegmentInfoEntry(const SegmentInfoEntry&) = delete;
+  SegmentInfoEntry& operator=(const SegmentInfoEntry&) = delete;
+
   const std::string file_name_;
   const double start_time_;
   const double duration_;
@@ -135,8 +137,6 @@ class SegmentInfoEntry : public HlsEntry {
   const uint64_t start_byte_offset_;
   const uint64_t segment_file_size_;
   const uint64_t previous_segment_end_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(SegmentInfoEntry);
 };
 
 SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
@@ -154,7 +154,6 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       start_byte_offset_(start_byte_offset),
       segment_file_size_(segment_file_size),
       previous_segment_end_offset_(previous_segment_end_offset) {}
-SegmentInfoEntry::~SegmentInfoEntry() {}
 
 std::string SegmentInfoEntry::ToString() {
   std::string result = base::StringPrintf("#EXTINF:%.3f,\n", duration_);
@@ -178,19 +177,18 @@ class EncryptionInfoEntry : public HlsEntry {
                       const std::string& key_format,
                       const std::string& key_format_versions);
 
-  ~EncryptionInfoEntry() override;
-
   std::string ToString() override;
 
  private:
+  EncryptionInfoEntry(const EncryptionInfoEntry&) = delete;
+  EncryptionInfoEntry& operator=(const EncryptionInfoEntry&) = delete;
+
   const MediaPlaylist::EncryptionMethod method_;
   const std::string url_;
   const std::string key_id_;
   const std::string iv_;
   const std::string key_format_;
   const std::string key_format_versions_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptionInfoEntry);
 };
 
 EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
@@ -206,8 +204,6 @@ EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
       iv_(iv),
       key_format_(key_format),
       key_format_versions_(key_format_versions) {}
-
-EncryptionInfoEntry::~EncryptionInfoEntry() {}
 
 std::string EncryptionInfoEntry::ToString() {
   std::string method_attribute;
@@ -242,21 +238,37 @@ class DiscontinuityEntry : public HlsEntry {
  public:
   DiscontinuityEntry();
 
-  ~DiscontinuityEntry() override;
-
   std::string ToString() override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DiscontinuityEntry);
+  DiscontinuityEntry(const DiscontinuityEntry&) = delete;
+  DiscontinuityEntry& operator=(const DiscontinuityEntry&) = delete;
 };
 
 DiscontinuityEntry::DiscontinuityEntry()
     : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
 
-DiscontinuityEntry::~DiscontinuityEntry() {}
-
 std::string DiscontinuityEntry::ToString() {
   return "#EXT-X-DISCONTINUITY\n";
+}
+
+class PlacementOpportunityEntry : public HlsEntry {
+ public:
+  PlacementOpportunityEntry();
+
+  std::string ToString() override;
+
+ private:
+  PlacementOpportunityEntry(const PlacementOpportunityEntry&) = delete;
+  PlacementOpportunityEntry& operator=(const PlacementOpportunityEntry&) =
+      delete;
+};
+
+PlacementOpportunityEntry::PlacementOpportunityEntry()
+    : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
+
+std::string PlacementOpportunityEntry::ToString() {
+  return "#EXT-X-PLACEMENT-OPPORTUNITY\n";
 }
 
 double LatestSegmentStartTime(
@@ -370,6 +382,10 @@ void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
   }
   entries_.emplace_back(new EncryptionInfoEntry(
       method, url, key_id, iv, key_format, key_format_versions));
+}
+
+void MediaPlaylist::AddPlacementOpportunity() {
+  entries_.emplace_back(new PlacementOpportunityEntry());
 }
 
 bool MediaPlaylist::WriteToFile(const std::string& file_path) {

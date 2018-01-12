@@ -38,6 +38,7 @@ class MockMediaPlaylist : public MediaPlaylist {
                     const std::string& iv,
                     const std::string& key_format,
                     const std::string& key_format_versions));
+  MOCK_METHOD0(AddPlacementOpportunity, void());
   MOCK_METHOD1(WriteToFile, bool(const std::string& file_path));
   MOCK_CONST_METHOD0(Bitrate, uint64_t());
   MOCK_CONST_METHOD0(GetLongestSegmentDuration, double());

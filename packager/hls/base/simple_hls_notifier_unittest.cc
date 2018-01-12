@@ -877,6 +877,21 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {
       notifier.NotifyEncryptionUpdate(1238u, key_id, system_id, iv, pssh_data));
 }
 
+TEST_F(SimpleHlsNotifierTest, NotifyCueEvent) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+  SimpleHlsNotifier notifier(kVodPlaylist, kTestTimeShiftBufferDepth,
+                             kTestPrefix, kIdentityKeyUri, kAnyOutputDir,
+                             kMasterPlaylistName);
+  const uint32_t stream_id =
+      SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
+
+  EXPECT_CALL(*mock_media_playlist, AddPlacementOpportunity());
+  const uint64_t kCueEventTimestamp = 12345;
+  EXPECT_TRUE(notifier.NotifyCueEvent(stream_id, kCueEventTimestamp));
+}
+
 class LiveOrEventSimpleHlsNotifierTest
     : public SimpleHlsNotifierTest,
       public ::testing::WithParamInterface<HlsPlaylistType> {
