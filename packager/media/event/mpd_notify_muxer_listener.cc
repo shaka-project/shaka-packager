@@ -112,7 +112,7 @@ void MpdNotifyMuxerListener::OnSampleDurationReady(
 void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
-    DCHECK(subsegments_.empty());
+    DCHECK(event_info_.empty());
     // TODO(kqyang): Set mpd duration to |duration_seconds|, which is more
     // accurate than the duration coded in the original media header.
     if (mpd_notifier_->mpd_type() == MpdType::kStatic)
@@ -132,15 +132,17 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   mpd_notifier_->NotifyNewContainer(*media_info_, &id);
   // TODO(rkuroiwa): Use media_ranges.subsegment_ranges instead of caching the
   // subsegments.
-  for (const SubsegmentInfo& subsegment : subsegments_) {
-    if (subsegment.cue_break) {
-      mpd_notifier_->NotifyCueEvent(id, subsegment.start_time);
+  for (const auto& event_info : event_info_) {
+    if (event_info.is_cue_event) {
+      mpd_notifier_->NotifyCueEvent(id, event_info.cue_event_info.timestamp);
+    } else {
+      mpd_notifier_->NotifyNewSegment(
+          id, event_info.segment_info.start_time,
+          event_info.segment_info.duration,
+          event_info.segment_info.segment_file_size);
     }
-    mpd_notifier_->NotifyNewSegment(id, subsegment.start_time,
-                                    subsegment.duration,
-                                    subsegment.segment_file_size);
   }
-  subsegments_.clear();
+  event_info_.clear();
   mpd_notifier_->Flush();
 }
 
@@ -155,10 +157,10 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
     if (mpd_notifier_->mpd_type() == MpdType::kDynamic)
       mpd_notifier_->Flush();
   } else {
-    SubsegmentInfo subsegment = {start_time, duration, segment_file_size,
-                                 next_subsegment_contains_cue_break_};
-    next_subsegment_contains_cue_break_ = false;
-    subsegments_.push_back(subsegment);
+    EventInfo event_info;
+    event_info.is_cue_event = false;
+    event_info.segment_info = {start_time, duration, segment_file_size};
+    event_info_.push_back(event_info);
   }
 }
 
@@ -168,7 +170,10 @@ void MpdNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifyCueEvent(notification_id_, timestamp);
   } else {
-    next_subsegment_contains_cue_break_ = true;
+    EventInfo event_info;
+    event_info.is_cue_event = true;
+    event_info.cue_event_info = {timestamp};
+    event_info_.push_back(event_info);
   }
 }
 

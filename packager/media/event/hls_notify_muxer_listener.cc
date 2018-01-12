@@ -154,23 +154,29 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   if (!media_ranges.subsegment_ranges.empty()) {
     const std::vector<Range>& subsegment_ranges =
         media_ranges.subsegment_ranges;
-    size_t num_subsegments = subsegment_ranges.size();
-    if (subsegments_.size() != num_subsegments) {
+    const size_t num_subsegments = subsegment_ranges.size();
+    size_t subsegment_index = 0;
+    for (const auto& event_info : event_info_) {
+      if (event_info.is_cue_event) {
+        hls_notifier_->NotifyCueEvent(stream_id_,
+                                      event_info.cue_event_info.timestamp);
+      } else {
+        if (subsegment_index < num_subsegments) {
+          const Range& range = subsegment_ranges[subsegment_index];
+          hls_notifier_->NotifyNewSegment(
+              stream_id_, media_info_.media_file_name(),
+              event_info.segment_info.start_time,
+              event_info.segment_info.duration, range.start,
+              range.end + 1 - range.start);
+        }
+        ++subsegment_index;
+      }
+    }
+    if (subsegment_index != num_subsegments) {
       LOG(WARNING) << "Number of subsegment ranges (" << num_subsegments
                    << ") does not match the number of subsegments notified to "
                       "OnNewSegment() ("
-                   << subsegments_.size() << ").";
-      num_subsegments = std::min(subsegments_.size(), num_subsegments);
-    }
-    for (size_t i = 0; i < num_subsegments; ++i) {
-      const Range& range = subsegment_ranges[i];
-      const SubsegmentInfo& subsegment_info = subsegments_[i];
-      if (subsegment_info.cue_break) {
-        hls_notifier_->NotifyCueEvent(stream_id_, subsegment_info.start_time);
-      }
-      hls_notifier_->NotifyNewSegment(
-          stream_id_, media_info_.media_file_name(), subsegment_info.start_time,
-          subsegment_info.duration, range.start, range.end + 1 - range.start);
+                   << event_info_.size() << ").";
     }
   }
 }
@@ -180,27 +186,31 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
   if (!media_info_.has_segment_template()) {
-    SubsegmentInfo subsegment = {start_time, duration, segment_file_size,
-                                 next_subsegment_contains_cue_break_};
-    subsegments_.push_back(subsegment);
-    next_subsegment_contains_cue_break_ = false;
-    return;
+    EventInfo event_info;
+    event_info.is_cue_event = false;
+    event_info.segment_info = {start_time, duration, segment_file_size};
+    event_info_.push_back(event_info);
+  } else {
+    // For multisegment, it always starts from the beginning of the file.
+    const size_t kStartingByteOffset = 0u;
+    const bool result = hls_notifier_->NotifyNewSegment(
+        stream_id_, file_name, start_time, duration, kStartingByteOffset,
+        segment_file_size);
+    LOG_IF(WARNING, !result) << "Failed to add new segment.";
   }
-  // For multisegment, it always starts from the beginning of the file.
-  const size_t kStartingByteOffset = 0u;
-  const bool result = hls_notifier_->NotifyNewSegment(
-      stream_id_, file_name, start_time, duration, kStartingByteOffset,
-      segment_file_size);
-  LOG_IF(WARNING, !result) << "Failed to add new segment.";
 }
 
 void HlsNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
                                         const std::string& cue_data) {
+  // Not using |cue_data| at this moment.
   if (!media_info_.has_segment_template()) {
-    next_subsegment_contains_cue_break_ = true;
-    return;
+    EventInfo event_info;
+    event_info.is_cue_event = true;
+    event_info.cue_event_info = {timestamp};
+    event_info_.push_back(event_info);
+  } else {
+    hls_notifier_->NotifyCueEvent(stream_id_, timestamp);
   }
-  hls_notifier_->NotifyCueEvent(stream_id_, timestamp);
 }
 
 }  // namespace media

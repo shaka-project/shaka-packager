@@ -72,10 +72,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
       break;
     }
     case StreamDataType::kScte35Event: {
-      DCHECK_NE(main_stream_index_, kInvalidStreamIndex)
-          << "kStreamInfo should arrive before kScte35Event";
-      const auto stream_index = stream_data->stream_index;
-      if (stream_index != main_stream_index_) {
+      if (stream_data->stream_index != main_stream_index_) {
         VLOG(3) << "Dropping scte35 event from non main stream.";
         return Status::OK;
       }
@@ -189,7 +186,7 @@ Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
       // Use PTS instead of DTS for cue event timestamp.
       cue_event->timestamp = sample->pts();
       cue_event->cue_data = scte35_events_.top()->scte35_event->cue_data;
-      VLOG(1) << "Chunked at " << timestamp << " for Ad Cue.";
+      LOG(INFO) << "Chunked at " << timestamp << " for Ad Cue.";
 
       scte35_events_.pop();
     }

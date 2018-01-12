@@ -15,6 +15,7 @@
       'sources': [
         'combined_muxer_listener.cc',
         'combined_muxer_listener.h',
+        'event_info.h',
         'hls_notify_muxer_listener.cc',
         'hls_notify_muxer_listener.h',
         'mpd_notify_muxer_listener.cc',
