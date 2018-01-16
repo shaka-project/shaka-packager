@@ -168,9 +168,10 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
     return Status(error::INVALID_ARGUMENT, "Unsupported output format.");
   } else if (output_format == MediaContainerName::CONTAINER_MPEG2TS) {
     if (stream.segment_template.empty()) {
-      return Status(error::INVALID_ARGUMENT,
-                    "Please specify segment_template. Single file TS output is "
-                    "not supported.");
+      return Status(
+          error::INVALID_ARGUMENT,
+          "Please specify 'segment_template'. Single file TS output is "
+          "not supported.");
     }
 
     // Right now the init segment is saved in |output| for multi-segment
@@ -180,6 +181,16 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
       return Status(error::INVALID_ARGUMENT,
                     "All TS segments must be self-initializing. Stream "
                     "descriptors 'output' or 'init_segment' are not allowed.");
+    }
+  } else if (output_format == CONTAINER_WEBVTT) {
+    // There is no need for an init segment when outputting to WebVTT because
+    // there is no initialization data.
+    if (stream.segment_template.length() && stream.output.length()) {
+      return Status(
+          error::INVALID_ARGUMENT,
+          "Segmented WebVTT output cannot have an init segment. Do not specify "
+          "stream descriptors 'output' or 'init_segment' when using "
+          "'segment_template' with WebVtt.");
     }
   } else {
     // For any other format, if there is a segment template, there must be an
@@ -271,13 +282,6 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   if (format.empty()) {
     LOG(ERROR) << "Failed to determine the text file format for "
                << stream_descriptor.input;
-    return false;
-  }
-
-  if (!File::Copy(stream_descriptor.input.c_str(),
-                  stream_descriptor.output.c_str())) {
-    LOG(ERROR) << "Failed to copy the input file (" << stream_descriptor.input
-               << ") to output file (" << stream_descriptor.output << ").";
     return false;
   }
 
@@ -533,24 +537,6 @@ Status CreateTextJobs(
                       "Cannot create text output for MPD with segment output.");
       }
 
-      MediaInfo text_media_info;
-      if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
-        return Status(error::INVALID_ARGUMENT,
-                      "Could not create media info for stream.");
-      }
-
-      // If we are outputting to MPD, just add the input to the outputted
-      // manifest.
-      if (mpd_notifier) {
-        uint32_t unused;
-        if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
-          mpd_notifier->Flush();
-        } else {
-          return Status(error::PARSER_FAILURE,
-                        "Failed to process text file " + stream.input);
-        }
-      }
-
       // If we are outputting to HLS, then create the HLS test pipeline that
       // will create segmented text output.
       if (hls_listener) {
@@ -561,9 +547,37 @@ Status CreateTextJobs(
         }
       }
 
-      if (packaging_params.output_media_info) {
-        VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
-            text_media_info, stream.output + kMediaInfoSuffix);
+      if (!stream.output.empty()) {
+        if (!File::Copy(stream.input.c_str(), stream.output.c_str())) {
+          std::string error;
+          base::StringAppendF(
+              &error, "Failed to copy the input file (%s) to output file (%s).",
+              stream.input.c_str(), stream.output.c_str());
+          return Status(error::FILE_FAILURE, error);
+        }
+
+        MediaInfo text_media_info;
+        if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
+          return Status(error::INVALID_ARGUMENT,
+                        "Could not create media info for stream.");
+        }
+
+        // If we are outputting to MPD, just add the input to the outputted
+        // manifest.
+        if (mpd_notifier) {
+          uint32_t unused;
+          if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
+            mpd_notifier->Flush();
+          } else {
+            return Status(error::PARSER_FAILURE,
+                          "Failed to process text file " + stream.input);
+          }
+        }
+
+        if (packaging_params.output_media_info) {
+          VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
+              text_media_info, stream.output + kMediaInfoSuffix);
+        }
       }
     }
   }
