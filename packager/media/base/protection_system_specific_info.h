@@ -13,6 +13,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_reader.h"
 
+#define NO_PROTECTION_SYSTEM_FLAG 0x00
 #define COMMON_PROTECTION_SYSTEM_FLAG 0x01
 #define PLAYREADY_PROTECTION_SYSTEM_FLAG 0x02
 #define WIDEVINE_PROTECTION_SYSTEM_FLAG 0x04

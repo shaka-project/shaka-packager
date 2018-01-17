@@ -93,8 +93,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      // TODO(hmchen): add multiple DRM support for raw key source.
-      encryption_key_source = RawKeySource::Create(encryption_params.raw_key);
+      encryption_key_source = RawKeySource::Create(encryption_params.raw_key,
+                                                   protection_systems_flags);
       break;
     }
     case KeyProvider::kPlayready: {
@@ -176,7 +176,9 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      decryption_key_source = RawKeySource::Create(decryption_params.raw_key);
+      decryption_key_source = RawKeySource::Create(
+          decryption_params.raw_key,
+          COMMON_PROTECTION_SYSTEM_FLAG /* value does not matter here*/);
       break;
     }
     case KeyProvider::kNone:

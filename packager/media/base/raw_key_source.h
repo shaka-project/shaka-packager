@@ -43,16 +43,16 @@ class RawKeySource : public KeySource {
   /// Creates a new RawKeySource from the given data.  Returns null
   /// if the parameter is malformed.
   /// @param raw_key contains parameters to setup the key source.
-  static std::unique_ptr<RawKeySource> Create(const RawKeyParams& raw_key);
+  static std::unique_ptr<RawKeySource> Create(const RawKeyParams& raw_key,
+                                              int protection_system_flags);
 
  protected:
   // Allow default constructor for mock key sources.
   RawKeySource();
 
  private:
-  typedef std::map<std::string, std::unique_ptr<EncryptionKey>>
-      EncryptionKeyMap;
-  explicit RawKeySource(EncryptionKeyMap&& encryption_key_map);
+  explicit RawKeySource(EncryptionKeyMap&& encryption_key_map,
+                        int protection_systems_flags);
   RawKeySource(const RawKeySource&) = delete;
   RawKeySource& operator=(const RawKeySource&) = delete;
 

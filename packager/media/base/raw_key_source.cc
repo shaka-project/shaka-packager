@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/key_source.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
 
 namespace {
@@ -78,6 +79,12 @@ Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
               key->key.end());
 
   for (auto& key_system : key->key_system_info) {
+    if (key_system.system_id() !=
+        std::vector<uint8_t>(std::begin(kCommonSystemId),
+                             std::end(kCommonSystemId))) {
+      LOG(WARNING) << "For key rotation with raw key source, only common key "
+                      "system is supported.";
+    }
     std::vector<uint8_t> pssh_data = key_system.pssh_data();
     if (!pssh_data.empty()) {
       std::rotate(pssh_data.begin(),
@@ -103,25 +110,17 @@ Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
 }
 
 std::unique_ptr<RawKeySource> RawKeySource::Create(
-    const RawKeyParams& raw_key) {
+    const RawKeyParams& raw_key,
+    int protection_systems_flags) {
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
+  bool pssh_provided = false;
   if (!raw_key.pssh.empty()) {
+    pssh_provided = true;
     if (!ProtectionSystemSpecificInfo::ParseBoxes(
             raw_key.pssh.data(), raw_key.pssh.size(), &key_system_info)) {
       LOG(ERROR) << "--pssh argument should be full PSSH boxes.";
       return std::unique_ptr<RawKeySource>();
     }
-  } else {
-    // If there aren't any PSSH boxes given, create one with the common system
-    // ID.
-    key_system_info.resize(1);
-    for (const auto& entry : raw_key.key_map) {
-      const RawKeyParams::KeyInfo& key_pair = entry.second;
-      key_system_info.back().add_key_id(key_pair.key_id);
-    }
-    key_system_info.back().set_system_id(kCommonSystemId,
-                                         arraysize(kCommonSystemId));
-    key_system_info.back().set_pssh_box_version(1);
   }
 
   EncryptionKeyMap encryption_key_map;
@@ -149,14 +148,23 @@ std::unique_ptr<RawKeySource> RawKeySource::Create(
     encryption_key_map[drm_label] = std::move(encryption_key);
   }
 
-  return std::unique_ptr<RawKeySource>(
-      new RawKeySource(std::move(encryption_key_map)));
+  // Generate common protection system if no other protection system is
+  // specified.
+  if (!pssh_provided && protection_systems_flags == NO_PROTECTION_SYSTEM_FLAG) {
+    protection_systems_flags = COMMON_PROTECTION_SYSTEM_FLAG;
+  }
+
+  return std::unique_ptr<RawKeySource>(new RawKeySource(
+      std::move(encryption_key_map), protection_systems_flags));
 }
 
-RawKeySource::RawKeySource() : KeySource(COMMON_PROTECTION_SYSTEM_FLAG) {}
-RawKeySource::RawKeySource(EncryptionKeyMap&& encryption_key_map)
-    : KeySource(COMMON_PROTECTION_SYSTEM_FLAG),
-      encryption_key_map_(std::move(encryption_key_map)) {}
+RawKeySource::RawKeySource() : KeySource(NO_PROTECTION_SYSTEM_FLAG) {}
+RawKeySource::RawKeySource(EncryptionKeyMap&& encryption_key_map,
+                           int protection_systems_flags)
+    : KeySource(protection_systems_flags),
+      encryption_key_map_(std::move(encryption_key_map)) {
+  UpdateProtectionSystemInfo(&encryption_key_map_);
+}
 
 }  // namespace media
 }  // namespace shaka
