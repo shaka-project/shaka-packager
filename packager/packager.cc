@@ -815,15 +815,7 @@ Status Packager::Initialize(
   }
 
   if (!hls_params.master_playlist_output.empty()) {
-    base::FilePath master_playlist_path(
-        base::FilePath::FromUTF8Unsafe(hls_params.master_playlist_output));
-    base::FilePath master_playlist_name = master_playlist_path.BaseName();
-
-    internal->hls_notifier.reset(new hls::SimpleHlsNotifier(
-        hls_params.playlist_type, hls_params.time_shift_buffer_depth,
-        hls_params.base_url, hls_params.key_uri,
-        master_playlist_path.DirName().AsEndingWithSeparator().AsUTF8Unsafe(),
-        master_playlist_name.AsUTF8Unsafe()));
+    internal->hls_notifier.reset(new hls::SimpleHlsNotifier(hls_params));
   }
 
   std::vector<StreamDescriptor> streams_for_jobs;

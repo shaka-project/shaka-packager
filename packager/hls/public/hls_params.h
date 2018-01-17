@@ -35,6 +35,10 @@ struct HlsParams {
   /// key formats. Ignored if the playlist is not encrypted or not using the
   /// above key formats.
   std::string key_uri;
+  /// The renditions tagged with this language will have 'DEFAULT' set to 'YES'
+  /// in 'EXT-X-MEDIA' tag. This allows the player to choose the correct default
+  /// language for the content.
+  std::string default_language;
 };
 
 }  // namespace shaka

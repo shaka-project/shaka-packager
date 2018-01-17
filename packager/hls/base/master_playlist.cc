@@ -23,6 +23,9 @@ namespace {
 void AppendMediaTag(const std::string& base_url,
                     const std::string& group_id,
                     const MediaPlaylist* audio_playlist,
+                    const std::string& language,
+                    bool is_default,
+                    bool is_autoselect,
                     std::string* out) {
   DCHECK(audio_playlist);
   DCHECK(out);
@@ -31,10 +34,13 @@ void AppendMediaTag(const std::string& base_url,
   base::StringAppendF(out, ",URI=\"%s\"",
                       (base_url + audio_playlist->file_name()).c_str());
   base::StringAppendF(out, ",GROUP-ID=\"%s\"", group_id.c_str());
-  std::string language = audio_playlist->GetLanguage();
   if (!language.empty())
     base::StringAppendF(out, ",LANGUAGE=\"%s\"", language.c_str());
   base::StringAppendF(out, ",NAME=\"%s\"", audio_playlist->name().c_str());
+  if (is_default)
+    base::StringAppendF(out, ",DEFAULT=YES");
+  if (is_autoselect)
+    base::StringAppendF(out, ",AUTOSELECT=YES");
   base::StringAppendF(out, ",CHANNELS=\"%d\"",
                       audio_playlist->GetNumChannels());
   out->append("\n");
@@ -62,8 +68,9 @@ void AppendStreamInfoTag(uint64_t bitrate,
 }
 }  // namespace
 
-MasterPlaylist::MasterPlaylist(const std::string& file_name)
-    : file_name_(file_name) {}
+MasterPlaylist::MasterPlaylist(const std::string& file_name,
+                               const std::string& default_language)
+    : file_name_(file_name), default_language_(default_language) {}
 MasterPlaylist::~MasterPlaylist() {}
 
 void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
@@ -99,9 +106,32 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     const std::list<const MediaPlaylist*>& audio_playlists =
         group_id_audio_playlists.second;
 
+    // Tracks the language of the playlist in this group.
+    // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
+    // - A Group MUST NOT have more than one member with a DEFAULT attribute of
+    //   YES.
+    // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
+    //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
+    //   CHARACTERISTICS attributes that is distinct from those of other
+    //   AUTOSELECT=YES members of its Group.
+    // We tag the first rendition encountered with a particular language with
+    // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
+    // |default_language_|.
+    std::set<std::string> languages;
+
     uint64_t max_audio_bitrate = 0;
     for (const MediaPlaylist* audio_playlist : audio_playlists) {
-      AppendMediaTag(base_url, group_id, audio_playlist, &audio_output);
+      bool is_default = false;
+      bool is_autoselect = false;
+      const std::string language = audio_playlist->GetLanguage();
+      if (languages.find(language) == languages.end()) {
+        is_default = !language.empty() && language == default_language_;
+        is_autoselect = true;
+        languages.insert(language);
+      }
+
+      AppendMediaTag(base_url, group_id, audio_playlist, language, is_default,
+                     is_autoselect, &audio_output);
       const uint64_t audio_bitrate = audio_playlist->Bitrate();
       if (audio_bitrate > max_audio_bitrate)
         max_audio_bitrate = audio_bitrate;

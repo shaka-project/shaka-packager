@@ -28,6 +28,7 @@ using base::FilePath;
 
 namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
+const char kDefaultLanguage[] = "en";
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
 const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
@@ -36,7 +37,7 @@ const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
 class MasterPlaylistTest : public ::testing::Test {
  protected:
   MasterPlaylistTest()
-      : master_playlist_(kDefaultMasterPlaylistName),
+      : master_playlist_(kDefaultMasterPlaylistName, kDefaultLanguage),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(
             FilePath::FromUTF8Unsafe(test_output_dir_)
@@ -166,10 +167,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "test\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"english\","
-      "CHANNELS=\"2\"\n"
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/spa.m3u8\","
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"es\",NAME=\"espanol\","
-      "CHANNELS=\"5\"\n"
+      "AUTOSELECT=YES,CHANNELS=\"5\"\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=360000,CODECS=\"sdvideocodec,audiocodec\","
       "RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
       "http://playlists.org/sd.m3u8\n"
@@ -181,7 +182,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
-  // First video, sd.m3u8.
+  // First video, video.m3u8.
   std::string video_codec = "videocodec";
   MockMediaPlaylist video_playlist(kVodPlaylist, "video.m3u8", "somename",
                                    "somegroupid");
@@ -213,6 +214,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       .Times(0);
   master_playlist_.AddMediaPlaylist(&eng_lo_playlist);
 
+  // Second audio, eng_hi.m3u8.
   std::string audio_codec_hi = "audiocodec_hi";
   MockMediaPlaylist eng_hi_playlist(kVodPlaylist, "eng_hi.m3u8", "english_hi",
                                     "audio_hi");
@@ -240,15 +242,85 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       "test\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_hi.m3u8\","
       "GROUP-ID=\"audio_hi\",LANGUAGE=\"en\",NAME=\"english_hi\","
-      "CHANNELS=\"8\"\n"
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_lo.m3u8\","
       "GROUP-ID=\"audio_lo\",LANGUAGE=\"en\",NAME=\"english_lo\","
-      "CHANNELS=\"1\"\n"
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"1\"\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=400000,CODECS=\"videocodec,audiocodec_hi\","
       "RESOLUTION=800x600,AUDIO=\"audio_hi\"\n"
       "http://anydomain.com/video.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"videocodec,audiocodec_lo\","
       "RESOLUTION=800x600,AUDIO=\"audio_lo\"\n"
+      "http://anydomain.com/video.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
+  // First video, video.m3u8.
+  std::string video_codec = "videocodec";
+  MockMediaPlaylist video_playlist(kVodPlaylist, "video.m3u8", "somename",
+                                   "somegroupid");
+  video_playlist.SetStreamTypeForTesting(
+      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
+  video_playlist.SetCodecForTesting(video_codec);
+  EXPECT_CALL(video_playlist, Bitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(300000));
+  EXPECT_CALL(video_playlist, GetDisplayResolution(NotNull(), NotNull()))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth), SetArgPointee<1>(kHeight),
+                            Return(true)));
+  master_playlist_.AddMediaPlaylist(&video_playlist);
+
+  // First audio, eng_lo.m3u8.
+  const std::string audio_codec = "audiocodec";
+  MockMediaPlaylist eng_lo_playlist(kVodPlaylist, "eng_lo.m3u8", "english",
+                                    "audio");
+  EXPECT_CALL(eng_lo_playlist, GetLanguage()).WillRepeatedly(Return("en"));
+  EXPECT_CALL(eng_lo_playlist, GetNumChannels()).WillRepeatedly(Return(1));
+  eng_lo_playlist.SetStreamTypeForTesting(
+      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+  eng_lo_playlist.SetCodecForTesting(audio_codec);
+  EXPECT_CALL(eng_lo_playlist, Bitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(50000));
+  EXPECT_CALL(eng_lo_playlist, GetDisplayResolution(NotNull(), NotNull()))
+      .Times(0);
+  master_playlist_.AddMediaPlaylist(&eng_lo_playlist);
+
+  // Second audio, eng_hi.m3u8.
+  MockMediaPlaylist eng_hi_playlist(kVodPlaylist, "eng_hi.m3u8", "english",
+                                    "audio");
+  EXPECT_CALL(eng_hi_playlist, GetLanguage()).WillRepeatedly(Return("en"));
+  EXPECT_CALL(eng_hi_playlist, GetNumChannels()).WillRepeatedly(Return(8));
+  eng_hi_playlist.SetStreamTypeForTesting(
+      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+  eng_hi_playlist.SetCodecForTesting(audio_codec);
+  EXPECT_CALL(eng_hi_playlist, Bitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(100000));
+  EXPECT_CALL(eng_hi_playlist, GetDisplayResolution(NotNull(), NotNull()))
+      .Times(0);
+  master_playlist_.AddMediaPlaylist(&eng_hi_playlist);
+
+  const char kBaseUrl[] = "http://anydomain.com/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_lo.m3u8\","
+      "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"1\"\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_hi.m3u8\","
+      "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\","
+      "CHANNELS=\"8\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=400000,CODECS=\"videocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio\"\n"
       "http://anydomain.com/video.m3u8\n";
 
   ASSERT_EQ(expected, actual);

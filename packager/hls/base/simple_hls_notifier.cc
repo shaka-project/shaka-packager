@@ -247,19 +247,19 @@ std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
       type, time_shift_buffer_depth, file_name, name, group_id));
 }
 
-SimpleHlsNotifier::SimpleHlsNotifier(HlsPlaylistType playlist_type,
-                                     double time_shift_buffer_depth,
-                                     const std::string& prefix,
-                                     const std::string& key_uri,
-                                     const std::string& output_dir,
-                                     const std::string& master_playlist_name)
-    : HlsNotifier(playlist_type),
-      time_shift_buffer_depth_(time_shift_buffer_depth),
-      prefix_(prefix),
-      key_uri_(key_uri),
-      output_dir_(output_dir),
-      media_playlist_factory_(new MediaPlaylistFactory()),
-      master_playlist_(new MasterPlaylist(master_playlist_name)) {}
+SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
+    : HlsNotifier(hls_params.playlist_type),
+      time_shift_buffer_depth_(hls_params.time_shift_buffer_depth),
+      prefix_(hls_params.base_url),
+      key_uri_(hls_params.key_uri),
+      media_playlist_factory_(new MediaPlaylistFactory()) {
+  const base::FilePath master_playlist_path(
+      base::FilePath::FromUTF8Unsafe(hls_params.master_playlist_output));
+  output_dir_ = master_playlist_path.DirName().AsUTF8Unsafe();
+  master_playlist_.reset(
+      new MasterPlaylist(master_playlist_path.BaseName().AsUTF8Unsafe(),
+                         hls_params.default_language));
+}
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}
 

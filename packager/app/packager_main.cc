@@ -406,6 +406,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   hls_params.base_url = FLAGS_hls_base_url;
   hls_params.key_uri = FLAGS_hls_key_uri;
   hls_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+  hls_params.default_language = FLAGS_default_language;
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = FLAGS_dump_stream_info;

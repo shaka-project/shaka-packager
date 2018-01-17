@@ -23,7 +23,10 @@ class MediaPlaylist;
 class MasterPlaylist {
  public:
   /// @param file_name is the file name of the master playlist.
-  explicit MasterPlaylist(const std::string& file_name);
+  /// @param default_language determines the rendition that should be tagged
+  ///        with 'DEFAULT'.
+  MasterPlaylist(const std::string& file_name,
+                 const std::string& default_language);
   virtual ~MasterPlaylist();
 
   /// @param media_playlist is a MediaPlaylist that should get added to this
@@ -46,6 +49,7 @@ class MasterPlaylist {
  private:
   std::string written_playlist_;
   const std::string file_name_;
+  const std::string default_language_;
   std::list<MediaPlaylist*> all_playlists_;
   std::list<const MediaPlaylist*> video_playlists_;
   // The key is the audio group name.
