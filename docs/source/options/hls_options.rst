@@ -24,5 +24,11 @@ HLS options
 
 --time_shift_buffer_depth <seconds>
 
-    Guaranteed duration of the time shifting buffer for LIVE playlist, in
+    Guaranteed duration of the time shifting buffer for LIVE playlists, in
     seconds.
+
+--default_language <language>
+
+    The first audio/text rendition in a group tagged with this language will
+    have 'DEFAULT' attribute set to 'YES'. This allows the player to choose the
+    correct default language for the content.

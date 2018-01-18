@@ -10,6 +10,7 @@
 #include "packager/app/ad_cue_generator_flags.h"
 #include "packager/app/crypto_flags.h"
 #include "packager/app/hls_flags.h"
+#include "packager/app/manifest_flags.h"
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
 #include "packager/app/packager_util.h"

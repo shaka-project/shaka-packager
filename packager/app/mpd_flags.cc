@@ -39,19 +39,10 @@ DEFINE_double(minimum_update_period,
               "Indicates to the player how often to refresh the media "
               "presentation description in seconds. This value is used for "
               "dynamic MPD only.");
-DEFINE_double(time_shift_buffer_depth,
-              1800.0,
-              "Guaranteed duration of the time shifting buffer for dynamic "
-              "media presentations, in seconds.");
 DEFINE_double(suggested_presentation_delay,
               0.0,
               "Specifies a delay, in seconds, to be added to the media "
               "presentation time. This value is used for dynamic MPD only.");
-DEFINE_string(default_language,
-              "",
-              "Any tracks tagged with this language will have "
-              "<Role ... value=\"main\" /> in the manifest.  This allows the "
-              "player to choose the correct default language for the content.");
 DEFINE_bool(generate_dash_if_iop_compliant_mpd,
             true,
             "Try to generate DASH-IF IOP compliant MPD. This is best effort "

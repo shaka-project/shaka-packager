@@ -70,6 +70,8 @@
         'app/gflags_hex_bytes.h',
         'app/hls_flags.cc',
         'app/hls_flags.h',
+        'app/manifest_flags.cc',
+        'app/manifest_flags.h',
         'app/mpd_flags.cc',
         'app/mpd_flags.h',
         'app/muxer_flags.cc',

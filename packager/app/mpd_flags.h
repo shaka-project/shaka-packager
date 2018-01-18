@@ -17,9 +17,7 @@ DECLARE_string(mpd_output);
 DECLARE_string(base_urls);
 DECLARE_double(minimum_update_period);
 DECLARE_double(min_buffer_time);
-DECLARE_double(time_shift_buffer_depth);
 DECLARE_double(suggested_presentation_delay);
-DECLARE_string(default_language);
 DECLARE_bool(generate_dash_if_iop_compliant_mpd);
 
 #endif  // APP_MPD_FLAGS_H_
