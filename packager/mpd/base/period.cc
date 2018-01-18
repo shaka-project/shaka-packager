@@ -88,9 +88,10 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
       }
     }
   }
-  adaptation_sets.push_back(new_adaptation_set.get());
-  adaptation_sets_.push_back(std::move(new_adaptation_set));
-  return adaptation_sets_.back().get();
+  AdaptationSet* adaptation_set_ptr = new_adaptation_set.get();
+  adaptation_sets.push_back(adaptation_set_ptr);
+  adaptation_set_map_[adaptation_set_ptr->id()] = std::move(new_adaptation_set);
+  return adaptation_set_ptr;
 }
 
 xml::scoped_xml_ptr<xmlNode> Period::GetXml() {
@@ -99,8 +100,8 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml() {
   // Required for 'dynamic' MPDs.
   period.SetId(id_);
   // Iterate thru AdaptationSets and add them to one big Period element.
-  for (const auto& adaptation_set : adaptation_sets_) {
-    xml::scoped_xml_ptr<xmlNode> child(adaptation_set->GetXml());
+  for (const auto& adaptation_set_pair : adaptation_set_map_) {
+    xml::scoped_xml_ptr<xmlNode> child(adaptation_set_pair.second->GetXml());
     if (!child || !period.AddChild(std::move(child)))
       return nullptr;
   }
@@ -115,9 +116,8 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml() {
 
 const std::list<AdaptationSet*> Period::GetAdaptationSets() const {
   std::list<AdaptationSet*> adaptation_sets;
-  for (const std::unique_ptr<AdaptationSet>& adaptation_set :
-       adaptation_sets_) {
-    adaptation_sets.push_back(adaptation_set.get());
+  for (const auto& adaptation_set_pair : adaptation_set_map_) {
+    adaptation_sets.push_back(adaptation_set_pair.second.get());
   }
   return adaptation_sets;
 }

@@ -229,7 +229,9 @@ class AdaptationSet {
   void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
 
   std::list<ContentProtectionElement> content_protection_elements_;
-  std::list<std::unique_ptr<Representation>> representations_;
+  // representation_id => Representation map. It also keeps the representations_
+  // sorted by default.
+  std::map<uint32_t, std::unique_ptr<Representation>> representation_map_;
 
   base::AtomicSequenceNumber* const representation_counter_;
 

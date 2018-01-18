@@ -15,8 +15,8 @@
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
 
+using ::testing::ElementsAre;
 using ::testing::Not;
-using ::testing::UnorderedElementsAre;
 
 namespace shaka {
 
@@ -590,7 +590,7 @@ TEST_F(AdaptationSetTest, BubbleUpAttributesToAdaptationSet) {
 }
 
 TEST_F(AdaptationSetTest, GetRepresentations) {
-  const char k480pMediaInfo[] =
+  const char kMediaInfo1[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
       "  width: 720\n"
@@ -601,7 +601,7 @@ TEST_F(AdaptationSetTest, GetRepresentations) {
       "  pixel_height: 9\n"
       "}\n"
       "container_type: 1\n";
-  const char k360pMediaInfo[] =
+  const char kMediaInfo2[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
       "  width: 640\n"
@@ -615,15 +615,29 @@ TEST_F(AdaptationSetTest, GetRepresentations) {
 
   auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
 
-  Representation* representation_480p =
-      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+  Representation* representation1 =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(kMediaInfo1));
   EXPECT_THAT(adaptation_set->GetRepresentations(),
-              UnorderedElementsAre(representation_480p));
+              ElementsAre(representation1));
 
-  Representation* representation_360p =
-      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+  Representation* representation2 =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(kMediaInfo2));
   EXPECT_THAT(adaptation_set->GetRepresentations(),
-              UnorderedElementsAre(representation_360p, representation_480p));
+              ElementsAre(representation1, representation2));
+
+  auto new_adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  const uint64_t kPresentationTimeOffset = 80;
+  Representation* new_representation2 =
+      new_adaptation_set->CopyRepresentationWithTimeOffset(
+          *representation2, kPresentationTimeOffset);
+  Representation* new_representation1 =
+      new_adaptation_set->CopyRepresentationWithTimeOffset(
+          *representation1, kPresentationTimeOffset);
+
+  EXPECT_THAT(new_adaptation_set->GetRepresentations(),
+              // Elements are ordered by id().
+              ElementsAre(new_representation1, new_representation2));
 }
 
 // Verify that subsegmentAlignment is set to true if all the Representations'

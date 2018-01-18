@@ -105,8 +105,9 @@ class Period {
   const MpdOptions& mpd_options_;
   base::AtomicSequenceNumber* const adaptation_set_counter_;
   base::AtomicSequenceNumber* const representation_counter_;
-  // The list of AdaptationSets in this Period.
-  std::list<std::unique_ptr<AdaptationSet>> adaptation_sets_;
+  // adaptation_id => Adaptation map. It also keeps the adaptation_sets_ sorted
+  // by default.
+  std::map<uint32_t, std::unique_ptr<AdaptationSet>> adaptation_set_map_;
   // AdaptationSets grouped by a specific adaptation set grouping key.
   // AdaptationSets with the same key contain identical parameters except
   // ContentProtection parameters. A single AdaptationSet would be created
