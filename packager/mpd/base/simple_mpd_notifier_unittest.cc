@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
@@ -15,6 +16,8 @@
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
+
+DECLARE_int32(pto_adjustment);
 
 namespace shaka {
 
@@ -242,9 +245,10 @@ TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {
   EXPECT_CALL(*mock_period2,
               GetOrCreateAdaptationSet(EqualsProto(valid_media_info1_), _))
       .WillOnce(Return(mock_adaptation_set2.get()));
-  EXPECT_CALL(*mock_adaptation_set2,
-              CopyRepresentationWithTimeOffset(Ref(*mock_representation),
-                                               kCueEventTimestamp))
+  EXPECT_CALL(
+      *mock_adaptation_set2,
+      CopyRepresentationWithTimeOffset(
+          Ref(*mock_representation), kCueEventTimestamp + FLAGS_pto_adjustment))
       .WillOnce(Return(mock_representation2.get()));
   EXPECT_TRUE(notifier.NotifyCueEvent(container_id, kCueEventTimestamp));
 }
