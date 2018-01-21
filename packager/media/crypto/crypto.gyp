@@ -15,6 +15,8 @@
       'sources': [
         'encryption_handler.cc',
         'encryption_handler.h',
+        'sample_aes_ec3_cryptor.cc',
+        'sample_aes_ec3_cryptor.h',
       ],
       'dependencies': [
         '../base/media_base.gyp:media_base',
@@ -26,6 +28,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'encryption_handler_unittest.cc',
+        'sample_aes_ec3_cryptor_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',

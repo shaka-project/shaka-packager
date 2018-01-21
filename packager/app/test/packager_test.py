@@ -1051,6 +1051,22 @@ class PackagerFunctionalTest(PackagerAppTest):
         os.path.join(self.tmp_dir, 'video.m3u8'),
         'bear-640x360-v-mp4-cenc-golden.m3u8')
 
+  def testPackageWithEc3AndHlsSingleSegmentMp4Encrypted(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'], hls=True, test_files=['bear-640x360-ec3.mp4']),
+        self._GetFlags(encryption=True, output_hls=True))
+    self._DiffGold(self.output[0], 'bear-640x360-ec3-a-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-ec3-v-cenc-golden.mp4')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-ec3-av-mp4-master-cenc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-ec3-a-mp4-cenc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-ec3-v-mp4-cenc-golden.m3u8')
+
   def testPackageWithHlsSingleSegmentMp4EncryptedAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),

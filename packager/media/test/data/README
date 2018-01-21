@@ -33,7 +33,8 @@ bear-640x360-hevc.ts - HEVC + AAC encode, multiplexed into an MPEG2-TS container
 // ISO-BMFF streams.
 bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.
 bear-640x360.mp4  - Same as above, but in a different resolution.
-bear-640x360-hevc.mp4  - Same content, but encoded with HEVC.
+bear-640x360-ec3.mp4  - Same content, but audio encoded with E-AC3.
+bear-640x360-hevc.mp4  - Same content, but video encoded with HEVC.
 bear-320x180.mp4  - Same as above, but in a different resolution.
 bear-640x360-trailing-moov.mp4  - Same content, but with moov box in the end.
 bear-640x360-trailing-moov-additional-mdat.mp4  - Same content, but with moov box in the end and an additional unused mdat, which should be ignored.

@@ -68,7 +68,8 @@ class AesCryptor {
   }
   /// @}
 
-  /// Set IV.
+  /// Set IV. SetIv() implementation guarantees that the iv passed to SetIv()
+  /// is set to iv() and then calls SetIvInternal().
   /// @return true if successful, false if the input is invalid.
   bool SetIv(const std::vector<uint8_t>& iv);
 
@@ -138,5 +139,3 @@ class AesCryptor {
 }  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_AES_CRYPTOR_H_
-
-
