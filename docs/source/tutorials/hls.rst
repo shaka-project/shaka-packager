@@ -54,7 +54,7 @@ The examples below uses the H264 streams created in :doc:`encoding`.
       --hls_master_playlist_output h264_master.m3u8
 
 The above packaging command creates five single track TS streams
-(4 video, 1 audio) and a manifest, which describes the streams.
+(4 video, 1 audio) and HLS playlists, which describe the streams.
 
 * MP4 output is also supported::
 
@@ -66,6 +66,10 @@ The above packaging command creates five single track TS streams
       'in=h264_main_1080p_6000.mp4,stream=video,init_segment=h264_1080p_init.mp4,segment_template=h264_1080p_$Number$.m4s,playlist_name=h264_1080p.m3u8' \
       --hls_master_playlist_output h264_master.m3u8
 
+The above packaging command creates five groups of streams (each with an init
+segment and a series of media segments) and HLS playlists, which describe the
+streams.
+
 * Single file MP4 output is also supported::
 
     $ packager \
@@ -76,9 +80,10 @@ The above packaging command creates five single track TS streams
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,playlist_name=h264_1080p.m3u8 \
       --hls_master_playlist_output h264_master.m3u8
 
-The above packaging command creates five groups of streams (each with an init
-segment and a series of media segments) and a manifest, which describes the
-streams.
+The above packaging command creates five single file MP4 streams and HLS
+playlists, which describe the streams.
+
+.. include:: /tutorials/dash_hls_example.rst
 
 .. include:: /options/hls_stream_descriptors.rst
 

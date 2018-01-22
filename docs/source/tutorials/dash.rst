@@ -58,6 +58,8 @@ The above packaging command creates five groups of segments (each with an init
 segment and a series of media segments) for the five streams and a manifest,
 which describes the streams.
 
+.. include:: /tutorials/dash_hls_example.rst
+
 .. include:: /options/dash_options.rst
 
 .. include:: /options/segment_template_formatting.rst
