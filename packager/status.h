@@ -11,7 +11,7 @@
 #include <string>
 
 #if defined(SHARED_LIBRARY_BUILD)
-#if defined(OS_WIN)
+#if defined(_WIN32)
 
 #if defined(SHAKA_IMPLEMENTATION)
 #define SHAKA_EXPORT __declspec(dllexport)
@@ -19,7 +19,7 @@
 #define SHAKA_EXPORT __declspec(dllimport)
 #endif  // defined(SHAKA_IMPLEMENTATION)
 
-#else  // defined(OS_WIN)
+#else  // defined(_WIN32)
 
 #if defined(SHAKA_IMPLEMENTATION)
 #define SHAKA_EXPORT __attribute__((visibility("default")))
@@ -27,7 +27,7 @@
 #define SHAKA_EXPORT
 #endif
 
-#endif  // defined(OS_WIN)
+#endif  // defined(_WIN32)
 
 #else  // defined(SHARED_LIBRARY_BUILD)
 #define SHAKA_EXPORT
@@ -115,31 +115,13 @@ class SHAKA_EXPORT Status {
   /// Create a status with the specified code, and error message.
   /// If "error_code == error::OK", error_message is ignored and a Status
   /// object identical to Status::OK is constructed.
-  Status(error::Code error_code, const std::string& error_message)
-      : error_code_(error_code) {
-    if (!ok())
-      error_message_ = error_message;
-  }
-
-  ~Status() {}
+  Status(error::Code error_code, const std::string& error_message);
 
   /// @name Some pre-defined Status objects.
   /// @{
   static const Status OK;  // Identical to 0-arg constructor.
   static const Status UNKNOWN;
   /// @}
-
-  /// Store the specified error in this Status object.
-  /// If "error_code == error::OK", error_message is ignored and a Status
-  /// object identical to Status::OK is constructed.
-  void SetError(error::Code error_code, const std::string& error_message) {
-    if (error_code == error::OK) {
-      Clear();
-    } else {
-      error_code_ = error_code;
-      error_message_ = error_message;
-    }
-  }
 
   /// If "ok()", stores "new_status" into *this.  If "!ok()", preserves
   /// the current "error_code()/error_message()",
@@ -149,16 +131,7 @@ class SHAKA_EXPORT Status {
   ///   if (overall_status.ok()) overall_status = new_status
   /// Use:
   ///   overall_status.Update(new_status);
-  void Update(const Status& new_status) {
-    if (ok())
-      *this = new_status;
-  }
-
-  /// Clear this status object to contain the OK code and no error message.
-  void Clear() {
-    error_code_ = error::OK;
-    error_message_ = "";
-  }
+  void Update(Status new_status);
 
   bool ok() const { return error_code_ == error::OK; }
   error::Code error_code() const { return error_code_; }
@@ -169,20 +142,8 @@ class SHAKA_EXPORT Status {
   }
   bool operator!=(const Status& x) const { return !(*this == x); }
 
-  /// @return true iff this has the same error_code as "x", i.e., the two
-  ///         Status objects are identical except possibly for the error
-  ///         message.
-  bool Matches(const Status& x) const { return error_code_ == x.error_code(); }
-
   /// @return A combination of the error code name and message.
   std::string ToString() const;
-
-  void Swap(Status* other) {
-    error::Code error_code = error_code_;
-    error_code_ = other->error_code_;
-    other->error_code_ = error_code;
-    error_message_.swap(other->error_message_);
-  }
 
  private:
   error::Code error_code_;

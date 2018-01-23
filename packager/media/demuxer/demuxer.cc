@@ -269,9 +269,9 @@ void Demuxer::ParserInitEvent(
         stream_info->set_language(iter->second);
       }
       if (stream_info->is_encrypted()) {
-        init_event_status_.SetError(
-            error::INVALID_ARGUMENT,
-            "A decryption key source is not provided for an encrypted stream.");
+        init_event_status_.Update(Status(error::INVALID_ARGUMENT,
+                                         "A decryption key source is not "
+                                         "provided for an encrypted stream."));
       } else {
         init_event_status_.Update(
             DispatchStreamInfo(stream_index, stream_info));

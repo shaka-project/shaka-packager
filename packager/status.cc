@@ -64,6 +64,20 @@ std::string ErrorCodeToString(Code error_code) {
 const Status Status::OK = Status(error::OK, "");
 const Status Status::UNKNOWN = Status(error::UNKNOWN, "");
 
+Status::Status(error::Code error_code, const std::string& error_message)
+    : error_code_(error_code) {
+  if (!ok()) {
+    error_message_ = error_message;
+    if (!error_message.empty())
+      VLOG(1) << ToString();
+  }
+}
+
+void Status::Update(Status new_status) {
+  if (ok())
+    *this = std::move(new_status);
+}
+
 std::string Status::ToString() const {
   if (error_code_ == error::OK)
     return "OK";

@@ -40,30 +40,12 @@ TEST(Status, ConstructorOK) {
   CheckStatus(Status(error::OK, "msg"), error::OK, "");
 }
 
-TEST(Status, SetError) {
-  Status status;
-  status.SetError(error::CANCELLED, "message");
-  CheckStatus(status, error::CANCELLED, "message");
-}
-
-TEST(Status, SetErrorOK) {
-  Status status(error::CANCELLED, "message");
-  status.SetError(error::OK, "msg");
-  CheckStatus(status, error::OK, "");
-}
-
 TEST(Status, Unknown) {
   CheckStatus(Status::UNKNOWN, error::UNKNOWN, "");
 }
 
 TEST(Status, Filled) {
   CheckStatus(Status(error::CANCELLED, "message"), error::CANCELLED, "message");
-}
-
-TEST(Status, Clear) {
-  Status status(error::CANCELLED, "message");
-  status.Clear();
-  CheckStatus(status, error::OK, "");
 }
 
 TEST(Status, Copy) {
@@ -92,7 +74,7 @@ TEST(Status, Update) {
   Status s;
   s.Update(Status::OK);
   ASSERT_TRUE(s.ok());
-  Status a(error::CANCELLED, "message");
+  const Status a(error::CANCELLED, "message");
   s.Update(a);
   ASSERT_EQ(s, a);
   Status b(error::UNIMPLEMENTED, "other message");
@@ -103,41 +85,12 @@ TEST(Status, Update) {
   ASSERT_FALSE(s.ok());
 }
 
-TEST(Status, Swap) {
-  Status a(error::CANCELLED, "message");
-  Status b = a;
-  Status c;
-  c.Swap(&a);
-  ASSERT_EQ(c, b);
-  ASSERT_EQ(a, Status::OK);
-}
-
-TEST(Status, MatchOK) {
-  ASSERT_TRUE(Status().Matches(Status::OK));
-}
-
-TEST(Status, MatchSame) {
-  Status a(error::UNKNOWN, "message");
-  Status b(error::UNKNOWN, "message");
-  ASSERT_TRUE(a.Matches(b));
-}
-
-TEST(Status, MatchCopy) {
-  Status a(error::UNKNOWN, "message");
-  Status b = a;
-  ASSERT_TRUE(a.Matches(b));
-}
-
-TEST(Status, MatchDifferentCode) {
-  Status a(error::UNKNOWN, "message");
-  Status b(error::CANCELLED, "message");
-  ASSERT_TRUE(!a.Matches(b));
-}
-
-TEST(Status, MatchDifferentMessage) {
-  Status a(error::UNKNOWN, "message");
-  Status b(error::UNKNOWN, "another");
-  ASSERT_TRUE(a.Matches(b));
+// Will trigger copy ellision.
+TEST(Status, Update2) {
+  Status s;
+  ASSERT_TRUE(s.ok());
+  s.Update(Status(error::INVALID_ARGUMENT, "some message"));
+  ASSERT_EQ(error::INVALID_ARGUMENT, s.error_code());
 }
 
 TEST(Status, EqualsOK) {
