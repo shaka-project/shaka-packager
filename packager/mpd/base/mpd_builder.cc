@@ -6,6 +6,8 @@
 
 #include "packager/mpd/base/mpd_builder.h"
 
+#include <algorithm>
+
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -170,6 +172,21 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       return nullptr;
   }
 
+  // Prefer Period@duration to Period@start for static MPD with more than one
+  // periods.
+  if (mpd_options_.mpd_type == MpdType::kStatic && periods_.size() > 1) {
+    // The duration of every period is determined by its start_time and next
+    // period start_time. The code below traverses |periods_| backwards.
+    double next_period_start_time = GetStaticMpdDuration();
+    std::for_each(
+        periods_.rbegin(), periods_.rend(),
+        [&next_period_start_time](const std::unique_ptr<Period>& period) {
+          period->set_duration_seconds(next_period_start_time -
+                                       period->start_time_in_seconds());
+          next_period_start_time = period->start_time_in_seconds();
+        });
+  }
+
   for (const auto& period : periods_) {
     xml::scoped_xml_ptr<xmlNode> period_node(period->GetXml());
     if (!period_node || !mpd.AddChild(std::move(period_node)))
@@ -242,9 +259,8 @@ void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
 
   static const char kStaticMpdType[] = "static";
   mpd_node->SetStringAttribute("type", kStaticMpdType);
-  mpd_node->SetStringAttribute(
-      "mediaPresentationDuration",
-      SecondsToXmlDuration(GetStaticMpdDuration(mpd_node)));
+  mpd_node->SetStringAttribute("mediaPresentationDuration",
+                               SecondsToXmlDuration(GetStaticMpdDuration()));
 }
 
 void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
@@ -290,8 +306,7 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
                 mpd_options_.mpd_params.suggested_presentation_delay, mpd_node);
 }
 
-float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
-  DCHECK(mpd_node);
+float MpdBuilder::GetStaticMpdDuration() {
   DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
   if (periods_.empty()) {

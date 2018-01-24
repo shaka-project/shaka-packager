@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/mpd/base/adaptation_set.h"
@@ -11,6 +12,8 @@
 #include "packager/mpd/base/period.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/version/version.h"
+
+using ::testing::HasSubstr;
 
 namespace shaka {
 
@@ -150,7 +153,7 @@ TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
   ASSERT_FALSE(mpd_.ToString(&mpd_doc));
 }
 
-TEST_F(LiveMpdBuilderTest, MultiplePeriodTest) {
+TEST_F(OnDemandMpdBuilderTest, MultiplePeriodTest) {
   const double kPeriodStartTimeSeconds = 1.0;
   Period* period = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
   ASSERT_TRUE(period);
@@ -168,6 +171,40 @@ TEST_F(LiveMpdBuilderTest, MultiplePeriodTest) {
   ASSERT_TRUE(period3);
   ASSERT_NE(period, period3);
   ASSERT_EQ(kPeriodStartTimeSeconds3, period3->start_time_in_seconds());
+}
+
+TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
+  const double kPeriodStartTimeSeconds = 0.0;
+  const double kPeriodStartTimeSeconds2 = 3.1;
+  const double kPeriodStartTimeSeconds3 = 8.0;
+  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
+  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds2);
+  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds3);
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  EXPECT_THAT(mpd_doc,
+              HasSubstr("  <Period id=\"0\" duration=\"PT3.1S\"/>\n"
+                        "  <Period id=\"1\" duration=\"PT4.9S\"/>\n"
+                        // There are no Representations so MPD duration is 0,
+                        // which results in a negative duration for the last
+                        // period. This would not happen in practice.
+                        "  <Period id=\"2\" duration=\"PT-8S\"/>\n"));
+}
+
+TEST_F(LiveMpdBuilderTest, MultiplePeriodCheckXmlTest) {
+  const double kPeriodStartTimeSeconds = 0.0;
+  const double kPeriodStartTimeSeconds2 = 3.1;
+  const double kPeriodStartTimeSeconds3 = 8.0;
+  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
+  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds2);
+  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds3);
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  EXPECT_THAT(mpd_doc, HasSubstr("  <Period id=\"0\" start=\"PT0S\"/>\n"
+                                 "  <Period id=\"1\" start=\"PT3.1S\"/>\n"
+                                 "  <Period id=\"2\" start=\"PT8S\"/>\n"));
 }
 
 // Check whether the attributes are set correctly for dynamic <MPD> element.

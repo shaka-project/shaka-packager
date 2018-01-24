@@ -48,13 +48,18 @@ class Period {
   /// Generates <Period> xml element with its child AdaptationSet elements.
   /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
   ///         NULL scoped_xml_ptr.
-  xml::scoped_xml_ptr<xmlNode> GetXml();
+  xml::scoped_xml_ptr<xmlNode> GetXml() const;
 
   /// @return The list of AdaptationSets in this Period.
   const std::list<AdaptationSet*> GetAdaptationSets() const;
 
   /// @return The start time of this Period.
   double start_time_in_seconds() const { return start_time_in_seconds_; }
+
+  /// Set period duration.
+  void set_duration_seconds(double duration_seconds) {
+    duration_seconds_ = duration_seconds;
+  }
 
  protected:
   /// @param period_id is an ID number for this Period.
@@ -102,6 +107,7 @@ class Period {
 
   const uint32_t id_;
   const double start_time_in_seconds_;
+  double duration_seconds_ = 0;
   const MpdOptions& mpd_options_;
   base::AtomicSequenceNumber* const adaptation_set_counter_;
   base::AtomicSequenceNumber* const representation_counter_;

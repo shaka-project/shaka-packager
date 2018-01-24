@@ -172,7 +172,7 @@ class Representation {
 
   // Returns true if |media_info_| has required fields to generate a valid
   // Representation. Otherwise returns false.
-  bool HasRequiredMediaInfoFields();
+  bool HasRequiredMediaInfoFields() const;
 
   // Return false if the segment should be considered a new segment. True if the
   // segment is contiguous.

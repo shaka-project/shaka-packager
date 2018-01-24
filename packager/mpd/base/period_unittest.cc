@@ -177,6 +177,38 @@ TEST_P(PeriodTest, DynamicMpdGetXml) {
   EXPECT_THAT(testable_period_.GetXml().get(), XmlNodeEqual(kExpectedXml));
 }
 
+TEST_P(PeriodTest, SetDurationAndGetXml) {
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+      .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
+
+  ASSERT_EQ(default_adaptation_set_ptr_,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVideoMediaInfo),
+                content_protection_in_adaptation_set_));
+
+  testable_period_.set_duration_seconds(100.234);
+
+  const char kExpectedXml[] =
+      "<Period id=\"9\" duration=\"PT100.234S\">"
+      // ContentType and Representation elements are populated after
+      // Representation::Init() is called.
+      "  <AdaptationSet id=\"0\" contentType=\"\"/>"
+      "</Period>";
+  EXPECT_THAT(testable_period_.GetXml().get(), XmlNodeEqual(kExpectedXml));
+}
+
 // Verify ForceSetSegmentAlignment is called.
 TEST_P(PeriodTest, Text) {
   const char kTextMediaInfo[] =

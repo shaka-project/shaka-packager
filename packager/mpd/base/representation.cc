@@ -315,7 +315,7 @@ float Representation::GetDurationSeconds() const {
   return media_info_.media_duration_seconds();
 }
 
-bool Representation::HasRequiredMediaInfoFields() {
+bool Representation::HasRequiredMediaInfoFields() const {
   if (HasVODOnlyFields(media_info_) && HasLiveOnlyFields(media_info_)) {
     LOG(ERROR) << "MediaInfo cannot have both VOD and Live fields.";
     return false;
