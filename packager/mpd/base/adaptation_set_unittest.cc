@@ -21,16 +21,14 @@ using ::testing::Not;
 namespace shaka {
 
 namespace {
-const uint32_t kAnyAdaptationSetId = 1;
 const char kNoLanguage[] = "";
 }  // namespace
 
 class AdaptationSetTest : public ::testing::Test {
  public:
-  std::unique_ptr<AdaptationSet> CreateAdaptationSet(uint32_t adaptation_set_id,
-                                                     const std::string& lang) {
-    return std::unique_ptr<AdaptationSet>(new AdaptationSet(
-        adaptation_set_id, lang, mpd_options_, &representation_counter_));
+  std::unique_ptr<AdaptationSet> CreateAdaptationSet(const std::string& lang) {
+    return std::unique_ptr<AdaptationSet>(
+        new AdaptationSet(lang, mpd_options_, &representation_counter_));
   }
 
  protected:
@@ -49,15 +47,24 @@ class LiveAdaptationSetTest : public AdaptationSetTest {
 };
 
 TEST_F(AdaptationSetTest, AddAdaptationSetSwitching) {
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
-  adaptation_set->AddAdaptationSetSwitching(1);
-  adaptation_set->AddAdaptationSetSwitching(2);
-  adaptation_set->AddAdaptationSetSwitching(8);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
+
+  auto adaptation_set_1 = CreateAdaptationSet(kNoLanguage);
+  adaptation_set_1->set_id(1);
+  adaptation_set->AddAdaptationSetSwitching(adaptation_set_1.get());
+
+  auto adaptation_set_2 = CreateAdaptationSet(kNoLanguage);
+  adaptation_set_2->set_id(2);
+  adaptation_set->AddAdaptationSetSwitching(adaptation_set_2.get());
+
+  auto adaptation_set_8 = CreateAdaptationSet(kNoLanguage);
+  adaptation_set_8->set_id(8);
+  adaptation_set->AddAdaptationSetSwitching(adaptation_set_8.get());
 
   // The empty contentType is sort of a side effect of being able to generate an
   // MPD without adding any Representations.
   const char kExpectedOutput[] =
-      "<AdaptationSet id=\"1\" contentType=\"\">"
+      "<AdaptationSet contentType=\"\">"
       "  <SupplementalProperty "
       "   schemeIdUri=\"urn:mpeg:dash:adaptation-set-switching:2016\" "
       "   value=\"1,2,8\"/>"
@@ -80,7 +87,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetVideoContentType) {
       "}\n"
       "container_type: CONTAINER_MP4\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
   EXPECT_THAT(adaptation_set->GetXml().get(),
               AttributeEqual("contentType", "video"));
@@ -98,7 +105,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetAudioContentType) {
       "}\n"
       "container_type: CONTAINER_MP4\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
   EXPECT_THAT(adaptation_set->GetXml().get(),
               AttributeEqual("contentType", "audio"));
@@ -114,7 +121,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetTextContentType) {
       "}\n"
       "container_type: CONTAINER_TEXT\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, "en");
+  auto adaptation_set = CreateAdaptationSet("en");
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
   EXPECT_THAT(adaptation_set->GetXml().get(),
               AttributeEqual("contentType", "text"));
@@ -133,7 +140,7 @@ TEST_F(AdaptationSetTest, CopyRepresentation) {
       "}\n"
       "container_type: CONTAINER_MP4\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
 
@@ -144,7 +151,7 @@ TEST_F(AdaptationSetTest, CopyRepresentation) {
 
 // Verify that language passed to the constructor sets the @lang field is set.
 TEST_F(AdaptationSetTest, CheckLanguageAttributeSet) {
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, "en");
+  auto adaptation_set = CreateAdaptationSet("en");
   EXPECT_THAT(adaptation_set->GetXml().get(), AttributeEqual("lang", "en"));
 }
 
@@ -152,26 +159,27 @@ TEST_F(AdaptationSetTest, CheckLanguageAttributeSet) {
 TEST_F(AdaptationSetTest, CheckConvertLanguageWithSubtag) {
   // "por-BR" is the long tag for Brazillian Portuguese.  The short tag
   // is "pt-BR", which is what should appear in the manifest.
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, "por-BR");
+  auto adaptation_set = CreateAdaptationSet("por-BR");
   EXPECT_THAT(adaptation_set->GetXml().get(), AttributeEqual("lang", "pt-BR"));
 }
 
 TEST_F(AdaptationSetTest, CheckAdaptationSetId) {
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   const uint32_t kAdaptationSetId = 42;
-  auto adaptation_set = CreateAdaptationSet(kAdaptationSetId, kNoLanguage);
+  adaptation_set->set_id(kAdaptationSetId);
   EXPECT_THAT(adaptation_set->GetXml().get(),
               AttributeEqual("id", std::to_string(kAdaptationSetId)));
 }
 
 // Verify AdaptationSet::AddRole() works for "main" role.
 TEST_F(AdaptationSetTest, AdaptationAddRoleElementMain) {
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   adaptation_set->AddRole(AdaptationSet::kRoleMain);
 
   // The empty contentType is sort of a side effect of being able to generate an
   // MPD without adding any Representations.
   const char kExpectedOutput[] =
-      "<AdaptationSet id=\"1\" contentType=\"\">\n"
+      "<AdaptationSet contentType=\"\">\n"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
       "</AdaptationSet>";
   EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
@@ -180,7 +188,7 @@ TEST_F(AdaptationSetTest, AdaptationAddRoleElementMain) {
 // Add Role, ContentProtection, and Representation elements. Verify that
 // ContentProtection -> Role -> Representation are in order.
 TEST_F(AdaptationSetTest, CheckContentProtectionRoleRepresentationOrder) {
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   adaptation_set->AddRole(AdaptationSet::kRoleMain);
   ContentProtectionElement any_content_protection;
   any_content_protection.scheme_id_uri = "any_scheme";
@@ -197,7 +205,7 @@ TEST_F(AdaptationSetTest, CheckContentProtectionRoleRepresentationOrder) {
 
   xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
   const char kExpectedOutput[] =
-      "<AdaptationSet id=\"1\" contentType=\"audio\">\n"
+      "<AdaptationSet contentType=\"audio\">\n"
       "  <ContentProtection schemeIdUri=\"any_scheme\"/>\n"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
       "  <Representation id=\"0\" bandwidth=\"0\" codecs=\"mp4a.40.2\"\n"
@@ -232,7 +240,7 @@ TEST_F(AdaptationSetTest, AdapatationSetFrameRate) {
       "  frame_duration: 3\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo1)));
   ASSERT_TRUE(
@@ -265,7 +273,7 @@ TEST_F(AdaptationSetTest, AdapatationSetMaxFrameRate) {
       "  frame_duration: 200\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kVideoMediaInfo30fps)));
   ASSERT_TRUE(adaptation_set->AddRepresentation(
@@ -307,7 +315,7 @@ TEST_F(AdaptationSetTest,
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
@@ -391,7 +399,7 @@ TEST_F(AdaptationSetTest, AdaptationSetParAllSame) {
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pVideoInfo)));
   ASSERT_TRUE(
@@ -432,7 +440,7 @@ TEST_F(AdaptationSetTest, AdaptationSetParDifferent) {
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k16by9VideoInfo)));
   ASSERT_TRUE(
@@ -455,7 +463,7 @@ TEST_F(AdaptationSetTest, AdaptationSetParUnknown) {
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kUknownPixelWidthAndHeight)));
 
@@ -487,7 +495,7 @@ TEST_F(AdaptationSetTest, AdapatationSetMaxFrameRateIntegerDivisionEdgeCase) {
       "  frame_duration: 3\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo1)));
   ASSERT_TRUE(
@@ -552,7 +560,7 @@ TEST_F(AdaptationSetTest, BubbleUpAttributesToAdaptationSet) {
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(ConvertToMediaInfo(k1080p)));
 
   xml::scoped_xml_ptr<xmlNode> all_attributes_on_adaptation_set(
@@ -610,7 +618,7 @@ TEST_F(AdaptationSetTest, GetRepresentations) {
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
 
   Representation* representation1 =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kMediaInfo1));
@@ -622,8 +630,7 @@ TEST_F(AdaptationSetTest, GetRepresentations) {
   EXPECT_THAT(adaptation_set->GetRepresentations(),
               ElementsAre(representation1, representation2));
 
-  auto new_adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto new_adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* new_representation2 =
       new_adaptation_set->CopyRepresentation(*representation2);
   Representation* new_representation1 =
@@ -668,7 +675,7 @@ TEST_F(OnDemandAdaptationSetTest, SubsegmentAlignment) {
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   // Add a subsegment immediately before adding the 360p Representation.
@@ -720,7 +727,7 @@ TEST_F(OnDemandAdaptationSetTest, ForceSetsubsegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
@@ -768,7 +775,7 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
@@ -815,7 +822,7 @@ TEST_F(OnDemandAdaptationSetTest, AdapatationSetWidthAndHeight) {
       "  frame_duration: 200\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo1)));
   ASSERT_TRUE(
@@ -849,7 +856,7 @@ TEST_F(OnDemandAdaptationSetTest, AdaptationSetMaxWidthAndMaxHeight) {
       "  frame_duration: 100\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kVideoMediaInfo1080p)));
   ASSERT_TRUE(adaptation_set->AddRepresentation(
@@ -875,7 +882,7 @@ TEST_F(AdaptationSetTest, SetSampleDuration) {
       "}\n"
       "container_type: 1\n";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
 
   const MediaInfo video_media_info = ConvertToMediaInfo(kVideoMediaInfo);
   Representation* representation =
@@ -911,13 +918,13 @@ TEST_F(AdaptationSetTest, AdaptationSetAddContentProtectionAndUpdate) {
   pssh.content = "any value";
   content_protection.subelements.push_back(pssh);
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kVideoMediaInfo1080p)));
   adaptation_set->AddContentProtectionElement(content_protection);
 
   const char kExpectedOutput1[] =
-      "<AdaptationSet id=\"1\" contentType=\"video\" width=\"1920\""
+      "<AdaptationSet contentType=\"video\" width=\"1920\""
       " height=\"1080\" frameRate=\"3000/100\">"
       "  <ContentProtection"
       "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
@@ -932,7 +939,7 @@ TEST_F(AdaptationSetTest, AdaptationSetAddContentProtectionAndUpdate) {
   adaptation_set->UpdateContentProtectionPssh(
       "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed", "new pssh value");
   const char kExpectedOutput2[] =
-      "<AdaptationSet id=\"1\" contentType=\"video\" width=\"1920\""
+      "<AdaptationSet contentType=\"video\" width=\"1920\""
       " height=\"1080\" frameRate=\"3000/100\">"
       "  <ContentProtection"
       "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
@@ -967,13 +974,13 @@ TEST_F(AdaptationSetTest, UpdateToRemovePsshElement) {
       "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
   content_protection.value = "some value";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   ASSERT_TRUE(adaptation_set->AddRepresentation(
       ConvertToMediaInfo(kVideoMediaInfo1080p)));
   adaptation_set->AddContentProtectionElement(content_protection);
 
   const char kExpectedOutput1[] =
-      "<AdaptationSet id=\"1\" contentType=\"video\" width=\"1920\""
+      "<AdaptationSet contentType=\"video\" width=\"1920\""
       " height=\"1080\" frameRate=\"3000/100\">"
       "  <ContentProtection"
       "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
@@ -987,7 +994,7 @@ TEST_F(AdaptationSetTest, UpdateToRemovePsshElement) {
   adaptation_set->UpdateContentProtectionPssh(
       "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed", "added pssh value");
   const char kExpectedOutput2[] =
-      "<AdaptationSet id=\"1\" contentType=\"video\" width=\"1920\""
+      "<AdaptationSet contentType=\"video\" width=\"1920\""
       " height=\"1080\" frameRate=\"3000/100\">"
       "  <ContentProtection"
       "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
@@ -1030,7 +1037,7 @@ TEST_F(OnDemandAdaptationSetTest,
       "container_type: CONTAINER_MP4\n";
 
   const char kExpectedOutput[] =
-      "<AdaptationSet id=\"1\" contentType=\"audio\">"
+      "<AdaptationSet contentType=\"audio\">"
       "  <Representation id=\"0\" bandwidth=\"195857\" codecs=\"mp4a.40.2\""
       "   mimeType=\"audio/mp4\" audioSamplingRate=\"44100\">"
       "    <AudioChannelConfiguration"
@@ -1054,7 +1061,7 @@ TEST_F(OnDemandAdaptationSetTest,
   pssh.content = "anything";
   content_protection.subelements.push_back(pssh);
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* audio_representation =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kTestMediaInfo));
   ASSERT_TRUE(audio_representation);
@@ -1076,7 +1083,7 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
       "container_type: CONTAINER_TEXT\n";
 
   const char kExpectedOutput[] =
-      "<AdaptationSet id=\"1\" contentType=\"text\" lang=\"en\">"
+      "<AdaptationSet contentType=\"text\" lang=\"en\">"
       "  <Role schemeIdUri=\"urn:mpeg:dash:role:2011\""
       "   value=\"subtitle\"/>\n"
       "  <Representation id=\"0\" bandwidth=\"1000\""
@@ -1085,7 +1092,7 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
       "  </Representation>"
       "</AdaptationSet>";
 
-  auto adaptation_set = CreateAdaptationSet(kAnyAdaptationSetId, "en");
+  auto adaptation_set = CreateAdaptationSet("en");
   Representation* text_representation =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
   ASSERT_TRUE(text_representation);

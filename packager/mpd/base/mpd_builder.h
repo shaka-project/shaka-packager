@@ -120,7 +120,6 @@ class MpdBuilder {
   std::string availability_start_time_;
 
   base::AtomicSequenceNumber period_counter_;
-  base::AtomicSequenceNumber adaptation_set_counter_;
   base::AtomicSequenceNumber representation_counter_;
 
   // By default, this returns the current time. This can be injected for

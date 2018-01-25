@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "packager/base/atomic_sequence_num.h"
+#include "packager/base/optional.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace shaka {
@@ -113,12 +114,15 @@ class AdaptationSet {
   ///        attribute.
   virtual void ForceSetSegmentAlignment(bool segment_alignment);
 
-  /// Adds the id of the adaptation set this adaptation set can switch to.
-  /// @param adaptation_set_id is the id of the switchable adaptation set.
-  virtual void AddAdaptationSetSwitching(uint32_t adaptation_set_id);
+  /// Adds the adaptation set this adaptation set can switch to.
+  /// @param adaptation_set points to the switchable adaptation set.
+  virtual void AddAdaptationSetSwitching(const AdaptationSet* adaptation_set);
+
+  /// @return true if id is set, false otherwise.
+  bool has_id() const { return static_cast<bool>(id_); }
 
   // Must be unique in the Period.
-  uint32_t id() const { return id_; }
+  uint32_t id() const { return id_.value(); }
 
   /// Set AdaptationSet@id.
   /// @param id is the new ID to be set.
@@ -155,10 +159,9 @@ class AdaptationSet {
                                        uint32_t frame_duration,
                                        uint32_t timescale);
 
-  /// Add the id of the adaptation set this trick play adaptation set belongs
-  /// to.
-  /// @param id the id of the reference (or main) adapation set.
-  virtual void AddTrickPlayReferenceId(uint32_t id);
+  /// Add the adaptation set this trick play adaptation set belongs to.
+  /// @param adaptation_set points to the reference (or main) adapation set.
+  virtual void AddTrickPlayReference(const AdaptationSet* adaptation_set);
 
   // Return the list of Representations in this AdaptationSet.
   const std::list<Representation*> GetRepresentations() const;
@@ -167,15 +170,13 @@ class AdaptationSet {
   bool IsVideo() const;
 
  protected:
-  /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param lang is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
   /// @param mpd_options is the options for this MPD.
   /// @param mpd_type is the type of this MPD.
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
-  AdaptationSet(uint32_t adaptation_set_id,
-                const std::string& lang,
+  AdaptationSet(const std::string& lang,
                 const MpdOptions& mpd_options,
                 base::AtomicSequenceNumber* representation_counter);
 
@@ -235,12 +236,12 @@ class AdaptationSet {
 
   base::AtomicSequenceNumber* const representation_counter_;
 
-  uint32_t id_;
+  base::Optional<uint32_t> id_;
   const std::string lang_;
   const MpdOptions& mpd_options_;
 
-  // The ids of the adaptation sets this adaptation set can switch to.
-  std::vector<uint32_t> adaptation_set_switching_ids_;
+  // An array of adaptation sets this adaptation set can switch to.
+  std::vector<const AdaptationSet*> switchable_adaptation_sets_;
 
   // Video widths and heights of Representations. Note that this is a set; if
   // there is only 1 resolution, then @width & @height should be set, otherwise
@@ -286,11 +287,11 @@ class AdaptationSet {
   // reasonable and may cause an out-of-memory problem.
   RepresentationTimeline representation_segment_start_times_;
 
-  // Record the reference id for the original adaptation sets the trick play
-  // stream belongs to. This is a set because the trick play streams may be for
-  // multiple AdaptationSets (e.g. SD and HD videos in different AdaptationSets
-  // can share the same trick play stream.)
-  std::set<uint32_t> trick_play_reference_ids_;
+  // Record the original AdaptationSets the trick play stream belongs to. There
+  // can be more than one reference AdaptationSets as multiple streams e.g. SD
+  // and HD videos in different AdaptationSets can share the same trick play
+  // stream.
+  std::vector<const AdaptationSet*> trick_play_references_;
 };
 
 }  // namespace shaka

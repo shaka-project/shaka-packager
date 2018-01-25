@@ -28,7 +28,6 @@ using ::testing::StrEq;
 namespace {
 const uint32_t kDefaultPeriodId = 0u;
 const double kDefaultPeriodStartTime = 0.0;
-const uint32_t kDefaultAdaptationSetId = 0u;
 const uint32_t kDefaultTimeScale = 10;
 const bool kContentProtectionInAdaptationSet = true;
 
@@ -43,8 +42,7 @@ class SimpleMpdNotifierTest : public ::testing::Test {
   SimpleMpdNotifierTest()
       : default_mock_period_(
             new MockPeriod(kDefaultPeriodId, kDefaultPeriodStartTime)),
-        default_mock_adaptation_set_(
-            new MockAdaptationSet(kDefaultAdaptationSetId)) {}
+        default_mock_adaptation_set_(new MockAdaptationSet()) {}
 
   void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
@@ -207,7 +205,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {
   std::unique_ptr<MockPeriod> mock_period(
       new MockPeriod(kDefaultPeriodId, kDefaultPeriodStartTime));
   std::unique_ptr<MockAdaptationSet> mock_adaptation_set(
-      new MockAdaptationSet(kDefaultAdaptationSetId));
+      new MockAdaptationSet());
   std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
@@ -229,7 +227,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {
   std::unique_ptr<MockPeriod> mock_period2(
       new MockPeriod(kAnotherPeriodId, kArbitraryPeriodStartTime));
   std::unique_ptr<MockAdaptationSet> mock_adaptation_set2(
-      new MockAdaptationSet(kDefaultAdaptationSetId));
+      new MockAdaptationSet());
   std::unique_ptr<MockRepresentation> mock_representation2(
       new MockRepresentation(kRepresentationId));
 
@@ -339,8 +337,8 @@ TEST_F(SimpleMpdNotifierTest, MultipleMediaInfo) {
   SimpleMpdNotifier notifier(empty_mpd_option_);
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
 
-  std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
-  std::unique_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
+  std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet());
+  std::unique_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet());
 
   std::unique_ptr<MockRepresentation> representation1(
       new MockRepresentation(1));

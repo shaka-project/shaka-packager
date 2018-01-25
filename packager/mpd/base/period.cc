@@ -37,12 +37,10 @@ std::set<std::string> GetUUIDs(
 Period::Period(uint32_t period_id,
                double start_time_in_seconds,
                const MpdOptions& mpd_options,
-               base::AtomicSequenceNumber* adaptation_set_counter,
                base::AtomicSequenceNumber* representation_counter)
     : id_(period_id),
       start_time_in_seconds_(start_time_in_seconds),
       mpd_options_(mpd_options),
-      adaptation_set_counter_(adaptation_set_counter),
       representation_counter_(representation_counter) {}
 
 AdaptationSet* Period::GetOrCreateAdaptationSet(
@@ -66,10 +64,9 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   }
   // None of the adaptation sets match with the new content protection.
   // Need a new one.
-  std::string language = GetLanguage(media_info);
+  const std::string language = GetLanguage(media_info);
   std::unique_ptr<AdaptationSet> new_adaptation_set =
-      NewAdaptationSet(adaptation_set_counter_->GetNext(), language,
-                       mpd_options_, representation_counter_);
+      NewAdaptationSet(language, mpd_options_, representation_counter_);
   if (!SetNewAdaptationSetAttributes(language, media_info, adaptation_sets,
                                      new_adaptation_set.get())) {
     return nullptr;
@@ -83,25 +80,35 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
     for (AdaptationSet* adaptation_set : adaptation_sets) {
       if (protected_adaptation_set_map_.Switchable(*adaptation_set,
                                                    *new_adaptation_set)) {
-        adaptation_set->AddAdaptationSetSwitching(new_adaptation_set->id());
-        new_adaptation_set->AddAdaptationSetSwitching(adaptation_set->id());
+        adaptation_set->AddAdaptationSetSwitching(new_adaptation_set.get());
+        new_adaptation_set->AddAdaptationSetSwitching(adaptation_set);
       }
     }
   }
   AdaptationSet* adaptation_set_ptr = new_adaptation_set.get();
   adaptation_sets.push_back(adaptation_set_ptr);
-  adaptation_set_map_[adaptation_set_ptr->id()] = std::move(new_adaptation_set);
+  adaptation_sets_.emplace_back(std::move(new_adaptation_set));
   return adaptation_set_ptr;
 }
 
-xml::scoped_xml_ptr<xmlNode> Period::GetXml(bool output_period_duration) const {
+xml::scoped_xml_ptr<xmlNode> Period::GetXml(bool output_period_duration) {
+  adaptation_sets_.sort(
+      [](const std::unique_ptr<AdaptationSet>& adaptation_set_a,
+         const std::unique_ptr<AdaptationSet>& adaptation_set_b) {
+        if (!adaptation_set_a->has_id())
+          return false;
+        if (!adaptation_set_b->has_id())
+          return true;
+        return adaptation_set_a->id() < adaptation_set_b->id();
+      });
+
   xml::XmlNode period("Period");
 
   // Required for 'dynamic' MPDs.
   period.SetId(id_);
   // Iterate thru AdaptationSets and add them to one big Period element.
-  for (const auto& adaptation_set_pair : adaptation_set_map_) {
-    xml::scoped_xml_ptr<xmlNode> child(adaptation_set_pair.second->GetXml());
+  for (const auto& adaptation_set : adaptation_sets_) {
+    xml::scoped_xml_ptr<xmlNode> child(adaptation_set->GetXml());
     if (!child || !period.AddChild(std::move(child)))
       return nullptr;
   }
@@ -118,19 +125,18 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml(bool output_period_duration) const {
 
 const std::list<AdaptationSet*> Period::GetAdaptationSets() const {
   std::list<AdaptationSet*> adaptation_sets;
-  for (const auto& adaptation_set_pair : adaptation_set_map_) {
-    adaptation_sets.push_back(adaptation_set_pair.second.get());
+  for (const auto& adaptation_set : adaptation_sets_) {
+    adaptation_sets.push_back(adaptation_set.get());
   }
   return adaptation_sets;
 }
 
 std::unique_ptr<AdaptationSet> Period::NewAdaptationSet(
-    uint32_t adaptation_set_id,
     const std::string& language,
     const MpdOptions& options,
     base::AtomicSequenceNumber* representation_counter) {
-  return std::unique_ptr<AdaptationSet>(new AdaptationSet(
-      adaptation_set_id, language, options, representation_counter));
+  return std::unique_ptr<AdaptationSet>(
+      new AdaptationSet(language, options, representation_counter));
 }
 
 bool Period::SetNewAdaptationSetAttributes(
@@ -152,14 +158,14 @@ bool Period::SetNewAdaptationSetAttributes(
     }
 
     if (media_info.video_info().has_playback_rate()) {
-      uint32_t trick_play_reference_id = 0;
-      if (!FindOriginalAdaptationSetForTrickPlay(media_info,
-                                                 &trick_play_reference_id)) {
-        LOG(ERROR) << "Failed to find main adaptation set for trick play.";
+      const AdaptationSet* trick_play_reference_adaptation_set =
+          FindOriginalAdaptationSetForTrickPlay(media_info);
+      if (!trick_play_reference_adaptation_set) {
+        LOG(ERROR) << "Failed to find original AdaptationSet for trick play.";
         return false;
       }
-      DCHECK_NE(new_adaptation_set->id(), trick_play_reference_id);
-      new_adaptation_set->AddTrickPlayReferenceId(trick_play_reference_id);
+      new_adaptation_set->AddTrickPlayReference(
+          trick_play_reference_adaptation_set);
     }
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
@@ -170,9 +176,8 @@ bool Period::SetNewAdaptationSetAttributes(
   return true;
 }
 
-bool Period::FindOriginalAdaptationSetForTrickPlay(
-    const MediaInfo& media_info,
-    uint32_t* main_adaptation_set_id) {
+const AdaptationSet* Period::FindOriginalAdaptationSetForTrickPlay(
+    const MediaInfo& media_info) {
   MediaInfo media_info_no_trickplay = media_info;
   media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
 
@@ -181,25 +186,24 @@ bool Period::FindOriginalAdaptationSetForTrickPlay(
       adaptation_set_list_map_[key];
   for (AdaptationSet* adaptation_set : adaptation_sets) {
     if (protected_adaptation_set_map_.Match(*adaptation_set, media_info)) {
-      *main_adaptation_set_id = adaptation_set->id();
-      return true;
+      return adaptation_set;
     }
   }
-  return false;
+  return nullptr;
 }
 
 void Period::ProtectedAdaptationSetMap::Register(
     const AdaptationSet& adaptation_set,
     const MediaInfo& media_info) {
-  DCHECK(!ContainsKey(protected_content_map_, adaptation_set.id()));
-  protected_content_map_[adaptation_set.id()] = media_info.protected_content();
+  DCHECK(!ContainsKey(protected_content_map_, &adaptation_set));
+  protected_content_map_[&adaptation_set] = media_info.protected_content();
 }
 
 bool Period::ProtectedAdaptationSetMap::Match(
     const AdaptationSet& adaptation_set,
     const MediaInfo& media_info) {
   const auto protected_content_it =
-      protected_content_map_.find(adaptation_set.id());
+      protected_content_map_.find(&adaptation_set);
   // If the AdaptationSet ID is not registered in the map, then it is clear
   // content.
   if (protected_content_it == protected_content_map_.end())
@@ -214,9 +218,9 @@ bool Period::ProtectedAdaptationSetMap::Switchable(
     const AdaptationSet& adaptation_set_a,
     const AdaptationSet& adaptation_set_b) {
   const auto protected_content_it_a =
-      protected_content_map_.find(adaptation_set_a.id());
+      protected_content_map_.find(&adaptation_set_a);
   const auto protected_content_it_b =
-      protected_content_map_.find(adaptation_set_b.id());
+      protected_content_map_.find(&adaptation_set_b);
 
   if (protected_content_it_a == protected_content_map_.end())
     return protected_content_it_b == protected_content_map_.end();

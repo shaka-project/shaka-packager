@@ -43,8 +43,7 @@ class MockPeriod : public Period {
 
 class MockAdaptationSet : public AdaptationSet {
  public:
-  // |adaptation_set_id| is the id for the AdaptationSet.
-  explicit MockAdaptationSet(uint32_t adaptation_set_id);
+  MockAdaptationSet();
   ~MockAdaptationSet() override;
 
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
@@ -56,8 +55,10 @@ class MockAdaptationSet : public AdaptationSet {
                void(const std::string& drm_uuid, const std::string& pssh));
   MOCK_METHOD1(AddRole, void(AdaptationSet::Role role));
   MOCK_METHOD1(ForceSetSegmentAlignment, void(bool segment_alignment));
-  MOCK_METHOD1(AddAdaptationSetSwitching, void(uint32_t adaptation_set_id));
-  MOCK_METHOD1(AddTrickPlayReferenceId, void(uint32_t id));
+  MOCK_METHOD1(AddAdaptationSetSwitching,
+               void(const AdaptationSet* adaptation_set));
+  MOCK_METHOD1(AddTrickPlayReference,
+               void(const AdaptationSet* adaptation_set));
 
  private:
   // Only for constructing the super class. Not used for testing.

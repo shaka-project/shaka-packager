@@ -167,12 +167,10 @@ class RepresentationStateChangeListenerImpl
 
 }  // namespace
 
-AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
-                             const std::string& lang,
+AdaptationSet::AdaptationSet(const std::string& lang,
                              const MpdOptions& mpd_options,
                              base::AtomicSequenceNumber* counter)
     : representation_counter_(counter),
-      id_(adaptation_set_id),
       lang_(lang),
       mpd_options_(mpd_options),
       segments_aligned_(kSegmentAlignmentUnknown),
@@ -245,7 +243,8 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   bool suppress_representation_height = false;
   bool suppress_representation_frame_rate = false;
 
-  adaptation_set.SetId(id_);
+  if (id_)
+    adaptation_set.SetId(id_.value());
   adaptation_set.SetStringAttribute("contentType", content_type_);
   if (!lang_.empty() && lang_ != "und") {
     adaptation_set.SetStringAttribute("lang", LanguageToShortestForm(lang_));
@@ -296,22 +295,24 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
     return xml::scoped_xml_ptr<xmlNode>();
   }
 
-  if (!trick_play_reference_ids_.empty()) {
-    std::string id_string;
-    for (uint32_t id : trick_play_reference_ids_) {
-      id_string += std::to_string(id) + ",";
-    }
-    DCHECK(!id_string.empty());
-    id_string.resize(id_string.size() - 1);
+  std::string trick_play_reference_ids;
+  for (const AdaptationSet* adaptation_set : trick_play_references_) {
+    if (!trick_play_reference_ids.empty())
+      trick_play_reference_ids += ',';
+    CHECK(adaptation_set->has_id());
+    trick_play_reference_ids += std::to_string(adaptation_set->id());
+  }
+  if (!trick_play_reference_ids.empty()) {
     adaptation_set.AddEssentialProperty(
-        "http://dashif.org/guidelines/trickmode", id_string);
+        "http://dashif.org/guidelines/trickmode", trick_play_reference_ids);
   }
 
   std::string switching_ids;
-  for (uint32_t id : adaptation_set_switching_ids_) {
+  for (const AdaptationSet* adaptation_set : switchable_adaptation_sets_) {
     if (!switching_ids.empty())
       switching_ids += ',';
-    switching_ids += base::UintToString(id);
+    CHECK(adaptation_set->has_id());
+    switching_ids += std::to_string(adaptation_set->id());
   }
   if (!switching_ids.empty()) {
     adaptation_set.AddSupplementalProperty(
@@ -343,8 +344,9 @@ void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
   force_set_segment_alignment_ = true;
 }
 
-void AdaptationSet::AddAdaptationSetSwitching(uint32_t adaptation_set_id) {
-  adaptation_set_switching_ids_.push_back(adaptation_set_id);
+void AdaptationSet::AddAdaptationSetSwitching(
+    const AdaptationSet* adaptation_set) {
+  switchable_adaptation_sets_.push_back(adaptation_set);
 }
 
 // Check segmentAlignment for Live here. Storing all start_time and duration
@@ -371,8 +373,8 @@ void AdaptationSet::OnSetFrameRateForRepresentation(uint32_t representation_id,
   RecordFrameRate(frame_duration, timescale);
 }
 
-void AdaptationSet::AddTrickPlayReferenceId(uint32_t id) {
-  trick_play_reference_ids_.insert(id);
+void AdaptationSet::AddTrickPlayReference(const AdaptationSet* adaptation_set) {
+  trick_play_references_.push_back(adaptation_set);
 }
 
 const std::list<Representation*> AdaptationSet::GetRepresentations() const {

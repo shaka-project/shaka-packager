@@ -56,17 +56,6 @@ class SimpleMpdNotifier : public MpdNotifier {
 
   friend class SimpleMpdNotifierTest;
 
-  // Add a new representation. If |original_representation| is not nullptr, the
-  // new Representation will clone from it; otherwise the new Representation is
-  // created from |media_info|.
-  // The new Representation will be added to Period with the specified start
-  // time.
-  // Returns the new Representation on success; otherwise a nullptr is returned.
-  Representation* AddRepresentationToPeriod(
-      const MediaInfo& media_info,
-      const Representation* original_representation,
-      double period_start_time_seconds);
-
   // Testing only method. Returns a pointer to MpdBuilder.
   MpdBuilder* MpdBuilderForTesting() const { return mpd_builder_.get(); }
 
@@ -81,6 +70,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   bool content_protection_in_adaptation_set_ = true;
   base::Lock lock_;
 
+  uint32_t next_adaptation_set_id_ = 0;
   // Maps Representation ID to Representation.
   std::map<uint32_t, Representation*> representation_map_;
   // Maps Representation ID to AdaptationSet. This is for updating the PSSH.

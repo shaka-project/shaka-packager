@@ -26,8 +26,6 @@ namespace shaka {
 namespace {
 const uint32_t kDefaultPeriodId = 9u;
 const double kDefaultPeriodStartTime = 5.6;
-const uint32_t kDefaultAdaptationSetId = 0u;
-const uint32_t kTrickPlayAdaptationSetId = 1u;
 const bool kOutputPeriodDuration = true;
 
 bool ElementEqual(const Element& lhs, const Element& rhs) {
@@ -80,12 +78,10 @@ class TestablePeriod : public Period {
       : Period(kDefaultPeriodId,
                kDefaultPeriodStartTime,
                mpd_options,
-               &sequence_number_,
                &sequence_number_) {}
 
-  MOCK_METHOD4(NewAdaptationSet,
+  MOCK_METHOD3(NewAdaptationSet,
                std::unique_ptr<AdaptationSet>(
-                   uint32_t adaptation_set_id,
                    const std::string& lang,
                    const MpdOptions& options,
                    base::AtomicSequenceNumber* representation_counter));
@@ -101,8 +97,7 @@ class PeriodTest : public ::testing::TestWithParam<bool> {
  public:
   PeriodTest()
       : testable_period_(mpd_options_),
-        default_adaptation_set_(
-            new StrictMock<MockAdaptationSet>(kDefaultAdaptationSetId)),
+        default_adaptation_set_(new StrictMock<MockAdaptationSet>()),
         default_adaptation_set_ptr_(default_adaptation_set_.get()) {}
 
   void SetUp() override { content_protection_in_adaptation_set_ = GetParam(); }
@@ -130,7 +125,7 @@ TEST_P(PeriodTest, GetXml) {
       "}\n"
       "container_type: 1\n";
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
@@ -142,7 +137,7 @@ TEST_P(PeriodTest, GetXml) {
       "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet id=\"0\" contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
               XmlNodeEqual(kExpectedXml));
@@ -162,7 +157,7 @@ TEST_P(PeriodTest, DynamicMpdGetXml) {
       "container_type: 1\n";
   mpd_options_.mpd_type = MpdType::kDynamic;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
@@ -174,7 +169,7 @@ TEST_P(PeriodTest, DynamicMpdGetXml) {
       "<Period id=\"9\" start=\"PT5.6S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet id=\"0\" contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
               XmlNodeEqual(kExpectedXml));
@@ -193,7 +188,7 @@ TEST_P(PeriodTest, SetDurationAndGetXml) {
       "}\n"
       "container_type: 1\n";
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
@@ -207,7 +202,7 @@ TEST_P(PeriodTest, SetDurationAndGetXml) {
       "<Period id=\"9\" duration=\"PT100.234S\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet id=\"0\" contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration).get(),
               XmlNodeEqual(kExpectedXml));
@@ -215,7 +210,7 @@ TEST_P(PeriodTest, SetDurationAndGetXml) {
       "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
-      "  <AdaptationSet id=\"0\" contentType=\"\"/>"
+      "  <AdaptationSet contentType=\"\"/>"
       "</Period>";
   EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
               XmlNodeEqual(kExpectedXmlSuppressDuration));
@@ -230,7 +225,7 @@ TEST_P(PeriodTest, Text) {
       "}\n"
       "container_type: CONTAINER_TEXT\n";
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, Eq("en"), _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(Eq("en"), _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
   EXPECT_CALL(*default_adaptation_set_ptr_, ForceSetSegmentAlignment(true));
 
@@ -240,7 +235,6 @@ TEST_P(PeriodTest, Text) {
                 content_protection_in_adaptation_set_));
 }
 
-// Verify AddTrickPlayReferenceId is called.
 TEST_P(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
@@ -267,15 +261,15 @@ TEST_P(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
       "container_type: 1\n";
 
   std::unique_ptr<StrictMock<MockAdaptationSet>> trick_play_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kTrickPlayAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* trick_play_adaptation_set_ptr = trick_play_adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))))
       .WillOnce(Return(ByMove(std::move(trick_play_adaptation_set))));
 
   EXPECT_CALL(*trick_play_adaptation_set_ptr,
-              AddTrickPlayReferenceId(Eq(kDefaultAdaptationSetId)));
+              AddTrickPlayReference(Eq(default_adaptation_set_ptr_)));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
             testable_period_.GetOrCreateAdaptationSet(
@@ -314,9 +308,9 @@ TEST_P(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
       "container_type: 1\n";
 
   std::unique_ptr<StrictMock<MockAdaptationSet>> trick_play_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kTrickPlayAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))))
       .WillOnce(Return(ByMove(std::move(trick_play_adaptation_set))));
 
@@ -396,18 +390,16 @@ TEST_P(PeriodTest, DifferentProtectedContent) {
 
   // Not using default mocks in this test so that we can keep track of
   // mocks by named mocks.
-  const uint32_t kSdAdaptationSetId = 2u;
-  const uint32_t kHdAdaptationSetId = 3u;
   std::unique_ptr<StrictMock<MockAdaptationSet>> sd_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kSdAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* sd_adaptation_set_ptr = sd_adaptation_set.get();
   std::unique_ptr<StrictMock<MockAdaptationSet>> hd_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kHdAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* hd_adaptation_set_ptr = hd_adaptation_set.get();
 
   InSequence in_sequence;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(sd_adaptation_set))));
 
   if (content_protection_in_adaptation_set_) {
@@ -418,7 +410,7 @@ TEST_P(PeriodTest, DifferentProtectedContent) {
         *sd_adaptation_set_ptr,
         AddContentProtectionElement(ContentProtectionElementEq(sd_my_drm)));
 
-    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
         .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
 
     // Add main Role here for both.
@@ -502,7 +494,7 @@ TEST_P(PeriodTest, SameProtectedContent) {
   InSequence in_sequence;
 
   // Only called once.
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   if (content_protection_in_adaptation_set_) {
@@ -579,22 +571,24 @@ TEST_P(PeriodTest, SetAdaptationSetSwitching) {
   const uint32_t kSdAdaptationSetId = 6u;
   const uint32_t kHdAdaptationSetId = 7u;
   std::unique_ptr<StrictMock<MockAdaptationSet>> sd_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kSdAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* sd_adaptation_set_ptr = sd_adaptation_set.get();
+  sd_adaptation_set_ptr->set_id(kSdAdaptationSetId);
   std::unique_ptr<StrictMock<MockAdaptationSet>> hd_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kHdAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* hd_adaptation_set_ptr = hd_adaptation_set.get();
+  hd_adaptation_set_ptr->set_id(kHdAdaptationSetId);
 
   InSequence in_sequence;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(sd_adaptation_set))));
 
   if (content_protection_in_adaptation_set_) {
     EXPECT_CALL(*sd_adaptation_set_ptr, AddContentProtectionElement(_))
         .Times(2);
 
-    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
         .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
 
     // Add main Role here for both.
@@ -605,9 +599,9 @@ TEST_P(PeriodTest, SetAdaptationSetSwitching) {
         .Times(2);
 
     EXPECT_CALL(*sd_adaptation_set_ptr,
-                AddAdaptationSetSwitching(kHdAdaptationSetId));
+                AddAdaptationSetSwitching(hd_adaptation_set_ptr));
     EXPECT_CALL(*hd_adaptation_set_ptr,
-                AddAdaptationSetSwitching(kSdAdaptationSetId));
+                AddAdaptationSetSwitching(sd_adaptation_set_ptr));
   }
 
   ASSERT_EQ(sd_adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
@@ -643,11 +637,12 @@ TEST_P(PeriodTest, SetAdaptationSetSwitching) {
 
   const uint32_t k4kAdaptationSetId = 4000u;
   std::unique_ptr<StrictMock<MockAdaptationSet>> fourk_adaptation_set(
-      new StrictMock<MockAdaptationSet>(k4kAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* fourk_adaptation_set_ptr = fourk_adaptation_set.get();
+  fourk_adaptation_set_ptr->set_id(k4kAdaptationSetId);
 
   if (content_protection_in_adaptation_set_) {
-    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
         .WillOnce(Return(ByMove(std::move(fourk_adaptation_set))));
 
     EXPECT_CALL(*fourk_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
@@ -655,13 +650,13 @@ TEST_P(PeriodTest, SetAdaptationSetSwitching) {
         .Times(2);
 
     EXPECT_CALL(*sd_adaptation_set_ptr,
-                AddAdaptationSetSwitching(k4kAdaptationSetId));
+                AddAdaptationSetSwitching(fourk_adaptation_set_ptr));
     EXPECT_CALL(*fourk_adaptation_set_ptr,
-                AddAdaptationSetSwitching(kSdAdaptationSetId));
+                AddAdaptationSetSwitching(sd_adaptation_set_ptr));
     EXPECT_CALL(*hd_adaptation_set_ptr,
-                AddAdaptationSetSwitching(k4kAdaptationSetId));
+                AddAdaptationSetSwitching(fourk_adaptation_set_ptr));
     EXPECT_CALL(*fourk_adaptation_set_ptr,
-                AddAdaptationSetSwitching(kHdAdaptationSetId));
+                AddAdaptationSetSwitching(hd_adaptation_set_ptr));
   }
 
   ASSERT_EQ(content_protection_in_adaptation_set_ ? fourk_adaptation_set_ptr
@@ -716,22 +711,24 @@ TEST_P(PeriodTest, DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
   const uint32_t kVideoAdaptationSetId = 6u;
   const uint32_t kAudioAdaptationSetId = 7u;
   std::unique_ptr<StrictMock<MockAdaptationSet>> video_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kVideoAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* video_adaptation_set_ptr = video_adaptation_set.get();
+  video_adaptation_set_ptr->set_id(kVideoAdaptationSetId);
   std::unique_ptr<StrictMock<MockAdaptationSet>> audio_adaptation_set(
-      new StrictMock<MockAdaptationSet>(kAudioAdaptationSetId));
+      new StrictMock<MockAdaptationSet>());
   auto* audio_adaptation_set_ptr = audio_adaptation_set.get();
+  audio_adaptation_set_ptr->set_id(kAudioAdaptationSetId);
 
   InSequence in_sequence;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(video_adaptation_set))));
   if (content_protection_in_adaptation_set_) {
     EXPECT_CALL(*video_adaptation_set_ptr, AddContentProtectionElement(_))
         .Times(2);
   }
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(audio_adaptation_set))));
   if (content_protection_in_adaptation_set_) {
     EXPECT_CALL(*audio_adaptation_set_ptr, AddContentProtectionElement(_))
@@ -796,17 +793,17 @@ TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
       "media_duration_seconds: 10.5\n";
 
   std::unique_ptr<StrictMock<MockAdaptationSet>> aac_eng_adaptation_set(
-      new StrictMock<MockAdaptationSet>(1));
+      new StrictMock<MockAdaptationSet>());
   auto* aac_eng_adaptation_set_ptr = aac_eng_adaptation_set.get();
   std::unique_ptr<StrictMock<MockAdaptationSet>> aac_ger_adaptation_set(
-      new StrictMock<MockAdaptationSet>(2));
+      new StrictMock<MockAdaptationSet>());
   auto* aac_ger_adaptation_set_ptr = aac_ger_adaptation_set.get();
   std::unique_ptr<StrictMock<MockAdaptationSet>> vorbis_german_adaptation_set(
-      new StrictMock<MockAdaptationSet>(3));
+      new StrictMock<MockAdaptationSet>());
   auto* vorbis_german_adaptation_set_ptr = vorbis_german_adaptation_set.get();
 
   // We expect three AdaptationSets.
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(aac_eng_adaptation_set))))
       .WillOnce(Return(ByMove(std::move(aac_ger_adaptation_set))))
       .WillOnce(Return(ByMove(std::move(vorbis_german_adaptation_set))));
@@ -855,13 +852,13 @@ TEST_P(PeriodTest, GetAdaptationSets) {
       "media_duration_seconds: 10.5\n";
 
   std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_1(
-      new StrictMock<MockAdaptationSet>(1));
+      new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_1_ptr = adaptation_set_1.get();
   std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_2(
-      new StrictMock<MockAdaptationSet>(2));
+      new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_2_ptr = adaptation_set_2.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
       .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
 
@@ -878,7 +875,7 @@ TEST_P(PeriodTest, GetAdaptationSets) {
               ElementsAre(adaptation_set_1_ptr, adaptation_set_2_ptr));
 }
 
-TEST_P(PeriodTest, GetAdaptationSetsOrderedByAdaptationSetId) {
+TEST_P(PeriodTest, OrderedByAdaptationSetId) {
   const char kContent1[] =
       "audio_info {\n"
       "  codec: 'mp4a.40.2'\n"
@@ -903,25 +900,34 @@ TEST_P(PeriodTest, GetAdaptationSetsOrderedByAdaptationSetId) {
       "media_duration_seconds: 10.5\n";
 
   std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_1(
-      new StrictMock<MockAdaptationSet>(1));
+      new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_1_ptr = adaptation_set_1.get();
   std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_2(
-      new StrictMock<MockAdaptationSet>(2));
+      new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_2_ptr = adaptation_set_2.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
-      .WillOnce(Return(ByMove(std::move(adaptation_set_2))))
-      .WillOnce(Return(ByMove(std::move(adaptation_set_1))));
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
+      .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
 
-  ASSERT_EQ(adaptation_set_2_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                      ConvertToMediaInfo(kContent2),
-                                      content_protection_in_adaptation_set_));
   ASSERT_EQ(adaptation_set_1_ptr, testable_period_.GetOrCreateAdaptationSet(
                                       ConvertToMediaInfo(kContent1),
                                       content_protection_in_adaptation_set_));
-  EXPECT_THAT(testable_period_.GetAdaptationSets(),
-              // Elements are ordered by id().
-              ElementsAre(adaptation_set_1_ptr, adaptation_set_2_ptr));
+  ASSERT_EQ(adaptation_set_2_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                      ConvertToMediaInfo(kContent2),
+                                      content_protection_in_adaptation_set_));
+
+  adaptation_set_1_ptr->set_id(2);
+  adaptation_set_2_ptr->set_id(1);
+  const char kExpectedXml[] =
+      R"(<Period id="9">)"
+      // ContentType and Representation elements are populated after
+      // Representation::Init() is called.
+      R"(  <AdaptationSet id="1" contentType=""/>)"
+      R"(  <AdaptationSet id="2" contentType=""/>)"
+      R"(</Period>)";
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+              XmlNodeEqual(kExpectedXml));
 }
 INSTANTIATE_TEST_CASE_P(ContentProtectionInAdaptationSet,
                         PeriodTest,
