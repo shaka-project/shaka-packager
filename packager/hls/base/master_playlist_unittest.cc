@@ -17,14 +17,14 @@
 namespace shaka {
 namespace hls {
 
+using base::FilePath;
+using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SetArgPointee;
 using ::testing::StrEq;
-using ::testing::_;
-using base::FilePath;
 
 namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
@@ -32,6 +32,58 @@ const char kDefaultLanguage[] = "en";
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
 const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
+
+std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
+    const std::string& filename,
+    const std::string& codec,
+    uint64_t bitrate) {
+  const char kNoName[] = "";
+  const char kNoGroup[] = "";
+
+  std::unique_ptr<MockMediaPlaylist> playlist(
+      new MockMediaPlaylist(kVodPlaylist, filename, kNoName, kNoGroup));
+
+  playlist->SetStreamTypeForTesting(
+      MediaPlaylist::MediaPlaylistStreamType::kVideo);
+  playlist->SetCodecForTesting(codec);
+
+  EXPECT_CALL(*playlist, Bitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(bitrate));
+  EXPECT_CALL(*playlist, GetDisplayResolution(NotNull(), NotNull()))
+      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth), SetArgPointee<1>(kHeight),
+                            Return(true)));
+
+  return playlist;
+}
+
+std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
+    const std::string& filename,
+    const std::string& name,
+    const std::string& group,
+    const std::string& codec,
+    const std::string& language,
+    uint64_t channels,
+    uint64_t bitrate) {
+  // Note that audiocodecs should match for different audio tracks with same
+  // group ID.
+  std::unique_ptr<MockMediaPlaylist> playlist(
+      new MockMediaPlaylist(kVodPlaylist, filename, name, group));
+
+  EXPECT_CALL(*playlist, GetLanguage()).WillRepeatedly(Return(language));
+  EXPECT_CALL(*playlist, GetNumChannels()).WillRepeatedly(Return(channels));
+
+  playlist->SetStreamTypeForTesting(
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
+  playlist->SetCodecForTesting(codec);
+
+  EXPECT_CALL(*playlist, Bitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(bitrate));
+  EXPECT_CALL(*playlist, GetDisplayResolution(NotNull(), NotNull())).Times(0);
+
+  return playlist;
+}
 }  // namespace
 
 class MasterPlaylistTest : public ::testing::Test {
@@ -44,9 +96,7 @@ class MasterPlaylistTest : public ::testing::Test {
                 .Append(FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName))
                 .AsUTF8Unsafe()) {}
 
-  void SetUp() override {
-    SetPackagerVersionForTesting("test");
-  }
+  void SetUp() override { SetPackagerVersionForTesting("test"); }
 
   MasterPlaylist master_playlist_;
   std::string test_output_dir_;
@@ -60,18 +110,11 @@ TEST_F(MasterPlaylistTest, AddMediaPlaylist) {
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
-  std::string codec = "avc1";
-  MockMediaPlaylist mock_playlist(kVodPlaylist, "media1.m3u8", "somename",
-                                  "somegroupid");
-  mock_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kVideo);
-  mock_playlist.SetCodecForTesting(codec);
-  EXPECT_CALL(mock_playlist, Bitrate()).WillOnce(Return(435889));
-  EXPECT_CALL(mock_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .WillOnce(DoAll(SetArgPointee<0>(kWidth),
-                      SetArgPointee<1>(kHeight),
-                      Return(true)));
-  master_playlist_.AddMediaPlaylist(&mock_playlist);
+  const uint64_t kBitRate = 435889;
+
+  std::unique_ptr<MockMediaPlaylist> mock_playlist =
+      CreateVideoPlaylist("media1.m3u8", "avc1", kBitRate);
+  master_playlist_.AddMediaPlaylist(mock_playlist.get());
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
@@ -90,70 +133,36 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
+  const uint64_t kVideo1BitRate = 300000;
+  const uint64_t kVideo2BitRate = 700000;
+
+  const uint64_t kAudio1BitRate = 50000;
+  const uint64_t kAudio2BitRate = 60000;
+
+  const uint64_t kAudio1Channels = 2;
+  const uint64_t kAudio2Channels = 5;
+
   // First video, sd.m3u8.
-  std::string sd_video_codec = "sdvideocodec";
-  MockMediaPlaylist sd_video_playlist(kVodPlaylist, "sd.m3u8", "somename",
-                                      "somegroupid");
-  sd_video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kVideo);
-  sd_video_playlist.SetCodecForTesting(sd_video_codec);
-  EXPECT_CALL(sd_video_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(300000));
-  EXPECT_CALL(sd_video_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
-                            SetArgPointee<1>(kHeight),
-                            Return(true)));
-  master_playlist_.AddMediaPlaylist(&sd_video_playlist);
+  std::unique_ptr<MockMediaPlaylist> sd_video_playlist =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", kVideo1BitRate);
+  master_playlist_.AddMediaPlaylist(sd_video_playlist.get());
 
   // Second video, hd.m3u8.
-  std::string hd_video_codec = "hdvideocodec";
-  MockMediaPlaylist hd_video_playlist(kVodPlaylist, "hd.m3u8", "somename",
-                                      "somegroupid");
-  hd_video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kVideo);
-  hd_video_playlist.SetCodecForTesting(hd_video_codec);
-  EXPECT_CALL(hd_video_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(700000));
-  EXPECT_CALL(hd_video_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
-                            SetArgPointee<1>(kHeight),
-                            Return(true)));
-  master_playlist_.AddMediaPlaylist(&hd_video_playlist);
+  std::unique_ptr<MockMediaPlaylist> hd_video_playlist =
+      CreateVideoPlaylist("hd.m3u8", "hdvideocodec", kVideo2BitRate);
+  master_playlist_.AddMediaPlaylist(hd_video_playlist.get());
 
   // First audio, english.m3u8.
-  // Note that audiocodecs should match for different audio tracks with same
-  // group ID.
-  std::string audio_codec = "audiocodec";
-  MockMediaPlaylist english_playlist(kVodPlaylist, "eng.m3u8", "english",
-                                     "audiogroup");
-  EXPECT_CALL(english_playlist, GetLanguage()).WillRepeatedly(Return("en"));
-  EXPECT_CALL(english_playlist, GetNumChannels()).WillRepeatedly(Return(2));
-  english_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kAudio);
-  english_playlist.SetCodecForTesting(audio_codec);
-  EXPECT_CALL(english_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(50000));
-  EXPECT_CALL(english_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .Times(0);
-  master_playlist_.AddMediaPlaylist(&english_playlist);
+  std::unique_ptr<MockMediaPlaylist> english_playlist =
+      CreateAudioPlaylist("eng.m3u8", "english", "audiogroup", "audiocodec",
+                          "en", kAudio1Channels, kAudio1BitRate);
+  master_playlist_.AddMediaPlaylist(english_playlist.get());
 
   // Second audio, spanish.m3u8.
-  MockMediaPlaylist spanish_playlist(kVodPlaylist, "spa.m3u8", "espanol",
-                                     "audiogroup");
-  EXPECT_CALL(spanish_playlist, GetLanguage()).WillRepeatedly(Return("es"));
-  EXPECT_CALL(spanish_playlist, GetNumChannels()).WillRepeatedly(Return(5));
-  spanish_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kAudio);
-  spanish_playlist.SetCodecForTesting(audio_codec);
-  EXPECT_CALL(spanish_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(60000));
-  EXPECT_CALL(spanish_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .Times(0);
-  master_playlist_.AddMediaPlaylist(&spanish_playlist);
+  std::unique_ptr<MockMediaPlaylist> spanish_playlist =
+      CreateAudioPlaylist("spa.m3u8", "espanol", "audiogroup", "audiocodec",
+                          "es", kAudio2Channels, kAudio2BitRate);
+  master_playlist_.AddMediaPlaylist(spanish_playlist.get());
 
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
@@ -182,53 +191,30 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
-  // First video, video.m3u8.
-  std::string video_codec = "videocodec";
-  MockMediaPlaylist video_playlist(kVodPlaylist, "video.m3u8", "somename",
-                                   "somegroupid");
-  video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kVideo);
-  video_playlist.SetCodecForTesting(video_codec);
-  EXPECT_CALL(video_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(300000));
-  EXPECT_CALL(video_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth),
-                            SetArgPointee<1>(kHeight),
-                            Return(true)));
-  master_playlist_.AddMediaPlaylist(&video_playlist);
+  const uint64_t kVideoBitRate = 300000;
+
+  const uint64_t kAudio1BitRate = 50000;
+  const uint64_t kAudio2BitRate = 100000;
+
+  const uint64_t kAudio1Channels = 1;
+  const uint64_t kAudio2Channels = 8;
+
+  // First video, sd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video_playlist =
+      CreateVideoPlaylist("video.m3u8", "videocodec", kVideoBitRate);
+  master_playlist_.AddMediaPlaylist(video_playlist.get());
 
   // First audio, eng_lo.m3u8.
-  std::string audio_codec_lo = "audiocodec_lo";
-  MockMediaPlaylist eng_lo_playlist(kVodPlaylist, "eng_lo.m3u8", "english_lo",
-                                    "audio_lo");
-  EXPECT_CALL(eng_lo_playlist, GetLanguage()).WillRepeatedly(Return("en"));
-  EXPECT_CALL(eng_lo_playlist, GetNumChannels()).WillRepeatedly(Return(1));
-  eng_lo_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kAudio);
-  eng_lo_playlist.SetCodecForTesting(audio_codec_lo);
-  EXPECT_CALL(eng_lo_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(50000));
-  EXPECT_CALL(eng_lo_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .Times(0);
-  master_playlist_.AddMediaPlaylist(&eng_lo_playlist);
+  std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
+      "eng_lo.m3u8", "english_lo", "audio_lo", "audiocodec_lo", "en",
+      kAudio1Channels, kAudio1BitRate);
+  master_playlist_.AddMediaPlaylist(eng_lo_playlist.get());
 
   // Second audio, eng_hi.m3u8.
-  std::string audio_codec_hi = "audiocodec_hi";
-  MockMediaPlaylist eng_hi_playlist(kVodPlaylist, "eng_hi.m3u8", "english_hi",
-                                    "audio_hi");
-  EXPECT_CALL(eng_hi_playlist, GetLanguage()).WillRepeatedly(Return("en"));
-  EXPECT_CALL(eng_hi_playlist, GetNumChannels()).WillRepeatedly(Return(8));
-  eng_hi_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kAudio);
-  eng_hi_playlist.SetCodecForTesting(audio_codec_hi);
-  EXPECT_CALL(eng_hi_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(100000));
-  EXPECT_CALL(eng_hi_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .Times(0);
-  master_playlist_.AddMediaPlaylist(&eng_hi_playlist);
+  std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
+      "eng_hi.m3u8", "english_hi", "audio_hi", "audiocodec_hi", "en",
+      kAudio2Channels, kAudio2BitRate);
+  master_playlist_.AddMediaPlaylist(eng_hi_playlist.get());
 
   const char kBaseUrl[] = "http://anydomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
@@ -258,50 +244,18 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   // First video, video.m3u8.
-  std::string video_codec = "videocodec";
-  MockMediaPlaylist video_playlist(kVodPlaylist, "video.m3u8", "somename",
-                                   "somegroupid");
-  video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kVideo);
-  video_playlist.SetCodecForTesting(video_codec);
-  EXPECT_CALL(video_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(300000));
-  EXPECT_CALL(video_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth), SetArgPointee<1>(kHeight),
-                            Return(true)));
-  master_playlist_.AddMediaPlaylist(&video_playlist);
+  std::unique_ptr<MockMediaPlaylist> video_playlist =
+      CreateVideoPlaylist("video.m3u8", "videocodec", 300000);
+  master_playlist_.AddMediaPlaylist(video_playlist.get());
 
   // First audio, eng_lo.m3u8.
-  const std::string audio_codec = "audiocodec";
-  MockMediaPlaylist eng_lo_playlist(kVodPlaylist, "eng_lo.m3u8", "english",
-                                    "audio");
-  EXPECT_CALL(eng_lo_playlist, GetLanguage()).WillRepeatedly(Return("en"));
-  EXPECT_CALL(eng_lo_playlist, GetNumChannels()).WillRepeatedly(Return(1));
-  eng_lo_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kAudio);
-  eng_lo_playlist.SetCodecForTesting(audio_codec);
-  EXPECT_CALL(eng_lo_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(50000));
-  EXPECT_CALL(eng_lo_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .Times(0);
-  master_playlist_.AddMediaPlaylist(&eng_lo_playlist);
+  std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
+      "eng_lo.m3u8", "english", "audio", "audiocodec", "en", 1, 50000);
+  master_playlist_.AddMediaPlaylist(eng_lo_playlist.get());
 
-  // Second audio, eng_hi.m3u8.
-  MockMediaPlaylist eng_hi_playlist(kVodPlaylist, "eng_hi.m3u8", "english",
-                                    "audio");
-  EXPECT_CALL(eng_hi_playlist, GetLanguage()).WillRepeatedly(Return("en"));
-  EXPECT_CALL(eng_hi_playlist, GetNumChannels()).WillRepeatedly(Return(8));
-  eng_hi_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kAudio);
-  eng_hi_playlist.SetCodecForTesting(audio_codec);
-  EXPECT_CALL(eng_hi_playlist, Bitrate())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(100000));
-  EXPECT_CALL(eng_hi_playlist, GetDisplayResolution(NotNull(), NotNull()))
-      .Times(0);
-  master_playlist_.AddMediaPlaylist(&eng_hi_playlist);
+  std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
+      "eng_hi.m3u8", "english", "audio", "audiocodec", "en", 8, 100000);
+  master_playlist_.AddMediaPlaylist(eng_hi_playlist.get());
 
   const char kBaseUrl[] = "http://anydomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
@@ -325,6 +279,5 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
 
   ASSERT_EQ(expected, actual);
 }
-
 }  // namespace hls
 }  // namespace shaka
