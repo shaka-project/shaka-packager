@@ -7,6 +7,7 @@
 #include "packager/media/formats/webm/single_segment_segmenter.h"
 
 #include "packager/media/base/muxer_options.h"
+#include "packager/media/event/muxer_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
 namespace shaka {
@@ -31,6 +32,11 @@ Status SingleSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
   CHECK(cluster());
   if (!cluster()->Finalize())
     return Status(error::FILE_FAILURE, "Error finalizing cluster.");
+  if (muxer_listener()) {
+    const uint64_t size = cluster()->Size();
+    muxer_listener()->OnNewSegment(options().output_file_name, start_timestamp,
+                                   duration_timestamp, size);
+  }
   return Status::OK;
 }
 
