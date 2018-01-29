@@ -28,6 +28,7 @@ const uint32_t kDefaultPeriodId = 9u;
 const double kDefaultPeriodStartTime = 5.6;
 const uint32_t kDefaultAdaptationSetId = 0u;
 const uint32_t kTrickPlayAdaptationSetId = 1u;
+const bool kOutputPeriodDuration = true;
 
 bool ElementEqual(const Element& lhs, const Element& rhs) {
   const bool all_equal_except_sublement_check =
@@ -138,12 +139,13 @@ TEST_P(PeriodTest, GetXml) {
                 content_protection_in_adaptation_set_));
 
   const char kExpectedXml[] =
-      "<Period id=\"9\" start=\"PT5.6S\">"
+      "<Period id=\"9\">"
       // ContentType and Representation elements are populated after
       // Representation::Init() is called.
       "  <AdaptationSet id=\"0\" contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml().get(), XmlNodeEqual(kExpectedXml));
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+              XmlNodeEqual(kExpectedXml));
 }
 
 TEST_P(PeriodTest, DynamicMpdGetXml) {
@@ -174,7 +176,8 @@ TEST_P(PeriodTest, DynamicMpdGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet id=\"0\" contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml().get(), XmlNodeEqual(kExpectedXml));
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+              XmlNodeEqual(kExpectedXml));
 }
 
 TEST_P(PeriodTest, SetDurationAndGetXml) {
@@ -206,7 +209,16 @@ TEST_P(PeriodTest, SetDurationAndGetXml) {
       // Representation::Init() is called.
       "  <AdaptationSet id=\"0\" contentType=\"\"/>"
       "</Period>";
-  EXPECT_THAT(testable_period_.GetXml().get(), XmlNodeEqual(kExpectedXml));
+  EXPECT_THAT(testable_period_.GetXml(kOutputPeriodDuration).get(),
+              XmlNodeEqual(kExpectedXml));
+  const char kExpectedXmlSuppressDuration[] =
+      "<Period id=\"9\">"
+      // ContentType and Representation elements are populated after
+      // Representation::Init() is called.
+      "  <AdaptationSet id=\"0\" contentType=\"\"/>"
+      "</Period>";
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+              XmlNodeEqual(kExpectedXmlSuppressDuration));
 }
 
 // Verify ForceSetSegmentAlignment is called.

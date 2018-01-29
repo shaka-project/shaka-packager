@@ -48,9 +48,8 @@ class MockAdaptationSet : public AdaptationSet {
   ~MockAdaptationSet() override;
 
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
-  MOCK_METHOD2(CopyRepresentationWithTimeOffset,
-               Representation*(const Representation& representation,
-                               uint64_t presentation_time_offset));
+  MOCK_METHOD1(CopyRepresentation,
+               Representation*(const Representation& representation));
   MOCK_METHOD1(AddContentProtectionElement,
                void(const ContentProtectionElement& element));
   MOCK_METHOD2(UpdateContentProtectionPssh,

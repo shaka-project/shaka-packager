@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.76317S">
-  <Period id="0" duration="PT2.06873S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.73607S">
+  <Period id="0" duration="PT2.002S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="875099" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <SegmentTemplate timescale="30000" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="1">
@@ -22,7 +22,7 @@
       </Representation>
     </AdaptationSet>
   </Period>
-  <Period id="1" duration="PT0.694444S">
+  <Period id="1" duration="PT0.734067S">
     <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
       <Representation id="1" bandwidth="108486" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
@@ -35,7 +35,7 @@
     </AdaptationSet>
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="869044" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
-        <SegmentTemplate timescale="30000" presentationTimeOffset="62060" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="3">
+        <SegmentTemplate timescale="30000" presentationTimeOffset="62061" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="3">
           <SegmentTimeline>
             <S t="62062" d="22022"/>
           </SegmentTimeline>

@@ -94,7 +94,7 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   return adaptation_set_ptr;
 }
 
-xml::scoped_xml_ptr<xmlNode> Period::GetXml() const {
+xml::scoped_xml_ptr<xmlNode> Period::GetXml(bool output_period_duration) const {
   xml::XmlNode period("Period");
 
   // Required for 'dynamic' MPDs.
@@ -106,11 +106,10 @@ xml::scoped_xml_ptr<xmlNode> Period::GetXml() const {
       return nullptr;
   }
 
-  if (duration_seconds_ != 0) {
+  if (output_period_duration) {
     period.SetStringAttribute("duration",
                               SecondsToXmlDuration(duration_seconds_));
-  } else if (mpd_options_.mpd_type == MpdType::kDynamic ||
-             start_time_in_seconds_ != 0) {
+  } else if (mpd_options_.mpd_type == MpdType::kDynamic) {
     period.SetStringAttribute("start",
                               SecondsToXmlDuration(start_time_in_seconds_));
   }

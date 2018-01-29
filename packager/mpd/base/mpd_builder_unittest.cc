@@ -4,14 +4,18 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/period.h"
+#include "packager/mpd/base/representation.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/version/version.h"
+
+DECLARE_int32(pto_adjustment);
 
 using ::testing::HasSubstr;
 
@@ -54,6 +58,23 @@ class MpdBuilderTest : public ::testing::Test {
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMpdToEqualExpectedOutputFile(mpd_doc, expected_output_file));
+  }
+
+  void AddSegmentToPeriod(double segment_start_time_seconds,
+                          double segment_duration_seconds,
+                          Period* period) {
+    MediaInfo media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
+    // Not relevant in this test.
+    const bool kContentProtectionFlag = true;
+    const size_t kBytes = 1000;
+
+    AdaptationSet* adaptation_set =
+        period->GetOrCreateAdaptationSet(media_info, kContentProtectionFlag);
+    Representation* representation =
+        adaptation_set->AddRepresentation(media_info);
+    representation->AddNewSegment(
+        segment_start_time_seconds * media_info.reference_time_scale(),
+        segment_duration_seconds * media_info.reference_time_scale(), kBytes);
   }
 
  protected:
@@ -174,31 +195,57 @@ TEST_F(OnDemandMpdBuilderTest, MultiplePeriodTest) {
 }
 
 TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
-  const double kPeriodStartTimeSeconds = 0.0;
-  const double kPeriodStartTimeSeconds2 = 3.1;
-  const double kPeriodStartTimeSeconds3 = 8.0;
-  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
-  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds2);
-  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds3);
+  // Disable pto adjustment.
+  FLAGS_pto_adjustment = 0;
+
+  const double kPeriod1StartTimeSeconds = 0.0;
+  const double kPeriod2StartTimeSeconds = 3.1;
+  const double kPeriod3StartTimeSeconds = 8.0;
+
+  // Actual period duration is determined by the segments not by the period
+  // start time above, which only provides an anchor point.
+  const double kPeriod1SegmentStartSeconds = 0.2;
+  const double kPeriod1SegmentDurationSeconds = 3.0;
+  const double kPeriod2SegmentStartSeconds = 5.5;
+  const double kPeriod2SegmentDurationSeconds = 10.5;
+  const double kPeriod3SegmentStartSeconds = 1.5;
+  const double kPeriod3SegmentDurationSeconds = 10.0;
+
+  Period* period = mpd_.GetOrCreatePeriod(kPeriod1StartTimeSeconds);
+  AddSegmentToPeriod(kPeriod1SegmentStartSeconds,
+                     kPeriod1SegmentDurationSeconds, period);
+
+  period = mpd_.GetOrCreatePeriod(kPeriod2StartTimeSeconds);
+  AddSegmentToPeriod(kPeriod2SegmentStartSeconds,
+                     kPeriod2SegmentDurationSeconds, period);
+
+  period = mpd_.GetOrCreatePeriod(kPeriod3StartTimeSeconds);
+  AddSegmentToPeriod(kPeriod3SegmentStartSeconds,
+                     kPeriod3SegmentDurationSeconds, period);
 
   std::string mpd_doc;
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"0\" duration=\"PT3S\">\n"));
+  EXPECT_THAT(
+      mpd_doc,
+      HasSubstr("<SegmentBase indexRange=\"121-221\" timescale=\"1000\">"));
+  EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"1\" duration=\"PT10.5S\">\n"));
   EXPECT_THAT(mpd_doc,
-              HasSubstr("  <Period id=\"0\" duration=\"PT3.1S\"/>\n"
-                        "  <Period id=\"1\" duration=\"PT4.9S\"/>\n"
-                        // There are no Representations so MPD duration is 0,
-                        // which results in a negative duration for the last
-                        // period. This would not happen in practice.
-                        "  <Period id=\"2\" duration=\"PT-8S\"/>\n"));
+              HasSubstr("<SegmentBase indexRange=\"121-221\" "
+                        "timescale=\"1000\" presentationTimeOffset=\"5500\">"));
+  EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"2\" duration=\"PT10S\">\n"));
+  EXPECT_THAT(mpd_doc,
+              HasSubstr("<SegmentBase indexRange=\"121-221\" "
+                        "timescale=\"1000\" presentationTimeOffset=\"1500\">"));
 }
 
 TEST_F(LiveMpdBuilderTest, MultiplePeriodCheckXmlTest) {
-  const double kPeriodStartTimeSeconds = 0.0;
-  const double kPeriodStartTimeSeconds2 = 3.1;
-  const double kPeriodStartTimeSeconds3 = 8.0;
-  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
-  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds2);
-  mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds3);
+  const double kPeriod1StartTimeSeconds = 0.0;
+  const double kPeriod2StartTimeSeconds = 3.1;
+  const double kPeriod3StartTimeSeconds = 8.0;
+  mpd_.GetOrCreatePeriod(kPeriod1StartTimeSeconds);
+  mpd_.GetOrCreatePeriod(kPeriod2StartTimeSeconds);
+  mpd_.GetOrCreatePeriod(kPeriod3StartTimeSeconds);
 
   std::string mpd_doc;
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));

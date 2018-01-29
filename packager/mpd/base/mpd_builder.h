@@ -110,6 +110,9 @@ class MpdBuilder {
   // successful, false otherwise.
   bool GetEarliestTimestamp(double* timestamp_seconds);
 
+  // Update Period durations and presentation timestamps.
+  void UpdatePeriodDurationAndPresentationTimestamp();
+
   MpdOptions mpd_options_;
   std::list<std::unique_ptr<Period>> periods_;
 

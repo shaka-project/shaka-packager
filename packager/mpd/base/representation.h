@@ -128,12 +128,19 @@ class Representation {
   /// This may be called multiple times to set different (or the same) flags.
   void SuppressOnce(SuppressFlag flag);
 
-  /// Gets the earliest, normalized segment timestamp.
-  /// @return true if successful, false otherwise.
-  bool GetEarliestTimestamp(double* timestamp_seconds) const;
+  /// Set @presentationTimeOffset in SegmentBase / SegmentTemplate.
+  void SetPresentationTimeOffset(double presentation_time_offset);
 
-  /// @return The duration of the Representation in seconds.
-  float GetDurationSeconds() const;
+  /// Gets the start and end timestamps in seconds.
+  /// @param start_timestamp_seconds contains the returned start timestamp in
+  ///        seconds on success. It can be nullptr, which means that start
+  ///        timestamp does not need to be returned.
+  /// @param end_timestamp_seconds contains the returned end timestamp in
+  ///        seconds on success. It can be nullptr, which means that end
+  ///        timestamp does not need to be returned.
+  /// @return true if successful, false otherwise.
+  bool GetStartAndEndTimestamps(double* start_timestamp_seconds,
+                                double* end_timestamp_seconds) const;
 
   /// @return ID number for <Representation>.
   uint32_t id() const { return id_; }
@@ -154,13 +161,10 @@ class Representation {
       std::unique_ptr<RepresentationStateChangeListener> state_change_listener);
 
   /// @param representation points to the original Representation to be cloned.
-  /// @param presentation_time_offset is the presentation time offset for the
-  ///        new Representation.
   /// @param state_change_listener is an event handler for state changes to
   ///        the representation. If null, no event handler registered.
   Representation(
       const Representation& representation,
-      uint64_t presentation_time_offset,
       std::unique_ptr<RepresentationStateChangeListener> state_change_listener);
 
  private:

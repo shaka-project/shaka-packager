@@ -10,6 +10,7 @@
 
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
+#include "packager/base/optional.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
@@ -172,23 +173,18 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       return nullptr;
   }
 
-  // Prefer Period@duration to Period@start for static MPD with more than one
-  // periods.
-  if (mpd_options_.mpd_type == MpdType::kStatic && periods_.size() > 1) {
-    // The duration of every period is determined by its start_time and next
-    // period start_time. The code below traverses |periods_| backwards.
-    double next_period_start_time = GetStaticMpdDuration();
-    std::for_each(
-        periods_.rbegin(), periods_.rend(),
-        [&next_period_start_time](const std::unique_ptr<Period>& period) {
-          period->set_duration_seconds(next_period_start_time -
-                                       period->start_time_in_seconds());
-          next_period_start_time = period->start_time_in_seconds();
-        });
+  bool output_period_duration = false;
+  if (mpd_options_.mpd_type == MpdType::kStatic) {
+    UpdatePeriodDurationAndPresentationTimestamp();
+    // Only output period duration if there are more than one period. In the
+    // case of only one period, Period@duration is redundant as it is identical
+    // to Mpd Duration so the convention is not to output Period@duration.
+    output_period_duration = periods_.size() > 1;
   }
 
   for (const auto& period : periods_) {
-    xml::scoped_xml_ptr<xmlNode> period_node(period->GetXml());
+    xml::scoped_xml_ptr<xmlNode> period_node(
+        period->GetXml(output_period_duration));
     if (!period_node || !mpd.AddChild(std::move(period_node)))
       return nullptr;
   }
@@ -309,26 +305,11 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
 float MpdBuilder::GetStaticMpdDuration() {
   DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
-  if (periods_.empty()) {
-    LOG(WARNING) << "No Period found. Set MPD duration to 0.";
-    return 0.0f;
+  float total_duration = 0.0f;
+  for (const auto& period : periods_) {
+    total_duration += period->duration_seconds();
   }
-
-  // Attribute mediaPresentationDuration must be present for 'static' MPD. So
-  // setting "PT0S" is required even if none of the representaions have duration
-  // attribute.
-  float max_duration = 0.0f;
-
-  // TODO(kqyang): Right now all periods contain the duration for the whole MPD.
-  // Simply get the duration from the first period. Ideally the period duration
-  // should only count the (sub)segments in that period.
-  for (const auto* adaptation_set : periods_.front()->GetAdaptationSets()) {
-    for (const auto* representation : adaptation_set->GetRepresentations()) {
-      max_duration =
-          std::max(representation->GetDurationSeconds(), max_duration);
-    }
-  }
-  return max_duration;
+  return total_duration;
 }
 
 bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
@@ -336,10 +317,13 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(!periods_.empty());
   double timestamp = 0;
   double earliest_timestamp = -1;
+  // TODO(kqyang): This is used to set availabilityStartTime. We may consider
+  // set presentationTimeOffset in the Representations then we can set
+  // availabilityStartTime to the time when MPD is first generated.
   // The first period should have the earliest timestamp.
   for (const auto* adaptation_set : periods_.front()->GetAdaptationSets()) {
     for (const auto* representation : adaptation_set->GetRepresentations()) {
-      if (representation->GetEarliestTimestamp(&timestamp) &&
+      if (representation->GetStartAndEndTimestamps(&timestamp, nullptr) &&
           (earliest_timestamp < 0 || timestamp < earliest_timestamp)) {
         earliest_timestamp = timestamp;
       }
@@ -349,6 +333,72 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
     return false;
   *timestamp_seconds = earliest_timestamp;
   return true;
+}
+
+void MpdBuilder::UpdatePeriodDurationAndPresentationTimestamp() {
+  DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
+
+  bool first_period = true;
+  for (const auto& period : periods_) {
+    std::list<Representation*> video_representations;
+    std::list<Representation*> non_video_representations;
+    for (const auto& adaptation_set : period->GetAdaptationSets()) {
+      const auto& representations = adaptation_set->GetRepresentations();
+      if (adaptation_set->IsVideo()) {
+        video_representations.insert(video_representations.end(),
+                                     representations.begin(),
+                                     representations.end());
+      } else {
+        non_video_representations.insert(non_video_representations.end(),
+                                         representations.begin(),
+                                         representations.end());
+      }
+    }
+
+    base::Optional<double> earliest_start_time;
+    base::Optional<double> latest_end_time;
+    // The timestamps are based on Video Representations if exist.
+    const auto& representations = video_representations.size() > 0
+                                      ? video_representations
+                                      : non_video_representations;
+    for (const auto& representation : representations) {
+      double start_time = 0;
+      double end_time = 0;
+      if (representation->GetStartAndEndTimestamps(&start_time, &end_time)) {
+        earliest_start_time =
+            std::min(earliest_start_time.value_or(start_time), start_time);
+        latest_end_time =
+            std::max(latest_end_time.value_or(end_time), end_time);
+      }
+    }
+
+    if (!earliest_start_time)
+      return;
+
+    period->set_duration_seconds(*latest_end_time - *earliest_start_time);
+
+    double presentation_time_offset = *earliest_start_time;
+    if (first_period) {
+      first_period = false;
+      // Chrome does not like negative dts (https://crbug.com/398141).
+      // Always set presentationTimeOffset (pto) to 0 for the first period as it
+      // may result in an error on Chrome v63.0.3239.132 if it sets to a non
+      // zero value.
+      // It is fine with subsequent periods as the actual offset applied takes
+      // Period@start into consideration:
+      //     offset = Period@start - presentationTimeOffset
+      // The result timestamp with offset applied is close to Period@start, so
+      // it is unlikely to result in a negative dts value.
+      // TODO(kqyang): Set the pto to |dts| instead of always setting it to 0 to
+      // workaround Chrome negative DTS bug.
+      presentation_time_offset = 0;
+    }
+    for (const auto& adaptation_set : period->GetAdaptationSets()) {
+      for (const auto& representation : adaptation_set->GetRepresentations()) {
+        representation->SetPresentationTimeOffset(presentation_time_offset);
+      }
+    }
+  }
 }
 
 void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
