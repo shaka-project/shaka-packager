@@ -201,15 +201,14 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   return representation_ptr;
 }
 
-Representation* AdaptationSet::CopyRepresentationWithTimeOffset(
-    const Representation& representation,
-    uint64_t presentation_time_offset) {
+Representation* AdaptationSet::CopyRepresentation(
+    const Representation& representation) {
   // Note that AdaptationSet outlive Representation, so this object
   // will die before AdaptationSet.
   std::unique_ptr<RepresentationStateChangeListener> listener(
       new RepresentationStateChangeListenerImpl(representation.id(), this));
-  std::unique_ptr<Representation> new_representation(new Representation(
-      representation, presentation_time_offset, std::move(listener)));
+  std::unique_ptr<Representation> new_representation(
+      new Representation(representation, std::move(listener)));
 
   UpdateFromMediaInfo(new_representation->GetMediaInfo());
   Representation* representation_ptr = new_representation.get();
@@ -382,6 +381,10 @@ const std::list<Representation*> AdaptationSet::GetRepresentations() const {
     representations.push_back(representation_pair.second.get());
   }
   return representations;
+}
+
+bool AdaptationSet::IsVideo() const {
+  return content_type_ == "video";
 }
 
 void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {

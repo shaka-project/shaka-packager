@@ -6,6 +6,7 @@
 
 #include "packager/mpd/base/representation.h"
 
+#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <inttypes.h>
@@ -14,6 +15,8 @@
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
+
+DECLARE_int32(pto_adjustment);
 
 using ::testing::Not;
 
@@ -54,12 +57,10 @@ class RepresentationTest : public ::testing::Test {
 
   std::unique_ptr<Representation> CopyRepresentation(
       const Representation& representation,
-      uint64_t presentation_time_offset,
       std::unique_ptr<RepresentationStateChangeListener>
           state_change_listener) {
     return std::unique_ptr<Representation>(
-        new Representation(representation, presentation_time_offset,
-                           std::move(state_change_listener)));
+        new Representation(representation, std::move(state_change_listener)));
   }
 
   std::unique_ptr<RepresentationStateChangeListener> NoListener() {
@@ -506,16 +507,14 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
 
-  const uint64_t kPresentationTimeOffset = 100;
-  auto cloned_representation = CopyRepresentation(
-      *representation_, kPresentationTimeOffset, NoListener());
+  auto cloned_representation =
+      CopyRepresentation(*representation_, NoListener());
   const char kExpectedXml[] =
       "<Representation id=\"1\" bandwidth=\"0\" "
       " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
       " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
-      "  <SegmentTemplate presentationTimeOffset=\"100\" timescale=\"1000\" "
-      "   initialization=\"init.mp4\" media=\"$Number$.mp4\" "
-      "   startNumber=\"2\">\n"
+      "  <SegmentTemplate timescale=\"1000\" initialization=\"init.mp4\" "
+      "   media=\"$Number$.mp4\" startNumber=\"2\">\n"
       "    <SegmentTimeline/>\n"
       "  </SegmentTemplate>\n"
       "</Representation>\n";
@@ -523,30 +522,50 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
               XmlNodeEqual(kExpectedXml));
 }
 
-TEST_F(SegmentTemplateTest, GetEarliestTimestamp) {
-  double earliest_timestamp;
+TEST_F(SegmentTemplateTest, PresentationTimeOffset) {
+  FLAGS_pto_adjustment = -1;
+
+  const uint64_t kStartTime = 0;
+  const uint64_t kDuration = 10;
+  const uint64_t kSize = 128;
+  AddSegments(kStartTime, kDuration, kSize, 0);
+
+  const double kPresentationTimeOffsetSeconds = 2.3;
+  representation_->SetPresentationTimeOffset(kPresentationTimeOffsetSeconds);
+
+  const char kExpectedXml[] =
+      "<Representation id=\"1\" bandwidth=\"102400\" "
+      " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
+      " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
+      // pto = kPresentationTimeOffsetSeconds * timescale + FLAGS_pto_adjustment
+      "  <SegmentTemplate timescale=\"1000\" presentationTimeOffset=\"2299\""
+      "   initialization=\"init.mp4\" media=\"$Time$.mp4\">\n"
+      "    <SegmentTimeline>\n"
+      "      <S t=\"0\" d=\"10\"/>\n"
+      "    </SegmentTimeline>\n"
+      "  </SegmentTemplate>\n"
+      "</Representation>\n";
+  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(kExpectedXml));
+}
+
+TEST_F(SegmentTemplateTest, GetStartAndEndTimestamps) {
+  double start_timestamp;
+  double end_timestamp;
   // No segments.
-  EXPECT_FALSE(representation_->GetEarliestTimestamp(&earliest_timestamp));
+  EXPECT_FALSE(representation_->GetStartAndEndTimestamps(&start_timestamp,
+                                                         &end_timestamp));
 
   const uint64_t kStartTime = 88;
   const uint64_t kDuration = 10;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
-  AddSegments(kStartTime + kDuration, kDuration, kSize, 0);
-  ASSERT_TRUE(representation_->GetEarliestTimestamp(&earliest_timestamp));
+  AddSegments(kStartTime + kDuration, kDuration, kSize, 2);
+  ASSERT_TRUE(representation_->GetStartAndEndTimestamps(&start_timestamp,
+                                                        &end_timestamp));
   EXPECT_EQ(static_cast<double>(kStartTime) / kDefaultTimeScale,
-            earliest_timestamp);
-}
-
-TEST_F(SegmentTemplateTest, GetDuration) {
-  const float kMediaDurationSeconds = 88.8f;
-  MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
-  media_info.set_media_duration_seconds(kMediaDurationSeconds);
-  representation_ =
-      CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
-  ASSERT_TRUE(representation_->Init());
-
-  EXPECT_EQ(kMediaDurationSeconds, representation_->GetDurationSeconds());
+            start_timestamp);
+  EXPECT_EQ(static_cast<double>(kStartTime + kDuration * 4) / kDefaultTimeScale,
+            end_timestamp);
 }
 
 TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {

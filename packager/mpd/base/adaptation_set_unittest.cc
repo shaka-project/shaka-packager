@@ -120,7 +120,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetTextContentType) {
               AttributeEqual("contentType", "text"));
 }
 
-TEST_F(AdaptationSetTest, CopyRepresentationWithTimeOffset) {
+TEST_F(AdaptationSetTest, CopyRepresentation) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -137,12 +137,9 @@ TEST_F(AdaptationSetTest, CopyRepresentationWithTimeOffset) {
   Representation* representation =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
 
-  const uint64_t kPresentationTimeOffset = 80;
   Representation* new_representation =
-      adaptation_set->CopyRepresentationWithTimeOffset(*representation,
-                                                       kPresentationTimeOffset);
-  EXPECT_EQ(kPresentationTimeOffset,
-            new_representation->GetMediaInfo().presentation_time_offset());
+      adaptation_set->CopyRepresentation(*representation);
+  ASSERT_TRUE(new_representation);
 }
 
 // Verify that language passed to the constructor sets the @lang field is set.
@@ -627,13 +624,10 @@ TEST_F(AdaptationSetTest, GetRepresentations) {
 
   auto new_adaptation_set =
       CreateAdaptationSet(kAnyAdaptationSetId, kNoLanguage);
-  const uint64_t kPresentationTimeOffset = 80;
   Representation* new_representation2 =
-      new_adaptation_set->CopyRepresentationWithTimeOffset(
-          *representation2, kPresentationTimeOffset);
+      new_adaptation_set->CopyRepresentation(*representation2);
   Representation* new_representation1 =
-      new_adaptation_set->CopyRepresentationWithTimeOffset(
-          *representation1, kPresentationTimeOffset);
+      new_adaptation_set->CopyRepresentation(*representation1);
 
   EXPECT_THAT(new_adaptation_set->GetRepresentations(),
               // Elements are ordered by id().

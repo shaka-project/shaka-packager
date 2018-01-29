@@ -6,8 +6,6 @@
 
 #include "packager/mpd/base/simple_mpd_notifier.h"
 
-#include <gflags/gflags.h>
-
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/mpd/base/adaptation_set.h"
@@ -16,17 +14,6 @@
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/period.h"
 #include "packager/mpd/base/representation.h"
-
-DEFINE_int32(
-    pto_adjustment,
-    -1,
-    "There could be rounding errors in MSE which could cut the first key frame "
-    "of the representation and thus cut all the frames until the next key "
-    "frame, which then leads to a big gap in presentation timeline which "
-    "stalls playback. A small back off may be necessary to compensate for the "
-    "possible rounding error. It should not cause any playback issues if it is "
-    "small enough. The workaround can be removed once the problem is handled "
-    "in all players.");
 
 namespace shaka {
 
@@ -164,13 +151,8 @@ Representation* SimpleMpdNotifier::AddRepresentationToPeriod(
 
   Representation* representation = nullptr;
   if (original_representation) {
-    uint64_t presentation_time_offset =
-        period->start_time_in_seconds() * media_info.reference_time_scale();
-    if (presentation_time_offset > 0) {
-      presentation_time_offset += FLAGS_pto_adjustment;
-    }
-    representation = adaptation_set->CopyRepresentationWithTimeOffset(
-        *original_representation, presentation_time_offset);
+    representation =
+        adaptation_set->CopyRepresentation(*original_representation);
   } else {
     representation = adaptation_set->AddRepresentation(media_info);
   }
