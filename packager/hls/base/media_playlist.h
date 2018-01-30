@@ -45,10 +45,11 @@ class HlsEntry {
 class MediaPlaylist {
  public:
   enum class MediaPlaylistStreamType {
-    kPlaylistUnknown,
-    kPlayListAudio,
-    kPlayListVideo,
-    kPlayListSubtitle,
+    kUnknown,
+    kAudio,
+    kVideo,
+    kVideoIFramesOnly,
+    kSubtitle,
   };
   enum class EncryptionMethod {
     kNone,           // No encryption, i.e. clear.
@@ -103,6 +104,16 @@ class MediaPlaylist {
                           uint64_t duration,
                           uint64_t start_byte_offset,
                           uint64_t size);
+
+  /// Keyframes must be added in order. It is also called before the containing
+  /// segment being called.
+  /// @param timestamp is the timestamp of the key frame in timescale of the
+  ///        media.
+  /// @param start_byte_offset is the offset of where the key frame starts.
+  /// @param size is size in bytes.
+  virtual void AddKeyFrame(uint64_t timestamp,
+                           uint64_t start_byte_offset,
+                           uint64_t size);
 
   /// All segments added after calling this method must be decryptable with
   /// the key that can be fetched from |url|, until calling this again.
@@ -168,6 +179,12 @@ class MediaPlaylist {
   virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;
 
  private:
+  // Add a SegmentInfoEntry (#EXTINF).
+  void AddSegmentInfoEntry(const std::string& segment_file_name,
+                           uint64_t start_time,
+                           uint64_t duration,
+                           uint64_t start_byte_offset,
+                           uint64_t size);
   // Remove elements from |entries_| for live profile. Increments
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
@@ -179,8 +196,9 @@ class MediaPlaylist {
   const std::string name_;
   const std::string group_id_;
   MediaInfo media_info_;
-  MediaPlaylistStreamType stream_type_ =
-      MediaPlaylistStreamType::kPlaylistUnknown;
+  MediaPlaylistStreamType stream_type_ = MediaPlaylistStreamType::kUnknown;
+  // Whether to use byte range for SegmentInfoEntry.
+  bool use_byte_range_ = false;
   std::string codec_;
   int media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
@@ -200,6 +218,16 @@ class MediaPlaylist {
   uint32_t target_duration_ = 0;
 
   std::list<std::unique_ptr<HlsEntry>> entries_;
+
+  // Used by kVideoIFrameOnly playlists to track the i-frames (key frames).
+  struct KeyFrameInfo {
+    uint64_t timestamp;
+    uint64_t start_byte_offset;
+    uint64_t size;
+    uint64_t duration;
+    std::string segment_file_name;
+  };
+  std::list<KeyFrameInfo> key_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
 };

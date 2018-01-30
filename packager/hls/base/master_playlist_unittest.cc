@@ -64,7 +64,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   MockMediaPlaylist mock_playlist(kVodPlaylist, "media1.m3u8", "somename",
                                   "somegroupid");
   mock_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
+      MediaPlaylist::MediaPlaylistStreamType::kVideo);
   mock_playlist.SetCodecForTesting(codec);
   EXPECT_CALL(mock_playlist, Bitrate()).WillOnce(Return(435889));
   EXPECT_CALL(mock_playlist, GetDisplayResolution(NotNull(), NotNull()))
@@ -95,7 +95,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   MockMediaPlaylist sd_video_playlist(kVodPlaylist, "sd.m3u8", "somename",
                                       "somegroupid");
   sd_video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
+      MediaPlaylist::MediaPlaylistStreamType::kVideo);
   sd_video_playlist.SetCodecForTesting(sd_video_codec);
   EXPECT_CALL(sd_video_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -111,7 +111,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   MockMediaPlaylist hd_video_playlist(kVodPlaylist, "hd.m3u8", "somename",
                                       "somegroupid");
   hd_video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
+      MediaPlaylist::MediaPlaylistStreamType::kVideo);
   hd_video_playlist.SetCodecForTesting(hd_video_codec);
   EXPECT_CALL(hd_video_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -131,7 +131,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(english_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   EXPECT_CALL(english_playlist, GetNumChannels()).WillRepeatedly(Return(2));
   english_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
   english_playlist.SetCodecForTesting(audio_codec);
   EXPECT_CALL(english_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -146,7 +146,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   EXPECT_CALL(spanish_playlist, GetLanguage()).WillRepeatedly(Return("es"));
   EXPECT_CALL(spanish_playlist, GetNumChannels()).WillRepeatedly(Return(5));
   spanish_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
   spanish_playlist.SetCodecForTesting(audio_codec);
   EXPECT_CALL(spanish_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -187,7 +187,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   MockMediaPlaylist video_playlist(kVodPlaylist, "video.m3u8", "somename",
                                    "somegroupid");
   video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
+      MediaPlaylist::MediaPlaylistStreamType::kVideo);
   video_playlist.SetCodecForTesting(video_codec);
   EXPECT_CALL(video_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -205,7 +205,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(eng_lo_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   EXPECT_CALL(eng_lo_playlist, GetNumChannels()).WillRepeatedly(Return(1));
   eng_lo_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
   eng_lo_playlist.SetCodecForTesting(audio_codec_lo);
   EXPECT_CALL(eng_lo_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -221,7 +221,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   EXPECT_CALL(eng_hi_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   EXPECT_CALL(eng_hi_playlist, GetNumChannels()).WillRepeatedly(Return(8));
   eng_hi_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
   eng_hi_playlist.SetCodecForTesting(audio_codec_hi);
   EXPECT_CALL(eng_hi_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -262,7 +262,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   MockMediaPlaylist video_playlist(kVodPlaylist, "video.m3u8", "somename",
                                    "somegroupid");
   video_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo);
+      MediaPlaylist::MediaPlaylistStreamType::kVideo);
   video_playlist.SetCodecForTesting(video_codec);
   EXPECT_CALL(video_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -279,7 +279,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   EXPECT_CALL(eng_lo_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   EXPECT_CALL(eng_lo_playlist, GetNumChannels()).WillRepeatedly(Return(1));
   eng_lo_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
   eng_lo_playlist.SetCodecForTesting(audio_codec);
   EXPECT_CALL(eng_lo_playlist, Bitrate())
       .Times(AtLeast(1))
@@ -294,7 +294,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   EXPECT_CALL(eng_hi_playlist, GetLanguage()).WillRepeatedly(Return("en"));
   EXPECT_CALL(eng_hi_playlist, GetNumChannels()).WillRepeatedly(Return(8));
   eng_hi_playlist.SetStreamTypeForTesting(
-      MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio);
+      MediaPlaylist::MediaPlaylistStreamType::kAudio);
   eng_hi_playlist.SetCodecForTesting(audio_codec);
   EXPECT_CALL(eng_hi_playlist, Bitrate())
       .Times(AtLeast(1))

@@ -76,12 +76,12 @@ MasterPlaylist::~MasterPlaylist() {}
 void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
   DCHECK(media_playlist);
   switch (media_playlist->stream_type()) {
-    case MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio: {
+    case MediaPlaylist::MediaPlaylistStreamType::kAudio: {
       const std::string& group_id = media_playlist->group_id();
       audio_playlist_groups_[group_id].push_back(media_playlist);
       break;
     }
-    case MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo: {
+    case MediaPlaylist::MediaPlaylistStreamType::kVideo: {
       video_playlists_.push_back(media_playlist);
       break;
     }
