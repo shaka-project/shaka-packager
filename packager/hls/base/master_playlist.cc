@@ -20,51 +20,107 @@ namespace hls {
 
 namespace {
 
-void AppendMediaTag(const std::string& base_url,
-                    const std::string& group_id,
-                    const MediaPlaylist* audio_playlist,
-                    const std::string& language,
-                    bool is_default,
-                    bool is_autoselect,
-                    std::string* out) {
-  DCHECK(audio_playlist);
+class Tag {
+ public:
+  Tag(const std::string& name, std::string* buffer) : buffer_(buffer) {
+    base::StringAppendF(buffer_, "%s:", name.c_str());
+  }
+
+  void AddString(const std::string& key, const std::string& value) {
+    NextField();
+    base::StringAppendF(buffer_, "%s=%s", key.c_str(), value.c_str());
+  }
+
+  void AddQuotedString(const std::string& key, const std::string& value) {
+    NextField();
+    base::StringAppendF(buffer_, "%s=\"%s\"", key.c_str(), value.c_str());
+  }
+
+  void AddNumber(const std::string& key, uint64_t value) {
+    NextField();
+    base::StringAppendF(buffer_, "%s=%" PRIu64, key.c_str(), value);
+  }
+
+  void AddResolution(const std::string& key, uint32_t width, uint32_t height) {
+    NextField();
+    base::StringAppendF(buffer_, "%s=%" PRIu32 "x%" PRIu32, key.c_str(), width,
+                        height);
+  }
+
+ private:
+  Tag(const Tag&) = delete;
+  Tag& operator=(const Tag&) = delete;
+
+  std::string* buffer_;
+  size_t fields = 0;
+
+  void NextField() {
+    if (fields++) {
+      buffer_->append(",");
+    }
+  }
+};
+
+void BuildAudioTag(const std::string& base_url,
+                   const std::string& group_id,
+                   const MediaPlaylist& audio_playlist,
+                   bool is_default,
+                   bool is_autoselect,
+                   std::string* out) {
   DCHECK(out);
 
-  out->append("#EXT-X-MEDIA:TYPE=AUDIO");
-  base::StringAppendF(out, ",URI=\"%s\"",
-                      (base_url + audio_playlist->file_name()).c_str());
-  base::StringAppendF(out, ",GROUP-ID=\"%s\"", group_id.c_str());
-  if (!language.empty())
-    base::StringAppendF(out, ",LANGUAGE=\"%s\"", language.c_str());
-  base::StringAppendF(out, ",NAME=\"%s\"", audio_playlist->name().c_str());
-  if (is_default)
-    base::StringAppendF(out, ",DEFAULT=YES");
-  if (is_autoselect)
-    base::StringAppendF(out, ",AUTOSELECT=YES");
-  base::StringAppendF(out, ",CHANNELS=\"%d\"",
-                      audio_playlist->GetNumChannels());
+  Tag tag("#EXT-X-MEDIA", out);
+  tag.AddString("TYPE", "AUDIO");
+  tag.AddQuotedString("URI", base_url + audio_playlist.file_name());
+  tag.AddQuotedString("GROUP-ID", group_id);
+  const std::string& language = audio_playlist.GetLanguage();
+  if (!language.empty()) {
+    tag.AddQuotedString("LANGUAGE", language);
+  }
+  tag.AddQuotedString("NAME", audio_playlist.name());
+  if (is_default) {
+    tag.AddString("DEFAULT", "YES");
+  }
+  if (is_autoselect) {
+    tag.AddString("AUTOSELECT", "YES");
+  }
+  tag.AddQuotedString("CHANNELS",
+                      std::to_string(audio_playlist.GetNumChannels()));
+
   out->append("\n");
 }
 
-void AppendStreamInfoTag(uint64_t bitrate,
-                         const std::string& codecs,
-                         uint32_t width,
-                         uint32_t height,
-                         const std::string* audio_group_id,
-                         const std::string& base_url,
-                         const std::string& file_name,
-                         std::string* out) {
+void BuildVideoTag(const MediaPlaylist& playlist,
+                   uint64_t max_audio_bitrate,
+                   const std::string& audio_codec,
+                   const std::string* audio_group_id,
+                   const std::string& base_url,
+                   std::string* out) {
   DCHECK(out);
-  base::StringAppendF(out, "#EXT-X-STREAM-INF:");
-  base::StringAppendF(out, "BANDWIDTH=%" PRIu64, bitrate);
-  base::StringAppendF(out, ",CODECS=\"%s\"", codecs.c_str());
-  base::StringAppendF(out, ",RESOLUTION=%" PRIu32 "x%" PRIu32, width, height);
 
-  if (audio_group_id) {
-    base::StringAppendF(out, ",AUDIO=\"%s\"", audio_group_id->c_str());
+  const uint64_t bitrate = playlist.Bitrate() + max_audio_bitrate;
+
+  uint32_t width;
+  uint32_t height;
+  CHECK(playlist.GetDisplayResolution(&width, &height));
+
+  std::string codecs = playlist.codec();
+  if (!audio_codec.empty()) {
+    base::StringAppendF(&codecs, ",%s", audio_codec.c_str());
   }
 
-  base::StringAppendF(out, "\n%s%s\n", base_url.c_str(), file_name.c_str());
+  Tag tag("#EXT-X-STREAM-INF", out);
+
+  tag.AddNumber("BANDWIDTH", bitrate);
+  tag.AddQuotedString("CODECS", codecs);
+  tag.AddResolution("RESOLUTION", width, height);
+
+  if (audio_group_id) {
+    tag.AddQuotedString("AUDIO", *audio_group_id);
+  }
+
+  base::StringAppendF(out, "\n%s%s\n", base_url.c_str(),
+                      playlist.file_name().c_str());
 }
 }  // namespace
 
@@ -130,16 +186,14 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
         languages.insert(language);
       }
 
-      AppendMediaTag(base_url, group_id, audio_playlist, language, is_default,
-                     is_autoselect, &audio_output);
+      BuildAudioTag(base_url, group_id, *audio_playlist, is_default,
+                    is_autoselect, &audio_output);
+
       const uint64_t audio_bitrate = audio_playlist->Bitrate();
       if (audio_bitrate > max_audio_bitrate)
         max_audio_bitrate = audio_bitrate;
     }
     for (const MediaPlaylist* video_playlist : video_playlists_) {
-      const std::string& video_codec = video_playlist->codec();
-      const uint64_t video_bitrate = video_playlist->Bitrate();
-
       // Assume all codecs are the same for same group ID.
       const std::string& audio_codec = audio_playlists.front()->codec();
 
@@ -147,34 +201,14 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
       uint32_t video_height;
       CHECK(video_playlist->GetDisplayResolution(&video_width, &video_height));
 
-      AppendStreamInfoTag(video_bitrate + max_audio_bitrate,
-                          video_codec + "," + audio_codec,
-                          video_width,
-                          video_height,
-                          &group_id,
-                          base_url,
-                          video_playlist->file_name(),
-                          &video_output);
+      BuildVideoTag(*video_playlist, max_audio_bitrate, audio_codec, &group_id,
+                    base_url, &video_output);
     }
   }
 
   if (audio_playlist_groups_.empty()) {
     for (const MediaPlaylist* video_playlist : video_playlists_) {
-      const std::string& video_codec = video_playlist->codec();
-      const uint64_t video_bitrate = video_playlist->Bitrate();
-
-      uint32_t video_width;
-      uint32_t video_height;
-      CHECK(video_playlist->GetDisplayResolution(&video_width, &video_height));
-
-      AppendStreamInfoTag(video_bitrate,
-                          video_codec,
-                          video_width,
-                          video_height,
-                          nullptr,
-                          base_url,
-                          video_playlist->file_name(),
-                          &video_output);
+      BuildVideoTag(*video_playlist, 0, "", nullptr, base_url, &video_output);
     }
   }
 
