@@ -44,15 +44,9 @@ std::unique_ptr<MuxerListener> CreateHlsListenerInternal(
   DCHECK(notifier);
   DCHECK_GE(stream_index, 0);
 
-  // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
-  // languages.
   std::string group_id = stream.hls_group_id;
   std::string name = stream.hls_name;
   std::string hls_playlist_name = stream.hls_playlist_name;
-
-  if (group_id.empty()) {
-    group_id = "audio";
-  }
 
   if (name.empty()) {
     name = base::StringPrintf("stream_%d", stream_index);

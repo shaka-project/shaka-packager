@@ -20,8 +20,9 @@
 
 namespace shaka {
 namespace hls {
-
 namespace {
+const char* kDefaultAudioGroupId = "default-audio-group";
+
 struct Variant {
   std::string audio_codec;
   const std::string* audio_group_id = nullptr;
@@ -62,6 +63,13 @@ std::list<Variant> AudioGroupsToVariants(
   }
 
   return variants;
+}
+
+const char* GetGroupId(const MediaPlaylist& playlist) {
+  // TODO(vaage): Add support to get a subtitle group id when text support
+  //              is added.
+  const std::string& group_id = playlist.group_id();
+  return group_id.empty() ? kDefaultAudioGroupId : group_id.c_str();
 }
 
 void BuildAudioTag(const std::string& base_url,
@@ -136,7 +144,7 @@ void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
   DCHECK(media_playlist);
   switch (media_playlist->stream_type()) {
     case MediaPlaylist::MediaPlaylistStreamType::kAudio: {
-      const std::string& group_id = media_playlist->group_id();
+      std::string group_id = GetGroupId(*media_playlist);
       audio_playlist_groups_[group_id].push_back(media_playlist);
       break;
     }
