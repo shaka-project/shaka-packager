@@ -15,6 +15,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/file/file.h"
 #include "packager/hls/base/media_playlist.h"
+#include "packager/hls/base/tag.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -62,47 +63,6 @@ std::list<Variant> AudioGroupsToVariants(
 
   return variants;
 }
-
-class Tag {
- public:
-  Tag(const std::string& name, std::string* buffer) : buffer_(buffer) {
-    base::StringAppendF(buffer_, "%s:", name.c_str());
-  }
-
-  void AddString(const std::string& key, const std::string& value) {
-    NextField();
-    base::StringAppendF(buffer_, "%s=%s", key.c_str(), value.c_str());
-  }
-
-  void AddQuotedString(const std::string& key, const std::string& value) {
-    NextField();
-    base::StringAppendF(buffer_, "%s=\"%s\"", key.c_str(), value.c_str());
-  }
-
-  void AddNumber(const std::string& key, uint64_t value) {
-    NextField();
-    base::StringAppendF(buffer_, "%s=%" PRIu64, key.c_str(), value);
-  }
-
-  void AddResolution(const std::string& key, uint32_t width, uint32_t height) {
-    NextField();
-    base::StringAppendF(buffer_, "%s=%" PRIu32 "x%" PRIu32, key.c_str(), width,
-                        height);
-  }
-
- private:
-  Tag(const Tag&) = delete;
-  Tag& operator=(const Tag&) = delete;
-
-  std::string* buffer_;
-  size_t fields = 0;
-
-  void NextField() {
-    if (fields++) {
-      buffer_->append(",");
-    }
-  }
-};
 
 void BuildAudioTag(const std::string& base_url,
                    const std::string& group_id,

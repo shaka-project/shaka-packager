@@ -20,6 +20,8 @@
         'base/media_playlist.h',
         'base/simple_hls_notifier.cc',
         'base/simple_hls_notifier.h',
+        'base/tag.cc',
+        'base/tag.h',
         'public/hls_params.h',
       ],
       'dependencies': [
