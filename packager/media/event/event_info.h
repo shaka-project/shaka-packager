@@ -22,16 +22,29 @@ struct SegmentEventInfo {
   uint64_t segment_file_size;
 };
 
+struct KeyFrameEvent {
+  uint64_t timestamp;
+  uint64_t start_byte_offset;
+  uint64_t size;
+};
+
 // This stores data passed into OnCueEvent() for VOD.
 struct CueEventInfo {
   uint64_t timestamp;
 };
 
+enum class EventInfoType {
+  kSegment,
+  kKeyFrame,
+  kCue,
+};
+
 // This stores data for lazy event callback for VOD.
 struct EventInfo {
-  bool is_cue_event;
+  EventInfoType type;
   union {
     SegmentEventInfo segment_info;
+    KeyFrameEvent key_frame;
     CueEventInfo cue_event_info;
   };
 };

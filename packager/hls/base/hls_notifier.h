@@ -57,6 +57,17 @@ class HlsNotifier {
                                 uint64_t start_byte_offset,
                                 uint64_t size) = 0;
 
+  /// Called on every key frame. For Video only.
+  /// @param stream_id is the value set by NotifyNewStream().
+  /// @param timestamp is the timesamp of the key frame in timescale units
+  ///        passed in @a media_info.
+  /// @param start_byte_offset is the offset of where the keyframe starts.
+  /// @param size is the size in bytes.
+  virtual bool NotifyKeyFrame(uint32_t stream_id,
+                              uint64_t timestamp,
+                              uint64_t start_byte_offset,
+                              uint64_t size) = 0;
+
   /// @param stream_id is the value set by NotifyNewStream().
   /// @param timestamp is the timestamp of the CueEvent.
   /// @return true on success, false otherwise.

@@ -459,6 +459,23 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_TRUE(notifier.Flush());
 }
 
+TEST_F(SimpleHlsNotifierTest, NotifyKeyFrame) {
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+  SimpleHlsNotifier notifier(hls_params_);
+  const uint32_t stream_id =
+      SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
+
+  const uint64_t kTimestamp = 12345;
+  const uint64_t kStartByteOffset = 888;
+  const uint64_t kSize = 555;
+  EXPECT_CALL(*mock_media_playlist,
+              AddKeyFrame(kTimestamp, kStartByteOffset, kSize));
+  EXPECT_TRUE(
+      notifier.NotifyKeyFrame(stream_id, kTimestamp, kStartByteOffset, kSize));
+}
+
 TEST_F(SimpleHlsNotifierTest, NotifyNewSegmentWithoutStreamsRegistered) {
   SimpleHlsNotifier notifier(hls_params_);
   EXPECT_TRUE(notifier.Init());

@@ -56,6 +56,10 @@ class SimpleHlsNotifier : public HlsNotifier {
                         uint64_t duration,
                         uint64_t start_byte_offset,
                         uint64_t size) override;
+  bool NotifyKeyFrame(uint32_t stream_id,
+                      uint64_t timestamp,
+                      uint64_t start_byte_offset,
+                      uint64_t size) override;
   bool NotifyCueEvent(uint32_t container_id, uint64_t timestamp) override;
   bool NotifyEncryptionUpdate(
       uint32_t stream_id,

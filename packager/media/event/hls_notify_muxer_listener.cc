@@ -18,10 +18,12 @@ namespace media {
 
 HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     const std::string& playlist_name,
+    bool iframes_only,
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
     hls::HlsNotifier* hls_notifier)
     : playlist_name_(playlist_name),
+      iframes_only_(iframes_only),
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
       hls_notifier_(hls_notifier) {
@@ -157,19 +159,28 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
     const size_t num_subsegments = subsegment_ranges.size();
     size_t subsegment_index = 0;
     for (const auto& event_info : event_info_) {
-      if (event_info.is_cue_event) {
-        hls_notifier_->NotifyCueEvent(stream_id_,
-                                      event_info.cue_event_info.timestamp);
-      } else {
-        if (subsegment_index < num_subsegments) {
-          const Range& range = subsegment_ranges[subsegment_index];
-          hls_notifier_->NotifyNewSegment(
-              stream_id_, media_info_.media_file_name(),
-              event_info.segment_info.start_time,
-              event_info.segment_info.duration, range.start,
-              range.end + 1 - range.start);
-        }
-        ++subsegment_index;
+      switch (event_info.type) {
+        case EventInfoType::kSegment:
+          if (subsegment_index < num_subsegments) {
+            const Range& range = subsegment_ranges[subsegment_index];
+            hls_notifier_->NotifyNewSegment(
+                stream_id_, media_info_.media_file_name(),
+                event_info.segment_info.start_time,
+                event_info.segment_info.duration, range.start,
+                range.end + 1 - range.start);
+          }
+          ++subsegment_index;
+          break;
+        case EventInfoType::kKeyFrame:
+          hls_notifier_->NotifyKeyFrame(stream_id_,
+                                        event_info.key_frame.timestamp,
+                                        event_info.key_frame.start_byte_offset,
+                                        event_info.key_frame.size);
+          break;
+        case EventInfoType::kCue:
+          hls_notifier_->NotifyCueEvent(stream_id_,
+                                        event_info.cue_event_info.timestamp);
+          break;
       }
     }
     if (subsegment_index != num_subsegments) {
@@ -187,7 +198,7 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           uint64_t segment_file_size) {
   if (!media_info_.has_segment_template()) {
     EventInfo event_info;
-    event_info.is_cue_event = false;
+    event_info.type = EventInfoType::kSegment;
     event_info.segment_info = {start_time, duration, segment_file_size};
     event_info_.push_back(event_info);
   } else {
@@ -200,12 +211,29 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
   }
 }
 
+void HlsNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
+                                        uint64_t start_byte_offset,
+                                        uint64_t size) {
+  if (!iframes_only_)
+    return;
+  if (!media_info_.has_segment_template()) {
+    EventInfo event_info;
+    event_info.type = EventInfoType::kKeyFrame;
+    event_info.key_frame = {timestamp, start_byte_offset, size};
+    event_info_.push_back(event_info);
+  } else {
+    const bool result = hls_notifier_->NotifyKeyFrame(stream_id_, timestamp,
+                                                      start_byte_offset, size);
+    LOG_IF(WARNING, !result) << "Failed to add new segment.";
+  }
+}
+
 void HlsNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
                                         const std::string& cue_data) {
   // Not using |cue_data| at this moment.
   if (!media_info_.has_segment_template()) {
     EventInfo event_info;
-    event_info.is_cue_event = true;
+    event_info.type = EventInfoType::kCue;
     event_info.cue_event_info = {timestamp};
     event_info_.push_back(event_info);
   } else {

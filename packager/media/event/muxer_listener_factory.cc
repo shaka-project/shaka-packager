@@ -56,8 +56,9 @@ std::unique_ptr<MuxerListener> CreateHlsListenerInternal(
     hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_index);
   }
 
-  std::unique_ptr<MuxerListener> listener(
-      new HlsNotifyMuxerListener(hls_playlist_name, name, group_id, notifier));
+  const bool kIFramesOnly = true;
+  std::unique_ptr<MuxerListener> listener(new HlsNotifyMuxerListener(
+      hls_playlist_name, !kIFramesOnly, name, group_id, notifier));
   return listener;
 }
 }  // namespace

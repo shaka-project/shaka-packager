@@ -128,6 +128,15 @@ class MuxerListener {
                             uint64_t duration,
                             uint64_t segment_file_size) = 0;
 
+  /// Called when there is a new key frame. For Video only. Note that it should
+  /// be called before OnNewSegment is called on the containing segment.
+  /// @param timestamp is in terms of the timescale of the media.
+  /// @param start_byte_offset is the offset of where the key frame starts.
+  /// @param size is size in bytes.
+  virtual void OnKeyFrame(uint64_t timestamp,
+                          uint64_t start_byte_offset,
+                          uint64_t size) = 0;
+
   /// Called when there is a new Ad Cue, which should align with (sub)segments.
   /// @param timestamp indicate the cue timestamp.
   /// @param cue_data is the data of the cue.

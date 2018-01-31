@@ -16,9 +16,11 @@
 namespace shaka {
 namespace media {
 
+using ::testing::_;
+using ::testing::Bool;
 using ::testing::Return;
 using ::testing::StrEq;
-using ::testing::_;
+using ::testing::TestWithParam;
 
 namespace {
 
@@ -38,6 +40,11 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     const std::string& segment_name,
                     uint64_t start_time,
                     uint64_t duration,
+                    uint64_t start_byte_offset,
+                    uint64_t size));
+  MOCK_METHOD4(NotifyKeyFrame,
+               bool(uint32_t stream_id,
+                    uint64_t timestamp,
                     uint64_t start_byte_offset,
                     uint64_t size));
   MOCK_METHOD2(NotifyCueEvent, bool(uint32_t stream_id, uint64_t timestamp));
@@ -65,6 +72,7 @@ const uint8_t kAnyData[] = {
 // This value doesn't really affect the test, it's not used by the
 // implementation.
 const bool kInitialEncryptionInfo = true;
+const bool kIFramesOnlyPlaylist = true;
 
 const char kDefaultPlaylistName[] = "default_playlist.m3u8";
 const char kDefaultName[] = "DEFAULTNAME";
@@ -87,6 +95,7 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
  protected:
   HlsNotifyMuxerListenerTest()
       : listener_(kDefaultPlaylistName,
+                  !kIFramesOnlyPlaylist,
                   kDefaultName,
                   kDefaultGroupId,
                   &mock_notifier_) {}
@@ -365,8 +374,7 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
   const uint64_t kFileSize = 756739;
 
   listener_.OnCueEvent(kStartTime, "dummy cue data");
-  listener_.OnNewSegment("filename.mp4", kStartTime, kDuration,
-                         kFileSize);
+  listener_.OnNewSegment("filename.mp4", kStartTime, kDuration, kFileSize);
   MuxerListener::MediaRanges ranges;
   Range init_range;
   init_range.start = 0;
@@ -386,8 +394,8 @@ TEST_F(HlsNotifyMuxerListenerTest, NoSegmentTemplateOnMediaEnd) {
 
   EXPECT_CALL(mock_notifier_, NotifyCueEvent(_, kStartTime));
   EXPECT_CALL(mock_notifier_,
-              NotifyNewSegment(_, StrEq("filename.mp4"), kStartTime,
-                               kDuration, kSegmentStartOffset, kFileSize));
+              NotifyNewSegment(_, StrEq("filename.mp4"), kStartTime, kDuration,
+                               kSegmentStartOffset, kFileSize));
   listener_.OnMediaEnd(ranges, 200000);
 }
 
@@ -442,6 +450,74 @@ TEST_F(HlsNotifyMuxerListenerTest,
                                kDuration, kSegmentStartOffset, kFileSize));
   listener_.OnMediaEnd(ranges, 200000);
 }
+
+class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
+ public:
+  HlsNotifyMuxerListenerKeyFrameTest()
+      : listener_(kDefaultPlaylistName,
+                  GetParam(),
+                  kDefaultName,
+                  kDefaultGroupId,
+                  &mock_notifier_) {}
+
+  MockHlsNotifier mock_notifier_;
+  HlsNotifyMuxerListener listener_;
+};
+
+TEST_P(HlsNotifyMuxerListenerKeyFrameTest, WithSegmentTemplate) {
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  std::shared_ptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+  muxer_options.segment_template = "$Number$.mp4";
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+
+  const uint64_t kKeyFrameTimestamp = 20123;
+  const uint64_t kKeyFrameStartByteOffset = 3456;
+  const uint64_t kKeyFrameSize = 543234;
+  EXPECT_CALL(mock_notifier_,
+              NotifyKeyFrame(_, kKeyFrameTimestamp, kKeyFrameStartByteOffset,
+                             kKeyFrameSize))
+      .Times(GetParam() ? 1 : 0);
+  listener_.OnKeyFrame(kKeyFrameTimestamp, kKeyFrameStartByteOffset,
+                       kKeyFrameSize);
+}
+
+// Verify that the notifier is called for every key frame in OnMediaEnd if
+// segment_template is not set.
+TEST_P(HlsNotifyMuxerListenerKeyFrameTest, NoSegmentTemplate) {
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  std::shared_ptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+  muxer_options.output_file_name = "filename.mp4";
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+
+  const uint64_t kKeyFrameTimestamp = 20123;
+  const uint64_t kKeyFrameStartByteOffset = 3456;
+  const uint64_t kKeyFrameSize = 543234;
+  listener_.OnKeyFrame(kKeyFrameTimestamp, kKeyFrameStartByteOffset,
+                       kKeyFrameSize);
+
+  EXPECT_CALL(mock_notifier_,
+              NotifyKeyFrame(_, kKeyFrameTimestamp, kKeyFrameStartByteOffset,
+                             kKeyFrameSize))
+      .Times(GetParam() ? 1 : 0);
+  MuxerListener::MediaRanges ranges;
+  // The value does not matter for this test.
+  ranges.subsegment_ranges.resize(1);
+  listener_.OnMediaEnd(ranges, 200000);
+}
+
+INSTANTIATE_TEST_CASE_P(InstantiationName,
+                        HlsNotifyMuxerListenerKeyFrameTest,
+                        Bool());
 
 }  // namespace media
 }  // namespace shaka

@@ -25,6 +25,8 @@ namespace media {
 class HlsNotifyMuxerListener : public MuxerListener {
  public:
   /// @param playlist_name is the name of the playlist for the muxer's stream.
+  /// @param iframes_only if true, indicates that it is for iframes-only
+  ///        playlist.
   /// @param ext_x_media_name is the name of this playlist. This is the
   ///        value of the NAME attribute for EXT-X-MEDIA, it is not the same as
   ///        @a playlist_name. This may be empty for video.
@@ -33,6 +35,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   ///        video.
   /// @param hls_notifier used by this listener. Ownership does not transfer.
   HlsNotifyMuxerListener(const std::string& playlist_name,
+                         bool iframes_only,
                          const std::string& ext_x_media_name,
                          const std::string& ext_x_media_group_id,
                          hls::HlsNotifier* hls_notifier);
@@ -58,6 +61,9 @@ class HlsNotifyMuxerListener : public MuxerListener {
                     uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size) override;
+  void OnKeyFrame(uint64_t timestamp,
+                  uint64_t start_byte_offset,
+                  uint64_t size);
   void OnCueEvent(uint64_t timestamp, const std::string& cue_data) override;
   /// @}
 
@@ -66,6 +72,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   HlsNotifyMuxerListener& operator=(const HlsNotifyMuxerListener&) = delete;
 
   const std::string playlist_name_;
+  const bool iframes_only_;
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
   hls::HlsNotifier* const hls_notifier_;

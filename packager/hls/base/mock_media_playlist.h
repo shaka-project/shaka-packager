@@ -31,6 +31,10 @@ class MockMediaPlaylist : public MediaPlaylist {
                     uint64_t duration,
                     uint64_t start_byte_offset,
                     uint64_t size));
+  MOCK_METHOD3(AddKeyFrame,
+               void(uint64_t timestamp,
+                    uint64_t start_byte_offset,
+                    uint64_t size));
   MOCK_METHOD6(AddEncryptionInfo,
                void(EncryptionMethod method,
                     const std::string& url,

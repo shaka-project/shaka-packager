@@ -367,6 +367,21 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   return true;
 }
 
+bool SimpleHlsNotifier::NotifyKeyFrame(uint32_t stream_id,
+                                       uint64_t timestamp,
+                                       uint64_t start_byte_offset,
+                                       uint64_t size) {
+  base::AutoLock auto_lock(lock_);
+  auto stream_iterator = stream_map_.find(stream_id);
+  if (stream_iterator == stream_map_.end()) {
+    LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
+    return false;
+  }
+  auto& media_playlist = stream_iterator->second->media_playlist;
+  media_playlist->AddKeyFrame(timestamp, start_byte_offset, size);
+  return true;
+}
+
 bool SimpleHlsNotifier::NotifyCueEvent(uint32_t stream_id, uint64_t timestamp) {
   base::AutoLock auto_lock(lock_);
   auto stream_iterator = stream_map_.find(stream_id);

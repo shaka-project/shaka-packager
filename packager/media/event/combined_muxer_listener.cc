@@ -65,6 +65,14 @@ void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
   }
 }
 
+void CombinedMuxerListener::OnKeyFrame(uint64_t timestamp,
+                                       uint64_t start_byte_offset,
+                                       uint64_t size) {
+  for (auto& listener : muxer_listeners_) {
+    listener->OnKeyFrame(timestamp, start_byte_offset, size);
+  }
+}
+
 void CombinedMuxerListener::OnCueEvent(uint64_t timestamp,
                                        const std::string& cue_data) {
   for (auto& listener : muxer_listeners_) {

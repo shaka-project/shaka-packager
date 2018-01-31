@@ -133,13 +133,19 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
   // TODO(rkuroiwa): Use media_ranges.subsegment_ranges instead of caching the
   // subsegments.
   for (const auto& event_info : event_info_) {
-    if (event_info.is_cue_event) {
-      mpd_notifier_->NotifyCueEvent(id, event_info.cue_event_info.timestamp);
-    } else {
-      mpd_notifier_->NotifyNewSegment(
-          id, event_info.segment_info.start_time,
-          event_info.segment_info.duration,
-          event_info.segment_info.segment_file_size);
+    switch (event_info.type) {
+      case EventInfoType::kSegment:
+        mpd_notifier_->NotifyNewSegment(
+            id, event_info.segment_info.start_time,
+            event_info.segment_info.duration,
+            event_info.segment_info.segment_file_size);
+        break;
+      case EventInfoType::kKeyFrame:
+        // NO-OP for DASH.
+        break;
+      case EventInfoType::kCue:
+        mpd_notifier_->NotifyCueEvent(id, event_info.cue_event_info.timestamp);
+        break;
     }
   }
   event_info_.clear();
@@ -158,10 +164,16 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
       mpd_notifier_->Flush();
   } else {
     EventInfo event_info;
-    event_info.is_cue_event = false;
+    event_info.type = EventInfoType::kSegment;
     event_info.segment_info = {start_time, duration, segment_file_size};
     event_info_.push_back(event_info);
   }
+}
+
+void MpdNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
+                                        uint64_t start_byte_offset,
+                                        uint64_t size) {
+  // NO-OP for DASH.
 }
 
 void MpdNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
@@ -171,7 +183,7 @@ void MpdNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
     mpd_notifier_->NotifyCueEvent(notification_id_, timestamp);
   } else {
     EventInfo event_info;
-    event_info.is_cue_event = true;
+    event_info.type = EventInfoType::kCue;
     event_info.cue_event_info = {timestamp};
     event_info_.push_back(event_info);
   }

@@ -62,6 +62,11 @@ class MockMuxerListener : public MuxerListener {
                     uint64_t duration,
                     uint64_t segment_file_size));
 
+  MOCK_METHOD3(OnKeyFrame,
+               void(uint64_t timestamp,
+                    uint64_t start_byte_offset,
+                    uint64_t size));
+
   MOCK_METHOD2(OnCueEvent,
                void(uint64_t timestamp, const std::string& cue_data));
 };
