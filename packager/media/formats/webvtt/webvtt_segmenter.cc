@@ -35,7 +35,10 @@ Status WebVttSegmenter::Process(std::unique_ptr<StreamData> stream_data) {
 Status WebVttSegmenter::OnFlushRequest(size_t input_stream_index) {
   Status status;
   while (status.ok() && samples_.size()) {
-    status.Update(OnSegmentEnd());
+    // It is not possible for there to be any gaps, or else we would have
+    // already ended the segments before them. So just close the last remaining
+    // open segments.
+    OnSegmentEnd(samples_.top().segment);
   }
   return status.ok() ? FlushAllDownstreams() : status;
 }
@@ -68,23 +71,19 @@ Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
     samples_.push(seg_sample);
   }
 
-  Status status;
-
-  while (status.ok() && samples_.size() &&
-         samples_.top().segment < start_segment) {
-    // WriteNextSegment will pop elements from |samples_| which will
-    // eventually allow the loop to exit.
-    status.Update(OnSegmentEnd());
+  // Output all the segments that come before the start of this cue's first
+  // segment.
+  for (; current_segment_ < start_segment; current_segment_++) {
+    Status status = OnSegmentEnd(current_segment_);
+    if (!status.ok()) {
+      return status;
+    }
   }
 
-  return status;
+  return Status::OK;
 }
 
-Status WebVttSegmenter::OnSegmentEnd() {
-  DCHECK(samples_.size());
-
-  const uint64_t segment = samples_.top().segment;
-
+Status WebVttSegmenter::OnSegmentEnd(uint64_t segment) {
   Status status;
   while (status.ok() && samples_.size() && samples_.top().segment == segment) {
     status.Update(

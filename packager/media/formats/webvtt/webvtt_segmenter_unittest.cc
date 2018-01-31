@@ -142,7 +142,7 @@ TEST_F(WebVttSegmenterTest, CreatesSegmentsForCues) {
 //           |          |
 //           |          | [---B---]
 //           |          |
-TEST_F(WebVttSegmenterTest, SkipsEmptySegments) {
+TEST_F(WebVttSegmenterTest, DoesntSkipsEmptySegments) {
   const uint64_t kSampleDuration = kSegmentDuration / 2;
 
   {
@@ -160,7 +160,11 @@ TEST_F(WebVttSegmenterTest, SkipsEmptySegments) {
         OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
                                 kSegmentDuration, !kSubSegment, !kEncrypted)));
 
-    // There is no segment two
+    // Segment two (empty)
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsSegmentInfo(
+                    kStreamIndex, kStartTimeSigned + kSegmentDuration,
+                    kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     // Segment Three
     EXPECT_CALL(*Output(kOutputIndex),

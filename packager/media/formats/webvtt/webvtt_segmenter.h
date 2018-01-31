@@ -56,8 +56,10 @@ class WebVttSegmenter : public MediaHandler {
   Status InitializeInternal() override;
 
   Status OnTextSample(std::shared_ptr<const TextSample> sample);
-  Status OnSegmentEnd();
 
+  Status OnSegmentEnd(uint64_t segment);
+
+  uint64_t current_segment_ = 0;
   uint64_t segment_duration_ms_;
   std::priority_queue<WebVttSegmentedTextSample,
                       std::vector<WebVttSegmentedTextSample>,

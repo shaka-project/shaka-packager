@@ -26,6 +26,7 @@ TEST(WebVttTextPipelineTest, SegmentedOutput) {
   const char* kOutput1 = "memory://output/template-1.vtt";
   const char* kOutput2 = "memory://output/template-2.vtt";
   const char* kOutput3 = "memory://output/template-3.vtt";
+  const char* kOutput4 = "memory://output/template-4.vtt";
 
   const char* kInputFile = "memory://input.vtt";
   const char* kInput =
@@ -53,8 +54,14 @@ TEST(WebVttTextPipelineTest, SegmentedOutput) {
       "Thank you.\n";
 
   // Segment One
-  // 00:00:10.000 to 00:00:20.000
+  // 00:00:00.000 to 00:00:10.000
   const char* kExpectedOutput1 =
+      "WEBVTT\n"
+      "\n";
+
+  // Segment Two
+  // 00:00:10.000 to 00:00:20.000
+  const char* kExpectedOutput2 =
       "WEBVTT\n"
       "\n"
       "1\n"
@@ -62,9 +69,9 @@ TEST(WebVttTextPipelineTest, SegmentedOutput) {
       "This blade has a dark past.\n"
       "\n";
 
-  // Segment Two
+  // Segment Three
   // 00:00:20.000 to 00:00:30.000
-  const char* kExpectedOutput2 =
+  const char* kExpectedOutput3 =
       "WEBVTT\n"
       "\n"
       "1\n"
@@ -80,9 +87,9 @@ TEST(WebVttTextPipelineTest, SegmentedOutput) {
       "You're a fool for traveling alone,\nso completely unprepared.\n"
       "\n";
 
-  // Segment Three
+  // Segment Four
   // 00:00:30.000 to 00:00:40.000
-  const char* kExpectedOutput3 =
+  const char* kExpectedOutput4 =
       "WEBVTT\n"
       "\n"
       "3\n"
@@ -128,6 +135,7 @@ TEST(WebVttTextPipelineTest, SegmentedOutput) {
   ASSERT_FILE_STREQ(kOutput1, kExpectedOutput1);
   ASSERT_FILE_STREQ(kOutput2, kExpectedOutput2);
   ASSERT_FILE_STREQ(kOutput3, kExpectedOutput3);
+  ASSERT_FILE_STREQ(kOutput4, kExpectedOutput4);
 }
 }  // namespace media
 }  // namespace shaka
