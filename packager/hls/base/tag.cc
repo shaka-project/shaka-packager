@@ -32,12 +32,22 @@ void Tag::AddNumber(const std::string& key, uint64_t value) {
   base::StringAppendF(buffer_, "%s=%" PRIu64, key.c_str(), value);
 }
 
-void Tag::AddResolution(const std::string& key,
-                        uint32_t width,
-                        uint32_t height) {
+void Tag::AddNumberPair(const std::string& key,
+                        uint64_t number1,
+                        char separator,
+                        uint64_t number2) {
   NextField();
-  base::StringAppendF(buffer_, "%s=%" PRIu32 "x%" PRIu32, key.c_str(), width,
-                      height);
+  base::StringAppendF(buffer_, "%s=%" PRIu64 "%c%" PRIu64, key.c_str(), number1,
+                      separator, number2);
+}
+
+void Tag::AddQuotedNumberPair(const std::string& key,
+                              uint64_t number1,
+                              char separator,
+                              uint64_t number2) {
+  NextField();
+  base::StringAppendF(buffer_, "%s=\"%" PRIu64 "%c%" PRIu64 "\"", key.c_str(),
+                      number1, separator, number2);
 }
 
 void Tag::NextField() {

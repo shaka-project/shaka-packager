@@ -16,6 +16,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/file/file.h"
+#include "packager/hls/base/tag.h"
 #include "packager/media/base/language_utils.h"
 #include "packager/version/version.h"
 
@@ -35,28 +36,29 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
-std::string CreateExtXMap(const MediaInfo& media_info) {
-  std::string ext_x_map;
+void AppendExtXMap(const MediaInfo& media_info, std::string* out) {
   if (media_info.has_init_segment_name()) {
-    base::StringAppendF(&ext_x_map, "#EXT-X-MAP:URI=\"%s\"",
-                        media_info.init_segment_name().data());
+    Tag tag("#EXT-X-MAP", out);
+    tag.AddQuotedString("URI", media_info.init_segment_name().data());
+    out->append("\n");
   } else if (media_info.has_media_file_name() && media_info.has_init_range()) {
     // It only makes sense for single segment media to have EXT-X-MAP if
     // there is init_range.
-    base::StringAppendF(&ext_x_map, "#EXT-X-MAP:URI=\"%s\"",
-                        media_info.media_file_name().data());
+    Tag tag("#EXT-X-MAP", out);
+    tag.AddQuotedString("URI", media_info.media_file_name().data());
+
+    if (media_info.has_init_range()) {
+      const uint64_t begin = media_info.init_range().begin();
+      const uint64_t end = media_info.init_range().end();
+      const uint64_t length = end - begin + 1;
+
+      tag.AddQuotedNumberPair("BYTERANGE", length, '@', begin);
+    }
+
+    out->append("\n");
   } else {
-    return "";
+    // This media info does not need an ext-x-map tag.
   }
-  if (media_info.has_init_range()) {
-    const uint64_t begin = media_info.init_range().begin();
-    const uint64_t end = media_info.init_range().end();
-    const uint64_t length = end - begin + 1;
-    base::StringAppendF(&ext_x_map, ",BYTERANGE=\"%" PRIu64 "@%" PRIu64 "\"",
-                        length, begin);
-  }
-  ext_x_map += "\n";
-  return ext_x_map;
 }
 
 std::string CreatePlaylistHeader(
@@ -109,7 +111,8 @@ std::string CreatePlaylistHeader(
 
   // Put EXT-X-MAP at the end since the rest of the playlist is about the
   // segment and key info.
-  header += CreateExtXMap(media_info);
+  AppendExtXMap(media_info, &header);
+
   return header;
 }
 
@@ -162,15 +165,18 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       previous_segment_end_offset_(previous_segment_end_offset) {}
 
 std::string SegmentInfoEntry::ToString() {
-  std::string result = base::StringPrintf("#EXTINF:%.3f,\n", duration_);
+  std::string result = base::StringPrintf("#EXTINF:%.3f,", duration_);
+
   if (use_byte_range_) {
-    result += "#EXT-X-BYTERANGE:" + base::Uint64ToString(segment_file_size_);
+    base::StringAppendF(&result, "\n#EXT-X-BYTERANGE:%" PRIu64,
+                        segment_file_size_);
     if (previous_segment_end_offset_ + 1 != start_byte_offset_) {
-      result += "@" + base::Uint64ToString(start_byte_offset_);
+      base::StringAppendF(&result, "@%" PRIu64, start_byte_offset_);
     }
-    result += "\n";
   }
-  result += file_name_ + "\n";
+
+  base::StringAppendF(&result, "\n%s", file_name_.c_str());
+
   return result;
 }
 
@@ -212,32 +218,37 @@ EncryptionInfoEntry::EncryptionInfoEntry(MediaPlaylist::EncryptionMethod method,
       key_format_versions_(key_format_versions) {}
 
 std::string EncryptionInfoEntry::ToString() {
+  std::string tag_string;
+  Tag tag("#EXT-X-KEY", &tag_string);
+
   std::string method_attribute;
   if (method_ == MediaPlaylist::EncryptionMethod::kSampleAes) {
-    method_attribute = "METHOD=SAMPLE-AES";
+    tag.AddString("METHOD", "SAMPLE-AES");
   } else if (method_ == MediaPlaylist::EncryptionMethod::kAes128) {
-    method_attribute = "METHOD=AES-128";
+    tag.AddString("METHOD", "AES-128");
   } else if (method_ == MediaPlaylist::EncryptionMethod::kSampleAesCenc) {
-    method_attribute = "METHOD=SAMPLE-AES-CTR";
+    tag.AddString("METHOD", "SAMPLE-AES-CTR");
   } else {
     DCHECK(method_ == MediaPlaylist::EncryptionMethod::kNone);
-    method_attribute = "METHOD=NONE";
+    tag.AddString("METHOD", "NONE");
   }
-  std::string ext_key = "#EXT-X-KEY:" + method_attribute + ",URI=\"" + url_ +
-                        "\"";
+
+  tag.AddQuotedString("URI", url_);
+
   if (!key_id_.empty()) {
-    ext_key += ",KEYID=" + key_id_;
+    tag.AddString("KEYID", key_id_);
   }
   if (!iv_.empty()) {
-    ext_key += ",IV=" + iv_;
+    tag.AddString("IV", iv_);
   }
   if (!key_format_versions_.empty()) {
-    ext_key += ",KEYFORMATVERSIONS=\"" + key_format_versions_ + "\"";
+    tag.AddQuotedString("KEYFORMATVERSIONS", key_format_versions_);
   }
-  if (key_format_.empty())
-    return ext_key + "\n";
+  if (!key_format_.empty()) {
+    tag.AddQuotedString("KEYFORMAT", key_format_);
+  }
 
-  return ext_key + ",KEYFORMAT=\"" + key_format_ + "\"\n";
+  return tag_string;
 }
 
 class DiscontinuityEntry : public HlsEntry {
@@ -255,7 +266,7 @@ DiscontinuityEntry::DiscontinuityEntry()
     : HlsEntry(HlsEntry::EntryType::kExtDiscontinuity) {}
 
 std::string DiscontinuityEntry::ToString() {
-  return "#EXT-X-DISCONTINUITY\n";
+  return "#EXT-X-DISCONTINUITY";
 }
 
 class PlacementOpportunityEntry : public HlsEntry {
@@ -274,7 +285,7 @@ PlacementOpportunityEntry::PlacementOpportunityEntry()
     : HlsEntry(HlsEntry::EntryType::kExtPlacementOpportunity) {}
 
 std::string PlacementOpportunityEntry::ToString() {
-  return "#EXT-X-PLACEMENT-OPPORTUNITY\n";
+  return "#EXT-X-PLACEMENT-OPPORTUNITY";
 }
 
 double LatestSegmentStartTime(
@@ -424,15 +435,12 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
-  std::string header = CreatePlaylistHeader(
+  std::string content = CreatePlaylistHeader(
       media_info_, target_duration_, playlist_type_, stream_type_,
       media_sequence_number_, discontinuity_sequence_number_);
 
-  std::string body;
   for (const auto& entry : entries_)
-    body.append(entry->ToString());
-
-  std::string content = header + body;
+    base::StringAppendF(&content, "%s\n", entry->ToString().c_str());
 
   if (playlist_type_ == HlsPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";

@@ -27,8 +27,17 @@ class Tag {
   /// Add a non-quoted numeric value to the argument list.
   void AddNumber(const std::string& key, uint64_t value);
 
-  /// Add a resolution value (AxB) to the argument list.
-  void AddResolution(const std::string& key, uint32_t width, uint32_t height);
+  /// Add a pair of numbers with a symbol separating them.
+  void AddNumberPair(const std::string& key,
+                     uint64_t number1,
+                     char separator,
+                     uint64_t number2);
+
+  /// Add a quoted pair of numbers with a symbol separating them.
+  void AddQuotedNumberPair(const std::string& key,
+                           uint64_t number1,
+                           char separator,
+                           uint64_t number2);
 
  private:
   Tag(const Tag&) = delete;

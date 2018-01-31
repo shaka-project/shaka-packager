@@ -124,7 +124,7 @@ void BuildVideoTag(const MediaPlaylist& playlist,
 
   tag.AddNumber("BANDWIDTH", bitrate);
   tag.AddQuotedString("CODECS", codecs);
-  tag.AddResolution("RESOLUTION", width, height);
+  tag.AddNumberPair("RESOLUTION", width, 'x', height);
 
   if (audio_group_id) {
     tag.AddQuotedString("AUDIO", *audio_group_id);
