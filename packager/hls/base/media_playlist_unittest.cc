@@ -99,13 +99,12 @@ TEST_F(MediaPlaylistMultiSegmentTest, NoTimeScale) {
   EXPECT_FALSE(media_playlist_.SetMediaInfo(media_info));
 }
 
-// The current implementation only handles video and audio.
-TEST_F(MediaPlaylistMultiSegmentTest, NoAudioOrVideo) {
+TEST_F(MediaPlaylistMultiSegmentTest, SetMediaInfoText) {
   MediaInfo media_info;
   media_info.set_reference_time_scale(kTimeScale);
   MediaInfo::TextInfo* text_info = media_info.mutable_text_info();
   text_info->set_format("vtt");
-  EXPECT_FALSE(media_playlist_.SetMediaInfo(media_info));
+  EXPECT_TRUE(media_playlist_.SetMediaInfo(media_info));
 }
 
 TEST_F(MediaPlaylistMultiSegmentTest, SetMediaInfo) {

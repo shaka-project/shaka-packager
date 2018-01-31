@@ -221,7 +221,6 @@ std::string EncryptionInfoEntry::ToString() {
   std::string tag_string;
   Tag tag("#EXT-X-KEY", &tag_string);
 
-  std::string method_attribute;
   if (method_ == MediaPlaylist::EncryptionMethod::kSampleAes) {
     tag.AddString("METHOD", "SAMPLE-AES");
   } else if (method_ == MediaPlaylist::EncryptionMethod::kAes128) {
@@ -342,8 +341,8 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
     stream_type_ = MediaPlaylistStreamType::kAudio;
     codec_ = media_info.audio_info().codec();
   } else {
-    NOTIMPLEMENTED();
-    return false;
+    stream_type_ = MediaPlaylistStreamType::kSubtitle;
+    codec_ = media_info.text_info().format();
   }
 
   time_scale_ = time_scale;

@@ -52,8 +52,13 @@ class MasterPlaylist {
   const std::string default_language_;
   std::list<MediaPlaylist*> all_playlists_;
   std::list<const MediaPlaylist*> video_playlists_;
-  // The key is the audio group name.
+
+  // The ID is the group name, and the value is the list of all media playlists
+  // in that group. Keep audio and subtitle separate as they are processed
+  // separately.
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups_;
+  std::map<std::string, std::list<const MediaPlaylist*>>
+      subtitle_playlist_groups_;
 
   DISALLOW_COPY_AND_ASSIGN(MasterPlaylist);
 };

@@ -22,10 +22,13 @@ namespace shaka {
 namespace hls {
 namespace {
 const char* kDefaultAudioGroupId = "default-audio-group";
+const char* kDefaultSubtitleGroupId = "default-text-group";
+const char* kUnexpectedGroupId = "unexpected-group";
 
 struct Variant {
   std::string audio_codec;
   const std::string* audio_group_id = nullptr;
+  const std::string* text_group_id = nullptr;
   uint64_t audio_bitrate = 0;
 };
 
@@ -66,10 +69,72 @@ std::list<Variant> AudioGroupsToVariants(
 }
 
 const char* GetGroupId(const MediaPlaylist& playlist) {
-  // TODO(vaage): Add support to get a subtitle group id when text support
-  //              is added.
   const std::string& group_id = playlist.group_id();
-  return group_id.empty() ? kDefaultAudioGroupId : group_id.c_str();
+
+  if (!group_id.empty()) {
+    return group_id.c_str();
+  }
+
+  switch (playlist.stream_type()) {
+    case MediaPlaylist::MediaPlaylistStreamType::kAudio:
+      return kDefaultAudioGroupId;
+
+    case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
+      return kDefaultSubtitleGroupId;
+
+    default:
+      return kUnexpectedGroupId;
+  }
+}
+
+std::list<Variant> SubtitleGroupsToVariants(
+    const std::map<std::string, std::list<const MediaPlaylist*>>& groups) {
+  std::list<Variant> variants;
+
+  for (const auto& group : groups) {
+    Variant variant;
+    variant.text_group_id = &group.first;
+
+    variants.push_back(variant);
+  }
+
+  // Make sure we return at least one variant so create a null variant if there
+  // are no variants.
+  if (variants.empty()) {
+    variants.emplace_back();
+  }
+
+  return variants;
+}
+
+std::list<Variant> BuildVariants(
+    const std::map<std::string, std::list<const MediaPlaylist*>>& audio_groups,
+    const std::map<std::string, std::list<const MediaPlaylist*>>&
+        subtitle_groups) {
+  std::list<Variant> audio_variants = AudioGroupsToVariants(audio_groups);
+  std::list<Variant> subtitle_variants =
+      SubtitleGroupsToVariants(subtitle_groups);
+
+  DCHECK_GE(audio_variants.size(), 1u);
+  DCHECK_GE(subtitle_variants.size(), 1u);
+
+  std::list<Variant> merged;
+
+  for (const auto& audio_variant : audio_variants) {
+    for (const auto& subtitle_variant : subtitle_variants) {
+      Variant variant;
+      variant.audio_codec = audio_variant.audio_codec;
+      variant.audio_group_id = audio_variant.audio_group_id;
+      variant.text_group_id = subtitle_variant.text_group_id;
+      variant.audio_bitrate = audio_variant.audio_bitrate;
+
+      merged.push_back(variant);
+    }
+  }
+
+  DCHECK_GE(merged.size(), 1u);
+
+  return merged;
 }
 
 void BuildAudioTag(const std::string& base_url,
@@ -105,6 +170,7 @@ void BuildVideoTag(const MediaPlaylist& playlist,
                    uint64_t max_audio_bitrate,
                    const std::string& audio_codec,
                    const std::string* audio_group_id,
+                   const std::string* text_group_id,
                    const std::string& base_url,
                    std::string* out) {
   DCHECK(out);
@@ -130,8 +196,30 @@ void BuildVideoTag(const MediaPlaylist& playlist,
     tag.AddQuotedString("AUDIO", *audio_group_id);
   }
 
+  if (text_group_id) {
+    tag.AddQuotedString("SUBTITLES", *text_group_id);
+  }
+
   base::StringAppendF(out, "\n%s%s\n", base_url.c_str(),
                       playlist.file_name().c_str());
+}
+
+void BuildSubtitleTag(const MediaPlaylist& playlist,
+                      const std::string& base_url,
+                      const std::string& group_id,
+                      std::string* out) {
+  Tag tag("#EXT-X-MEDIA", out);
+
+  tag.AddString("TYPE", "SUBTITLES");
+  tag.AddQuotedString("URI", base_url + playlist.file_name());
+  tag.AddQuotedString("GROUP-ID", group_id);
+  const std::string& language = playlist.GetLanguage();
+  if (!language.empty()) {
+    tag.AddQuotedString("LANGUAGE", language);
+  }
+  tag.AddQuotedString("NAME", playlist.name());
+
+  out->append("\n");
 }
 }  // namespace
 
@@ -152,6 +240,11 @@ void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
       video_playlists_.push_back(media_playlist);
       break;
     }
+    case MediaPlaylist::MediaPlaylistStreamType::kSubtitle: {
+      std::string group_id = GetGroupId(*media_playlist);
+      subtitle_playlist_groups_[group_id].push_back(media_playlist);
+      break;
+    }
     default: {
       NOTIMPLEMENTED() << static_cast<int>(media_playlist->stream_type())
                        << " not handled.";
@@ -168,6 +261,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
   // TODO(rkuroiwa): Handle audio only.
   std::string audio_output;
   std::string video_output;
+  std::string subtitle_output;
 
   // Write out all the audio tags.
   for (const auto& group : audio_playlist_groups_) {
@@ -203,13 +297,24 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     }
   }
 
-  std::list<Variant> variants = AudioGroupsToVariants(audio_playlist_groups_);
+  // Write out all the text tags.
+  for (const auto& group : subtitle_playlist_groups_) {
+    const auto& group_id = group.first;
+    const auto& playlists = group.second;
+    for (const auto& playlist : playlists) {
+      BuildSubtitleTag(*playlist, base_url, group_id, &subtitle_output);
+    }
+  }
+
+  std::list<Variant> variants =
+      BuildVariants(audio_playlist_groups_, subtitle_playlist_groups_);
 
   // Write all the video tags out.
   for (const auto& playlist : video_playlists_) {
     for (const auto& variant : variants) {
       BuildVideoTag(*playlist, variant.audio_bitrate, variant.audio_codec,
-                    variant.audio_group_id, base_url, &video_output);
+                    variant.audio_group_id, variant.text_group_id, base_url,
+                    &video_output);
     }
   }
 
@@ -222,8 +327,9 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
   }
 
   std::string content = "";
-  base::StringAppendF(&content, "#EXTM3U\n%s%s%s", version_line.c_str(),
-                      audio_output.c_str(), video_output.c_str());
+  base::StringAppendF(&content, "#EXTM3U\n%s%s%s%s", version_line.c_str(),
+                      audio_output.c_str(), subtitle_output.c_str(),
+                      video_output.c_str());
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)

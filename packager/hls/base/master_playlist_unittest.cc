@@ -84,6 +84,20 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
 
   return playlist;
 }
+
+std::unique_ptr<MockMediaPlaylist> MakeText(const std::string& filename,
+                                            const std::string& name,
+                                            const std::string& group,
+                                            const std::string& language) {
+  std::unique_ptr<MockMediaPlaylist> playlist(
+      new MockMediaPlaylist(kVodPlaylist, filename, name, group));
+
+  EXPECT_CALL(*playlist, GetLanguage()).WillRepeatedly(Return(language));
+  playlist->SetStreamTypeForTesting(
+      MediaPlaylist::MediaPlaylistStreamType::kSubtitle);
+
+  return playlist;
+}
 }  // namespace
 
 class MasterPlaylistTest : public ::testing::Test {
@@ -276,6 +290,215 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       "#EXT-X-STREAM-INF:BANDWIDTH=400000,CODECS=\"videocodec,audiocodec\","
       "RESOLUTION=800x600,AUDIO=\"audio\"\n"
       "http://anydomain.com/video.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
+  // Video, sd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video1 =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
+  master_playlist_.AddMediaPlaylist(video1.get());
+
+  // Video, hd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video2 =
+      CreateVideoPlaylist("hd.m3u8", "sdvideocodec", 600000);
+  master_playlist_.AddMediaPlaylist(video2.get());
+
+  // Text, eng.m3u8.
+  std::unique_ptr<MockMediaPlaylist> text_eng =
+      MakeText("eng.m3u8", "english", "textgroup", "en");
+  master_playlist_.AddMediaPlaylist(text_eng.get());
+
+  // Text, fr.m3u8.
+  std::unique_ptr<MockMediaPlaylist> text_fr =
+      MakeText("fr.m3u8", "french", "textgroup", "fr");
+  master_playlist_.AddMediaPlaylist(text_fr.get());
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\"\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec\","
+      "RESOLUTION=800x600,SUBTITLES=\"textgroup\"\n"
+      "http://playlists.org/sd.m3u8\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=600000,CODECS=\"sdvideocodec\","
+      "RESOLUTION=800x600,SUBTITLES=\"textgroup\"\n"
+      "http://playlists.org/hd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
+  // Video, sd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
+  master_playlist_.AddMediaPlaylist(video.get());
+
+  // Text, eng.m3u8.
+  std::unique_ptr<MockMediaPlaylist> text_eng =
+      MakeText("eng.m3u8", "english", "en-text-group", "en");
+  master_playlist_.AddMediaPlaylist(text_eng.get());
+
+  // Text, fr.m3u8.
+  std::unique_ptr<MockMediaPlaylist> text_fr =
+      MakeText("fr.m3u8", "french", "fr-text-group", "fr");
+  master_playlist_.AddMediaPlaylist(text_fr.get());
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"en-text-group\",LANGUAGE=\"en\",NAME=\"english\"\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
+      "GROUP-ID=\"fr-text-group\",LANGUAGE=\"fr\",NAME=\"french\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec\","
+      "RESOLUTION=800x600,SUBTITLES=\"en-text-group\"\n"
+      "http://playlists.org/sd.m3u8\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec\","
+      "RESOLUTION=800x600,SUBTITLES=\"fr-text-group\"\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
+  // Video, sd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
+  master_playlist_.AddMediaPlaylist(video.get());
+
+  // Audio, english.m3u8.
+  std::unique_ptr<MockMediaPlaylist> audio = CreateAudioPlaylist(
+      "eng.m3u8", "english", "audiogroup", "audiocodec", "en", 2, 50000);
+  master_playlist_.AddMediaPlaylist(audio.get());
+
+  // Text, english.m3u8.
+  std::unique_ptr<MockMediaPlaylist> text =
+      MakeText("eng.m3u8", "english", "textgroup", "en");
+  master_playlist_.AddMediaPlaylist(text.get());
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"audiogroup\",LANGUAGE=\"en\",NAME=\"english\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audiogroup\",SUBTITLES=\"textgroup\"\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistVidesAudiosTextsDifferentGroups) {
+  const uint64_t kAudioChannels = 2;
+  const uint64_t kAudioBitRate = 50000;
+  const uint64_t kVideoBitRate = 300000;
+
+  std::unique_ptr<MockMediaPlaylist> media_playlists[] = {
+      // AUDIO
+      CreateAudioPlaylist("audio-1.m3u8", "audio 1", "audio-group-1",
+                          "audiocodec", "en", kAudioChannels, kAudioBitRate),
+      CreateAudioPlaylist("audio-2.m3u8", "audio 2", "audio-group-2",
+                          "audiocodec", "en", kAudioChannels, kAudioBitRate),
+
+      // SUBTITLES
+      MakeText("text-1.m3u8", "text 1", "text-group-1", "en"),
+      MakeText("text-2.m3u8", "text 2", "text-group-2", "en"),
+
+      // VIDEO
+      CreateVideoPlaylist("video-1.m3u8", "sdvideocodec", kVideoBitRate),
+      CreateVideoPlaylist("video-2.m3u8", "sdvideocodec", kVideoBitRate),
+  };
+
+  // Add all the media playlists to the master playlist.
+  for (const auto& media_playlist : media_playlists) {
+    master_playlist_.AddMediaPlaylist(media_playlist.get());
+  }
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
+      "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
+      "GROUP-ID=\"audio-group-2\",LANGUAGE=\"en\",NAME=\"audio 2\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/text-1.m3u8\","
+      "GROUP-ID=\"text-group-1\",LANGUAGE=\"en\",NAME=\"text 1\"\n"
+
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/text-2.m3u8\","
+      "GROUP-ID=\"text-group-2\",LANGUAGE=\"en\",NAME=\"text 2\"\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
+      "http://playlists.org/video-1.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
+      "http://playlists.org/video-1.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
+      "http://playlists.org/video-1.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
+      "http://playlists.org/video-1.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
+      "http://playlists.org/video-2.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
+      "http://playlists.org/video-2.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
+      "http://playlists.org/video-2.m3u8\n"
+
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
+      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
+      "http://playlists.org/video-2.m3u8\n";
 
   ASSERT_EQ(expected, actual);
 }
