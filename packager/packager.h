@@ -112,6 +112,9 @@ struct StreamDescriptor {
   /// Required for HLS output. It defines the name of the playlist for the
   /// stream. Usually ends with `.m3u8`.
   std::string hls_playlist_name;
+  /// Optional for HLS output. It defines the name of the I-Frames only playlist
+  /// for the stream. For Video only. Usually ends with `.m3u8`.
+  std::string hls_iframe_playlist_name;
 };
 
 class SHAKA_EXPORT Packager {

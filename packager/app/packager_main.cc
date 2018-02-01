@@ -100,7 +100,11 @@ const char kUsage[] =
     "  - playlist_name: The HLS playlist file to create. Usually ends with\n"
     "    '.m3u8', and is relative to --hls_master_playlist_output. If\n"
     "    unspecified, defaults to something of the form 'stream_0.m3u8',\n"
-    "    'stream_1.m3u8', 'stream_2.m3u8', etc.\n";
+    "    'stream_1.m3u8', 'stream_2.m3u8', etc.\n"
+    "  - iframe_playlist_name: The optional HLS I-Frames only playlist file\n"
+    "    to create. Usually ends with '.m3u8', and is relative to\n"
+    "    hls_master_playlist_output. Should only be set for video streams. If\n"
+    "    unspecified, no I-Frames only playlist is created.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";

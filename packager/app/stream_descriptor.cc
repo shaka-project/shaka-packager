@@ -26,6 +26,7 @@ enum FieldType {
   kHlsNameField,
   kHlsGroupIdField,
   kHlsPlaylistNameField,
+  kHlsIframePlaylistNameField,
   kTrickPlayFactorField,
   kSkipEncryptionField,
   kDrmStreamLabelField,
@@ -56,6 +57,7 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"hls_name", kHlsNameField},
     {"hls_group_id", kHlsGroupIdField},
     {"playlist_name", kHlsPlaylistNameField},
+    {"iframe_playlist_name", kHlsIframePlaylistNameField},
     {"trick_play_factor", kTrickPlayFactorField},
     {"tpf", kTrickPlayFactorField},
     {"skip_encryption", kSkipEncryptionField},
@@ -126,6 +128,10 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
       }
       case kHlsPlaylistNameField: {
         descriptor.hls_playlist_name = iter->second;
+        break;
+      }
+      case kHlsIframePlaylistNameField: {
+        descriptor.hls_iframe_playlist_name = iter->second;
         break;
       }
       case kTrickPlayFactorField: {

@@ -17,3 +17,10 @@ HLS specific stream descriptor fields
     relative to hls_master_playlist_output (see below). If unspecified,
     defaults to something of the form 'stream_0.m3u8', 'stream_1.m3u8',
     'stream_2.m3u8', etc.
+
+:iframe_playlist_name:
+
+    The optional HLS I-Frames only playlist file to create. Usually ends with
+    '.m3u8', and is relative to hls_master_playlist_output (see below). Should
+    only be set for video streams. If unspecified, no I-Frames only playlist is
+    created.

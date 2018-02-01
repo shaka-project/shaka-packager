@@ -37,7 +37,7 @@ std::unique_ptr<MuxerListener> CreateMpdListenerInternal(
   return listener;
 }
 
-std::unique_ptr<MuxerListener> CreateHlsListenerInternal(
+std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
     const MuxerListenerFactory::StreamData& stream,
     int stream_index,
     hls::HlsNotifier* notifier) {
@@ -47,6 +47,7 @@ std::unique_ptr<MuxerListener> CreateHlsListenerInternal(
   std::string group_id = stream.hls_group_id;
   std::string name = stream.hls_name;
   std::string hls_playlist_name = stream.hls_playlist_name;
+  std::string hls_iframe_playlist_name = stream.hls_iframe_playlist_name;
 
   if (name.empty()) {
     name = base::StringPrintf("stream_%d", stream_index);
@@ -57,9 +58,14 @@ std::unique_ptr<MuxerListener> CreateHlsListenerInternal(
   }
 
   const bool kIFramesOnly = true;
-  std::unique_ptr<MuxerListener> listener(new HlsNotifyMuxerListener(
+  std::list<std::unique_ptr<MuxerListener>> listeners;
+  listeners.emplace_back(new HlsNotifyMuxerListener(
       hls_playlist_name, !kIFramesOnly, name, group_id, notifier));
-  return listener;
+  if (!hls_iframe_playlist_name.empty()) {
+    listeners.emplace_back(new HlsNotifyMuxerListener(
+        hls_iframe_playlist_name, kIFramesOnly, name, group_id, notifier));
+  }
+  return listeners;
 }
 }  // namespace
 
@@ -85,8 +91,10 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
     combined_listener->AddListener(CreateMpdListenerInternal(mpd_notifier_));
   }
   if (hls_notifier_) {
-    combined_listener->AddListener(
-        CreateHlsListenerInternal(stream, stream_index, hls_notifier_));
+    for (auto& listener :
+         CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
+      combined_listener->AddListener(std::move(listener));
+    }
   }
 
   return std::move(combined_listener);
@@ -99,7 +107,8 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateHlsListener(
   }
 
   const int stream_index = stream_index_++;
-  return CreateHlsListenerInternal(stream, stream_index, hls_notifier_);
+  return std::move(
+      CreateHlsListenersInternal(stream, stream_index, hls_notifier_).front());
 }
 
 }  // namespace media

@@ -43,6 +43,7 @@ class MuxerListenerFactory {
     std::string hls_group_id;
     std::string hls_name;
     std::string hls_playlist_name;
+    std::string hls_iframe_playlist_name;
   };
 
   /// Create a new muxer listener.
