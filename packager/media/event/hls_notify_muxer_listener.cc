@@ -172,10 +172,15 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
           ++subsegment_index;
           break;
         case EventInfoType::kKeyFrame:
-          hls_notifier_->NotifyKeyFrame(stream_id_,
-                                        event_info.key_frame.timestamp,
-                                        event_info.key_frame.start_byte_offset,
-                                        event_info.key_frame.size);
+          if (subsegment_index < num_subsegments) {
+            const uint64_t segment_start_offset =
+                subsegment_ranges[subsegment_index].start;
+            hls_notifier_->NotifyKeyFrame(
+                stream_id_, event_info.key_frame.timestamp,
+                segment_start_offset +
+                    event_info.key_frame.start_offset_in_segment,
+                event_info.key_frame.size);
+          }
           break;
         case EventInfoType::kCue:
           hls_notifier_->NotifyCueEvent(stream_id_,

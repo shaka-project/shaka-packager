@@ -46,6 +46,11 @@ class PesPacket {
     pts_ = pts;
   }
 
+  /// @return whether it is a key frame.
+  bool is_key_frame() const { return is_key_frame_; }
+  /// @param is_key_frame indicates whether it is a key frame.
+  void set_is_key_frame(bool is_key_frame) { is_key_frame_ = is_key_frame; }
+
   const std::vector<uint8_t>& data() const { return data_; }
   /// @return mutable data for this PES.
   std::vector<uint8_t>* mutable_data() { return &data_; }
@@ -56,6 +61,7 @@ class PesPacket {
   // These values mean "not set" when the value is less than 0.
   int64_t dts_ = -1;
   int64_t pts_ = -1;
+  bool is_key_frame_ = false;
 
   std::vector<uint8_t> data_;
 

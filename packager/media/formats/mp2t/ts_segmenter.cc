@@ -143,8 +143,23 @@ Status TsSegmenter::WritePesPacketsToFile() {
     if (!status.ok())
       return status;
 
-    if (!ts_writer_->AddPesPacket(std::move(pes_packet)))
-      return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
+    if (listener_ && IsVideoCodec(codec_) && pes_packet->is_key_frame()) {
+      base::Optional<uint64_t> start_pos = ts_writer_->GetFilePosition();
+
+      const int64_t timestamp = pes_packet->pts();
+      if (!ts_writer_->AddPesPacket(std::move(pes_packet)))
+        return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
+
+      base::Optional<uint64_t> end_pos = ts_writer_->GetFilePosition();
+      if (!start_pos || !end_pos) {
+        return Status(error::MUXER_FAILURE,
+                      "Failed to get file position in WritePesPacketsToFile.");
+      }
+      listener_->OnKeyFrame(timestamp, *start_pos, *end_pos - *start_pos);
+    } else {
+      if (!ts_writer_->AddPesPacket(std::move(pes_packet)))
+        return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
+    }
   }
   return Status::OK;
 }

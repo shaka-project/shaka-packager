@@ -28,6 +28,7 @@
         'decoding_time_iterator.h',
         'fragmenter.cc',
         'fragmenter.h',
+        'key_frame_info.h',
         'mp4_media_parser.cc',
         'mp4_media_parser.h',
         'mp4_muxer.cc',

@@ -22,6 +22,7 @@ class StreamInfo;
 
 namespace mp4 {
 
+struct KeyFrameInfo;
 struct SegmentReference;
 struct TrackFragment;
 
@@ -62,6 +63,9 @@ class Fragmenter {
   bool fragment_initialized() const { return fragment_initialized_; }
   bool fragment_finalized() const { return fragment_finalized_; }
   BufferWriter* data() { return data_.get(); }
+  const std::vector<KeyFrameInfo>& key_frame_infos() const {
+    return key_frame_infos_;
+  }
 
   /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
   /// decoding timestamp instead of presentation timestamp in media timeline,
@@ -96,6 +100,8 @@ class Fragmenter {
   int64_t earliest_presentation_time_;
   int64_t first_sap_time_;
   std::unique_ptr<BufferWriter> data_;
+  // Saves key frames information, for Video.
+  std::vector<KeyFrameInfo> key_frame_infos_;
 
   DISALLOW_COPY_AND_ASSIGN(Fragmenter);
 };

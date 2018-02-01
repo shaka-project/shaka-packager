@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "packager/base/optional.h"
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
@@ -49,6 +50,9 @@ class TsWriter {
   /// @param pes_packet gets added to the writer.
   /// @return true on success, false otherwise.
   virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet);
+
+  /// @return current file position on success, nullopt otherwise.
+  base::Optional<uint64_t> GetFilePosition();
 
  private:
   TsWriter(const TsWriter&) = delete;

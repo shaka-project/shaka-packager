@@ -18,6 +18,7 @@
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/fragmenter.h"
+#include "packager/media/formats/mp4/key_frame_info.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -191,8 +192,13 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
   // Write the fragment to buffer.
   moof_->Write(fragment_buffer_.get());
   mdat.WriteHeader(fragment_buffer_.get());
-  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
+  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_) {
+    for (const KeyFrameInfo& key_frame_info : fragmenter->key_frame_infos()) {
+      key_frame_infos_.push_back(key_frame_info);
+      key_frame_infos_.back().start_byte_offset += fragment_buffer_->Size();
+    }
     fragment_buffer_->AppendBuffer(*fragmenter->data());
+  }
 
   // Increase sequence_number for next fragment.
   ++moof_->header.sequence_number;
@@ -203,6 +209,7 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
     Status status = DoFinalizeSegment();
     // Reset segment information to initial state.
     sidx_->references.clear();
+    key_frame_infos_.clear();
     return status;
   }
   return Status::OK;

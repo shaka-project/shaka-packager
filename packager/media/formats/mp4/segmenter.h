@@ -33,6 +33,7 @@ class StreamInfo;
 namespace mp4 {
 
 class Fragmenter;
+struct KeyFrameInfo;
 
 /// This class defines the Segmenter which is responsible for organizing
 /// fragments into segments/subsegments and package them into a MP4 file.
@@ -112,6 +113,9 @@ class Segmenter {
   SegmentIndex* sidx() { return sidx_.get(); }
   MuxerListener* muxer_listener() { return muxer_listener_; }
   uint64_t progress_target() { return progress_target_; }
+  const std::vector<KeyFrameInfo>& key_frame_infos() const {
+    return key_frame_infos_;
+  }
 
   void set_progress_target(uint64_t progress_target) {
     progress_target_ = progress_target;
@@ -142,6 +146,7 @@ class Segmenter {
   uint64_t accumulated_progress_ = 0u;
   uint32_t sample_duration_ = 0u;
   std::vector<uint64_t> stream_durations_;
+  std::vector<KeyFrameInfo> key_frame_infos_;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

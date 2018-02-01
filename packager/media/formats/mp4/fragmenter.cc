@@ -8,10 +8,11 @@
 
 #include <limits>
 
-#include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/key_frame_info.h"
 
 namespace shaka {
 namespace media {
@@ -89,6 +90,12 @@ Status Fragmenter::AddSample(const MediaSample& sample) {
         !stream_info_->encryption_config().constant_iv.empty(), traf_);
   }
 
+  if (stream_info_->stream_type() == StreamType::kStreamVideo &&
+      sample.is_key_frame()) {
+    key_frame_infos_.push_back({static_cast<uint64_t>(sample.pts()),
+                                data_->Size(), sample.data_size()});
+  }
+
   data_->AppendArray(sample.data(), sample.data_size());
   fragment_duration_ += sample.duration();
 
@@ -132,6 +139,7 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   earliest_presentation_time_ = kInvalidTime;
   first_sap_time_ = kInvalidTime;
   data_.reset(new BufferWriter());
+  key_frame_infos_.clear();
   return Status::OK;
 }
 

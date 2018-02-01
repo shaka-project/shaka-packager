@@ -214,6 +214,14 @@ bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet) {
   return true;
 }
 
+base::Optional<uint64_t> TsWriter::GetFilePosition() {
+  if (!current_file_)
+    return base::nullopt;
+  uint64_t position;
+  return current_file_->Tell(&position) ? base::make_optional(position)
+                                        : base::nullopt;
+}
+
 }  // namespace mp2t
 }  // namespace media
 }  // namespace shaka

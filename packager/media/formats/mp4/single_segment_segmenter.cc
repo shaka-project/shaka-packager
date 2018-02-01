@@ -14,6 +14,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/key_frame_info.h"
 
 namespace shaka {
 namespace media {
@@ -217,6 +218,15 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   }
   vod_sidx_->references.push_back(vod_ref);
 
+  if (muxer_listener()) {
+    for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
+      // Unlike multisegment-segmenter, there is no (sub)segment header (styp,
+      // sidx), so this is already the offset within the (sub)segment.
+      muxer_listener()->OnKeyFrame(key_frame_info.timestamp,
+                                   key_frame_info.start_byte_offset,
+                                   key_frame_info.size);
+    }
+  }
   // Append fragment buffer to temp file.
   size_t segment_size = fragment_buffer()->Size();
   Status status = fragment_buffer()->WriteToFile(temp_file_.get());

@@ -76,6 +76,7 @@ bool PesPacketGenerator::PushSample(const MediaSample& sample) {
   if (!current_processing_pes_)
     current_processing_pes_.reset(new PesPacket());
 
+  current_processing_pes_->set_is_key_frame(sample.is_key_frame());
   current_processing_pes_->set_pts(timescale_scale_ * sample.pts());
   current_processing_pes_->set_dts(timescale_scale_ * sample.dts());
   if (stream_type_ == kStreamVideo) {

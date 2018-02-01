@@ -24,7 +24,8 @@ struct SegmentEventInfo {
 
 struct KeyFrameEvent {
   uint64_t timestamp;
-  uint64_t start_byte_offset;
+  // In segment for multi-segment, in subsegment for single-segment.
+  uint64_t start_offset_in_segment;
   uint64_t size;
 };
 
