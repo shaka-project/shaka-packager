@@ -137,35 +137,6 @@ std::list<Variant> BuildVariants(
   return merged;
 }
 
-void BuildAudioTag(const std::string& base_url,
-                   const std::string& group_id,
-                   const MediaPlaylist& audio_playlist,
-                   bool is_default,
-                   bool is_autoselect,
-                   std::string* out) {
-  DCHECK(out);
-
-  Tag tag("#EXT-X-MEDIA", out);
-  tag.AddString("TYPE", "AUDIO");
-  tag.AddQuotedString("URI", base_url + audio_playlist.file_name());
-  tag.AddQuotedString("GROUP-ID", group_id);
-  const std::string& language = audio_playlist.GetLanguage();
-  if (!language.empty()) {
-    tag.AddQuotedString("LANGUAGE", language);
-  }
-  tag.AddQuotedString("NAME", audio_playlist.name());
-  if (is_default) {
-    tag.AddString("DEFAULT", "YES");
-  }
-  if (is_autoselect) {
-    tag.AddString("AUTOSELECT", "YES");
-  }
-  tag.AddQuotedString("CHANNELS",
-                      std::to_string(audio_playlist.GetNumChannels()));
-
-  out->append("\n");
-}
-
 void BuildVideoTag(const MediaPlaylist& playlist,
                    uint64_t max_audio_bitrate,
                    const std::string& audio_codec,
@@ -204,22 +175,101 @@ void BuildVideoTag(const MediaPlaylist& playlist,
                       playlist.file_name().c_str());
 }
 
-void BuildSubtitleTag(const MediaPlaylist& playlist,
-                      const std::string& base_url,
-                      const std::string& group_id,
-                      std::string* out) {
+// Need to pass in |group_id| as it may have changed to a new default when
+// grouped with other playlists.
+void BuildMediaTag(const MediaPlaylist& playlist,
+                   const std::string& group_id,
+                   bool is_default,
+                   bool is_autoselect,
+                   const std::string& base_url,
+                   std::string* out) {
+  // Tag attribures should follow the order as defined in
+  // https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-3.5
+
   Tag tag("#EXT-X-MEDIA", out);
 
-  tag.AddString("TYPE", "SUBTITLES");
+  // We should only be making media tags for audio and text.
+  switch (playlist.stream_type()) {
+    case MediaPlaylist::MediaPlaylistStreamType::kAudio:
+      tag.AddString("TYPE", "AUDIO");
+      break;
+
+    case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
+      tag.AddString("TYPE", "SUBTITLES");
+      break;
+
+    default:
+      NOTREACHED() << "Cannot build media tag for type "
+                   << static_cast<int>(playlist.stream_type());
+      break;
+  }
+
   tag.AddQuotedString("URI", base_url + playlist.file_name());
   tag.AddQuotedString("GROUP-ID", group_id);
+
   const std::string& language = playlist.GetLanguage();
   if (!language.empty()) {
     tag.AddQuotedString("LANGUAGE", language);
   }
+
   tag.AddQuotedString("NAME", playlist.name());
 
+  if (is_default) {
+    tag.AddString("DEFAULT", "YES");
+  }
+
+  if (is_autoselect) {
+    tag.AddString("AUTOSELECT", "YES");
+  }
+
+  const MediaPlaylist::MediaPlaylistStreamType kAudio =
+      MediaPlaylist::MediaPlaylistStreamType::kAudio;
+  if (playlist.stream_type() == kAudio) {
+    std::string channel_string = std::to_string(playlist.GetNumChannels());
+    tag.AddQuotedString("CHANNELS", channel_string);
+  }
+
   out->append("\n");
+}
+
+void BuildMediaTags(
+    const std::map<std::string, std::list<const MediaPlaylist*>>& groups,
+    const std::string& default_language,
+    const std::string& base_url,
+    std::string* out) {
+  for (const auto& group : groups) {
+    const std::string& group_id = group.first;
+    const auto& playlists = group.second;
+
+    // Tracks the language of the playlist in this group.
+    // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
+    // - A Group MUST NOT have more than one member with a DEFAULT attribute of
+    //   YES.
+    // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
+    //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
+    //   CHARACTERISTICS attributes that is distinct from those of other
+    //   AUTOSELECT=YES members of its Group.
+    // We tag the first rendition encountered with a particular language with
+    // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
+    // |default_language_|.
+    std::set<std::string> languages;
+
+    for (const auto& playlist : playlists) {
+      bool is_default = false;
+      bool is_autoselect = false;
+
+      const std::string language = playlist->GetLanguage();
+      if (languages.find(language) == languages.end()) {
+        is_default = !language.empty() && language == default_language;
+        is_autoselect = true;
+
+        languages.insert(language);
+      }
+
+      BuildMediaTag(*playlist, group_id, is_default, is_autoselect, base_url,
+                    out);
+    }
+  }
 }
 }  // namespace
 
@@ -264,47 +314,12 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
   std::string subtitle_output;
 
   // Write out all the audio tags.
-  for (const auto& group : audio_playlist_groups_) {
-    const auto& group_id = group.first;
-    const auto& playlists = group.second;
-
-    // Tracks the language of the playlist in this group.
-    // According to HLS spec: https://goo.gl/MiqjNd 4.3.4.1.1. Rendition Groups
-    // - A Group MUST NOT have more than one member with a DEFAULT attribute of
-    //   YES.
-    // - Each EXT-X-MEDIA tag with an AUTOSELECT=YES attribute SHOULD have a
-    //   combination of LANGUAGE[RFC5646], ASSOC-LANGUAGE, FORCED, and
-    //   CHARACTERISTICS attributes that is distinct from those of other
-    //   AUTOSELECT=YES members of its Group.
-    // We tag the first rendition encountered with a particular language with
-    // 'AUTOSELECT'; it is tagged with 'DEFAULT' too if the language matches
-    // |default_language_|.
-    std::set<std::string> languages;
-
-    for (const auto& playlist : playlists) {
-      bool is_default = false;
-      bool is_autoselect = false;
-
-      const std::string language = playlist->GetLanguage();
-      if (languages.find(language) == languages.end()) {
-        is_default = !language.empty() && language == default_language_;
-        is_autoselect = true;
-        languages.insert(language);
-      }
-
-      BuildAudioTag(base_url, group_id, *playlist, is_default, is_autoselect,
-                    &audio_output);
-    }
-  }
+  BuildMediaTags(audio_playlist_groups_, default_language_, base_url,
+                 &audio_output);
 
   // Write out all the text tags.
-  for (const auto& group : subtitle_playlist_groups_) {
-    const auto& group_id = group.first;
-    const auto& playlists = group.second;
-    for (const auto& playlist : playlists) {
-      BuildSubtitleTag(*playlist, base_url, group_id, &subtitle_output);
-    }
-  }
+  BuildMediaTags(subtitle_playlist_groups_, default_language_, base_url,
+                 &subtitle_output);
 
   std::list<Variant> variants =
       BuildVariants(audio_playlist_groups_, subtitle_playlist_groups_);
