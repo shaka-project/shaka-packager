@@ -145,42 +145,58 @@ std::list<Variant> BuildVariants(
   return merged;
 }
 
-void BuildVideoTag(const MediaPlaylist& playlist,
-                   uint64_t max_audio_bitrate,
-                   const std::string& audio_codec,
-                   const std::string* audio_group_id,
-                   const std::string* text_group_id,
-                   const std::string& base_url,
-                   std::string* out) {
+void BuildStreamInfTag(const MediaPlaylist& playlist,
+                       const Variant& variant,
+                       const std::string& base_url,
+                       std::string* out) {
   DCHECK(out);
 
-  const uint64_t bitrate = playlist.Bitrate() + max_audio_bitrate;
+  const uint64_t bitrate = playlist.Bitrate() + variant.audio_bitrate;
 
   uint32_t width;
   uint32_t height;
   CHECK(playlist.GetDisplayResolution(&width, &height));
 
   std::string codecs = playlist.codec();
-  if (!audio_codec.empty()) {
-    base::StringAppendF(&codecs, ",%s", audio_codec.c_str());
+  if (!variant.audio_codec.empty()) {
+    base::StringAppendF(&codecs, ",%s", variant.audio_codec.c_str());
   }
 
-  Tag tag("#EXT-X-STREAM-INF", out);
+  std::string tag_name;
+  switch (playlist.stream_type()) {
+    case MediaPlaylist::MediaPlaylistStreamType::kVideo:
+      tag_name = "#EXT-X-STREAM-INF";
+      break;
+    case MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly:
+      tag_name = "#EXT-X-I-FRAME-STREAM-INF";
+      break;
+    default:
+      NOTREACHED() << "Cannot build STREAM-INFO tag for type "
+                   << static_cast<int>(playlist.stream_type());
+      break;
+  }
+  Tag tag(tag_name, out);
 
   tag.AddNumber("BANDWIDTH", bitrate);
   tag.AddQuotedString("CODECS", codecs);
   tag.AddNumberPair("RESOLUTION", width, 'x', height);
 
-  if (audio_group_id) {
-    tag.AddQuotedString("AUDIO", *audio_group_id);
+  if (variant.audio_group_id) {
+    tag.AddQuotedString("AUDIO", *variant.audio_group_id);
   }
 
-  if (text_group_id) {
-    tag.AddQuotedString("SUBTITLES", *text_group_id);
+  if (variant.text_group_id) {
+    tag.AddQuotedString("SUBTITLES", *variant.text_group_id);
   }
 
-  base::StringAppendF(out, "\n%s%s\n", base_url.c_str(),
-                      playlist.file_name().c_str());
+  if (playlist.stream_type() ==
+      MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly) {
+    tag.AddQuotedString("URI", base_url + playlist.file_name());
+    out->append("\n");
+  } else {
+    base::StringAppendF(out, "\n%s%s\n", base_url.c_str(),
+                        playlist.file_name().c_str());
+  }
 }
 
 // Need to pass in |group_id| as it may have changed to a new default when
@@ -297,6 +313,9 @@ void AppendPlaylists(const std::string& default_language,
       case MediaPlaylist::MediaPlaylistStreamType::kVideo:
         video_playlists.push_back(playlist);
         break;
+      case MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly:
+        iframe_playlists.push_back(playlist);
+        break;
       case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
         subtitle_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
         break;
@@ -313,10 +332,13 @@ void AppendPlaylists(const std::string& default_language,
       BuildVariants(audio_playlist_groups, subtitle_playlist_groups);
   for (const auto& playlist : video_playlists) {
     for (const auto& variant : variants) {
-      BuildVideoTag(*playlist, variant.audio_bitrate, variant.audio_codec,
-                    variant.audio_group_id, variant.text_group_id, base_url,
-                    content);
+      BuildStreamInfTag(*playlist, variant, base_url, content);
     }
+  }
+
+  for (const auto& playlist : iframe_playlists) {
+    // I-Frame playlists do not have variant. Just use the default.
+    BuildStreamInfTag(*playlist, Variant(), base_url, content);
   }
 }
 
