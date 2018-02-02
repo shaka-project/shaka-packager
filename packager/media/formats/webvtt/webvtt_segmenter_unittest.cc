@@ -245,5 +245,66 @@ TEST_F(WebVttSegmenterTest, CueCrossesSegments) {
   ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
+class WebVttSegmenterOrderTest : public MediaHandlerTestBase {};
+
+TEST_F(WebVttSegmenterOrderTest, PreservesOrder) {
+  const size_t kInputs = 1;
+  const size_t kOutputs = 1;
+
+  const size_t kInput = 0;
+  const size_t kOutput = 0;
+
+  const uint64_t kDuration = 10000;
+  const int64_t kSegmentStart1 = 0;
+  const int64_t kSegmentStart2 = kDuration;
+
+  ASSERT_OK(SetUpAndInitializeGraph(
+      std::make_shared<WebVttSegmenter>(kDuration), kInputs, kOutputs));
+
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsStreamInfo(kInput)));
+
+    // Segment One
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsTextSample("1", 5000u, 8500u, "",
+                                       "WebVtt testing Line 1 (5.0 - 8.5)")));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsTextSample("2", 5000u, 8500u, "",
+                                       "WebVtt testing Line 2 (5.0 - 8.5)")));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsTextSample("3", 5000u, 12500u, "",
+                                       "WebVtt testing (5.0 - 12.5)")));
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsSegmentInfo(
+                                      kInput, kSegmentStart1, kSegmentDuration,
+                                      !kSubSegment, !kEncrypted)));
+
+    // Segment Two
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsTextSample("3", 5000u, 12500u, "",
+                                       "WebVtt testing (5.0 - 12.5)")));
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsSegmentInfo(
+                                      kInput, kSegmentStart2, kSegmentDuration,
+                                      !kSubSegment, !kEncrypted)));
+
+    EXPECT_CALL(*Output(kOutput), OnFlush(kInput));
+  }
+
+  ASSERT_OK(Input(kInput)->Dispatch(
+      StreamData::FromStreamInfo(0, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
+      kOutput,
+      GetTextSample("1", 5000, 8500, "WebVtt testing Line 1 (5.0 - 8.5)"))));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
+      kOutput,
+      GetTextSample("2", 5000, 8500, "WebVtt testing Line 2 (5.0 - 8.5)"))));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
+      kOutput,
+      GetTextSample("3", 5000, 12500, "WebVtt testing (5.0 - 12.5)"))));
+
+  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+}
+
 }  // namespace media
 }  // namespace shaka
