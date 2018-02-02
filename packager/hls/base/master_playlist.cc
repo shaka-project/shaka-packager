@@ -25,6 +25,14 @@ const char* kDefaultAudioGroupId = "default-audio-group";
 const char* kDefaultSubtitleGroupId = "default-text-group";
 const char* kUnexpectedGroupId = "unexpected-group";
 
+void AppendVersionString(std::string* content) {
+  const std::string version = GetPackagerVersion();
+  if (version.empty())
+    return;
+  base::StringAppendF(content, "## Generated with %s version %s\n",
+                      GetPackagerProjectUrl().c_str(), version.c_str());
+}
+
 struct Variant {
   std::string audio_codec;
   const std::string* audio_group_id = nullptr;
@@ -271,6 +279,47 @@ void BuildMediaTags(
     }
   }
 }
+
+void AppendPlaylists(const std::string& default_language,
+                     const std::string& base_url,
+                     const std::list<MediaPlaylist*>& playlists,
+                     std::string* content) {
+  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
+  std::map<std::string, std::list<const MediaPlaylist*>>
+      subtitle_playlist_groups;
+  std::list<const MediaPlaylist*> video_playlists;
+  std::list<const MediaPlaylist*> iframe_playlists;
+  for (const MediaPlaylist* playlist : playlists) {
+    switch (playlist->stream_type()) {
+      case MediaPlaylist::MediaPlaylistStreamType::kAudio:
+        audio_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
+        break;
+      case MediaPlaylist::MediaPlaylistStreamType::kVideo:
+        video_playlists.push_back(playlist);
+        break;
+      case MediaPlaylist::MediaPlaylistStreamType::kSubtitle:
+        subtitle_playlist_groups[GetGroupId(*playlist)].push_back(playlist);
+        break;
+      default:
+        NOTIMPLEMENTED() << static_cast<int>(playlist->stream_type())
+                         << " not handled.";
+    }
+  }
+
+  BuildMediaTags(audio_playlist_groups, default_language, base_url, content);
+  BuildMediaTags(subtitle_playlist_groups, default_language, base_url, content);
+
+  std::list<Variant> variants =
+      BuildVariants(audio_playlist_groups, subtitle_playlist_groups);
+  for (const auto& playlist : video_playlists) {
+    for (const auto& variant : variants) {
+      BuildVideoTag(*playlist, variant.audio_bitrate, variant.audio_codec,
+                    variant.audio_group_id, variant.text_group_id, base_url,
+                    content);
+    }
+  }
+}
+
 }  // namespace
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
@@ -278,73 +327,13 @@ MasterPlaylist::MasterPlaylist(const std::string& file_name,
     : file_name_(file_name), default_language_(default_language) {}
 MasterPlaylist::~MasterPlaylist() {}
 
-void MasterPlaylist::AddMediaPlaylist(MediaPlaylist* media_playlist) {
-  DCHECK(media_playlist);
-  switch (media_playlist->stream_type()) {
-    case MediaPlaylist::MediaPlaylistStreamType::kAudio: {
-      std::string group_id = GetGroupId(*media_playlist);
-      audio_playlist_groups_[group_id].push_back(media_playlist);
-      break;
-    }
-    case MediaPlaylist::MediaPlaylistStreamType::kVideo: {
-      video_playlists_.push_back(media_playlist);
-      break;
-    }
-    case MediaPlaylist::MediaPlaylistStreamType::kSubtitle: {
-      std::string group_id = GetGroupId(*media_playlist);
-      subtitle_playlist_groups_[group_id].push_back(media_playlist);
-      break;
-    }
-    default: {
-      NOTIMPLEMENTED() << static_cast<int>(media_playlist->stream_type())
-                       << " not handled.";
-      break;
-    }
-  }
-  // Sometimes we need to iterate over all playlists, so keep a collection
-  // of all playlists to make iterating easier.
-  all_playlists_.push_back(media_playlist);
-}
-
-bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
-                                         const std::string& output_dir) {
-  // TODO(rkuroiwa): Handle audio only.
-  std::string audio_output;
-  std::string video_output;
-  std::string subtitle_output;
-
-  // Write out all the audio tags.
-  BuildMediaTags(audio_playlist_groups_, default_language_, base_url,
-                 &audio_output);
-
-  // Write out all the text tags.
-  BuildMediaTags(subtitle_playlist_groups_, default_language_, base_url,
-                 &subtitle_output);
-
-  std::list<Variant> variants =
-      BuildVariants(audio_playlist_groups_, subtitle_playlist_groups_);
-
-  // Write all the video tags out.
-  for (const auto& playlist : video_playlists_) {
-    for (const auto& variant : variants) {
-      BuildVideoTag(*playlist, variant.audio_bitrate, variant.audio_codec,
-                    variant.audio_group_id, variant.text_group_id, base_url,
-                    &video_output);
-    }
-  }
-
-  const std::string version = GetPackagerVersion();
-  std::string version_line;
-  if (!version.empty()) {
-    version_line =
-        base::StringPrintf("## Generated with %s version %s\n",
-                           GetPackagerProjectUrl().c_str(), version.c_str());
-  }
-
-  std::string content = "";
-  base::StringAppendF(&content, "#EXTM3U\n%s%s%s%s", version_line.c_str(),
-                      audio_output.c_str(), subtitle_output.c_str(),
-                      video_output.c_str());
+bool MasterPlaylist::WriteMasterPlaylist(
+    const std::string& base_url,
+    const std::string& output_dir,
+    const std::list<MediaPlaylist*>& playlists) {
+  std::string content = "#EXTM3U\n";
+  AppendVersionString(&content);
+  AppendPlaylists(default_language_, base_url, playlists, &content);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)

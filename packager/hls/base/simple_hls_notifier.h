@@ -7,6 +7,7 @@
 #ifndef PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 #define PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -89,6 +90,7 @@ class SimpleHlsNotifier : public HlsNotifier {
 
   // Maps to unique_ptr because StreamEntry also holds unique_ptr
   std::map<uint32_t, std::unique_ptr<StreamEntry>> stream_map_;
+  std::list<MediaPlaylist*> media_playlists_;
 
   base::AtomicSequenceNumber sequence_number_;
 

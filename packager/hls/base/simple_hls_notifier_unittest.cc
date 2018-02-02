@@ -21,13 +21,14 @@
 namespace shaka {
 namespace hls {
 
+using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
-using ::testing::_;
 
 namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
@@ -43,9 +44,10 @@ class MockMasterPlaylist : public MasterPlaylist {
   MockMasterPlaylist()
       : MasterPlaylist(kMasterPlaylistName, kDefaultLanguage) {}
 
-  MOCK_METHOD1(AddMediaPlaylist, void(MediaPlaylist* media_playlist));
-  MOCK_METHOD2(WriteMasterPlaylist,
-               bool(const std::string& prefix, const std::string& output_dir));
+  MOCK_METHOD3(WriteMasterPlaylist,
+               bool(const std::string& prefix,
+                    const std::string& output_dir,
+                    const std::list<MediaPlaylist*>& playlists));
 };
 
 class MockMediaPlaylistFactory : public MediaPlaylistFactory {
@@ -128,9 +130,6 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     std::unique_ptr<MockMediaPlaylistFactory> factory(
         new MockMediaPlaylistFactory());
 
-    EXPECT_CALL(
-        *mock_master_playlist,
-        AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
     EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
     EXPECT_CALL(*factory, CreateMock(_, _, _, _, _))
         .WillOnce(Return(mock_media_playlist));
@@ -167,7 +166,6 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   EXPECT_CALL(*mock_media_playlist,
               SetMediaInfo(Property(&MediaInfo::init_segment_name, StrEq(""))))
@@ -207,7 +205,6 @@ TEST_F(SimpleHlsNotifierTest, RebaseInitSegmentUrl) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   // Verify that the common prefix is stripped in init segment.
   EXPECT_CALL(
@@ -243,7 +240,6 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "video/playlist.m3u8", "", "");
-  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   // Verify that the init segment URL is relative to playlist path.
   EXPECT_CALL(*mock_media_playlist,
@@ -292,7 +288,6 @@ TEST_F(SimpleHlsNotifierTest, RebaseAbsoluteSegmentPrefixAndOutputDirMatch) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
 
@@ -334,7 +329,6 @@ TEST_F(SimpleHlsNotifierTest,
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist,
@@ -363,7 +357,7 @@ TEST_F(SimpleHlsNotifierTest, Flush) {
   std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
       new MockMasterPlaylist());
   EXPECT_CALL(*mock_master_playlist,
-              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir)))
+              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir), _))
       .WillOnce(Return(true));
   InjectMasterPlaylist(std::move(mock_master_playlist), &notifier);
   EXPECT_TRUE(notifier.Init());
@@ -379,7 +373,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
-  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
   EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
@@ -409,9 +402,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
 
-  EXPECT_CALL(
-      *mock_master_playlist,
-      AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
   EXPECT_CALL(*factory, CreateMock(_, _, _, _, _))
       .WillOnce(Return(mock_media_playlist));
@@ -446,7 +436,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   Mock::VerifyAndClearExpectations(mock_media_playlist);
 
   EXPECT_CALL(*mock_master_playlist_ptr,
-              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir)))
+              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir),
+                                  ElementsAre(mock_media_playlist)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kTargetDuration))
       .Times(1);
@@ -908,9 +899,6 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist(expected_playlist_type_, "playlist.m3u8", "", "");
 
-  EXPECT_CALL(
-      *mock_master_playlist,
-      AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
   EXPECT_CALL(*factory, CreateMock(expected_playlist_type_, _, _, _, _))
       .WillOnce(Return(mock_media_playlist));
@@ -929,7 +917,7 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
       .WillOnce(Return(kLongestSegmentDuration));
 
   EXPECT_CALL(*mock_master_playlist,
-              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir)))
+              WriteMasterPlaylist(StrEq(kTestPrefix), StrEq(kAnyOutputDir), _))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist, SetTargetDuration(kTargetDuration))
       .Times(1);
@@ -975,15 +963,9 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*factory, CreateMock(_, _, StrEq("playlist1.m3u8"), _, _))
       .WillOnce(Return(mock_media_playlist1));
   EXPECT_CALL(*mock_media_playlist1, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(
-      *mock_master_playlist,
-      AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist1)));
   EXPECT_CALL(*factory, CreateMock(_, _, StrEq("playlist2.m3u8"), _, _))
       .WillOnce(Return(mock_media_playlist2));
   EXPECT_CALL(*mock_media_playlist2, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(
-      *mock_master_playlist,
-      AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist2)));
 
   hls_params_.playlist_type = GetParam();
   SimpleHlsNotifier notifier(hls_params_);
@@ -1006,7 +988,10 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*mock_media_playlist1, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
 
-  EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _))
+  EXPECT_CALL(
+      *mock_master_playlist_ptr,
+      WriteMasterPlaylist(
+          _, _, ElementsAre(mock_media_playlist1, mock_media_playlist2)))
       .WillOnce(Return(true));
   // SetTargetDuration and update all playlists as target duration is updated.
   EXPECT_CALL(*mock_media_playlist1, SetTargetDuration(kTargetDuration))
@@ -1031,7 +1016,7 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*mock_media_playlist2, AddSegment(_, _, _, _, _)).Times(1);
   EXPECT_CALL(*mock_media_playlist2, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
-  EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _))
+  EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _, _))
       .WillOnce(Return(true));
   // Not updating other playlists as target duration does not change.
   EXPECT_CALL(*mock_media_playlist2,

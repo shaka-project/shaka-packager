@@ -8,10 +8,7 @@
 #define PACKAGER_HLS_BASE_MASTER_PLAYLIST_H_
 
 #include <list>
-#include <map>
 #include <string>
-
-#include "packager/base/macros.h"
 
 namespace shaka {
 namespace hls {
@@ -29,11 +26,6 @@ class MasterPlaylist {
                  const std::string& default_language);
   virtual ~MasterPlaylist();
 
-  /// @param media_playlist is a MediaPlaylist that should get added to this
-  ///        master playlist. Ownership does not transfer.
-  /// @return true on success, false otherwise.
-  virtual void AddMediaPlaylist(MediaPlaylist* media_playlist);
-
   /// Writes Master Playlist to output_dir + <name of playlist>.
   /// This assumes that @a base_url is used as the prefix for Media Playlists.
   /// @param base_url is the prefix for the Media Playlist files. This should be
@@ -44,23 +36,16 @@ class MasterPlaylist {
   /// @return true if the playlist is updated successfully or there is no
   ///         difference since the last write, false otherwise.
   virtual bool WriteMasterPlaylist(const std::string& base_url,
-                                   const std::string& output_dir);
+                                   const std::string& output_dir,
+                                   const std::list<MediaPlaylist*>& playlists);
 
  private:
+  MasterPlaylist(const MasterPlaylist&) = delete;
+  MasterPlaylist& operator=(const MasterPlaylist&) = delete;
+
   std::string written_playlist_;
   const std::string file_name_;
   const std::string default_language_;
-  std::list<MediaPlaylist*> all_playlists_;
-  std::list<const MediaPlaylist*> video_playlists_;
-
-  // The ID is the group name, and the value is the list of all media playlists
-  // in that group. Keep audio and subtitle separate as they are processed
-  // separately.
-  std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups_;
-  std::map<std::string, std::list<const MediaPlaylist*>>
-      subtitle_playlist_groups_;
-
-  DISALLOW_COPY_AND_ASSIGN(MasterPlaylist);
 };
 
 }  // namespace hls

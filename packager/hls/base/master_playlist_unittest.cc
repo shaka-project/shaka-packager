@@ -117,21 +117,15 @@ class MasterPlaylistTest : public ::testing::Test {
   std::string master_playlist_path_;
 };
 
-TEST_F(MasterPlaylistTest, AddMediaPlaylist) {
-  MockMediaPlaylist mock_playlist(kVodPlaylist, "playlist1.m3u8", "somename",
-                                  "somegroupid");
-  master_playlist_.AddMediaPlaylist(&mock_playlist);
-}
-
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   const uint64_t kBitRate = 435889;
 
   std::unique_ptr<MockMediaPlaylist> mock_playlist =
       CreateVideoPlaylist("media1.m3u8", "avc1", kBitRate);
-  master_playlist_.AddMediaPlaylist(mock_playlist.get());
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+                                                   {mock_playlist.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -159,27 +153,26 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   // First video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> sd_video_playlist =
       CreateVideoPlaylist("sd.m3u8", "sdvideocodec", kVideo1BitRate);
-  master_playlist_.AddMediaPlaylist(sd_video_playlist.get());
 
   // Second video, hd.m3u8.
   std::unique_ptr<MockMediaPlaylist> hd_video_playlist =
       CreateVideoPlaylist("hd.m3u8", "hdvideocodec", kVideo2BitRate);
-  master_playlist_.AddMediaPlaylist(hd_video_playlist.get());
 
   // First audio, english.m3u8.
   std::unique_ptr<MockMediaPlaylist> english_playlist =
       CreateAudioPlaylist("eng.m3u8", "english", "audiogroup", "audiocodec",
                           "en", kAudio1Channels, kAudio1BitRate);
-  master_playlist_.AddMediaPlaylist(english_playlist.get());
 
   // Second audio, spanish.m3u8.
   std::unique_ptr<MockMediaPlaylist> spanish_playlist =
       CreateAudioPlaylist("spa.m3u8", "espanol", "audiogroup", "audiocodec",
                           "es", kAudio2Channels, kAudio2BitRate);
-  master_playlist_.AddMediaPlaylist(spanish_playlist.get());
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {sd_video_playlist.get(), hd_video_playlist.get(), english_playlist.get(),
+       spanish_playlist.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -216,22 +209,21 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   // First video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video_playlist =
       CreateVideoPlaylist("video.m3u8", "videocodec", kVideoBitRate);
-  master_playlist_.AddMediaPlaylist(video_playlist.get());
 
   // First audio, eng_lo.m3u8.
   std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
       "eng_lo.m3u8", "english_lo", "audio_lo", "audiocodec_lo", "en",
       kAudio1Channels, kAudio1BitRate);
-  master_playlist_.AddMediaPlaylist(eng_lo_playlist.get());
 
   // Second audio, eng_hi.m3u8.
   std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
       "eng_hi.m3u8", "english_hi", "audio_hi", "audiocodec_hi", "en",
       kAudio2Channels, kAudio2BitRate);
-  master_playlist_.AddMediaPlaylist(eng_hi_playlist.get());
 
   const char kBaseUrl[] = "http://anydomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -260,19 +252,18 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   // First video, video.m3u8.
   std::unique_ptr<MockMediaPlaylist> video_playlist =
       CreateVideoPlaylist("video.m3u8", "videocodec", 300000);
-  master_playlist_.AddMediaPlaylist(video_playlist.get());
 
   // First audio, eng_lo.m3u8.
   std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
       "eng_lo.m3u8", "english", "audio", "audiocodec", "en", 1, 50000);
-  master_playlist_.AddMediaPlaylist(eng_lo_playlist.get());
 
   std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
       "eng_hi.m3u8", "english", "audio", "audiocodec", "en", 8, 100000);
-  master_playlist_.AddMediaPlaylist(eng_hi_playlist.get());
 
   const char kBaseUrl[] = "http://anydomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -297,25 +288,23 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video1 =
       CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
-  master_playlist_.AddMediaPlaylist(video1.get());
 
   // Video, hd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video2 =
       CreateVideoPlaylist("hd.m3u8", "sdvideocodec", 600000);
-  master_playlist_.AddMediaPlaylist(video2.get());
 
   // Text, eng.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_eng =
       MakeText("eng.m3u8", "english", "textgroup", "en");
-  master_playlist_.AddMediaPlaylist(text_eng.get());
 
   // Text, fr.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_fr =
       MakeText("fr.m3u8", "french", "textgroup", "fr");
-  master_playlist_.AddMediaPlaylist(text_fr.get());
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video1.get(), video2.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -343,20 +332,19 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video =
       CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
-  master_playlist_.AddMediaPlaylist(video.get());
 
   // Text, eng.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_eng =
       MakeText("eng.m3u8", "english", "en-text-group", "en");
-  master_playlist_.AddMediaPlaylist(text_eng.get());
 
   // Text, fr.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_fr =
       MakeText("fr.m3u8", "french", "fr-text-group", "fr");
-  master_playlist_.AddMediaPlaylist(text_fr.get());
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_,
+      {video.get(), text_eng.get(), text_fr.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -385,20 +373,18 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video =
       CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
-  master_playlist_.AddMediaPlaylist(video.get());
 
   // Audio, english.m3u8.
   std::unique_ptr<MockMediaPlaylist> audio = CreateAudioPlaylist(
       "eng.m3u8", "english", "audiogroup", "audiocodec", "en", 2, 50000);
-  master_playlist_.AddMediaPlaylist(audio.get());
 
   // Text, english.m3u8.
   std::unique_ptr<MockMediaPlaylist> text =
       MakeText("eng.m3u8", "english", "textgroup", "en");
-  master_playlist_.AddMediaPlaylist(text.get());
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+      kBaseUrl, test_output_dir_, {video.get(), audio.get(), text.get()}));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
@@ -442,12 +428,14 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVidesAudiosTextsDifferentGroups) {
   };
 
   // Add all the media playlists to the master playlist.
+  std::list<MediaPlaylist*> media_playlist_list;
   for (const auto& media_playlist : media_playlists) {
-    master_playlist_.AddMediaPlaylist(media_playlist.get());
+    media_playlist_list.push_back(media_playlist.get());
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+                                                   media_playlist_list));
 
   std::string actual;
   ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));

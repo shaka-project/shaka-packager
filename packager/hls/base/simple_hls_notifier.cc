@@ -312,7 +312,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
 
   *stream_id = sequence_number_.GetNext();
   base::AutoLock auto_lock(lock_);
-  master_playlist_->AddMediaPlaylist(media_playlist.get());
+  media_playlists_.push_back(media_playlist.get());
   stream_map_[*stream_id].reset(
       new StreamEntry{std::move(media_playlist), encryption_method});
   return true;
@@ -348,14 +348,14 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   // Update the playlists when there is new segments in live mode.
   if (playlist_type() == HlsPlaylistType::kLive ||
       playlist_type() == HlsPlaylistType::kEvent) {
-    if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_)) {
+    if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
+                                               media_playlists_)) {
       LOG(ERROR) << "Failed to write master playlist.";
       return false;
     }
     // Update all playlists if target duration is updated.
     if (target_duration_updated) {
-      for (auto& streams : stream_map_) {
-        MediaPlaylist* playlist = streams.second->media_playlist.get();
+      for (MediaPlaylist* playlist : media_playlists_) {
         playlist->SetTargetDuration(target_duration_);
         if (!WriteMediaPlaylist(output_dir_, playlist))
           return false;
@@ -461,12 +461,12 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
 
 bool SimpleHlsNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
-  if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_)) {
+  if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
+                                             media_playlists_)) {
     LOG(ERROR) << "Failed to write master playlist.";
     return false;
   }
-  for (auto& streams : stream_map_) {
-    MediaPlaylist* playlist = streams.second->media_playlist.get();
+  for (MediaPlaylist* playlist : media_playlists_) {
     playlist->SetTargetDuration(target_duration_);
     if (!WriteMediaPlaylist(output_dir_, playlist))
       return false;
