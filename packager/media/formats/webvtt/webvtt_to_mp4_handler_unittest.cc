@@ -63,32 +63,104 @@ class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
   std::shared_ptr<TestableWebVttToMp4Handler> mp4_handler_;
 };
 
-// Verify the cues are grouped correctly when the cues do not overlap at all.
-//
-// [----A---]  [---B---]
-TEST_F(WebVttToMp4HandlerTest, NoOverlap) {
-  const int64_t kStart[] = {0, 1100};
-  const int64_t kEnd[] = {1000, 2100};
+// Verify that when the stream starts at a non-zero value, the gap at the
+// start will be filled.
+// |    [----A----]
+TEST_F(WebVttToMp4HandlerTest, NonZeroStartTime) {
+  const int64_t kGapStart = 0;
+  const int64_t kGapEnd = 100;
+  const int64_t kGapDuration = kGapEnd - kGapStart;
+
+  const char* kSampleId = kId[0];
+  const char* kSamplePayload = kPayload[0];
+  const int64_t kSampleStart = kGapEnd;
+  const int64_t kSampleDuration = 500;
+  const int64_t kSampleEnd = kSampleStart + kSampleDuration;
 
   {
     testing::InSequence s;
 
-    for (size_t i = kA; i <= kB; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-      EXPECT_CALL(*Output(kOutputIndex),
-                  OnProcess(IsMediaSample(kStreamIndex, kStart[i],
-                                          kEnd[i] - kStart[i], !kEncrypted)));
-    }
+    // Empty Cue to fill gap
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsMediaSample(kStreamIndex, kGapStart, kGapDuration,
+                                        !kEncrypted)));
+
+    // Sample
+    EXPECT_CALL(*mp4_handler_,
+                OnWriteCue(kSampleId, kNoSettings, kSamplePayload));
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsMediaSample(kStreamIndex, kSampleStart,
+                                        kSampleDuration, !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
 
-  for (size_t i = kA; i <= kB; i++) {
-    ASSERT_OK(Input(kInputIndex)
-                  ->Dispatch(StreamData::FromTextSample(
-                      kStreamIndex,
-                      GetTextSample(kId[i], kStart[i], kEnd[i], kPayload[i]))));
+  ASSERT_OK(Input(kInputIndex)
+                ->Dispatch(StreamData::FromTextSample(
+                    kStreamIndex, GetTextSample(kSampleId, kSampleStart,
+                                                kSampleEnd, kSamplePayload))));
+
+  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+}
+
+// Verify the cues are grouped correctly when the cues do not overlap at all.
+// An empty cue should be inserted between the two as there is a gap.
+//
+// [----A---]  [---B---]
+TEST_F(WebVttToMp4HandlerTest, NoOverlap) {
+  const int64_t kDuration = 1000;
+
+  const char* kSample1Id = kId[0];
+  const char* kSample1Payload = kPayload[0];
+  const int64_t kSample1Start = 0;
+  const int64_t kSample1End = kSample1Start + kDuration;
+
+  // Make sample 2 be just a little after sample 1.
+  const char* kSample2Id = kId[1];
+  const char* kSample2Payload = kPayload[1];
+  const int64_t kSample2Start = kSample1End + 100;
+  const int64_t kSample2End = kSample2Start + kDuration;
+
+  const int64_t kGapStart = kSample1End;
+  const int64_t kGapDuration = kSample2Start - kSample1End;
+
+  {
+    testing::InSequence s;
+
+    // Sample 1
+    EXPECT_CALL(*mp4_handler_,
+                OnWriteCue(kSample1Id, kNoSettings, kSample1Payload));
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsMediaSample(kStreamIndex, kSample1Start, kDuration,
+                                        !kEncrypted)));
+
+    // Empty Cue to fill gap
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsMediaSample(kStreamIndex, kGapStart, kGapDuration,
+                                        !kEncrypted)));
+
+    // Sample 2
+    EXPECT_CALL(*mp4_handler_,
+                OnWriteCue(kSample2Id, kNoSettings, kSample2Payload));
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsMediaSample(kStreamIndex, kSample2Start, kDuration,
+                                        !kEncrypted)));
+
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
+
+  ASSERT_OK(
+      Input(kInputIndex)
+          ->Dispatch(StreamData::FromTextSample(
+              kStreamIndex, GetTextSample(kSample1Id, kSample1Start,
+                                          kSample1End, kSample1Payload))));
+
+  ASSERT_OK(
+      Input(kInputIndex)
+          ->Dispatch(StreamData::FromTextSample(
+              kStreamIndex, GetTextSample(kSample2Id, kSample2Start,
+                                          kSample2End, kSample2Payload))));
+
   ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
