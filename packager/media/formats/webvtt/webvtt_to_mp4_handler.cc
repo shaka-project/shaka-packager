@@ -85,9 +85,7 @@ Status WebVttToMp4Handler::Process(std::unique_ptr<StreamData> stream_data) {
     actions_.push(add);
     actions_.push(remove);
 
-    ProcessUpToTime(add->time());
-
-    return Status::OK;
+    return ProcessUpToTime(add->time());
   }
   return Status(error::INTERNAL_ERROR,
                 "Invalid stream data type for this handler");
@@ -123,7 +121,7 @@ void WebVttToMp4Handler::WriteCue(const std::string& id,
   box.Write(out);
 }
 
-void WebVttToMp4Handler::ProcessUpToTime(uint64_t cutoff_time) {
+Status WebVttToMp4Handler::ProcessUpToTime(uint64_t cutoff_time) {
   // We can only process as far as the last add as no new events will be
   // added that come before that time.
   while (actions_.size() && actions_.top()->time() < cutoff_time) {
@@ -138,9 +136,14 @@ void WebVttToMp4Handler::ProcessUpToTime(uint64_t cutoff_time) {
            next_change_ > previous_change);
 
     // Send out the active group. If there is nothing in the active group, then
-    // this segment is ignored.
-    if (active_.size()) {
-      MergeAndSendSamples(active_, previous_change, next_change_);
+    // an empty cue is sent.
+    Status status =
+        active_.size()
+            ? MergeAndSendSamples(active_, previous_change, next_change_)
+            : SendEmptySample(previous_change, next_change_);
+
+    if (!status.ok()) {
+      return status;
     }
 
     // STAGE 2: Move to the next state.
@@ -149,6 +152,8 @@ void WebVttToMp4Handler::ProcessUpToTime(uint64_t cutoff_time) {
       actions_.pop();
     }
   }
+
+  return Status::OK;
 }
 
 Status WebVttToMp4Handler::MergeAndSendSamples(
@@ -171,6 +176,12 @@ Status WebVttToMp4Handler::MergeAndSendSamples(
   sample->set_dts(start_time);
   sample->set_duration(end_time - start_time);
   return DispatchMediaSample(kTrackId, std::move(sample));
+}
+
+Status WebVttToMp4Handler::SendEmptySample(uint64_t start_time,
+                                           uint64_t end_time) {
+  // TODO(vaage): Dispatch an empty vtt sample.
+  return Status::OK;
 }
 
 uint64_t WebVttToMp4Handler::NextActionId() {
