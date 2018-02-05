@@ -142,7 +142,7 @@ TEST_F(WebVttSegmenterTest, CreatesSegmentsForCues) {
 //           |          |
 //           |          | [---B---]
 //           |          |
-TEST_F(WebVttSegmenterTest, DoesntSkipsEmptySegments) {
+TEST_F(WebVttSegmenterTest, SkipsEmptySegments) {
   const uint64_t kSampleDuration = kSegmentDuration / 2;
 
   {
@@ -160,13 +160,7 @@ TEST_F(WebVttSegmenterTest, DoesntSkipsEmptySegments) {
         OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
                                 kSegmentDuration, !kSubSegment, !kEncrypted)));
 
-    // Segment two (empty)
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsSegmentInfo(
-                    kStreamIndex, kStartTimeSigned + kSegmentDuration,
-                    kSegmentDuration, !kSubSegment, !kEncrypted)));
-
-    // Segment Three
+    // Segment Two
     EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTextSample(
                     kId[1], kStartTime + 2 * kSegmentDuration,

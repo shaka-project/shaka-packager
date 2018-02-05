@@ -33,14 +33,17 @@ Status WebVttSegmenter::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status WebVttSegmenter::OnFlushRequest(size_t input_stream_index) {
-  Status status;
-  while (status.ok() && samples_.size()) {
-    // It is not possible for there to be any gaps, or else we would have
-    // already ended the segments before them. So just close the last remaining
-    // open segments.
-    OnSegmentEnd(samples_.top().segment);
+  while (segment_map_.size()) {
+    uint64_t segment = segment_map_.begin()->first;
+
+    // OnSegmentEnd will remove the segment from the map.
+    Status status = OnSegmentEnd(segment);
+    if (!status.ok()) {
+      return status;
+    }
   }
-  return status.ok() ? FlushAllDownstreams() : status;
+
+  return FlushAllDownstreams();
 }
 
 Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
@@ -56,25 +59,34 @@ Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
 
   // Samples must always be advancing. If a sample comes in out of order,
   // skip the sample.
-  if (samples_.size() && samples_.top().segment > start_segment) {
+  if (head_segment_ > start_segment) {
     LOG(WARNING) << "New sample has arrived out of order. Skipping sample "
                  << "as segment start is " << start_segment << " and segment "
-                 << "head is " << samples_.top().segment << ".";
+                 << "head is " << head_segment_ << ".";
     return Status::OK;
   }
 
-  for (uint64_t segment = start_segment; segment <= ending_segment; segment++) {
-    WebVttSegmentedTextSample seg_sample;
-    seg_sample.segment = segment;
-    seg_sample.sample = sample;
+  // Now that we are accepting this new segment, its starting segment is our
+  // new head segment.
+  head_segment_ = start_segment;
 
-    samples_.push(seg_sample);
+  // Add the sample to each segment it spans.
+  for (uint64_t segment = start_segment; segment <= ending_segment; segment++) {
+    segment_map_[segment].push_back(sample);
   }
 
   // Output all the segments that come before the start of this cue's first
   // segment.
-  for (; current_segment_ < start_segment; current_segment_++) {
-    Status status = OnSegmentEnd(current_segment_);
+  while (segment_map_.size()) {
+    // Since the segments are in accending order, we can break out of the loop
+    // once we catch-up to the new samples starting segment.
+    const uint64_t segment = segment_map_.begin()->first;
+    if (segment >= start_segment) {
+      break;
+    }
+
+    // Output the segment. If there is an error, there is no reason to continue.
+    Status status = OnSegmentEnd(segment);
     if (!status.ok()) {
       return status;
     }
@@ -85,10 +97,15 @@ Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
 
 Status WebVttSegmenter::OnSegmentEnd(uint64_t segment) {
   Status status;
-  while (status.ok() && samples_.size() && samples_.top().segment == segment) {
-    status.Update(
-        DispatchTextSample(kStreamIndex, std::move(samples_.top().sample)));
-    samples_.pop();
+
+  const auto found = segment_map_.find(segment);
+  if (found != segment_map_.end()) {
+    for (const auto& sample : found->second) {
+      status.Update(DispatchTextSample(kStreamIndex, sample));
+    }
+
+    // Stop storing the segment.
+    segment_map_.erase(found);
   }
 
   // Only send the segment info if all the samples were accepted.
