@@ -325,20 +325,34 @@ void AppendPlaylists(const std::string& default_language,
     }
   }
 
-  BuildMediaTags(audio_playlist_groups, default_language, base_url, content);
-  BuildMediaTags(subtitle_playlist_groups, default_language, base_url, content);
+  if (!audio_playlist_groups.empty()) {
+    content->append("\n");
+    BuildMediaTags(audio_playlist_groups, default_language, base_url, content);
+  }
+
+  if (!subtitle_playlist_groups.empty()) {
+    content->append("\n");
+    BuildMediaTags(subtitle_playlist_groups, default_language, base_url,
+                   content);
+  }
 
   std::list<Variant> variants =
       BuildVariants(audio_playlist_groups, subtitle_playlist_groups);
-  for (const auto& playlist : video_playlists) {
-    for (const auto& variant : variants) {
+  for (const auto& variant : variants) {
+    if (video_playlists.empty())
+      break;
+    content->append("\n");
+    for (const auto& playlist : video_playlists) {
       BuildStreamInfTag(*playlist, variant, base_url, content);
     }
   }
 
-  for (const auto& playlist : iframe_playlists) {
-    // I-Frame playlists do not have variant. Just use the default.
-    BuildStreamInfTag(*playlist, Variant(), base_url, content);
+  if (!iframe_playlists.empty()) {
+    content->append("\n");
+    for (const auto& playlist : iframe_playlists) {
+      // I-Frame playlists do not have variant. Just use the default.
+      BuildStreamInfTag(*playlist, Variant(), base_url, content);
+    }
   }
 }
 

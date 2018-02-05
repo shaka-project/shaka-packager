@@ -189,13 +189,25 @@ Status Segmenter::FinalizeSegment(size_t stream_id,
   sidx_->references[sidx_->references.size() - 1].referenced_size =
       data_offset + mdat.data_size;
 
+  const uint64_t moof_start_offset = fragment_buffer_->Size();
+
   // Write the fragment to buffer.
   moof_->Write(fragment_buffer_.get());
   mdat.WriteHeader(fragment_buffer_.get());
+
+  bool first_key_frame = true;
   for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_) {
-    for (const KeyFrameInfo& key_frame_info : fragmenter->key_frame_infos()) {
-      key_frame_infos_.push_back(key_frame_info);
-      key_frame_infos_.back().start_byte_offset += fragment_buffer_->Size();
+    // https://goo.gl/xcFus6 6. Trick play requirements
+    // 6.10. If using fMP4, I-frame segments must include the 'moof' header
+    // associated with the I-frame. It also implies that only the first key
+    // frame can be included.
+    if (!fragmenter->key_frame_infos().empty() && first_key_frame) {
+      const KeyFrameInfo& key_frame_info =
+          fragmenter->key_frame_infos().front();
+      first_key_frame = false;
+      key_frame_infos_.push_back(
+          {key_frame_info.timestamp, moof_start_offset,
+           fragment_buffer_->Size() - moof_start_offset + key_frame_info.size});
     }
     fragment_buffer_->AppendBuffer(*fragmenter->data());
   }

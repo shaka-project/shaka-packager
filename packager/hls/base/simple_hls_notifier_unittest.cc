@@ -988,11 +988,6 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
   EXPECT_CALL(*mock_media_playlist1, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
 
-  EXPECT_CALL(
-      *mock_master_playlist_ptr,
-      WriteMasterPlaylist(
-          _, _, ElementsAre(mock_media_playlist1, mock_media_playlist2)))
-      .WillOnce(Return(true));
   // SetTargetDuration and update all playlists as target duration is updated.
   EXPECT_CALL(*mock_media_playlist1, SetTargetDuration(kTargetDuration))
       .Times(1);
@@ -1010,20 +1005,25 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
                       .Append(base::FilePath::FromUTF8Unsafe("playlist2.m3u8"))
                       .AsUTF8Unsafe())))
       .WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_master_playlist_ptr,
+      WriteMasterPlaylist(
+          _, _, ElementsAre(mock_media_playlist1, mock_media_playlist2)))
+      .WillOnce(Return(true));
   EXPECT_TRUE(notifier.NotifyNewSegment(stream_id1, "segment_name", kStartTime,
                                         kDuration, 0, kSize));
 
   EXPECT_CALL(*mock_media_playlist2, AddSegment(_, _, _, _, _)).Times(1);
   EXPECT_CALL(*mock_media_playlist2, GetLongestSegmentDuration())
       .WillOnce(Return(kLongestSegmentDuration));
-  EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _, _))
-      .WillOnce(Return(true));
   // Not updating other playlists as target duration does not change.
   EXPECT_CALL(*mock_media_playlist2,
               WriteToFile(StrEq(
                   base::FilePath::FromUTF8Unsafe(kAnyOutputDir)
                       .Append(base::FilePath::FromUTF8Unsafe("playlist2.m3u8"))
                       .AsUTF8Unsafe())))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_master_playlist_ptr, WriteMasterPlaylist(_, _, _))
       .WillOnce(Return(true));
   EXPECT_TRUE(notifier.NotifyNewSegment(stream_id2, "segment_name", kStartTime,
                                         kDuration, 0, kSize));

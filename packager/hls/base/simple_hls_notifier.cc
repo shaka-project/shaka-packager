@@ -348,11 +348,6 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   // Update the playlists when there is new segments in live mode.
   if (playlist_type() == HlsPlaylistType::kLive ||
       playlist_type() == HlsPlaylistType::kEvent) {
-    if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
-                                               media_playlists_)) {
-      LOG(ERROR) << "Failed to write master playlist.";
-      return false;
-    }
     // Update all playlists if target duration is updated.
     if (target_duration_updated) {
       for (MediaPlaylist* playlist : media_playlists_) {
@@ -361,7 +356,13 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
           return false;
       }
     } else {
-      return WriteMediaPlaylist(output_dir_, media_playlist.get());
+      if (!WriteMediaPlaylist(output_dir_, media_playlist.get()))
+        return false;
+    }
+    if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
+                                               media_playlists_)) {
+      LOG(ERROR) << "Failed to write master playlist.";
+      return false;
     }
   }
   return true;
@@ -461,15 +462,15 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
 
 bool SimpleHlsNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
-  if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
-                                             media_playlists_)) {
-    LOG(ERROR) << "Failed to write master playlist.";
-    return false;
-  }
   for (MediaPlaylist* playlist : media_playlists_) {
     playlist->SetTargetDuration(target_duration_);
     if (!WriteMediaPlaylist(output_dir_, playlist))
       return false;
+  }
+  if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
+                                             media_playlists_)) {
+    LOG(ERROR) << "Failed to write master playlist.";
+    return false;
   }
   return true;
 }
