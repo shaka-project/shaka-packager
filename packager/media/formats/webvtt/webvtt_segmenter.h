@@ -30,19 +30,20 @@ class WebVttSegmenter : public MediaHandler {
   WebVttSegmenter(const WebVttSegmenter&) = delete;
   WebVttSegmenter& operator=(const WebVttSegmenter&) = delete;
 
+  using WebVttSample = std::shared_ptr<const TextSample>;
+  using WebVttSegmentSamples = std::vector<WebVttSample>;
+
   Status InitializeInternal() override;
 
   Status OnTextSample(std::shared_ptr<const TextSample> sample);
 
-  Status OnSegmentEnd(uint64_t segment);
+  Status DispatchSegmentWithSamples(uint64_t segment,
+                                    const WebVttSegmentSamples& samples);
 
   uint64_t segment_duration_ms_;
 
-  using WebVttSample = std::shared_ptr<const TextSample>;
-  using WebVttSegment = std::vector<WebVttSample>;
-
   // Mapping of segment number to segment.
-  std::map<uint64_t, WebVttSegment> segment_map_;
+  std::map<uint64_t, WebVttSegmentSamples> segment_map_;
   uint64_t head_segment_ = 0;
 };
 

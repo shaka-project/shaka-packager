@@ -142,8 +142,12 @@ TEST_F(WebVttSegmenterTest, CreatesSegmentsForCues) {
 //           |          |
 //           |          | [---B---]
 //           |          |
-TEST_F(WebVttSegmenterTest, SkipsEmptySegments) {
+TEST_F(WebVttSegmenterTest, OutputsEmptySegments) {
   const uint64_t kSampleDuration = kSegmentDuration / 2;
+
+  const int64_t kSegment1Start = kStartTime;
+  const int64_t kSegment2Start = kSegment1Start + kSegmentDuration;
+  const int64_t kSegment3Start = kSegment2Start + kSegmentDuration;
 
   {
     testing::InSequence s;
@@ -157,19 +161,25 @@ TEST_F(WebVttSegmenterTest, SkipsEmptySegments) {
                                kNoSettings, kPayload[0])));
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
+        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
+                                !kSubSegment, !kEncrypted)));
 
-    // Segment Two
+    // Segment Two (empty segment)
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start, kSegmentDuration,
+                                !kSubSegment, !kEncrypted)));
+
+    // Segment Three
     EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTextSample(
                     kId[1], kStartTime + 2 * kSegmentDuration,
                     kStartTime + 2 * kSegmentDuration + kSampleDuration,
                     kNoSettings, kPayload[1])));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsSegmentInfo(
-                    kStreamIndex, kStartTimeSigned + 2 * kSegmentDuration,
-                    kSegmentDuration, !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kSegment3Start, kSegmentDuration,
+                                !kSubSegment, !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
