@@ -1371,6 +1371,16 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
 
+  def testHlsSegmentedWebVtt(self):
+    streams = self._GetStreams(['audio', 'video'], segmented=True)
+    streams += self._GetStreams(
+        ['text'], test_files=['bear-subtitle-english.vtt'], segmented=True)
+
+    flags = self._GetFlags(output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._DiffDir('hls-segmented-webvtt')
+
   def _AssertStreamInfo(self, stream, info):
     stream_info = self.packager.DumpStreamInfo(stream)
     self.assertIn('Found 1 stream(s).', stream_info)
