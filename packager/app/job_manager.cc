@@ -14,14 +14,10 @@ namespace media {
 
 Job::Job(const std::string& name, std::shared_ptr<OriginHandler> work)
     : SimpleThread(name),
-      work_(work),
+      work_(std::move(work)),
       wait_(base::WaitableEvent::ResetPolicy::MANUAL,
             base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  DCHECK(work);
-}
-
-void Job::Initialize() {
-  status_ = work_->Initialize();
+  DCHECK(work_);
 }
 
 void Job::Cancel() {
@@ -35,17 +31,22 @@ void Job::Run() {
 
 void JobManager::Add(const std::string& name,
                      std::shared_ptr<OriginHandler> handler) {
-  jobs_.emplace_back(new Job(name, std::move(handler)));
+  // Stores Job entries for delayed construction of Job objects, to avoid
+  // setting up SimpleThread until we know all workers can be initialized
+  // successfully.
+  job_entries_.push_back({name, std::move(handler)});
 }
 
 Status JobManager::InitializeJobs() {
   Status status;
+  for (const JobEntry& job_entry : job_entries_)
+    status.Update(job_entry.worker->Initialize());
+  if (!status.ok())
+    return status;
 
-  for (auto& job : jobs_) {
-    job->Initialize();
-    status.Update(job->status());
-  }
-
+  // Create Job objects after successfully initialized all workers.
+  for (const JobEntry& job_entry : job_entries_)
+    jobs_.emplace_back(new Job(job_entry.name, std::move(job_entry.worker)));
   return status;
 }
 

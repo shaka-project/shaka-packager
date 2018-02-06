@@ -24,11 +24,6 @@ class Job : public base::SimpleThread {
  public:
   Job(const std::string& name, std::shared_ptr<OriginHandler> work);
 
-  // Initialize the chain of handlers that make up this job. This only
-  // initializes the handlers, it does not execute the job. If
-  // initialization fails, |status| will return a non-ok status.
-  void Initialize();
-
   // Request that the job stops executing. This is only a request and
   // will not block. If you want to wait for the job to complete, use
   // |wait|.
@@ -84,6 +79,12 @@ class JobManager {
   JobManager(const JobManager&) = delete;
   JobManager& operator=(const JobManager&) = delete;
 
+  struct JobEntry {
+    std::string name;
+    std::shared_ptr<OriginHandler> worker;
+  };
+  // Stores Job entries for delayed construction of Job object.
+  std::vector<JobEntry> job_entries_;
   std::vector<std::unique_ptr<Job>> jobs_;
 };
 

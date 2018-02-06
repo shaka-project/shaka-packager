@@ -1415,6 +1415,14 @@ class PackagerCommandParsingTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']), flags)
     self.assertEqual(packaging_result, 1)
 
+  def testPackageAudioVideoWithNotExistText(self):
+    audio_video_stream = self._GetStreams(['audio', 'video'])
+    text_stream = self._GetStreams(['text'], test_files=['not-exist.vtt'])
+    packaging_result = self.packager.Package(audio_video_stream + text_stream,
+                                             self._GetFlags())
+    # Expect the test to fail but we do not expect a crash.
+    self.assertEqual(packaging_result, 1)
+
 
 if __name__ == '__main__':
   unittest.main()
