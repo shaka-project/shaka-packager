@@ -28,6 +28,20 @@ The test executed the following command line:
 """
 
 
+class StreamDescriptor(object):
+  """Basic class used to build stream descriptor commands."""
+
+  def __init__(self, input_file):
+    self.buffer = 'input=%s' % input_file
+
+  def Append(self, key, value):
+    self.buffer += ',%s=%s' % (key, value)
+    return self
+
+  def __str__(self):
+    return self.buffer
+
+
 class PackagerAppTest(unittest.TestCase):
 
   def setUp(self):
@@ -88,30 +102,33 @@ class PackagerAppTest(unittest.TestCase):
         for ch in [',', '=']:
           output_prefix = output_prefix.replace(ch, '_')
 
+        stream = StreamDescriptor(test_file)
+        stream.Append('stream', stream_descriptor)
+
         if live:
           if output_format == 'ts':
-            stream = ('input=%s,stream=%s,segment_template=%s-$Number$.ts' %
-                      (test_file, stream_descriptor, output_prefix))
+            stream.Append('segment_template', output_prefix + '-$Number$.ts')
           else:
-            stream = (
-                'input=%s,stream=%s,init_segment=%s-init.mp4,'
-                'segment_template=%s-$Number$.m4s' %
-                (test_file, stream_descriptor, output_prefix, output_prefix))
+            stream.Append('init_segment', output_prefix + '-init.mp4')
+            stream.Append('segment_template', output_prefix + '-$Number$.m4s')
+
           self.output.append(output_prefix)
         else:
           output = '%s.%s' % (
               output_prefix,
               self._GetExtension(stream_descriptor, output_format))
-          stream = ('input=%s,stream=%s,output=%s' %
-                    (test_file, stream_descriptor, output))
+          stream.Append('output', output)
           self.output.append(output)
+
         if output_format:
-          stream += ',format=%s' % output_format
+          stream.Append('format', output_format)
         if language_override:
-          stream += ',lang=%s' % language_override
+          stream.Append('lang', language_override)
         if hls:
-          stream += ',playlist_name=%s.m3u8' % stream_descriptor
-        streams.append(stream)
+          stream.Append('playlist_name', stream_descriptor + '.m3u8')
+
+        streams.append(str(stream))
+
     return streams
 
   def _GetExtension(self, stream_descriptor, output_format):
