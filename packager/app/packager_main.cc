@@ -263,6 +263,8 @@ bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
 base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
+  packaging_params.temp_dir = FLAGS_temp_dir;
+
   AdCueGeneratorParams& ad_cue_generator_params =
       packaging_params.ad_cue_generator_params;
   if (!ParseAdCues(FLAGS_ad_cues, &ad_cue_generator_params.cue_points)) {
