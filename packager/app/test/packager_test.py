@@ -25,7 +25,7 @@ _TEST_FAILURE_COMMAND_LINE_MESSAGE = """
 !!! directory by removing /tmp/something/ in the following  !!!
 !!! command line.                                           !!!
 The test executed the following command line:
-"""
+""".strip()
 
 
 class StreamDescriptor(object):
@@ -253,6 +253,20 @@ class PackagerAppTest(unittest.TestCase):
     golden_file = os.path.join(self.golden_file_dir, golden_file_name)
     return filecmp.cmp(test_output, golden_file)
 
+  def _GitDiff(self, file_a, file_b):
+    cmd = [
+        'git',
+        '--no-pager',
+        'diff',
+        '--color=auto',
+        '--no-ext-diff',
+        '--no-index',
+        file_a,
+        file_b
+    ]
+    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    return p.communicate()
+
   def _DiffGold(self, test_output, golden_file_name):
     golden_file = os.path.join(self.golden_file_dir, golden_file_name)
     if test_env.options.test_update_golden_files:
@@ -263,16 +277,14 @@ class PackagerAppTest(unittest.TestCase):
     else:
       match = filecmp.cmp(test_output, golden_file)
       if not match:
-        p = subprocess.Popen(['git', '--no-pager', 'diff', '--color=auto',
-                              '--no-ext-diff', '--no-index', golden_file,
-                              test_output],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        output, error = p.communicate()
+        output, error = self._GitDiff(test_output, golden_file)
         command_line = self.packager.GetCommandLine()
-        failure_message = (output + error + '\n' +
-                           _TEST_FAILURE_COMMAND_LINE_MESSAGE +
-                           command_line)
+        failure_message = '\n'.join([
+            output,
+            error,
+            _TEST_FAILURE_COMMAND_LINE_MESSAGE,
+            command_line
+        ])
         self.fail(failure_message)
 
   # '*.media_info' outputs contain media file names, which is changing for
@@ -328,6 +340,84 @@ class PackagerAppTest(unittest.TestCase):
               publish_time, 'publishTime="some_publish_time"'))
 
     self._DiffGold(test_output, golden_file_name)
+
+  # |test_dir| is expected to be relative to |self.golden_file_dir|.
+  def _CheckTestResults(self, test_dir):
+    if test_env.options.test_update_golden_files:
+      self._UpdateGold(test_dir)
+    else:
+      self._DiffDir(test_dir)
+
+  # |test_dir| is expected to be relative to |self.golden_file_dir|.
+  def _UpdateGold(self, test_dir):
+    out_dir = self.tmp_dir
+    gold_dir = os.path.join(self.golden_file_dir, test_dir)
+
+    # Get a list of the files and dirs that are different between the two top
+    # level directories.
+    diff = filecmp.dircmp(out_dir, gold_dir)
+
+    # Files in the output that are not in the gold dir yet, need to be copied
+    # over.
+    for filename in diff.left_only:
+      out_path = os.path.join(out_dir, filename)
+      shutil.copyfile(out_path, gold_dir)
+    # Files in the gold dir but not in the output need to be removed.
+    for filename in diff.right_only:
+      gold_path = os.path.join(gold_dir, filename)
+      os.rm(gold_path)
+    # Copy any changed files over to the gold directory.
+    for filename in diff.diff_files:
+      out_path = os.path.join(out_dir, filename)
+      gold_path = os.path.join(gold_dir, filename)
+      shutil.copyfile(out_path, gold_path)
+
+  # |test_dir| is expected to be relative to |self.golden_file_dir|.
+  def _DiffDir(self, test_dir):
+    out_dir = self.tmp_dir
+    gold_dir = os.path.join(self.golden_file_dir, test_dir)
+
+    # Get a list of the files and dirs that are different between the two top
+    # level directories.
+    diff = filecmp.dircmp(out_dir, gold_dir)
+
+    # Create a list of all the details about the failure. The list will be
+    # joined together when sent out.
+    failure_messages = []
+
+    missing = diff.left_only
+    if missing:
+      failure_messages += [
+          'Missing %d files: %s' % (len(missing), str(missing))
+      ]
+
+    extra = diff.right_only
+    if extra:
+      failure_messages += [
+          'Found %d unexpected files: %s' % (len(extra), str(extra))
+      ]
+
+    # Produce nice diffs for each file that differs.
+    for diff_file in diff.diff_files:
+      actual_file = os.path.join(out_dir, diff_file)
+      expected_file = os.path.join(gold_dir, diff_file)
+
+      output, error = self._GitDiff(actual_file, expected_file)
+
+      if output:
+        failure_messages += [output]
+
+      if error:
+        failure_messages += [error]
+
+    if failure_messages:
+      # Prepend the failure messages with the header.
+      failure_messages = [
+          _TEST_FAILURE_COMMAND_LINE_MESSAGE,
+          self.packager.GetCommandLine()
+      ] + failure_messages
+
+      self.fail('\n'.join(failure_messages))
 
 
 class PackagerFunctionalTest(PackagerAppTest):
