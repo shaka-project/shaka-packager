@@ -30,13 +30,16 @@ Shaka Packager supports:
   |       VP8         |    I / O     |    I / O     |       -      |      -      |
   |       VP9         |    I / O     |    I / O     |       -      |      -      |
   |       AAC         |    I / O     |      -       |     I / O    |      I      |
-  |  Dolby AC3/EAC3   |    I / O     |      -       |       -      |      -      |
+  |  Dolby AC3/EAC3   |    I / O     |      -       |       I      |      -      |
   |       DTS         |    I / O     |      -       |       -      |      -      |
   |       Opus        |   *I / O*    |    I / O     |       -      |      -      |
   |      Vorbis       |      -       |    I / O     |       -      |      -      |
 
   ** I for input and O for output.
   ** Opus support in ISO-BMFF is experimental.
+- Subtitles
+  - WebVTT in both text form and embedded in MP4
+  - TTML in text form (DASH only)
 - Platforms
   - Linux
   - Mac
