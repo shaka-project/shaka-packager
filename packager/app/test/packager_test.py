@@ -42,6 +42,23 @@ class StreamDescriptor(object):
     return self.buffer
 
 
+def GetExtension(stream_descriptor, output_format):
+  # TODO(rkuroiwa): Support ttml.
+  if stream_descriptor == 'text':
+    return 'vtt'
+  if output_format:
+    return output_format
+  # Default to mp4.
+  return 'mp4'
+
+
+def GetSegmentedExtension(base_extension):
+  if base_extension == 'mp4':
+    return 'm4s'
+
+  return base_extension
+
+
 class PackagerAppTest(unittest.TestCase):
 
   def setUp(self):
@@ -54,7 +71,7 @@ class PackagerAppTest(unittest.TestCase):
     self.output_prefix = os.path.join(self.tmp_dir, 'output')
     self.mpd_output = self.output_prefix + '.mpd'
     self.hls_master_playlist_output = self.output_prefix + '.m3u8'
-    self.output = None
+    self.output = []
 
     # Test variables.
     self.encryption_key_id = '31323334353637383930313233343536'
@@ -76,79 +93,124 @@ class PackagerAppTest(unittest.TestCase):
     if test_env.options.remove_temp_files_after_test:
       shutil.rmtree(self.tmp_dir)
 
-  def _GetStreams(self,
-                  stream_descriptors,
-                  language_override=None,
-                  output_format=None,
-                  segmented=False,
-                  hls=False,
-                  test_files=None):
-    if test_files is None:
-      test_files = ['bear-640x360.mp4']
-    streams = []
-    if not self.output:
-      self.output = []
+  def _GetStream(self,
+                 descriptor,
+                 language=None,
+                 output_format=None,
+                 segmented=False,
+                 hls=False,
+                 trick_play_factor=None,
+                 drm_label=None,
+                 skip_encryption=None,
+                 test_file=None,
+                 test_file_index=None):
+    """Get a stream descriptor as a string.
 
-    for test_file_index, test_file_name in enumerate(test_files):
-      test_file = os.path.join(self.test_data_dir, test_file_name)
-      for stream_descriptor in stream_descriptors:
-        if len(test_files) == 1:
-          output_prefix = '%s_%s' % (self.output_prefix, stream_descriptor)
-        else:
-          output_prefix = '%s_%d_%s' % (self.output_prefix, test_file_index,
-                                        stream_descriptor)
-        # Replace ',', '=' with '_' to make it more like a filename, also
-        # avoid potential illegal charactors for a filename.
-        for ch in [',', '=']:
-          output_prefix = output_prefix.replace(ch, '_')
 
-        stream = StreamDescriptor(test_file)
-        stream.Append('stream', stream_descriptor)
+    Create the stream descriptor as a string for the given parameters so that
+    it can be passed as an input parameter to the packager.
 
-        base_ext = self._GetExtension(stream_descriptor, output_format)
-        segment_ext = self._GetSegmentedExtension(base_ext)
 
-        requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
+    Args:
+      descriptor: The name of the stream in the container that should be used as
+          input for the output.
+      language: The language override for the input stream.
+      output_format: Specify the format for the output.
+      segmented: Should the output use a segmented formatted. This will affect
+          the output extensions and manifests.
+      hls: Should the output be for an HLS manifest.
+      trick_play_factor: Signals the stream is to be used for a trick play
+          stream and which key frames to use. A trick play factor of 0 is the
+          same as not specifying a trick play factor.
+      drm_label: Sets the drm label for the stream.
+      skip_encryption: If set to true, the stream will not be encrypted.
+      test_file: Specify the input file to use. If the input file is not
+          specify, a default file will be used.
+      test_file_index: Specify the index of the input out of a group of input
+          files.
 
-        if requires_init_segment:
-          init_seg = '%s-init.%s' % (output_prefix, base_ext)
-          stream.Append('init_segment', init_seg)
 
-        if segmented:
-          seg_template = '%s-$Number$.%s' % (output_prefix, segment_ext)
-          stream.Append('segment_template', seg_template)
+    Returns:
+      A string that makes up a single stream descriptor for input to the
+      packager.
+    """
 
-          self.output.append(output_prefix)
-        else:
-          output = '%s.%s' % (output_prefix, base_ext)
-          stream.Append('output', output)
-          self.output.append(output)
+    test_file = test_file or 'bear-640x360.mp4'
+    test_file = os.path.join(self.test_data_dir, test_file)
 
-        if output_format:
-          stream.Append('format', output_format)
-        if language_override:
-          stream.Append('lang', language_override)
-        if hls:
-          stream.Append('playlist_name', stream_descriptor + '.m3u8')
+    if test_file_index is None:
+      output_file = '%s_%s' % (self.output_prefix, descriptor)
+    else:
+      str_params = (self.output_prefix, test_file_index, descriptor)
+      output_file = '%s_%d_%s' % str_params
 
-        streams.append(str(stream))
+    if trick_play_factor:
+      output_file += '_trick_play_factor_%d' % trick_play_factor
 
-    return streams
+    if skip_encryption:
+      output_file += '_skip_encryption'
 
-  def _GetExtension(self, stream_descriptor, output_format):
-    # TODO(vaage): Support ttml.
-    if stream_descriptor == 'text':
-      return 'vtt'
+    stream = StreamDescriptor(test_file)
+    stream.Append('stream', descriptor)
+
+    base_ext = GetExtension(descriptor, output_format)
+
+    requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
+
+    if requires_init_segment:
+      init_seg = '%s-init.%s' % (output_file, base_ext)
+      stream.Append('init_segment', init_seg)
+
+    if segmented:
+      segment_ext = GetSegmentedExtension(base_ext)
+      seg_template = '%s-$Number$.%s' % (output_file, segment_ext)
+      stream.Append('segment_template', seg_template)
+    else:
+      output_file = '%s.%s' % (output_file, base_ext)
+      stream.Append('output', output_file)
+
+    self.output.append(output_file)
+
     if output_format:
-      return output_format
-    # Default to mp4.
-    return 'mp4'
+      stream.Append('format', output_format)
 
-  def _GetSegmentedExtension(self, base_extension):
-    if base_extension == 'mp4':
-      return 'm4s'
+    if language:
+      stream.Append('lang', language)
 
-    return base_extension
+    if hls:
+      stream.Append('playlist_name', descriptor + '.m3u8')
+
+    if trick_play_factor:
+      stream.Append('trick_play_factor', trick_play_factor)
+
+    if drm_label:
+      stream.Append('drm_label', drm_label)
+
+    if skip_encryption:
+      stream.Append('skip_encryption', 1)
+
+    return str(stream)
+
+  def _GetStreams(self, streams, test_files=None, **kwargs):
+    # Make sure there is a valid list that we can get the length from.
+    test_files = test_files or []
+    test_files_count = len(test_files)
+
+    out = []
+
+    if test_files_count == 0:
+      for stream in streams:
+        out.append(self._GetStream(stream, **kwargs))
+    elif test_files_count == 1:
+      for stream in streams:
+        out.append(self._GetStream(stream, test_file=test_files[0], **kwargs))
+    else:
+      for index, filename in enumerate(test_files):
+        for stream in streams:
+          out.append(self._GetStream(
+              stream, test_file_index=index, test_file=filename, **kwargs))
+
+    return out
 
   def _GetFlags(self,
                 strip_parameter_set_nalus=True,
@@ -483,19 +545,27 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(self.mpd_output, 'bear-640x360-av-golden.mpd')
 
   def testPackageAudioVideoWithTrickPlay(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1']),
-        self._GetFlags())
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=1),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-trick-1-golden.mpd')
 
   def testPackageAudioVideoWithTwoTrickPlay(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1',
-                          'video,trick_play_factor=2']),
-        self._GetFlags())
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=1),
+        self._GetStream('video', trick_play_factor=2),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
@@ -504,10 +574,14 @@ class PackagerFunctionalTest(PackagerAppTest):
                    'bear-640x360-av-trick-1-trick-2-golden.mpd')
 
   def testPackageAudioVideoWithTwoTrickPlayDecreasingRate(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video', 'video,trick_play_factor=2',
-                          'video,trick_play_factor=1']),
-        self._GetFlags())
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=2),
+        self._GetStream('video', trick_play_factor=1),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.output[2], 'bear-640x360-v-trick-2-golden.mp4')
@@ -519,7 +593,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language_override='por-BR'),
+        self._GetStreams(['audio', 'video'], language='por-BR'),
         self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-por-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
@@ -527,7 +601,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageAudioVideoWithLanguageOverrideWithSubtag(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language_override='por-BR'),
+        self._GetStreams(['audio', 'video'], language='por-BR'),
         self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-por-BR-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
@@ -798,9 +872,12 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     # DRM label 'MyVideo' is not defined, will fall back to the key for the
     # empty default label.
-    self.assertPackageSuccess(
-        self._GetStreams(['audio,drm_label=MyAudio',
-                          'video,drm_label=MyVideo']), flags)
+    streams = [
+        self._GetStream('audio', drm_label='MyAudio'),
+        self._GetStream('video', drm_label='MyVideo')
+    ]
+
+    self.assertPackageSuccess(streams, flags)
 
     self.encryption_key_id = audio_key_id
     self.encryption_key = audio_key
@@ -810,18 +887,27 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWithEncryptionOfOnlyVideoStream(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio,skip_encryption=1', 'video']),
-        self._GetFlags(encryption=True))
+    streams = [
+        self._GetStream('audio', skip_encryption=True),
+        self._GetStream('video')
+    ]
+    flags = self._GetFlags(encryption=True)
+
+    self.assertPackageSuccess(streams, flags)
+
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-a-clear-v-cenc-golden.mpd')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWithEncryptionAndTrickPlay(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1']),
-        self._GetFlags(encryption=True))
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=1),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-cenc-golden.mp4')
@@ -833,10 +919,14 @@ class PackagerFunctionalTest(PackagerAppTest):
   # TODO(hmchen): Add a test case that SD and HD AdapatationSet share one trick
   # play stream.
   def testPackageWithEncryptionAndTwoTrickPlays(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video', 'video,trick_play_factor=1',
-                          'video,trick_play_factor=2']),
-        self._GetFlags(encryption=True))
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=1),
+        self._GetStream('video', trick_play_factor=2),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-cenc-golden.mp4')
