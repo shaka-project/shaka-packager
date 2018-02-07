@@ -80,7 +80,7 @@ class PackagerAppTest(unittest.TestCase):
                   stream_descriptors,
                   language_override=None,
                   output_format=None,
-                  live=False,
+                  segmented=False,
                   hls=False,
                   test_files=None):
     if test_files is None:
@@ -105,18 +105,22 @@ class PackagerAppTest(unittest.TestCase):
         stream = StreamDescriptor(test_file)
         stream.Append('stream', stream_descriptor)
 
-        if live:
-          if output_format == 'ts':
-            stream.Append('segment_template', output_prefix + '-$Number$.ts')
-          else:
-            stream.Append('init_segment', output_prefix + '-init.mp4')
-            stream.Append('segment_template', output_prefix + '-$Number$.m4s')
+        base_ext = self._GetExtension(stream_descriptor, output_format)
+        segment_ext = self._GetSegmentedExtension(base_ext)
+
+        requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
+
+        if requires_init_segment:
+          init_seg = '%s-init.%s' % (output_prefix, base_ext)
+          stream.Append('init_segment', init_seg)
+
+        if segmented:
+          seg_template = '%s-$Number$.%s' % (output_prefix, segment_ext)
+          stream.Append('segment_template', seg_template)
 
           self.output.append(output_prefix)
         else:
-          output = '%s.%s' % (
-              output_prefix,
-              self._GetExtension(stream_descriptor, output_format))
+          output = '%s.%s' % (output_prefix, base_ext)
           stream.Append('output', output)
           self.output.append(output)
 
@@ -132,13 +136,19 @@ class PackagerAppTest(unittest.TestCase):
     return streams
 
   def _GetExtension(self, stream_descriptor, output_format):
-    # TODO(rkuroiwa): Support ttml.
+    # TODO(vaage): Support ttml.
     if stream_descriptor == 'text':
       return 'vtt'
     if output_format:
       return output_format
     # Default to mp4.
     return 'mp4'
+
+  def _GetSegmentedExtension(self, base_extension):
+    if base_extension == 'mp4':
+      return 'm4s'
+
+    return base_extension
 
   def _GetFlags(self,
                 strip_parameter_set_nalus=True,
@@ -459,7 +469,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(output_hls=True))
@@ -482,7 +492,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360-ac3.ts']),
         self._GetFlags(output_hls=True))
@@ -521,7 +531,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(
@@ -548,7 +558,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(
@@ -577,7 +587,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(
@@ -839,7 +849,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(encryption=True, output_hls=True))
@@ -864,7 +874,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(encryption=True, output_hls=True, fairplay=True))
@@ -889,7 +899,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['audio', 'video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['bear-640x360-ac3.ts']),
         self._GetFlags(encryption=True, output_hls=True))
@@ -915,7 +925,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(
             ['video'],
             output_format='ts',
-            live=True,
+            segmented=True,
             hls=True,
             test_files=['sintel-1024x436.mp4']),
         self._GetFlags(
@@ -1129,14 +1139,14 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveProfile(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True), self._GetFlags())
+        self._GetStreams(['audio', 'video'], segmented=True), self._GetFlags())
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
     self._DiffLiveMpdGold(self.mpd_output, 'bear-640x360-av-live-golden.mpd')
 
   def testPackageWithLiveStaticProfile(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(generate_static_mpd=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
@@ -1144,7 +1154,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveStaticProfileAndAdCues(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(generate_static_mpd=True, ad_cues='1.5'))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
@@ -1153,7 +1163,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
@@ -1162,7 +1172,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveProfileAndEncryptionAndNonDashIfIop(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, dash_if_iop=False))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
@@ -1172,7 +1182,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testPackageWithLiveProfileAndEncryptionAndMultFiles(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'],
-                         live=True,
+                         segmented=True,
                          test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                                      'bear-320x180.mp4']),
         self._GetFlags(encryption=True))
@@ -1184,7 +1194,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveProfileAndKeyRotation(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, key_rotation=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-live-cenc-rotation-golden')
@@ -1195,7 +1205,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveProfileAndKeyRotationAndNoPsshInStream(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(
             encryption=True, key_rotation=True, include_pssh_in_stream=False))
     self._DiffLiveGold(self.output[0],
@@ -1208,7 +1218,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageWithLiveProfileAndKeyRotationAndNonDashIfIop(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
                        dash_if_iop=False))
