@@ -462,8 +462,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageFirstStream(self):
     self.assertPackageSuccess(self._GetStreams(['0']), self._GetFlags())
-    self._DiffGold(self.output[0], 'bear-640x360-v-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-v-golden.mpd')
+    self._CheckTestResults('first-stream')
 
   def testPackageText(self):
     self.assertPackageSuccess(
