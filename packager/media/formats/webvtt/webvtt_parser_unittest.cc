@@ -16,6 +16,7 @@
 namespace shaka {
 namespace media {
 namespace {
+const char kLanguage[] = "en";
 const size_t kInputCount = 0;
 const size_t kOutputCount = 1;
 const size_t kOutputIndex = 0;
@@ -40,7 +41,7 @@ class WebVttParserTest : public MediaHandlerTestBase {
     std::unique_ptr<FileReader> reader;
     ASSERT_OK(FileReader::Open(kFilename, &reader));
 
-    parser_ = std::make_shared<WebVttParser>(std::move(reader));
+    parser_ = std::make_shared<WebVttParser>(std::move(reader), kLanguage);
 
     ASSERT_OK(MediaHandlerTestBase::SetUpAndInitializeGraph(
         parser_, kInputCount, kOutputCount));
@@ -70,7 +71,8 @@ TEST_F(WebVttParserTest, ParseOnlyHeader) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted,
+                                       kLanguage)));
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
 

@@ -431,7 +431,8 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
     return open_status;
   }
 
-  std::shared_ptr<OriginHandler> parser(new WebVttParser(std::move(reader)));
+  std::shared_ptr<OriginHandler> parser(
+      new WebVttParser(std::move(reader), stream.language));
   std::shared_ptr<MediaHandler> segmenter(
       new WebVttSegmenter(segment_length_in_ms));
 
@@ -460,7 +461,8 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
     return status;
   }
 
-  std::shared_ptr<OriginHandler> parser(new WebVttParser(std::move(reader)));
+  std::shared_ptr<OriginHandler> parser(
+      new WebVttParser(std::move(reader), stream.language));
   std::shared_ptr<MediaHandler> text_to_mp4(new WebVttToMp4Handler);
   std::shared_ptr<MediaHandler> chunker(
       new ChunkingHandler(packaging_params.chunking_params));

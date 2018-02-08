@@ -39,6 +39,23 @@ MATCHER_P3(IsStreamInfo, stream_index, time_scale, encrypted, "") {
          arg->stream_info->is_encrypted() == encrypted;
 }
 
+MATCHER_P4(IsStreamInfo, stream_index, time_scale, encrypted, language, "") {
+  if (arg->stream_data_type != StreamDataType::kStreamInfo) {
+    *result_listener << "which is "
+                     << StreamDataTypeToString(arg->stream_data_type);
+    return false;
+  }
+
+  *result_listener << "which is (" << arg->stream_index << ","
+                   << arg->stream_info->time_scale() << ","
+                   << BoolToString(arg->stream_info->is_encrypted()) << ","
+                   << arg->stream_info->language() << ")";
+  return arg->stream_index == stream_index &&
+         arg->stream_info->time_scale() == time_scale &&
+         arg->stream_info->is_encrypted() == encrypted &&
+         arg->stream_info->language() == language;
+}
+
 MATCHER_P5(IsSegmentInfo,
            stream_index,
            start_timestamp,

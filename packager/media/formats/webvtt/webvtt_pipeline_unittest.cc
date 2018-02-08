@@ -109,7 +109,9 @@ TEST(WebVttTextPipelineTest, SegmentedOutput) {
   ASSERT_TRUE(File::WriteStringToFile(kInputFile, kInput));
   std::unique_ptr<FileReader> reader;
   ASSERT_OK(FileReader::Open(kInputFile, &reader));
-  std::shared_ptr<OriginHandler> parser(new WebVttParser(std::move(reader)));
+  const char kLanguage[] = "en";
+  std::shared_ptr<OriginHandler> parser(
+      new WebVttParser(std::move(reader), kLanguage));
 
   std::shared_ptr<MediaHandler> segmenter(
       new WebVttSegmenter(kSegmentDuration));

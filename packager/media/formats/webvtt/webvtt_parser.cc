@@ -46,8 +46,9 @@ bool MaybeCueId(const std::string& line) {
 }
 }  // namespace
 
-WebVttParser::WebVttParser(std::unique_ptr<FileReader> source)
-    : reader_(std::move(source)) {}
+WebVttParser::WebVttParser(std::unique_ptr<FileReader> source,
+                           const std::string& language)
+    : reader_(std::move(source)), language_(language) {}
 
 Status WebVttParser::InitializeInternal() {
   return Status::OK;
@@ -186,17 +187,13 @@ Status WebVttParser::DispatchTextStreamInfo() {
   // work nicely with the current demuxer.
   const int kDuration = 0;
 
-  // There is no one metadata to determine what the language is. Parts
-  // of the text may be annotated as some specific language.
-  const char kLanguage[] = "";
-
   const char kWebVttCodecString[] = "wvtt";
 
   StreamInfo* info = new TextStreamInfo(0, kTimescale, kDuration, kCodecWebVtt,
                                         kWebVttCodecString, "",
                                         0,  // width
                                         0,  // height
-                                        kLanguage);
+                                        language_);
 
   return DispatchStreamInfo(0, std::shared_ptr<StreamInfo>(info));
 }
