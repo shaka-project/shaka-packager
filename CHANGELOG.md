@@ -1,3 +1,43 @@
+## [2.0.0] - 2018-02-08
+### Added
+- Enhanced HLS support.
+  - Support for attributes RESOLUTION, CHANNELS, AUTOSELECT and DEFAULT.
+  - Live and Event playlists.
+  - fMP4 in HLS (including byte range support).
+  - DRM: Widevine and Fairplay.
+  - I-Frame playlist.
+- Enhanced subtitle support.
+  - Segmented WebVTT in fMP4.
+  - Segmented WebVTT in text, for HLS.
+- Support generating DASH + HLS manifests simultaneously (#262).
+- AC3 / E-AC3 support.
+- Experimental multi-period support.
+- Raw key multi-key support.
+- DASH Trickplay.
+- Make fMP4 output CMAF compatible.
+- Support for WebM colour element.
+- Support skip_encryption stream descriptor fields (#219).
+- Improved documentation and tutorials.
+
+### Changed
+- Refactored packager code and media pipeline.
+- Exposed top level packaging interface.
+- Renamed --webm_subsample_encryption flag to --vp9_subsample_encryption flag.
+- Deprecated --availability_time_offset flag.
+
+### Fixed
+- Write manifests atomically to fix possible truncated manifests seen on clients
+  (#186).
+- [WebM] Fix live segmenter overflow if longer than two hours (#233).
+- Fix a possible interferenace problem when re-using UDP multicast streams in
+  different processes (#241).
+- Create directories in the output path if not exist (#276).
+- Fix order of H265 VPS, SPS, PPS in hvcC box (#297).
+- Handle additional unused mdat properly (#298).
+- Fix possible incorrect HEVC decoder configuration data (#312).
+- Handle varying parameter sets in sample when converting from NAL unit stream
+  to byte stream (#327).
+
 ## [1.6.2] - 2017-04-18
 ### Added
 - Added an option to keep parameter set NAL units (SPS/PPS for H264,
@@ -248,6 +288,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.0.0]: https://github.com/google/shaka-packager/compare/v1.6.2...v2.0.0
 [1.6.2]: https://github.com/google/shaka-packager/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/google/shaka-packager/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/google/shaka-packager/compare/v1.5.1...v1.6.0
