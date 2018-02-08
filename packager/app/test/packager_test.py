@@ -181,9 +181,6 @@ class PackagerAppTest(unittest.TestCase):
         os.path.splitext(input_file_name)[0],
         descriptor)
 
-    if hls:
-      stream.Append('playlist_name', descriptor + '.m3u8')
-
     if trick_play_factor:
       stream.Append('trick_play_factor', trick_play_factor)
       output_file_name += '-trick_play_factor_%d' % trick_play_factor
@@ -196,6 +193,16 @@ class PackagerAppTest(unittest.TestCase):
       output_file_name += '-skip_encryption'
 
     base_ext = GetExtension(descriptor, output_format)
+
+    if hls:
+      stream.Append('playlist_name', output_file_name + '.m3u8')
+
+      # By default, add a iframe playlist for all HLS playlists (assuming that
+      # the source input is supported). iframe playlists should only be for
+      # videos. This check will fail for numeric descriptors, but that is an
+      # acceptable limitation (b/73960731).
+      if base_ext in ['ts', 'mp4'] and descriptor == 'video':
+        stream.Append('iframe_playlist_name', output_file_name + '-iframe.m3u8')
 
     requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
 
