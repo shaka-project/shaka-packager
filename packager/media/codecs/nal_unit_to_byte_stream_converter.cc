@@ -13,7 +13,6 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/macros.h"
-#include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/nalu_reader.h"
 
 namespace shaka {
@@ -27,6 +26,16 @@ const uint8_t kNaluStartCode[] = {0x00, 0x00, 0x00, 0x01};
 const uint8_t kEmulationPreventionByte = 0x03;
 
 const uint8_t kAccessUnitDelimiterRbspAnyPrimaryPicType = 0xF0;
+
+bool IsNaluEqual(const Nalu& left, const Nalu& right) {
+  if (left.type() != right.type())
+    return false;
+  const size_t left_size = left.header_size() + left.payload_size();
+  const size_t right_size = right.header_size() + right.payload_size();
+  if (left_size != right_size)
+    return false;
+  return memcmp(left.data(), right.data(), left_size) == 0;
+}
 
 void AppendNalu(const Nalu& nalu,
                 int nalu_length_size,
@@ -207,25 +216,24 @@ bool NalUnitToByteStreamConverter::Initialize(
     return false;
   }
 
-  AVCDecoderConfigurationRecord decoder_config;
-  if (!decoder_config.Parse(std::vector<uint8_t>(
+  if (!decoder_config_.Parse(std::vector<uint8_t>(
           decoder_configuration_data,
           decoder_configuration_data + decoder_configuration_data_size))) {
     return false;
   }
 
-  if (decoder_config.nalu_count() < 2) {
+  if (decoder_config_.nalu_count() < 2) {
     LOG(ERROR) << "Cannot find SPS or PPS.";
     return false;
   }
 
-  nalu_length_size_ = decoder_config.nalu_length_size();
+  nalu_length_size_ = decoder_config_.nalu_length_size();
 
   BufferWriter buffer_writer(decoder_configuration_data_size);
   bool found_sps = false;
   bool found_pps = false;
-  for (uint32_t i = 0; i < decoder_config.nalu_count(); ++i) {
-    const Nalu& nalu = decoder_config.nalu(i);
+  for (uint32_t i = 0; i < decoder_config_.nalu_count(); ++i) {
+    const Nalu& nalu = decoder_config_.nalu(i);
     if (nalu.type() == Nalu::H264NaluType::H264_SPS) {
       buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
       AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
@@ -245,8 +253,6 @@ bool NalUnitToByteStreamConverter::Initialize(
   return true;
 }
 
-// This ignores all AUD, SPS, and PPS in the sample. Instead uses the data
-// parsed in Initialize().
 bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
     const uint8_t* sample,
     size_t sample_size,
@@ -258,7 +264,8 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
 }
 
 // This ignores all AUD, SPS, and PPS in the sample. Instead uses the data
-// parsed in Initialize().
+// parsed in Initialize(). However, if the SPS and PPS are different to
+// those parsed in Initialized(), they are kept.
 bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
     const uint8_t* sample,
     size_t sample_size,
@@ -303,11 +310,30 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
     }
     switch (nalu.type()) {
       case Nalu::H264_AUD:
-        FALLTHROUGH_INTENDED;
+        break;
       case Nalu::H264_SPS:
         FALLTHROUGH_INTENDED;
-      case Nalu::H264_PPS:
-        break;
+      case Nalu::H264_PPS: {
+        // Also write this SPS/PPS if it is not the same as SPS/PPS in decoder
+        // configuration, which is already written.
+        //
+        // For more information see:
+        //  - github.com/google/shaka-packager/issues/327
+        //  - ISO/IEC 14496-15 5.4.5 Sync Sample
+        //
+        // TODO(kqyang): Parse sample data to figure out which SPS/PPS the
+        // sample actually uses and include that only.
+        bool new_decoder_config = true;
+        for (size_t i = 0; i < decoder_config_.nalu_count(); ++i) {
+          if (IsNaluEqual(decoder_config_.nalu(i), nalu)) {
+            new_decoder_config = false;
+            break;
+          }
+        }
+        if (!new_decoder_config)
+          break;
+        FALLTHROUGH_INTENDED;
+      }
       default:
         bool escape_data = false;
         if (subsamples && !subsamples->empty()) {

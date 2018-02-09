@@ -12,6 +12,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/media/base/decrypt_config.h"
+#include "packager/media/codecs/avc_decoder_configuration_record.h"
 
 namespace shaka {
 namespace media {
@@ -83,6 +84,7 @@ class NalUnitToByteStreamConverter {
   friend class NalUnitToByteStreamConverterTest;
 
   int nalu_length_size_;
+  AVCDecoderConfigurationRecord decoder_config_;
   std::vector<uint8_t> decoder_configuration_in_byte_stream_;
 
   DISALLOW_COPY_AND_ASSIGN(NalUnitToByteStreamConverter);
