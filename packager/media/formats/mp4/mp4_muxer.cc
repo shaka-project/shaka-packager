@@ -94,9 +94,36 @@ void GenerateSinf(FourCC old_type,
 
   auto& track_encryption = sinf->info.track_encryption;
   track_encryption.default_is_protected = 1;
+
   track_encryption.default_crypt_byte_block =
       encryption_config.crypt_byte_block;
   track_encryption.default_skip_byte_block = encryption_config.skip_byte_block;
+  switch (encryption_config.protection_scheme) {
+    case FOURCC_cenc:
+    case FOURCC_cbc1:
+      DCHECK_EQ(track_encryption.default_crypt_byte_block, 0u);
+      DCHECK_EQ(track_encryption.default_skip_byte_block, 0u);
+      // CENCv3 10.1 ‘cenc’ AES-CTR scheme and 10.2 ‘cbc1’ AES-CBC scheme:
+      // The version of the Track Encryption Box (‘tenc’) SHALL be 0.
+      track_encryption.version = 0;
+      break;
+    case FOURCC_cbcs:
+    case FOURCC_cens:
+      if (track_encryption.default_skip_byte_block == 0) {
+        // Some clients, e.g. Safari v11.0.3 does not like having
+        // crypt_byte_block as a non-zero value when skip_byte_block is zero.
+        track_encryption.default_crypt_byte_block = 0;
+      }
+      // CENCv3 10.3 ‘cens’ AES-CTR subsample pattern encryption scheme and
+      //        10.4 ‘cbcs’ AES-CBC subsample pattern encryption scheme:
+      // The version of the Track Encryption Box (‘tenc’) SHALL be 1.
+      track_encryption.version = 1;
+      break;
+    default:
+      NOTREACHED() << "Unexpected protection scheme "
+                   << encryption_config.protection_scheme;
+  }
+
   track_encryption.default_per_sample_iv_size =
       encryption_config.per_sample_iv_size;
   track_encryption.default_constant_iv = encryption_config.constant_iv;
