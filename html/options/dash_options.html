@@ -1,17 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>DASH options &#8212; Shaka Packager  documentation</title>
-    
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -25,11 +22,11 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -100,21 +97,21 @@ Representation data rate.</td></tr>
 <tr><td>&#160;</td><td>Indicates to the player how often to refresh the media presentation
 description in seconds. This value is used for dynamic MPD only.</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
-presentations, in seconds.</td></tr>
-<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--suggested_presentation_delay <var>&lt;seconds&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Specifies a delay, in seconds, to be added to the media presentation time.
 This value is used for dynamic MPD only.</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
+presentations, in seconds.</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Any tracks tagged with this language will have &lt;Role ... value=&#8221;main&#8221; /&gt;
-in the manifest.  This allows the player to choose the correct default
-language for the content.</td></tr>
+<tr><td>&#160;</td><td>Any audio/text tracks tagged with this language will have
+&lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
+choose the correct default language for the content.</td></tr>
 </tbody>
 </table>
 </div>
@@ -136,7 +133,7 @@ language for the content.</td></tr>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>

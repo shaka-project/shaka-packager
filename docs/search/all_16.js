@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7eclosurethread',['~ClosureThread',['../dc/df0/classshaka_1_1media_1_1ClosureThread.html#a811ad9bb9367c0ff74093c4a337d1398',1,'shaka::media::ClosureThread']]],
-  ['_7efile',['~File',['../d3/d73/classshaka_1_1File.html#a92d1a67d1560a5290eb36447c50fabf9',1,'shaka::File']]]
+  ['xmldeleter',['XmlDeleter',['../dd/da4/structshaka_1_1xml_1_1XmlDeleter.html',1,'shaka::xml']]],
+  ['xmlnode',['XmlNode',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html',1,'shaka::xml::XmlNode'],['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a52ffb838d25293eafbea9f05fb1c2d17',1,'shaka::xml::XmlNode::XmlNode()']]]
 ];

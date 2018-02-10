@@ -10,14 +10,14 @@ var searchData=
   ['writefileatomically',['WriteFileAtomically',['../d3/d73/classshaka_1_1File.html#a4b5280fe058359b5991037f90dde2b77',1,'shaka::File']]],
   ['writefromfile',['WriteFromFile',['../d1/d0a/classshaka_1_1media_1_1MkvWriter.html#ab331684a758a93bf0c77fa224fe429ea',1,'shaka::media::MkvWriter::WriteFromFile(File *source)'],['../d1/d0a/classshaka_1_1media_1_1MkvWriter.html#a2dfac99ec5531ca2e102e5b145bb29ed',1,'shaka::media::MkvWriter::WriteFromFile(File *source, int64_t max_copy)']]],
   ['writeheader',['WriteHeader',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a57b8837c93d51f5cf03d3862069d509a',1,'shaka::media::mp4::Box']]],
-  ['writemasterplaylist',['WriteMasterPlaylist',['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a07e967ee0312dc3aa6180816286aa6d1',1,'shaka::hls::MasterPlaylist']]],
+  ['writemasterplaylist',['WriteMasterPlaylist',['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#ad4255082cd307583e3600a5cffdd2bb1',1,'shaka::hls::MasterPlaylist']]],
   ['writemediainfotofile',['WriteMediaInfoToFile',['../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae0a573e1c785164f40bfbfba2ced6a16',1,'shaka::media::VodMediaInfoDumpMuxerListener']]],
-  ['writemp4',['WriteMP4',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a790c2bbfed9caa79aefb5c597c892e00',1,'shaka::media::VPCodecConfigurationRecord']]],
+  ['writemp4',['WriteMP4',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a17c95b92810ebb43d7dc9ab0783e5f2a',1,'shaka::media::VPCodecConfigurationRecord']]],
   ['writempdtofile',['WriteMpdToFile',['../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8',1,'shaka']]],
   ['writer',['writer',['../d1/da1/classshaka_1_1media_1_1mp4_1_1BoxBuffer.html#a0b9aa5e5669d771e12563e168d5c967d',1,'shaka::media::mp4::BoxBuffer']]],
   ['writesegmentheader',['WriteSegmentHeader',['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aebcf73c5a1c3ae0f2608032d2a6ee445',1,'shaka::media::webm::Segmenter']]],
   ['writestringtofile',['WriteStringToFile',['../d3/d73/classshaka_1_1File.html#a483ce187d628385d342748315d72f8ab',1,'shaka::File']]],
   ['writetofile',['WriteToFile',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a182ca5726d4fb7d3053f76b515042440',1,'shaka::hls::MediaPlaylist::WriteToFile()'],['../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d',1,'shaka::media::BufferWriter::WriteToFile()']]],
   ['writevoid',['WriteVoid',['../dc/d16/classshaka_1_1media_1_1SeekHead.html#a1a7895c6f5548405377aabb9521111a1',1,'shaka::media::SeekHead']]],
-  ['writewebm',['WriteWebM',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#ab5186aead4b73cc3cd33587f25f166ce',1,'shaka::media::VPCodecConfigurationRecord']]]
+  ['writewebm',['WriteWebM',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a62bb64ea665385ae67c2fce8fb8b76bd',1,'shaka::media::VPCodecConfigurationRecord']]]
 ];

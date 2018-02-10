@@ -72,15 +72,15 @@ Assume there is an RTP input described by `saved_sdp_file`::
 
     For testing, you can generate an RTP input from a static media file::
 
-        $ ffmpeg -re -stream_loop 100 -i <static.mp4> -vcodec copy -an \
-          -f rtp rtp://239.255.0.1:1234 -sdp_file saved_sdp_file
+        $ ffmpeg -re -stream_loop 100 -i <static.mp4> -vcodec copy -acodec \
+          copy -f rtp rtp://239.255.0.1:1234 -sdp_file saved_sdp_file
 
 The command starts only after packager starts.
 
 .. note::
 
     After encoding starts, monitor encoding speed carefully. It should always be
-    1x and above. If not, adjust the encoding parameters to recude it.
+    1x or above. If not, adjust the encoding parameters to increase it.
 
 Example packaging command in DASH
 ---------------------------------

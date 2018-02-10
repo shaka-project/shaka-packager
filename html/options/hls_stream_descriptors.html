@@ -1,17 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>HLS specific stream descriptor fields &#8212; Shaka Packager  documentation</title>
-    
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -25,11 +22,11 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -76,11 +73,18 @@
 Defaults to the base of the playlist name.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
-Defaults to &#8216;audio&#8217; if not specified.</td>
+Defaults to ‘audio’ if not specified.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">Used for HLS to name the playlist for the stream. Usually ends
-with &#8216;.m3u8&#8217;. If unspecified, defaults to something of the form
-&#8216;stream_0.m3u8&#8217;, &#8216;stream_1.m3u8&#8217;, &#8216;stream_2.m3u8&#8217;, etc.</td>
+<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">The HLS playlist file to create. Usually ends with ‘.m3u8’, and is
+relative to hls_master_playlist_output (see below). If unspecified,
+defaults to something of the form ‘stream_0.m3u8’, ‘stream_1.m3u8’,
+‘stream_2.m3u8’, etc.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">iframe_playlist_name:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">The optional HLS I-Frames only playlist file to create. Usually ends with
+‘.m3u8’, and is relative to hls_master_playlist_output (see below). Should
+only be set for video streams. If unspecified, no I-Frames only playlist is
+created.</td>
 </tr>
 </tbody>
 </table>
@@ -103,7 +107,7 @@ with &#8216;.m3u8&#8217;. If unspecified, defaults to something of the form
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>

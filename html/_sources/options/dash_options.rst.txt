@@ -28,18 +28,18 @@ DASH options
     Indicates to the player how often to refresh the media presentation
     description in seconds. This value is used for dynamic MPD only.
 
---time_shift_buffer_depth <seconds>
-
-    Guaranteed duration of the time shifting buffer for dynamic media
-    presentations, in seconds.
-
 --suggested_presentation_delay <seconds>
 
     Specifies a delay, in seconds, to be added to the media presentation time.
     This value is used for dynamic MPD only.
 
+--time_shift_buffer_depth <seconds>
+
+    Guaranteed duration of the time shifting buffer for dynamic media
+    presentations, in seconds.
+
 --default_language <language>
 
-    Any tracks tagged with this language will have <Role ... value=\"main\" />
-    in the manifest.  This allows the player to choose the correct default
-    language for the content.
+    Any audio/text tracks tagged with this language will have
+    <Role ... value=\"main\" /> in the manifest.  This allows the player to
+    choose the correct default language for the content.

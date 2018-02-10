@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['dash_5fprofile',['dash_profile',['../d3/dd0/classshaka_1_1MpdNotifier.html#a3eb0f05b01d475eff0a75bab71f21149',1,'shaka::MpdNotifier']]],
-  ['data',['data',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a20e0a9cb8002c943814853bd6ce488df',1,'shaka::media::DecoderConfigurationRecord::data()'],['../d6/dff/classshaka_1_1media_1_1Nalu.html#a3175755a2a847c3bfc8292434d4ea3b6',1,'shaka::media::Nalu::data()']]],
-  ['data_5fsize',['data_size',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab016f1def77f35b4256e7e8ca990ed57',1,'shaka::media::DecoderConfigurationRecord']]],
+  ['dash_5fprofile',['dash_profile',['../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37',1,'shaka::MpdNotifier']]],
+  ['data',['data',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a09f2c913c2d98c8136ec8d07a5ae1e27',1,'shaka::media::DecoderConfigurationRecord::data()'],['../d6/dff/classshaka_1_1media_1_1Nalu.html#a52dc6f445a09c36a64c634ccc2891489',1,'shaka::media::Nalu::data()']]],
+  ['data_5fsize',['data_size',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ada228c2392a0ff3069f2be7c27347a4f',1,'shaka::media::DecoderConfigurationRecord']]],
   ['decodingtimeiterator',['DecodingTimeIterator',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#aa2b6f0a9697cfd606bfe95b5377c953e',1,'shaka::media::mp4::DecodingTimeIterator']]],
   ['decrypt',['Decrypt',['../d0/dce/classshaka_1_1media_1_1RsaPrivateKey.html#a89a475ffe2d96bfab09536b864038ca4',1,'shaka::media::RsaPrivateKey']]],
   ['decryptconfig',['DecryptConfig',['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a24035bb6edcb3aaaa9923bf385376ae5',1,'shaka::media::DecryptConfig::DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)'],['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#ab2dfe0a2ee285539843ac55b5f1ac7c7',1,'shaka::media::DecryptConfig::DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block)']]],
@@ -20,6 +20,6 @@ var searchData=
   ['dispatchstreaminfo',['DispatchStreamInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#af0c7b537e9745a0eb49b4561dbc89f55',1,'shaka::media::MediaHandler']]],
   ['dispatchtextsample',['DispatchTextSample',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a65d965532a6488eab28551aca51a1a2a',1,'shaka::media::MediaHandler']]],
   ['doubletostring',['DoubleToString',['../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31',1,'shaka']]],
-  ['dts',['dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a88111c4190e74c24c10f0a694e723cb8',1,'shaka::media::mp2t::PesPacket']]],
-  ['duration',['Duration',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a9527abde0a2131605d06fdfa2859dc47',1,'shaka::media::mp4::DecodingTimeIterator']]]
+  ['dts',['dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a02537ce70272a3e22426c46e4540ac64',1,'shaka::media::mp2t::PesPacket']]],
+  ['duration',['Duration',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a30c32c95fd45e372c25e96769ca7862a',1,'shaka::media::mp4::DecodingTimeIterator']]]
 ];

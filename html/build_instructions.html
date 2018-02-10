@@ -1,17 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Build Instructions &#8212; Shaka Packager  documentation</title>
-    
     <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/table_styling.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -25,13 +22,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Using Docker" href="docker_instructions.html" />
     <link rel="prev" title="Shaka Packager Library" href="library.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -191,7 +188,7 @@ Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:</p>
 <p>If you have Administrator access, Modify the PATH system variable and
 put <code class="docutils literal"><span class="pre">C:\src\depot_tools</span></code> at the front (or at least in front of any directory
 that might already have a copy of Python or Git).</p>
-<p>If you don&#8217;t have Administrator access, you can add a user-level PATH
+<p>If you don’t have Administrator access, you can add a user-level PATH
 environment variable and put <code class="docutils literal"><span class="pre">C:\src\depot_tools</span></code> at the front, but
 if your system PATH has a Python in it, you will be out of luck.</p>
 <p>Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
@@ -224,7 +221,7 @@ dependencies.</p>
 $ gclient sync
 </pre></div>
 </div>
-<p>To sync to a particular commit or version, add the &#8216;-r &lt;revision&gt;&#8216; flag to
+<p>To sync to a particular commit or version, add the ‘-r &lt;revision&gt;’ flag to
 <code class="docutils literal"><span class="pre">gclient</span> <span class="pre">sync</span></code>, e.g.</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ gclient sync -r 4cb5326355e1559d60b46167740e04624d0d2f51
 </pre></div>
@@ -232,7 +229,7 @@ $ gclient sync
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ gclient sync -r v1.2.0
 </pre></div>
 </div>
-<p>If you don&#8217;t want the full repo history, you can save some time by adding the
+<p>If you don’t want the full repo history, you can save some time by adding the
 <code class="docutils literal"><span class="pre">--no-history</span></code> flag to <code class="docutils literal"><span class="pre">gclient</span> <span class="pre">sync</span></code>.</p>
 <p>When the above commands completes, it will have created a hidden <code class="docutils literal"><span class="pre">.gclient</span></code> file
 and a directory called <code class="docutils literal"><span class="pre">src</span></code> in the working directory. The remaining
@@ -358,11 +355,11 @@ $ makepkg -si
 <span id="tips-tricks-and-troubleshooting"></span><h2>Tips, tricks, and troubleshooting<a class="headerlink" href="#tips-tricks-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="xcode-license-agreement">
 <span id="xcode-license-agreement"></span><h3>Xcode license agreement<a class="headerlink" href="#xcode-license-agreement" title="Permalink to this headline">¶</a></h3>
-<p>If you&#8217;re getting the error</p>
+<p>If you’re getting the error</p>
 <blockquote>
 <div>Agreeing to the Xcode/iOS license requires admin privileges, please re-run as
 root via sudo.</div></blockquote>
-<p>the Xcode license hasn&#8217;t been accepted yet which (contrary to the message) any
+<p>the Xcode license hasn’t been accepted yet which (contrary to the message) any
 user can do by running:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ xcodebuild -license
 </pre></div>
@@ -413,7 +410,7 @@ are run using the <code class="docutils literal"><span class="pre">--gtest_filte
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>

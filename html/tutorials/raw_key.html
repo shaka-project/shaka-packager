@@ -1,17 +1,14 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Raw key &#8212; Shaka Packager  documentation</title>
-    
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
@@ -25,13 +22,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Widevine" href="widevine.html" />
     <link rel="prev" title="DRM" href="drm.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -58,6 +55,7 @@
 <li><a class="reference internal" href="#examples">Examples</a><ul>
 <li><a class="reference internal" href="#test-vectors-used-in-this-tutorial">Test vectors used in this tutorial</a></li>
 <li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
 <li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
 <li><a class="reference internal" href="#pssh-box-utility-to-generate-pssh-boxes">pssh-box (Utility to generate PSSH boxes)</a></li>
 </ul>
@@ -113,7 +111,7 @@
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=</span><span class="p">{</span><span class="n">label</span><span class="p">}:</span><span class="n">key_id</span><span class="o">=</span><span class="p">{</span><span class="n">key_id</span><span class="p">}:</span><span class="n">key</span><span class="o">=</span><span class="p">{</span><span class="n">key</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>Custom PSSH(s) can be provided in <em>&#8211;pssh</em>. If absent,
+<p>Custom PSSH(s) can be provided in <em>–pssh</em>. If absent,
 <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> is generated.</p>
 </div>
 <div class="section" id="examples">
@@ -206,10 +204,32 @@ of the stream will be made.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">drm_label:</th><td class="field-body">Optional value for custom DRM label, which defines the encryption key
 applied to the stream. Typically values include AUDIO, SD, HD, UHD1, UHD2.
-For raw key, it should be a label defined in &#8211;keys. If not provided, the
+For raw key, it should be a label defined in –keys. If not provided, the
 DRM label is derived from stream type (video, audio), resolutions, etc.
 Note that it is case sensitive.</td>
 </tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="general-encryption-options">
+<h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
+schemes ‘cens’ or ‘cbcs’.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable / disable VP9 subsample encryption. Enabled by default.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
 </tbody>
 </table>
 </div>
@@ -228,7 +248,7 @@ Note that it is case sensitive.</td>
 </tr>
 <tr><td>&#160;</td><td>Enable decryption with raw key (keys provided in command line).</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]...&gt;</var></span></kbd></td>
+<kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td><p class="first"><strong>key_info_string</strong> is of the form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=</span><span class="p">{</span><span class="n">label</span><span class="p">}:</span><span class="n">key_id</span><span class="o">=</span><span class="p">{</span><span class="n">key_id</span><span class="p">}:</span><span class="n">key</span><span class="o">=</span><span class="p">{</span><span class="n">key</span><span class="p">}</span>
@@ -287,7 +307,7 @@ a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box<
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>
