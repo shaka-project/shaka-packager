@@ -1,4 +1,4 @@
-## [2.0.0] - 2018-02-08
+## [2.0.0] - 2018-02-10
 ### Added
 - Enhanced HLS support.
   - Support for attributes RESOLUTION, CHANNELS, AUTOSELECT and DEFAULT.
