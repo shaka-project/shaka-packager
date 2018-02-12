@@ -42,14 +42,9 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
   switch (stream_data->stream_data_type) {
     case StreamDataType::kStreamInfo:
       return OnStreamInfo(stream_data->stream_index, stream_data->stream_info);
-    case StreamDataType::kScte35Event: {
-      if (stream_data->stream_index != main_stream_index_) {
-        VLOG(3) << "Dropping scte35 event from non main stream.";
-        return Status::OK;
-      }
-      scte35_events_.push(std::move(stream_data));
-      return Status::OK;
-    }
+    case StreamDataType::kScte35Event:
+      return OnScte35Event(stream_data->stream_index,
+                           stream_data->scte35_event);
     case StreamDataType::kSegmentInfo:
       VLOG(3) << "Droppping existing segment info.";
       return Status::OK;
@@ -165,6 +160,18 @@ Status ChunkingHandler::OnStreamInfo(uint64_t stream_index,
   return DispatchStreamInfo(stream_index, std::move(info));
 }
 
+Status ChunkingHandler::OnScte35Event(
+    uint64_t stream_index,
+    std::shared_ptr<const Scte35Event> event) {
+  if (stream_index == main_stream_index_) {
+    scte35_events_.push(std::move(event));
+  } else {
+    VLOG(3) << "Dropping scte35 event from non main stream.";
+  }
+
+  return Status::OK;
+}
+
 Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
   const bool is_key_frame = sample->is_key_frame();
   const int64_t timestamp = sample->dts();
@@ -183,7 +190,7 @@ Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
     // We use 'while' instead of 'if' to make sure to pop off multiple SCTE35
     // events that may be very close to each other.
     while (!scte35_events_.empty() &&
-           (scte35_events_.top()->scte35_event->start_time <= timestamp)) {
+           (scte35_events_.top()->start_time <= timestamp)) {
       // For simplicity, don't change |current_segment_index_|.
       current_subsegment_index_ = 0;
       new_segment = true;
@@ -191,7 +198,7 @@ Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
       cue_event = std::make_shared<CueEvent>();
       // Use PTS instead of DTS for cue event timestamp.
       cue_event->timestamp = sample->pts();
-      cue_event->cue_data = scte35_events_.top()->scte35_event->cue_data;
+      cue_event->cue_data = scte35_events_.top()->cue_data;
       LOG(INFO) << "Chunked at " << timestamp << " for Ad Cue.";
 
       scte35_events_.pop();
@@ -325,13 +332,11 @@ double ChunkingHandler::MediaSampleTimestampGreater::GetSampleTimeInSeconds(
 }
 
 bool ChunkingHandler::Scte35EventTimestampGreater::operator()(
-    const std::unique_ptr<StreamData>& lhs,
-    const std::unique_ptr<StreamData>& rhs) const {
+    const std::shared_ptr<const Scte35Event>& lhs,
+    const std::shared_ptr<const Scte35Event>& rhs) const {
   DCHECK(lhs);
   DCHECK(rhs);
-  DCHECK(lhs->scte35_event);
-  DCHECK(rhs->scte35_event);
-  return lhs->scte35_event->start_time > rhs->scte35_event->start_time;
+  return lhs->start_time > rhs->start_time;
 }
 
 }  // namespace media

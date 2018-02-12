@@ -64,6 +64,8 @@ class ChunkingHandler : public MediaHandler {
 
   Status OnStreamInfo(uint64_t stream_index,
                       std::shared_ptr<const StreamInfo> info);
+  Status OnScte35Event(uint64_t stream_index,
+                       std::shared_ptr<const Scte35Event> event);
 
   // Processes main media sample and apply chunking if needed.
   Status ProcessMainMediaSample(const MediaSample* sample);
@@ -126,14 +128,14 @@ class ChunkingHandler : public MediaHandler {
   std::vector<int64_t> last_sample_end_timestamps_;
 
   struct Scte35EventTimestampGreater {
-    bool operator()(const std::unique_ptr<StreamData>& lhs,
-                    const std::unique_ptr<StreamData>& rhs) const;
+    bool operator()(const std::shared_ptr<const Scte35Event>& lhs,
+                    const std::shared_ptr<const Scte35Event>& rhs) const;
   };
   // Captures all incoming SCTE35 events to identify chunking points. Events
   // will be removed from this queue one at a time as soon as the correct
   // chunking point is identified in the incoming samples.
-  std::priority_queue<std::unique_ptr<StreamData>,
-                      std::vector<std::unique_ptr<StreamData>>,
+  std::priority_queue<std::shared_ptr<const Scte35Event>,
+                      std::vector<std::shared_ptr<const Scte35Event>>,
                       Scte35EventTimestampGreater>
       scte35_events_;
 };
