@@ -62,6 +62,9 @@ class ChunkingHandler : public MediaHandler {
   ChunkingHandler(const ChunkingHandler&) = delete;
   ChunkingHandler& operator=(const ChunkingHandler&) = delete;
 
+  Status OnStreamInfo(uint64_t stream_index,
+                      std::shared_ptr<const StreamInfo> info);
+
   // Processes main media sample and apply chunking if needed.
   Status ProcessMainMediaSample(const MediaSample* sample);
 

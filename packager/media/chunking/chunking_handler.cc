@@ -40,37 +40,8 @@ Status ChunkingHandler::InitializeInternal() {
 
 Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
   switch (stream_data->stream_data_type) {
-    case StreamDataType::kStreamInfo: {
-      // Make sure the inputs come from the same thread.
-      const int64_t thread_id =
-          static_cast<int64_t>(base::PlatformThread::CurrentId());
-      int64_t expected = kThreadIdUnset;
-      if (!thread_id_.compare_exchange_strong(expected, thread_id) &&
-          expected != thread_id) {
-        return Status(error::CHUNKING_ERROR,
-                      "Inputs should come from the same thread.");
-      }
-
-      const auto time_scale = stream_data->stream_info->time_scale();
-      // The video stream is treated as the main stream. If there is only one
-      // stream, it is the main stream.
-      const bool is_main_stream =
-          main_stream_index_ == kInvalidStreamIndex &&
-          (stream_data->stream_info->stream_type() == kStreamVideo ||
-           num_input_streams() == 1);
-      if (is_main_stream) {
-        main_stream_index_ = stream_data->stream_index;
-        segment_duration_ =
-            chunking_params_.segment_duration_in_seconds * time_scale;
-        subsegment_duration_ =
-            chunking_params_.subsegment_duration_in_seconds * time_scale;
-      } else if (stream_data->stream_info->stream_type() == kStreamVideo) {
-        return Status(error::CHUNKING_ERROR,
-                      "Only one video stream is allowed per chunking handler.");
-      }
-      time_scales_[stream_data->stream_index] = time_scale;
-      break;
-    }
+    case StreamDataType::kStreamInfo:
+      return OnStreamInfo(stream_data->stream_index, stream_data->stream_info);
     case StreamDataType::kScte35Event: {
       if (stream_data->stream_index != main_stream_index_) {
         VLOG(3) << "Dropping scte35 event from non main stream.";
@@ -157,6 +128,41 @@ Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
   }
   const size_t output_stream_index = input_stream_index;
   return FlushDownstream(output_stream_index);
+}
+
+Status ChunkingHandler::OnStreamInfo(uint64_t stream_index,
+                                     std::shared_ptr<const StreamInfo> info) {
+  // Make sure the inputs come from the same thread.
+  const int64_t thread_id =
+      static_cast<int64_t>(base::PlatformThread::CurrentId());
+
+  int64_t expected = kThreadIdUnset;
+  if (!thread_id_.compare_exchange_strong(expected, thread_id) &&
+      expected != thread_id) {
+    return Status(error::CHUNKING_ERROR,
+                  "Inputs should come from the same thread.");
+  }
+
+  const auto time_scale = info->time_scale();
+  time_scales_[stream_index] = time_scale;
+
+  // The video stream is treated as the main stream. If there is only one
+  // stream, it is the main stream.
+  const bool is_main_stream =
+      main_stream_index_ == kInvalidStreamIndex &&
+      (info->stream_type() == kStreamVideo || num_input_streams() == 1);
+  if (is_main_stream) {
+    main_stream_index_ = stream_index;
+    segment_duration_ =
+        chunking_params_.segment_duration_in_seconds * time_scale;
+    subsegment_duration_ =
+        chunking_params_.subsegment_duration_in_seconds * time_scale;
+  } else if (info->stream_type() == kStreamVideo) {
+    return Status(error::CHUNKING_ERROR,
+                  "Only one video stream is allowed per chunking handler.");
+  }
+
+  return DispatchStreamInfo(stream_index, std::move(info));
 }
 
 Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
