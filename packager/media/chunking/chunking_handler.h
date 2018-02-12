@@ -67,6 +67,8 @@ class ChunkingHandler : public MediaHandler {
   Status OnScte35Event(uint64_t stream_index,
                        std::shared_ptr<const Scte35Event> event);
 
+  Status OnMediaSample(std::unique_ptr<StreamData> stream_data);
+
   // Processes main media sample and apply chunking if needed.
   Status ProcessMainMediaSample(const MediaSample* sample);
 

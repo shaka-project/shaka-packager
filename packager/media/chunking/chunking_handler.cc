@@ -48,56 +48,13 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
     case StreamDataType::kSegmentInfo:
       VLOG(3) << "Droppping existing segment info.";
       return Status::OK;
-    case StreamDataType::kMediaSample: {
-      const size_t stream_index = stream_data->stream_index;
-      DCHECK_NE(time_scales_[stream_index], 0u)
-          << "kStreamInfo should arrive before kMediaSample";
-
-      if (stream_index != main_stream_index_ &&
-          !stream_data->media_sample->is_key_frame()) {
-        return Status(error::CHUNKING_ERROR,
-                      "All non video samples should be key frames.");
-      }
-      // The streams are expected to be roughly synchronized, so we don't expect
-      // to see a lot of samples from one stream but no samples from another
-      // stream.
-      // The value is kind of arbitrary here. For a 24fps video, it is ~40s.
-      const size_t kMaxCachedSamplesPerStream = 1000u;
-      if (num_cached_samples_[stream_index] >= kMaxCachedSamplesPerStream) {
-        LOG(ERROR) << "Streams are not synchronized:";
-        for (size_t i = 0; i < num_cached_samples_.size(); ++i)
-          LOG(ERROR) << " [Stream " << i << "] " << num_cached_samples_[i];
-        return Status(error::CHUNKING_ERROR, "Streams are not synchronized.");
-      }
-
-      cached_media_sample_stream_data_.push(std::move(stream_data));
-      ++num_cached_samples_[stream_index];
-
-      // If we have cached samples from every stream, the first sample in
-      // |cached_media_samples_stream_data_| is guaranteed to be the earliest
-      // sample. Extract and process that sample.
-      if (std::all_of(num_cached_samples_.begin(), num_cached_samples_.end(),
-                      [](size_t num_samples) { return num_samples > 0; })) {
-        while (true) {
-          const size_t top_stream_index =
-              cached_media_sample_stream_data_.top()->stream_index;
-          Status status = ProcessMediaSampleStreamData(
-              *cached_media_sample_stream_data_.top());
-          if (!status.ok())
-            return status;
-          cached_media_sample_stream_data_.pop();
-          if (--num_cached_samples_[top_stream_index] == 0)
-            break;
-        }
-      }
-      return Status::OK;
-    }
+    case StreamDataType::kMediaSample:
+      return OnMediaSample(std::move(stream_data));
     default:
       VLOG(3) << "Stream data type "
               << static_cast<int>(stream_data->stream_data_type) << " ignored.";
-      break;
+      return Dispatch(std::move(stream_data));
   }
-  return Dispatch(std::move(stream_data));
 }
 
 Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
@@ -169,6 +126,53 @@ Status ChunkingHandler::OnScte35Event(
     VLOG(3) << "Dropping scte35 event from non main stream.";
   }
 
+  return Status::OK;
+}
+
+Status ChunkingHandler::OnMediaSample(std::unique_ptr<StreamData> stream_data) {
+  DCHECK_EQ(StreamDataType::kMediaSample, stream_data->stream_data_type);
+
+  const size_t stream_index = stream_data->stream_index;
+  DCHECK_NE(time_scales_[stream_index], 0u)
+      << "kStreamInfo should arrive before kMediaSample";
+
+  if (stream_index != main_stream_index_ &&
+      !stream_data->media_sample->is_key_frame()) {
+    return Status(error::CHUNKING_ERROR,
+                  "All non video samples should be key frames.");
+  }
+  // The streams are expected to be roughly synchronized, so we don't expect
+  // to see a lot of samples from one stream but no samples from another
+  // stream.
+  // The value is kind of arbitrary here. For a 24fps video, it is ~40s.
+  const size_t kMaxCachedSamplesPerStream = 1000u;
+  if (num_cached_samples_[stream_index] >= kMaxCachedSamplesPerStream) {
+    LOG(ERROR) << "Streams are not synchronized:";
+    for (size_t i = 0; i < num_cached_samples_.size(); ++i)
+      LOG(ERROR) << " [Stream " << i << "] " << num_cached_samples_[i];
+    return Status(error::CHUNKING_ERROR, "Streams are not synchronized.");
+  }
+
+  cached_media_sample_stream_data_.push(std::move(stream_data));
+  ++num_cached_samples_[stream_index];
+
+  // If we have cached samples from every stream, the first sample in
+  // |cached_media_samples_stream_data_| is guaranteed to be the earliest
+  // sample. Extract and process that sample.
+  if (std::all_of(num_cached_samples_.begin(), num_cached_samples_.end(),
+                  [](size_t num_samples) { return num_samples > 0; })) {
+    while (true) {
+      const size_t top_stream_index =
+          cached_media_sample_stream_data_.top()->stream_index;
+      Status status =
+          ProcessMediaSampleStreamData(*cached_media_sample_stream_data_.top());
+      if (!status.ok())
+        return status;
+      cached_media_sample_stream_data_.pop();
+      if (--num_cached_samples_[top_stream_index] == 0)
+        break;
+    }
+  }
   return Status::OK;
 }
 
