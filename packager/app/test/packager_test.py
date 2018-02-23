@@ -540,9 +540,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testPackageAudioVideo(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']), self._GetFlags())
-    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-golden.mpd')
+    self._CheckTestResults('audio-video')
 
   def testPackageAudioVideoWithTrickPlay(self):
     streams = [
