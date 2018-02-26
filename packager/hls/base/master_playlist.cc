@@ -12,6 +12,7 @@
 
 #include "packager/base/files/file_path.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/file/file.h"
 #include "packager/hls/base/media_playlist.h"
@@ -34,7 +35,8 @@ void AppendVersionString(std::string* content) {
 }
 
 struct Variant {
-  std::string audio_codec;
+  std::set<std::string> audio_codecs;
+  std::set<std::string> text_codecs;
   const std::string* audio_group_id = nullptr;
   const std::string* text_group_id = nullptr;
   uint64_t audio_bitrate = 0;
@@ -48,10 +50,15 @@ uint64_t MaxBitrate(const std::list<const MediaPlaylist*> playlists) {
   return max;
 }
 
-std::string GetAudioGroupCodecString(
+std::set<std::string> GetGroupCodecString(
     const std::list<const MediaPlaylist*>& group) {
-  // TODO(vaage): Should be a concatenation of all the codecs in the group.
-  return group.front()->codec();
+  std::set<std::string> codecs;
+
+  for (const MediaPlaylist* playlist : group) {
+    codecs.insert(playlist->codec());
+  }
+
+  return codecs;
 }
 
 std::list<Variant> AudioGroupsToVariants(
@@ -60,9 +67,9 @@ std::list<Variant> AudioGroupsToVariants(
 
   for (const auto& group : groups) {
     Variant variant;
-    variant.audio_codec = GetAudioGroupCodecString(group.second);
     variant.audio_group_id = &group.first;
     variant.audio_bitrate = MaxBitrate(group.second);
+    variant.audio_codecs = GetGroupCodecString(group.second);
 
     variants.push_back(variant);
   }
@@ -102,6 +109,7 @@ std::list<Variant> SubtitleGroupsToVariants(
   for (const auto& group : groups) {
     Variant variant;
     variant.text_group_id = &group.first;
+    variant.text_codecs = GetGroupCodecString(group.second);
 
     variants.push_back(variant);
   }
@@ -131,7 +139,8 @@ std::list<Variant> BuildVariants(
   for (const auto& audio_variant : audio_variants) {
     for (const auto& subtitle_variant : subtitle_variants) {
       Variant variant;
-      variant.audio_codec = audio_variant.audio_codec;
+      variant.audio_codecs = audio_variant.audio_codecs;
+      variant.text_codecs = subtitle_variant.text_codecs;
       variant.audio_group_id = audio_variant.audio_group_id;
       variant.text_group_id = subtitle_variant.text_group_id;
       variant.audio_bitrate = audio_variant.audio_bitrate;
@@ -151,17 +160,6 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
                        std::string* out) {
   DCHECK(out);
 
-  const uint64_t bitrate = playlist.Bitrate() + variant.audio_bitrate;
-
-  uint32_t width;
-  uint32_t height;
-  CHECK(playlist.GetDisplayResolution(&width, &height));
-
-  std::string codecs = playlist.codec();
-  if (!variant.audio_codec.empty()) {
-    base::StringAppendF(&codecs, ",%s", variant.audio_codec.c_str());
-  }
-
   std::string tag_name;
   switch (playlist.stream_type()) {
     case MediaPlaylist::MediaPlaylistStreamType::kVideo:
@@ -177,8 +175,20 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
   }
   Tag tag(tag_name, out);
 
+  const uint64_t bitrate = playlist.Bitrate() + variant.audio_bitrate;
   tag.AddNumber("BANDWIDTH", bitrate);
-  tag.AddQuotedString("CODECS", codecs);
+
+  std::vector<std::string> all_codecs;
+  all_codecs.push_back(playlist.codec());
+  all_codecs.insert(all_codecs.end(), variant.audio_codecs.begin(),
+                    variant.audio_codecs.end());
+  all_codecs.insert(all_codecs.end(), variant.text_codecs.begin(),
+                    variant.text_codecs.end());
+  tag.AddQuotedString("CODECS", base::JoinString(all_codecs, ","));
+
+  uint32_t width;
+  uint32_t height;
+  CHECK(playlist.GetDisplayResolution(&width, &height));
   tag.AddNumberPair("RESOLUTION", width, 'x', height);
 
   if (variant.audio_group_id) {

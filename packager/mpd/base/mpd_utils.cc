@@ -30,20 +30,22 @@ bool IsKeyRotationDefaultKeyId(const std::string& key_id) {
 
 std::string TextCodecString(const MediaInfo& media_info) {
   CHECK(media_info.has_text_info());
-  const std::string& format = media_info.text_info().format();
-  // DASH IOP mentions that the codec for ttml in mp4 is stpp.
-  if (format == "ttml" &&
-      (media_info.container_type() == MediaInfo::CONTAINER_MP4)) {
-    return "stpp";
-  }
-  if (format == "vtt" &&
-      (media_info.container_type() == MediaInfo::CONTAINER_MP4)) {
-    return "wvtt";
+  const auto container_type = media_info.container_type();
+
+  // Codecs are not needed when mimeType is "text/*". Having a codec would be
+  // redundant.
+  if (container_type == MediaInfo::CONTAINER_TEXT) {
+    return "";
   }
 
-  // Otherwise codec doesn't need to be specified, e.g. vtt and ttml+xml are
-  // obvious from the mime type.
-  return "";
+  // DASH IOP mentions that the codec for ttml in mp4 is stpp, so override
+  // the default codec value.
+  const std::string& codec = media_info.text_info().codec();
+  if (codec == "ttml" && container_type == MediaInfo::CONTAINER_MP4) {
+    return "stpp";
+  }
+
+  return codec;
 }
 
 }  // namespace
@@ -118,7 +120,7 @@ std::string GetBaseCodec(const MediaInfo& media_info) {
   } else if (media_info.has_audio_info()) {
     codec = media_info.audio_info().codec();
   } else if (media_info.has_text_info()) {
-    codec = media_info.text_info().format();
+    codec = media_info.text_info().codec();
   }
   // Convert, for example, "mp4a.40.2" to simply "mp4a".
   // "mp4a.40.2" and "mp4a.40.5" can exist in the same AdaptationSet.
@@ -186,10 +188,12 @@ bool MoreThanOneTrue(bool b1, bool b2, bool b3) {
   return (b1 && b2) || (b2 && b3) || (b3 && b1);
 }
 
-bool AtLeastOneTrue(bool b1, bool b2, bool b3) { return b1 || b2 || b3; }
+bool AtLeastOneTrue(bool b1, bool b2, bool b3) {
+  return b1 || b2 || b3;
+}
 
 bool OnlyOneTrue(bool b1, bool b2, bool b3) {
-    return !MoreThanOneTrue(b1, b2, b3) && AtLeastOneTrue(b1, b2, b3);
+  return !MoreThanOneTrue(b1, b2, b3) && AtLeastOneTrue(b1, b2, b3);
 }
 
 // Implement our own DoubleToString as base::DoubleToString uses third_party
@@ -374,6 +378,5 @@ void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent) {
   AddContentProtectionElementsHelperTemplated(media_info, parent);
 }
-
 
 }  // namespace shaka

@@ -109,7 +109,7 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetAudioContentType) {
 TEST_F(AdaptationSetTest, CheckAdaptationSetTextContentType) {
   const char kTextMediaInfo[] =
       "text_info {\n"
-      "  format: 'ttml'\n"
+      "  codec: 'ttml'\n"
       "  language: 'en'\n"
       "}\n"
       "container_type: CONTAINER_TEXT\n";
@@ -1072,7 +1072,7 @@ TEST_F(OnDemandAdaptationSetTest,
 TEST_F(OnDemandAdaptationSetTest, Text) {
   const char kTextMediaInfo[] =
       "text_info {\n"
-      "  format: 'ttml'\n"
+      "  codec: 'ttml'\n"
       "  language: 'en'\n"
       "  type: SUBTITLE\n"
       "}\n"

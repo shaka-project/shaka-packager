@@ -342,7 +342,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
     codec_ = media_info.audio_info().codec();
   } else {
     stream_type_ = MediaPlaylistStreamType::kSubtitle;
-    codec_ = media_info.text_info().format();
+    codec_ = media_info.text_info().codec();
   }
 
   time_scale_ = time_scale;

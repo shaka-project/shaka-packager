@@ -88,22 +88,32 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
 // TODO(rkuroiwa): Write TTML and WebVTT parser (demuxing) for a better check
 // and for supporting live/segmenting (muxing).  With a demuxer and a muxer,
 // CreateAllJobs() shouldn't treat text as a special case.
-std::string DetermineTextFileFormat(const std::string& file) {
+bool DetermineTextFileCodec(const std::string& file, std::string* out) {
+  CHECK(out);
+
   std::string content;
   if (!File::ReadFileToString(file.c_str(), &content)) {
     LOG(ERROR) << "Failed to open file " << file
                << " to determine file format.";
-    return "";
-  }
-  MediaContainerName container_name = DetermineContainer(
-      reinterpret_cast<const uint8_t*>(content.data()), content.size());
-  if (container_name == CONTAINER_WEBVTT) {
-    return "vtt";
-  } else if (container_name == CONTAINER_TTML) {
-    return "ttml";
+    return false;
   }
 
-  return "";
+  const uint8_t* content_data =
+      reinterpret_cast<const uint8_t*>(content.data());
+  MediaContainerName container_name =
+      DetermineContainer(content_data, content.size());
+
+  if (container_name == CONTAINER_WEBVTT) {
+    *out = "wvtt";
+    return true;
+  }
+
+  if (container_name == CONTAINER_TTML) {
+    *out = "ttml";
+    return true;
+  }
+
+  return false;
 }
 
 MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
@@ -278,12 +288,19 @@ class FakeClock : public base::Clock {
 
 bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
                                MediaInfo* text_media_info) {
-  const std::string& language = stream_descriptor.language;
-  const std::string format = DetermineTextFileFormat(stream_descriptor.input);
-  if (format.empty()) {
+  std::string codec;
+  if (!DetermineTextFileCodec(stream_descriptor.input, &codec)) {
     LOG(ERROR) << "Failed to determine the text file format for "
                << stream_descriptor.input;
     return false;
+  }
+
+  MediaInfo::TextInfo* text_info = text_media_info->mutable_text_info();
+  text_info->set_codec(codec);
+
+  const std::string& language = stream_descriptor.language;
+  if (!language.empty()) {
+    text_info->set_language(language);
   }
 
   text_media_info->set_media_file_name(stream_descriptor.output);
@@ -298,11 +315,6 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
     const int kDefaultTextBandwidth = 256;
     text_media_info->set_bandwidth(kDefaultTextBandwidth);
   }
-
-  MediaInfo::TextInfo* text_info = text_media_info->mutable_text_info();
-  text_info->set_format(format);
-  if (!language.empty())
-    text_info->set_language(language);
 
   return true;
 }

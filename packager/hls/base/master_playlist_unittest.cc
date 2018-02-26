@@ -97,6 +97,7 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
     const std::string& filename,
     const std::string& name,
     const std::string& group,
+    const std::string& codec,
     const std::string& language) {
   std::unique_ptr<MockMediaPlaylist> playlist(
       new MockMediaPlaylist(kVodPlaylist, filename, name, group));
@@ -104,6 +105,7 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
   EXPECT_CALL(*playlist, GetLanguage()).WillRepeatedly(Return(language));
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kSubtitle);
+  playlist->SetCodecForTesting(codec);
 
   return playlist;
 }
@@ -336,11 +338,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
 
   // Text, eng.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_eng =
-      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "en");
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
 
   // Text, fr.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_fr =
-      CreateTextPlaylist("fr.m3u8", "french", "textgroup", "fr");
+      CreateTextPlaylist("fr.m3u8", "french", "textgroup", "textcodec", "fr");
 
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
@@ -361,10 +363,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\",AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec,textcodec\","
       "RESOLUTION=800x600,SUBTITLES=\"textgroup\"\n"
       "http://playlists.org/sd.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=600000,CODECS=\"sdvideocodec\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=600000,CODECS=\"sdvideocodec,textcodec\","
       "RESOLUTION=800x600,SUBTITLES=\"textgroup\"\n"
       "http://playlists.org/hd.m3u8\n";
 
@@ -377,12 +379,12 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
 
   // Text, eng.m3u8.
-  std::unique_ptr<MockMediaPlaylist> text_eng =
-      CreateTextPlaylist("eng.m3u8", "english", "en-text-group", "en");
+  std::unique_ptr<MockMediaPlaylist> text_eng = CreateTextPlaylist(
+      "eng.m3u8", "english", "en-text-group", "textcodec", "en");
 
   // Text, fr.m3u8.
-  std::unique_ptr<MockMediaPlaylist> text_fr =
-      CreateTextPlaylist("fr.m3u8", "french", "fr-text-group", "fr");
+  std::unique_ptr<MockMediaPlaylist> text_fr = CreateTextPlaylist(
+      "fr.m3u8", "french", "fr-text-group", "textcodec", "fr");
 
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
@@ -404,11 +406,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       "GROUP-ID=\"fr-text-group\",LANGUAGE=\"fr\",NAME=\"french\","
       "AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec,textcodec\","
       "RESOLUTION=800x600,SUBTITLES=\"en-text-group\"\n"
       "http://playlists.org/sd.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec,textcodec\","
       "RESOLUTION=800x600,SUBTITLES=\"fr-text-group\"\n"
       "http://playlists.org/sd.m3u8\n";
 
@@ -426,7 +428,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
 
   // Text, english.m3u8.
   std::unique_ptr<MockMediaPlaylist> text =
-      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "en");
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
 
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
@@ -448,8 +450,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
       "AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audiogroup\",SUBTITLES=\"textgroup\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audiogroup\",SUBTITLES="
+      "\"textgroup\"\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -469,8 +472,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
                           "audiocodec", "en", kAudioChannels, kAudioBitRate),
 
       // SUBTITLES
-      CreateTextPlaylist("text-1.m3u8", "text 1", "text-group-1", "en"),
-      CreateTextPlaylist("text-2.m3u8", "text 2", "text-group-2", "en"),
+      CreateTextPlaylist("text-1.m3u8", "text 1", "text-group-1", "textcodec",
+                         "en"),
+      CreateTextPlaylist("text-2.m3u8", "text 2", "text-group-2", "textcodec",
+                         "en"),
 
       // VIDEO
       CreateVideoPlaylist("video-1.m3u8", "sdvideocodec", kVideoBitRate),
@@ -513,32 +518,40 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
       "GROUP-ID=\"text-group-2\",LANGUAGE=\"en\",NAME=\"text 2\","
       "DEFAULT=YES,AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
+      "group-1\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
+      "group-1\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
+      "group-2\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
+      "group-2\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
+      "group-1\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
+      "group-1\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
+      "group-2\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
+      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
+      "group-2\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
       "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,CODECS=\"sdvideocodec\","

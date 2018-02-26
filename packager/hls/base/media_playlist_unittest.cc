@@ -103,7 +103,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, SetMediaInfoText) {
   MediaInfo media_info;
   media_info.set_reference_time_scale(kTimeScale);
   MediaInfo::TextInfo* text_info = media_info.mutable_text_info();
-  text_info->set_format("vtt");
+  text_info->set_codec("wvtt");
   EXPECT_TRUE(media_playlist_.SetMediaInfo(media_info));
 }
 
@@ -181,7 +181,8 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRangeWithOffset) {
 }
 
 // Closest to the normal use case where there is an init range and then
-// subsegment ranges. There is index range between the subsegment and init range.
+// subsegment ranges. There is index range between the subsegment and init
+// range.
 TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
@@ -203,8 +204,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
   valid_video_media_info_.mutable_init_range()->set_end(500);
 
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
-  media_playlist_.AddSegment("file.mp4", 0, 10 * kTimeScale, 1000,
-                             1 * kMBytes);
+  media_playlist_.AddSegment("file.mp4", 0, 10 * kTimeScale, 1000, 1 * kMBytes);
   media_playlist_.AddSegment("file.mp4", 10 * kTimeScale, 10 * kTimeScale,
                              1001000, 2 * kMBytes);
 
@@ -381,8 +381,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFileWithEncryptionInfoEmptyIv) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
 
   media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
-                                    "http://example.com", "", "", "com.widevine",
-                                    "");
+                                    "http://example.com", "", "",
+                                    "com.widevine", "");
   media_playlist_.AddSegment("file1.ts", 0, 10 * kTimeScale, kZeroByteOffset,
                              kMBytes);
   media_playlist_.AddSegment("file2.ts", 10 * kTimeScale, 30 * kTimeScale,
@@ -489,7 +489,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, InitSegment) {
   const char kExpectedOutput[] =
       "#EXTM3U\n"
       "#EXT-X-VERSION:6\n"
-      "## Generated with https://github.com/google/shaka-packager version test\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"init_segment.mp4\"\n"

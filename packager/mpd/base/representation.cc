@@ -452,7 +452,7 @@ std::string Representation::GetAudioMimeType() const {
 
 std::string Representation::GetTextMimeType() const {
   CHECK(media_info_.has_text_info());
-  if (media_info_.text_info().format() == "ttml") {
+  if (media_info_.text_info().codec() == "ttml") {
     switch (media_info_.container_type()) {
       case MediaInfo::CONTAINER_TEXT:
         return "application/ttml+xml";
@@ -464,7 +464,7 @@ std::string Representation::GetTextMimeType() const {
         return "";
     }
   }
-  if (media_info_.text_info().format() == "vtt") {
+  if (media_info_.text_info().codec() == "wvtt") {
     if (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {
       return "text/vtt";
     } else if (media_info_.container_type() == MediaInfo::CONTAINER_MP4) {
@@ -476,7 +476,7 @@ std::string Representation::GetTextMimeType() const {
   }
 
   LOG(ERROR) << "Cannot determine MIME type for format: "
-             << media_info_.text_info().format()
+             << media_info_.text_info().codec()
              << " container: " << media_info_.container_type();
   return "";
 }

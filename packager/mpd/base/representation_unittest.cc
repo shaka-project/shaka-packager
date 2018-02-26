@@ -291,7 +291,7 @@ TEST_F(RepresentationTest,
 TEST_F(RepresentationTest, TtmlXmlMimeType) {
   const char kTtmlXmlMediaInfo[] =
       "text_info {\n"
-      "  format: 'ttml'\n"
+      "  codec: 'ttml'\n"
       "}\n"
       "container_type: CONTAINER_TEXT\n";
 
@@ -306,7 +306,7 @@ TEST_F(RepresentationTest, TtmlXmlMimeType) {
 TEST_F(RepresentationTest, TtmlMp4MimeType) {
   const char kTtmlMp4MediaInfo[] =
       "text_info {\n"
-      "  format: 'ttml'\n"
+      "  codec: 'ttml'\n"
       "}\n"
       "container_type: CONTAINER_MP4\n";
 
@@ -321,7 +321,7 @@ TEST_F(RepresentationTest, TtmlMp4MimeType) {
 TEST_F(RepresentationTest, WebVttMimeType) {
   const char kWebVttMediaInfo[] =
       "text_info {\n"
-      "  format: 'vtt'\n"
+      "  codec: 'wvtt'\n"
       "}\n"
       "container_type: CONTAINER_TEXT\n";
 

@@ -213,7 +213,7 @@ TEST_P(PeriodTest, SetDurationAndGetXml) {
 TEST_P(PeriodTest, Text) {
   const char kTextMediaInfo[] =
       "text_info {\n"
-      "  format: 'ttml'\n"
+      "  codec: 'ttml'\n"
       "  language: 'en'\n"
       "}\n"
       "container_type: CONTAINER_TEXT\n";

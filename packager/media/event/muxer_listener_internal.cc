@@ -128,31 +128,22 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
 
 void AddTextInfo(const TextStreamInfo& text_stream_info,
                  MediaInfo* media_info) {
-  MediaInfo::TextInfo* text_info = media_info->mutable_text_info();
   // For now, set everything as subtitle.
+  MediaInfo::TextInfo* text_info = media_info->mutable_text_info();
   text_info->set_type(MediaInfo::TextInfo::SUBTITLE);
-  if (text_stream_info.codec_string() == "wvtt") {
-    text_info->set_format("vtt");
-  } else {
-    LOG(WARNING) << "Unhandled codec " << text_stream_info.codec_string()
-                 << " copying it as format.";
-    text_info->set_format(text_stream_info.codec_string());
-  }
-
+  text_info->set_codec(text_stream_info.codec_string());
   text_info->set_language(text_stream_info.language());
 }
 
 void SetMediaInfoStreamInfo(const StreamInfo& stream_info,
                             MediaInfo* media_info) {
   if (stream_info.stream_type() == kStreamAudio) {
-    AddAudioInfo(static_cast<const AudioStreamInfo*>(&stream_info),
-                 media_info);
+    AddAudioInfo(static_cast<const AudioStreamInfo*>(&stream_info), media_info);
   } else if (stream_info.stream_type() == kStreamText) {
     AddTextInfo(static_cast<const TextStreamInfo&>(stream_info), media_info);
   } else {
     DCHECK_EQ(stream_info.stream_type(), kStreamVideo);
-    AddVideoInfo(static_cast<const VideoStreamInfo*>(&stream_info),
-                 media_info);
+    AddVideoInfo(static_cast<const VideoStreamInfo*>(&stream_info), media_info);
   }
   if (stream_info.duration() > 0) {
     // |stream_info.duration()| contains the media duration from the original
@@ -203,7 +194,6 @@ bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
     LOG(ERROR) << "Duration is not positive: " << duration_seconds;
     return false;
   }
-
 
   if (media_ranges.init_range) {
     SetRange(media_ranges.init_range->start, media_ranges.init_range->end,
