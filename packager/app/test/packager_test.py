@@ -353,6 +353,9 @@ class PackagerAppTest(unittest.TestCase):
     out_dir = self.tmp_dir
     gold_dir = os.path.join(self.golden_file_dir, test_dir)
 
+    if not os.path.exists(gold_dir):
+      os.makedirs(gold_dir)
+
     # Get a list of the files and dirs that are different between the two top
     # level directories.
     diff = filecmp.dircmp(out_dir, gold_dir)
@@ -360,17 +363,17 @@ class PackagerAppTest(unittest.TestCase):
     # Files in the output that are not in the gold dir yet, need to be copied
     # over.
     for filename in diff.left_only:
-      out_path = os.path.join(out_dir, filename)
-      shutil.copyfile(out_path, gold_dir)
+      shutil.copyfile(
+          os.path.join(out_dir, filename),
+          os.path.join(gold_dir, filename))
     # Files in the gold dir but not in the output need to be removed.
     for filename in diff.right_only:
-      gold_path = os.path.join(gold_dir, filename)
-      os.rm(gold_path)
+      os.rm(os.path.join(gold_dir, filename))
     # Copy any changed files over to the gold directory.
     for filename in diff.diff_files:
-      out_path = os.path.join(out_dir, filename)
-      gold_path = os.path.join(gold_dir, filename)
-      shutil.copyfile(out_path, gold_path)
+      shutil.copyfile(
+          os.path.join(out_dir, filename),
+          os.path.join(gold_dir, filename))
 
   # |test_dir| is expected to be relative to |self.golden_file_dir|.
   def _DiffDir(self, test_dir):
@@ -1378,7 +1381,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(output_hls=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._DiffDir('hls-segmented-webvtt')
+    self._CheckTestResults('hls-segmented-webvtt')
 
   def _AssertStreamInfo(self, stream, info):
     stream_info = self.packager.DumpStreamInfo(stream)
