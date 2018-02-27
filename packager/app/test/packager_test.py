@@ -1140,20 +1140,20 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),
         self._GetFlags(encryption=True, output_hls=True))
-    self._CheckTestResults('with-hls-single-segment-mp4-encrypted')
+    self._CheckTestResults('hls-single-segment-mp4-encrypted')
 
   def testPackageEc3AndHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio', 'video'], hls=True, test_files=['bear-640x360-ec3.mp4']),
         self._GetFlags(encryption=True, output_hls=True))
-    self._CheckTestResults('with-ec3-and-hls-single-segment-mp4-encrypted')
+    self._CheckTestResults('ec3-and-hls-single-segment-mp4-encrypted')
 
   def testPackageHlsSingleSegmentMp4EncryptedAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),
         self._GetFlags(encryption=True, output_hls=True, ad_cues='1.5'))
-    self._CheckTestResults('with-hls-single-segment-mp4-encrypted-and-ad-cues')
+    self._CheckTestResults('hls-single-segment-mp4-encrypted-and-ad-cues')
 
   # Test HLS with multi-segment mp4 and content in subdirectories.
   def testPackageHlsMultiSegmentMp4WithCustomPath(self):
@@ -1194,13 +1194,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(generate_static_mpd=True))
-    self._CheckTestResults('with-live-static-profile')
+    self._CheckTestResults('live-static-profile')
 
   def testPackageLiveStaticProfileAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(generate_static_mpd=True, ad_cues='1.5'))
-    self._CheckTestResults('with-live-static-profile-and-ad-cues')
+    self._CheckTestResults('live-static-profile-and-ad-cues')
 
   def testPackageLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
