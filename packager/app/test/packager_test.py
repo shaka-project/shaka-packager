@@ -430,7 +430,7 @@ class PackagerAppTest(unittest.TestCase):
           os.path.join(gold_dir, filename))
     # Files in the gold dir but not in the output need to be removed.
     for filename in diff.right_only:
-      os.rm(os.path.join(gold_dir, filename))
+      os.remove(os.path.join(gold_dir, filename))
     # Copy any changed files over to the gold directory.
     for filename in diff.diff_files:
       shutil.copyfile(
