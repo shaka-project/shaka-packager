@@ -142,13 +142,13 @@ class PackagerAppTest(unittest.TestCase):
       output_file = '%s_%s' % (self.output_prefix, descriptor)
     else:
       str_params = (self.output_prefix, test_file_index, descriptor)
-      output_file = '%s_%d_%s' % str_params
+      output_file = '%s_%d-%s' % str_params
 
     if trick_play_factor:
-      output_file += '_trick_play_factor_%d' % trick_play_factor
+      output_file += '-trick_play_factor_%d' % trick_play_factor
 
     if skip_encryption:
-      output_file += '_skip_encryption'
+      output_file += '-skip_encryption'
 
     stream = StreamDescriptor(test_file)
     stream.Append('stream', descriptor)

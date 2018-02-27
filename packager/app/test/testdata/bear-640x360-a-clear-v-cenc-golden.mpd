@@ -17,7 +17,7 @@
     <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
       <Representation id="1" bandwidth="126510" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <BaseURL>output_audio_skip_encryption.mp4</BaseURL>
+        <BaseURL>output_audio-skip_encryption.mp4</BaseURL>
         <SegmentBase indexRange="757-824" timescale="44100">
           <Initialization range="0-756"/>
         </SegmentBase>

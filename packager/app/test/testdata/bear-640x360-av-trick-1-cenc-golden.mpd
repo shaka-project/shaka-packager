@@ -21,7 +21,7 @@
       </ContentProtection>
       <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="0"/>
       <Representation id="1" bandwidth="157348" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" maxPlayoutRate="30" codingDependency="false">
-        <BaseURL>output_video_trick_play_factor_1.mp4</BaseURL>
+        <BaseURL>output_video-trick_play_factor_1.mp4</BaseURL>
         <SegmentBase indexRange="1091-1158" timescale="30000">
           <Initialization range="0-1090"/>
         </SegmentBase>
