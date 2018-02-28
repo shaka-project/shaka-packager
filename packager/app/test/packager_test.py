@@ -68,9 +68,8 @@ class PackagerAppTest(unittest.TestCase):
                                       'test', 'data')
     self.golden_file_dir = os.path.join(test_env.SRC_DIR, 'packager', 'app',
                                         'test', 'testdata')
-    self.output_prefix = os.path.join(self.tmp_dir, 'output')
-    self.mpd_output = self.output_prefix + '.mpd'
-    self.hls_master_playlist_output = self.output_prefix + '.m3u8'
+    self.mpd_output = os.path.join(self.tmp_dir, 'output.mpd')
+    self.hls_master_playlist_output = os.path.join(self.tmp_dir, 'output.m3u8')
     self.output = []
 
     # Test variables.
@@ -135,41 +134,11 @@ class PackagerAppTest(unittest.TestCase):
       packager.
     """
 
-    test_file = test_file or 'bear-640x360.mp4'
-    test_file = os.path.join(self.test_data_dir, test_file)
+    input_file_name = test_file or 'bear-640x360.mp4'
+    input_file_path = os.path.join(self.test_data_dir, input_file_name)
 
-    if test_file_index is None:
-      output_file = '%s_%s' % (self.output_prefix, descriptor)
-    else:
-      str_params = (self.output_prefix, test_file_index, descriptor)
-      output_file = '%s_%d-%s' % str_params
-
-    if trick_play_factor:
-      output_file += '-trick_play_factor_%d' % trick_play_factor
-
-    if skip_encryption:
-      output_file += '-skip_encryption'
-
-    stream = StreamDescriptor(test_file)
+    stream = StreamDescriptor(input_file_path)
     stream.Append('stream', descriptor)
-
-    base_ext = GetExtension(descriptor, output_format)
-
-    requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
-
-    if requires_init_segment:
-      init_seg = '%s-init.%s' % (output_file, base_ext)
-      stream.Append('init_segment', init_seg)
-
-    if segmented:
-      segment_ext = GetSegmentedExtension(base_ext)
-      seg_template = '%s-$Number$.%s' % (output_file, segment_ext)
-      stream.Append('segment_template', seg_template)
-    else:
-      output_file = '%s.%s' % (output_file, base_ext)
-      stream.Append('output', output_file)
-
-    self.output.append(output_file)
 
     if output_format:
       stream.Append('format', output_format)
@@ -177,17 +146,44 @@ class PackagerAppTest(unittest.TestCase):
     if language:
       stream.Append('lang', language)
 
+    if test_file_index is None:
+      output_file_name = 'output_%s' % descriptor
+    else:
+      output_file_name = 'output_%d_%s' % (test_file_index, descriptor)
+
     if hls:
       stream.Append('playlist_name', descriptor + '.m3u8')
 
     if trick_play_factor:
       stream.Append('trick_play_factor', trick_play_factor)
+      output_file_name += '-trick_play_factor_%d' % trick_play_factor
 
     if drm_label:
       stream.Append('drm_label', drm_label)
 
     if skip_encryption:
       stream.Append('skip_encryption', 1)
+      output_file_name += '-skip_encryption'
+
+    base_ext = GetExtension(descriptor, output_format)
+
+    requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
+
+    output_file_path = os.path.join(self.tmp_dir, output_file_name)
+
+    if requires_init_segment:
+      init_seg = '%s-init.%s' % (output_file_path, base_ext)
+      stream.Append('init_segment', init_seg)
+
+    if segmented:
+      segment_ext = GetSegmentedExtension(base_ext)
+      seg_template = '%s-$Number$.%s' % (output_file_path, segment_ext)
+      stream.Append('segment_template', seg_template)
+    else:
+      output_file_path = '%s.%s' % (output_file_path, base_ext)
+      stream.Append('output', output_file_path)
+
+    self.output.append(output_file_path)
 
     return str(stream)
 
@@ -205,10 +201,10 @@ class PackagerAppTest(unittest.TestCase):
       for stream in streams:
         out.append(self._GetStream(stream, test_file=test_files[0], **kwargs))
     else:
-      for index, filename in enumerate(test_files):
+      for index, file_name in enumerate(test_files):
         for stream in streams:
           out.append(self._GetStream(
-              stream, test_file_index=index, test_file=filename, **kwargs))
+              stream, test_file_index=index, test_file=file_name, **kwargs))
 
     return out
 
@@ -355,7 +351,7 @@ class PackagerAppTest(unittest.TestCase):
     if platform.system() == 'Windows':
       test_output = test_output.replace('\\', '\\\\')
     media_info_output = test_output + '.media_info'
-    # Replaces filename, which is changing for every test run.
+    # Replaces file name, which is changing for every test run.
     with open(media_info_output, 'rb') as f:
       content = f.read()
     with open(media_info_output, 'wb') as f:
@@ -424,18 +420,18 @@ class PackagerAppTest(unittest.TestCase):
 
     # Files in the output that are not in the gold dir yet, need to be copied
     # over.
-    for filename in diff.left_only:
+    for file_name in diff.left_only:
       shutil.copyfile(
-          os.path.join(out_dir, filename),
-          os.path.join(gold_dir, filename))
+          os.path.join(out_dir, file_name),
+          os.path.join(gold_dir, file_name))
     # Files in the gold dir but not in the output need to be removed.
-    for filename in diff.right_only:
-      os.remove(os.path.join(gold_dir, filename))
+    for file_name in diff.right_only:
+      os.remove(os.path.join(gold_dir, file_name))
     # Copy any changed files over to the gold directory.
-    for filename in diff.diff_files:
+    for file_name in diff.diff_files:
       shutil.copyfile(
-          os.path.join(out_dir, filename),
-          os.path.join(gold_dir, filename))
+          os.path.join(out_dir, file_name),
+          os.path.join(gold_dir, file_name))
 
   # |test_dir| is expected to be relative to |self.golden_file_dir|.
   def _DiffDir(self, test_dir):
