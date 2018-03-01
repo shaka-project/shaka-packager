@@ -2230,17 +2230,21 @@ Movie::~Movie() {}
 FourCC Movie::BoxType() const { return FOURCC_moov; }
 
 bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->PrepareChildren() &&
-         buffer->ReadWriteChild(&header) &&
-         buffer->TryReadWriteChild(&metadata));
+  RCHECK(ReadWriteHeaderInternal(buffer) && buffer->PrepareChildren() &&
+         buffer->ReadWriteChild(&header));
   if (buffer->Reading()) {
     BoxReader* reader = buffer->reader();
     DCHECK(reader);
-    RCHECK(reader->ReadChildren(&tracks) &&
-           reader->TryReadChild(&extends) &&
+    RCHECK(reader->ReadChildren(&tracks) && reader->TryReadChild(&extends) &&
            reader->TryReadChildren(&pssh));
   } else {
+    // The 'meta' box is not well formed in the video captured by Android's
+    // default camera app: spec indicates that it is a FullBox but it is written
+    // as a Box. This results in the box failed to be parsed. See
+    // https://github.com/google/shaka-packager/issues/319 for details.
+    // We do not care the content of metadata box in the source content, so just
+    // skip reading the box.
+    RCHECK(buffer->TryReadWriteChild(&metadata));
     for (uint32_t i = 0; i < tracks.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&tracks[i]));
     RCHECK(buffer->TryReadWriteChild(&extends));
