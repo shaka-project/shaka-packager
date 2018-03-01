@@ -88,6 +88,7 @@ TEST(ContainerNamesTest, FromFormatName) {
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("m4a"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("m4v"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("M4v"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("m4s"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("mov"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("mp4"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("Mp4"));
@@ -105,6 +106,7 @@ TEST(ContainerNamesTest, FromFileName) {
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("test.m4a"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("file.m4v"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("a file .m4V"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("segment.m4s"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("2_more-files.mp4"));
   EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("foo.bar.MP4"));
   EXPECT_EQ(CONTAINER_MPEG2TS, DetermineContainerFromFileName("a.ts"));
