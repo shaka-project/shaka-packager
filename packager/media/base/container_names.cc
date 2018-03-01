@@ -1730,49 +1730,33 @@ MediaContainerName DetermineContainerFromFormatName(
     return CONTAINER_WEBM;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "m4a") ||
              base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "m4s") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mp4") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mov")) {
     return CONTAINER_MOV;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "ts") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mpeg2ts")) {
     return CONTAINER_MPEG2TS;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "wvm")) {
+    return CONTAINER_WVM;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "vtt") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "webvtt")) {
+    return CONTAINER_WEBVTT;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ttml") ||
+             // Treat xml as ttml.
+             base::EqualsCaseInsensitiveASCII(format_name, "xml")) {
+    return CONTAINER_TTML;
   }
   return CONTAINER_UNKNOWN;
 }
 
 MediaContainerName DetermineContainerFromFileName(
     const std::string& file_name) {
-  if (base::EndsWith(file_name, ".webm",
-                     base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_WEBM;
-  } else if (base::EndsWith(file_name, ".mp4",
-                            base::CompareCase::INSENSITIVE_ASCII) ||
-             base::EndsWith(file_name, ".m4a",
-                            base::CompareCase::INSENSITIVE_ASCII) ||
-             base::EndsWith(file_name, ".m4v",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_MOV;
-  } else if (base::EndsWith(file_name, ".ts",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_MPEG2TS;
-  } else if (base::EndsWith(file_name, ".wvm",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_WVM;
-  } else if (base::EndsWith(file_name, ".vtt",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_WEBVTT;
-  } else if (base::EndsWith(file_name, ".webvtt",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_WEBVTT;
-  } else if (base::EndsWith(file_name, ".ttml",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return CONTAINER_TTML;
-  } else if (base::EndsWith(file_name, ".xml",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    // In our supported containers, only ttml is in xml format.
-    return CONTAINER_TTML;
-  }
-  return CONTAINER_UNKNOWN;
+  const size_t pos = file_name.rfind('.');
+  if (pos == std::string::npos)
+    return CONTAINER_UNKNOWN;
+  const std::string& file_extension = file_name.substr(pos + 1);
+  return DetermineContainerFromFormatName(file_extension);
 }
 
 }  // namespace media
