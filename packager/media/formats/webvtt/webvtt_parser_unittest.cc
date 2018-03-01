@@ -147,6 +147,25 @@ TEST_F(WebVttParserTest, DISABLED_ParseStyleBlocks) {
   ASSERT_OK(parser_->Run());
 }
 
+TEST_F(WebVttParserTest, IngoresZeroDurationCues) {
+  const char* text =
+      "WEBVTT\n"
+      "\n"
+      "00:01:00.000 --> 00:01:00.000\n"
+      "This subtitle would never show\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+  }
+
+  ASSERT_OK(parser_->Run());
+}
+
 TEST_F(WebVttParserTest, ParseOneCue) {
   const char* text =
       "WEBVTT\n"
