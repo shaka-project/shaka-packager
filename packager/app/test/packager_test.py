@@ -8,6 +8,7 @@
 """Tests utilizing the sample packager binary."""
 
 import filecmp
+import glob
 import os
 import platform
 import re
@@ -40,6 +41,38 @@ class StreamDescriptor(object):
 
   def __str__(self):
     return self.buffer
+
+
+def _UpdateMpdTimes(mpd_filepath):
+  # Take a single pattern, and replace the first match with the
+  # given new string.
+  def _Replace(str_in, pattern, new):
+    m = re.search(pattern, str_in)
+
+    if m:
+      old = m.group(0)
+      out = str_in.replace(old, new)
+      print 'Replacing "%s" with "%s"' % (old, new)
+    else:
+      out = str_in
+
+    return out
+
+  with open(mpd_filepath, 'rb') as f:
+    content = f.read()
+
+  content = _Replace(
+      content,
+      'availabilityStartTime="[^"]+"',
+      'availabilityStartTime="some_time"')
+
+  content = _Replace(
+      content,
+      'publishTime="[^"]+"',
+      'publishTime="some_time"')
+
+  with open(mpd_filepath, 'wb') as f:
+    f.write(content)
 
 
 def GetExtension(stream_descriptor, output_format):
@@ -358,6 +391,7 @@ class PackagerAppTest(unittest.TestCase):
       f.write(content.replace(test_output, 'place_holder'))
     self._DiffGold(media_info_output, golden_file_name + '.media_info')
 
+  # TODO(vaage): Replace all used of this with |_CheckTestResults|.
   def _DiffLiveGold(self,
                     test_output_prefix,
                     golden_file_name_prefix,
@@ -374,33 +408,15 @@ class PackagerAppTest(unittest.TestCase):
         self._DiffGold('%s-%d.m4s' % (test_output_prefix, i),
                        '%s-%d.m4s' % (golden_file_name_prefix, i))
 
-  # Live mpd contains current availabilityStartTime and publishTime, which
-  # needs to be replaced for comparison.
-  def _DiffLiveMpdGold(self, test_output, golden_file_name):
-    with open(test_output, 'rb') as f:
-      content = f.read()
-
-    # Extract availabilityStartTime.
-    m = re.search('availabilityStartTime="[^"]+"', content)
-    self.assertIsNotNone(m)
-    availability_start_time = m.group(0)
-    print availability_start_time
-
-    # Extract publishTime.
-    m = re.search('publishTime="[^"]+"', content)
-    self.assertIsNotNone(m)
-    publish_time = m.group(0)
-    print publish_time
-    with open(test_output, 'wb') as f:
-      f.write(content.replace(
-          availability_start_time,
-          'availabilityStartTime="some_availability_start_time"').replace(
-              publish_time, 'publishTime="some_publish_time"'))
-
-    self._DiffGold(test_output, golden_file_name)
-
   # |test_dir| is expected to be relative to |self.golden_file_dir|.
   def _CheckTestResults(self, test_dir):
+    # Live mpd contains current availabilityStartTime and publishTime, which
+    # needs to be replaced before comparison. If this is not a live test, then
+    # this will be a no-op.
+    mpds = glob.glob(os.path.join(self.tmp_dir, '*.mpd'))
+    for manifest in mpds:
+      _UpdateMpdTimes(manifest)
+
     if test_env.options.test_update_golden_files:
       self._UpdateGold(test_dir)
     else:
@@ -913,20 +929,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(encryption=True, output_hls=True))
-    self._DiffLiveGold(self.output[0],
-                       'bear-640x360-a-enc-golden',
-                       output_format='ts')
-    self._DiffLiveGold(self.output[1],
-                       'bear-640x360-v-enc-golden',
-                       output_format='ts')
-    self._DiffGold(self.hls_master_playlist_output,
-                   'bear-640x360-av-master-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'audio.m3u8'),
-        'bear-640x360-a-enc-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'video.m3u8'),
-        'bear-640x360-v-enc-golden.m3u8')
+    self._CheckTestResults('avc-ts-with-encryption')
 
   def testPackageAvcTsWithEncryptionAndFairplay(self):
     # Currently we only support live packaging for ts.
@@ -938,20 +941,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             hls=True,
             test_files=['bear-640x360.ts']),
         self._GetFlags(encryption=True, output_hls=True, fairplay=True))
-    self._DiffLiveGold(self.output[0],
-                       'bear-640x360-a-enc-golden',
-                       output_format='ts')
-    self._DiffLiveGold(self.output[1],
-                       'bear-640x360-v-enc-golden',
-                       output_format='ts')
-    self._DiffGold(self.hls_master_playlist_output,
-                   'bear-640x360-av-master-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'audio.m3u8'),
-        'bear-640x360-a-fairplay-enc-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'video.m3u8'),
-        'bear-640x360-v-fairplay-enc-golden.m3u8')
+    self._CheckTestResults('avc-ts-with-encryption-and-fairplay')
 
   def testPackageAvcAc3TsWithEncryption(self):
     # Currently we only support live packaging for ts.
@@ -963,20 +953,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             hls=True,
             test_files=['bear-640x360-ac3.ts']),
         self._GetFlags(encryption=True, output_hls=True))
-    self._DiffLiveGold(self.output[0],
-                       'bear-640x360-ac3-enc-golden',
-                       output_format='ts')
-    self._DiffLiveGold(self.output[1],
-                       'bear-640x360-v-enc-golden',
-                       output_format='ts')
-    self._DiffGold(self.hls_master_playlist_output,
-                   'bear-640x360-av-ac3-master-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'audio.m3u8'),
-        'bear-640x360-ac3-enc-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'video.m3u8'),
-        'bear-640x360-v-enc-golden.m3u8')
+    self._CheckTestResults('avc-ac3-ts-with-encryption')
 
   def testPackageAvcTsWithEncryptionExerciseEmulationPrevention(self):
     self.encryption_key = 'ad7e9786def9159db6724be06dfcde7a'
@@ -991,14 +968,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(
             encryption=True,
             output_hls=True))
-    self._DiffLiveGold(self.output[0],
-                       'sintel-1024x436-v-enc-golden',
-                       output_format='ts')
-    self._DiffGold(self.hls_master_playlist_output,
-                   'sintel-1024x436-v-enc-master-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'video.m3u8'),
-        'sintel-1024x436-v-enc-golden.m3u8')
+    self._CheckTestResults(
+        'avc-ts-with-encryption-exercise-emulation-prevention')
 
   def testPackageWebmWithEncryption(self):
     self.assertPackageSuccess(
@@ -1158,9 +1129,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testPackageLiveProfile(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True), self._GetFlags())
-    self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
-    self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
-    self._DiffLiveMpdGold(self.mpd_output, 'bear-640x360-av-live-golden.mpd')
+    self._CheckTestResults('live-profile')
 
   def testPackageLiveStaticProfile(self):
     self.assertPackageSuccess(
@@ -1178,19 +1147,14 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True))
-    self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
-    self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
-    self._DiffLiveMpdGold(self.mpd_output,
-                          'bear-640x360-av-live-cenc-golden.mpd')
+    self._CheckTestResults('live-profile-and-encryption')
 
   def testPackageLiveProfileAndEncryptionAndNonDashIfIop(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, dash_if_iop=False))
-    self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
-    self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
-    self._DiffLiveMpdGold(self.mpd_output,
-                          'bear-640x360-av-live-cenc-non-iop-golden.mpd')
+    self._CheckTestResults(
+        'live-profile-and-encryption-and-non-dash-if-iop')
 
   def testPackageLiveProfileAndEncryptionAndMultFiles(self):
     self.assertPackageSuccess(
@@ -1210,25 +1174,15 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, key_rotation=True))
-    self._DiffLiveGold(self.output[0],
-                       'bear-640x360-a-live-cenc-rotation-golden')
-    self._DiffLiveGold(self.output[1],
-                       'bear-640x360-v-live-cenc-rotation-golden')
-    self._DiffLiveMpdGold(self.mpd_output,
-                          'bear-640x360-av-live-cenc-rotation-golden.mpd')
+    self._CheckTestResults('live-profile-and-key-rotation')
 
   def testPackageLiveProfileAndKeyRotationAndNoPsshInStream(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(
             encryption=True, key_rotation=True, include_pssh_in_stream=False))
-    self._DiffLiveGold(self.output[0],
-                       'bear-640x360-a-live-cenc-rotation-no-pssh-golden')
-    self._DiffLiveGold(self.output[1],
-                       'bear-640x360-v-live-cenc-rotation-no-pssh-golden')
-    self._DiffLiveMpdGold(
-        self.mpd_output,
-        'bear-640x360-av-live-cenc-rotation-no-pssh-golden.mpd')
+    self._CheckTestResults(
+        'live-profile-and-key-rotation-and-no-pssh-in-stream')
 
   def testPackageLiveProfileAndKeyRotationAndNonDashIfIop(self):
     self.assertPackageSuccess(
@@ -1236,13 +1190,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True,
                        key_rotation=True,
                        dash_if_iop=False))
-    self._DiffLiveGold(self.output[0],
-                       'bear-640x360-a-live-cenc-rotation-golden')
-    self._DiffLiveGold(self.output[1],
-                       'bear-640x360-v-live-cenc-rotation-golden')
-    self._DiffLiveMpdGold(
-        self.mpd_output,
-        'bear-640x360-av-live-cenc-rotation-non-iop-golden.mpd')
+    self._CheckTestResults(
+        'live-profile-and-key-rotation-and-non-dash-if-iop')
 
   @unittest.skipUnless(test_env.has_aes_flags, 'Requires AES credentials.')
   def testWidevineEncryptionWithAes(self):
