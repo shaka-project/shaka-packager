@@ -35,9 +35,9 @@ class WebVttParser : public OriginHandler {
   bool Parse();
   bool ParseCueWithNoId(const std::vector<std::string>& block);
   bool ParseCueWithId(const std::vector<std::string>& block);
-  bool ParseCue(const std::string& id,
-                const std::string* block,
-                size_t block_size);
+  Status ParseCue(const std::string& id,
+                  const std::string* block,
+                  size_t block_size);
 
   Status DispatchTextStreamInfo();
 
