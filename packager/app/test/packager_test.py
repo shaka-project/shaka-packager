@@ -411,27 +411,10 @@ class PackagerAppTest(unittest.TestCase):
     out_dir = self.tmp_dir
     gold_dir = os.path.join(self.golden_file_dir, test_dir)
 
-    if not os.path.exists(gold_dir):
-      os.makedirs(gold_dir)
+    if os.path.exists(gold_dir):
+      shutil.rmtree(gold_dir)
 
-    # Get a list of the files and dirs that are different between the two top
-    # level directories.
-    diff = filecmp.dircmp(out_dir, gold_dir)
-
-    # Files in the output that are not in the gold dir yet, need to be copied
-    # over.
-    for file_name in diff.left_only:
-      shutil.copyfile(
-          os.path.join(out_dir, file_name),
-          os.path.join(gold_dir, file_name))
-    # Files in the gold dir but not in the output need to be removed.
-    for file_name in diff.right_only:
-      os.remove(os.path.join(gold_dir, file_name))
-    # Copy any changed files over to the gold directory.
-    for file_name in diff.diff_files:
-      shutil.copyfile(
-          os.path.join(out_dir, file_name),
-          os.path.join(gold_dir, file_name))
+    shutil.copytree(out_dir, gold_dir)
 
   # |test_dir| is expected to be relative to |self.golden_file_dir|.
   def _DiffDir(self, test_dir):
@@ -1158,6 +1141,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     audio_output_prefix = os.path.join(self.tmp_dir, 'audio', 'audio')
     # {tmp}/video/video-init.mp4, {tmp}/video/video-1.m4s etc.
     video_output_prefix = os.path.join(self.tmp_dir, 'video', 'video')
+
     self.assertPackageSuccess(
         [
             'input=%s,stream=audio,init_segment=%s-init.mp4,'
@@ -1168,16 +1152,8 @@ class PackagerFunctionalTest(PackagerAppTest):
             (test_file, video_output_prefix, video_output_prefix),
         ],
         self._GetFlags(output_hls=True))
-    self._DiffLiveGold(audio_output_prefix, 'bear-640x360-a-live-golden')
-    self._DiffLiveGold(video_output_prefix, 'bear-640x360-v-live-golden')
-    self._DiffGold(self.hls_master_playlist_output,
-                   'bear-640x360-av-mp4-master-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'audio', 'audio.m3u8'),
-        'bear-640x360-a-mp4-golden.m3u8')
-    self._DiffGold(
-        os.path.join(self.tmp_dir, 'video', 'video.m3u8'),
-        'bear-640x360-v-mp4-golden.m3u8')
+
+    self._CheckTestResults('hls-multi-segment-mp4-with-custom-path')
 
   def testPackageLiveProfile(self):
     self.assertPackageSuccess(
