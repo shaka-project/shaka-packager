@@ -8,7 +8,7 @@
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
       <Representation id="0" bandwidth="341018" codecs="vp08.00.10.08.01.02.02.02.00" mimeType="video/mp4" sar="1:1">
-        <BaseURL>output_video.mp4</BaseURL>
+        <BaseURL>bear-640x360-video.mp4</BaseURL>
         <SegmentBase indexRange="1031-1098" timescale="1000000">
           <Initialization range="0-1030"/>
         </SegmentBase>

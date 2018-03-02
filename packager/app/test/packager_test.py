@@ -134,8 +134,7 @@ class PackagerAppTest(unittest.TestCase):
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
-                 test_file=None,
-                 test_file_index=None):
+                 test_file=None):
     """Get a stream descriptor as a string.
 
 
@@ -158,15 +157,12 @@ class PackagerAppTest(unittest.TestCase):
       skip_encryption: If set to true, the stream will not be encrypted.
       test_file: Specify the input file to use. If the input file is not
           specify, a default file will be used.
-      test_file_index: Specify the index of the input out of a group of input
-          files.
 
 
     Returns:
       A string that makes up a single stream descriptor for input to the
       packager.
     """
-
     input_file_name = test_file or 'bear-640x360.mp4'
     input_file_path = os.path.join(self.test_data_dir, input_file_name)
 
@@ -179,10 +175,11 @@ class PackagerAppTest(unittest.TestCase):
     if language:
       stream.Append('lang', language)
 
-    if test_file_index is None:
-      output_file_name = 'output_%s' % descriptor
-    else:
-      output_file_name = 'output_%d_%s' % (test_file_index, descriptor)
+    # Use the input file name (no extension) and pair it with the
+    # descriptor to create the root of the output file_name.
+    output_file_name = '%s-%s' % (
+        os.path.splitext(input_file_name)[0],
+        descriptor)
 
     if hls:
       stream.Append('playlist_name', descriptor + '.m3u8')
@@ -213,7 +210,7 @@ class PackagerAppTest(unittest.TestCase):
       seg_template = '%s-$Number$.%s' % (output_file_path, segment_ext)
       stream.Append('segment_template', seg_template)
     else:
-      output_file_path = '%s.%s' % (output_file_path, base_ext)
+      output_file_path += '.' +  base_ext
       stream.Append('output', output_file_path)
 
     self.output.append(output_file_path)
@@ -230,14 +227,10 @@ class PackagerAppTest(unittest.TestCase):
     if test_files_count == 0:
       for stream in streams:
         out.append(self._GetStream(stream, **kwargs))
-    elif test_files_count == 1:
-      for stream in streams:
-        out.append(self._GetStream(stream, test_file=test_files[0], **kwargs))
     else:
-      for index, file_name in enumerate(test_files):
+      for file_name in test_files:
         for stream in streams:
-          out.append(self._GetStream(
-              stream, test_file_index=index, test_file=file_name, **kwargs))
+          out.append(self._GetStream(stream, test_file=file_name, **kwargs))
 
     return out
 

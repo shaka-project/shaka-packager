@@ -4,7 +4,7 @@
   <Period id="0">
     <AdaptationSet id="0" contentType="video" width="320" height="240" frameRate="1000000/33000" subsegmentAlignment="true" par="4:3">
       <Representation id="0" bandwidth="196977" codecs="vp9" mimeType="video/webm" sar="1:1">
-        <BaseURL>output_video.webm</BaseURL>
+        <BaseURL>bear-vp9-blockgroup-video.webm</BaseURL>
         <SegmentBase indexRange="302-320" timescale="1000000">
           <Initialization range="0-301"/>
         </SegmentBase>

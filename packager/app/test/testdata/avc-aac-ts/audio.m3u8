@@ -4,9 +4,9 @@
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXTINF:0.952,
-output_audio-1.ts
+bear-640x360-audio-1.ts
 #EXTINF:0.998,
-output_audio-2.ts
+bear-640x360-audio-2.ts
 #EXTINF:0.813,
-output_audio-3.ts
+bear-640x360-audio-3.ts
 #EXT-X-ENDLIST

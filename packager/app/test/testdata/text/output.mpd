@@ -4,7 +4,7 @@
   <Period id="0">
     <AdaptationSet id="0" contentType="text" subsegmentAlignment="true">
       <Representation id="0" bandwidth="256" mimeType="text/vtt">
-        <BaseURL>output_text.vtt</BaseURL>
+        <BaseURL>subtitle-english-text.vtt</BaseURL>
       </Representation>
     </AdaptationSet>
   </Period>

@@ -8,7 +8,7 @@
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
       <Representation id="0" bandwidth="885590" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
-        <BaseURL>output_video.mp4</BaseURL>
+        <BaseURL>bear-640x360-video.mp4</BaseURL>
         <SegmentBase indexRange="1091-1158" timescale="30000">
           <Initialization range="0-1090"/>
         </SegmentBase>
@@ -21,7 +21,7 @@
       </ContentProtection>
       <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="0"/>
       <Representation id="1" bandwidth="157348" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" maxPlayoutRate="30" codingDependency="false">
-        <BaseURL>output_video-trick_play_factor_1.mp4</BaseURL>
+        <BaseURL>bear-640x360-video-trick_play_factor_1.mp4</BaseURL>
         <SegmentBase indexRange="1091-1158" timescale="30000">
           <Initialization range="0-1090"/>
         </SegmentBase>
@@ -34,7 +34,7 @@
       </ContentProtection>
       <Representation id="2" bandwidth="129185" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <BaseURL>output_audio.mp4</BaseURL>
+        <BaseURL>bear-640x360-audio.mp4</BaseURL>
         <SegmentBase indexRange="967-1034" timescale="44100">
           <Initialization range="0-966"/>
         </SegmentBase>

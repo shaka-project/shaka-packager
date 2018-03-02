@@ -5,7 +5,7 @@
     <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
       <Representation id="0" bandwidth="68215" codecs="mp4a.40.5" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <BaseURL>output_audio.mp4</BaseURL>
+        <BaseURL>bear-640x360-aac_he-silent_right-audio.mp4</BaseURL>
         <SegmentBase indexRange="756-823" timescale="44100">
           <Initialization range="0-755"/>
         </SegmentBase>

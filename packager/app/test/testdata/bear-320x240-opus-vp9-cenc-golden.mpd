@@ -9,7 +9,7 @@
       </ContentProtection>
       <Representation id="0" bandwidth="79930" codecs="opus" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <BaseURL>output_audio.mp4</BaseURL>
+        <BaseURL>bear-320x240-vp9-opus-audio.mp4</BaseURL>
         <SegmentBase indexRange="975-1042" timescale="1000000">
           <Initialization range="0-974"/>
         </SegmentBase>
@@ -21,7 +21,7 @@
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
       <Representation id="1" bandwidth="210205" codecs="vp09.00.10.08.01.02.02.02.00" mimeType="video/mp4" sar="427:320">
-        <BaseURL>output_video.mp4</BaseURL>
+        <BaseURL>bear-320x240-vp9-opus-video.mp4</BaseURL>
         <SegmentBase indexRange="1063-1130" timescale="1000000">
           <Initialization range="0-1062"/>
         </SegmentBase>
