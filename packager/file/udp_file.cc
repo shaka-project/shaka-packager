@@ -204,22 +204,50 @@ bool UdpFile::Open() {
   }
 
   if (is_multicast) {
-    struct ip_mreq multicast_group;
-    multicast_group.imr_multiaddr = local_in_addr;
+    if (options->isSSM()) {
+      /* user has specified they want a specific source sender.  let's use that here */
+      struct ip_mreq_source source_multicast_group;
 
-    if (inet_pton(AF_INET, options->interface_address().c_str(),
-                  &multicast_group.imr_interface) != 1) {
-      LOG(ERROR) << "Malformed IPv4 interface address "
-                 << options->interface_address();
-      return false;
-    }
+      source_multicast_group.imr_multiaddr = local_in_addr;
+      if (inet_pton(AF_INET, options->interface_address().c_str(),
+                  &source_multicast_group.imr_interface) != 1) {
+          LOG(ERROR) << "Malformed IPv4 interface address "
+                  << options->interface_address();
+          return false;
+      }
+      if (inet_pton(AF_INET, options->source_address().c_str(),
+                  &source_multicast_group.imr_sourceaddr) != 1) {
+          LOG(ERROR) << "Malformed IPv4 ssm address " << options->source_address();
+          return false;
+      }
 
-    if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                   reinterpret_cast<const char*>(&multicast_group),
-                   sizeof(multicast_group)) < 0) {
-      LOG(ERROR) << "Failed to join multicast group.";
-      return false;
-    }
+      if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP,
+                      reinterpret_cast<const char*>(&source_multicast_group),
+                      sizeof(source_multicast_group)) < 0) {
+          LOG(ERROR) << "Failed to join multicast group.";
+          return false;
+      }
+    } else {
+      /* this is a v2 join without an ssm source. */
+      struct ip_mreq multicast_group;
+
+      multicast_group.imr_multiaddr = local_in_addr;
+
+      if (inet_pton(AF_INET, options->interface_address().c_str(),
+                    &multicast_group.imr_interface) != 1) {
+        LOG(ERROR) << "Malformed IPv4 interface address "
+                   << options->interface_address();
+        return false;
+      }
+
+      if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                    reinterpret_cast<const char*>(&multicast_group),
+                    sizeof(multicast_group)) < 0) {
+        LOG(ERROR) << "Failed to join multicast group.";
+        return false;
+      }
+
+  }
 
 #if defined(__linux__)
     // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets
