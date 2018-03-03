@@ -1,3 +1,17 @@
+## [2.0.1] - 2018-03-05
+### Added
+- Recognize m4s as a valid extension for init segment (#331). It is used to be
+  allowed as the extension for media segments only.
+- Improve DASH multi-period support: calculate presentationTimeOffset and
+  Period@duration from video segment presentation timestamps. This avoids
+  video playback jitters due to gaps.
+
+### Fixed
+- Handle invalid WebVTT with start_time == end_time gracefully (#335).
+- Ignore invalid `meta` box in mp4 files, which Android's camera app generates
+  (#319).
+- Set stream duration in init segment for mp4 with static live profile (#340).
+
 ## [2.0.0] - 2018-02-10
 ### Added
 - Enhanced HLS support.
@@ -288,6 +302,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.0.1]: https://github.com/google/shaka-packager/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/google/shaka-packager/compare/v1.6.2...v2.0.0
 [1.6.2]: https://github.com/google/shaka-packager/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/google/shaka-packager/compare/v1.6.0...v1.6.1
