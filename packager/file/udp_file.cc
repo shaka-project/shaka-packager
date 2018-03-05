@@ -204,7 +204,7 @@ bool UdpFile::Open() {
   }
 
   if (is_multicast) {
-    if (options->isSSM()) {
+    if (options->is_source_specific_multicast()) {
       // user has specified they want a specific source sender.  let's use that
       // here
       struct ip_mreq_source source_multicast_group;
@@ -232,7 +232,7 @@ bool UdpFile::Open() {
           return false;
       }
     } else {
-      // this is a v2 join without an ssm source.
+      // this is a v2 join without a specific source.
       struct ip_mreq multicast_group;
 
       multicast_group.imr_multiaddr = local_in_addr;

@@ -27,7 +27,7 @@ TEST_F(UdpOptionsTest, AddressAndPort) {
   EXPECT_FALSE(options->reuse());
   EXPECT_EQ("0.0.0.0", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
-  EXPECT_FALSE(options->isSSM());
+  EXPECT_FALSE(options->is_source_specific_multicast());
   EXPECT_EQ("0.0.0.0", options->source_address());
 }
 
@@ -57,7 +57,7 @@ TEST_F(UdpOptionsTest, UdpInterfaceAddressFlag) {
   EXPECT_FALSE(options->reuse());
   EXPECT_EQ("10.11.12.13", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
-  EXPECT_FALSE(options->isSSM());
+  EXPECT_FALSE(options->is_source_specific_multicast());
   EXPECT_EQ("0.0.0.0", options->source_address());
 }
 
@@ -68,7 +68,7 @@ TEST_F(UdpOptionsTest, Reuse) {
   EXPECT_TRUE(options->reuse());
   EXPECT_EQ("0.0.0.0", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
-  EXPECT_FALSE(options->isSSM());
+  EXPECT_FALSE(options->is_source_specific_multicast());
   EXPECT_EQ("0.0.0.0", options->source_address());
 }
 
@@ -84,7 +84,7 @@ TEST_F(UdpOptionsTest, InterfaceAddress) {
   EXPECT_FALSE(options->reuse());
   EXPECT_EQ("10.11.12.13", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
-  EXPECT_FALSE(options->isSSM());
+  EXPECT_FALSE(options->is_source_specific_multicast());
   EXPECT_EQ("0.0.0.0", options->source_address());
 }
 
@@ -96,7 +96,7 @@ TEST_F(UdpOptionsTest, SourceAddress) {
   EXPECT_FALSE(options->reuse());
   EXPECT_EQ("10.11.12.13", options->interface_address());
   EXPECT_EQ(0u, options->timeout_us());
-  EXPECT_TRUE(options->isSSM());
+  EXPECT_TRUE(options->is_source_specific_multicast());
   EXPECT_EQ("10.14.15.16", options->source_address());
 }
 
@@ -108,7 +108,7 @@ TEST_F(UdpOptionsTest, Timeout) {
   EXPECT_FALSE(options->reuse());
   EXPECT_EQ("10.11.12.13", options->interface_address());
   EXPECT_EQ(88888888u, options->timeout_us());
-  EXPECT_FALSE(options->isSSM());
+  EXPECT_FALSE(options->is_source_specific_multicast());
   EXPECT_EQ("0.0.0.0", options->source_address());
 }
 

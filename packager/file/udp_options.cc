@@ -108,7 +108,7 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
           break;
         case kMulticastSourceField:
           options->source_address_ = pair.second;
-          options->isSSM_ = true;
+          options->is_source_specific_multicast_ = true;
           break;
         default:
           LOG(ERROR) << "Unknown field in udp options (\"" << pair.first

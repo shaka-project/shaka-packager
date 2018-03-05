@@ -27,7 +27,9 @@ class UdpOptions {
   const std::string& interface_address() const { return interface_address_; }
   unsigned timeout_us() const { return timeout_us_; }
   const std::string& source_address() const { return source_address_; }
-  bool isSSM() const { return isSSM_; }
+  bool is_source_specific_multicast() const {
+    return is_source_specific_multicast_;
+  }
 
  private:
   UdpOptions() = default;
@@ -43,7 +45,7 @@ class UdpOptions {
   unsigned timeout_us_ = 0;
   // Source specific multicast source address
   std::string source_address_ = "0.0.0.0";
-  bool isSSM_ = false;
+  bool is_source_specific_multicast_ = false;
 };
 
 }  // namespace shaka
