@@ -205,20 +205,24 @@ bool UdpFile::Open() {
 
   if (is_multicast) {
     if (options->isSSM()) {
-      /* user has specified they want a specific source sender.  let's use that here */
+      // user has specified they want a specific source sender.  let's use that
+      // here
       struct ip_mreq_source source_multicast_group;
 
       source_multicast_group.imr_multiaddr = local_in_addr;
-      if (inet_pton(AF_INET, options->interface_address().c_str(),
-                  &source_multicast_group.imr_interface) != 1) {
-          LOG(ERROR) << "Malformed IPv4 interface address "
-                  << options->interface_address();
-          return false;
+      if (inet_pton(AF_INET,
+                    options->interface_address().c_str(),
+                    &source_multicast_group.imr_interface) != 1) {
+        LOG(ERROR) << "Malformed IPv4 interface address "
+                   << options->interface_address();
+        return false;
       }
-      if (inet_pton(AF_INET, options->source_address().c_str(),
-                  &source_multicast_group.imr_sourceaddr) != 1) {
-          LOG(ERROR) << "Malformed IPv4 ssm address " << options->source_address();
-          return false;
+      if (inet_pton(AF_INET,
+                    options->source_address().c_str(),
+                    &source_multicast_group.imr_sourceaddr) != 1) {
+        LOG(ERROR) << "Malformed IPv4 source specific multicast address "
+                   << options->source_address();
+        return false;
       }
 
       if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP,
@@ -228,7 +232,7 @@ bool UdpFile::Open() {
           return false;
       }
     } else {
-      /* this is a v2 join without an ssm source. */
+      // this is a v2 join without an ssm source.
       struct ip_mreq multicast_group;
 
       multicast_group.imr_multiaddr = local_in_addr;
