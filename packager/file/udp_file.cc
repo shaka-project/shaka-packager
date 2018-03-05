@@ -226,8 +226,8 @@ bool UdpFile::Open() {
       }
 
       if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP,
-                      reinterpret_cast<const char*>(&source_multicast_group),
-                      sizeof(source_multicast_group)) < 0) {
+                     reinterpret_cast<const char*>(&source_multicast_group),
+                     sizeof(source_multicast_group)) < 0) {
           LOG(ERROR) << "Failed to join multicast group.";
           return false;
       }
