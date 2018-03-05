@@ -101,7 +101,7 @@ Status Segmenter::Initialize(
 Status Segmenter::Finalize() {
   // Set movie duration. Note that the duration in mvhd, tkhd, mdhd should not
   // be touched, i.e. kept at 0. The updated moov box will be written to output
-  // file for VOD case only.
+  // file for VOD and static live case only.
   moov_->extends.header.fragment_duration = 0;
   for (size_t i = 0; i < stream_durations_.size(); ++i) {
     uint64_t duration =

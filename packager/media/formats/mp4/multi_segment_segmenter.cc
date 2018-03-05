@@ -11,6 +11,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/file/file.h"
+#include "packager/file/file_closer.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
@@ -55,28 +56,15 @@ std::vector<Range> MultiSegmentSegmenter::GetSegmentRanges() {
 }
 
 Status MultiSegmentSegmenter::DoInitialize() {
-  DCHECK(ftyp());
-  DCHECK(moov());
-  // Generate the output file with init segment.
-  File* file = File::Open(options().output_file_name.c_str(), "w");
-  if (file == NULL) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot open file for write " + options().output_file_name);
-  }
-  std::unique_ptr<BufferWriter> buffer(new BufferWriter);
-  ftyp()->Write(buffer.get());
-  moov()->Write(buffer.get());
-  Status status = buffer->WriteToFile(file);
-  if (!file->Close()) {
-    LOG(WARNING) << "Failed to close the file properly: "
-                 << options().output_file_name;
-  }
-  return status;
+  return WriteInitSegment();
 }
 
 Status MultiSegmentSegmenter::DoFinalize() {
-  SetComplete();
-  return Status::OK;
+  // Update init segment with media duration set.
+  Status status = WriteInitSegment();
+  if (status.ok())
+    SetComplete();
+  return status;
 }
 
 Status MultiSegmentSegmenter::DoFinalizeSegment() {
@@ -140,29 +128,44 @@ Status MultiSegmentSegmenter::DoFinalizeSegment() {
   return WriteSegment();
 }
 
+Status MultiSegmentSegmenter::WriteInitSegment() {
+  DCHECK(ftyp());
+  DCHECK(moov());
+  // Generate the output file with init segment.
+  std::unique_ptr<File, FileCloser> file(
+      File::Open(options().output_file_name.c_str(), "w"));
+  if (!file) {
+    return Status(error::FILE_FAILURE,
+                  "Cannot open file for write " + options().output_file_name);
+  }
+  std::unique_ptr<BufferWriter> buffer(new BufferWriter);
+  ftyp()->Write(buffer.get());
+  moov()->Write(buffer.get());
+  return buffer->WriteToFile(file.get());
+}
+
 Status MultiSegmentSegmenter::WriteSegment() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);
 
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
-  File* file;
+  std::unique_ptr<File, FileCloser> file;
   std::string file_name;
   if (options().segment_template.empty()) {
     // Append the segment to output file if segment template is not specified.
     file_name = options().output_file_name.c_str();
-    file = File::Open(file_name.c_str(), "a");
-    if (file == NULL) {
-      return Status(
-          error::FILE_FAILURE,
-          "Cannot open file for append " + options().output_file_name);
+    file.reset(File::Open(file_name.c_str(), "a"));
+    if (!file) {
+      return Status(error::FILE_FAILURE, "Cannot open file for append " +
+                                             options().output_file_name);
     }
   } else {
     file_name = GetSegmentName(options().segment_template,
                                sidx()->earliest_presentation_time,
                                num_segments_++, options().bandwidth);
-    file = File::Open(file_name.c_str(), "w");
-    if (file == NULL) {
+    file.reset(File::Open(file_name.c_str(), "w"));
+    if (!file) {
       return Status(error::FILE_FAILURE,
                     "Cannot open file for write " + file_name);
     }
@@ -177,7 +180,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
   DCHECK_NE(segment_size, 0u);
 
-  Status status = buffer->WriteToFile(file);
+  Status status = buffer->WriteToFile(file.get());
   if (status.ok()) {
     if (muxer_listener()) {
       for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
@@ -187,11 +190,8 @@ Status MultiSegmentSegmenter::WriteSegment() {
             key_frame_info.size);
       }
     }
-    status = fragment_buffer()->WriteToFile(file);
+    status = fragment_buffer()->WriteToFile(file.get());
   }
-
-  if (!file->Close())
-    LOG(WARNING) << "Failed to close the file properly: " << file_name;
 
   if (!status.ok())
     return status;
