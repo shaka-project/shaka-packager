@@ -49,6 +49,7 @@ class MultiSegmentSegmenter : public Segmenter {
   Status DoFinalizeSegment() override;
 
   // Write segment to file.
+  Status WriteInitSegment();
   Status WriteSegment();
 
   std::unique_ptr<SegmentType> styp_;
