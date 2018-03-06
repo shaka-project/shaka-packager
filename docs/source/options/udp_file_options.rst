@@ -8,10 +8,15 @@ options:
 
     Allow or disallow reusing UDP sockets.
 
-:interface=<addr>, source=<addr>:
+:interface=<addr>:
 
-    Multicast group interface address. Only the packets sent to this address is
+    Multicast group interface address. Only the packets sent to this address are
     received. Default to "0.0.0.0" if not specified.
+
+:source=<addr>:
+
+    Multicast source ip address. Only the packets sent from this source address
+    are received. Defaults to "0.0.0.0" if not specified.
 
 :timeout=<microseconds>:
 

@@ -24,6 +24,7 @@ enum FieldType {
   kUnknownField = 0,
   kReuseField,
   kInterfaceAddressField,
+  kMulticastSourceField,
   kTimeoutField,
 };
 
@@ -35,7 +36,7 @@ struct FieldNameToTypeMapping {
 const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"reuse", kReuseField},
     {"interface", kInterfaceAddressField},
-    {"source", kInterfaceAddressField},
+    {"source", kMulticastSourceField},
     {"timeout", kTimeoutField},
 };
 
@@ -104,6 +105,10 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
                        << pair.second;
             return nullptr;
           }
+          break;
+        case kMulticastSourceField:
+          options->source_address_ = pair.second;
+          options->is_source_specific_multicast_ = true;
           break;
         default:
           LOG(ERROR) << "Unknown field in udp options (\"" << pair.first
