@@ -205,8 +205,6 @@ bool UdpFile::Open() {
 
   if (is_multicast) {
     if (options->is_source_specific_multicast()) {
-      // user has specified they want a specific source sender.  let's use that
-      // here
       struct ip_mreq_source source_multicast_group;
 
       source_multicast_group.imr_multiaddr = local_in_addr;
@@ -225,7 +223,9 @@ bool UdpFile::Open() {
         return false;
       }
 
-      if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP,
+      if (setsockopt(new_socket.get(),
+                     IPPROTO_IP,
+                     IP_ADD_SOURCE_MEMBERSHIP,
                      reinterpret_cast<const char*>(&source_multicast_group),
                      sizeof(source_multicast_group)) < 0) {
           LOG(ERROR) << "Failed to join multicast group.";

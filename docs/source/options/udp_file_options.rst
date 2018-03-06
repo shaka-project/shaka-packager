@@ -15,8 +15,8 @@ options:
 
 :source=<addr>:
 
-    Multicast source ip address.  Only the packets sent from this source address
-    are received.  Defaults to "0.0.0.0" if not specified.
+    Multicast source ip address. Only the packets sent from this source address
+    are received. Defaults to "0.0.0.0" if not specified.
 
 :timeout=<microseconds>:
 
