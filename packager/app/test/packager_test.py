@@ -10,7 +10,6 @@
 import filecmp
 import glob
 import os
-import platform
 import re
 import shutil
 import subprocess
@@ -41,6 +40,23 @@ class StreamDescriptor(object):
 
   def __str__(self):
     return self.buffer
+
+
+def _UpdateMediaInfoPaths(media_info_filepath):
+  # Example:
+  #   before: media_file_name: "/tmp/tmpD1h5UC/bear-640x360-audio.mp4"
+  #   after:  media_file_name: "bear-640x360-audio.mp4"
+
+  with open(media_info_filepath, 'rb') as f:
+    content = f.read()
+
+  regex = 'media_file_name: "(.*)"'
+  for path in re.findall(regex, content):
+    short_path = os.path.basename(path)
+    content = content.replace(path, short_path)
+
+  with open(media_info_filepath, 'wb') as f:
+    f.write(content)
 
 
 def _UpdateMpdTimes(mpd_filepath):
@@ -378,19 +394,6 @@ class PackagerAppTest(unittest.TestCase):
         ])
         self.fail(failure_message)
 
-  # '*.media_info' outputs contain media file names, which is changing for
-  # every test run. These needs to be replaced for comparison.
-  def _DiffMediaInfoGold(self, test_output, golden_file_name):
-    if platform.system() == 'Windows':
-      test_output = test_output.replace('\\', '\\\\')
-    media_info_output = test_output + '.media_info'
-    # Replaces file name, which is changing for every test run.
-    with open(media_info_output, 'rb') as f:
-      content = f.read()
-    with open(media_info_output, 'wb') as f:
-      f.write(content.replace(test_output, 'place_holder'))
-    self._DiffGold(media_info_output, golden_file_name + '.media_info')
-
   # TODO(vaage): Replace all used of this with |_CheckTestResults|.
   def _DiffLiveGold(self,
                     test_output_prefix,
@@ -416,6 +419,12 @@ class PackagerAppTest(unittest.TestCase):
     mpds = glob.glob(os.path.join(self.tmp_dir, '*.mpd'))
     for manifest in mpds:
       _UpdateMpdTimes(manifest)
+
+    # '*.media_info' outputs contain media file names, which is changing for
+    # every test run. These needs to be replaced for comparison.
+    media_infos = glob.glob(os.path.join(self.tmp_dir, '*.media_info'))
+    for media_info in media_infos:
+      _UpdateMediaInfoPaths(media_info)
 
     if test_env.options.test_update_golden_files:
       self._UpdateGold(test_dir)
@@ -1081,10 +1090,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_media_info=True))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffMediaInfoGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffMediaInfoGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._CheckTestResults('encryption-and-output-media-info')
 
   def testPackageHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(

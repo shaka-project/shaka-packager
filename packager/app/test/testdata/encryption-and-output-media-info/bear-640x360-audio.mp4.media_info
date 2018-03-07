@@ -14,7 +14,7 @@ index_range {
   begin: 967
   end: 1034
 }
-media_file_name: "place_holder"
+media_file_name: "bear-640x360-audio.mp4"
 media_duration_seconds: 2.7631745
 reference_time_scale: 44100
 container_type: CONTAINER_MP4
