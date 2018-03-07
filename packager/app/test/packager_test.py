@@ -718,9 +718,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
+    self._CheckTestResults('encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
@@ -734,9 +732,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             self.encryption_iv)
     ]
     self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
+    self._CheckTestResults('encryption-using-fixed-key')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
@@ -753,6 +749,7 @@ class PackagerFunctionalTest(PackagerAppTest):
                    self.clear_lead), '--iv={0}'.format(self.encryption_iv)
     ]
     self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
+    self._CheckTestResults('encryption-multi-keys')
 
     self.encryption_key_id = audio_key_id
     self.encryption_key = audio_key
@@ -781,6 +778,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
 
     self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('encryption-multi-keys-with-stream-label')
 
     self.encryption_key_id = audio_key_id
     self.encryption_key = audio_key
@@ -797,10 +795,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True)
 
     self.assertPackageSuccess(streams, flags)
-
-    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-a-clear-v-cenc-golden.mpd')
+    self._CheckTestResults('encryption-of-only-video-stream')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageEncryptionAndTrickPlay(self):
@@ -811,10 +806,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
 
     self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-trick-1-cenc-golden.mpd')
+    self._CheckTestResults('encryption-and-trick-play')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
     self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
@@ -830,27 +822,21 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
 
     self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.output[2], 'bear-640x360-v-trick-1-cenc-golden.mp4')
-    self._DiffGold(self.output[3], 'bear-640x360-v-trick-2-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output,
-                   'bear-640x360-av-trick-1-trick-2-cenc-golden.mpd')
+    self._CheckTestResults('encryption-and-two-trick-plays')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
     self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
     self._VerifyDecryption(self.output[3], 'bear-640x360-v-trick-2-golden.mp4')
 
   def testPackageEncryptionAndNoClearLead(self):
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video')
+    ]
+
     self.clear_lead = 0
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video']), self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0],
-                   'bear-640x360-a-cenc-no-clear-lead-golden.mp4')
-    self._DiffGold(self.output[1],
-                   'bear-640x360-v-cenc-no-clear-lead-golden.mp4')
-    self._DiffGold(self.mpd_output,
-                   'bear-640x360-av-cenc-no-clear-lead-golden.mpd')
+    self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
+    self._CheckTestResults('encryption-and-no-clear-lead')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
@@ -858,9 +844,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, include_pssh_in_stream=False))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-no-pssh-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-no-pssh-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-no-pssh-golden.mpd')
+    self._CheckTestResults('encryption-and-no-pssh-in-stream')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
@@ -869,9 +853,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True,
                        protection_scheme='cbc1'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cbc1-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cbc1-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cbc1-golden.mpd')
+    self._CheckTestResults('encryption-cbc-1')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
@@ -880,9 +862,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True,
                        protection_scheme='cens'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cens-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cens-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cens-golden.mpd')
+    self._CheckTestResults('encryption-cens')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
@@ -901,30 +881,33 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, ad_cues='1.5'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-ad_cues-golden.mpd')
+    self._CheckTestResults('encryption-and-ad-cues')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWebmSubsampleEncryption(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['video'],
-                         output_format='webm',
-                         test_files=['bear-320x180-vp9-altref.webm']),
-        self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-320x180-vp9-altref-enc-golden.webm')
+    streams = [
+        self._GetStream('video',
+                        output_format='webm',
+                        test_file='bear-320x180-vp9-altref.webm')
+    ]
+    self.assertPackageSuccess(streams, self._GetFlags(encryption=True))
+    self._CheckTestResults('webm-subsample-encryption')
     self._VerifyDecryption(self.output[0],
                            'bear-320x180-vp9-altref-dec-golden.webm')
 
   def testPackageWebmVp9FullSampleEncryption(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['video'],
-                         output_format='webm',
-                         test_files=['bear-320x180-vp9-altref.webm']),
-        self._GetFlags(encryption=True, vp9_subsample_encryption=False))
-    self._DiffGold(self.output[0],
-                   'bear-320x180-vp9-fullsample-enc-golden.webm')
+    streams = [
+        self._GetStream('video',
+                        output_format='webm',
+                        test_file='bear-320x180-vp9-altref.webm')
+    ]
+    flags = self._GetFlags(
+        encryption=True,
+        vp9_subsample_encryption=False)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('webm-vp9-full-sample-encryption')
     self._VerifyDecryption(self.output[0],
                            'bear-320x180-vp9-altref-dec-golden.webm')
 
@@ -981,43 +964,52 @@ class PackagerFunctionalTest(PackagerAppTest):
         'avc-ts-with-encryption-exercise-emulation-prevention')
 
   def testPackageWebmWithEncryption(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['video'],
-                         output_format='webm',
-                         test_files=['bear-640x360.webm']),
-        self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-vp8-cenc-golden.webm')
-    self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-webm-golden.mpd')
+    streams = [
+        self._GetStream('video',
+                        output_format='webm',
+                        test_file='bear-640x360.webm')
+    ]
+    flags = self._GetFlags(encryption=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('webm-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.webm')
 
   def testPackageHevcWithEncryption(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['video'],
-                         test_files=['bear-640x360-hevc.mp4']),
-        self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-hevc-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-hevc-cenc-golden.mpd')
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4')
+    ]
+    flags = self._GetFlags(encryption=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('hevc-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-hevc-golden.mp4')
 
   def testPackageVp8Mp4WithEncryption(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['video'],
-                         output_format='mp4',
-                         test_files=['bear-640x360.webm']),
-        self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-vp8-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-golden.mpd')
+    streams = [
+        self._GetStream('video',
+                        output_format='mp4',
+                        test_file='bear-640x360.webm')
+    ]
+    flags = self._GetFlags(encryption=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('vp8-mp4-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.mp4')
 
   def testPackageOpusVp9Mp4WithEncryption(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'],
-                         output_format='mp4',
-                         test_files=['bear-320x240-vp9-opus.webm']),
-        self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-320x240-opus-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-320x240-vp9-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-320x240-opus-vp9-cenc-golden.mpd')
+    streams = [
+        self._GetStream('audio',
+                        output_format='mp4',
+                        test_file='bear-320x240-vp9-opus.webm'),
+        self._GetStream('video',
+                        output_format='mp4',
+                        test_file='bear-320x240-vp9-opus.webm'),
+    ]
+    flags = self._GetFlags(encryption=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('opus-vp9-mp4-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-320x240-opus-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-320x240-vp9-golden.mp4')
 
