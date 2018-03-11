@@ -29,6 +29,7 @@ struct Mp4OutputParams {
   /// which is needed to workaround a Chromium bug that decoding timestamp is
   /// used in buffered range, https://crbug.com/398130.
   bool use_decoding_timestamp_in_timeline = false;
+  int sequence_number_initial = 1;
 };
 
 }  // namespace shaka

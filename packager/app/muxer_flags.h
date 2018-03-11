@@ -20,5 +20,6 @@ DECLARE_int32(num_subsegments_per_sidx);
 DECLARE_string(temp_dir);
 DECLARE_bool(mp4_include_pssh_in_stream);
 DECLARE_bool(mp4_use_decoding_timestamp_in_timeline);
+DECLARE_int32(mp4_sequence_number_initial);
 
 #endif  // APP_MUXER_FLAGS_H_

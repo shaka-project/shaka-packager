@@ -50,3 +50,7 @@ DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
             "be used when generating media timeline, e.g. timestamps in sidx "
             "and mpd. This is to workaround a Chromium bug that decoding "
             "timestamp is used in buffered range, https://crbug.com/398130.");
+DEFINE_int32(mp4_sequence_number_initial,
+             1,
+             "This number allows for the customization of the "
+             "initial sequence_number in the mp4 moof->mfhd.");

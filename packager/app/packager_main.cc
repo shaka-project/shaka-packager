@@ -392,6 +392,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mp4_params.use_decoding_timestamp_in_timeline =
       FLAGS_mp4_use_decoding_timestamp_in_timeline;
   mp4_params.include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
+  mp4_params.sequence_number_initial = FLAGS_mp4_sequence_number_initial;
 
   packaging_params.output_media_info = FLAGS_output_media_info;
 
