@@ -21,7 +21,7 @@ variable `CPUPROFILE` set to a filename. For example:
 
 The cpu profile will be dumped periodically to the filename specified in the
 CPUPROFILE environment variable. You can then analyze the dumps using the pprof
-script (packager/third_party/tcmalloc/chromium/src/pprof). For example,
+script (`packager/third_party/tcmalloc/chromium/src/pprof`). For example,
 
     pprof --gv out/Release/packager /tmp/cpuprofile
 
