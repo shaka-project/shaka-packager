@@ -8,6 +8,13 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_reader.h"
 
+#define LOG_ERROR_ONCE(msg)             \
+  do {                                  \
+    static bool logged_once = false;    \
+    LOG_IF(ERROR, !logged_once) << msg; \
+    logged_once = true;                 \
+  } while (0)
+
 namespace shaka {
 namespace media {
 
@@ -727,7 +734,7 @@ H264Parser::Result H264Parser::ParsePps(const Nalu& nalu, int* pps_id) {
 
   READ_UE_OR_RETURN(&pps->num_slice_groups_minus1);
   if (pps->num_slice_groups_minus1 > 1) {
-    DVLOG(1) << "Slice groups not supported";
+    LOG_ERROR_ONCE("Slice groups not supported");
     return kUnsupportedStream;
   }
 
@@ -962,7 +969,7 @@ H264Parser::Result H264Parser::ParseDecRefPicMarking(H26xBitReader* br,
       }
 
       if (i == arraysize(shdr->ref_pic_marking)) {
-        DVLOG(1) << "Ran out of dec ref pic marking fields";
+        LOG_ERROR_ONCE("Ran out of dec ref pic marking fields");
         return kUnsupportedStream;
       }
     }
@@ -1001,7 +1008,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   TRUE_OR_RETURN(sps);
 
   if (sps->separate_colour_plane_flag) {
-    DVLOG(1) << "Interlaced streams not supported";
+    LOG_ERROR_ONCE("Interlaced streams not supported");
     return kUnsupportedStream;
   }
 
@@ -1009,7 +1016,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   if (!sps->frame_mbs_only_flag) {
     READ_BOOL_OR_RETURN(&shdr->field_pic_flag);
     if (shdr->field_pic_flag) {
-      DVLOG(1) << "Interlaced streams not supported";
+      LOG_ERROR_ONCE("Interlaced streams not supported");
       return kUnsupportedStream;
     }
   }
@@ -1112,7 +1119,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   }
 
   if (pps->num_slice_groups_minus1 > 0) {
-    DVLOG(1) << "Slice groups not supported";
+    LOG_ERROR_ONCE("Slice groups not supported");
     return kUnsupportedStream;
   }
 
