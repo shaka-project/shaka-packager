@@ -15,6 +15,10 @@
       'sources': [
         'chunking_handler.cc',
         'chunking_handler.h',
+        'cue_alignment_handler.cc',
+        'cue_alignment_handler.h',
+        'sync_point_queue.cc',
+        'sync_point_queue.h',
       ],
       'dependencies': [
         '../base/media_base.gyp:media_base',
@@ -25,6 +29,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'chunking_handler_unittest.cc',
+        'cue_alignment_handler_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',

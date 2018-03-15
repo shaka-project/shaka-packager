@@ -116,8 +116,8 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
                    << arg->media_sample->duration() << ","
                    << BoolToString(arg->media_sample->is_encrypted()) << ")";
   return arg->stream_index == stream_index &&
-         arg->media_sample->dts() == timestamp &&
-         arg->media_sample->duration() == duration &&
+         arg->media_sample->dts() == static_cast<int64_t>(timestamp) &&
+         arg->media_sample->duration() == static_cast<int64_t>(duration) &&
          arg->media_sample->is_encrypted() == encrypted;
 }
 
