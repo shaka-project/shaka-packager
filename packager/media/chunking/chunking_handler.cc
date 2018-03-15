@@ -12,12 +12,15 @@
 #include "packager/base/threading/platform_thread.h"
 #include "packager/media/base/media_sample.h"
 
-namespace {
-int64_t kThreadIdUnset = -1;
-}  // namespace
-
 namespace shaka {
 namespace media {
+namespace {
+int64_t kThreadIdUnset = -1;
+
+double TimeInSeconds(const Scte35Event& event, int64_t timescale) {
+  return static_cast<double>(event.start_time) / timescale;
+}
+}  // namespace
 
 ChunkingHandler::ChunkingHandler(const ChunkingParams& chunking_params)
     : chunking_params_(chunking_params),
@@ -179,6 +182,9 @@ Status ChunkingHandler::OnMediaSample(std::unique_ptr<StreamData> stream_data) {
 Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
   const bool is_key_frame = sample->is_key_frame();
   const int64_t timestamp = sample->dts();
+  const int64_t time_scale = time_scales_[main_stream_index_];
+  const double dts_in_seconds = static_cast<double>(sample->dts()) / time_scale;
+
   // Check if we need to terminate the current (sub)segment.
   bool new_segment = false;
   bool new_subsegment = false;
@@ -194,16 +200,16 @@ Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
     // We use 'while' instead of 'if' to make sure to pop off multiple SCTE35
     // events that may be very close to each other.
     while (!scte35_events_.empty() &&
-           (scte35_events_.top()->start_time <= timestamp)) {
+           TimeInSeconds(*scte35_events_.top(), time_scale) <= dts_in_seconds) {
       // For simplicity, don't change |current_segment_index_|.
       current_subsegment_index_ = 0;
       new_segment = true;
 
       cue_event = std::make_shared<CueEvent>();
-      // Use PTS instead of DTS for cue event timestamp.
-      cue_event->timestamp = sample->pts();
+      cue_event->time_in_seconds =
+          static_cast<double>(sample->pts()) / time_scale;
       cue_event->cue_data = scte35_events_.top()->cue_data;
-      LOG(INFO) << "Chunked at " << timestamp << " for Ad Cue.";
+      LOG(INFO) << "Chunked at " << dts_in_seconds << " seconds for Ad Cue.";
 
       scte35_events_.pop();
     }
@@ -298,10 +304,7 @@ Status ChunkingHandler::DispatchCueEventForAllStreams(
     std::shared_ptr<CueEvent> cue_event) {
   Status status;
   for (size_t i = 0; i < segment_info_.size() && status.ok(); ++i) {
-    std::shared_ptr<CueEvent> new_cue_event(new CueEvent(*cue_event));
-    new_cue_event->timestamp = cue_event->timestamp * time_scales_[i] /
-                               time_scales_[main_stream_index_];
-    status.Update(DispatchCueEvent(i, std::move(new_cue_event)));
+    status.Update(DispatchCueEvent(i, cue_event));
   }
   return status;
 }

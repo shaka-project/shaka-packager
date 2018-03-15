@@ -45,8 +45,8 @@ enum class CueEventType { kCueIn, kCueOut, kCuePoint };
 // In server-based model, Chunking Handler consolidates SCTE-35 events and
 // generates CueEvent before an ad is about to be inserted.
 struct CueEvent {
-  int64_t timestamp = 0;
   CueEventType type = CueEventType::kCuePoint;
+  double time_in_seconds;
   std::string cue_data;
 };
 
