@@ -139,16 +139,16 @@ MATCHER_P5(IsTextSample, id, start_time, end_time, settings, payload, "") {
          arg->text_sample->payload() == payload;
 }
 
-MATCHER_P2(IsCueEvent, stream_index, timestamp, "") {
+MATCHER_P2(IsCueEvent, stream_index, time_in_seconds, "") {
   if (arg->stream_data_type != StreamDataType::kCueEvent) {
     *result_listener << "which is "
                      << StreamDataTypeToString(arg->stream_data_type);
     return false;
   }
   *result_listener << "which is (" << arg->stream_index << ","
-                   << arg->cue_event->timestamp << ")";
+                   << arg->cue_event->time_in_seconds << ")";
   return arg->stream_index == stream_index &&
-         arg->cue_event->timestamp == timestamp;
+         arg->cue_event->time_in_seconds == time_in_seconds;
 }
 
 class FakeInputMediaHandler : public MediaHandler {

@@ -70,11 +70,15 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
       return FinalizeSegment(stream_data->stream_index, segment_info);
     }
     case StreamDataType::kMediaSample:
-      return AddSample(stream_data->stream_index,
-                       *stream_data->media_sample);
+      return AddSample(stream_data->stream_index, *stream_data->media_sample);
     case StreamDataType::kCueEvent:
       if (muxer_listener_) {
-        muxer_listener_->OnCueEvent(stream_data->cue_event->timestamp,
+        const int64_t time_scale =
+            streams_[stream_data->stream_index]->time_scale();
+        const double time_in_seconds = stream_data->cue_event->time_in_seconds;
+        const int64_t scaled_time =
+            static_cast<int64_t>(time_in_seconds * time_scale);
+        muxer_listener_->OnCueEvent(scaled_time,
                                     stream_data->cue_event->cue_data);
       }
       break;
