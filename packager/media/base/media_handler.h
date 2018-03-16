@@ -35,8 +35,8 @@ struct Scte35Event {
   std::string id;
   // Segmentation type id from SCTE35 segmentation descriptor.
   int type = 0;
-  int64_t start_time = 0;
-  int64_t duration = 0;
+  double start_time_in_seconds = 0;
+  double duration_in_seconds = 0;
   std::string cue_data;
 };
 

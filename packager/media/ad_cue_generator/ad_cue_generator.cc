@@ -50,8 +50,8 @@ Status AdCueGenerator::DispatchScte35Events(size_t stream_index,
   Status status;
   for (const auto& cue_point : ad_cue_generator_params_.cue_points) {
     std::shared_ptr<Scte35Event> scte35_event = std::make_shared<Scte35Event>();
-    scte35_event->start_time = cue_point.start_time_in_seconds * time_scale;
-    scte35_event->duration = cue_point.duration_in_seconds * time_scale;
+    scte35_event->start_time_in_seconds = cue_point.start_time_in_seconds;
+    scte35_event->duration_in_seconds = cue_point.duration_in_seconds;
     status.Update(DispatchScte35Event(stream_index, std::move(scte35_event)));
     if (!status.ok()) {
       return status;
