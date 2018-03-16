@@ -282,9 +282,11 @@ TEST_F(ChunkingHandlerTest, Scte35Event) {
       kStreamIndex0, GetVideoStreamInfo(kTimeScale1))));
 
   const int64_t kVideoStartTimestamp = 12345;
+  const double kScte35TimeInSeconds =
+      static_cast<double>(kVideoStartTimestamp + kDuration1) / kTimeScale1;
 
   auto scte35_event = std::make_shared<Scte35Event>();
-  scte35_event->start_time = kVideoStartTimestamp + kDuration1;
+  scte35_event->start_time_in_seconds = kScte35TimeInSeconds;
   ASSERT_OK(Process(StreamData::FromScte35Event(kStreamIndex0, scte35_event)));
 
   for (int i = 0; i < 3; ++i) {
@@ -303,9 +305,7 @@ TEST_F(ChunkingHandlerTest, Scte35Event) {
           // A new segment is created due to the existance of Cue.
           IsSegmentInfo(kStreamIndex0, kVideoStartTimestamp, kDuration1,
                         !kIsSubsegment, !kEncrypted),
-          IsCueEvent(
-              kStreamIndex0,
-              static_cast<double>(kVideoStartTimestamp + kDuration1) / 1000),
+          IsCueEvent(kStreamIndex0, kScte35TimeInSeconds),
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 1,
                         kDuration1, !kEncrypted),
           IsMediaSample(kStreamIndex0, kVideoStartTimestamp + kDuration1 * 2,

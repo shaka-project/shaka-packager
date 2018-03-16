@@ -16,10 +16,6 @@ namespace shaka {
 namespace media {
 namespace {
 int64_t kThreadIdUnset = -1;
-
-double TimeInSeconds(const Scte35Event& event, int64_t timescale) {
-  return static_cast<double>(event.start_time) / timescale;
-}
 }  // namespace
 
 ChunkingHandler::ChunkingHandler(const ChunkingParams& chunking_params)
@@ -200,7 +196,7 @@ Status ChunkingHandler::ProcessMainMediaSample(const MediaSample* sample) {
     // We use 'while' instead of 'if' to make sure to pop off multiple SCTE35
     // events that may be very close to each other.
     while (!scte35_events_.empty() &&
-           TimeInSeconds(*scte35_events_.top(), time_scale) <= dts_in_seconds) {
+           scte35_events_.top()->start_time_in_seconds <= dts_in_seconds) {
       // For simplicity, don't change |current_segment_index_|.
       current_subsegment_index_ = 0;
       new_segment = true;
@@ -343,7 +339,7 @@ bool ChunkingHandler::Scte35EventTimestampGreater::operator()(
     const std::shared_ptr<const Scte35Event>& rhs) const {
   DCHECK(lhs);
   DCHECK(rhs);
-  return lhs->start_time > rhs->start_time;
+  return lhs->start_time_in_seconds > rhs->start_time_in_seconds;
 }
 
 }  // namespace media
