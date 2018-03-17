@@ -273,6 +273,7 @@ class PackagerAppTest(unittest.TestCase):
                 output_hls=False,
                 hls_playlist_type=None,
                 time_shift_buffer_depth=0.0,
+                utc_timings=None,
                 generate_static_mpd=False,
                 ad_cues=None,
                 use_fake_clock=True):
@@ -341,6 +342,9 @@ class PackagerAppTest(unittest.TestCase):
     else:
       flags += ['--mpd_output', self.mpd_output]
 
+    if utc_timings:
+      flags += ['--utc_timings', utc_timings]
+
     if generate_static_mpd:
       flags += ['--generate_static_mpd']
 
@@ -384,7 +388,7 @@ class PackagerAppTest(unittest.TestCase):
     else:
       match = filecmp.cmp(test_output, golden_file)
       if not match:
-        output, error = self._GitDiff(test_output, golden_file)
+        output, error = self._GitDiff(golden_file, test_output)
         command_line = self.packager.GetCommandLine()
         failure_message = '\n'.join([
             output,
@@ -471,7 +475,7 @@ class PackagerAppTest(unittest.TestCase):
       actual_file = os.path.join(out_dir, diff_file)
       expected_file = os.path.join(gold_dir, diff_file)
 
-      output, error = self._GitDiff(actual_file, expected_file)
+      output, error = self._GitDiff(expected_file, actual_file)
 
       if output:
         failure_messages += [output]
@@ -1126,7 +1130,13 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageLiveProfile(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], segmented=True), self._GetFlags())
+        self._GetStreams(['audio', 'video'], segmented=True),
+        self._GetFlags(
+            utc_timings=
+            'urn:mpeg:dash:utc:http-xsdate:2014='
+            'http://foo.bar/my_body_is_the_current_date_and_time,'
+            'urn:mpeg:dash:utc:http-head:2014='
+            'http://foo.bar/check_me_for_the_date_header'))
     self._CheckTestResults('live-profile')
 
   def testPackageLiveStaticProfile(self):

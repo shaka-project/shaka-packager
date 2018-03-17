@@ -396,17 +396,30 @@ base::Optional<PackagingParams> GetPackagingParams() {
   packaging_params.output_media_info = FLAGS_output_media_info;
 
   MpdParams& mpd_params = packaging_params.mpd_params;
-  mpd_params.generate_static_live_mpd = FLAGS_generate_static_mpd;
   mpd_params.mpd_output = FLAGS_mpd_output;
   mpd_params.base_urls = base::SplitString(
-      FLAGS_base_urls, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      FLAGS_base_urls, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  mpd_params.min_buffer_time = FLAGS_min_buffer_time;
+  mpd_params.minimum_update_period = FLAGS_minimum_update_period;
+  mpd_params.suggested_presentation_delay = FLAGS_suggested_presentation_delay;
+  mpd_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+
+  if (!FLAGS_utc_timings.empty()) {
+    base::StringPairs pairs;
+    if (!base::SplitStringIntoKeyValuePairs(FLAGS_utc_timings, '=', ',',
+                                            &pairs)) {
+      LOG(ERROR) << "Invalid --utc_timings scheme_id_uri/value pairs.";
+      return base::nullopt;
+    }
+    for (const auto& string_pair : pairs) {
+      mpd_params.utc_timings.push_back({string_pair.first, string_pair.second});
+    }
+  }
+
+  mpd_params.default_language = FLAGS_default_language;
+  mpd_params.generate_static_live_mpd = FLAGS_generate_static_mpd;
   mpd_params.generate_dash_if_iop_compliant_mpd =
       FLAGS_generate_dash_if_iop_compliant_mpd;
-  mpd_params.minimum_update_period = FLAGS_minimum_update_period;
-  mpd_params.min_buffer_time = FLAGS_min_buffer_time;
-  mpd_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
-  mpd_params.suggested_presentation_delay = FLAGS_suggested_presentation_delay;
-  mpd_params.default_language = FLAGS_default_language;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {

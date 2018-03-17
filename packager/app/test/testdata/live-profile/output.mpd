@@ -25,4 +25,6 @@
       </Representation>
     </AdaptationSet>
   </Period>
+  <UTCTiming schemeIdUri="urn:mpeg:dash:utc:http-xsdate:2014" value="http://foo.bar/my_body_is_the_current_date_and_time"/>
+  <UTCTiming schemeIdUri="urn:mpeg:dash:utc:http-head:2014" value="http://foo.bar/check_me_for_the_date_header"/>
 </MPD>

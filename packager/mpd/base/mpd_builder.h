@@ -100,6 +100,9 @@ class MpdBuilder {
   // Same as AddStaticMpdInfo() but for 'dynamic' MPDs.
   void AddDynamicMpdInfo(xml::XmlNode* mpd_node);
 
+  // Add UTCTiming element if utc timing is provided.
+  void AddUtcTiming(xml::XmlNode* mpd_node);
+
   float GetStaticMpdDuration();
 
   // Set MPD attributes for dynamic profile MPD. Uses non-zero |mpd_options_| as

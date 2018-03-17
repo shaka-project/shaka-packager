@@ -43,6 +43,10 @@ DEFINE_double(suggested_presentation_delay,
               0.0,
               "Specifies a delay, in seconds, to be added to the media "
               "presentation time. This value is used for dynamic MPD only.");
+DEFINE_string(utc_timings,
+              "",
+              "Comma separated UTCTiming schemeIdUri and value pairs for the "
+              "MPD. This value is used for dynamic MPD only.");
 DEFINE_bool(generate_dash_if_iop_compliant_mpd,
             true,
             "Try to generate DASH-IF IOP compliant MPD. This is best effort "

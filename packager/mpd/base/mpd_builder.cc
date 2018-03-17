@@ -215,6 +215,8 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       break;
     case MpdType::kDynamic:
       AddDynamicMpdInfo(&mpd);
+      // Must be after Period element.
+      AddUtcTiming(&mpd);
       break;
     default:
       NOTREACHED() << "Unknown MPD type: "
@@ -300,6 +302,19 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
                 mpd_options_.mpd_params.time_shift_buffer_depth, mpd_node);
   SetIfPositive("suggestedPresentationDelay",
                 mpd_options_.mpd_params.suggested_presentation_delay, mpd_node);
+}
+
+void MpdBuilder::AddUtcTiming(XmlNode* mpd_node) {
+  DCHECK(mpd_node);
+  DCHECK_EQ(MpdType::kDynamic, mpd_options_.mpd_type);
+
+  for (const MpdParams::UtcTiming& utc_timing :
+       mpd_options_.mpd_params.utc_timings) {
+    XmlNode utc_timing_node("UTCTiming");
+    utc_timing_node.SetStringAttribute("schemeIdUri", utc_timing.scheme_id_uri);
+    utc_timing_node.SetStringAttribute("value", utc_timing.value);
+    mpd_node->AddChild(utc_timing_node.PassScopedPtr());
+  }
 }
 
 float MpdBuilder::GetStaticMpdDuration() {
