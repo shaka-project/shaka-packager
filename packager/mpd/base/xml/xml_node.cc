@@ -354,13 +354,7 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
 
   if (media_info.has_segment_template()) {
     segment_template.SetStringAttribute("media", media_info.segment_template());
-
-    // TODO(rkuroiwa): Need a better check. $$Number is legitimate but not a
-    // template.
-    if (media_info.segment_template().find("$Number") != std::string::npos) {
-      DCHECK_GE(start_number, 1u);
-      segment_template.SetIntegerAttribute("startNumber", start_number);
-    }
+    segment_template.SetIntegerAttribute("startNumber", start_number);
   }
 
   // TODO(rkuroiwa): Find out when a live MPD doesn't require SegmentTimeline.
