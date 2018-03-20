@@ -806,8 +806,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, ad_cues='1.5'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-ad_cues-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-ad_cues-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-ad_cues-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
@@ -1088,10 +1088,10 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),
         self._GetFlags(encryption=True, output_hls=True, ad_cues='1.5'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-ad_cues-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-ad_cues-golden.mp4')
     self._DiffGold(self.hls_master_playlist_output,
-                   'bear-640x360-av-mp4-master-cenc-golden.m3u8')
+                   'bear-640x360-av-mp4-master-cenc-ad_cues-golden.m3u8')
     self._DiffGold(
         os.path.join(self.tmp_dir, 'audio.m3u8'),
         'bear-640x360-a-mp4-cenc-ad_cues-golden.m3u8')
@@ -1146,8 +1146,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(generate_static_mpd=True, ad_cues='1.5'))
-    self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
-    self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
+    self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-ad_cues-golden')
+    self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-ad_cues-golden')
     self._DiffGold(self.mpd_output,
                    'bear-640x360-av-live-static-ad_cues-golden.mpd')
 

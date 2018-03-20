@@ -5,5 +5,5 @@
 #EXT-X-MEDIA-SEQUENCE:1
 #EXTINF:0.998,
 output_audio-2.ts
-#EXTINF:0.813,
+#EXTINF:0.789,
 output_audio-3.ts

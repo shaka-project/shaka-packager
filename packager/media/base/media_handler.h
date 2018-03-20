@@ -185,43 +185,54 @@ class MediaHandler {
 
   /// Dispatch the stream data to downstream handlers. Note that
   /// stream_data.stream_index should be the output stream index.
-  Status Dispatch(std::unique_ptr<StreamData> stream_data);
+  Status Dispatch(std::unique_ptr<StreamData> stream_data) const;
 
   /// Dispatch the stream info to downstream handlers.
   Status DispatchStreamInfo(
-      size_t stream_index, std::shared_ptr<const StreamInfo> stream_info) {
-    return Dispatch(StreamData::FromStreamInfo(stream_index, stream_info));
+      size_t stream_index,
+      std::shared_ptr<const StreamInfo> stream_info) const {
+    return Dispatch(
+        StreamData::FromStreamInfo(stream_index, std::move(stream_info)));
   }
 
   /// Dispatch the media sample to downstream handlers.
   Status DispatchMediaSample(
-      size_t stream_index, std::shared_ptr<const MediaSample> media_sample) {
-    return Dispatch(StreamData::FromMediaSample(stream_index, media_sample));
+      size_t stream_index,
+      std::shared_ptr<const MediaSample> media_sample) const {
+    return Dispatch(
+        StreamData::FromMediaSample(stream_index, std::move(media_sample)));
   }
 
   /// Dispatch the text sample to downsream handlers.
   // DispatchTextSample should only be override for testing.
   Status DispatchTextSample(
-      size_t stream_index, std::shared_ptr<const TextSample> text_sample) {
-    return Dispatch(StreamData::FromTextSample(stream_index, text_sample));
+      size_t stream_index,
+      std::shared_ptr<const TextSample> text_sample) const {
+    return Dispatch(
+        StreamData::FromTextSample(stream_index, std::move(text_sample)));
   }
 
   /// Dispatch the segment info to downstream handlers.
   Status DispatchSegmentInfo(
-      size_t stream_index, std::shared_ptr<const SegmentInfo> segment_info) {
-    return Dispatch(StreamData::FromSegmentInfo(stream_index, segment_info));
+      size_t stream_index,
+      std::shared_ptr<const SegmentInfo> segment_info) const {
+    return Dispatch(
+        StreamData::FromSegmentInfo(stream_index, std::move(segment_info)));
   }
 
   /// Dispatch the scte35 event to downstream handlers.
-  Status DispatchScte35Event(size_t stream_index,
-                             std::shared_ptr<const Scte35Event> scte35_event) {
-    return Dispatch(StreamData::FromScte35Event(stream_index, scte35_event));
+  Status DispatchScte35Event(
+      size_t stream_index,
+      std::shared_ptr<const Scte35Event> scte35_event) const {
+    return Dispatch(
+        StreamData::FromScte35Event(stream_index, std::move(scte35_event)));
   }
 
   /// Dispatch the cue event to downstream handlers.
   Status DispatchCueEvent(size_t stream_index,
-                          std::shared_ptr<const CueEvent> cue_event) {
-    return Dispatch(StreamData::FromCueEvent(stream_index, cue_event));
+                          std::shared_ptr<const CueEvent> cue_event) const {
+    return Dispatch(
+        StreamData::FromCueEvent(stream_index, std::move(cue_event)));
   }
 
   /// Flush the downstream connected at the specified output stream index.
