@@ -20,7 +20,18 @@ double TimeInSeconds(const StreamInfo& info, const StreamData& data) {
   switch (data.stream_data_type) {
     case StreamDataType::kMediaSample:
       time_scale = info.time_scale();
-      scaled_time = data.media_sample->pts();
+      if (info.stream_type() == kStreamAudio) {
+        // Return the start time for video and mid-point for audio, so that for
+        // an audio sample, if the portion of the sample after the cue point is
+        // bigger than the portion of the sample before the cue point, the
+        // sample is placed after the cue.
+        // It does not matter for text samples as text samples will be cut at
+        // cue point.
+        scaled_time =
+            data.media_sample->pts() + data.media_sample->duration() / 2;
+      } else {
+        scaled_time = data.media_sample->pts();
+      }
       break;
     case StreamDataType::kTextSample:
       // Text is always in MS but the stream info time scale is 0.
@@ -80,7 +91,7 @@ Status CueAlignmentHandler::OnFlushRequest(size_t stream_index) {
     if (!stream_state.samples.empty()) {
       LOG(WARNING) << "Unexpected data seen on stream " << i;
       while (!stream_state.samples.empty()) {
-        Status status(Dispatch(std::move(stream_state.samples.front())));
+        Status status = Dispatch(std::move(stream_state.samples.front()));
         if (!status.ok())
           return status;
         stream_state.samples.pop_front();
@@ -141,7 +152,7 @@ Status CueAlignmentHandler::OnSample(std::unique_ptr<StreamData> sample) {
 
   // Accept the sample. This will output it if it comes before the hint point or
   // will cache it if it comes after the hint point.
-  Status status(AcceptSample(std::move(sample), &stream_state));
+  Status status = AcceptSample(std::move(sample), &stream_state);
   if (!status.ok()) {
     return status;
   }
@@ -180,6 +191,8 @@ Status CueAlignmentHandler::UseNewSyncPoint(
     // No stream should be so out of sync with the others that they would
     // still be working on an old cue.
     if (stream_state.cue) {
+      // TODO(kqyang): Could this happen for text when there are no text samples
+      // between the two cues?
       LOG(ERROR) << "Found two cue events that are too close together. One at "
                  << stream_state.cue->time_in_seconds << " and the other at "
                  << new_sync->time_in_seconds;

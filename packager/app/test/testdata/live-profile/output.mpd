@@ -13,12 +13,13 @@
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
-      <Representation id="1" bandwidth="122544" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="1" bandwidth="122308" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="44100" initialization="bear-640x360-audio-init.mp4" media="bear-640x360-audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
-            <S t="0" d="44032" r="1"/>
-            <S t="88064" d="33792"/>
+            <S t="0" d="45056"/>
+            <S t="45056" d="44032"/>
+            <S t="89088" d="32768"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>

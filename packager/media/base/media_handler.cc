@@ -49,7 +49,7 @@ bool MediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
   return stream_index < num_input_streams_;
 }
 
-Status MediaHandler::Dispatch(std::unique_ptr<StreamData> stream_data) {
+Status MediaHandler::Dispatch(std::unique_ptr<StreamData> stream_data) const {
   size_t output_stream_index = stream_data->stream_index;
   auto handler_it = output_handlers_.find(output_stream_index);
   if (handler_it == output_handlers_.end()) {

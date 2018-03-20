@@ -5,8 +5,8 @@
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXTINF:0.975,
 bear-640x360-ac3-audio-1.ts
-#EXTINF:0.975,
+#EXTINF:1.010,
 bear-640x360-ac3-audio-2.ts
-#EXTINF:0.836,
+#EXTINF:0.801,
 bear-640x360-ac3-audio-3.ts
 #EXT-X-ENDLIST

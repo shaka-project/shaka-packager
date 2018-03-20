@@ -33,6 +33,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/chunking/chunking_handler.h"
+#include "packager/media/chunking/cue_alignment_handler.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/demuxer/demuxer.h"
 #include "packager/media/event/muxer_listener_factory.h"
@@ -55,6 +56,7 @@ namespace shaka {
 using media::Demuxer;
 using media::KeySource;
 using media::MuxerOptions;
+using media::SyncPointQueue;
 
 namespace media {
 namespace {
@@ -387,8 +389,15 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
 Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
                              const PackagingParams& packaging_params,
                              std::unique_ptr<MuxerListener> muxer_listener,
+                             SyncPointQueue* sync_points,
                              MuxerFactory* muxer_factory,
                              std::shared_ptr<OriginHandler>* root) {
+  // TODO(kqyang): This need to be integrated back to media pipeline since we
+  // may want to get not only text streams from the demuxer, in which case, the
+  // same demuxer should be used to get all streams instead of having a demuxer
+  // specifically for text.
+  // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
+
   Status status;
   std::shared_ptr<Demuxer> demuxer;
 
@@ -397,14 +406,15 @@ Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
     demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
   }
 
-  std::shared_ptr<MediaHandler> chunker(
-      new ChunkingHandler(packaging_params.chunking_params));
+  auto chunker =
+      std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
   std::shared_ptr<Muxer> muxer =
       muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
 
   status.Update(chunker->AddHandler(std::move(muxer)));
-  status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
+  status.Update(
+      demuxer->SetHandler(stream.stream_selector, std::move(chunker)));
 
   return status;
 }
@@ -412,7 +422,10 @@ Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
 Status CreateHlsTextJob(const StreamDescriptor& stream,
                         const PackagingParams& packaging_params,
                         std::unique_ptr<MuxerListener> muxer_listener,
+                        SyncPointQueue* sync_points,
                         JobManager* job_manager) {
+  // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
+
   DCHECK(muxer_listener);
   DCHECK(job_manager);
 
@@ -433,9 +446,8 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   MuxerOptions muxer_options = CreateMuxerOptions(stream, packaging_params);
   muxer_options.bandwidth = stream.bandwidth ? stream.bandwidth : 256;
 
-  std::shared_ptr<WebVttSegmentedOutputHandler> output(
-      new WebVttSegmentedOutputHandler(muxer_options,
-                                       std::move(muxer_listener)));
+  auto output = std::make_shared<WebVttSegmentedOutputHandler>(
+      muxer_options, std::move(muxer_listener));
 
   std::unique_ptr<FileReader> reader;
   Status open_status = FileReader::Open(stream.input, &reader);
@@ -443,10 +455,9 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
     return open_status;
   }
 
-  std::shared_ptr<OriginHandler> parser(
-      new WebVttParser(std::move(reader), stream.language));
-  std::shared_ptr<MediaHandler> segmenter(
-      new WebVttSegmenter(segment_length_in_ms));
+  auto parser =
+      std::make_shared<WebVttParser>(std::move(reader), stream.language);
+  auto segmenter = std::make_shared<WebVttSegmenter>(segment_length_in_ms);
 
   // Build in reverse to allow us to move the pointers.
   Status status;
@@ -463,8 +474,11 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
 Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
                                 const PackagingParams& packaging_params,
                                 std::unique_ptr<MuxerListener> muxer_listener,
+                                SyncPointQueue* sync_points,
                                 MuxerFactory* muxer_factory,
                                 std::shared_ptr<OriginHandler>* root) {
+  // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
+
   Status status;
   std::unique_ptr<FileReader> reader;
   status = FileReader::Open(stream.input, &reader);
@@ -473,11 +487,11 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
     return status;
   }
 
-  std::shared_ptr<OriginHandler> parser(
-      new WebVttParser(std::move(reader), stream.language));
-  std::shared_ptr<MediaHandler> text_to_mp4(new WebVttToMp4Handler);
-  std::shared_ptr<MediaHandler> chunker(
-      new ChunkingHandler(packaging_params.chunking_params));
+  auto parser =
+      std::make_shared<WebVttParser>(std::move(reader), stream.language);
+  auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
+  auto chunker =
+      std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
   std::shared_ptr<Muxer> muxer =
       muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
@@ -494,6 +508,7 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
 Status CreateTextJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
+    SyncPointQueue* sync_points,
     MuxerListenerFactory* muxer_listener_factory,
     MuxerFactory* muxer_factory,
     MpdNotifier* mpd_notifier,
@@ -510,15 +525,15 @@ Status CreateTextJobs(
 
       switch (DetermineContainerFromFileName(stream.input)) {
         case CONTAINER_WEBVTT:
-          status.Update(CreateWebVttToMp4TextJob(stream, packaging_params,
-                                                 std::move(muxer_listener),
-                                                 muxer_factory, &root));
+          status.Update(CreateWebVttToMp4TextJob(
+              stream, packaging_params, std::move(muxer_listener), sync_points,
+              muxer_factory, &root));
           break;
 
         case CONTAINER_MOV:
-          status.Update(CreateMp4ToMp4TextJob(stream, packaging_params,
-                                              std::move(muxer_listener),
-                                              muxer_factory, &root));
+          status.Update(CreateMp4ToMp4TextJob(
+              stream, packaging_params, std::move(muxer_listener), sync_points,
+              muxer_factory, &root));
           break;
 
         default:
@@ -555,8 +570,9 @@ Status CreateTextJobs(
       // If we are outputting to HLS, then create the HLS test pipeline that
       // will create segmented text output.
       if (hls_listener) {
-        Status status = CreateHlsTextJob(stream, packaging_params,
-                                         std::move(hls_listener), job_manager);
+        Status status =
+            CreateHlsTextJob(stream, packaging_params, std::move(hls_listener),
+                             sync_points, job_manager);
         if (!status.ok()) {
           return status;
         }
@@ -604,6 +620,7 @@ Status CreateAudioVideoJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
     KeySource* encryption_key_source,
+    SyncPointQueue* sync_points,
     MuxerListenerFactory* muxer_listener_factory,
     MuxerFactory* muxer_factory,
     JobManager* job_manager) {
@@ -613,14 +630,14 @@ Status CreateAudioVideoJobs(
 
   // Demuxers are shared among all streams with the same input.
   std::shared_ptr<Demuxer> demuxer;
-  // Chunkers can be shared among all streams with the same input (except for
-  // WVM files), which allows samples from the same input to be synced when
-  // doing chunking.
-  std::shared_ptr<MediaHandler> chunker;
-  bool is_wvm_file = false;
+  // When |sync_points| is not null, there should be one CueAlignmentHandler per
+  // input. All CueAlignmentHandler shares the same |sync_points|, which allows
+  // sync points / cues to be aligned across streams, whether they are from the
+  // same input or not.
+  std::shared_ptr<CueAlignmentHandler> cue_aligner;
   // Replicators are shared among all streams with the same input and stream
   // selector.
-  std::shared_ptr<MediaHandler> replicator;
+  std::shared_ptr<Replicator> replicator;
 
   std::string previous_input;
   std::string previous_selector;
@@ -636,15 +653,8 @@ Status CreateAudioVideoJobs(
 
       job_manager->Add("RemuxJob", demuxer);
 
-      // Share chunkers among all streams with the same input except for WVM
-      // file, which may contain multiple video files and the samples may not be
-      // interleaved either.
-      is_wvm_file =
-          DetermineContainerFromFileName(stream.input) == CONTAINER_WVM;
-      if (!is_wvm_file) {
-        chunker =
-            std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
-      }
+      if (sync_points)
+        cue_aligner = std::make_shared<CueAlignmentHandler>(sync_points);
     }
 
     if (!stream.language.empty()) {
@@ -663,16 +673,8 @@ Status CreateAudioVideoJobs(
     }
 
     if (new_stream) {
-      std::shared_ptr<MediaHandler> ad_cue_generator;
-      if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
-        ad_cue_generator = std::make_shared<AdCueGenerator>(
-            packaging_params.ad_cue_generator_params);
-      }
-
-      if (is_wvm_file) {
-        chunker =
-            std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
-      }
+      auto chunker =
+          std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
 
       std::shared_ptr<MediaHandler> encryptor = CreateEncryptionHandler(
           packaging_params, stream, encryption_key_source);
@@ -680,10 +682,9 @@ Status CreateAudioVideoJobs(
       replicator = std::make_shared<Replicator>();
 
       Status status;
-      if (ad_cue_generator) {
-        status.Update(
-            demuxer->SetHandler(stream.stream_selector, ad_cue_generator));
-        status.Update(ad_cue_generator->AddHandler(chunker));
+      if (cue_aligner) {
+        status.Update(demuxer->SetHandler(stream.stream_selector, cue_aligner));
+        status.Update(cue_aligner->AddHandler(chunker));
       } else {
         status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
       }
@@ -741,6 +742,7 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
                      const PackagingParams& packaging_params,
                      MpdNotifier* mpd_notifier,
                      KeySource* encryption_key_source,
+                     SyncPointQueue* sync_points,
                      MuxerListenerFactory* muxer_listener_factory,
                      MuxerFactory* muxer_factory,
                      JobManager* job_manager) {
@@ -770,11 +772,11 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
             media::StreamDescriptorCompareFn);
 
   Status status;
-  status.Update(CreateTextJobs(text_streams, packaging_params,
+  status.Update(CreateTextJobs(text_streams, packaging_params, sync_points,
                                muxer_listener_factory, muxer_factory,
                                mpd_notifier, job_manager));
   status.Update(CreateAudioVideoJobs(
-      audio_video_streams, packaging_params, encryption_key_source,
+      audio_video_streams, packaging_params, encryption_key_source, sync_points,
       muxer_listener_factory, muxer_factory, job_manager));
 
   if (!status.ok()) {
@@ -795,6 +797,7 @@ struct Packager::PackagerInternal {
   std::unique_ptr<KeySource> encryption_key_source;
   std::unique_ptr<MpdNotifier> mpd_notifier;
   std::unique_ptr<hls::HlsNotifier> hls_notifier;
+  std::unique_ptr<SyncPointQueue> sync_points;
   BufferCallbackParams buffer_callback_params;
   media::JobManager job_manager;
 };
@@ -866,6 +869,11 @@ Status Packager::Initialize(
     internal->hls_notifier.reset(new hls::SimpleHlsNotifier(hls_params));
   }
 
+  if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
+    internal->sync_points.reset(
+        new SyncPointQueue(packaging_params.ad_cue_generator_params));
+  }
+
   std::vector<StreamDescriptor> streams_for_jobs;
 
   for (const StreamDescriptor& descriptor : stream_descriptors) {
@@ -908,8 +916,8 @@ Status Packager::Initialize(
 
   Status status = media::CreateAllJobs(
       streams_for_jobs, packaging_params, internal->mpd_notifier.get(),
-      internal->encryption_key_source.get(), &muxer_listener_factory,
-      &muxer_factory, &internal->job_manager);
+      internal->encryption_key_source.get(), internal->sync_points.get(),
+      &muxer_listener_factory, &muxer_factory, &internal->job_manager);
 
   if (!status.ok()) {
     return status;
