@@ -83,6 +83,10 @@ class ChunkingHandler : public MediaHandler {
   uint32_t time_scale_ = 0;
   // The end timestamp of the last dispatched sample.
   int64_t last_sample_end_timestamp_ = 0;
+
+  // The offset is applied to sample timestamps so a full segment is generated
+  // after cue points.
+  int64_t cue_offset_ = 0;
 };
 
 }  // namespace media

@@ -156,6 +156,7 @@
       'sources': [
         'status.cc',
         'status.h',
+        'status_macros.h',
       ],
       'dependencies': [
         'base/base.gyp:base',
