@@ -10,6 +10,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -49,9 +50,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
-  Status status = EndSegmentIfStarted();
-  if (!status.ok())
-    return status;
+  RETURN_IF_ERROR(EndSegmentIfStarted());
   return FlushDownstream(kStreamIndex);
 }
 
@@ -65,12 +64,16 @@ Status ChunkingHandler::OnStreamInfo(std::shared_ptr<const StreamInfo> info) {
 }
 
 Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
-  Status status = EndSegmentIfStarted();
-  if (!status.ok())
-    return status;
+  RETURN_IF_ERROR(EndSegmentIfStarted());
+  const double event_time_in_seconds = event->time_in_seconds;
+  RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
+
   // Force start new segment after cue event.
   segment_start_time_ = base::nullopt;
-  return DispatchCueEvent(kStreamIndex, std::move(event));
+  // |cue_offset_| will be applied to sample timestamp so the segment after cue
+  // point have duration ~= |segment_duration_|.
+  cue_offset_ = event_time_in_seconds * time_scale_;
+  return Status::OK;
 }
 
 Status ChunkingHandler::OnMediaSample(
@@ -83,15 +86,15 @@ Status ChunkingHandler::OnMediaSample(
   const bool can_start_new_segment =
       sample->is_key_frame() || !chunking_params_.segment_sap_aligned;
   if (can_start_new_segment) {
-    const int64_t segment_index = timestamp / segment_duration_;
+    const int64_t segment_index =
+        timestamp < cue_offset_ ? 0
+                                : (timestamp - cue_offset_) / segment_duration_;
     if (!segment_start_time_ || segment_index != current_segment_index_) {
       current_segment_index_ = segment_index;
       // Reset subsegment index.
       current_subsegment_index_ = 0;
 
-      Status status = EndSegmentIfStarted();
-      if (!status.ok())
-        return status;
+      RETURN_IF_ERROR(EndSegmentIfStarted());
       segment_start_time_ = timestamp;
       subsegment_start_time_ = timestamp;
       started_new_segment = true;
@@ -106,9 +109,7 @@ Status ChunkingHandler::OnMediaSample(
       if (subsegment_index != current_subsegment_index_) {
         current_subsegment_index_ = subsegment_index;
 
-        Status status = EndSubsegmentIfStarted();
-        if (!status.ok())
-          return status;
+        RETURN_IF_ERROR(EndSubsegmentIfStarted());
         subsegment_start_time_ = timestamp;
       }
     }

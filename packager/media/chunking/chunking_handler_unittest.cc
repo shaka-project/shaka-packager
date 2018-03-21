@@ -161,6 +161,7 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
 
   ASSERT_OK(Process(StreamData::FromStreamInfo(
       kStreamIndex, GetVideoStreamInfo(kTimeScale1))));
+  ClearOutputStreamDataVector();
 
   const int64_t kVideoStartTimestamp = 12345;
   const double kCueTimeInSeconds =
@@ -169,7 +170,7 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
   auto cue_event = std::make_shared<CueEvent>();
   cue_event->time_in_seconds = kCueTimeInSeconds;
 
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 6; ++i) {
     const bool is_key_frame = true;
     ASSERT_OK(Process(StreamData::FromMediaSample(
         kStreamIndex, GetMediaSample(kVideoStartTimestamp + i * kDuration,
@@ -182,7 +183,6 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
-          IsStreamInfo(kStreamIndex, kTimeScale1, !kEncrypted),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp, kDuration,
                         !kEncrypted),
           // A new segment is created due to the existance of Cue.
@@ -192,6 +192,16 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 1,
                         kDuration, !kEncrypted),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 2,
+                        kDuration, !kEncrypted),
+          IsSegmentInfo(kStreamIndex, kVideoStartTimestamp + kDuration,
+                        kDuration * 2, kIsSubsegment, !kEncrypted),
+          IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 3,
+                        kDuration, !kEncrypted),
+          IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 4,
+                        kDuration, !kEncrypted),
+          IsSegmentInfo(kStreamIndex, kVideoStartTimestamp + kDuration,
+                        kDuration * 4, !kIsSubsegment, !kEncrypted),
+          IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 5,
                         kDuration, !kEncrypted)));
 }
 
