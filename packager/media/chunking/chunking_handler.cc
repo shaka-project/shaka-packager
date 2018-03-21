@@ -16,6 +16,16 @@ namespace shaka {
 namespace media {
 namespace {
 const size_t kStreamIndex = 0;
+
+bool IsNewSegmentIndex(int64_t new_index, int64_t current_index) {
+  return new_index != current_index &&
+         // Index is calculated from pts, which could decrease. We do not expect
+         // it to decrease by more than one segment though, which could happen
+         // only if there is a big overlap in the timeline, in which case, we
+         // will create a new segment and leave it to the player to handle it.
+         new_index != current_index - 1;
+}
+
 }  // namespace
 
 ChunkingHandler::ChunkingHandler(const ChunkingParams& chunking_params)
@@ -80,7 +90,7 @@ Status ChunkingHandler::OnMediaSample(
     std::shared_ptr<const MediaSample> sample) {
   DCHECK_NE(time_scale_, 0u) << "kStreamInfo should arrive before kMediaSample";
 
-  const int64_t timestamp = sample->dts();
+  const int64_t timestamp = sample->pts();
 
   bool started_new_segment = false;
   const bool can_start_new_segment =
@@ -89,7 +99,8 @@ Status ChunkingHandler::OnMediaSample(
     const int64_t segment_index =
         timestamp < cue_offset_ ? 0
                                 : (timestamp - cue_offset_) / segment_duration_;
-    if (!segment_start_time_ || segment_index != current_segment_index_) {
+    if (!segment_start_time_ ||
+        IsNewSegmentIndex(segment_index, current_segment_index_)) {
       current_segment_index_ = segment_index;
       // Reset subsegment index.
       current_subsegment_index_ = 0;
@@ -97,6 +108,7 @@ Status ChunkingHandler::OnMediaSample(
       RETURN_IF_ERROR(EndSegmentIfStarted());
       segment_start_time_ = timestamp;
       subsegment_start_time_ = timestamp;
+      max_segment_time_ = timestamp + sample->duration();
       started_new_segment = true;
     }
   }
@@ -106,7 +118,7 @@ Status ChunkingHandler::OnMediaSample(
     if (can_start_new_subsegment) {
       const int64_t subsegment_index =
           (timestamp - segment_start_time_.value()) / subsegment_duration_;
-      if (subsegment_index != current_subsegment_index_) {
+      if (IsNewSegmentIndex(subsegment_index, current_subsegment_index_)) {
         current_subsegment_index_ = subsegment_index;
 
         RETURN_IF_ERROR(EndSubsegmentIfStarted());
@@ -118,11 +130,17 @@ Status ChunkingHandler::OnMediaSample(
   VLOG(3) << "Sample ts: " << timestamp << " "
           << " duration: " << sample->duration() << " scale: " << time_scale_
           << (segment_start_time_ ? " dispatch " : " discard ");
-  // Discard samples before segment start. If the segment has started,
-  // |segment_start_time_| won't be null.
-  if (!segment_start_time_)
+  if (!segment_start_time_) {
+    DCHECK(!subsegment_start_time_);
+    // Discard samples before segment start. If the segment has started,
+    // |segment_start_time_| won't be null.
     return Status::OK;
-  last_sample_end_timestamp_ = timestamp + sample->duration();
+  }
+
+  segment_start_time_ = std::min(segment_start_time_.value(), timestamp);
+  subsegment_start_time_ = std::min(subsegment_start_time_.value(), timestamp);
+  max_segment_time_ =
+      std::max(max_segment_time_, timestamp + sample->duration());
   return DispatchMediaSample(kStreamIndex, std::move(sample));
 }
 
@@ -132,8 +150,7 @@ Status ChunkingHandler::EndSegmentIfStarted() const {
 
   auto segment_info = std::make_shared<SegmentInfo>();
   segment_info->start_timestamp = segment_start_time_.value();
-  segment_info->duration =
-      last_sample_end_timestamp_ - segment_start_time_.value();
+  segment_info->duration = max_segment_time_ - segment_start_time_.value();
   return DispatchSegmentInfo(kStreamIndex, std::move(segment_info));
 }
 
@@ -144,7 +161,7 @@ Status ChunkingHandler::EndSubsegmentIfStarted() const {
   auto subsegment_info = std::make_shared<SegmentInfo>();
   subsegment_info->start_timestamp = subsegment_start_time_.value();
   subsegment_info->duration =
-      last_sample_end_timestamp_ - subsegment_start_time_.value();
+      max_segment_time_ - subsegment_start_time_.value();
   subsegment_info->is_subsegment = true;
   return DispatchSegmentInfo(kStreamIndex, std::move(subsegment_info));
 }
