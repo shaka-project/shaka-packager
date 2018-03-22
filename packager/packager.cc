@@ -54,6 +54,7 @@ namespace shaka {
 
 // TODO(kqyang): Clean up namespaces.
 using media::Demuxer;
+using media::JobManager;
 using media::KeySource;
 using media::MuxerOptions;
 using media::SyncPointQueue;
@@ -785,9 +786,8 @@ struct Packager::PackagerInternal {
   std::unique_ptr<KeySource> encryption_key_source;
   std::unique_ptr<MpdNotifier> mpd_notifier;
   std::unique_ptr<hls::HlsNotifier> hls_notifier;
-  std::unique_ptr<SyncPointQueue> sync_points;
   BufferCallbackParams buffer_callback_params;
-  media::JobManager job_manager;
+  std::unique_ptr<media::JobManager> job_manager;
 };
 
 Packager::Packager() {}
@@ -857,10 +857,12 @@ Status Packager::Initialize(
     internal->hls_notifier.reset(new hls::SimpleHlsNotifier(hls_params));
   }
 
+  std::unique_ptr<SyncPointQueue> sync_points;
   if (!packaging_params.ad_cue_generator_params.cue_points.empty()) {
-    internal->sync_points.reset(
+    sync_points.reset(
         new SyncPointQueue(packaging_params.ad_cue_generator_params));
   }
+  internal->job_manager.reset(new JobManager(std::move(sync_points)));
 
   std::vector<StreamDescriptor> streams_for_jobs;
 
@@ -904,8 +906,9 @@ Status Packager::Initialize(
 
   Status status = media::CreateAllJobs(
       streams_for_jobs, packaging_params, internal->mpd_notifier.get(),
-      internal->encryption_key_source.get(), internal->sync_points.get(),
-      &muxer_listener_factory, &muxer_factory, &internal->job_manager);
+      internal->encryption_key_source.get(),
+      internal->job_manager->sync_points(), &muxer_listener_factory,
+      &muxer_factory, internal->job_manager.get());
 
   if (!status.ok()) {
     return status;
@@ -919,7 +922,7 @@ Status Packager::Run() {
   if (!internal_)
     return Status(error::INVALID_ARGUMENT, "Not yet initialized.");
 
-  Status status = internal_->job_manager.RunJobs();
+  Status status = internal_->job_manager->RunJobs();
   if (!status.ok())
     return status;
 
@@ -939,7 +942,7 @@ void Packager::Cancel() {
     LOG(INFO) << "Not yet initialized. Return directly.";
     return;
   }
-  internal_->job_manager.CancelJobs();
+  internal_->job_manager->CancelJobs();
 }
 
 std::string Packager::GetLibraryVersion() {

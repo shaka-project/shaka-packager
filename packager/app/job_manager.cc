@@ -7,6 +7,7 @@
 #include "packager/app/job_manager.h"
 
 #include "packager/app/libcrypto_threading.h"
+#include "packager/media/chunking/sync_point_queue.h"
 #include "packager/media/origin/origin_handler.h"
 
 namespace shaka {
@@ -28,6 +29,9 @@ void Job::Run() {
   status_ = work_->Run();
   wait_.Signal();
 }
+
+JobManager::JobManager(std::unique_ptr<SyncPointQueue> sync_points)
+    : sync_points_(std::move(sync_points)) {}
 
 void JobManager::Add(const std::string& name,
                      std::shared_ptr<OriginHandler> handler) {
@@ -87,6 +91,8 @@ Status JobManager::RunJobs() {
 
   // If the main loop has exited and there are still jobs running,
   // we need to cancel them and clean-up.
+  if (sync_points_)
+    sync_points_->Cancel();
   for (auto& job : active_jobs) {
     job->Cancel();
   }
@@ -99,6 +105,8 @@ Status JobManager::RunJobs() {
 }
 
 void JobManager::CancelJobs() {
+  if (sync_points_)
+    sync_points_->Cancel();
   for (auto& job : jobs_) {
     job->Cancel();
   }

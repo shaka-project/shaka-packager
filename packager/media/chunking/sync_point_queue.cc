@@ -27,6 +27,14 @@ void SyncPointQueue::AddThread() {
   thread_count_++;
 }
 
+void SyncPointQueue::Cancel() {
+  {
+    base::AutoLock auto_lock(lock_);
+    cancelled_ = true;
+  }
+  sync_condition_.Broadcast();
+}
+
 double SyncPointQueue::GetHint(double time_in_seconds) {
   base::AutoLock auto_lock(lock_);
 
@@ -46,7 +54,7 @@ double SyncPointQueue::GetHint(double time_in_seconds) {
 std::shared_ptr<const CueEvent> SyncPointQueue::GetNext(
     double hint_in_seconds) {
   base::AutoLock auto_lock(lock_);
-  while (true) {
+  while (!cancelled_) {
     // Find the promoted cue that would line up with our hint, which is the
     // first cue that is not less than |hint_in_seconds|.
     auto iter = promoted_.lower_bound(hint_in_seconds);
@@ -70,6 +78,7 @@ std::shared_ptr<const CueEvent> SyncPointQueue::GetNext(
     sync_condition_.Wait();
     waiting_thread_count_--;
   }
+  return nullptr;
 }
 
 std::shared_ptr<const CueEvent> SyncPointQueue::PromoteAt(

@@ -170,7 +170,10 @@ Status CueAlignmentHandler::OnSample(std::unique_ptr<StreamData> sample) {
 
     std::shared_ptr<const CueEvent> next_sync =
         sync_points_->GetNext(next_cue_hint);
-    DCHECK(next_sync);
+    if (!next_sync) {
+      // This happens only if the job is cancelled.
+      return Status(error::CANCELLED, "SyncPointQueue is cancelled.");
+    }
 
     Status status = UseNewSyncPoint(next_sync);
     if (!status.ok()) {
