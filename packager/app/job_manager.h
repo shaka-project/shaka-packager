@@ -17,6 +17,7 @@ namespace shaka {
 namespace media {
 
 class OriginHandler;
+class SyncPointQueue;
 
 // A job is a single line of work that is expected to run in parallel with
 // other jobs.
@@ -54,7 +55,10 @@ class Job : public base::SimpleThread {
 // jobs.
 class JobManager {
  public:
-  JobManager() = default;
+  // @param sync_points is an optional SyncPointQueue used to synchronize and
+  //        align cue points. JobManager cancels @a sync_points when any job
+  //        fails or is cancelled. It can be NULL.
+  explicit JobManager(std::unique_ptr<SyncPointQueue> sync_points);
 
   // Create a new job entry by specifying the origin handler at the top of the
   // chain and a name for the thread. This will only register the job. To start
@@ -75,6 +79,8 @@ class JobManager {
   // unblock a call to |RunJobs|.
   void CancelJobs();
 
+  SyncPointQueue* sync_points() { return sync_points_.get(); }
+
  private:
   JobManager(const JobManager&) = delete;
   JobManager& operator=(const JobManager&) = delete;
@@ -86,6 +92,9 @@ class JobManager {
   // Stores Job entries for delayed construction of Job object.
   std::vector<JobEntry> job_entries_;
   std::vector<std::unique_ptr<Job>> jobs_;
+  // Stored in JobManager so JobManager can cancel |sync_points| when any job
+  // fails or is cancelled.
+  std::unique_ptr<SyncPointQueue> sync_points_;
 };
 
 }  // namespace media

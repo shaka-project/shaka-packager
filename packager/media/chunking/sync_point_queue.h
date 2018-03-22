@@ -26,6 +26,9 @@ class SyncPointQueue {
   /// order to keep track of its clients.
   void AddThread();
 
+  /// Cancel the queue and unblock all threads.
+  void Cancel();
+
   /// @return A hint for when the next cue event would be. The returned hint is
   ///         not less than @a time_in_seconds. The actual time for the next cue
   ///         event will not be less than the returned hint, with the exact
@@ -37,7 +40,7 @@ class SyncPointQueue {
   ///         after @a hint_in_seconds has been promoted, this will block until
   ///         either a cue is promoted or all threads are blocked (in which
   ///         case, the unpromoted cue at @a hint_in_seconds will be
-  ///         self-promoted and returned).
+  ///         self-promoted and returned) or Cancel() is called.
   std::shared_ptr<const CueEvent> GetNext(double hint_in_seconds);
 
   /// Promote the first cue that is not greater than @a time_in_seconds. All
@@ -56,6 +59,7 @@ class SyncPointQueue {
   base::ConditionVariable sync_condition_;
   size_t thread_count_ = 0;
   size_t waiting_thread_count_ = 0;
+  bool cancelled_ = false;
 
   std::map<double, std::shared_ptr<CueEvent>> unpromoted_;
   std::map<double, std::shared_ptr<CueEvent>> promoted_;
