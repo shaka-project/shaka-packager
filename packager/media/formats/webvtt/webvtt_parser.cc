@@ -18,6 +18,7 @@
 namespace shaka {
 namespace media {
 namespace {
+const uint64_t kStreamIndex = 0;
 
 std::string BlockToString(const std::string* block, size_t size) {
   std::string out = " --- BLOCK START ---\n";
@@ -70,12 +71,12 @@ Status WebVttParser::InitializeInternal() {
 
 bool WebVttParser::ValidateOutputStreamIndex(size_t stream_index) const {
   // Only support one output
-  return stream_index == 0;
+  return stream_index == kStreamIndex;
 }
 
 Status WebVttParser::Run() {
   return Parse()
-             ? FlushDownstream(0)
+             ? FlushDownstream(kStreamIndex)
              : Status(error::INTERNAL_ERROR,
                       "Failed to parse WebVTT source. See log for details.");
 }
@@ -209,27 +210,27 @@ Status WebVttParser::ParseCue(const std::string& id,
     sample->AppendPayload(block[i]);
   }
 
-  return DispatchTextSample(0, sample);
+  return DispatchTextSample(kStreamIndex, sample);
 }
 
 Status WebVttParser::DispatchTextStreamInfo() {
+  const int kTrackId = 0;
   // The resolution of timings are in milliseconds.
   const int kTimescale = 1000;
-
   // The duration passed here is not very important. Also the whole file
   // must be read before determining the real duration which doesn't
   // work nicely with the current demuxer.
   const int kDuration = 0;
-
   const char kWebVttCodecString[] = "wvtt";
+  const char kCodecConfig[] = "";
+  const int64_t kNoWidth = 0;
+  const int64_t kNoHeight = 0;
 
-  StreamInfo* info = new TextStreamInfo(0, kTimescale, kDuration, kCodecWebVtt,
-                                        kWebVttCodecString, "",
-                                        0,  // width
-                                        0,  // height
-                                        language_);
+  std::shared_ptr<StreamInfo> info = std::make_shared<TextStreamInfo>(
+      kTrackId, kTimescale, kDuration, kCodecWebVtt, kWebVttCodecString,
+      kCodecConfig, kNoWidth, kNoHeight, language_);
 
-  return DispatchStreamInfo(0, std::shared_ptr<StreamInfo>(info));
+  return DispatchStreamInfo(kStreamIndex, std::move(info));
 }
 }  // namespace media
 }  // namespace shaka
