@@ -43,7 +43,6 @@
         'webvtt_output_handler_unittest.cc',
         'webvtt_parser_unittest.cc',
         'webvtt_segmenter_unittest.cc',
-        'webvtt_pipeline_unittest.cc',
         'webvtt_timestamp_unittest.cc',
         'webvtt_to_mp4_handler_unittest.cc',
       ],
