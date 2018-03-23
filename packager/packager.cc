@@ -34,7 +34,7 @@
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/chunking/chunking_handler.h"
 #include "packager/media/chunking/cue_alignment_handler.h"
-#include "packager/media/chunking/webvtt_segmenter.h"
+#include "packager/media/chunking/text_chunker.h"
 #include "packager/media/crypto/encryption_handler.h"
 #include "packager/media/demuxer/demuxer.h"
 #include "packager/media/event/muxer_listener_factory.h"
@@ -457,7 +457,7 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
 
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
-  auto segmenter = std::make_shared<WebVttSegmenter>(segment_length_in_ms);
+  auto segmenter = std::make_shared<TextChunker>(segment_length_in_ms);
 
   // Build in reverse to allow us to move the pointers.
   Status status;

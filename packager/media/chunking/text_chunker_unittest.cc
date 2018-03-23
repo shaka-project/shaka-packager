@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/chunking/webvtt_segmenter.h"
+#include "packager/media/chunking/text_chunker.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {
@@ -35,12 +35,12 @@ const char* kPayload[] = {"cue 1 payload", "cue 2 payload"};
 const std::string kNoSettings = "";
 }  // namespace
 
-class WebVttSegmenterTest : public MediaHandlerTestBase {
+class TextChunkerTest : public MediaHandlerTestBase {
  protected:
   void SetUp() {
-    ASSERT_OK(SetUpAndInitializeGraph(
-        std::make_shared<WebVttSegmenter>(kSegmentDuration), kInputCount,
-        kOutputCount));
+    ASSERT_OK(
+        SetUpAndInitializeGraph(std::make_shared<TextChunker>(kSegmentDuration),
+                                kInputCount, kOutputCount));
   }
 };
 
@@ -49,7 +49,7 @@ class WebVttSegmenterTest : public MediaHandlerTestBase {
 // |         |
 // |[---A---]|
 // |         |
-TEST_F(WebVttSegmenterTest, CueEndingOnSegmentStart) {
+TEST_F(TextChunkerTest, CueEndingOnSegmentStart) {
   const uint64_t kSampleDuration = kSegmentDuration;
 
   {
@@ -86,7 +86,7 @@ TEST_F(WebVttSegmenterTest, CueEndingOnSegmentStart) {
 // [---A---] |
 //           | [---B---]
 //           |
-TEST_F(WebVttSegmenterTest, CreatesSegmentsForCues) {
+TEST_F(TextChunkerTest, CreatesSegmentsForCues) {
   // Divide segment duration by 2 so that the sample duration won't be a full
   // segment.
   const uint64_t kSampleDuration = kSegmentDuration / 2;
@@ -142,7 +142,7 @@ TEST_F(WebVttSegmenterTest, CreatesSegmentsForCues) {
 //           |          |
 //           |          | [---B---]
 //           |          |
-TEST_F(WebVttSegmenterTest, OutputsEmptySegments) {
+TEST_F(TextChunkerTest, OutputsEmptySegments) {
   const uint64_t kSampleDuration = kSegmentDuration / 2;
 
   const int64_t kSegment1Start = kStartTime;
@@ -207,7 +207,7 @@ TEST_F(WebVttSegmenterTest, OutputsEmptySegments) {
 //              |
 //  [-----A-----|---------]
 //              |
-TEST_F(WebVttSegmenterTest, CueCrossesSegments) {
+TEST_F(TextChunkerTest, CueCrossesSegments) {
   const uint64_t kSampleDuration = 2 * kSegmentDuration;
 
   {
@@ -249,9 +249,9 @@ TEST_F(WebVttSegmenterTest, CueCrossesSegments) {
   ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
-class WebVttSegmenterOrderTest : public MediaHandlerTestBase {};
+class TextChunkerOrderTest : public MediaHandlerTestBase {};
 
-TEST_F(WebVttSegmenterOrderTest, PreservesOrder) {
+TEST_F(TextChunkerOrderTest, PreservesOrder) {
   const size_t kInputs = 1;
   const size_t kOutputs = 1;
 
@@ -262,8 +262,8 @@ TEST_F(WebVttSegmenterOrderTest, PreservesOrder) {
   const int64_t kSegmentStart1 = 0;
   const int64_t kSegmentStart2 = kDuration;
 
-  ASSERT_OK(SetUpAndInitializeGraph(
-      std::make_shared<WebVttSegmenter>(kDuration), kInputs, kOutputs));
+  ASSERT_OK(SetUpAndInitializeGraph(std::make_shared<TextChunker>(kDuration),
+                                    kInputs, kOutputs));
 
   {
     testing::InSequence s;

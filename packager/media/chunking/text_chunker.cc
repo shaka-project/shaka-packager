@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/chunking/webvtt_segmenter.h"
+#include "packager/media/chunking/text_chunker.h"
 
 namespace shaka {
 namespace media {
@@ -12,14 +12,14 @@ namespace {
 const size_t kStreamIndex = 0;
 }  // namespace
 
-WebVttSegmenter::WebVttSegmenter(uint64_t segment_duration_ms)
+TextChunker::TextChunker(uint64_t segment_duration_ms)
     : segment_duration_ms_(segment_duration_ms) {}
 
-Status WebVttSegmenter::InitializeInternal() {
+Status TextChunker::InitializeInternal() {
   return Status::OK;
 }
 
-Status WebVttSegmenter::Process(std::unique_ptr<StreamData> stream_data) {
+Status TextChunker::Process(std::unique_ptr<StreamData> stream_data) {
   switch (stream_data->stream_data_type) {
     case StreamDataType::kStreamInfo:
       return DispatchStreamInfo(kStreamIndex,
@@ -32,7 +32,7 @@ Status WebVttSegmenter::Process(std::unique_ptr<StreamData> stream_data) {
   }
 }
 
-Status WebVttSegmenter::OnFlushRequest(size_t input_stream_index) {
+Status TextChunker::OnFlushRequest(size_t input_stream_index) {
   // At this point we know that there is a single series of consecutive
   // segments, all we need to do is run through all of them.
   for (const auto& pair : segment_map_) {
@@ -48,7 +48,7 @@ Status WebVttSegmenter::OnFlushRequest(size_t input_stream_index) {
   return FlushAllDownstreams();
 }
 
-Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
+Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   const uint64_t start_segment = sample->start_time() / segment_duration_ms_;
 
   // Find the last segment that overlaps the sample. Adjust the sample by one
@@ -80,7 +80,7 @@ Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
 
     Status status;
     if (it == segment_map_.end()) {
-      const WebVttSegmentSamples kNoSamples;
+      const SegmentSamples kNoSamples;
       status.Update(DispatchSegmentWithSamples(segment, kNoSamples));
     } else {
       // We found a segment, output all the samples. Remove it from the map as
@@ -102,9 +102,8 @@ Status WebVttSegmenter::OnTextSample(std::shared_ptr<const TextSample> sample) {
   return Status::OK;
 }
 
-Status WebVttSegmenter::DispatchSegmentWithSamples(
-    uint64_t segment,
-    const WebVttSegmentSamples& samples) {
+Status TextChunker::DispatchSegmentWithSamples(uint64_t segment,
+                                               const SegmentSamples& samples) {
   Status status;
   for (const auto& sample : samples) {
     status.Update(DispatchTextSample(kStreamIndex, sample));
