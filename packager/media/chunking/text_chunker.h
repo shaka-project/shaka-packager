@@ -7,43 +7,41 @@
 #ifndef PACKAGER_MEDIA_CHUNKING_TEXT_CHUNKER_H_
 #define PACKAGER_MEDIA_CHUNKING_TEXT_CHUNKER_H_
 
-#include <stdint.h>
-
-#include <map>
-#include <vector>
+#include <list>
 
 #include "packager/media/base/media_handler.h"
-#include "packager/status.h"
 
 namespace shaka {
 namespace media {
 
 class TextChunker : public MediaHandler {
  public:
-  explicit TextChunker(uint64_t segment_duration_ms);
-
- protected:
-  Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status OnFlushRequest(size_t input_stream_index) override;
+  explicit TextChunker(int64_t segment_duration_ms);
 
  private:
   TextChunker(const TextChunker&) = delete;
   TextChunker& operator=(const TextChunker&) = delete;
 
-  using SegmentSamples = std::vector<std::shared_ptr<const TextSample>>;
-
   Status InitializeInternal() override;
 
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
+  Status OnFlushRequest(size_t input_stream_index) override;
+
+  Status OnStreamInfo(std::shared_ptr<const StreamInfo> info);
+  Status OnCueEvent(std::shared_ptr<const CueEvent> cue);
   Status OnTextSample(std::shared_ptr<const TextSample> sample);
 
-  Status DispatchSegmentWithSamples(uint64_t segment,
-                                    const SegmentSamples& samples);
+  Status EndSegment(int64_t segment_actual_end_ms);
+  void StartNewSegment(int64_t start_ms);
 
-  uint64_t segment_duration_ms_;
+  int64_t segment_duration_ms_;
 
-  // Mapping of segment number to segment.
-  std::map<uint64_t, SegmentSamples> segment_map_;
-  uint64_t head_segment_ = 0;
+  // The segment that we are currently outputting samples for. The segment
+  // will end once a new sample with start time greater or equal to the
+  // segment's end time arrives.
+  int64_t segment_start_ms_;
+  int64_t segment_expected_end_ms_;
+  std::list<std::shared_ptr<const TextSample>> segment_samples_;
 };
 
 }  // namespace media
