@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/media/base/media_handler_test_base.h"
-#include "packager/media/formats/webvtt/webvtt_segmenter.h"
+#include "packager/media/chunking/webvtt_segmenter.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {

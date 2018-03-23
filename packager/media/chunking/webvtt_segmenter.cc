@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_segmenter.h"
+#include "packager/media/chunking/webvtt_segmenter.h"
 
 namespace shaka {
 namespace media {

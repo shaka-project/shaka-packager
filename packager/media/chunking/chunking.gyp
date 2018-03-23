@@ -19,6 +19,8 @@
         'cue_alignment_handler.h',
         'sync_point_queue.cc',
         'sync_point_queue.h',
+        'webvtt_segmenter.cc',
+        'webvtt_segmenter.h',
       ],
       'dependencies': [
         '../base/media_base.gyp:media_base',
@@ -30,6 +32,7 @@
       'sources': [
         'chunking_handler_unittest.cc',
         'cue_alignment_handler_unittest.cc',
+        'webvtt_segmenter_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
