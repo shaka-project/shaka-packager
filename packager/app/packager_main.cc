@@ -29,6 +29,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/file/file.h"
 #include "packager/packager.h"
+#include "packager/tools/license_notice.h"
 
 #if defined(OS_WIN)
 #include <codecvt>
@@ -37,6 +38,7 @@
 #endif  // defined(OS_WIN)
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
+DEFINE_bool(licenses, false, "Dump licenses.");
 DEFINE_bool(use_fake_clock_for_muxer,
             false,
             "Set to true to use a fake clock for muxer. With this flag set, "
@@ -452,6 +454,11 @@ int PackagerMain(int argc, char** argv) {
   google::SetVersionString(shaka::Packager::GetLibraryVersion());
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
+  if (FLAGS_licenses) {
+    for (const char* line : kLicenseNotice)
+      std::cout << line << std::endl;
+    return kSuccess;
+  }
   if (argc < 2) {
     google::ShowUsageWithFlags("Usage");
     return kSuccess;
