@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <iostream>
+
 #include "packager/app/mpd_generator_flags.h"
 #include "packager/app/vlog_flags.h"
 #include "packager/base/at_exit.h"
@@ -12,6 +14,7 @@
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/mpd/util/mpd_writer.h"
+#include "packager/tools/license_notice.h"
 #include "packager/version/version.h"
 
 #if defined(OS_WIN)
@@ -19,6 +22,8 @@
 #include <functional>
 #include <locale>
 #endif  // defined(OS_WIN)
+
+DEFINE_bool(licenses, false, "Dump licenses.");
 
 namespace shaka {
 namespace {
@@ -100,6 +105,11 @@ int MpdMain(int argc, char** argv) {
   google::SetVersionString(GetPackagerVersion());
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
+  if (FLAGS_licenses) {
+    for (const char* line : kLicenseNotice)
+      std::cout << line << std::endl;
+    return kSuccess;
+  }
 
   ExitStatus status = CheckRequiredFlags();
   if (status != kSuccess) {

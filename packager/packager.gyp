@@ -97,6 +97,7 @@
         'file/file.gyp:file',
         'libpackager',
         'third_party/gflags/gflags.gyp:gflags',
+        'tools/license_notice.gyp:license_notice',
       ],
       'conditions': [
         ['profiling==1', {
@@ -119,6 +120,7 @@
         'base/base.gyp:base',
         'mpd/mpd.gyp:mpd_util',
         'third_party/gflags/gflags.gyp:gflags',
+        'tools/license_notice.gyp:license_notice',
       ],
     },
     {
