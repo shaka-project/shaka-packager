@@ -11,11 +11,13 @@
 namespace shaka {
 namespace media {
 
-uint64_t TextSample::EndTime() const {
+int64_t TextSample::EndTime() const {
   return start_time_ + duration_;
 }
 
-void TextSample::SetTime(uint64_t start_time, uint64_t end_time) {
+void TextSample::SetTime(int64_t start_time, int64_t end_time) {
+  DCHECK_GE(start_time, 0);
+  DCHECK_GT(end_time, 0);
   DCHECK_LT(start_time, end_time);
   start_time_ = start_time;
   duration_ = end_time - start_time;

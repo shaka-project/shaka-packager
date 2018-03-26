@@ -15,8 +15,7 @@ namespace shaka {
 namespace media {
 
 namespace {
-const int64_t kStartTimeSigned = 0;
-const uint64_t kStartTime = 0;
+const int64_t kStartTime = 0;
 const int64_t kSegmentDuration = 10000;  // 10 seconds
 
 const size_t kStreamIndex = 0;
@@ -50,7 +49,7 @@ class TextChunkerTest : public MediaHandlerTestBase {
 // |[---A---]|
 // |         |
 TEST_F(TextChunkerTest, CueEndingOnSegmentStart) {
-  const uint64_t kSampleDuration = kSegmentDuration;
+  const int64_t kSampleDuration = kSegmentDuration;
 
   {
     testing::InSequence s;
@@ -64,8 +63,8 @@ TEST_F(TextChunkerTest, CueEndingOnSegmentStart) {
                                kNoSettings, kPayload[0])));
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTime, kSegmentDuration,
+                                !kSubSegment, !kEncrypted)));
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
 
@@ -89,7 +88,7 @@ TEST_F(TextChunkerTest, CueEndingOnSegmentStart) {
 TEST_F(TextChunkerTest, CreatesSegmentsForCues) {
   // Divide segment duration by 2 so that the sample duration won't be a full
   // segment.
-  const uint64_t kSampleDuration = kSegmentDuration / 2;
+  const int64_t kSampleDuration = kSegmentDuration / 2;
 
   {
     testing::InSequence s;
@@ -103,8 +102,8 @@ TEST_F(TextChunkerTest, CreatesSegmentsForCues) {
                                kNoSettings, kPayload[0])));
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTime, kSegmentDuration,
+                                !kSubSegment, !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(
@@ -112,10 +111,10 @@ TEST_F(TextChunkerTest, CreatesSegmentsForCues) {
         OnProcess(IsTextSample(kId[1], kStartTime + kSegmentDuration,
                                kStartTime + kSegmentDuration + kSampleDuration,
                                kNoSettings, kPayload[1])));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsSegmentInfo(
-                    kStreamIndex, kStartTimeSigned + kSegmentDuration,
-                    kSegmentDuration, !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTime + kSegmentDuration,
+                                kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
@@ -143,7 +142,7 @@ TEST_F(TextChunkerTest, CreatesSegmentsForCues) {
 //           |          | [---B---]
 //           |          |
 TEST_F(TextChunkerTest, OutputsEmptySegments) {
-  const uint64_t kSampleDuration = kSegmentDuration / 2;
+  const int64_t kSampleDuration = kSegmentDuration / 2;
 
   const int64_t kSegment1Start = kStartTime;
   const int64_t kSegment2Start = kSegment1Start + kSegmentDuration;
@@ -208,7 +207,7 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
 //  [-----A-----|---------]
 //              |
 TEST_F(TextChunkerTest, CueCrossesSegments) {
-  const uint64_t kSampleDuration = 2 * kSegmentDuration;
+  const int64_t kSampleDuration = 2 * kSegmentDuration;
 
   {
     testing::InSequence s;
@@ -222,18 +221,18 @@ TEST_F(TextChunkerTest, CueCrossesSegments) {
                                kNoSettings, kPayload[0])));
     EXPECT_CALL(
         *Output(kOutputIndex),
-        OnProcess(IsSegmentInfo(kStreamIndex, kStartTimeSigned,
-                                kSegmentDuration, !kSubSegment, !kEncrypted)));
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTime, kSegmentDuration,
+                                !kSubSegment, !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(
         *Output(kOutputIndex),
         OnProcess(IsTextSample(kId[0], kStartTime, kStartTime + kSampleDuration,
                                kNoSettings, kPayload[0])));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsSegmentInfo(
-                    kStreamIndex, kStartTimeSigned + kSegmentDuration,
-                    kSegmentDuration, !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsSegmentInfo(kStreamIndex, kStartTime + kSegmentDuration,
+                                kSegmentDuration, !kSubSegment, !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
   }
@@ -258,7 +257,7 @@ TEST_F(TextChunkerOrderTest, PreservesOrder) {
   const size_t kInput = 0;
   const size_t kOutput = 0;
 
-  const uint64_t kDuration = 10000;
+  const int64_t kDuration = 10000;
   const int64_t kSegmentStart1 = 0;
   const int64_t kSegmentStart2 = kDuration;
 

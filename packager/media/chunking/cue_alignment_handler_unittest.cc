@@ -139,12 +139,12 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
 
   const int64_t kSampleDuration = 1000;
 
-  const uint64_t kSample0Start = 0;
-  const uint64_t kSample0End = kSample0Start + kSampleDuration;
-  const uint64_t kSample1Start = kSample0End;
-  const uint64_t kSample1End = kSample1Start + kSampleDuration;
-  const uint64_t kSample2Start = kSample1End;
-  const uint64_t kSample2End = kSample2Start + kSampleDuration;
+  const int64_t kSample0Start = 0;
+  const int64_t kSample0End = kSample0Start + kSampleDuration;
+  const int64_t kSample1Start = kSample0End;
+  const int64_t kSample1End = kSample1Start + kSampleDuration;
+  const int64_t kSample2Start = kSample1End;
+  const int64_t kSample2End = kSample2Start + kSampleDuration;
 
   AdCueGeneratorParams params;
   SyncPointQueue sync_points(params);
@@ -191,14 +191,14 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
   const size_t kAudioStream = 1;
   const size_t kVideoStream = 2;
 
-  const uint64_t kSampleDuration = 1000;
+  const int64_t kSampleDuration = 1000;
 
-  const uint64_t kSample0Start = 0;
-  const uint64_t kSample0End = kSample0Start + kSampleDuration;
-  const uint64_t kSample1Start = kSample0Start + kSampleDuration;
-  const uint64_t kSample1End = kSample1Start + kSampleDuration;
-  const uint64_t kSample2Start = kSample1Start + kSampleDuration;
-  const uint64_t kSample2End = kSample2Start + kSampleDuration;
+  const int64_t kSample0Start = 0;
+  const int64_t kSample0End = kSample0Start + kSampleDuration;
+  const int64_t kSample1Start = kSample0Start + kSampleDuration;
+  const int64_t kSample1End = kSample1Start + kSampleDuration;
+  const int64_t kSample2Start = kSample1Start + kSampleDuration;
+  const int64_t kSample2End = kSample2Start + kSampleDuration;
 
   AdCueGeneratorParams params;
   SyncPointQueue sync_points(params);
@@ -420,12 +420,12 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
 
   const int64_t kSampleDuration = 1000;
 
-  const uint64_t kSample0Start = 0;
-  const uint64_t kSample0End = kSample0Start + kSampleDuration;
-  const uint64_t kSample1Start = kSample0End;
-  const uint64_t kSample1End = kSample1Start + kSampleDuration;
-  const uint64_t kSample2Start = kSample1End;
-  const uint64_t kSample2End = kSample2Start + kSampleDuration;
+  const int64_t kSample0Start = 0;
+  const int64_t kSample0End = kSample0Start + kSampleDuration;
+  const int64_t kSample1Start = kSample0End;
+  const int64_t kSample1End = kSample1Start + kSampleDuration;
+  const int64_t kSample2Start = kSample1End;
+  const int64_t kSample2End = kSample2Start + kSampleDuration;
 
   const double kSample1StartInSeconds =
       static_cast<double>(kSample1Start) / kMsTimeScale;
@@ -485,15 +485,11 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
   const int64_t kSampleDuration = 1000;
 
   const int64_t kSample0Start = 0;
-  const int64_t kSample1Start = kSample0Start + kSampleDuration;
-  const int64_t kSample2Start = kSample1Start + kSampleDuration;
-
-  const uint64_t kSample0StartU = 0;
-  const uint64_t kSample0EndU = kSample0StartU + kSampleDuration;
-  const uint64_t kSample1StartU = kSample0EndU;
-  const uint64_t kSample1EndU = kSample1StartU + kSampleDuration;
-  const uint64_t kSample2StartU = kSample1EndU;
-  const uint64_t kSample2EndU = kSample2StartU + kSampleDuration;
+  const int64_t kSample0End = kSample0Start + kSampleDuration;
+  const int64_t kSample1Start = kSample0End;
+  const int64_t kSample1End = kSample1Start + kSampleDuration;
+  const int64_t kSample2Start = kSample1End;
+  const int64_t kSample2End = kSample2Start + kSampleDuration;
 
   const double kSample2StartInSeconds =
       static_cast<double>(kSample2Start) / kMsTimeScale;
@@ -516,15 +512,15 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsStreamInfo(kParent, kNoTimeScale, !kEncrypted)));
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(kNoId, kSample0StartU, kSample0EndU,
+                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(kNoId, kSample1StartU, kSample1EndU,
+                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsCueEvent(kParent, kSample2StartInSeconds)));
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(kNoId, kSample2StartU, kSample2EndU,
+                OnProcess(IsTextSample(kNoId, kSample2Start, kSample2End,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
   }
@@ -572,15 +568,15 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
   Input(kTextStream)
       ->Dispatch(StreamData::FromTextSample(
           kChild,
-          GetTextSample(kNoId, kSample0StartU, kSample0EndU, kNoPayload)));
+          GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload)));
   Input(kTextStream)
       ->Dispatch(StreamData::FromTextSample(
           kChild,
-          GetTextSample(kNoId, kSample1StartU, kSample1EndU, kNoPayload)));
+          GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload)));
   Input(kTextStream)
       ->Dispatch(StreamData::FromTextSample(
           kChild,
-          GetTextSample(kNoId, kSample2StartU, kSample2EndU, kNoPayload)));
+          GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload)));
   Input(kTextStream)->FlushAllDownstreams();
 
   Input(kAudioStream)

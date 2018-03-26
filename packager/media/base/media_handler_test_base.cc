@@ -34,6 +34,7 @@ const bool kEncrypted = true;
 
 // Use H264 code config.
 const uint8_t kCodecConfig[]{
+    // clang-format off
     // Header
     0x01, 0x64, 0x00, 0x1e, 0xff,
     // SPS count (ignore top three bits)
@@ -48,6 +49,7 @@ const uint8_t kCodecConfig[]{
     // PPS
     0x00, 0x06,  // Size
     0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
+    // clang-format on
 };
 
 // Mock data, we don't really care about what is inside.
@@ -221,8 +223,8 @@ std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetTextStreamInfo() const {
 
 std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
     const std::string& id,
-    uint64_t start,
-    uint64_t end,
+    int64_t start,
+    int64_t end,
     const std::string& payload) const {
   std::unique_ptr<TextSample> sample(new TextSample);
   sample->set_id(id);
@@ -230,6 +232,14 @@ std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
   sample->AppendPayload(payload);
 
   return sample;
+}
+
+std::unique_ptr<CueEvent> MediaHandlerTestBase::GetCueEvent(
+    double time_in_seconds) const {
+  std::unique_ptr<CueEvent> event(new CueEvent);
+  event->time_in_seconds = time_in_seconds;
+
+  return event;
 }
 
 Status MediaHandlerTestBase::SetUpAndInitializeGraph(

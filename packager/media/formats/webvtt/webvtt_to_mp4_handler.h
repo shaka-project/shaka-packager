@@ -54,20 +54,20 @@ class WebVttToMp4Handler : public MediaHandler {
   // queue's time is less than |cutoff|. |cutoff| is needed as we can only
   // merge and send samples when we are sure no new samples will appear before
   // the next action.
-  Status ProcessUpToTime(uint64_t cutoff_time);
+  Status ProcessUpToTime(int64_t cutoff_time);
 
   // Merge together all TextSamples in |samples| into a single MP4 box and
   // pass the box downstream.
   Status MergeAndSendSamples(const std::list<const TextSample*>& samples,
-                             uint64_t start_time,
-                             uint64_t end_time);
+                             int64_t start_time,
+                             int64_t end_time);
 
-  Status SendEmptySample(uint64_t start_time, uint64_t end_time);
+  Status SendEmptySample(int64_t start_time, int64_t end_time);
 
   // Get a new id for the next action.
   uint64_t NextActionId();
 
-  uint64_t next_change_ = 0;
+  int64_t next_change_ = 0;
 
   // This is the current state of the box we are writing.
   BufferWriter box_writer_;

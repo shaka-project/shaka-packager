@@ -17,16 +17,16 @@ namespace media {
 
 class DisplayAction {
  public:
-  DisplayAction(uint64_t id, uint64_t time) : id_(id), time_(time) {}
+  DisplayAction(uint64_t id, int64_t time) : id_(id), time_(time) {}
   virtual ~DisplayAction() = default;
 
   uint64_t id() const { return id_; }
-  uint64_t time() const { return time_; }
+  int64_t time() const { return time_; }
   virtual void ActOn(std::list<const TextSample*>* display) const = 0;
 
  private:
   uint64_t id_;
-  uint64_t time_;
+  int64_t time_;
 };
 
 namespace {
@@ -92,7 +92,7 @@ Status WebVttToMp4Handler::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status WebVttToMp4Handler::OnFlushRequest(size_t input_stream_index) {
-  const uint64_t kEndOfTime = std::numeric_limits<uint64_t>::max();
+  const int64_t kEndOfTime = std::numeric_limits<int64_t>::max();
   ProcessUpToTime(kEndOfTime);
 
   return FlushDownstream(0);
@@ -121,13 +121,13 @@ void WebVttToMp4Handler::WriteCue(const std::string& id,
   box.Write(out);
 }
 
-Status WebVttToMp4Handler::ProcessUpToTime(uint64_t cutoff_time) {
+Status WebVttToMp4Handler::ProcessUpToTime(int64_t cutoff_time) {
   // We can only process as far as the last add as no new events will be
   // added that come before that time.
   while (actions_.size() && actions_.top()->time() < cutoff_time) {
     // STAGE 1: Write out the current state
     // Get the time range for which the current active state is valid.
-    const uint64_t previous_change = next_change_;
+    const int64_t previous_change = next_change_;
     next_change_ = actions_.top()->time();
 
     if (next_change_ > previous_change) {
@@ -161,8 +161,8 @@ Status WebVttToMp4Handler::ProcessUpToTime(uint64_t cutoff_time) {
 
 Status WebVttToMp4Handler::MergeAndSendSamples(
     const std::list<const TextSample*>& samples,
-    uint64_t start_time,
-    uint64_t end_time) {
+    int64_t start_time,
+    int64_t end_time) {
   DCHECK_GT(end_time, start_time);
 
   box_writer_.Clear();
@@ -181,8 +181,8 @@ Status WebVttToMp4Handler::MergeAndSendSamples(
   return DispatchMediaSample(kTrackId, std::move(sample));
 }
 
-Status WebVttToMp4Handler::SendEmptySample(uint64_t start_time,
-                                           uint64_t end_time) {
+Status WebVttToMp4Handler::SendEmptySample(int64_t start_time,
+                                           int64_t end_time) {
   DCHECK_GT(end_time, start_time);
 
   box_writer_.Clear();

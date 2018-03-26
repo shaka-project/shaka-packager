@@ -19,14 +19,14 @@ class TextSample {
   TextSample() = default;
 
   const std::string& id() const { return id_; }
-  uint64_t start_time() const { return start_time_; }
-  uint64_t duration() const { return duration_; }
+  int64_t start_time() const { return start_time_; }
+  int64_t duration() const { return duration_; }
   const std::string& settings() const { return settings_; }
   const std::string& payload() const { return payload_; }
-  uint64_t EndTime() const;
+  int64_t EndTime() const;
 
   void set_id(const std::string& id) { id_ = id; }
-  void SetTime(uint64_t start_time, uint64_t end_time);
+  void SetTime(int64_t start_time, int64_t end_time);
   void AppendStyle(const std::string& style);
   void AppendPayload(const std::string& payload);
 
@@ -36,8 +36,8 @@ class TextSample {
   // impact is minimal.
 
   std::string id_;
-  uint64_t start_time_ = 0;
-  uint64_t duration_ = 0;
+  int64_t start_time_ = 0;
+  int64_t duration_ = 0;
   std::string settings_;
   std::string payload_;
 };

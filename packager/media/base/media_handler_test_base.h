@@ -235,9 +235,11 @@ class MediaHandlerTestBase : public ::testing::Test {
   std::unique_ptr<StreamInfo> GetTextStreamInfo() const;
 
   std::unique_ptr<TextSample> GetTextSample(const std::string& id,
-                                            uint64_t start,
-                                            uint64_t end,
+                                            int64_t start,
+                                            int64_t end,
                                             const std::string& payload) const;
+
+  std::unique_ptr<CueEvent> GetCueEvent(double time_in_seconds) const;
 
   // Connect and initialize all handlers.
   Status SetUpAndInitializeGraph(std::shared_ptr<MediaHandler> handler,
