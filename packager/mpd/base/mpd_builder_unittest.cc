@@ -174,6 +174,29 @@ TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
   ASSERT_FALSE(mpd_.ToString(&mpd_doc));
 }
 
+TEST_F(OnDemandMpdBuilderTest, CheckXmlTest) {
+  // Disable pto adjustment.
+  FLAGS_pto_adjustment = 0;
+
+  const double kPeriod1StartTimeSeconds = 0.0;
+
+  // Actual period duration is determined by the segments not by the period
+  // start time above, which only provides an anchor point.
+  const double kPeriod1SegmentStartSeconds = 0.2;
+  const double kPeriod1SegmentDurationSeconds = 3.0;
+
+  Period* period = mpd_.GetOrCreatePeriod(kPeriod1StartTimeSeconds);
+  AddSegmentToPeriod(kPeriod1SegmentStartSeconds,
+                     kPeriod1SegmentDurationSeconds, period);
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"0\">\n"));
+  EXPECT_THAT(mpd_doc,
+              HasSubstr("<SegmentBase indexRange=\"121-221\""
+                        " timescale=\"1000\" presentationTimeOffset=\"200\">"));
+}
+
 TEST_F(OnDemandMpdBuilderTest, MultiplePeriodTest) {
   const double kPeriodStartTimeSeconds = 1.0;
   Period* period = mpd_.GetOrCreatePeriod(kPeriodStartTimeSeconds);
@@ -226,17 +249,19 @@ TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
   std::string mpd_doc;
   ASSERT_TRUE(mpd_.ToString(&mpd_doc));
   EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"0\" duration=\"PT3S\">\n"));
+  EXPECT_THAT(mpd_doc,
+              HasSubstr("<SegmentBase indexRange=\"121-221\""
+                        " timescale=\"1000\" presentationTimeOffset=\"200\">"));
+  EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"1\" duration=\"PT10.5S\">\n"));
   EXPECT_THAT(
       mpd_doc,
-      HasSubstr("<SegmentBase indexRange=\"121-221\" timescale=\"1000\">"));
-  EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"1\" duration=\"PT10.5S\">\n"));
-  EXPECT_THAT(mpd_doc,
-              HasSubstr("<SegmentBase indexRange=\"121-221\" "
-                        "timescale=\"1000\" presentationTimeOffset=\"5500\">"));
+      HasSubstr("<SegmentBase indexRange=\"121-221\""
+                " timescale=\"1000\" presentationTimeOffset=\"5500\">"));
   EXPECT_THAT(mpd_doc, HasSubstr("<Period id=\"2\" duration=\"PT10S\">\n"));
-  EXPECT_THAT(mpd_doc,
-              HasSubstr("<SegmentBase indexRange=\"121-221\" "
-                        "timescale=\"1000\" presentationTimeOffset=\"1500\">"));
+  EXPECT_THAT(
+      mpd_doc,
+      HasSubstr("<SegmentBase indexRange=\"121-221\""
+                " timescale=\"1000\" presentationTimeOffset=\"1500\">"));
 }
 
 TEST_F(LiveMpdBuilderTest, MultiplePeriodCheckXmlTest) {

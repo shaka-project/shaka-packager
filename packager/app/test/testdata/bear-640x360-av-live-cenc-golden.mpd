@@ -7,10 +7,11 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="875692" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+      <Representation id="0" bandwidth="854753" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <SegmentTemplate timescale="30000" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
-            <S t="2002" d="30030" r="1"/>
+            <S t="0" d="32032"/>
+            <S t="32032" d="30030"/>
             <S t="62062" d="22022"/>
           </SegmentTimeline>
         </SegmentTemplate>
