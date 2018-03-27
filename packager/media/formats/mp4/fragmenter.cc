@@ -6,6 +6,7 @@
 
 #include "packager/media/formats/mp4/fragmenter.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "packager/media/base/audio_stream_info.h"
@@ -150,6 +151,24 @@ Status Fragmenter::FinalizeFragment() {
       return status;
   }
 
+  if (first_fragment_) {
+    // Chrome (as of v66 https://crbug.com/398141) does not like negative values
+    // for adjusted dts = dts + Period@start (0 for first Period)
+    //                    - presentationTimeOffset
+    // Since |earliest_presentation_time| of the first fragment will be used to
+    // set presentationTimeOffset, the adjusted dts can become negative for the
+    // frames in the first segment in the first Period. To avoid seeing that,
+    // |earliest_presentation_time| is adjusted so it is not larger than the
+    // dts.
+    const int64_t dts = traf_->decode_time.decode_time;
+    if (earliest_presentation_time_ > dts) {
+      const uint64_t delta = earliest_presentation_time_ - dts;
+      earliest_presentation_time_ = dts;
+      fragment_duration_ += delta;
+    }
+    first_fragment_ = false;
+  }
+
   // Optimize trun box.
   traf_->runs[0].sample_count =
       static_cast<uint32_t>(traf_->runs[0].sample_sizes.size());
@@ -208,7 +227,7 @@ Status Fragmenter::FinalizeFragment() {
   return Status::OK;
 }
 
-void Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
+void Fragmenter::GenerateSegmentReference(SegmentReference* reference) const {
   // NOTE: Daisy chain is not supported currently.
   reference->reference_type = false;
   reference->subsegment_duration = fragment_duration_;
@@ -275,7 +294,7 @@ Status Fragmenter::FinalizeFragmentForEncryption() {
   return Status::OK;
 }
 
-bool Fragmenter::StartsWithSAP() {
+bool Fragmenter::StartsWithSAP() const {
   DCHECK(!traf_->runs.empty());
   uint32_t start_sample_flag;
   if (traf_->runs[0].flags & TrackFragmentRun::kSampleFlagsPresentMask) {

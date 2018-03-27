@@ -353,7 +353,6 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
 void MpdBuilder::UpdatePeriodDurationAndPresentationTimestamp() {
   DCHECK_EQ(MpdType::kStatic, mpd_options_.mpd_type);
 
-  bool first_period = true;
   for (const auto& period : periods_) {
     std::list<Representation*> video_representations;
     std::list<Representation*> non_video_representations;
@@ -393,21 +392,6 @@ void MpdBuilder::UpdatePeriodDurationAndPresentationTimestamp() {
     period->set_duration_seconds(*latest_end_time - *earliest_start_time);
 
     double presentation_time_offset = *earliest_start_time;
-    if (first_period) {
-      first_period = false;
-      // Chrome does not like negative dts (https://crbug.com/398141).
-      // Always set presentationTimeOffset (pto) to 0 for the first period as it
-      // may result in an error on Chrome v63.0.3239.132 if it sets to a non
-      // zero value.
-      // It is fine with subsequent periods as the actual offset applied takes
-      // Period@start into consideration:
-      //     offset = Period@start - presentationTimeOffset
-      // The result timestamp with offset applied is close to Period@start, so
-      // it is unlikely to result in a negative dts value.
-      // TODO(kqyang): Set the pto to |dts| instead of always setting it to 0 to
-      // workaround Chrome negative DTS bug.
-      presentation_time_offset = 0;
-    }
     for (const auto& adaptation_set : period->GetAdaptationSets()) {
       for (const auto& representation : adaptation_set->GetRepresentations()) {
         representation->SetPresentationTimeOffset(presentation_time_offset);

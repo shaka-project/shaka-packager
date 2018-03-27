@@ -196,25 +196,7 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
     vod_sidx_.reset(new SegmentIndex());
     vod_sidx_->reference_id = sidx()->reference_id;
     vod_sidx_->timescale = sidx()->timescale;
-
-    if (vod_ref.earliest_presentation_time > 0) {
-      const double starting_time_in_seconds =
-          static_cast<double>(vod_ref.earliest_presentation_time) /
-          GetReferenceTimeScale();
-      // Give a warning if it is significant.
-      if (starting_time_in_seconds > 0.5) {
-        // Note that DASH IF player requires presentationTimeOffset to be set in
-        // Segment{Base,List,Template} if there is non-zero starting time. Since
-        // current Chromium's MSE implementation uses DTS, the player expects
-        // DTS to be used.
-        LOG(WARNING) << "Warning! Non-zero starting time (in seconds): "
-                     << starting_time_in_seconds
-                     << ". Manual adjustment of presentationTimeOffset in "
-                        "mpd might be necessary.";
-      }
-    }
-    // Force earliest_presentation_time to start from 0 for VOD.
-    vod_sidx_->earliest_presentation_time = 0;
+    vod_sidx_->earliest_presentation_time = vod_ref.earliest_presentation_time;
   }
   vod_sidx_->references.push_back(vod_ref);
 

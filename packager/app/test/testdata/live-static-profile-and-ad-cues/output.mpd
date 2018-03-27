@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360668182373047S">
-  <Period id="0" duration="PT2.002S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.802799940109253S">
+  <Period id="0" duration="PT2.0687333333333333S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
-      <Representation id="0" bandwidth="875099" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+      <Representation id="0" bandwidth="844102" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <SegmentTemplate timescale="30000" initialization="bear-640x360-video-init.mp4" media="bear-640x360-video-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
-            <S t="2002" d="30030" r="1"/>
+            <S t="0" d="32032"/>
+            <S t="32032" d="30030"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>

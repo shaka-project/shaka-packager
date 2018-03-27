@@ -51,7 +51,7 @@ class Fragmenter {
   Status FinalizeFragment();
 
   /// Fill @a reference with current fragment information.
-  void GenerateSegmentReference(SegmentReference* reference);
+  void GenerateSegmentReference(SegmentReference* reference) const;
 
   void ClearFragmentFinalized() { fragment_finalized_ = false; }
 
@@ -88,7 +88,7 @@ class Fragmenter {
  private:
   Status FinalizeFragmentForEncryption();
   // Check if the current fragment starts with SAP.
-  bool StartsWithSAP();
+  bool StartsWithSAP() const;
 
   std::shared_ptr<const StreamInfo> stream_info_;
   bool use_decoding_timestamp_in_timeline_;
@@ -98,6 +98,7 @@ class Fragmenter {
   bool fragment_finalized_;
   uint64_t fragment_duration_;
   int64_t earliest_presentation_time_;
+  bool first_fragment_ = true;
   int64_t first_sap_time_;
   std::unique_ptr<BufferWriter> data_;
   // Saves key frames information, for Video.
