@@ -1,3 +1,7 @@
+## [2.0.2] - 2018-03-27
+### Added
+- Support cue alignment from multiple demuxed streams (#355).
+
 ## [2.0.1] - 2018-03-05
 ### Added
 - Recognize m4s as a valid extension for init segment (#331). It is used to be
@@ -302,6 +306,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.0.2]: https://github.com/google/shaka-packager/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/google/shaka-packager/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/google/shaka-packager/compare/v1.6.2...v2.0.0
 [1.6.2]: https://github.com/google/shaka-packager/compare/v1.6.1...v1.6.2
