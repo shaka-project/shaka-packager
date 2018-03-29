@@ -48,6 +48,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
+#include "packager/status_macros.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -425,8 +426,6 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
                         std::unique_ptr<MuxerListener> muxer_listener,
                         SyncPointQueue* sync_points,
                         JobManager* job_manager) {
-  // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
-
   DCHECK(muxer_listener);
   DCHECK(job_manager);
 
@@ -451,24 +450,25 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
       muxer_options, std::move(muxer_listener));
 
   std::unique_ptr<FileReader> reader;
-  Status open_status = FileReader::Open(stream.input, &reader);
-  if (!open_status.ok()) {
-    return open_status;
-  }
+  RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
 
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
-  auto segmenter = std::make_shared<TextChunker>(segment_length_in_ms);
+  auto chunker = std::make_shared<TextChunker>(segment_length_in_ms);
 
   // Build in reverse to allow us to move the pointers.
-  Status status;
-  status.Update(segmenter->AddHandler(std::move(output)));
-  status.Update(parser->AddHandler(std::move(segmenter)));
-  if (!status.ok()) {
-    return status;
+  if (sync_points) {
+    auto cue_aligner = std::make_shared<CueAlignmentHandler>(sync_points);
+    RETURN_IF_ERROR(chunker->AddHandler(std::move(output)));
+    RETURN_IF_ERROR(cue_aligner->AddHandler(std::move(chunker)));
+    RETURN_IF_ERROR(parser->AddHandler(std::move(cue_aligner)));
+  } else {
+    RETURN_IF_ERROR(chunker->AddHandler(std::move(output)));
+    RETURN_IF_ERROR(parser->AddHandler(std::move(chunker)));
   }
 
   job_manager->Add("Segmented Text Job", std::move(parser));
+
   return Status::OK;
 }
 
