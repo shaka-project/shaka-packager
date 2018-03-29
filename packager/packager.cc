@@ -39,6 +39,7 @@
 #include "packager/media/demuxer/demuxer.h"
 #include "packager/media/event/muxer_listener_factory.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
+#include "packager/media/formats/webvtt/text_padder.h"
 #include "packager/media/formats/webvtt/text_readers.h"
 #include "packager/media/formats/webvtt/webvtt_output_handler.h"
 #include "packager/media/formats/webvtt/webvtt_parser.h"
@@ -452,8 +453,10 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   std::unique_ptr<FileReader> reader;
   RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
 
+  const int64_t kNoDuration = 0;
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
+  auto padder = std::make_shared<TextPadder>(kNoDuration);
   auto chunker = std::make_shared<TextChunker>(segment_length_in_ms);
 
   // Build in reverse to allow us to move the pointers.
@@ -461,10 +464,12 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
     auto cue_aligner = std::make_shared<CueAlignmentHandler>(sync_points);
     RETURN_IF_ERROR(chunker->AddHandler(std::move(output)));
     RETURN_IF_ERROR(cue_aligner->AddHandler(std::move(chunker)));
-    RETURN_IF_ERROR(parser->AddHandler(std::move(cue_aligner)));
+    RETURN_IF_ERROR(padder->AddHandler(std::move(cue_aligner)));
+    RETURN_IF_ERROR(parser->AddHandler(std::move(padder)));
   } else {
     RETURN_IF_ERROR(chunker->AddHandler(std::move(output)));
-    RETURN_IF_ERROR(parser->AddHandler(std::move(chunker)));
+    RETURN_IF_ERROR(padder->AddHandler(std::move(chunker)));
+    RETURN_IF_ERROR(parser->AddHandler(std::move(padder)));
   }
 
   job_manager->Add("Segmented Text Job", std::move(parser));
@@ -480,30 +485,27 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
                                 std::shared_ptr<OriginHandler>* root) {
   // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
 
-  Status status;
   std::unique_ptr<FileReader> reader;
-  status = FileReader::Open(stream.input, &reader);
+  RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
 
-  if (!status.ok()) {
-    return status;
-  }
-
+  const int64_t kNoDuration = 0;
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
+  auto padder = std::make_shared<TextPadder>(kNoDuration);
   auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
   auto chunker =
       std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
-  std::shared_ptr<Muxer> muxer =
-      muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
+  auto muxer = muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
 
-  status.Update(chunker->AddHandler(std::move(muxer)));
-  status.Update(text_to_mp4->AddHandler(std::move(chunker)));
-  status.Update(parser->AddHandler(std::move(text_to_mp4)));
+  RETURN_IF_ERROR(chunker->AddHandler(std::move(muxer)));
+  RETURN_IF_ERROR(text_to_mp4->AddHandler(std::move(chunker)));
+  RETURN_IF_ERROR(padder->AddHandler(std::move(text_to_mp4)));
+  RETURN_IF_ERROR(parser->AddHandler(std::move(padder)));
 
   *root = std::move(parser);
 
-  return status;
+  return Status::OK;
 }
 
 Status CreateTextJobs(
