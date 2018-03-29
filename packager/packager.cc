@@ -66,6 +66,26 @@ namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
 
+Status ChainHandlers(
+    std::initializer_list<std::shared_ptr<MediaHandler>> list) {
+  std::shared_ptr<MediaHandler> previous;
+
+  for (auto& next : list) {
+    // Skip null entries.
+    if (!next) {
+      continue;
+    }
+
+    if (previous) {
+      RETURN_IF_ERROR(previous->AddHandler(next));
+    }
+
+    previous = std::move(next);
+  }
+
+  return Status::OK;
+}
+
 MuxerOptions CreateMuxerOptions(const StreamDescriptor& stream,
                                 const PackagingParams& params) {
   MuxerOptions options;
@@ -401,10 +421,8 @@ Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
   // specifically for text.
   // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
 
-  Status status;
   std::shared_ptr<Demuxer> demuxer;
-
-  status.Update(CreateDemuxer(stream, packaging_params, &demuxer));
+  RETURN_IF_ERROR(CreateDemuxer(stream, packaging_params, &demuxer));
   if (!stream.language.empty()) {
     demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
   }
@@ -415,11 +433,11 @@ Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
       muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
 
-  status.Update(chunker->AddHandler(std::move(muxer)));
-  status.Update(
+  RETURN_IF_ERROR(chunker->AddHandler(std::move(muxer)));
+  RETURN_IF_ERROR(
       demuxer->SetHandler(stream.stream_selector, std::move(chunker)));
 
-  return status;
+  return Status::OK;
 }
 
 Status CreateHlsTextJob(const StreamDescriptor& stream,
@@ -457,20 +475,14 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
   auto padder = std::make_shared<TextPadder>(kNoDuration);
+  auto cue_aligner = sync_points
+                         ? std::make_shared<CueAlignmentHandler>(sync_points)
+                         : nullptr;
   auto chunker = std::make_shared<TextChunker>(segment_length_in_ms);
 
-  // Build in reverse to allow us to move the pointers.
-  if (sync_points) {
-    auto cue_aligner = std::make_shared<CueAlignmentHandler>(sync_points);
-    RETURN_IF_ERROR(chunker->AddHandler(std::move(output)));
-    RETURN_IF_ERROR(cue_aligner->AddHandler(std::move(chunker)));
-    RETURN_IF_ERROR(padder->AddHandler(std::move(cue_aligner)));
-    RETURN_IF_ERROR(parser->AddHandler(std::move(padder)));
-  } else {
-    RETURN_IF_ERROR(chunker->AddHandler(std::move(output)));
-    RETURN_IF_ERROR(padder->AddHandler(std::move(chunker)));
-    RETURN_IF_ERROR(parser->AddHandler(std::move(padder)));
-  }
+  RETURN_IF_ERROR(
+      ChainHandlers({parser, std::move(padder), std::move(cue_aligner),
+                     std::move(chunker), std::move(output)}));
 
   job_manager->Add("Segmented Text Job", std::move(parser));
 
@@ -498,11 +510,9 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
   auto muxer = muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
 
-  RETURN_IF_ERROR(chunker->AddHandler(std::move(muxer)));
-  RETURN_IF_ERROR(text_to_mp4->AddHandler(std::move(chunker)));
-  RETURN_IF_ERROR(padder->AddHandler(std::move(text_to_mp4)));
-  RETURN_IF_ERROR(parser->AddHandler(std::move(padder)));
-
+  RETURN_IF_ERROR(
+      ChainHandlers({parser, std::move(padder), std::move(text_to_mp4),
+                     std::move(chunker), std::move(muxer)}));
   *root = std::move(parser);
 
   return Status::OK;
@@ -684,22 +694,18 @@ Status CreateAudioVideoJobs(
 
       replicator = std::make_shared<Replicator>();
 
-      Status status;
       if (cue_aligner) {
-        status.Update(demuxer->SetHandler(stream.stream_selector, cue_aligner));
-        status.Update(cue_aligner->AddHandler(chunker));
+        RETURN_IF_ERROR(
+            demuxer->SetHandler(stream.stream_selector, cue_aligner));
+        RETURN_IF_ERROR(cue_aligner->AddHandler(chunker));
       } else {
-        status.Update(demuxer->SetHandler(stream.stream_selector, chunker));
+        RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, chunker));
       }
       if (encryptor) {
-        status.Update(chunker->AddHandler(encryptor));
-        status.Update(encryptor->AddHandler(replicator));
+        RETURN_IF_ERROR(chunker->AddHandler(encryptor));
+        RETURN_IF_ERROR(encryptor->AddHandler(replicator));
       } else {
-        status.Update(chunker->AddHandler(replicator));
-      }
-
-      if (!status.ok()) {
-        return status;
+        RETURN_IF_ERROR(chunker->AddHandler(replicator));
       }
 
       if (!stream.language.empty()) {
@@ -725,16 +731,11 @@ Status CreateAudioVideoJobs(
       trick_play = std::make_shared<TrickPlayHandler>(stream.trick_play_factor);
     }
 
-    Status status;
     if (trick_play) {
-      status.Update(replicator->AddHandler(trick_play));
-      status.Update(trick_play->AddHandler(muxer));
+      RETURN_IF_ERROR(replicator->AddHandler(trick_play));
+      RETURN_IF_ERROR(trick_play->AddHandler(muxer));
     } else {
-      status.Update(replicator->AddHandler(muxer));
-    }
-
-    if (!status.ok()) {
-      return status;
+      RETURN_IF_ERROR(replicator->AddHandler(muxer));
     }
   }
 
@@ -774,22 +775,15 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   std::sort(audio_video_streams.begin(), audio_video_streams.end(),
             media::StreamDescriptorCompareFn);
 
-  Status status;
-  status.Update(CreateTextJobs(text_streams, packaging_params, sync_points,
-                               muxer_listener_factory, muxer_factory,
-                               mpd_notifier, job_manager));
-  status.Update(CreateAudioVideoJobs(
+  RETURN_IF_ERROR(CreateTextJobs(text_streams, packaging_params, sync_points,
+                                 muxer_listener_factory, muxer_factory,
+                                 mpd_notifier, job_manager));
+  RETURN_IF_ERROR(CreateAudioVideoJobs(
       audio_video_streams, packaging_params, encryption_key_source, sync_points,
       muxer_listener_factory, muxer_factory, job_manager));
 
-  if (!status.ok()) {
-    return status;
-  }
-
   // Initialize processing graph.
-  status.Update(job_manager->InitializeJobs());
-
-  return status;
+  return job_manager->InitializeJobs();
 }
 
 }  // namespace
