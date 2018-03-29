@@ -140,9 +140,9 @@ struct StreamData {
 ///      The number of outputs must be equal to the number of inputs. The
 ///      output stream at a specific index comes from the input stream at the
 ///      same index. Different streams usually share a common resource, although
-///      they may be independent. One example of this is encryptor handler.
+///      they may be independent. One example of this is encryption handler.
 ///   3) Single input multiple outputs
-///      The input stream is splitted into multiple output streams. One example
+///      The input stream is split into multiple output streams. One example
 ///      of this is trick play handler.
 /// Other types of media handlers are disallowed and not supported.
 class MediaHandler {
@@ -154,7 +154,7 @@ class MediaHandler {
   Status SetHandler(size_t output_stream_index,
                     std::shared_ptr<MediaHandler> handler);
 
-  /// Connect downstream handler to the next availble output stream index.
+  /// Connect downstream handler to the next available output stream index.
   Status AddHandler(std::shared_ptr<MediaHandler> handler) {
     return SetHandler(next_output_stream_index_, handler);
   }
@@ -203,7 +203,7 @@ class MediaHandler {
         StreamData::FromMediaSample(stream_index, std::move(media_sample)));
   }
 
-  /// Dispatch the text sample to downsream handlers.
+  /// Dispatch the text sample to downstream handlers.
   // DispatchTextSample should only be override for testing.
   Status DispatchTextSample(
       size_t stream_index,
@@ -238,7 +238,7 @@ class MediaHandler {
   /// Flush the downstream connected at the specified output stream index.
   Status FlushDownstream(size_t output_stream_index);
 
-  /// Flush all connected downstreams.
+  /// Flush all connected downstream handlers.
   Status FlushAllDownstreams();
 
   bool initialized() { return initialized_; }
