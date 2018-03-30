@@ -61,14 +61,15 @@ There are several ways you can get Shaka Packager.
 
 # Useful Links
 
-- [Mailing List](https://groups.google.com/forum/#!forum/shaka-packager-users)
-  (join for release announcements or problem discussions)
+- [Announcement List](https://groups.google.com/forum/#!forum/shaka-packager-users)
+  (join for release announcements and surveys)
 - [Documentation](https://google.github.io/shaka-packager/html/)
 - [Tutorials](https://google.github.io/shaka-packager/html/tutorials/tutorials.html)
 - Several open source players:
-  - [Web: Shaka Player](https://github.com/google/shaka-player)
-  - [Web: dash.js](https://github.com/Dash-Industry-Forum/dash.js)
-  - [Android: ExoPlayer](https://github.com/google/ExoPlayer)
+  - [DASH and HLS on Web: Shaka Player](https://github.com/google/shaka-player)
+  - [DASH on Web: dash.js](https://github.com/Dash-Industry-Forum/dash.js)
+  - [HLS on Web: hls.js](https://github.com/video-dev/hls.js)
+  - [DASH and HLS on Android: ExoPlayer](https://github.com/google/ExoPlayer)
 
 # Contributing
 
