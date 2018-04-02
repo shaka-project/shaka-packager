@@ -18,6 +18,8 @@ void WebVttOutputHandler::WriteCue(const std::string& id,
                                    uint64_t end_ms,
                                    const std::string& settings,
                                    const std::string& payload) {
+  DCHECK_GT(payload.size(), 0u);
+
   // Build a block of text that makes up the cue so that we can use a loop to
   // write all the lines.
   const std::string start = MsToWebVttTimestamp(start_ms);
@@ -148,7 +150,11 @@ Status WebVttSegmentedOutputHandler::OnTextSample(const TextSample& sample) {
   const std::string& settings = sample.settings();
   const std::string& payload = sample.payload();
 
-  WriteCue(id, start_ms, end_ms, settings, payload);
+  // Only write cues that have payloads. Cue without payloads won't present
+  // any information to the user.
+  if (payload.size()) {
+    WriteCue(id, start_ms, end_ms, settings, payload);
+  }
   return Status::OK;
 }
 
