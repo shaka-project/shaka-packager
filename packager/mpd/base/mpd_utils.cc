@@ -159,7 +159,12 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info) {
 }
 
 std::string SecondsToXmlDuration(double seconds) {
-  return "PT" + DoubleToString(seconds) + "S";
+  // Chrome internally uses time accurate to microseconds, which is implemented
+  // per MSE spec (https://www.w3.org/TR/media-source/).
+  // We need a string formatter that has at least microseconds accuracy for a
+  // normal video (with duration up to 3 hours). Chrome's DoubleToString
+  // implementation meets the requirement.
+  return "PT" + base::DoubleToString(seconds) + "S";
 }
 
 bool GetDurationAttribute(xmlNodePtr node, float* duration) {
@@ -190,14 +195,6 @@ bool AtLeastOneTrue(bool b1, bool b2, bool b3) { return b1 || b2 || b3; }
 
 bool OnlyOneTrue(bool b1, bool b2, bool b3) {
     return !MoreThanOneTrue(b1, b2, b3) && AtLeastOneTrue(b1, b2, b3);
-}
-
-// Implement our own DoubleToString as base::DoubleToString uses third_party
-// library dmg_fp.
-std::string DoubleToString(double value) {
-  std::ostringstream stringstream;
-  stringstream << value;
-  return stringstream.str();
 }
 
 // Coverts binary data into human readable UUID format.

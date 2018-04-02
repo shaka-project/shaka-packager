@@ -121,7 +121,7 @@ void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
   DCHECK(node_);
   DCHECK(attribute_name);
   xmlSetProp(node_.get(), BAD_CAST attribute_name,
-             BAD_CAST(DoubleToString(number).c_str()));
+             BAD_CAST(base::DoubleToString(number).c_str()));
 }
 
 void XmlNode::SetId(uint32_t id) {
