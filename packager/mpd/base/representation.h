@@ -188,6 +188,11 @@ class Representation {
   // |start_number_| by the number of segments removed.
   void SlideWindow();
 
+  // Remove |num_segments| starting from |start_time| with |duration|.
+  void RemoveSegments(uint64_t start_time,
+                      uint64_t duration,
+                      uint64_t num_segments);
+
   // Note: Because 'mimeType' is a required field for a valid MPD, these return
   // strings.
   std::string GetVideoMimeType() const;
@@ -200,6 +205,8 @@ class Representation {
   std::list<ContentProtectionElement> content_protection_elements_;
   // TODO(kqyang): Address sliding window issue with multiple periods.
   std::list<SegmentInfo> segment_infos_;
+  // A temporary list to hold the file names of segments to be removed.
+  std::list<std::string> segments_to_be_removed_;
 
   const uint32_t id_;
   std::string mime_type_;

@@ -37,6 +37,13 @@ struct MpdParams {
   /// Set MPD@timeShiftBufferDepth attribute, which is the guaranteed duration
   /// of the time shifting buffer for 'dynamic' media presentations, in seconds.
   double time_shift_buffer_depth = 0;
+  /// Segments outside live window (defined by 'time_shift_buffer_depth' above)
+  /// are automatically removed except the latest number of segments defined by
+  /// this parameter. This is needed to accommodate latencies in various stages
+  /// of content serving pipeline, so that the segments stay accessible as they
+  /// may still be accessed by the player.
+  /// The segments are not removed if the value is zero.
+  size_t preserved_segments_outside_live_window = 0;
   /// UTCTimings. For dynamic MPD only.
   struct UtcTiming {
     std::string scheme_id_uri;

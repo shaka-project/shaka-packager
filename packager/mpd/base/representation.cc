@@ -9,6 +9,8 @@
 #include <gflags/gflags.h>
 
 #include "packager/base/logging.h"
+#include "packager/file/file.h"
+#include "packager/media/base/muxer_util.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/xml/xml_node.h"
@@ -93,8 +95,8 @@ uint64_t LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
 
 // Given |timeshift_limit|, finds out the number of segments that are no longer
 // valid and should be removed from |segment_info|.
-int SearchTimedOutRepeatIndex(uint64_t timeshift_limit,
-                              const SegmentInfo& segment_info) {
+uint64_t SearchTimedOutRepeatIndex(uint64_t timeshift_limit,
+                                   const SegmentInfo& segment_info) {
   DCHECK_LE(timeshift_limit, LastSegmentEndTime(segment_info));
   if (timeshift_limit < segment_info.start_time)
     return 0;
@@ -427,32 +429,50 @@ void Representation::SlideWindow() {
   // looking at the very last segment's end time.
   std::list<SegmentInfo>::iterator first = segment_infos_.begin();
   std::list<SegmentInfo>::iterator last = first;
-  size_t num_segments_removed = 0;
   for (; last != segment_infos_.end(); ++last) {
     const uint64_t last_segment_end_time = LastSegmentEndTime(*last);
     if (timeshift_limit < last_segment_end_time)
       break;
-    num_segments_removed += last->repeat + 1;
+    RemoveSegments(last->start_time, last->duration, last->repeat + 1);
+    start_number_ += last->repeat + 1;
   }
   segment_infos_.erase(first, last);
-  start_number_ += num_segments_removed;
 
   // Now some segment in the first SegmentInfo should be left in the list.
   SegmentInfo* first_segment_info = &segment_infos_.front();
   DCHECK_LE(timeshift_limit, LastSegmentEndTime(*first_segment_info));
 
   // Identify which segments should still be in the SegmentInfo.
-  const int repeat_index =
+  const uint64_t repeat_index =
       SearchTimedOutRepeatIndex(timeshift_limit, *first_segment_info);
-  CHECK_GE(repeat_index, 0);
   if (repeat_index == 0)
     return;
 
+  RemoveSegments(first_segment_info->start_time, first_segment_info->duration,
+                 repeat_index);
+
   first_segment_info->start_time = first_segment_info->start_time +
                                    first_segment_info->duration * repeat_index;
-
   first_segment_info->repeat = first_segment_info->repeat - repeat_index;
   start_number_ += repeat_index;
+}
+
+void Representation::RemoveSegments(uint64_t start_time,
+                                    uint64_t duration,
+                                    uint64_t num_segments) {
+  if (mpd_options_.mpd_params.preserved_segments_outside_live_window == 0)
+    return;
+
+  for (size_t i = 0; i < num_segments; ++i) {
+    segments_to_be_removed_.push_back(media::GetSegmentName(
+        media_info_.segment_template(), start_time + i * duration,
+        start_number_ - 1 + i, media_info_.bandwidth()));
+  }
+  while (segments_to_be_removed_.size() >
+         mpd_options_.mpd_params.preserved_segments_outside_live_window) {
+    File::Delete(segments_to_be_removed_.front().c_str());
+    segments_to_be_removed_.pop_front();
+  }
 }
 
 std::string Representation::GetVideoMimeType() const {

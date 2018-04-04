@@ -11,9 +11,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
-#include "packager/media/base/key_source.h"
+#include "packager/status.h"
 
 namespace shaka {
 namespace media {
