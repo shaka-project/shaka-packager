@@ -86,6 +86,9 @@ class MediaPlaylist {
   /// For testing only.
   void SetCodecForTesting(const std::string& codec);
 
+  /// For testing only.
+  void SetLanguageForTesting(const std::string& language);
+
   /// This must succeed before calling any other public methods.
   /// @param media_info is the info of the segments that are going to be added
   ///        to this playlist.
@@ -167,16 +170,16 @@ class MediaPlaylist {
   /// @param target_duration is the target duration for this playlist.
   virtual void SetTargetDuration(uint32_t target_duration);
 
-  /// @return the language of the media, as an ISO language tag in its shortest
-  ///         form.  May be an empty string for video.
-  virtual std::string GetLanguage() const;
-
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
 
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.
   virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;
+
+  /// @return the language of the media, as an ISO language tag in its shortest
+  ///         form.  May be an empty string for video.
+  std::string language() const { return language_; }
 
  private:
   // Add a SegmentInfoEntry (#EXTINF).
@@ -200,6 +203,7 @@ class MediaPlaylist {
   // Whether to use byte range for SegmentInfoEntry.
   bool use_byte_range_ = false;
   std::string codec_;
+  std::string language_;
   int media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;

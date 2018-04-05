@@ -158,6 +158,7 @@ class PackagerAppTest(unittest.TestCase):
                 time_shift_buffer_depth=0.0,
                 generate_static_mpd=False,
                 ad_cues=None,
+                default_language=None,
                 use_fake_clock=True):
     flags = []
 
@@ -229,6 +230,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
+
+    if default_language:
+      flags += ['--default_language', default_language]
 
     flags.append('--segment_duration=1')
     # Use fake clock, so output can be compared.
@@ -417,8 +421,32 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testPackageAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language_override='por-BR'),
-        self._GetFlags())
+        self._GetStreams(['audio', 'video'], language_override='por'),
+        self._GetFlags(default_language='por'))
+    self._DiffGold(self.output[0], 'bear-640x360-a-por-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-por-golden.mpd')
+
+  def testPackageAudioVideoWithLanguageOverrideUsingMixingCode(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], language_override='por'),
+        self._GetFlags(default_language='pt'))
+    self._DiffGold(self.output[0], 'bear-640x360-a-por-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-por-golden.mpd')
+
+  def testPackageAudioVideoWithLanguageOverrideUsingMixingCode2(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], language_override='pt'),
+        self._GetFlags(default_language='por'))
+    self._DiffGold(self.output[0], 'bear-640x360-a-por-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-por-golden.mpd')
+
+  def testPackageAudioVideoWithLanguageOverrideUsingTwoCharacterCode(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], language_override='pt'),
+        self._GetFlags(default_language='pt'))
     self._DiffGold(self.output[0], 'bear-640x360-a-por-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-por-golden.mpd')
@@ -471,6 +499,42 @@ class PackagerFunctionalTest(PackagerAppTest):
                        output_format='ts')
     self._DiffGold(self.hls_master_playlist_output,
                    'bear-640x360-av-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'), 'bear-640x360-a-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'), 'bear-640x360-v-golden.m3u8')
+
+  def testPackageAvcAacTsLanguage(self):
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            language_override='por',
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(output_hls=True, default_language='por'))
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-por-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'), 'bear-640x360-a-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'), 'bear-640x360-v-golden.m3u8')
+
+  def testPackageAvcAacTsLanguageUsingTwoCharacterCode(self):
+    # Currently we only support live packaging for ts.
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            hls=True,
+            language_override='pt',
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(output_hls=True, default_language='pt'))
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-por-master-golden.m3u8')
     self._DiffGold(
         os.path.join(self.tmp_dir, 'audio.m3u8'), 'bear-640x360-a-golden.m3u8')
     self._DiffGold(

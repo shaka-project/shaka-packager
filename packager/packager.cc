@@ -839,6 +839,13 @@ Status Packager::Initialize(
     hls_params.master_playlist_output = File::MakeCallbackFileName(
         internal->buffer_callback_params, hls_params.master_playlist_output);
   }
+  // Both DASH and HLS require language to follow RFC5646
+  // (https://tools.ietf.org/html/rfc5646), which requires the language to be
+  // in the shortest form.
+  mpd_params.default_language =
+      LanguageToShortestForm(mpd_params.default_language);
+  hls_params.default_language =
+      LanguageToShortestForm(hls_params.default_language);
 
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =

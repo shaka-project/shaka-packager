@@ -10,7 +10,8 @@
         </SegmentBase>
       </Representation>
     </AdaptationSet>
-    <AdaptationSet id="1" contentType="audio" lang="pt-BR" subsegmentAlignment="true">
+    <AdaptationSet id="1" contentType="audio" lang="pt" subsegmentAlignment="true">
+      <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
       <Representation id="1" bandwidth="126510" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>output_audio.mp4</BaseURL>

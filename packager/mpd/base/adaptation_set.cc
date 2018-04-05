@@ -10,7 +10,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/language_utils.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
@@ -248,7 +247,7 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   adaptation_set.SetId(id_);
   adaptation_set.SetStringAttribute("contentType", content_type_);
   if (!lang_.empty() && lang_ != "und") {
-    adaptation_set.SetStringAttribute("lang", LanguageToShortestForm(lang_));
+    adaptation_set.SetStringAttribute("lang", lang_);
   }
 
   // Note that std::{set,map} are ordered, so the last element is the max value.

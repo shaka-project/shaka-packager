@@ -12,6 +12,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
+#include "packager/media/base/language_utils.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/representation.h"
@@ -79,7 +80,7 @@ std::string GetLanguage(const MediaInfo& media_info) {
   } else if (media_info.has_text_info()) {
     lang = media_info.text_info().language();
   }
-  return lang;
+  return LanguageToShortestForm(lang);
 }
 
 std::string GetCodecs(const MediaInfo& media_info) {

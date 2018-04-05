@@ -449,15 +449,15 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetLanguage) {
   // Check conversions from long to short form.
   media_info.mutable_audio_info()->set_language("eng");
   ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
-  EXPECT_EQ("en", media_playlist_.GetLanguage());  // short form
+  EXPECT_EQ("en", media_playlist_.language());  // short form
 
   media_info.mutable_audio_info()->set_language("eng-US");
   ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
-  EXPECT_EQ("en-US", media_playlist_.GetLanguage());  // region preserved
+  EXPECT_EQ("en-US", media_playlist_.language());  // region preserved
 
   media_info.mutable_audio_info()->set_language("apa");
   ASSERT_TRUE(media_playlist_.SetMediaInfo(media_info));
-  EXPECT_EQ("apa", media_playlist_.GetLanguage());  // no short form exists
+  EXPECT_EQ("apa", media_playlist_.language());  // no short form exists
 }
 
 TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {

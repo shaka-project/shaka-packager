@@ -35,7 +35,7 @@ bool HasLiveOnlyFields(const MediaInfo& media_info);
 void RemoveDuplicateAttributes(
     ContentProtectionElement* content_protection_element);
 
-// Returns a language tag. May be blank for video.
+// Returns a language in ISO-639 shortest form. May be blank for video.
 std::string GetLanguage(const MediaInfo& media_info);
 
 // Returns a 'codecs' string that has all the video and audio codecs joined with

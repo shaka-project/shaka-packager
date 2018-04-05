@@ -231,7 +231,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   tag.AddQuotedString("URI", base_url + playlist.file_name());
   tag.AddQuotedString("GROUP-ID", group_id);
 
-  const std::string& language = playlist.GetLanguage();
+  const std::string& language = playlist.language();
   if (!language.empty()) {
     tag.AddQuotedString("LANGUAGE", language);
   }
@@ -282,7 +282,7 @@ void BuildMediaTags(
       bool is_default = false;
       bool is_autoselect = false;
 
-      const std::string language = playlist->GetLanguage();
+      const std::string language = playlist->language();
       if (languages.find(language) == languages.end()) {
         is_default = !language.empty() && language == default_language;
         is_autoselect = true;
