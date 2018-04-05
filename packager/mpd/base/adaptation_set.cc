@@ -10,7 +10,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/language_utils.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
@@ -167,11 +166,11 @@ class RepresentationStateChangeListenerImpl
 
 }  // namespace
 
-AdaptationSet::AdaptationSet(const std::string& lang,
+AdaptationSet::AdaptationSet(const std::string& language,
                              const MpdOptions& mpd_options,
                              base::AtomicSequenceNumber* counter)
     : representation_counter_(counter),
-      lang_(lang),
+      language_(language),
       mpd_options_(mpd_options),
       segments_aligned_(kSegmentAlignmentUnknown),
       force_set_segment_alignment_(false) {
@@ -246,8 +245,8 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   if (id_)
     adaptation_set.SetId(id_.value());
   adaptation_set.SetStringAttribute("contentType", content_type_);
-  if (!lang_.empty() && lang_ != "und") {
-    adaptation_set.SetStringAttribute("lang", LanguageToShortestForm(lang_));
+  if (!language_.empty() && language_ != "und") {
+    adaptation_set.SetStringAttribute("lang", language_);
   }
 
   // Note that std::{set,map} are ordered, so the last element is the max value.

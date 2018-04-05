@@ -170,13 +170,13 @@ class AdaptationSet {
   bool IsVideo() const;
 
  protected:
-  /// @param lang is the language of this AdaptationSet. Mainly relevant for
+  /// @param language is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
   /// @param mpd_options is the options for this MPD.
   /// @param mpd_type is the type of this MPD.
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
-  AdaptationSet(const std::string& lang,
+  AdaptationSet(const std::string& language,
                 const MpdOptions& mpd_options,
                 base::AtomicSequenceNumber* representation_counter);
 
@@ -237,7 +237,7 @@ class AdaptationSet {
   base::AtomicSequenceNumber* const representation_counter_;
 
   base::Optional<uint32_t> id_;
-  const std::string lang_;
+  const std::string language_;
   const MpdOptions& mpd_options_;
 
   // An array of adaptation sets this adaptation set can switch to.

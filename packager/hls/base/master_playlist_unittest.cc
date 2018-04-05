@@ -78,12 +78,12 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
   std::unique_ptr<MockMediaPlaylist> playlist(
       new MockMediaPlaylist(kVodPlaylist, filename, name, group));
 
-  EXPECT_CALL(*playlist, GetLanguage()).WillRepeatedly(Return(language));
   EXPECT_CALL(*playlist, GetNumChannels()).WillRepeatedly(Return(channels));
 
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kAudio);
   playlist->SetCodecForTesting(codec);
+  playlist->SetLanguageForTesting(language);
 
   EXPECT_CALL(*playlist, Bitrate())
       .Times(AtLeast(1))
@@ -102,10 +102,10 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
   std::unique_ptr<MockMediaPlaylist> playlist(
       new MockMediaPlaylist(kVodPlaylist, filename, name, group));
 
-  EXPECT_CALL(*playlist, GetLanguage()).WillRepeatedly(Return(language));
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kSubtitle);
   playlist->SetCodecForTesting(codec);
+  playlist->SetLanguageForTesting(language);
 
   return playlist;
 }

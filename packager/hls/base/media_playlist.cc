@@ -36,6 +36,22 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
+// Duplicated from MpdUtils because:
+// 1. MpdUtils header depends on libxml header, which is not in the deps here
+// 2. GetLanguage depends on MediaInfo from packager/mpd/
+// 3. Moving GetLanguage to LanguageUtils would create a a media => mpd dep.
+// TODO(https://github.com/google/shaka-packager/issues/373): Fix this
+// dependency situation and factor this out to a common location.
+std::string GetLanguage(const MediaInfo& media_info) {
+  std::string lang;
+  if (media_info.has_audio_info()) {
+    lang = media_info.audio_info().language();
+  } else if (media_info.has_text_info()) {
+    lang = media_info.text_info().language();
+  }
+  return LanguageToShortestForm(lang);
+}
+
 void AppendExtXMap(const MediaInfo& media_info, std::string* out) {
   if (media_info.has_init_segment_name()) {
     Tag tag("#EXT-X-MAP", out);
@@ -327,6 +343,10 @@ void MediaPlaylist::SetCodecForTesting(const std::string& codec) {
   codec_ = codec;
 }
 
+void MediaPlaylist::SetLanguageForTesting(const std::string& language) {
+  language_ = language;
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   const uint32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
@@ -347,6 +367,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 
   time_scale_ = time_scale;
   media_info_ = media_info;
+  language_ = GetLanguage(media_info);
   use_byte_range_ = !media_info_.has_segment_template();
   return true;
 }
@@ -471,21 +492,6 @@ void MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
   }
   target_duration_ = target_duration;
   target_duration_set_ = true;
-}
-
-// Duplicated from MpdUtils because:
-// 1. MpdUtils header depends on libxml header, which is not in the deps here
-// 2. GetLanguage depends on MediaInfo from packager/mpd/
-// 3. Moving GetLanguage to LanguageUtils would create a a media => mpd dep.
-// TODO: fix this dependency situation and factor this out to a common location
-std::string MediaPlaylist::GetLanguage() const {
-  std::string lang;
-  if (media_info_.has_audio_info()) {
-    lang = media_info_.audio_info().language();
-  } else if (media_info_.has_text_info()) {
-    lang = media_info_.text_info().language();
-  }
-  return LanguageToShortestForm(lang);
 }
 
 int MediaPlaylist::GetNumChannels() const {

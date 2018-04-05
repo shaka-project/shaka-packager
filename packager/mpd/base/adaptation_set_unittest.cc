@@ -155,14 +155,6 @@ TEST_F(AdaptationSetTest, CheckLanguageAttributeSet) {
   EXPECT_THAT(adaptation_set->GetXml().get(), AttributeEqual("lang", "en"));
 }
 
-// Verify that language tags with subtags can still be converted.
-TEST_F(AdaptationSetTest, CheckConvertLanguageWithSubtag) {
-  // "por-BR" is the long tag for Brazillian Portuguese.  The short tag
-  // is "pt-BR", which is what should appear in the manifest.
-  auto adaptation_set = CreateAdaptationSet("por-BR");
-  EXPECT_THAT(adaptation_set->GetXml().get(), AttributeEqual("lang", "pt-BR"));
-}
-
 TEST_F(AdaptationSetTest, CheckAdaptationSetId) {
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   const uint32_t kAdaptationSetId = 42;
