@@ -239,7 +239,7 @@ bool CueAlignmentHandler::EveryoneWaitingAtHint() const {
 
 // Accept Sample will either:
 //  1. Send the sample downstream, as it comes before the next sync point and
-//     therefore can skip the bufferring.
+//     therefore can skip the buffering.
 //  2. Save the sample in the buffer as it comes after the next sync point.
 Status CueAlignmentHandler::AcceptSample(std::unique_ptr<StreamData> sample,
                                          StreamState* stream_state) {
