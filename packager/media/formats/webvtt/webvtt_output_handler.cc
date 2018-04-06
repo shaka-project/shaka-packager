@@ -13,6 +13,10 @@
 
 namespace shaka {
 namespace media {
+namespace {
+double kMillisecondsToSeconds = 1000.0;
+}  // namespace
+
 void WebVttOutputHandler::WriteCue(const std::string& id,
                                    uint64_t start_ms,
                                    uint64_t end_ms,
@@ -91,6 +95,8 @@ Status WebVttOutputHandler::Process(std::unique_ptr<StreamData> stream_data) {
       return OnStreamInfo(*stream_data->stream_info);
     case StreamDataType::kSegmentInfo:
       return OnSegmentInfo(*stream_data->segment_info);
+    case StreamDataType::kCueEvent:
+      return OnCueEvent(*stream_data->cue_event);
     case StreamDataType::kTextSample:
       return OnTextSample(*stream_data->text_sample);
     default:
@@ -140,6 +146,14 @@ Status WebVttSegmentedOutputHandler::OnSegmentInfo(const SegmentInfo& info) {
   const uint64_t size = File::GetFileSize(filename.c_str());
   muxer_listener_->OnNewSegment(filename, start, duration, size);
 
+  return Status::OK;
+}
+
+Status WebVttSegmentedOutputHandler::OnCueEvent(const CueEvent& event) {
+  double timestamp_seconds = event.time_in_seconds;
+  double timestamp_ms = timestamp_seconds * kMillisecondsToSeconds;
+  uint64_t timestamp = static_cast<uint64_t>(timestamp_ms);
+  muxer_listener_->OnCueEvent(timestamp, event.cue_data);
   return Status::OK;
 }
 

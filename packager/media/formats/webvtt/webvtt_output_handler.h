@@ -29,6 +29,7 @@ class WebVttOutputHandler : public MediaHandler {
  protected:
   virtual Status OnStreamInfo(const StreamInfo& info) = 0;
   virtual Status OnSegmentInfo(const SegmentInfo& info) = 0;
+  virtual Status OnCueEvent(const CueEvent& event) = 0;
   virtual Status OnTextSample(const TextSample& sample) = 0;
   virtual Status OnStreamEnd() = 0;
 
@@ -65,6 +66,7 @@ class WebVttSegmentedOutputHandler : public WebVttOutputHandler {
  private:
   Status OnStreamInfo(const StreamInfo& info) override;
   Status OnSegmentInfo(const SegmentInfo& info) override;
+  Status OnCueEvent(const CueEvent& event) override;
   Status OnTextSample(const TextSample& sample) override;
   Status OnStreamEnd() override;
 
