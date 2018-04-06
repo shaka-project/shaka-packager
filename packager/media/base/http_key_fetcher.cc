@@ -9,6 +9,7 @@
 #include <curl/curl.h>
 
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
 
@@ -20,6 +21,59 @@ const char kSoapActionHeader[] =
     "SOAPAction: \"http://schemas.microsoft.com/DRM/2007/03/protocols/"
     "AcquirePackagingData\"";
 const char kXmlContentTypeHeader[] = "Content-Type: text/xml; charset=UTF-8";
+const char kJsonContentTypeHeader[] = "Content-Type: application/json";
+
+const int kMinLogLevelForCurlDebugFunction = 2;
+
+int CurlDebugFunction(CURL* /* handle */,
+                      curl_infotype type,
+                      const char* data,
+                      size_t size,
+                      void* /* userptr */) {
+  const char* type_text;
+  int log_level = kMinLogLevelForCurlDebugFunction;
+  switch (type) {
+    case CURLINFO_TEXT:
+      type_text = "== Info";
+      log_level = kMinLogLevelForCurlDebugFunction + 1;
+      break;
+    case CURLINFO_HEADER_IN:
+      type_text = "<= Recv header";
+      log_level = kMinLogLevelForCurlDebugFunction;
+      break;
+    case CURLINFO_HEADER_OUT:
+      type_text = "=> Send header";
+      log_level = kMinLogLevelForCurlDebugFunction;
+      break;
+    case CURLINFO_DATA_IN:
+      type_text = "<= Recv data";
+      log_level = kMinLogLevelForCurlDebugFunction + 1;
+      break;
+    case CURLINFO_DATA_OUT:
+      type_text = "=> Send data";
+      log_level = kMinLogLevelForCurlDebugFunction + 1;
+      break;
+    case CURLINFO_SSL_DATA_IN:
+      type_text = "<= Recv SSL data";
+      log_level = kMinLogLevelForCurlDebugFunction + 2;
+      break;
+    case CURLINFO_SSL_DATA_OUT:
+      type_text = "=> Send SSL data";
+      log_level = kMinLogLevelForCurlDebugFunction + 2;
+      break;
+    default:
+      // Ignore other debug data.
+      return 0;
+  }
+
+  VLOG(log_level) << "\n\n"
+                  << type_text << " (0x" << std::hex << size << std::dec
+                  << " bytes)"
+                  << "\n"
+                  << std::string(data, size) << "\nHex Format: \n"
+                  << base::HexEncode(data, size);
+  return 0;
+}
 
 // Scoped CURL implementation which cleans up itself when goes out of scope.
 class ScopedCurl {
@@ -141,14 +195,23 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
   if (method == POST) {
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
-    if (data.find("soap:Envelope") > 0) {
+
+    curl_slist* chunk = nullptr;
+    if (data.find("soap:Envelope") != std::string::npos) {
       // Adds Http headers for SOAP requests.
-      struct curl_slist *chunk = NULL;
       chunk = curl_slist_append(chunk, kXmlContentTypeHeader);
       chunk = curl_slist_append(chunk, kSoapActionHeader);
-      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+    } else {
+      chunk = curl_slist_append(chunk, kJsonContentTypeHeader);
     }
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
   }
+
+  if (VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
+    curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+  }
+
   CURLcode res = curl_easy_perform(curl);
   if (res != CURLE_OK) {
     std::string error_message = base::StringPrintf(
