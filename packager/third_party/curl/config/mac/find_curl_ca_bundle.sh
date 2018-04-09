@@ -10,7 +10,7 @@
 paths=('/opt/local/etc/openssl/cert.pem'  # macports
        '/opt/local/share/curl/curl-ca-bundle.crt' # macports
        '/usr/local/etc/openssl/cert.pem'  # homebrew
-)
+       '/etc/ssl/cert.pem')
 
 for path in "${paths[@]}"; do
   if test -f "$path"; then
