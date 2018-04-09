@@ -5,7 +5,7 @@
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="1000000/33000" subsegmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="335457" codecs="vp8" mimeType="video/webm" sar="1:1">
         <BaseURL>bear-640x360-video.webm</BaseURL>
-        <SegmentBase indexRange="289-338" timescale="1000000" presentationTimeOffset="25999">
+        <SegmentBase indexRange="289-338" timescale="1000000" presentationTimeOffset="26000">
           <Initialization range="0-288"/>
         </SegmentBase>
       </Representation>
