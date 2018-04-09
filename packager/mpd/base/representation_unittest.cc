@@ -6,7 +6,6 @@
 
 #include "packager/mpd/base/representation.h"
 
-#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <inttypes.h>
@@ -15,8 +14,6 @@
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
-
-DECLARE_int32(pto_adjustment);
 
 using ::testing::Not;
 
@@ -523,8 +520,6 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
 }
 
 TEST_F(SegmentTemplateTest, PresentationTimeOffset) {
-  FLAGS_pto_adjustment = -1;
-
   const uint64_t kStartTime = 0;
   const uint64_t kDuration = 10;
   const uint64_t kSize = 128;
@@ -537,8 +532,7 @@ TEST_F(SegmentTemplateTest, PresentationTimeOffset) {
       "<Representation id=\"1\" bandwidth=\"102400\" "
       " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
       " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
-      // pto = kPresentationTimeOffsetSeconds * timescale + FLAGS_pto_adjustment
-      "  <SegmentTemplate timescale=\"1000\" presentationTimeOffset=\"2299\""
+      "  <SegmentTemplate timescale=\"1000\" presentationTimeOffset=\"2300\""
       "   initialization=\"init.mp4\" media=\"$Time$.mp4\">\n"
       "    <SegmentTimeline>\n"
       "      <S t=\"0\" d=\"10\"/>\n"

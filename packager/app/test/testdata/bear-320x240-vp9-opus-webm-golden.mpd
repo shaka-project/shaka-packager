@@ -6,7 +6,7 @@
       <Representation id="0" bandwidth="76531" codecs="opus" mimeType="audio/webm" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>output_audio.webm</BaseURL>
-        <SegmentBase indexRange="323-371" timescale="1000000" presentationTimeOffset="36999">
+        <SegmentBase indexRange="323-371" timescale="1000000" presentationTimeOffset="37000">
           <Initialization range="0-322"/>
         </SegmentBase>
       </Representation>
@@ -14,7 +14,7 @@
     <AdaptationSet id="1" contentType="video" width="320" height="240" frameRate="1000000/34000" subsegmentAlignment="true" par="16:9">
       <Representation id="1" bandwidth="203360" codecs="vp9" mimeType="video/webm" sar="427:320">
         <BaseURL>output_video.webm</BaseURL>
-        <SegmentBase indexRange="302-350" timescale="1000000" presentationTimeOffset="36999">
+        <SegmentBase indexRange="302-350" timescale="1000000" presentationTimeOffset="37000">
           <Initialization range="0-301"/>
         </SegmentBase>
       </Representation>

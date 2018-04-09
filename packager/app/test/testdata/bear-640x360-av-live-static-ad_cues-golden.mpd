@@ -28,7 +28,7 @@
   <Period id="1" duration="PT.7340666666666666S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" segmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="869044" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
-        <SegmentTemplate timescale="30000" presentationTimeOffset="62061" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="3">
+        <SegmentTemplate timescale="30000" presentationTimeOffset="62062" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="3">
           <SegmentTimeline>
             <S t="62062" d="22022"/>
           </SegmentTimeline>
@@ -38,7 +38,7 @@
     <AdaptationSet id="1" contentType="audio" segmentAlignment="true">
       <Representation id="1" bandwidth="105634" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <SegmentTemplate timescale="44100" presentationTimeOffset="91230" initialization="output_audio-init.mp4" media="output_audio-$Number$.m4s" startNumber="4">
+        <SegmentTemplate timescale="44100" presentationTimeOffset="91231" initialization="output_audio-init.mp4" media="output_audio-$Number$.m4s" startNumber="4">
           <SegmentTimeline>
             <S t="91136" d="30720"/>
           </SegmentTimeline>

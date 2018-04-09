@@ -13,17 +13,6 @@
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/xml/xml_node.h"
 
-DEFINE_int32(
-    pto_adjustment,
-    -1,
-    "There could be rounding errors in MSE which could cut the first key frame "
-    "of the representation and thus cut all the frames until the next key "
-    "frame, which then leads to a big gap in presentation timeline which "
-    "stalls playback. A small back off may be necessary to compensate for the "
-    "possible rounding error. It should not cause any playback issues if it is "
-    "small enough. The workaround can be removed once the problem is handled "
-    "in all players.");
-
 namespace shaka {
 namespace {
 
@@ -315,7 +304,6 @@ void Representation::SetPresentationTimeOffset(
   uint64_t pto = presentation_time_offset * media_info_.reference_time_scale();
   if (pto <= 0)
     return;
-  pto += FLAGS_pto_adjustment;
   media_info_.set_presentation_time_offset(pto);
 }
 

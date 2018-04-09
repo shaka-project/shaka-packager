@@ -4,7 +4,6 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -14,8 +13,6 @@
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/version/version.h"
-
-DECLARE_int32(pto_adjustment);
 
 using ::testing::HasSubstr;
 
@@ -175,9 +172,6 @@ TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
 }
 
 TEST_F(OnDemandMpdBuilderTest, CheckXmlTest) {
-  // Disable pto adjustment.
-  FLAGS_pto_adjustment = 0;
-
   const double kPeriod1StartTimeSeconds = 0.0;
 
   // Actual period duration is determined by the segments not by the period
@@ -218,9 +212,6 @@ TEST_F(OnDemandMpdBuilderTest, MultiplePeriodTest) {
 }
 
 TEST_F(OnDemandMpdBuilderTest, MultiplePeriodCheckXmlTest) {
-  // Disable pto adjustment.
-  FLAGS_pto_adjustment = 0;
-
   const double kPeriod1StartTimeSeconds = 0.0;
   const double kPeriod2StartTimeSeconds = 3.1;
   const double kPeriod3StartTimeSeconds = 8.0;
