@@ -470,7 +470,7 @@ class SegmentTemplateTest : public RepresentationTest {
         "    </SegmentTimeline>\n"
         "  </SegmentTemplate>\n"
         "</Representation>\n";
-    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Estimate(),
+    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Max(),
                               expected_s_elements_.c_str());
   }
 
@@ -730,7 +730,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "  </SegmentTemplate>\n"
         "</Representation>\n";
 
-    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Estimate(),
+    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Max(),
                               expected_start_number,
                               expected_s_element.c_str());
   }

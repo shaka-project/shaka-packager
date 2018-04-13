@@ -7,57 +7,68 @@
 #include "packager/mpd/base/bandwidth_estimator.h"
 
 #include <cmath>
-#include <cstdlib>
 
 #include "packager/base/logging.h"
 
-const int BandwidthEstimator::kUseAllBlocks = 0;
+namespace shaka {
 
-BandwidthEstimator::BandwidthEstimator(int num_blocks)
-    : num_blocks_for_estimation_(num_blocks),
-      harmonic_mean_denominator_(0.0),
-      num_blocks_added_(0) {}
+BandwidthEstimator::BandwidthEstimator(size_t num_blocks)
+    : sliding_queue_(num_blocks) {}
 BandwidthEstimator::~BandwidthEstimator() {}
 
 void BandwidthEstimator::AddBlock(uint64_t size, double duration) {
   DCHECK_GT(duration, 0.0);
   DCHECK_GT(size, 0u);
 
-  if (num_blocks_for_estimation_ < 0 &&
-      static_cast<int>(history_.size()) >= -1 * num_blocks_for_estimation_) {
-    // Short circuiting the case where |num_blocks_for_estimation_| number of
-    // blocks have been added already.
-    return;
-  }
-
   const int kBitsInByte = 8;
   const double bits_per_second_reciprocal = duration / (kBitsInByte * size);
-  harmonic_mean_denominator_ += bits_per_second_reciprocal;
-  if (num_blocks_for_estimation_ == kUseAllBlocks) {
-    DCHECK_EQ(history_.size(), 0u);
-    ++num_blocks_added_;
-    return;
-  }
-
-  history_.push_back(bits_per_second_reciprocal);
-  if (num_blocks_for_estimation_ > 0 &&
-      static_cast<int>(history_.size()) > num_blocks_for_estimation_) {
-    harmonic_mean_denominator_ -= history_.front();
-    history_.pop_front();
-  }
-
-  DCHECK_NE(num_blocks_for_estimation_, kUseAllBlocks);
-  DCHECK_LE(static_cast<int>(history_.size()), abs(num_blocks_for_estimation_));
-  DCHECK_EQ(num_blocks_added_, 0u);
-  return;
+  sliding_queue_.Add(bits_per_second_reciprocal);
 }
 
 uint64_t BandwidthEstimator::Estimate() const {
-  if (harmonic_mean_denominator_ == 0.0)
-    return 0;
-
-  const uint64_t num_blocks = num_blocks_for_estimation_ == kUseAllBlocks
-                                  ? num_blocks_added_
-                                  : history_.size();
-  return static_cast<uint64_t>(ceil(num_blocks / harmonic_mean_denominator_));
+  return sliding_queue_.size() == 0
+             ? 0
+             : static_cast<uint64_t>(
+                   ceil(sliding_queue_.size() / sliding_queue_.sum()));
 }
+
+uint64_t BandwidthEstimator::Max() const {
+  // The first element has minimum "bits per second reciprocal", thus the
+  // reverse is maximum "bits per second".
+  return sliding_queue_.size() == 0
+             ? 0
+             : static_cast<uint64_t>(ceil(1 / sliding_queue_.min()));
+}
+
+BandwidthEstimator::SlidingQueue::SlidingQueue(size_t window_size)
+    : window_size_(window_size) {}
+
+void BandwidthEstimator::SlidingQueue::Add(double value) {
+  // Remove elements if needed to form a monotonic non-decreasing sequence.
+  while (!min_.empty() && min_.back() > value)
+    min_.pop_back();
+  min_.push_back(value);
+
+  if (window_size_ == kUseAllBlocks) {
+    size_++;
+    sum_ += value;
+    min_.resize(1);  // Keep only the minimum one.
+    return;
+  }
+
+  window_.push_back(value);
+  sum_ += value;
+
+  if (window_.size() <= window_size_) {
+    size_++;
+    return;
+  }
+
+  if (min_.front() == window_.front())
+    min_.pop_front();
+
+  sum_ -= window_.front();
+  window_.pop_front();
+}
+
+}  // namespace shaka

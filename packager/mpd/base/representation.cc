@@ -242,7 +242,7 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
 
   const uint64_t bandwidth = media_info_.has_bandwidth()
                                  ? media_info_.bandwidth()
-                                 : bandwidth_estimator_.Estimate();
+                                 : bandwidth_estimator_.Max();
 
   DCHECK(!(HasVODOnlyFields(media_info_) && HasLiveOnlyFields(media_info_)));
 
