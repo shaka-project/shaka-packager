@@ -6,14 +6,15 @@
 
 #include "packager/hls/base/mock_media_playlist.h"
 
+#include "packager/hls/public/hls_params.h"
+
 namespace shaka {
 namespace hls {
 
-MockMediaPlaylist::MockMediaPlaylist(HlsPlaylistType type,
-                                     const std::string& file_name,
+MockMediaPlaylist::MockMediaPlaylist(const std::string& file_name,
                                      const std::string& name,
                                      const std::string& group_id)
-    : MediaPlaylist(type, 0, file_name, name, group_id) {}
+    : MediaPlaylist(HlsParams(), file_name, name, group_id) {}
 MockMediaPlaylist::~MockMediaPlaylist() {}
 
 }  // namespace hls

@@ -29,8 +29,7 @@ namespace hls {
 class MediaPlaylistFactory {
  public:
   virtual ~MediaPlaylistFactory();
-  virtual std::unique_ptr<MediaPlaylist> Create(HlsPlaylistType type,
-                                                double time_shift_buffer_depth,
+  virtual std::unique_ptr<MediaPlaylist> Create(const HlsParams& hls_params,
                                                 const std::string& file_name,
                                                 const std::string& name,
                                                 const std::string& group_id);
@@ -79,9 +78,6 @@ class SimpleHlsNotifier : public HlsNotifier {
     MediaPlaylist::EncryptionMethod encryption_method;
   };
 
-  const double time_shift_buffer_depth_ = 0;
-  const std::string prefix_;
-  const std::string key_uri_;
   std::string output_dir_;
   uint32_t target_duration_ = 0;
 

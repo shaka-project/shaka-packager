@@ -31,7 +31,6 @@ const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
 const char kDefaultLanguage[] = "en";
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
-const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
 
 std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
     const std::string& filename,
@@ -41,7 +40,7 @@ std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
   const char kNoGroup[] = "";
 
   std::unique_ptr<MockMediaPlaylist> playlist(
-      new MockMediaPlaylist(kVodPlaylist, filename, kNoName, kNoGroup));
+      new MockMediaPlaylist(filename, kNoName, kNoGroup));
 
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kVideo);
@@ -76,7 +75,7 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
     uint64_t channels,
     uint64_t bitrate) {
   std::unique_ptr<MockMediaPlaylist> playlist(
-      new MockMediaPlaylist(kVodPlaylist, filename, name, group));
+      new MockMediaPlaylist(filename, name, group));
 
   EXPECT_CALL(*playlist, GetNumChannels()).WillRepeatedly(Return(channels));
 
@@ -100,7 +99,7 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
     const std::string& codec,
     const std::string& language) {
   std::unique_ptr<MockMediaPlaylist> playlist(
-      new MockMediaPlaylist(kVodPlaylist, filename, name, group));
+      new MockMediaPlaylist(filename, name, group));
 
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kSubtitle);

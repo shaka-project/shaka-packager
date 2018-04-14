@@ -104,6 +104,30 @@ std::string GenerateSegmentUrl(const std::string& segment_name,
   return MakePathRelative(segment_name, playlist_dir);
 }
 
+MediaInfo MakeMediaInfoPathsRelativeToPlaylist(
+    const MediaInfo& media_info,
+    const std::string& base_url,
+    const std::string& output_dir,
+    const std::string& playlist_name) {
+  MediaInfo media_info_copy = media_info;
+  if (media_info_copy.has_init_segment_name()) {
+    media_info_copy.set_init_segment_url(
+        GenerateSegmentUrl(media_info_copy.init_segment_name(), base_url,
+                           output_dir, playlist_name));
+  }
+  if (media_info_copy.has_media_file_name()) {
+    media_info_copy.set_media_file_url(
+        GenerateSegmentUrl(media_info_copy.media_file_name(), base_url,
+                           output_dir, playlist_name));
+  }
+  if (media_info_copy.has_segment_template()) {
+    media_info_copy.set_segment_template_url(
+        GenerateSegmentUrl(media_info_copy.segment_template(), base_url,
+                           output_dir, playlist_name));
+  }
+  return media_info_copy;
+}
+
 bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_box,
                         const std::vector<uint8_t>& key_id,
                         std::string* pssh_json) {
@@ -240,20 +264,16 @@ bool WriteMediaPlaylist(const std::string& output_dir,
 MediaPlaylistFactory::~MediaPlaylistFactory() {}
 
 std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
-    HlsPlaylistType type,
-    double time_shift_buffer_depth,
+    const HlsParams& hls_params,
     const std::string& file_name,
     const std::string& name,
     const std::string& group_id) {
-  return std::unique_ptr<MediaPlaylist>(new MediaPlaylist(
-      type, time_shift_buffer_depth, file_name, name, group_id));
+  return std::unique_ptr<MediaPlaylist>(
+      new MediaPlaylist(hls_params, file_name, name, group_id));
 }
 
 SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
-    : HlsNotifier(hls_params.playlist_type),
-      time_shift_buffer_depth_(hls_params.time_shift_buffer_depth),
-      prefix_(hls_params.base_url),
-      key_uri_(hls_params.key_uri),
+    : HlsNotifier(hls_params),
       media_playlist_factory_(new MediaPlaylistFactory()) {
   const base::FilePath master_playlist_path(
       base::FilePath::FromUTF8Unsafe(hls_params.master_playlist_output));
@@ -277,27 +297,12 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   DCHECK(stream_id);
 
   std::unique_ptr<MediaPlaylist> media_playlist =
-      media_playlist_factory_->Create(playlist_type(), time_shift_buffer_depth_,
-                                      playlist_name, name, group_id);
-
-  // Update init_segment_name to be relative to playlist path if needed.
-  MediaInfo media_info_copy = media_info;
-  if (media_info_copy.has_init_segment_name()) {
-    media_info_copy.set_init_segment_url(
-        GenerateSegmentUrl(media_info_copy.init_segment_name(), prefix_,
-                           output_dir_, media_playlist->file_name()));
-  }
-  if (media_info_copy.has_media_file_name()) {
-    media_info_copy.set_media_file_url(
-        GenerateSegmentUrl(media_info_copy.media_file_name(), prefix_,
-                           output_dir_, media_playlist->file_name()));
-  }
-  if (media_info_copy.has_segment_template()) {
-    media_info_copy.set_segment_template_url(
-        GenerateSegmentUrl(media_info_copy.segment_template(), prefix_,
-                           output_dir_, media_playlist->file_name()));
-  }
-  if (!media_playlist->SetMediaInfo(media_info_copy)) {
+      media_playlist_factory_->Create(hls_params(), playlist_name, name,
+                                      group_id);
+  MediaInfo adjusted_media_info = MakeMediaInfoPathsRelativeToPlaylist(
+      media_info, hls_params().base_url, output_dir_,
+      media_playlist->file_name());
+  if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
   }
@@ -338,8 +343,9 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     return false;
   }
   auto& media_playlist = stream_iterator->second->media_playlist;
-  const std::string& segment_url = GenerateSegmentUrl(
-      segment_name, prefix_, output_dir_, media_playlist->file_name());
+  const std::string& segment_url =
+      GenerateSegmentUrl(segment_name, hls_params().base_url, output_dir_,
+                         media_playlist->file_name());
   media_playlist->AddSegment(segment_url, start_time, duration,
                              start_byte_offset, size);
 
@@ -353,8 +359,8 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   }
 
   // Update the playlists when there is new segments in live mode.
-  if (playlist_type() == HlsPlaylistType::kLive ||
-      playlist_type() == HlsPlaylistType::kEvent) {
+  if (hls_params().playlist_type == HlsPlaylistType::kLive ||
+      hls_params().playlist_type == HlsPlaylistType::kEvent) {
     // Update all playlists if target duration is updated.
     if (target_duration_updated) {
       for (MediaPlaylist* playlist : media_playlists_) {
@@ -366,8 +372,8 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
       if (!WriteMediaPlaylist(output_dir_, media_playlist.get()))
         return false;
     }
-    if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
-                                               media_playlists_)) {
+    if (!master_playlist_->WriteMasterPlaylist(hls_params().base_url,
+                                               output_dir_, media_playlists_)) {
       LOG(ERROR) << "Failed to write master playlist.";
       return false;
     }
@@ -431,10 +437,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   const std::vector<uint8_t> empty_key_id;
 
   if (IsCommonSystemId(system_id)) {
-    std::string key_uri;
-    if (!key_uri_.empty()) {
-      key_uri = key_uri_;
-    } else {
+    std::string key_uri = hls_params().key_uri;
+    if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
       // convert it to the actual key uri.
       std::string key_uri_data = VectorToString(key_id);
@@ -444,10 +448,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
                                     iv, "identity", "", media_playlist.get());
     return true;
   } else if (IsFairplaySystemId(system_id)) {
-    std::string key_uri;
-    if (!key_uri_.empty()) {
-      key_uri = key_uri_;
-    } else {
+    std::string key_uri = hls_params().key_uri;
+    if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
       // convert it to the actual key uri.
       std::string key_uri_data = VectorToString(key_id);
@@ -474,7 +476,7 @@ bool SimpleHlsNotifier::Flush() {
     if (!WriteMediaPlaylist(output_dir_, playlist))
       return false;
   }
-  if (!master_playlist_->WriteMasterPlaylist(prefix_, output_dir_,
+  if (!master_playlist_->WriteMasterPlaylist(hls_params().base_url, output_dir_,
                                              media_playlists_)) {
     LOG(ERROR) << "Failed to write master playlist.";
     return false;

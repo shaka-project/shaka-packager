@@ -19,8 +19,7 @@ namespace hls {
 // TODO(rkuroiwa): Consider merging this with MpdNotifier.
 class HlsNotifier {
  public:
-  explicit HlsNotifier(HlsPlaylistType playlist_type)
-      : playlist_type_(playlist_type) {}
+  explicit HlsNotifier(const HlsParams& hls_params) : hls_params_(hls_params) {}
   virtual ~HlsNotifier() {}
 
   /// Intialize the notifier.
@@ -92,11 +91,11 @@ class HlsNotifier {
   /// @return true on success, false otherwise.
   virtual bool Flush() = 0;
 
-  /// @return the playlist type.
-  HlsPlaylistType playlist_type() const { return playlist_type_; }
+  /// @return The HLS parameters.
+  const HlsParams& hls_params() const { return hls_params_; }
 
  private:
-  HlsPlaylistType playlist_type_;
+  const HlsParams hls_params_;
 };
 
 }  // namespace hls

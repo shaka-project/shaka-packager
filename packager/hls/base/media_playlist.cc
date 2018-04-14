@@ -321,13 +321,11 @@ double LatestSegmentStartTime(
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
 HlsEntry::~HlsEntry() {}
 
-MediaPlaylist::MediaPlaylist(HlsPlaylistType playlist_type,
-                             double time_shift_buffer_depth,
+MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
                              const std::string& file_name,
                              const std::string& name,
                              const std::string& group_id)
-    : playlist_type_(playlist_type),
-      time_shift_buffer_depth_(time_shift_buffer_depth),
+    : hls_params_(hls_params),
       file_name_(file_name),
       name_(name),
       group_id_(group_id) {}
@@ -440,7 +438,8 @@ void MediaPlaylist::AddPlacementOpportunity() {
 }
 
 bool MediaPlaylist::WriteToFile(const std::string& file_path) {
-  if (!key_frames_.empty() && playlist_type_ == HlsPlaylistType::kVod) {
+  if (!key_frames_.empty() &&
+      hls_params_.playlist_type == HlsPlaylistType::kVod) {
     // Flush remaining key frames. This assumes |WriteToFile| is only called
     // once at the end of the file in VOD.
     CHECK_EQ(key_frames_.size(), 1u);
@@ -456,13 +455,13 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
   }
 
   std::string content = CreatePlaylistHeader(
-      media_info_, target_duration_, playlist_type_, stream_type_,
+      media_info_, target_duration_, hls_params_.playlist_type, stream_type_,
       media_sequence_number_, discontinuity_sequence_number_);
 
   for (const auto& entry : entries_)
     base::StringAppendF(&content, "%s\n", entry->ToString().c_str());
 
-  if (playlist_type_ == HlsPlaylistType::kVod) {
+  if (hls_params_.playlist_type == HlsPlaylistType::kVod) {
     content += "#EXT-X-ENDLIST\n";
   }
 
@@ -550,8 +549,8 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
 
 void MediaPlaylist::SlideWindow() {
   DCHECK(!entries_.empty());
-  if (time_shift_buffer_depth_ <= 0.0 ||
-      playlist_type_ != HlsPlaylistType::kLive) {
+  if (hls_params_.time_shift_buffer_depth <= 0.0 ||
+      hls_params_.playlist_type != HlsPlaylistType::kLive) {
     return;
   }
   DCHECK_GT(time_scale_, 0u);
@@ -559,10 +558,11 @@ void MediaPlaylist::SlideWindow() {
   // The start time of the latest segment is considered the current_play_time,
   // and this should guarantee that the latest segment will stay in the list.
   const double current_play_time = LatestSegmentStartTime(entries_);
-  if (current_play_time <= time_shift_buffer_depth_)
+  if (current_play_time <= hls_params_.time_shift_buffer_depth)
     return;
 
-  const double timeshift_limit = current_play_time - time_shift_buffer_depth_;
+  const double timeshift_limit =
+      current_play_time - hls_params_.time_shift_buffer_depth;
 
   // Temporary list to hold the EXT-X-KEYs. For example, this allows us to
   // remove <3> without removing <1> and <2> below (<1> and <2> are moved to the

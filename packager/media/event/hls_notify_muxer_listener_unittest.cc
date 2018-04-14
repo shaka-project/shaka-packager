@@ -26,7 +26,7 @@ namespace {
 
 class MockHlsNotifier : public hls::HlsNotifier {
  public:
-  MockHlsNotifier() : HlsNotifier(HlsPlaylistType::kVod) {}
+  MockHlsNotifier() : HlsNotifier(HlsParams()) {}
 
   MOCK_METHOD0(Init, bool());
   MOCK_METHOD5(NotifyNewStream,

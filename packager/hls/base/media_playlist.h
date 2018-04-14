@@ -58,17 +58,14 @@ class MediaPlaylist {
     kSampleAesCenc,  // 'cenc' encrypted content.
   };
 
-  /// @param playlist_type is the type of this media playlist.
-  /// @param time_shift_buffer_depth determines the duration of the time
-  ///        shifting buffer, only for live HLS.
+  /// @param hls_params contains HLS parameters.
   /// @param file_name is the file name of this media playlist.
   /// @param name is the name of this playlist. In other words this is the
   ///        value of the NAME attribute for EXT-X-MEDIA. This is not
   ///        necessarily the same as @a file_name.
   /// @param group_id is the group ID for this playlist. This is the value of
   ///        GROUP-ID attribute for EXT-X-MEDIA.
-  MediaPlaylist(HlsPlaylistType playlist_type,
-                double time_shift_buffer_depth,
+  MediaPlaylist(const HlsParams& hls_params,
                 const std::string& file_name,
                 const std::string& name,
                 const std::string& group_id);
@@ -192,8 +189,7 @@ class MediaPlaylist {
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
 
-  const HlsPlaylistType playlist_type_;
-  const double time_shift_buffer_depth_;
+  const HlsParams hls_params_;
   // Mainly for MasterPlaylist to use these values.
   const std::string file_name_;
   const std::string name_;

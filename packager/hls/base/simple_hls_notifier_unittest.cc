@@ -54,20 +54,18 @@ class MockMasterPlaylist : public MasterPlaylist {
 
 class MockMediaPlaylistFactory : public MediaPlaylistFactory {
  public:
-  MOCK_METHOD5(CreateMock,
-               MediaPlaylist*(HlsPlaylistType type,
-                              double time_shift_buffer_depth,
+  MOCK_METHOD4(CreateMock,
+               MediaPlaylist*(const HlsParams& hls_params,
                               const std::string& file_name,
                               const std::string& name,
                               const std::string& group_id));
 
-  std::unique_ptr<MediaPlaylist> Create(HlsPlaylistType type,
-                                        double time_shift_buffer_depth,
+  std::unique_ptr<MediaPlaylist> Create(const HlsParams& hls_params,
                                         const std::string& file_name,
                                         const std::string& name,
                                         const std::string& group_id) override {
     return std::unique_ptr<MediaPlaylist>(
-        CreateMock(type, time_shift_buffer_depth, file_name, name, group_id));
+        CreateMock(hls_params, file_name, name, group_id));
   }
 };
 
@@ -133,7 +131,7 @@ class SimpleHlsNotifierTest : public ::testing::Test {
         new MockMediaPlaylistFactory());
 
     EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-    EXPECT_CALL(*factory, CreateMock(_, _, _, _, _))
+    EXPECT_CALL(*factory, CreateMock(_, _, _, _))
         .WillOnce(Return(mock_media_playlist));
 
     InjectMasterPlaylist(std::move(mock_master_playlist), notifier);
@@ -167,7 +165,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist,
               SetMediaInfo(Property(&MediaInfo::init_segment_url, StrEq(""))))
@@ -177,9 +175,8 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
   EXPECT_CALL(
       *mock_media_playlist,
       AddSegment("http://testprefix.com/path/to/media1.ts", _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
-                                   StrEq("video_playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   SimpleHlsNotifier notifier(hls_params_);
@@ -206,7 +203,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseInitSegmentUrl) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   // Verify that the common prefix is stripped in init segment.
   EXPECT_CALL(
@@ -215,9 +212,8 @@ TEST_F(SimpleHlsNotifierTest, RebaseInitSegmentUrl) {
                             StrEq("http://testprefix.com/path/to/init.mp4"))))
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
-                                   StrEq("video_playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   SimpleHlsNotifier notifier(hls_params_);
@@ -241,7 +237,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "video/playlist.m3u8", "", "");
+      new MockMediaPlaylist("video/playlist.m3u8", "", "");
 
   // Verify that the init segment URL is relative to playlist path.
   EXPECT_CALL(*mock_media_playlist,
@@ -252,9 +248,8 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
   // Verify that the segment URL is relative to playlist path.
   EXPECT_CALL(*mock_media_playlist,
               AddSegment(StrEq("path/to/media1.m4s"), _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
-                                   StrEq("video/playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("video/playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   hls_params_.base_url = kEmptyPrefix;
@@ -289,16 +284,15 @@ TEST_F(SimpleHlsNotifierTest, RebaseAbsoluteSegmentPrefixAndOutputDirMatch) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
 
   // Verify that the output_dir is stripped and then kTestPrefix is prepended.
   EXPECT_CALL(*mock_media_playlist,
               AddSegment("http://testprefix.com/media1.ts", _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
-                                   StrEq("video_playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
@@ -330,15 +324,14 @@ TEST_F(SimpleHlsNotifierTest,
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_media_playlist,
               AddSegment("http://testprefix.com//var/somewhereelse/media1.ts",
                          _, _, _, _));
-  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
-                                   StrEq("video_playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
@@ -374,12 +367,11 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, Eq(kTestTimeShiftBufferDepth),
-                                   StrEq("video_playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   SimpleHlsNotifier notifier(hls_params_);
@@ -402,10 +394,10 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(_, _, _, _, _))
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
   const uint64_t kStartTime = 1328;
@@ -455,7 +447,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
 TEST_F(SimpleHlsNotifierTest, NotifyKeyFrame) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
@@ -478,7 +470,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegmentWithoutStreamsRegistered) {
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
@@ -539,7 +531,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
@@ -596,7 +588,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateIdentityKey) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
@@ -624,7 +616,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateIdentityKey) {
 TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
@@ -700,7 +692,7 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
 TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   hls_params_.key_uri = kIdentityKeyUri;
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
@@ -724,7 +716,7 @@ TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kLivePlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   hls_params_.playlist_type = kLivePlaylist;
   hls_params_.key_uri = kFairplayKeyUri;
   SimpleHlsNotifier notifier(hls_params_);
@@ -747,7 +739,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
 TEST_F(SimpleHlsNotifierTest, WidevineCencEncryptionScheme) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
@@ -794,7 +786,7 @@ TEST_F(SimpleHlsNotifierTest, WidevineCencEncryptionScheme) {
 TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
@@ -870,7 +862,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {
 TEST_F(SimpleHlsNotifierTest, NotifyCueEvent) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kCencProtectionScheme, mock_media_playlist, &notifier);
@@ -899,10 +891,10 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegment) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(expected_playlist_type_, "playlist.m3u8", "", "");
+      new MockMediaPlaylist("playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(expected_playlist_type_, _, _, _, _))
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
   const uint64_t kStartTime = 1328;
@@ -958,14 +950,14 @@ TEST_P(LiveOrEventSimpleHlsNotifierTest, NotifyNewSegmentsWithMultipleStreams) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist1 =
-      new MockMediaPlaylist(expected_playlist_type_, "playlist1.m3u8", "", "");
+      new MockMediaPlaylist("playlist1.m3u8", "", "");
   MockMediaPlaylist* mock_media_playlist2 =
-      new MockMediaPlaylist(expected_playlist_type_, "playlist2.m3u8", "", "");
+      new MockMediaPlaylist("playlist2.m3u8", "", "");
 
-  EXPECT_CALL(*factory, CreateMock(_, _, StrEq("playlist1.m3u8"), _, _))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("playlist1.m3u8"), _, _))
       .WillOnce(Return(mock_media_playlist1));
   EXPECT_CALL(*mock_media_playlist1, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(_, _, StrEq("playlist2.m3u8"), _, _))
+  EXPECT_CALL(*factory, CreateMock(_, StrEq("playlist2.m3u8"), _, _))
       .WillOnce(Return(mock_media_playlist2));
   EXPECT_CALL(*mock_media_playlist2, SetMediaInfo(_)).WillOnce(Return(true));
 
