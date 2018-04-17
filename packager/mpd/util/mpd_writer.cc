@@ -44,8 +44,7 @@ class SimpleMpdNotifierFactory : public MpdNotifierFactory {
 MpdWriter::MpdWriter() : notifier_factory_(new SimpleMpdNotifierFactory()) {}
 MpdWriter::~MpdWriter() {}
 
-bool MpdWriter::AddFile(const std::string& media_info_path,
-                        const std::string& mpd_path) {
+bool MpdWriter::AddFile(const std::string& media_info_path) {
   std::string file_content;
   if (!File::ReadFileToString(media_info_path.c_str(), &file_content)) {
     LOG(ERROR) << "Failed to read " << media_info_path << " to string.";
@@ -59,7 +58,6 @@ bool MpdWriter::AddFile(const std::string& media_info_path,
     return false;
   }
 
-  MpdBuilder::MakePathsRelativeToMpd(mpd_path, &media_info);
   media_infos_.push_back(media_info);
   return true;
 }
@@ -82,13 +80,11 @@ bool MpdWriter::WriteMpdToFile(const char* file_name) {
     return false;
   }
 
-  for (std::list<MediaInfo>::const_iterator it = media_infos_.begin();
-       it != media_infos_.end();
-       ++it) {
+  for (const MediaInfo& media_info : media_infos_) {
     uint32_t unused_conatiner_id;
-    if (!notifier->NotifyNewContainer(*it, &unused_conatiner_id)) {
+    if (!notifier->NotifyNewContainer(media_info, &unused_conatiner_id)) {
       LOG(ERROR) << "Failed to add MediaInfo for media file: "
-                 << it->media_file_name();
+                 << media_info.media_file_name();
       return false;
     }
   }

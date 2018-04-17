@@ -53,12 +53,12 @@ std::string TextCodecString(const MediaInfo& media_info) {
 
 bool HasVODOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_range() || media_info.has_index_range() ||
-         media_info.has_media_file_name();
+         media_info.has_media_file_url();
 }
 
 bool HasLiveOnlyFields(const MediaInfo& media_info) {
-  return media_info.has_init_segment_name() ||
-         media_info.has_segment_template() ||
+  return media_info.has_init_segment_url() ||
+         media_info.has_segment_template_url() ||
          media_info.has_segment_duration_seconds();
 }
 

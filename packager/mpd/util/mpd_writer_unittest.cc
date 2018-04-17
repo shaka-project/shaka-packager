@@ -88,8 +88,8 @@ TEST_F(MpdWriterTest, WriteMpdToFile) {
       GetTestDataFilePath(kFileNameVideoMediaInfo2);
 
   SetMpdNotifierFactoryForTest();
-  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file1.AsUTF8Unsafe(), ""));
-  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file2.AsUTF8Unsafe(), ""));
+  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file1.AsUTF8Unsafe()));
+  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file2.AsUTF8Unsafe()));
   mpd_writer_.AddBaseUrl(kBaseUrl1);
   mpd_writer_.AddBaseUrl(kBaseUrl2);
 

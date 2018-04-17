@@ -1023,7 +1023,7 @@ TEST_F(OnDemandAdaptationSetTest,
       "  begin: 864\n"
       "  end: 931\n"
       "}\n"
-      "media_file_name: 'encrypted_audio.mp4'\n"
+      "media_file_url: 'encrypted_audio.mp4'\n"
       "media_duration_seconds: 24.009434\n"
       "reference_time_scale: 44100\n"
       "container_type: CONTAINER_MP4\n";
@@ -1071,7 +1071,7 @@ TEST_F(OnDemandAdaptationSetTest, Text) {
       "}\n"
       "media_duration_seconds: 35\n"
       "bandwidth: 1000\n"
-      "media_file_name: 'subtitle.xml'\n"
+      "media_file_url: 'subtitle.xml'\n"
       "container_type: CONTAINER_TEXT\n";
 
   const char kExpectedOutput[] =

@@ -170,7 +170,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrl) {
       new MockMediaPlaylist(kVodPlaylist, "playlist.m3u8", "", "");
 
   EXPECT_CALL(*mock_media_playlist,
-              SetMediaInfo(Property(&MediaInfo::init_segment_name, StrEq(""))))
+              SetMediaInfo(Property(&MediaInfo::init_segment_url, StrEq(""))))
       .WillOnce(Return(true));
 
   // Verify that the common prefix is stripped for AddSegment().
@@ -211,7 +211,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseInitSegmentUrl) {
   // Verify that the common prefix is stripped in init segment.
   EXPECT_CALL(
       *mock_media_playlist,
-      SetMediaInfo(Property(&MediaInfo::init_segment_name,
+      SetMediaInfo(Property(&MediaInfo::init_segment_url,
                             StrEq("http://testprefix.com/path/to/init.mp4"))))
       .WillOnce(Return(true));
 
@@ -245,7 +245,7 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentUrlRelativeToPlaylist) {
 
   // Verify that the init segment URL is relative to playlist path.
   EXPECT_CALL(*mock_media_playlist,
-              SetMediaInfo(Property(&MediaInfo::init_segment_name,
+              SetMediaInfo(Property(&MediaInfo::init_segment_url,
                                     StrEq("path/to/init.mp4"))))
       .WillOnce(Return(true));
 

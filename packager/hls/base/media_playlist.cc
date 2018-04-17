@@ -53,15 +53,15 @@ std::string GetLanguage(const MediaInfo& media_info) {
 }
 
 void AppendExtXMap(const MediaInfo& media_info, std::string* out) {
-  if (media_info.has_init_segment_name()) {
+  if (media_info.has_init_segment_url()) {
     Tag tag("#EXT-X-MAP", out);
-    tag.AddQuotedString("URI", media_info.init_segment_name().data());
+    tag.AddQuotedString("URI", media_info.init_segment_url().data());
     out->append("\n");
-  } else if (media_info.has_media_file_name() && media_info.has_init_range()) {
+  } else if (media_info.has_media_file_url() && media_info.has_init_range()) {
     // It only makes sense for single segment media to have EXT-X-MAP if
     // there is init_range.
     Tag tag("#EXT-X-MAP", out);
-    tag.AddQuotedString("URI", media_info.media_file_name().data());
+    tag.AddQuotedString("URI", media_info.media_file_url().data());
 
     if (media_info.has_init_range()) {
       const uint64_t begin = media_info.init_range().begin();
@@ -368,7 +368,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   time_scale_ = time_scale;
   media_info_ = media_info;
   language_ = GetLanguage(media_info);
-  use_byte_range_ = !media_info_.has_segment_template();
+  use_byte_range_ = !media_info_.has_segment_template_url();
   return true;
 }
 

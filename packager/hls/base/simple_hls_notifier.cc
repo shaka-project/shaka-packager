@@ -283,13 +283,18 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   // Update init_segment_name to be relative to playlist path if needed.
   MediaInfo media_info_copy = media_info;
   if (media_info_copy.has_init_segment_name()) {
-    media_info_copy.set_init_segment_name(
+    media_info_copy.set_init_segment_url(
         GenerateSegmentUrl(media_info_copy.init_segment_name(), prefix_,
                            output_dir_, media_playlist->file_name()));
   }
   if (media_info_copy.has_media_file_name()) {
-    media_info_copy.set_media_file_name(
+    media_info_copy.set_media_file_url(
         GenerateSegmentUrl(media_info_copy.media_file_name(), prefix_,
+                           output_dir_, media_playlist->file_name()));
+  }
+  if (media_info_copy.has_segment_template()) {
+    media_info_copy.set_segment_template_url(
+        GenerateSegmentUrl(media_info_copy.segment_template(), prefix_,
                            output_dir_, media_playlist->file_name()));
   }
   if (!media_playlist->SetMediaInfo(media_info_copy)) {

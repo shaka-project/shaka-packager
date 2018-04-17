@@ -153,4 +153,11 @@ message MediaInfo {
   // MpdNotifier::NotifyNewSegment().
   optional float segment_duration_seconds = 12;
   // END LIVE only.
+
+  // URL fields for the corresponding file_name fields above.
+  // The file names are adjusted to be relative to DASH MPD or HLS media
+  // playlist, or with base url prepended.
+  optional string media_file_url = 17;
+  optional string init_segment_url = 18;
+  optional string segment_template_url = 19;
 }

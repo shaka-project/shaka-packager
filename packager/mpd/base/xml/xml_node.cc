@@ -276,9 +276,9 @@ bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
 }
 
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
-  if (media_info.has_media_file_name()) {
+  if (media_info.has_media_file_url()) {
     XmlNode base_url("BaseURL");
-    base_url.SetContent(media_info.media_file_name());
+    base_url.SetContent(media_info.media_file_url());
 
     if (!AddChild(base_url.PassScopedPtr()))
       return false;
@@ -336,24 +336,14 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
                                          media_info.presentation_time_offset());
   }
 
-  if (media_info.has_init_segment_name()) {
-    // The spec does not allow '$Number$' and '$Time$' in initialization
-    // attribute.
-    // TODO(rkuroiwa, kqyang): Swap this check out with a better check. These
-    // templates allow formatting as well.
-    const std::string& init_segment_name = media_info.init_segment_name();
-    if (init_segment_name.find("$Number$") != std::string::npos ||
-        init_segment_name.find("$Time$") != std::string::npos) {
-      LOG(ERROR) << "$Number$ and $Time$ cannot be used for "
-                    "SegmentTemplate@initialization";
-      return false;
-    }
+  if (media_info.has_init_segment_url()) {
     segment_template.SetStringAttribute("initialization",
-                                        media_info.init_segment_name());
+                                        media_info.init_segment_url());
   }
 
-  if (media_info.has_segment_template()) {
-    segment_template.SetStringAttribute("media", media_info.segment_template());
+  if (media_info.has_segment_template_url()) {
+    segment_template.SetStringAttribute("media",
+                                        media_info.segment_template_url());
     segment_template.SetIntegerAttribute("startNumber", start_number);
   }
 

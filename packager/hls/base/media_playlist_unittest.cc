@@ -84,7 +84,7 @@ class MediaPlaylistMultiSegmentTest : public MediaPlaylistTest {
     // This is just set to be consistent with the multisegment format and used
     // as a switch in MediaPlaylist.
     // The template string doesn't really matter.
-    valid_video_media_info_.set_segment_template("file$Number$.ts");
+    valid_video_media_info_.set_segment_template_url("file$Number$.ts");
   }
 };
 
@@ -150,7 +150,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRange) {
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
       "#EXT-X-ENDLIST\n";
-  valid_video_media_info_.set_media_file_name("file.mp4");
+  valid_video_media_info_.set_media_file_url("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(0);
   valid_video_media_info_.mutable_init_range()->set_end(500);
 
@@ -170,7 +170,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, InitRangeWithOffset) {
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"485@16\"\n"
       "#EXT-X-ENDLIST\n";
-  valid_video_media_info_.set_media_file_name("file.mp4");
+  valid_video_media_info_.set_media_file_url("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(16);
   valid_video_media_info_.mutable_init_range()->set_end(500);
 
@@ -199,7 +199,7 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
       "#EXT-X-BYTERANGE:2000000\n"
       "file.mp4\n"
       "#EXT-X-ENDLIST\n";
-  valid_video_media_info_.set_media_file_name("file.mp4");
+  valid_video_media_info_.set_media_file_url("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(0);
   valid_video_media_info_.mutable_init_range()->set_end(500);
 
@@ -478,7 +478,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {
 
 TEST_F(MediaPlaylistMultiSegmentTest, InitSegment) {
   valid_video_media_info_.set_reference_time_scale(90000);
-  valid_video_media_info_.set_init_segment_name("init_segment.mp4");
+  valid_video_media_info_.set_init_segment_url("init_segment.mp4");
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
 
   media_playlist_.AddSegment("file1.mp4", 0, 10 * kTimeScale, kZeroByteOffset,
@@ -785,7 +785,7 @@ TEST_F(IFrameMediaPlaylistTest, MediaPlaylistType) {
 }
 
 TEST_F(IFrameMediaPlaylistTest, SingleSegment) {
-  valid_video_media_info_.set_media_file_name("file.mp4");
+  valid_video_media_info_.set_media_file_url("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(0);
   valid_video_media_info_.mutable_init_range()->set_end(500);
 

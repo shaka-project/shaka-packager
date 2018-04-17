@@ -55,8 +55,7 @@ class MpdWriter {
   // MediaInfo, i.e. the content should be a result of using
   // google::protobuf::TestFormat::Print*() methods.
   // If necessary, this method can be called after WriteMpd*() methods.
-  bool AddFile(const std::string& media_info_path,
-               const std::string& mpd_path);
+  bool AddFile(const std::string& media_info_path);
 
   // |base_url| will be used for <BaseURL> element for the MPD. The BaseURL
   // element will be a direct child element of the <MPD> element.

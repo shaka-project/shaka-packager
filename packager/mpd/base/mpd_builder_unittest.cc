@@ -355,9 +355,9 @@ TEST(RelativePaths, PathsModified) {
   media_info.set_init_segment_name(kInitSegment);
   media_info.set_segment_template(kSegmentTemplate);
   MpdBuilder::MakePathsRelativeToMpd(kPathModifiedMpd, &media_info);
-  EXPECT_EQ(kMediaFileBase, media_info.media_file_name());
-  EXPECT_EQ(kInitSegmentBase, media_info.init_segment_name());
-  EXPECT_EQ(kSegmentTemplateBase, media_info.segment_template());
+  EXPECT_EQ(kMediaFileBase, media_info.media_file_url());
+  EXPECT_EQ(kInitSegmentBase, media_info.init_segment_url());
+  EXPECT_EQ(kSegmentTemplateBase, media_info.segment_template_url());
 }
 
 TEST(RelativePaths, PathsNotModified) {
@@ -367,9 +367,9 @@ TEST(RelativePaths, PathsNotModified) {
   media_info.set_init_segment_name(kInitSegment);
   media_info.set_segment_template(kSegmentTemplate);
   MpdBuilder::MakePathsRelativeToMpd(kPathNotModifiedMpd, &media_info);
-  EXPECT_EQ(kMediaFile, media_info.media_file_name());
-  EXPECT_EQ(kInitSegment, media_info.init_segment_name());
-  EXPECT_EQ(kSegmentTemplate, media_info.segment_template());
+  EXPECT_EQ(kMediaFile, media_info.media_file_url());
+  EXPECT_EQ(kInitSegment, media_info.init_segment_url());
+  EXPECT_EQ(kSegmentTemplate, media_info.segment_template_url());
 }
 
 }  // namespace shaka

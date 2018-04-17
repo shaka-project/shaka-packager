@@ -8,4 +8,5 @@ audio_info {
 reference_time_scale: 50
 container_type: 1
 media_file_name: "test_output_file_name_audio1.mp4"
+media_file_url: "test_output_file_name_audio1.mp4"
 media_duration_seconds: 10.5

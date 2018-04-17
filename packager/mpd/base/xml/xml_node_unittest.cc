@@ -191,28 +191,5 @@ TEST(XmlNodeTest, AddEC3AudioInfo) {
           "</Representation>\n"));
 }
 
-// Some template names cannot be used for init segment name.
-TEST(XmlNodeTest, InvalidLiveInitSegmentName) {
-  MediaInfo media_info;
-  const uint32_t kDefaultStartNumber = 1;
-  std::list<SegmentInfo> segment_infos;
-  RepresentationXmlNode representation;
-
-  // $Number$ cannot be used for segment name.
-  media_info.set_init_segment_name("$Number$.mp4");
-  ASSERT_FALSE(representation.AddLiveOnlyInfo(media_info, segment_infos,
-                                              kDefaultStartNumber));
-
-  // $Time$ as well.
-  media_info.set_init_segment_name("$Time$.mp4");
-  ASSERT_FALSE(representation.AddLiveOnlyInfo(media_info, segment_infos,
-                                              kDefaultStartNumber));
-
-  // This should be valid.
-  media_info.set_init_segment_name("some_non_template_name.mp4");
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info, segment_infos,
-                                             kDefaultStartNumber));
-}
-
 }  // namespace xml
 }  // namespace shaka

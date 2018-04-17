@@ -19,4 +19,5 @@ index_range {
 reference_time_scale: 1000
 container_type: 1
 media_file_name: "test_output_file_name1.mp4"
+media_file_url: "test_output_file_name1.mp4"
 media_duration_seconds: 10.5

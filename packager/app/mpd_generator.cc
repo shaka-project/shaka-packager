@@ -78,9 +78,9 @@ ExitStatus RunMpdGenerator() {
   for (Iterator it = base_urls.begin(); it != base_urls.end(); ++it)
     mpd_writer.AddBaseUrl(*it);
 
-  for (Iterator it = input_files.begin(); it != input_files.end(); ++it) {
-    if (!mpd_writer.AddFile(it->c_str(), FLAGS_output)) {
-      LOG(WARNING) << "MpdWriter failed to read " << *it << ", skipping.";
+  for (const std::string& file : input_files) {
+    if (!mpd_writer.AddFile(file)) {
+      LOG(WARNING) << "MpdWriter failed to read " << file << ", skipping.";
     }
   }
 

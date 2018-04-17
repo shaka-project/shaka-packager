@@ -409,8 +409,8 @@ std::string GetDefaultMediaInfo() {
       "}\n"
       "reference_time_scale: %u\n"
       "container_type: 1\n"
-      "init_segment_name: 'init.mp4'\n"
-      "segment_template: '$Time$.mp4'\n";
+      "init_segment_url: 'init.mp4'\n"
+      "segment_template_url: '$Time$.mp4'\n";
 
   return base::StringPrintf(kMediaInfo, kDefaultTimeScale);
 }
@@ -503,7 +503,7 @@ TEST_F(SegmentTemplateTest, OneSegmentNormal) {
 
 TEST_F(SegmentTemplateTest, RepresentationClone) {
   MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
-  media_info.set_segment_template("$Number$.mp4");
+  media_info.set_segment_template_url("$Number$.mp4");
   representation_ =
       CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation_->Init());
@@ -703,8 +703,8 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "}\n"
         "reference_time_scale: %u\n"
         "container_type: 1\n"
-        "init_segment_name: 'init.mp4'\n"
-        "segment_template: '$Number$.mp4'\n";
+        "init_segment_url: 'init.mp4'\n"
+        "segment_template_url: '$Number$.mp4'\n";
     const std::string& number_template_media_info =
         base::StringPrintf(kMediaInfo, kDefaultTimeScale);
     mpd_options_.mpd_type = MpdType::kDynamic;
