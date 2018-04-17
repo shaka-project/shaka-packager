@@ -188,8 +188,12 @@ class MediaPlaylist {
   // Remove elements from |entries_| for live profile. Increments
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
+  // Remove the segment specified by |start_time|. The actual deletion can
+  // happen at a later time depending on the value of
+  // |preserved_segment_outside_live_window| in |hls_params_|.
+  void RemoveOldSegment(uint64_t start_time);
 
-  const HlsParams hls_params_;
+  const HlsParams& hls_params_;
   // Mainly for MasterPlaylist to use these values.
   const std::string file_name_;
   const std::string name_;
@@ -218,6 +222,9 @@ class MediaPlaylist {
   uint32_t target_duration_ = 0;
 
   std::list<std::unique_ptr<HlsEntry>> entries_;
+  // A list to hold the file names of the segments to be removed temporarily.
+  // Once a file is actually removed, it is removed from the list.
+  std::list<std::string> segments_to_be_removed_;
 
   // Used by kVideoIFrameOnly playlists to track the i-frames (key frames).
   struct KeyFrameInfo {

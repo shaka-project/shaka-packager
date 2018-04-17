@@ -7,6 +7,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "packager/base/strings/stringprintf.h"
+#include "packager/file/file.h"
+#include "packager/file/file_closer.h"
 #include "packager/file/file_test_util.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/version/version.h"
@@ -42,10 +45,9 @@ class MediaPlaylistTest : public ::testing::Test {
       : default_file_name_(kDefaultPlaylistFileName),
         default_name_("default_name"),
         default_group_id_("default_group_id") {
-    HlsParams hls_params;
-    hls_params.playlist_type = type;
-    hls_params.time_shift_buffer_depth = kTimeShiftBufferDepth;
-    media_playlist_.reset(new MediaPlaylist(hls_params, default_file_name_,
+    hls_params_.playlist_type = type;
+    hls_params_.time_shift_buffer_depth = kTimeShiftBufferDepth;
+    media_playlist_.reset(new MediaPlaylist(hls_params_, default_file_name_,
                                             default_name_, default_group_id_));
   }
 
@@ -65,9 +67,12 @@ class MediaPlaylistTest : public ::testing::Test {
     valid_video_media_info_.set_reference_time_scale(kTimeScale);
   }
 
+  HlsParams* mutable_hls_params() { return &hls_params_; }
+
   const std::string default_file_name_;
   const std::string default_name_;
   const std::string default_group_id_;
+  HlsParams hls_params_;
   std::unique_ptr<MediaPlaylist> media_playlist_;
 
   MediaInfo valid_video_media_info_;
@@ -868,6 +873,85 @@ TEST_F(IFrameMediaPlaylistTest, MultiSegment) {
   const char kMemoryFilePath[] = "memory://media.m3u8";
   EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+namespace {
+const int kNumPreservedSegmentsOutsideLiveWindow = 3;
+const int kMaxNumSegmentsAvailable =
+    kTimeShiftBufferDepth + 1 + kNumPreservedSegmentsOutsideLiveWindow;
+
+const char kSegmentTemplate[] = "memory://$Number$.mp4";
+const char kSegmentTemplateUrl[] = "video/$Number$.mp4";
+const char kStringPrintTemplate[] = "memory://%d.mp4";
+const char kIgnoredSegmentName[] = "ignored_segment_name";
+
+const uint64_t kInitialStartTime = 0;
+const uint64_t kDuration = kTimeScale;
+}  // namespace
+
+class MediaPlaylistDeleteSegmentsTest : public LiveMediaPlaylistTest {
+ public:
+  void SetUp() override {
+    LiveMediaPlaylistTest::SetUp();
+
+    // Create 100 files with the template.
+    for (int i = 1; i <= 100; ++i) {
+      File::WriteStringToFile(
+          base::StringPrintf(kStringPrintTemplate, i).c_str(), "dummy content");
+    }
+
+    valid_video_media_info_.set_segment_template(kSegmentTemplate);
+    valid_video_media_info_.set_segment_template_url(kSegmentTemplateUrl);
+    ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+
+    mutable_hls_params()->preserved_segments_outside_live_window =
+        kNumPreservedSegmentsOutsideLiveWindow;
+  }
+
+  bool SegmentDeleted(const std::string& segment_name) {
+    std::unique_ptr<File, FileCloser> file_closer(
+        File::Open(segment_name.c_str(), "r"));
+    return file_closer.get() == nullptr;
+  }
+};
+
+// Verify that no segments are deleted initially until there are more than
+// |kMaxNumSegmentsAvailable| segments.
+TEST_F(MediaPlaylistDeleteSegmentsTest, NoSegmentsDeletedInitially) {
+  for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
+    media_playlist_->AddSegment(kIgnoredSegmentName,
+                                kInitialStartTime + i * kDuration, kDuration,
+                                kZeroByteOffset, kMBytes);
+  }
+  for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
+    EXPECT_FALSE(
+        SegmentDeleted(base::StringPrintf(kStringPrintTemplate, i + 1)));
+  }
+}
+
+TEST_F(MediaPlaylistDeleteSegmentsTest, OneSegmentDeleted) {
+  for (int i = 0; i <= kMaxNumSegmentsAvailable; ++i) {
+    media_playlist_->AddSegment(kIgnoredSegmentName,
+                                kInitialStartTime + i * kDuration, kDuration,
+                                kZeroByteOffset, kMBytes);
+  }
+  EXPECT_FALSE(SegmentDeleted(base::StringPrintf(kStringPrintTemplate, 2)));
+  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(kStringPrintTemplate, 1)));
+}
+
+TEST_F(MediaPlaylistDeleteSegmentsTest, ManySegments) {
+  int many_segments = 50;
+  for (int i = 0; i < many_segments; ++i) {
+    media_playlist_->AddSegment(kIgnoredSegmentName,
+                                kInitialStartTime + i * kDuration, kDuration,
+                                kZeroByteOffset, kMBytes);
+  }
+  const int last_available_segment_index =
+      many_segments - kMaxNumSegmentsAvailable + 1;
+  EXPECT_FALSE(SegmentDeleted(
+      base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
+  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
+      kStringPrintTemplate, last_available_segment_index - 1)));
 }
 
 }  // namespace hls

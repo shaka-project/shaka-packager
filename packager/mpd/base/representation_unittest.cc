@@ -27,12 +27,6 @@ namespace {
 
 const uint32_t kAnyRepresentationId = 1;
 
-bool SegmentDeleted(const std::string& segment_name) {
-  std::unique_ptr<File, FileCloser> file_closer(
-      File::Open(segment_name.c_str(), "r"));
-  return file_closer.get() == nullptr;
-}
-
 class MockRepresentationStateChangeListener
     : public RepresentationStateChangeListener {
  public:
@@ -1185,86 +1179,106 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
       XmlNodeEqual(ExpectedXml(expected_s_element, kExpectedStartNumber)));
 }
 
-TEST_P(TimeShiftBufferDepthTest, DeleteSegmentsOutsideOfLiveWindow) {
-  const char kSegmentTemplate[] = "memory://$Number$.mp4";
-  const char kStringPrintTemplate[] = "memory://%d.mp4";
+INSTANTIATE_TEST_CASE_P(InitialStartTime,
+                        TimeShiftBufferDepthTest,
+                        Values(0, 1000));
 
-  // Create 100 files with the template.
-  for (int i = 1; i <= 100; ++i) {
-    File::WriteStringToFile(base::StringPrintf(kStringPrintTemplate, i).c_str(),
-                            "dummy content");
+namespace {
+const int kTimeShiftBufferDepth = 2;
+const int kNumPreservedSegmentsOutsideLiveWindow = 3;
+const int kMaxNumSegmentsAvailable =
+    kTimeShiftBufferDepth + 1 + kNumPreservedSegmentsOutsideLiveWindow;
+
+const char kSegmentTemplate[] = "memory://$Number$.mp4";
+const char kSegmentTemplateUrl[] = "video/$Number$.mp4";
+const char kStringPrintTemplate[] = "memory://%d.mp4";
+
+const uint64_t kInitialStartTime = 0;
+const uint64_t kDuration = kDefaultTimeScale;
+const uint64_t kSize = 10;
+const uint64_t kNoRepeat = 0;
+}  // namespace
+
+class RepresentationDeleteSegmentsTest : public SegmentTimelineTestBase {
+ public:
+  void SetUp() override {
+    SegmentTimelineTestBase::SetUp();
+
+    // Create 100 files with the template.
+    for (int i = 1; i <= 100; ++i) {
+      File::WriteStringToFile(
+          base::StringPrintf(kStringPrintTemplate, i).c_str(), "dummy content");
+    }
+
+    MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
+    media_info.set_segment_template(kSegmentTemplate);
+    media_info.set_segment_template_url(kSegmentTemplateUrl);
+    representation_ =
+        CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
+    ASSERT_TRUE(representation_->Init());
+
+    mpd_options_.mpd_params.time_shift_buffer_depth = kTimeShiftBufferDepth;
+    mpd_options_.mpd_params.preserved_segments_outside_live_window =
+        kNumPreservedSegmentsOutsideLiveWindow;
   }
 
-  MediaInfo media_info = ConvertToMediaInfo(GetDefaultMediaInfo());
-  media_info.set_segment_template(kSegmentTemplate);
-  representation_ =
-      CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
-  ASSERT_TRUE(representation_->Init());
+  bool SegmentDeleted(const std::string& segment_name) {
+    std::unique_ptr<File, FileCloser> file_closer(
+        File::Open(segment_name.c_str(), "r"));
+    return file_closer.get() == nullptr;
+  }
+};
 
-  const int kTimeShiftBufferDepth = 2;
-  const int kNumPreservedSegmentsOutsideLiveWindow = 3;
-  const int kMaxNumSegmentsAvailable =
-      kTimeShiftBufferDepth + 1 + kNumPreservedSegmentsOutsideLiveWindow;
-
-  mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
-      kTimeShiftBufferDepth;
-  mutable_mpd_options()->mpd_params.preserved_segments_outside_live_window =
-      kNumPreservedSegmentsOutsideLiveWindow;
-
-  const uint64_t kInitialStartTime = 0;
-  const uint64_t kDuration = kDefaultTimeScale;
-  const uint64_t kSize = 10;
-  const uint64_t kNoRepeat = 0;
-
-  // Verify that no segments are deleted initially until there are more than
-  // |kMaxNumSegmentsAvailable| segments.
-  uint64_t next_start_time = kInitialStartTime;
-  int num_total_segments = 0;
-  int last_available_segment_index = 1;  // No segments are deleted.
+// Verify that no segments are deleted initially until there are more than
+// |kMaxNumSegmentsAvailable| segments.
+TEST_F(RepresentationDeleteSegmentsTest, NoSegmentsDeletedInitially) {
   for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
-    AddSegments(next_start_time, kDuration, kSize, kNoRepeat);
-    next_start_time += kDuration;
-    ++num_total_segments;
-
-    EXPECT_FALSE(SegmentDeleted(base::StringPrintf(
-        kStringPrintTemplate, last_available_segment_index)));
+    AddSegments(kInitialStartTime + i * kDuration, kDuration, kSize, kNoRepeat);
   }
+  for (int i = 0; i < kMaxNumSegmentsAvailable; ++i) {
+    EXPECT_FALSE(
+        SegmentDeleted(base::StringPrintf(kStringPrintTemplate, i + 1)));
+  }
+}
 
-  AddSegments(next_start_time, kDuration, kSize, kNoRepeat);
-  next_start_time += kDuration;
-  ++num_total_segments;
-  last_available_segment_index = 2;
+TEST_F(RepresentationDeleteSegmentsTest, OneSegmentDeleted) {
+  for (int i = 0; i <= kMaxNumSegmentsAvailable; ++i) {
+    AddSegments(kInitialStartTime + i * kDuration, kDuration, kSize, kNoRepeat);
+  }
+  EXPECT_FALSE(SegmentDeleted(base::StringPrintf(kStringPrintTemplate, 2)));
+  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(kStringPrintTemplate, 1)));
+}
 
-  EXPECT_FALSE(SegmentDeleted(
-      base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
-  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
-      kStringPrintTemplate, last_available_segment_index - 1)));
-
-  // Verify that there are exactly |kMaxNumSegmentsAvailable| segments
-  // remaining.
-  const uint64_t kRepeat = 10;
-  AddSegments(next_start_time, kDuration, kSize, kRepeat);
-  next_start_time += (kRepeat + 1) * kDuration;
-  num_total_segments += kRepeat + 1;
-  last_available_segment_index =
-      num_total_segments - kMaxNumSegmentsAvailable + 1;
-
-  EXPECT_FALSE(SegmentDeleted(
-      base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
-  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
-      kStringPrintTemplate, last_available_segment_index - 1)));
-
-  AddSegments(next_start_time, kDuration, kSize, kNoRepeat);
-  ++last_available_segment_index;
-
+// Verify that segments are deleted as expected with many non-repeating
+// segments.
+TEST_F(RepresentationDeleteSegmentsTest, ManyNonRepeatingSegments) {
+  int many_segments = 50;
+  for (int i = 0; i < many_segments; ++i) {
+    AddSegments(kInitialStartTime + i * kDuration, kDuration, kSize, kNoRepeat);
+  }
+  const int last_available_segment_index =
+      many_segments - kMaxNumSegmentsAvailable + 1;
   EXPECT_FALSE(SegmentDeleted(
       base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
   EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
       kStringPrintTemplate, last_available_segment_index - 1)));
 }
 
-INSTANTIATE_TEST_CASE_P(InitialStartTime,
-                        TimeShiftBufferDepthTest,
-                        Values(0, 1000));
+// Verify that segments are deleted as expected with many repeating segments.
+TEST_F(RepresentationDeleteSegmentsTest, ManyRepeatingSegments) {
+  const int kLoops = 4;
+  const uint64_t kRepeat = 10;
+  for (int i = 0; i < kLoops; ++i) {
+    AddSegments(kInitialStartTime + i * kDuration * (kRepeat + 1), kDuration,
+                kSize, kRepeat);
+  }
+  const int kNumSegments = kLoops * (kRepeat + 1);
+  const int last_available_segment_index =
+      kNumSegments - kMaxNumSegmentsAvailable + 1;
+  EXPECT_FALSE(SegmentDeleted(
+      base::StringPrintf(kStringPrintTemplate, last_available_segment_index)));
+  EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
+      kStringPrintTemplate, last_available_segment_index - 1)));
+}
 
 }  // namespace shaka

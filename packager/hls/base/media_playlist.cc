@@ -18,6 +18,7 @@
 #include "packager/file/file.h"
 #include "packager/hls/base/tag.h"
 #include "packager/media/base/language_utils.h"
+#include "packager/media/base/muxer_util.h"
 #include "packager/version/version.h"
 
 namespace shaka {
@@ -577,7 +578,6 @@ void MediaPlaylist::SlideWindow() {
   HlsEntry::EntryType prev_entry_type = HlsEntry::EntryType::kExtInf;
 
   std::list<std::unique_ptr<HlsEntry>>::iterator last = entries_.begin();
-  size_t num_segments_removed = 0;
   for (; last != entries_.end(); ++last) {
     HlsEntry::EntryType entry_type = last->get()->type();
     if (entry_type == HlsEntry::EntryType::kExtKey) {
@@ -588,13 +588,14 @@ void MediaPlaylist::SlideWindow() {
       ++discontinuity_sequence_number_;
     } else {
       DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
-      const SegmentInfoEntry* segment_info =
-          reinterpret_cast<SegmentInfoEntry*>(last->get());
+      const SegmentInfoEntry& segment_info =
+          *reinterpret_cast<SegmentInfoEntry*>(last->get());
       const double last_segment_end_time =
-          segment_info->start_time() + segment_info->duration();
+          segment_info.start_time() + segment_info.duration();
       if (timeshift_limit < last_segment_end_time)
         break;
-      ++num_segments_removed;
+      RemoveOldSegment(segment_info.start_time());
+      media_sequence_number_++;
     }
     prev_entry_type = entry_type;
   }
@@ -602,7 +603,23 @@ void MediaPlaylist::SlideWindow() {
   // Add key entries back.
   entries_.insert(entries_.begin(), std::make_move_iterator(ext_x_keys.begin()),
                   std::make_move_iterator(ext_x_keys.end()));
-  media_sequence_number_ += num_segments_removed;
+}
+
+void MediaPlaylist::RemoveOldSegment(uint64_t start_time) {
+  if (hls_params_.preserved_segments_outside_live_window == 0)
+    return;
+  if (stream_type_ == MediaPlaylistStreamType::kVideoIFramesOnly)
+    return;
+
+  segments_to_be_removed_.push_back(
+      media::GetSegmentName(media_info_.segment_template(), start_time,
+                            media_sequence_number_, media_info_.bandwidth()));
+  while (segments_to_be_removed_.size() >
+         hls_params_.preserved_segments_outside_live_window) {
+    VLOG(2) << "Deleting " << segments_to_be_removed_.front();
+    File::Delete(segments_to_be_removed_.front().c_str());
+    segments_to_be_removed_.pop_front();
+  }
 }
 
 }  // namespace hls

@@ -212,7 +212,8 @@ class Representation {
   std::list<ContentProtectionElement> content_protection_elements_;
   // TODO(kqyang): Address sliding window issue with multiple periods.
   std::list<SegmentInfo> segment_infos_;
-  // A temporary list to hold the file names of segments to be removed.
+  // A list to hold the file names of the segments to be removed temporarily.
+  // Once a file is actually removed, it is removed from the list.
   std::list<std::string> segments_to_be_removed_;
 
   const uint32_t id_;
