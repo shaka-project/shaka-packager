@@ -290,7 +290,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
     ++num_key_providers;
   }
   if (FLAGS_enable_playready_encryption) {
-    encryption_params.key_provider = KeyProvider::kPlayready;
+    encryption_params.key_provider = KeyProvider::kPlayReady;
     ++num_key_providers;
   }
   if (FLAGS_enable_raw_key_encryption) {
@@ -327,8 +327,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
         return base::nullopt;
       break;
     }
-    case KeyProvider::kPlayready: {
-      PlayreadyEncryptionParams& playready = encryption_params.playready;
+    case KeyProvider::kPlayReady: {
+      PlayReadyEncryptionParams& playready = encryption_params.playready;
       playready.key_server_url = FLAGS_playready_server_url;
       playready.program_identifier = FLAGS_program_identifier;
       playready.ca_file = FLAGS_ca_file;
@@ -376,7 +376,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
         return base::nullopt;
       break;
     }
-    case KeyProvider::kPlayready:
+    case KeyProvider::kPlayReady:
     case KeyProvider::kNone:
       break;
   }

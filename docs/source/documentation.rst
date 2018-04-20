@@ -59,7 +59,7 @@ Shaka Packager supports three different types of key providers:
 
 - Raw key: keys are provided in command line
 - Widevine: fetches keys from Widevine key server
-- Playready: fetches keys from Playready key server
+- PlayReady: fetches keys from PlayReady key server
 
 Different key providers cannot be specified at the same time.
 
@@ -69,7 +69,7 @@ Different key providers cannot be specified at the same time.
     [--enable_widevine_decryption {Widevine Decryption Options}] \
     [--enable_raw_key_encryption {Raw Key Encryption Options}] \
     [--enable_raw_key_decryption {Raw Key Decryption Options}] \
-    [--enable_playready_encryption {Playready Encryption Options}]
+    [--enable_playready_encryption {PlayReady Encryption Options}]
 
 .. include:: /options/general_encryption_options.rst
 

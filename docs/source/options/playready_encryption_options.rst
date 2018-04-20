@@ -1,4 +1,4 @@
-Playready encryption options
+PlayReady encryption options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 --enable_playready_encryption
@@ -7,7 +7,7 @@ Playready encryption options
 
 --playready_server_url <url>
 
-    Playready packaging server url.
+    PlayReady packaging server url.
 
 --program_identifier <program_identifier>
 
@@ -15,11 +15,11 @@ Playready encryption options
 
 --playready_key_id <hex>
 
-    Playready key id in hex.
+    PlayReady key id in hex.
 
 --playready_key <hex>
 
-    Playready key in hex.
+    PlayReady key in hex.
 
 --ca_file <file path>
 

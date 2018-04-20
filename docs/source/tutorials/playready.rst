@@ -1,4 +1,4 @@
-Playready
+PlayReady
 =========
 
 To be completed.

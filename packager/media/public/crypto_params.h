@@ -18,7 +18,7 @@ namespace shaka {
 enum class KeyProvider {
   kNone = 0,
   kWidevine = 1,
-  kPlayready = 2,
+  kPlayReady = 2,
   kRawKey = 3,
 };
 
@@ -61,17 +61,17 @@ struct WidevineEncryptionParams {
   std::vector<uint8_t> group_id;
 };
 
-/// Playready encryption parameters.
+/// PlayReady encryption parameters.
 /// Two different modes of playready key acquisition is supported:
 ///   (1) Fetch from a key server. `key_server_url` and `program_identifier` are
 ///       required. The presence of other parameters may be necessary depends
 ///       on server configuration.
 ///   (2) Provide the raw key directly. Both `key_id` and `key` are required.
 ///       We are planning to merge this mode with `RawKeyParams`.
-struct PlayreadyEncryptionParams {
-  /// Playready license / key server URL.
+struct PlayReadyEncryptionParams {
+  /// PlayReady license / key server URL.
   std::string key_server_url;
-  /// Playready program identifier.
+  /// PlayReady program identifier.
   std::string program_identifier;
   /// Absolute path to the Certificate Authority file for the server cert in PEM
   /// format.
@@ -114,7 +114,7 @@ struct EncryptionParams {
   KeyProvider key_provider = KeyProvider::kNone;
   // Only one of the three fields is valid.
   WidevineEncryptionParams widevine;
-  PlayreadyEncryptionParams playready;
+  PlayReadyEncryptionParams playready;
   RawKeyParams raw_key;
 
   /// When it is true, generate a v1 PSSH box for the common
@@ -122,7 +122,7 @@ struct EncryptionParams {
   /// The flag is default to be true if --enable_raw_key_encryption
   /// is set and no other pssh flags are specified.
   bool generate_common_pssh = false;
-  /// When it is true, include a Playready PSSH box.
+  /// When it is true, include a PlayReady PSSH box.
   /// A playready PSSH is always generated regardless of the value of
   /// --generate_playready_pssh for --enable_playready_encryption.
   bool generate_playready_pssh = false;

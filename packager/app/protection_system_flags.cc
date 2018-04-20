@@ -16,7 +16,7 @@ DEFINE_bool(generate_common_pssh,
             "is set and no other pssh flags are specified.");
 DEFINE_bool(generate_playready_pssh,
             false,
-            "When specified, include a Playready PSSH box."
+            "When specified, include a PlayReady PSSH box."
             "A playready PSSH is always generated regardless of the value of "
             "--generate_playready_pssh for --enable_playready_encryption.");
 DEFINE_bool(generate_widevine_pssh,

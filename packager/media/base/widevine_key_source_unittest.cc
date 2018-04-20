@@ -244,7 +244,7 @@ class WidevineKeySourceTest : public Test {
               kPlayReadySystemId,
               kPlayReadySystemId + arraysize(kPlayReadySystemId));
 
-          // Playready pssh index depends on if there has common pssh box.
+          // PlayReady pssh index depends on if there has common pssh box.
           const uint8_t playready_index = 1 + (add_common_pssh_ ? 1 : 0);
           ASSERT_EQ(
               playready_system_id,

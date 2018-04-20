@@ -97,8 +97,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
                                                    protection_systems_flags);
       break;
     }
-    case KeyProvider::kPlayready: {
-      const PlayreadyEncryptionParams& playready = encryption_params.playready;
+    case KeyProvider::kPlayReady: {
+      const PlayReadyEncryptionParams& playready = encryption_params.playready;
       if (!playready.key_server_url.empty() ||
           !playready.program_identifier.empty()) {
         if (playready.key_server_url.empty() ||
@@ -175,7 +175,7 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       break;
     }
     case KeyProvider::kNone:
-    case KeyProvider::kPlayready:
+    case KeyProvider::kPlayReady:
       break;
   }
   return decryption_key_source;
