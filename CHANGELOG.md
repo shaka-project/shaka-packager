@@ -1,3 +1,15 @@
+## [2.0.3] - 2018-04-23
+### Changed
+- Removed --pto_adjustment flag (related to #368).
+
+### Fixed
+- Use max bitrate in Representation@bandwidth instead of average bitrate (#376).
+- Set Widevine key request content-type to JSON instead of xml (#372).
+- Fix default_language not working if 2-char code is used (#371).
+- Do not force earliest_presentation_time to 0 for VOD (#303).
+- Generate more precise time in Period@duration (#368). This avoids possible
+  rounding error in MSE causing frames to be dropped.
+
 ## [2.0.2] - 2018-03-27
 ### Added
 - Support cue alignment from multiple demuxed streams (#355).
@@ -306,6 +318,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.0.3]: https://github.com/google/shaka-packager/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/google/shaka-packager/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/google/shaka-packager/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/google/shaka-packager/compare/v1.6.2...v2.0.0
