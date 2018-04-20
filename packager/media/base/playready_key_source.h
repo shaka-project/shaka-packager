@@ -21,17 +21,23 @@ class PlayReadyKeySource : public KeySource {
  public:
   /// Creates a new PlayReadyKeySource from the given packaging information.
   /// @param server_url PlayReady packaging server url.
-  PlayReadyKeySource(const std::string& server_url);
+  /// @param proteciton_systems_flags is the flags indicating which PSSH should
+  ///        be included.
+  PlayReadyKeySource(const std::string& server_url,
+                     int protection_scheme_flags);
   /// Creates a new PlayReadyKeySource from the given packaging information.
   /// @param server_url PlayReady packaging server url.
   /// @param client_cert_file absolute path to a client certificate.
   /// @param client_cert_private_key_file absolute path to the private file
   ///     for the client certificate.
   /// @param client_cert_private_key_password password for the private key.
+  /// @param proteciton_systems_flags is the flags indicating which PSSH should
+  ///        be included.
   PlayReadyKeySource(const std::string& server_url,
                      const std::string& client_cert_file,
                      const std::string& client_cert_private_key_file,
-                     const std::string& client_cert_private_key_password);
+                     const std::string& client_cert_private_key_password,
+                     int protection_scheme_flags);
   ~PlayReadyKeySource() override;
 
   /// @name KeySource implementation overrides.

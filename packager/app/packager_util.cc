@@ -98,17 +98,9 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kPlayready: {
-      // TODO(hmchen): add multiple DRM support for playready key source.
       const PlayreadyEncryptionParams& playready = encryption_params.playready;
-      if (!playready.key_id.empty() || !playready.key.empty()) {
-        if (playready.key_id.empty() || playready.key.empty()) {
-          LOG(ERROR) << "Either playready key_id or key is not set.";
-          return nullptr;
-        }
-        encryption_key_source = PlayReadyKeySource::CreateFromKeyAndKeyId(
-            playready.key_id, playready.key);
-      } else if (!playready.key_server_url.empty() ||
-                 !playready.program_identifier.empty()) {
+      if (!playready.key_server_url.empty() ||
+          !playready.program_identifier.empty()) {
         if (playready.key_server_url.empty() ||
             playready.program_identifier.empty()) {
           LOG(ERROR) << "Either playready key_server_url or program_identifier "
@@ -128,10 +120,11 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
           playready_key_source.reset(new PlayReadyKeySource(
               playready.key_server_url, playready.client_cert_file,
               playready.client_cert_private_key_file,
-              playready.client_cert_private_key_password));
+              playready.client_cert_private_key_password,
+              protection_systems_flags));
         } else {
-          playready_key_source.reset(
-              new PlayReadyKeySource(playready.key_server_url));
+          playready_key_source.reset(new PlayReadyKeySource(
+              playready.key_server_url, protection_systems_flags));
         }
         if (!playready.ca_file.empty()) {
           playready_key_source->SetCaFile(playready.ca_file);

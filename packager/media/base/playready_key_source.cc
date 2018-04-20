@@ -60,8 +60,10 @@ bool Base64StringToBytes(const std::string& base64_string,
 }
 }
 
-PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url)
-    : KeySource(PLAYREADY_PROTECTION_SYSTEM_FLAG),
+PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url,
+                                       int protection_system_flags)
+    // Playready PSSH is retrived from Playready server response.
+    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG),
       encryption_key_(new EncryptionKey),
       server_url_(server_url) {}
 
@@ -69,8 +71,10 @@ PlayReadyKeySource::PlayReadyKeySource(
     const std::string& server_url,
     const std::string& client_cert_file,
     const std::string& client_cert_private_key_file,
-    const std::string& client_cert_private_key_password)
-    : KeySource(PLAYREADY_PROTECTION_SYSTEM_FLAG),
+    const std::string& client_cert_private_key_password,
+    int protection_system_flags)
+    // Playready PSSH is retrived from Playready server response.
+    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG),
       encryption_key_(new EncryptionKey),
       server_url_(server_url),
       client_cert_file_(client_cert_file),
@@ -83,30 +87,6 @@ PlayReadyKeySource::PlayReadyKeySource(
       encryption_key_(std::move(encryption_key)) {}
 
 PlayReadyKeySource::~PlayReadyKeySource() {}
-
-std::unique_ptr<PlayReadyKeySource> PlayReadyKeySource::CreateFromKeyAndKeyId(
-    const std::vector<uint8_t>& key_id,
-    const std::vector<uint8_t>& key) {
-  std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
-  encryption_key->key_id = key_id;
-  encryption_key->key = key;
-
-  ProtectionSystemSpecificInfo info;
-  info.add_key_id(key_id);
-  info.set_system_id(kPlayReadySystemId, arraysize(kPlayReadySystemId));
-
-  std::vector<uint8_t> pssh_data =
-      PlayReadyPsshGenerator::GeneratePsshFromKeyIdAndKey(key_id, key);
-  if (pssh_data.empty()) {
-    DLOG(INFO) << "Fail to generate PlayReady PSSH.";
-    return nullptr;
-  }
-  info.set_pssh_data(pssh_data);
-
-  encryption_key->key_system_info.push_back(info);
-  return std::unique_ptr<PlayReadyKeySource>(
-      new PlayReadyKeySource(std::move(encryption_key)));
-}
 
 Status RetrieveTextInXMLElement(const std::string& element,
                                 const std::string& xml,
@@ -203,7 +183,15 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
   }
   status = SetKeyInformationFromServerResponse(acquire_license_response,
                                                encryption_key.get());
-  encryption_key_ = std::move(encryption_key);
+  // Playready does not specify different streams.
+  const char kEmptyDrmLabel[] = "";
+  EncryptionKeyMap encryption_key_map;
+  encryption_key_map[kEmptyDrmLabel] = std::move(encryption_key);
+  status = UpdateProtectionSystemInfo(&encryption_key_map);
+  if (!status.ok()) {
+    return status;
+  }
+  encryption_key_ = std::move(encryption_key_map[kEmptyDrmLabel]);
   return Status::OK;
 }
 

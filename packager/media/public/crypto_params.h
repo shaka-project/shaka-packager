@@ -82,12 +82,6 @@ struct PlayreadyEncryptionParams {
   std::string client_cert_private_key_file;
   /// Password to the private key file.
   std::string client_cert_private_key_password;
-
-  // TODO(kqyang): move raw playready key generation to RawKey.
-  /// Provides a raw Playready KeyId.
-  std::vector<uint8_t> key_id;
-  /// Provides a raw Playready Key.
-  std::vector<uint8_t> key;
 };
 
 /// Raw key encryption/decryption parameters, i.e. with key parameters provided.

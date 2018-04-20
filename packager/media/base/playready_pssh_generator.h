@@ -25,10 +25,6 @@ class PlayReadyPsshGenerator : public PsshGenerator {
   PlayReadyPsshGenerator();
   ~PlayReadyPsshGenerator() override;
 
-  static std::vector<uint8_t> GeneratePsshFromKeyIdAndKey(
-      const std::vector<uint8_t>& key_id,
-      const std::vector<uint8_t>& key);
-
   /// @name PsshGenerator implemetation overrides.
   /// @{
   bool SupportMultipleKeys() override;

@@ -4,12 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/media/base/playready_pssh_generator.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/widevine_pssh_generator.h"
 #include "packager/status_test_util.h"
+
+using ::testing::ElementsAreArray;
 
 namespace shaka {
 namespace media {
@@ -94,16 +97,6 @@ std::vector<uint8_t> GetTestKey1() {
 std::vector<uint8_t> GetTestKeyId2() {
   return std::vector<uint8_t>(std::begin(kTestKeyId2), std::end(kTestKeyId2));
 }
-
-std::vector<uint8_t> GetExpectedPlayReadyPsshData() {
-  return std::vector<uint8_t>(std::begin(kExpectedPlayReadyPsshData),
-                              std::end(kExpectedPlayReadyPsshData));
-}
-
-std::vector<uint8_t> GetExpectedWidevinePsshData() {
-  return std::vector<uint8_t>(std::begin(kExpectedWidevinePsshData),
-                              std::end(kExpectedWidevinePsshData));
-}
 }  // namespace
 
 // Folowing tests test PlayReady, RawKey and Widevine PSSH generators. Note
@@ -132,13 +125,13 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshDataFromKeyIdAndKey) {
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
       new PlayReadyPsshGenerator());
-  base::Optional<std::vector<uint8_t>> pssh_data =
-      playready_pssh_generator->GeneratePsshDataFromKeyIdAndKey(kTestKeyId,
-                                                                kTestKey);
-  ASSERT_TRUE(pssh_data);
+  ProtectionSystemSpecificInfo info;
+  EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
+      kTestKeyId, kTestKey, &info));
 
-  const std::vector<uint8_t> kExpectedPsshData = GetExpectedPlayReadyPsshData();
-  EXPECT_EQ(kExpectedPsshData, pssh_data.value());
+  EXPECT_THAT(info.pssh_data(),
+              ElementsAreArray(std::begin(kExpectedPlayReadyPsshData),
+                               std::end(kExpectedPlayReadyPsshData)));
 }
 
 TEST(PsshGeneratorTest, GenerateRawKeyPsshDataFromKeyIds) {
@@ -171,8 +164,9 @@ TEST(PsshGeneratorTest, GenerateWidevinePsshDataFromKeyIds) {
   ASSERT_OK(
       widevine_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
 
-  const std::vector<uint8_t> kExpectedPsshData = GetExpectedWidevinePsshData();
-  EXPECT_EQ(kExpectedPsshData, info.pssh_data());
+  EXPECT_THAT(info.pssh_data(),
+              ElementsAreArray(std::begin(kExpectedWidevinePsshData),
+                               std::end(kExpectedWidevinePsshData)));
 }
 
 TEST(PsshGeneratorTest, GenerateWidevinyPsshDataFromKeyIdAndKey) {

@@ -20,6 +20,14 @@ DEFINE_double(availability_time_offset,
               0,
               "This flag is deprecated. Use suggested_presentation_delay "
               "instead which can achieve similar effect.");
+DEFINE_string(playready_key_id,
+              "",
+              "This flag is deprecated. Use --enable_raw_key_encryption with "
+              "--generate_playready_pssh to generate PlayReady PSSH.");
+DEFINE_string(playready_key,
+              "",
+              "This flag is deprecated. Use --enable_raw_key_encryption with "
+              "--generate_playready_pssh to generate PlayReady PSSH.");
 
 // The current gflags library does not provide a way to check whether a flag is
 // set in command line. If a flag has a different value to its default value,
@@ -47,3 +55,5 @@ DEFINE_validator(profile, &InformRetiredStringFlag);
 DEFINE_validator(single_segment, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(webm_subsample_encryption, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(availability_time_offset, &InformRetiredDefaultDoubleFlag);
+DEFINE_validator(playready_key_id, &InformRetiredStringFlag);
+DEFINE_validator(playready_key, &InformRetiredStringFlag);

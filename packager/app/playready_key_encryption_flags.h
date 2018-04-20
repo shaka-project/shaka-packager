@@ -16,8 +16,6 @@
 DECLARE_bool(enable_playready_encryption);
 DECLARE_string(playready_server_url);
 DECLARE_string(program_identifier);
-DECLARE_hex_bytes(playready_key_id);
-DECLARE_hex_bytes(playready_key);
 DECLARE_string(ca_file);
 DECLARE_string(client_cert_file);
 DECLARE_string(client_cert_private_key_file);

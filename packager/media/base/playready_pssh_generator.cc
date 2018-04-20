@@ -133,22 +133,6 @@ PlayReadyPsshGenerator::PlayReadyPsshGenerator()
 
 PlayReadyPsshGenerator::~PlayReadyPsshGenerator() {}
 
-// TODO(hmchen): remove this static function when implementing the multi
-// DRM support for PlayReadyKeySource.
-// static
-std::vector<uint8_t> PlayReadyPsshGenerator::GeneratePsshFromKeyIdAndKey(
-    const std::vector<uint8_t>& key_id,
-    const std::vector<uint8_t>& key) {
-  std::vector<uint8_t> pssh_data;
-  Status status = GeneratePlayReadyPsshData(key_id, key, &pssh_data);
-  if (!status.ok()) {
-    LOG(ERROR) << status.ToString();
-    return std::vector<uint8_t>();
-  }
-
-  return pssh_data;
-}
-
 bool PlayReadyPsshGenerator::SupportMultipleKeys() {
   return false;
 }

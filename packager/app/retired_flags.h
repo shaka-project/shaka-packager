@@ -10,3 +10,5 @@ DECLARE_string(profile);
 DECLARE_bool(single_segment);
 DECLARE_bool(webm_subsample_encryption);
 DECLARE_double(availability_time_offset);
+DECLARE_string(playready_key_id);
+DECLARE_string(playready_key);

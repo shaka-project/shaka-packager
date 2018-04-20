@@ -337,8 +337,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
           FLAGS_client_cert_private_key_file;
       playready.client_cert_private_key_password =
           FLAGS_client_cert_private_key_password;
-      playready.key_id = FLAGS_playready_key_id_bytes;
-      playready.key = FLAGS_playready_key_bytes;
       break;
     }
     case KeyProvider::kRawKey: {
