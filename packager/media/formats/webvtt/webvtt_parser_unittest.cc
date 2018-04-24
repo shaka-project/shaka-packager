@@ -123,9 +123,35 @@ TEST_F(WebVttParserTest, FailToParseHeaderNotOneLine) {
   ASSERT_NE(Status::OK, parser_->Run());
 }
 
-// TODO: Add style blocks support to WebVttParser.
-// This test is disabled until WebVTT parses STYLE blocks.
-TEST_F(WebVttParserTest, DISABLED_ParseStyleBlocks) {
+// Right now we don't support region blocks, but for now make sure that we don't
+// die if we see a region block.
+TEST_F(WebVttParserTest, ParserDoesNotDieOnRegionBlock) {
+  const char* text =
+      "WEBVTT\n"
+      "\n"
+      "REGION\n"
+      "id:fred\n"
+      "width:40%\n"
+      "lines:3\n"
+      "regionanchor:0%,100%\n"
+      "viewportanchor:10%,90%\n"
+      "scroll:up";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+  }
+
+  ASSERT_OK(parser_->Run());
+}
+
+// Right now we don't support style blocks, but for now make sure that we don't
+// die if we see a style block.
+TEST_F(WebVttParserTest, ParserDoesNotDieOnStyleBlock) {
   const char* text =
       "WEBVTT\n"
       "\n"

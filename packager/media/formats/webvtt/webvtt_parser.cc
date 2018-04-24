@@ -59,6 +59,22 @@ bool IsLikelyCueTiming(const std::string& line) {
 bool MaybeCueId(const std::string& line) {
   return line.find("-->") == std::string::npos;
 }
+
+// Check to see if the block is likely a style block. Style blocks are
+// identified as any block that starts with a line that only contains
+// "STYLE".
+// SOURCE: https://w3c.github.io/webvtt/#styling
+bool IsLikelyStyle(const std::string& line) {
+  return base::TrimWhitespaceASCII(line, base::TRIM_TRAILING) == "STYLE";
+}
+
+// Check to see if the block is likely a region block. Region blocks are
+// identified as any block that starts with a line that only contains
+// "REGION".
+// SOURCE: https://w3c.github.io/webvtt/#webvtt-region
+bool IsLikelyRegion(const std::string& line) {
+  return base::TrimWhitespaceASCII(line, base::TRIM_TRAILING) == "REGION";
+}
 }  // namespace
 
 WebVttParser::WebVttParser(std::unique_ptr<FileReader> source,
@@ -113,6 +129,8 @@ bool WebVttParser::Parse() {
     return false;
   }
 
+  bool saw_cue = false;
+
   while (reader_.Next(&block) && keep_reading_) {
     // NOTE
     if (IsLikelyNote(block[0])) {
@@ -120,15 +138,41 @@ bool WebVttParser::Parse() {
       continue;
     }
 
+    // STYLE
+    if (IsLikelyStyle(block[0])) {
+      if (saw_cue) {
+        LOG(ERROR)
+            << "Found style block after seeing cue. Ignoring style block";
+      } else {
+        LOG(WARNING) << "Missing support for style blocks. Skipping block:\n"
+                     << BlockToString(block.data(), block.size());
+      }
+      continue;
+    }
+
+    // REGION
+    if (IsLikelyRegion(block[0])) {
+      if (saw_cue) {
+        LOG(ERROR)
+            << "Found region block after seeing cue. Ignoring region block";
+      } else {
+        LOG(WARNING) << "Missing support for region blocks. Skipping block:\n"
+                     << BlockToString(block.data(), block.size());
+      }
+      continue;
+    }
+
     // CUE with ID
     if (block.size() > 2 && MaybeCueId(block[0]) &&
         IsLikelyCueTiming(block[1]) && ParseCueWithId(block)) {
+      saw_cue = true;
       continue;
     }
 
     // CUE with no ID
     if (block.size() > 1 && IsLikelyCueTiming(block[0]) &&
         ParseCueWithNoId(block)) {
+      saw_cue = true;
       continue;
     }
 
