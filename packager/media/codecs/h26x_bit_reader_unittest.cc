@@ -95,6 +95,8 @@ TEST(H26xBitReaderTest, SkipBits) {
   EXPECT_EQ(0x15, dummy);
   EXPECT_EQ(4, reader.NumBitsLeft());
   EXPECT_FALSE(reader.SkipBits(5));
+  EXPECT_TRUE(reader.SkipBits(0));
+  EXPECT_EQ(4, reader.NumBitsLeft());
 }
 
 TEST(H26xBitReaderTest, StopBitOccupyFullByte) {

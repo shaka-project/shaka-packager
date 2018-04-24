@@ -236,6 +236,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
         TRUE_OR_RETURN(
             br->ReadBits(ceil(log2(sps->num_short_term_ref_pic_sets)),
                          &slice_header->short_term_ref_pic_set_idx));
+        TRUE_OR_RETURN(slice_header->short_term_ref_pic_set_idx <
+                       sps->num_short_term_ref_pic_sets);
       }
 
       if (sps->long_term_ref_pic_present_flag) {
@@ -389,6 +391,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
     TRUE_OR_RETURN(br->ReadUE(&extension_length));
     TRUE_OR_RETURN(br->SkipBits(extension_length * 8));
   }
+
+  OK_OR_RETURN(ByteAlignment(br));
 
   slice_header->header_bit_size = nalu.payload_size() * 8 - br->NumBitsLeft();
   return kOk;
@@ -832,7 +836,9 @@ H265Parser::Result H265Parser::ParseReferencePictureSet(
     }
   } else {
     TRUE_OR_RETURN(br->ReadUE(&out_ref_pic_set->num_negative_pics));
+    TRUE_OR_RETURN(out_ref_pic_set->num_negative_pics <= kMaxRefPicSetCount);
     TRUE_OR_RETURN(br->ReadUE(&out_ref_pic_set->num_positive_pics));
+    TRUE_OR_RETURN(out_ref_pic_set->num_positive_pics <= kMaxRefPicSetCount);
 
     int prev_poc = 0;
     for (int i = 0; i < out_ref_pic_set->num_negative_pics; i++) {
@@ -1104,6 +1110,12 @@ H265Parser::Result H265Parser::SkipSubLayerHrdParameters(
     TRUE_OR_RETURN(br->SkipBits(1));  // cbr_flag
   }
 
+  return kOk;
+}
+
+H265Parser::Result H265Parser::ByteAlignment(H26xBitReader* br) {
+  TRUE_OR_RETURN(br->SkipBits(1));
+  TRUE_OR_RETURN(br->SkipBits(br->NumBitsLeft() % 8));
   return kOk;
 }
 

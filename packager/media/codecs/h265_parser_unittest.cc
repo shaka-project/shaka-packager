@@ -55,7 +55,7 @@ TEST(H265ParserTest, ParseSliceHeader) {
   EXPECT_EQ(8, header.slice_qp_delta);
   EXPECT_FALSE(header.cu_chroma_qp_offset_enabled_flag);
   EXPECT_EQ(5, header.num_entry_point_offsets);
-  EXPECT_EQ(85u, header.header_bit_size);
+  EXPECT_EQ(88u, header.header_bit_size);
 }
 
 TEST(H265ParserTest, ParseSliceHeader_NonIDR) {
@@ -81,7 +81,7 @@ TEST(H265ParserTest, ParseSliceHeader_NonIDR) {
   EXPECT_FALSE(header.dependent_slice_segment_flag);
   EXPECT_EQ(1, header.slice_type);
   EXPECT_EQ(5, header.num_entry_point_offsets);
-  EXPECT_EQ(124u, header.header_bit_size);
+  EXPECT_EQ(128u, header.header_bit_size);
 }
 
 TEST(H265ParserTest, ParseSps) {
