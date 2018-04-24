@@ -192,7 +192,6 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
       CreateVideoStreamInfo(video_params);
   const uint32_t kSampleDuration = 1234u;
   const char kExpectedMediaInfo[] =
-      "bandwidth: 7620\n"
       "video_info {\n"
       "  frame_duration: 1234\n"  // Should match the constant above.
       "  codec: 'avc1.010101'\n"

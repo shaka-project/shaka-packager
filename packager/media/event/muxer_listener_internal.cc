@@ -25,17 +25,6 @@ namespace internal {
 
 namespace {
 
-// This will return a positive value, given that |file_size| and
-// |duration_seconds| are positive.
-uint32_t EstimateRequiredBandwidth(uint64_t file_size, float duration_seconds) {
-  const uint64_t file_size_bits = file_size * 8;
-  const float bits_per_second = file_size_bits / duration_seconds;
-
-  // Note that casting |bits_per_second| to an integer might make it 0. Take the
-  // ceiling and make sure that it returns a positive value.
-  return static_cast<uint32_t>(ceil(bits_per_second));
-}
-
 // TODO(rkuroiwa): There is shaka::Range in MediaInfo proto and
 // shaka::media::Range in media/base. Find better names.
 void SetRange(uint64_t begin, uint64_t end, shaka::Range* range) {
@@ -207,21 +196,6 @@ bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
 
   media_info->set_media_duration_seconds(duration_seconds);
 
-  if (!media_info->has_bandwidth()) {
-    // Calculate file size from media_ranges.
-    uint64_t file_size = 0;
-    if (media_ranges.init_range)
-      file_size = std::max(file_size, media_ranges.init_range->end + 1);
-    if (media_ranges.index_range)
-      file_size = std::max(file_size, media_ranges.index_range->end + 1);
-    if (!media_ranges.subsegment_ranges.empty()) {
-      file_size =
-          std::max(file_size, media_ranges.subsegment_ranges.back().end + 1);
-    }
-
-    media_info->set_bandwidth(
-        EstimateRequiredBandwidth(file_size, duration_seconds));
-  }
   return true;
 }
 

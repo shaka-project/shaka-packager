@@ -160,17 +160,6 @@ TEST_F(OnDemandMpdBuilderTest, VideoAndAudio) {
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputAudio1AndVideo1));
 }
 
-// Static profile requires bandwidth to be set because it has no other way to
-// get the bandwidth for the Representation.
-TEST_F(OnDemandMpdBuilderTest, MediaInfoMissingBandwidth) {
-  MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
-  video_media_info.clear_bandwidth();
-  AddRepresentation(video_media_info);
-
-  std::string mpd_doc;
-  ASSERT_FALSE(mpd_.ToString(&mpd_doc));
-}
-
 TEST_F(OnDemandMpdBuilderTest, CheckXmlTest) {
   const double kPeriod1StartTimeSeconds = 0.0;
 

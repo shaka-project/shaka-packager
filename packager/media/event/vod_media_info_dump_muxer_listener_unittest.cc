@@ -93,6 +93,11 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
                             MuxerListener::kContainerMp4);
   }
 
+  void FireOnNewSegmentWithParams(const OnNewSegmentParameters& params) {
+    listener_->OnNewSegment(params.file_name, params.start_time,
+                            params.duration, params.segment_file_size);
+  }
+
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
     // On success, this writes the result to |temp_file_path_|.
     listener_->OnMediaEnd(params.media_ranges, params.duration_seconds);
@@ -125,7 +130,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
   FireOnMediaEndWithParams(media_end_param);
 
   const char kExpectedProtobufOutput[] =
-      "bandwidth: 7620\n"
+      "bandwidth: 0\n"
       "video_info {\n"
       "  codec: 'avc1.010101'\n"
       "  width: 720\n"
@@ -157,7 +162,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
   FireOnMediaEndWithParams(media_end_param);
 
   const std::string kExpectedProtobufOutput =
-      "bandwidth: 7620\n"
+      "bandwidth: 0\n"
       "video_info {\n"
       "  codec: 'avc1.010101'\n"
       "  width: 720\n"
@@ -181,7 +186,9 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "protected_content {\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
+      "    pssh: '" +
+      std::string(kExpectedDefaultPsshBox) +
+      "'\n"
       "  }\n"
       "  default_key_id: '_default_key_id_'\n"
       "  protection_scheme: 'cenc'\n"
@@ -203,7 +210,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
   FireOnMediaEndWithParams(media_end_param);
 
   const char kExpectedProtobufOutput[] =
-      "bandwidth: 7620\n"
+      "bandwidth: 0\n"
       "video_info {\n"
       "  codec: 'avc1.010101'\n"
       "  width: 720\n"
@@ -211,6 +218,47 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
       "  time_scale: 10\n"
       "  pixel_width: 8\n"
       "  pixel_height: 9\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 120\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 121\n"
+      "  end: 221\n"
+      "}\n"
+      "reference_time_scale: 1000\n"
+      "container_type: 1\n"
+      "media_file_name: 'test_output_file_name.mp4'\n"
+      "media_duration_seconds: 10.5\n";
+  ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
+}
+
+TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
+  VideoStreamInfoParameters params = GetDefaultVideoStreamInfoParams();
+
+  std::shared_ptr<StreamInfo> stream_info = CreateVideoStreamInfo(params);
+  FireOnMediaStartWithDefaultMuxerOptions(*stream_info, !kEnableEncryption);
+
+  OnNewSegmentParameters new_segment_param;
+  new_segment_param.segment_file_size = 100;
+  new_segment_param.duration = 1000;
+  FireOnNewSegmentWithParams(new_segment_param);
+  new_segment_param.segment_file_size = 200;
+  FireOnNewSegmentWithParams(new_segment_param);
+
+  OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
+  FireOnMediaEndWithParams(media_end_param);
+
+  const char kExpectedProtobufOutput[] =
+      "bandwidth: 1600\n"
+      "video_info {\n"
+      "  codec: 'avc1.010101'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"

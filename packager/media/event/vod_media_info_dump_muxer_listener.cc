@@ -8,6 +8,8 @@
 
 #include <google/protobuf/text_format.h>
 
+#include <cmath>
+
 #include "packager/base/logging.h"
 #include "packager/file/file.h"
 #include "packager/media/base/muxer_options.h"
@@ -21,7 +23,7 @@ namespace media {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
     const std::string& output_file_path)
-    : output_file_name_(output_file_path), is_encrypted_(false) {}
+    : output_file_name_(output_file_path) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -80,13 +82,23 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;
   }
+  if (!media_info_->has_bandwidth())
+    media_info_->set_bandwidth(max_bitrate_);
   WriteMediaInfoToFile(*media_info_, output_file_name_);
 }
 
 void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
                                                  uint64_t start_time,
                                                  uint64_t duration,
-                                                 uint64_t segment_file_size) {}
+                                                 uint64_t segment_file_size) {
+  const double segment_duration_seconds =
+      static_cast<double>(duration) / media_info_->reference_time_scale();
+
+  const int kBitsInByte = 8;
+  const uint64_t bitrate =
+      ceil(kBitsInByte * segment_file_size / segment_duration_seconds);
+  max_bitrate_ = std::max(max_bitrate_, bitrate);
+}
 
 void VodMediaInfoDumpMuxerListener::OnKeyFrame(uint64_t timestamp,
                                                uint64_t start_byte_offset,

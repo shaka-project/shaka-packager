@@ -6,7 +6,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b" cenc:default_KID="31323334-3536-3738-3930-313233343536">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="337062" codecs="vp8" mimeType="video/webm" sar="1:1">
+      <Representation id="0" bandwidth="472624" codecs="vp8" mimeType="video/webm" sar="1:1">
         <BaseURL>bear-640x360-video.webm</BaseURL>
         <SegmentBase indexRange="340-389" timescale="1000000" presentationTimeOffset="26000">
           <Initialization range="0-339"/>

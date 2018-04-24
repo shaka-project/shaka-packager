@@ -28,7 +28,6 @@ const char kExpectedDefaultPsshBox[] =
   "\\000\\000\\000$pssh\\000\\000\\000\\000\\000\\001\\002\\003\\004\\005"
   "\\006\\007\\010\\t\\n\\013\\014\\r\\016\\017\\000\\000\\000\\004pssh";
 const char kExpectedDefaultMediaInfo[] =
-    "bandwidth: 7620\n"
     "video_info {\n"
     "  codec: 'avc1.010101'\n"
     "  width: 720\n"
@@ -70,6 +69,13 @@ struct VideoStreamInfoParameters {
   uint8_t nalu_length_size;
   std::vector<uint8_t> codec_config;
   bool is_encrypted;
+};
+
+struct OnNewSegmentParameters {
+  std::string file_name;
+  uint64_t start_time;
+  uint64_t duration;
+  uint64_t segment_file_size;
 };
 
 // Note that this does not have vector of StreamInfo pointer.

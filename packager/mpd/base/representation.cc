@@ -341,16 +341,6 @@ bool Representation::HasRequiredMediaInfoFields() const {
     return false;
   }
 
-  if (HasVODOnlyFields(media_info_) && !media_info_.has_bandwidth()) {
-    LOG(ERROR) << "Missing 'bandwidth' field. MediaInfo requires bandwidth for "
-                  "static profile for generating a valid MPD.";
-    return false;
-  }
-
-  VLOG_IF(3, HasLiveOnlyFields(media_info_) && !media_info_.has_bandwidth())
-      << "MediaInfo missing field 'bandwidth'. Using estimated from "
-         "segment size.";
-
   return true;
 }
 

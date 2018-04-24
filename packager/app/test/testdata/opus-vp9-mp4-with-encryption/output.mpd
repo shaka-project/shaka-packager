@@ -7,7 +7,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="81568" codecs="opus" mimeType="audio/mp4" audioSamplingRate="48000">
+      <Representation id="0" bandwidth="86874" codecs="opus" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-320x240-vp9-opus-audio.mp4</BaseURL>
         <SegmentBase indexRange="975-1042" timescale="1000000" presentationTimeOffset="37000">
@@ -20,7 +20,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="1" bandwidth="210205" codecs="vp09.00.10.08.01.02.02.02.00" mimeType="video/mp4" sar="427:320">
+      <Representation id="1" bandwidth="231745" codecs="vp09.00.10.08.01.02.02.02.00" mimeType="video/mp4" sar="427:320">
         <BaseURL>bear-320x240-vp9-opus-video.mp4</BaseURL>
         <SegmentBase indexRange="1063-1130" timescale="1000000" presentationTimeOffset="37000">
           <Initialization range="0-1062"/>

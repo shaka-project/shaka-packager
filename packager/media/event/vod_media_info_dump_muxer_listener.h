@@ -68,8 +68,9 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
  private:
   std::string output_file_name_;
   std::unique_ptr<MediaInfo> media_info_;
+  uint64_t max_bitrate_ = 0;
 
-  bool is_encrypted_;
+  bool is_encrypted_ = false;
   // Storage for values passed to OnEncryptionInfoReady().
   FourCC protection_scheme_;
   std::vector<uint8_t> default_key_id_;
