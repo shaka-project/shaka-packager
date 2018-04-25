@@ -1774,6 +1774,27 @@ size_t OpusSpecific::ComputeSizeInternal() {
          kOpusMagicSignatureSize;
 }
 
+FlacSpecific::FlacSpecific() {}
+FlacSpecific::~FlacSpecific() {}
+
+FourCC FlacSpecific::BoxType() const {
+  return FOURCC_dfLa;
+}
+
+bool FlacSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  size_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
+  RCHECK(buffer->ReadWriteVector(&data, size));
+  return true;
+}
+
+size_t FlacSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
+}
+
 AudioSampleEntry::AudioSampleEntry()
     : format(FOURCC_NULL),
       data_reference_index(1),
@@ -1818,6 +1839,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&dac3));
   RCHECK(buffer->TryReadWriteChild(&dec3));
   RCHECK(buffer->TryReadWriteChild(&dops));
+  RCHECK(buffer->TryReadWriteChild(&dfla));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
   // box, so just do it in the end of AudioSampleEntry. See
@@ -1842,7 +1864,8 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
   return HeaderSize() + sizeof(data_reference_index) + sizeof(channelcount) +
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
-         dec3.ComputeSize() + dops.ComputeSize() +
+         dec3.ComputeSize() + dops.ComputeSize() + dfla.ComputeSize() +
+         // Reserved and predefined bytes.
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
 }

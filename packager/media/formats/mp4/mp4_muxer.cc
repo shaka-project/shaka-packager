@@ -73,6 +73,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_dtsm;
     case kCodecEAC3:
       return FOURCC_ec_3;
+    case kCodecFlac:
+      return FOURCC_fLaC;
     case kCodecOpus:
       return FOURCC_Opus;
     default:
@@ -366,6 +368,9 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       break;
     case kCodecEAC3:
       audio.dec3.data = audio_info->codec_config();
+      break;
+    case kCodecFlac:
+      audio.dfla.data = audio_info->codec_config();
       break;
     case kCodecOpus:
       audio.dops.opus_identification_header = audio_info->codec_config();

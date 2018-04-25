@@ -89,6 +89,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecAC3;
     case FOURCC_ec_3:
       return kCodecEAC3;
+    case FOURCC_fLaC:
+      return kCodecFlac;
     default:
       return kUnknownCodec;
   }
@@ -425,11 +427,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           break;
         case FOURCC_dtsc:
           FALLTHROUGH_INTENDED;
+        case FOURCC_dtse:
+          FALLTHROUGH_INTENDED;
         case FOURCC_dtsh:
           FALLTHROUGH_INTENDED;
         case FOURCC_dtsl:
-          FALLTHROUGH_INTENDED;
-        case FOURCC_dtse:
           FALLTHROUGH_INTENDED;
         case FOURCC_dtsm:
           codec_config = entry.ddts.extra_data;
@@ -446,6 +448,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_ec_3:
           codec_config = entry.dec3.data;
           num_channels = static_cast<uint8_t>(GetEc3NumChannels(codec_config));
+          sampling_frequency = entry.samplerate;
+          break;
+        case FOURCC_fLaC:
+          codec_config = entry.dfla.data;
+          num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
         case FOURCC_Opus:

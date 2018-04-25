@@ -46,6 +46,7 @@ enum Codec {
   kCodecDTSM,
   kCodecDTSP,
   kCodecEAC3,
+  kCodecFlac,
   kCodecOpus,
   kCodecVorbis,
   kCodecAudioMaxPlusOne,

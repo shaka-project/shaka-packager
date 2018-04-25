@@ -434,6 +434,16 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         dops->opus_identification_header.size() - 1);
   }
 
+  void Fill(FlacSpecific* dfla) {
+    const uint8_t kFlacData[] = {0x50, 0x11, 0x60};
+    dfla->data.assign(std::begin(kFlacData), std::end(kFlacData));
+  }
+
+  void Modify(FlacSpecific* dfla) {
+    const uint8_t kFlacData[] = {0x50, 0x11, 0x40};
+    dfla->data.assign(std::begin(kFlacData), std::end(kFlacData));
+  }
+
   void Fill(AudioSampleEntry* enca) {
     enca->format = FOURCC_enca;
     enca->data_reference_index = 2;
@@ -1227,6 +1237,21 @@ TEST_F(BoxDefinitionsTest, OpusSampleEntry) {
   entry.samplesize = 16;
   entry.samplerate = 48000;
   Fill(&entry.dops);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, FlacSampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_fLaC;
+  entry.data_reference_index = 2;
+  entry.channelcount = 5;
+  entry.samplesize = 16;
+  entry.samplerate = 44100;
+  Fill(&entry.dfla);
   entry.Write(this->buffer_.get());
 
   AudioSampleEntry entry_readback;

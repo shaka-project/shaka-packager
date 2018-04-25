@@ -342,6 +342,15 @@ struct OpusSpecific : Box {
   uint16_t preskip;
 };
 
+// FLAC specific decoder configuration box:
+//   https://github.com/xiph/flac/blob/master/doc/isoflac.txt
+// We do not care about the actual data inside, which is simply copied over.
+struct FlacSpecific : FullBox {
+  DECLARE_BOX_METHODS(FlacSpecific);
+
+  std::vector<uint8_t> data;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
   // Returns actual format of this sample entry.
@@ -362,6 +371,7 @@ struct AudioSampleEntry : Box {
   AC3Specific dac3;
   EC3Specific dec3;
   OpusSpecific dops;
+  FlacSpecific dfla;
 };
 
 struct WebVTTConfigurationBox : Box {

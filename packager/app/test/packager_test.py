@@ -1071,6 +1071,17 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-320x240-opus-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-320x240-vp9-golden.mp4')
 
+  def testPackageFlacWithEncryption(self):
+    streams = [
+        self._GetStream(
+            'audio', output_format='mp4', test_file='bear-flac.mp4'),
+    ]
+    flags = self._GetFlags(encryption=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('flac-with-encryption')
+    self._VerifyDecryption(self.output[0], 'bear-flac-golden.mp4')
+
   def testPackageWvmInput(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'
     self.assertPackageSuccess(

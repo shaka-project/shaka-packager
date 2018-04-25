@@ -37,6 +37,8 @@ std::string AudioCodecToString(Codec codec) {
       return "DTS+";
     case kCodecEAC3:
       return "EAC3";
+    case kCodecFlac:
+      return "FLAC";
     case kCodecOpus:
       return "Opus";
     case kCodecVorbis:
@@ -99,28 +101,30 @@ std::unique_ptr<StreamInfo> AudioStreamInfo::Clone() const {
 std::string AudioStreamInfo::GetCodecString(Codec codec,
                                             uint8_t audio_object_type) {
   switch (codec) {
-    case kCodecVorbis:
-      return "vorbis";
-    case kCodecOpus:
-      return "opus";
     case kCodecAAC:
       return "mp4a.40." + base::UintToString(audio_object_type);
+    case kCodecAC3:
+      return "ac-3";
     case kCodecDTSC:
       return "dtsc";
+    case kCodecDTSE:
+      return "dtse";
     case kCodecDTSH:
       return "dtsh";
     case kCodecDTSL:
       return "dtsl";
-    case kCodecDTSE:
-      return "dtse";
-    case kCodecDTSP:
-      return "dts+";
     case kCodecDTSM:
       return "dts-";
-    case kCodecAC3:
-      return "ac-3";
+    case kCodecDTSP:
+      return "dts+";
     case kCodecEAC3:
       return "ec-3";
+    case kCodecFlac:
+      return "flac";
+    case kCodecOpus:
+      return "opus";
+    case kCodecVorbis:
+      return "vorbis";
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";
