@@ -4,6 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#ifndef PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
+#define PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
+
 #include <list>
 
 #include "packager/media/base/media_handler.h"
@@ -81,3 +84,5 @@ class CueAlignmentHandler : public MediaHandler {
 
 }  // namespace media
 }  // namespace shaka
+
+#endif  // PACKAGER_MEDIA_CHUNKING_CUE_ALIGNMENT_HANDLER_
