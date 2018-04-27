@@ -101,6 +101,22 @@ TEST(AACAudioSpecificConfigTest, SixChannelTest) {
             aac_audio_specific_config.GetAudioObjectType());
 }
 
+TEST(AACAudioSpecificConfigTest, ProgramConfigElementTest) {
+  uint8_t buffer[] = {
+      0x11, 0x80, 0x04, 0xC8, 0x44, 0x00, 0x20, 0x00, 0xC4,
+      0x0D, 0x4C, 0x61, 0x76, 0x63, 0x35, 0x38, 0x2E, 0x31,
+      0x38, 0x2E, 0x31, 0x30, 0x30, 0x56, 0xE5, 0x00,
+  };
+  std::vector<uint8_t> data(std::begin(buffer), std::end(buffer));
+
+  AACAudioSpecificConfig aac_audio_specific_config;
+  EXPECT_TRUE(aac_audio_specific_config.Parse(data));
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetSamplesPerSecond());
+  EXPECT_EQ(6u, aac_audio_specific_config.GetNumChannels());
+  EXPECT_EQ(AACAudioSpecificConfig::AOT_AAC_LC,
+            aac_audio_specific_config.GetAudioObjectType());
+}
+
 TEST(AACAudioSpecificConfigTest, DataTooShortTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
   std::vector<uint8_t> data;

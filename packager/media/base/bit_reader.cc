@@ -51,6 +51,15 @@ bool BitReader::SkipBits(size_t num_bits) {
   return ReadBitsInternal(num_bits, &not_needed);
 }
 
+void BitReader::SkipToNextByte() {
+  // Already aligned.
+  if (num_remaining_bits_in_curr_byte_ == 8)
+    return;
+
+  num_remaining_bits_in_curr_byte_ = 0;
+  UpdateCurrByte();
+}
+
 bool BitReader::SkipBytes(size_t num_bytes) {
   if (num_remaining_bits_in_curr_byte_ != 8)
     return false;

@@ -73,6 +73,10 @@ class BitReader {
     return condition_read == condition ? SkipBits(num_bits) : true;
   }
 
+  /// Skip a number of bits so the stream is byte aligned to the initial data.
+  /// There could be 0 to 7 bits skipped.
+  void SkipToNextByte();
+
   /// Skip a number of bytes from stream. The current posision should be byte
   /// aligned, otherwise a false is returned and bytes are not skipped.
   /// @param num_bytes specifies the number of bytes to be skipped.

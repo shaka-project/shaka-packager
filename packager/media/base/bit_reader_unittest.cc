@@ -88,5 +88,30 @@ TEST(BitReaderTest, SkipBitsConditionalTest) {
   EXPECT_FALSE(reader.SkipBits(1));
 }
 
+TEST(BitReaderTest, SkipToNextByteAligned) {
+  uint8_t buffer[] = {0x8a, 0x12};
+  BitReader reader(buffer, sizeof(buffer));
+
+  reader.SkipToNextByte();
+  EXPECT_EQ(0u, reader.bit_position());
+
+  EXPECT_TRUE(reader.SkipBits(8));
+  EXPECT_EQ(8u, reader.bit_position());
+
+  reader.SkipToNextByte();
+  EXPECT_EQ(8u, reader.bit_position());
+}
+
+TEST(BitReaderTest, SkipToNextByteTestUnaligned) {
+  uint8_t buffer[] = {0x8a, 0x12};
+  BitReader reader(buffer, sizeof(buffer));
+
+  EXPECT_TRUE(reader.SkipBits(4));
+  EXPECT_EQ(4u, reader.bit_position());
+
+  reader.SkipToNextByte();
+  EXPECT_EQ(8u, reader.bit_position());
+}
+
 }  // namespace media
 }  // namespace shaka
