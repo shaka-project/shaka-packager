@@ -150,6 +150,7 @@ class PackagerAppTest(unittest.TestCase):
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
+                 bandwidth=None,
                  test_file=None):
     """Get a stream descriptor as a string.
 
@@ -171,6 +172,8 @@ class PackagerAppTest(unittest.TestCase):
           same as not specifying a trick play factor.
       drm_label: Sets the drm label for the stream.
       skip_encryption: If set to true, the stream will not be encrypted.
+      bandwidth: The expected bandwidth value that should be listed in the
+          manifest.
       test_file: Specify the input file to use. If the input file is not
           specify, a default file will be used.
 
@@ -235,6 +238,9 @@ class PackagerAppTest(unittest.TestCase):
     else:
       output_file_path += '.' +  base_ext
       stream.Append('output', output_file_path)
+
+    if bandwidth:
+      stream.Append('bandwidth', bandwidth)
 
     self.output.append(output_file_path)
 
@@ -1309,6 +1315,28 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('hls-segmented-webvtt')
+
+  def testHlsWithBandwidthOverride(self):
+    streams = [
+        self._GetStream('audio', segmented=True, bandwidth=11111),
+        self._GetStream('video', segmented=True, bandwidth=44444)
+    ]
+
+    flags = self._GetFlags(output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('hls-with-bandwidth-override')
+
+  def testDashWithBandwidthOverride(self):
+    streams = [
+        self._GetStream('audio', bandwidth=11111),
+        self._GetStream('video', bandwidth=44444)
+    ]
+
+    flags = self._GetFlags()
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dash-with-bandwidth-override')
 
   def _AssertStreamInfo(self, stream, info):
     stream_info = self.packager.DumpStreamInfo(stream)
