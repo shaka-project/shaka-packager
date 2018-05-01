@@ -29,7 +29,6 @@ const size_t kThreeOutput = 3;
 const bool kEncrypted = true;
 const bool kKeyFrame = true;
 
-const uint64_t kNoTimeScale = 0;
 const uint64_t kMsTimeScale = 1000;
 
 const char* kNoId = "";
@@ -156,7 +155,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kNoTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
                                        kNoSettings, kNoPayload)));
@@ -210,7 +209,7 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kNoTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
                                        kNoSettings, kNoPayload)));
@@ -445,7 +444,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kNoTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
                                        kNoSettings, kNoPayload)));
@@ -510,7 +509,7 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kNoTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
                                        kNoSettings, kNoPayload)));

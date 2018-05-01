@@ -215,10 +215,13 @@ std::unique_ptr<SegmentInfo> MediaHandlerTestBase::GetSegmentInfo(
 }
 
 std::unique_ptr<StreamInfo> MediaHandlerTestBase::GetTextStreamInfo() const {
+  // Assume that text will use milliseconds.
+  const uint64_t kTimeScaleMs = 1000;
+
   // None of this information is actually used by the text out handler.
   // The stream info is just needed to signal the start of the stream.
   return std::unique_ptr<StreamInfo>(
-      new TextStreamInfo(0, 0, 0, kUnknownCodec, "", "", 0, 0, ""));
+      new TextStreamInfo(0, kTimeScaleMs, 0, kUnknownCodec, "", "", 0, 0, ""));
 }
 
 std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
