@@ -10,6 +10,15 @@ DEFINE_double(time_shift_buffer_depth,
               1800.0,
               "Guaranteed duration of the time shifting buffer for HLS LIVE "
               "playlists and DASH dynamic media presentations, in seconds.");
+DEFINE_uint64(
+    preserved_segments_outside_live_window,
+    50,
+    "Segments outside the live window (defined by '--time_shift_buffer_depth') "
+    "are automatically removed except for the most recent X segments defined "
+    "by this parameter. This is needed to accommodate latencies in various "
+    "stages of content serving pipeline, so that the segments stay accessible "
+    "as they may still be accessed by the player."
+    "The segments are not removed if the value is zero.");
 DEFINE_string(default_language,
               "",
               "For DASH, any audio/text tracks tagged with this language will "

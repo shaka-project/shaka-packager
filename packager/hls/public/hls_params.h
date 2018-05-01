@@ -31,12 +31,12 @@ struct HlsParams {
   /// Defines the live window, or the guaranteed duration of the time shifting
   /// buffer for 'live' playlists.
   double time_shift_buffer_depth = 0;
-  /// Segments outside live window (defined by 'time_shift_buffer_depth' above)
-  /// are automatically removed except the latest number of segments defined by
-  /// this parameter. This is needed to accommodate latencies in various stages
-  /// of content serving pipeline, so that the segments stay accessible as they
-  /// may still be accessed by the player.
-  /// The segments are not removed if the value is zero.
+  /// Segments outside the live window (defined by 'time_shift_buffer_depth'
+  /// above) are automatically removed except for the most recent X segments
+  /// defined by this parameter. This is needed to accommodate latencies in
+  /// various stages of content serving pipeline, so that the segments stay
+  /// accessible as they may still be accessed by the player. The segments are
+  /// not removed if the value is zero.
   size_t preserved_segments_outside_live_window = 0;
   /// Defines the key uri for "identity" and "com.apple.streamingkeydelivery"
   /// key formats. Ignored if the playlist is not encrypted or not using the

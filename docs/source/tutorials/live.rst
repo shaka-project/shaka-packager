@@ -37,8 +37,9 @@ Here are some examples.
 
 .. note::
 
-    Packager does not support removing old segments internally. The user is
-    resposible for setting up a cron job to do so.
+    Packager supports removing old segments automatically. See
+    `preserved_segments_outside_live_window` option in
+    :doc:`/options/dash_options` or :doc:`/options/hls_options` for details.
 
 .. include:: /options/udp_file_options.rst
 

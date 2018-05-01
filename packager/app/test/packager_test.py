@@ -279,10 +279,12 @@ class PackagerAppTest(unittest.TestCase):
                 output_hls=False,
                 hls_playlist_type=None,
                 time_shift_buffer_depth=0.0,
+                preserved_segments_outside_live_window=0,
                 utc_timings=None,
                 generate_static_mpd=False,
                 ad_cues=None,
                 default_language=None,
+                segment_duration=1.0,
                 use_fake_clock=True):
     flags = []
 
@@ -342,12 +344,16 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--hls_master_playlist_output', self.hls_master_playlist_output]
       if hls_playlist_type:
         flags += ['--hls_playlist_type', hls_playlist_type]
-      if time_shift_buffer_depth != 0.0:
-        flags += [
-            '--time_shift_buffer_depth={0}'.format(time_shift_buffer_depth)
-        ]
     else:
       flags += ['--mpd_output', self.mpd_output]
+
+    if time_shift_buffer_depth != 0.0:
+      flags += ['--time_shift_buffer_depth={0}'.format(time_shift_buffer_depth)]
+    if preserved_segments_outside_live_window != 0:
+      flags += [
+          '--preserved_segments_outside_live_window={0}'.format(
+              preserved_segments_outside_live_window)
+      ]
 
     if utc_timings:
       flags += ['--utc_timings', utc_timings]
@@ -361,7 +367,8 @@ class PackagerAppTest(unittest.TestCase):
     if default_language:
       flags += ['--default_language', default_language]
 
-    flags.append('--segment_duration=1')
+    flags.append('--segment_duration={0}'.format(segment_duration))
+
     # Use fake clock, so output can be compared.
     if use_fake_clock:
       flags.append('--use_fake_clock_for_muxer')
@@ -739,6 +746,36 @@ class PackagerFunctionalTest(PackagerAppTest):
             hls_playlist_type='EVENT',
             time_shift_buffer_depth=0.5))
     self._CheckTestResults('avc-ts-event-playlist')
+
+  def testPackageAvcTsLivePlaylistWithSegmentDeletion(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio'],
+            output_format='mp4',
+            segmented=True,
+            hls=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            output_hls=True,
+            hls_playlist_type='LIVE',
+            segment_duration=0.5,
+            time_shift_buffer_depth=0.5,
+            preserved_segments_outside_live_window=1))
+    self._CheckTestResults('avc-ts-live-playlist-with-segment-deletion')
+
+  def testPackageAvcTsDashDynamicWithSegmentDeletion(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio'],
+            output_format='mp4',
+            segmented=True,
+            hls=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(
+            segment_duration=0.5,
+            time_shift_buffer_depth=0.5,
+            preserved_segments_outside_live_window=1))
+    self._CheckTestResults('avc-ts-dash-dynamic-with-segment-deletion')
 
   def testPackageVp8Webm(self):
     self.assertPackageSuccess(

@@ -38,6 +38,16 @@ DASH options
     Guaranteed duration of the time shifting buffer for dynamic media
     presentations, in seconds.
 
+--preserved_segments_outside_live_window <num_segments>
+
+    Segments outside the live window (defined by `time_shift_buffer_depth`
+    above) are automatically removed except for the most recent X segments
+    defined by this parameter. This is needed to accommodate latencies in
+    various stages of content serving pipeline, so that the segments stay
+    accessible as they may still be accessed by the player.
+
+    The segments are not removed if the value is zero.
+
 --utc_timing {scheme_id_uri}={value}[,{scheme_id_uri}={value}]...
 
     Comma separated UTCTiming schemeIdUri and value pairs for the MPD.

@@ -403,6 +403,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
   mpd_params.minimum_update_period = FLAGS_minimum_update_period;
   mpd_params.suggested_presentation_delay = FLAGS_suggested_presentation_delay;
   mpd_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+  mpd_params.preserved_segments_outside_live_window =
+      FLAGS_preserved_segments_outside_live_window;
 
   if (!FLAGS_utc_timings.empty()) {
     base::StringPairs pairs;
@@ -431,6 +433,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
   hls_params.base_url = FLAGS_hls_base_url;
   hls_params.key_uri = FLAGS_hls_key_uri;
   hls_params.time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+  hls_params.preserved_segments_outside_live_window =
+      FLAGS_preserved_segments_outside_live_window;
   hls_params.default_language = FLAGS_default_language;
 
   TestParams& test_params = packaging_params.test_params;

@@ -1,0 +1,12 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:1
+#EXT-X-MEDIA-SEQUENCE:3
+#EXT-X-MAP:URI="bear-640x360-audio-init.mp4"
+#EXTINF:0.511,
+bear-640x360-audio-4.m4s
+#EXTINF:0.487,
+bear-640x360-audio-5.m4s
+#EXTINF:0.302,
+bear-640x360-audio-6.m4s
