@@ -18,6 +18,7 @@
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_frame_info.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -61,10 +62,9 @@ Status MultiSegmentSegmenter::DoInitialize() {
 
 Status MultiSegmentSegmenter::DoFinalize() {
   // Update init segment with media duration set.
-  Status status = WriteInitSegment();
-  if (status.ok())
-    SetComplete();
-  return status;
+  RETURN_IF_ERROR(WriteInitSegment());
+  SetComplete();
+  return Status::OK;
 }
 
 Status MultiSegmentSegmenter::DoFinalizeSegment() {
@@ -180,21 +180,25 @@ Status MultiSegmentSegmenter::WriteSegment() {
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
   DCHECK_NE(segment_size, 0u);
 
-  Status status = buffer->WriteToFile(file.get());
-  if (status.ok()) {
-    if (muxer_listener()) {
-      for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
-        muxer_listener()->OnKeyFrame(
-            key_frame_info.timestamp,
-            segment_header_size + key_frame_info.start_byte_offset,
-            key_frame_info.size);
-      }
+  RETURN_IF_ERROR(buffer->WriteToFile(file.get()));
+  if (muxer_listener()) {
+    for (const KeyFrameInfo& key_frame_info : key_frame_infos()) {
+      muxer_listener()->OnKeyFrame(
+          key_frame_info.timestamp,
+          segment_header_size + key_frame_info.start_byte_offset,
+          key_frame_info.size);
     }
-    status = fragment_buffer()->WriteToFile(file.get());
   }
+  RETURN_IF_ERROR(fragment_buffer()->WriteToFile(file.get()));
 
-  if (!status.ok())
-    return status;
+  // Close the file, which also does flushing, to make sure the file is written
+  // before manifest is updated.
+  if (!file.release()->Close()) {
+    return Status(
+        error::FILE_FAILURE,
+        "Cannot close file " + file_name +
+            ", possibly file permission issue or running out of disk space.");
+  }
 
   uint64_t segment_duration = 0;
   // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the

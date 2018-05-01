@@ -10,6 +10,7 @@
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/status_macros.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
 namespace shaka {
@@ -25,17 +26,21 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
                                               uint64_t duration_timestamp,
                                               bool is_subsegment) {
   CHECK(cluster());
-  Status status = Segmenter::FinalizeSegment(start_timestamp,
-                                             duration_timestamp, is_subsegment);
-  if (!status.ok())
-    return status;
+  RETURN_IF_ERROR(Segmenter::FinalizeSegment(
+      start_timestamp, duration_timestamp, is_subsegment));
   if (!cluster()->Finalize())
     return Status(error::FILE_FAILURE, "Error finalizing segment.");
+
   if (!is_subsegment) {
+    const std::string segment_name = writer_->file()->file_name();
+    // Close the file, which also does flushing, to make sure the file is
+    // written before manifest is updated.
+    RETURN_IF_ERROR(writer_->Close());
+
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
-      muxer_listener()->OnNewSegment(writer_->file()->file_name(),
-                                     start_timestamp, duration_timestamp, size);
+      muxer_listener()->OnNewSegment(segment_name, start_timestamp,
+                                     duration_timestamp, size);
     }
     VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";
   }
@@ -66,7 +71,7 @@ Status MultiSegmentSegmenter::DoInitialize() {
 }
 
 Status MultiSegmentSegmenter::DoFinalize() {
-  return writer_->Close();
+  return Status::OK;
 }
 
 Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,

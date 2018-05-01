@@ -41,6 +41,24 @@ Here are some examples.
     `preserved_segments_outside_live_window` option in
     :doc:`/options/dash_options` or :doc:`/options/hls_options` for details.
 
+.. note::
+
+    Shaka Packager ensures all segments referenced in DASH manifest / HLS
+    playlists are available, by updating the manifest / playlists only after a
+    segment is completed.
+
+    However, if content is not served directly from packaging output location,
+    extra care must be taken outside of packager to avoid updating manifest /
+    playlists without updating media segments.
+
+    Here is an example flow that avoids potential race condition. The following
+    steps should be done SERIALLY AND IN ORDER in every sync loop when uploading
+    manifest / playlists and media segments to content server:
+
+      1. Upload manifest / playlists under different names
+      2. Upload / Sync media segments
+      3. Rename uploaded manifest / playlists back to the original names
+
 .. include:: /options/udp_file_options.rst
 
 .. include:: /options/segment_template_formatting.rst

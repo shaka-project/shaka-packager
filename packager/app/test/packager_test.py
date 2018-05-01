@@ -1241,6 +1241,15 @@ class PackagerFunctionalTest(PackagerAppTest):
             'http://foo.bar/check_me_for_the_date_header'))
     self._CheckTestResults('live-profile')
 
+  def testPackageLiveProfileWithWebM(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'],
+            segmented=True,
+            output_format='webm',
+            test_files=['bear-640x360.webm']), self._GetFlags())
+    self._CheckTestResults('live-profile-with-webm')
+
   def testPackageLiveStaticProfile(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
