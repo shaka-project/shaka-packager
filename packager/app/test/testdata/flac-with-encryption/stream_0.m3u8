@@ -1,0 +1,17 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="bear-flac-audio.mp4",BYTERANGE="983@0"
+#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",KEYFORMAT="identity"
+#EXTINF:1.045,
+#EXT-X-BYTERANGE:85277@1051
+bear-flac-audio.mp4
+#EXTINF:1.045,
+#EXT-X-BYTERANGE:87892
+bear-flac-audio.mp4
+#EXTINF:0.650,
+#EXT-X-BYTERANGE:43075
+bear-flac-audio.mp4
+#EXT-X-ENDLIST

@@ -1,0 +1,13 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="bear-640x360-audio-init.webm"
+#EXTINF:1.014,
+bear-640x360-audio-1.webm
+#EXTINF:1.002,
+bear-640x360-audio-2.webm
+#EXTINF:0.755,
+bear-640x360-audio-3.webm
+#EXT-X-ENDLIST
