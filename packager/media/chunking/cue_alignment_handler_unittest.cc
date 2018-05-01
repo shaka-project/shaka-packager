@@ -12,6 +12,7 @@
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/chunking/cue_alignment_handler.h"
 #include "packager/media/public/ad_cue_generator_params.h"
+#include "packager/status_macros.h"
 #include "packager/status_test_util.h"
 
 using ::testing::ElementsAre;
@@ -39,7 +40,34 @@ const size_t kChild = 0;
 const size_t kParent = 0;
 }  // namespace
 
-class CueAlignmentHandlerTest : public MediaHandlerTestBase {};
+class CueAlignmentHandlerTest : public MediaHandlerTestBase {
+ protected:
+  Status DispatchStreamInfo(size_t stream,
+                            std::shared_ptr<const StreamInfo> info) {
+    return Input(stream)->Dispatch(
+        StreamData::FromStreamInfo(kChild, std::move(info)));
+  }
+
+  Status DispatchMediaSample(size_t stream,
+                             std::shared_ptr<const MediaSample> sample) {
+    return Input(stream)->Dispatch(
+        StreamData::FromMediaSample(kChild, std::move(sample)));
+  }
+
+  Status DispatchTextSample(size_t stream,
+                            std::shared_ptr<const TextSample> sample) {
+    return Input(stream)->Dispatch(
+        StreamData::FromTextSample(kChild, std::move(sample)));
+  }
+
+  Status FlushAll(std::initializer_list<size_t> inputs) {
+    for (auto& input : inputs) {
+      RETURN_IF_ERROR(Input(input)->FlushAllDownstreams());
+    }
+
+    return Status::OK;
+  }
+};
 
 TEST_F(CueAlignmentHandlerTest, VideoInputWithNoCues) {
   const size_t kVideoStream = 0;
@@ -72,19 +100,17 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithNoCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
   }
 
-  Input(kVideoStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetVideoStreamInfo(kMsTimeScale)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)->FlushAllDownstreams();
+  auto stream_info = GetVideoStreamInfo(kMsTimeScale);
+  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
+  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
+
+  DispatchStreamInfo(kVideoStream, std::move(stream_info));
+  DispatchMediaSample(kVideoStream, std::move(sample_0));
+  DispatchMediaSample(kVideoStream, std::move(sample_1));
+  DispatchMediaSample(kVideoStream, std::move(sample_2));
+
+  ASSERT_OK(FlushAll({kVideoStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, AudioInputWithNoCues) {
@@ -118,19 +144,17 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithNoCues) {
     EXPECT_CALL(*Output(kAudioStream), OnFlush(kParent));
   }
 
-  Input(kAudioStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetAudioStreamInfo(kMsTimeScale)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)->FlushAllDownstreams();
+  auto stream_info = GetAudioStreamInfo(kMsTimeScale);
+  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
+  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
+
+  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(stream_info)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_0)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_1)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_2)));
+
+  ASSERT_OK(FlushAll({kAudioStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
@@ -168,21 +192,17 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
   }
 
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromStreamInfo(kChild, GetTextStreamInfo()));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload)));
-  Input(kTextStream)->FlushAllDownstreams();
+  auto stream_info = GetTextStreamInfo();
+  auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
+  auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
+  auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
+
+  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(stream_info)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_0)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_1)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_2)));
+
+  ASSERT_OK(FlushAll({kTextStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
@@ -256,49 +276,54 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
   }
 
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromStreamInfo(kChild, GetTextStreamInfo()));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload)));
-  Input(kTextStream)->FlushAllDownstreams();
+  // Text samples
+  auto text_stream_info = GetTextStreamInfo();
+  auto text_sample_0 =
+      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
+  auto text_sample_1 =
+      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
+  auto text_sample_2 =
+      GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
 
-  Input(kAudioStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetAudioStreamInfo(kMsTimeScale)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)->FlushAllDownstreams();
+  // Audio samples
+  auto audio_stream_info = GetAudioStreamInfo(kMsTimeScale);
+  auto audio_sample_0 =
+      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto audio_sample_1 =
+      GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
+  auto audio_sample_2 =
+      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
 
-  Input(kVideoStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetVideoStreamInfo(kMsTimeScale)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)->FlushAllDownstreams();
+  // Video samples
+  auto video_stream_info = GetVideoStreamInfo(kMsTimeScale);
+  auto video_sample_0 =
+      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto video_sample_1 =
+      GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
+  auto video_sample_2 =
+      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
+
+  // Dispatch Stream Info
+  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(text_stream_info)));
+  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(audio_stream_info)));
+  ASSERT_OK(DispatchStreamInfo(kVideoStream, std::move(video_stream_info)));
+
+  // Dispatch Sample 0
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_0)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_0)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_0)));
+
+  // Dispatch Sample 1
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_1)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_1)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_1)));
+
+  // Dispatch Sample 2
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_2)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_2)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_2)));
+
+  ASSERT_OK(FlushAll({kTextStream, kAudioStream, kVideoStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, VideoInputWithCues) {
@@ -343,19 +368,17 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
   }
 
-  Input(kVideoStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetVideoStreamInfo(kMsTimeScale)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)->FlushAllDownstreams();
+  auto stream_info = GetVideoStreamInfo(kMsTimeScale);
+  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
+  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
+
+  ASSERT_OK(DispatchStreamInfo(kVideoStream, std::move(stream_info)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(sample_0)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(sample_1)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(sample_2)));
+
+  ASSERT_OK(FlushAll({kVideoStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, AudioInputWithCues) {
@@ -399,19 +422,17 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithCues) {
     EXPECT_CALL(*Output(kAudioStream), OnFlush(kParent));
   }
 
-  Input(kAudioStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetAudioStreamInfo(kMsTimeScale)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)->FlushAllDownstreams();
+  auto stream_info = GetAudioStreamInfo(kMsTimeScale);
+  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
+  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
+
+  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(stream_info)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_0)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_1)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_2)));
+
+  ASSERT_OK(FlushAll({kAudioStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
@@ -459,21 +480,17 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
   }
 
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromStreamInfo(kChild, GetTextStreamInfo()));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload)));
-  Input(kTextStream)->FlushAllDownstreams();
+  auto stream_info = GetTextStreamInfo();
+  auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
+  auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
+  auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
+
+  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(stream_info)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_0)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_1)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_2)));
+
+  ASSERT_OK(FlushAll({kTextStream}));
 }
 
 TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
@@ -562,49 +579,54 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
   }
 
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromStreamInfo(kChild, GetTextStreamInfo()));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload)));
-  Input(kTextStream)
-      ->Dispatch(StreamData::FromTextSample(
-          kChild,
-          GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload)));
-  Input(kTextStream)->FlushAllDownstreams();
+  // Text samples
+  auto text_stream_info = GetTextStreamInfo();
+  auto text_sample_0 =
+      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
+  auto text_sample_1 =
+      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
+  auto text_sample_2 =
+      GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
 
-  Input(kAudioStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetAudioStreamInfo(kMsTimeScale)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kAudioStream)->FlushAllDownstreams();
+  // Audio samples
+  auto audio_stream_info = GetAudioStreamInfo(kMsTimeScale);
+  auto audio_sample_0 =
+      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto audio_sample_1 =
+      GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
+  auto audio_sample_2 =
+      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
 
-  Input(kVideoStream)
-      ->Dispatch(
-          StreamData::FromStreamInfo(kChild, GetVideoStreamInfo(kMsTimeScale)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame)));
-  Input(kVideoStream)
-      ->Dispatch(StreamData::FromMediaSample(
-          kChild, GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame)));
-  Input(kVideoStream)->FlushAllDownstreams();
+  // Video samples
+  auto video_stream_info = GetVideoStreamInfo(kMsTimeScale);
+  auto video_sample_0 =
+      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
+  auto video_sample_1 =
+      GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
+  auto video_sample_2 =
+      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
+
+  // Dispatch Stream Info
+  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(text_stream_info)));
+  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(audio_stream_info)));
+  ASSERT_OK(DispatchStreamInfo(kVideoStream, std::move(video_stream_info)));
+
+  // Dispatch Sample 0
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_0)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_0)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_0)));
+
+  // Dispatch Sample 1
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_1)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_1)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_1)));
+
+  // Dispatch Sample 2
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_2)));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_2)));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_2)));
+
+  ASSERT_OK(FlushAll({kTextStream, kAudioStream, kVideoStream}));
 }
 
 // TODO(kqyang): Add more tests, in particular, multi-thread tests.
