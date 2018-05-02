@@ -34,7 +34,7 @@ Synopsis
 
 ::
 
-    $ packager {stream_descriptor} [{stream_descriptor}] ... \
+    $ packager <stream_descriptor> ... \
                [--dump_stream_info] \
                [Chunking Options] \
                [MP4 Output Options] \
@@ -65,11 +65,11 @@ Different key providers cannot be specified at the same time.
 
 ::
 
-    [--enable_widevine_encryption {Widevine Encryption Options}] \
-    [--enable_widevine_decryption {Widevine Decryption Options}] \
-    [--enable_raw_key_encryption {Raw Key Encryption Options}] \
-    [--enable_raw_key_decryption {Raw Key Decryption Options}] \
-    [--enable_playready_encryption {PlayReady Encryption Options}]
+    [--enable_widevine_encryption <Widevine Encryption Options>] \
+    [--enable_widevine_decryption <Widevine Decryption Options>] \
+    [--enable_raw_key_encryption <Raw Key Encryption Options>] \
+    [--enable_raw_key_decryption <Raw Key Decryption Options>] \
+    [--enable_playready_encryption <PlayReady Encryption Options>]
 
 .. include:: /options/general_encryption_options.rst
 

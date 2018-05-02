@@ -23,9 +23,8 @@ Synopsis
 
 ::
 
-    $ packager {stream_descriptor with HLS specific descriptors} \
-               [stream_descriptor with HLS specific descriptors] ... \
-      --hls_master_playlist_output {master playlist output path} \
+    $ packager <stream_descriptor> ... \
+      --hls_master_playlist_output <master_playlist_output_path> \
       [Other HLS options] \
       [Other options, e.g. DRM options, DASH options]
 

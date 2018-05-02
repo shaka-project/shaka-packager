@@ -14,8 +14,8 @@ Synopsis
 
 ::
 
-    $ packager {stream_descriptor} [stream_descriptor] ... \
-      --mpd_output {manifest output path} \
+    $ packager <stream_descriptor> ... \
+      --mpd_output <manifest_output_path> \
       [Other DASH options] \
       [Other options, e.g. DRM options, HLS options]
 

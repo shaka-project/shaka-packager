@@ -8,15 +8,15 @@ Synopsis
 
 ::
 
-    $ packager {stream_descriptor} [stream_descriptor] ... \
+    $ packager <stream_descriptor> ... \
       --enable_raw_key_encryption \
-      --keys <key_info_string[,key_info_string][,key_info_string]...> \
-      [--pssh <concatenated PSSHs>] \
+      --keys <key_info_string>[,<key_info_string>]... \
+      [--pssh <concatenated_PSSHs>] \
       [Other options, e.g. DASH options, HLS options]
 
 **key_info_string** is of the form::
 
-    label={label}:key_id={key_id}:key={key}
+    label=<label>:key_id=<key_id>:key=<key>
 
 Custom PSSH(s) can be provided in *--pssh*. If absent,
 `v1 common PSSH box <https://goo.gl/s8RIhr>`_ is generated.

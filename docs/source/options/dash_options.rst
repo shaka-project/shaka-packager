@@ -9,31 +9,34 @@ DASH options
     that if segment_template is not specified, shaka-packager always generates
     static mpd regardless of the value of this flag.
 
---mpd_output {file_path}
+--mpd_output <file_path>
 
     MPD output file name.
 
---base_urls {url}[,{url}]...
+--base_urls <comma_separated_urls>
 
-    Comma separated BaseURLs for the MPD. The values will be added  as <BaseURL>
-    element(s) immediately under the <MPD> element.
+    Comma separated BaseURLs for the MPD:
+        **<url>[,<url>]...**.
 
---min_buffer_time {seconds}
+    The values will be added as <BaseURL> element(s) immediately under the <MPD>
+    element.
+
+--min_buffer_time <seconds>
 
     Specifies, in seconds, a common duration used in the definition of the MPD
     Representation data rate.
 
---minimum_update_period {seconds}
+--minimum_update_period <seconds>
 
     Indicates to the player how often to refresh the media presentation
     description in seconds. This value is used for dynamic MPD only.
 
---suggested_presentation_delay {seconds}
+--suggested_presentation_delay <seconds>
 
     Specifies a delay, in seconds, to be added to the media presentation time.
     This value is used for dynamic MPD only.
 
---time_shift_buffer_depth {seconds}
+--time_shift_buffer_depth <seconds>
 
     Guaranteed duration of the time shifting buffer for dynamic media
     presentations, in seconds.
@@ -48,12 +51,14 @@ DASH options
 
     The segments are not removed if the value is zero.
 
---utc_timing {scheme_id_uri}={value}[,{scheme_id_uri}={value}]...
+--utc_timing <scheme_id_uri_value_pairs>
 
-    Comma separated UTCTiming schemeIdUri and value pairs for the MPD.
+    Comma separated UTCTiming schemeIdUri and value pairs for the MPD:
+        **<scheme_id_uri>=<value>[,<scheme_id_uri>=<value>]...**
+
     This value is used for dynamic MPD only.
 
---default_language {language}
+--default_language <language>
 
     Any audio/text tracks tagged with this language will have
     <Role ... value=\"main\" /> in the manifest.  This allows the player to

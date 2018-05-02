@@ -13,7 +13,7 @@ Raw key encryption options
 
     **key_info_string** is of the form::
 
-        label={label}:key_id={key_id}:key={key}
+        label=<label>:key_id=<key_id>:key=<key>
 
     *label* can be an arbitrary string or a predefined DRM label like AUDIO,
     SD, HD, etc. Label with an empty string indicates the default key and

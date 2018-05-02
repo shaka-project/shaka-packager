@@ -6,7 +6,7 @@ multiple different "files".
 
 Stream descriptor is of the form::
 
-    {field}={value}[,{field}={value}]...
+    <field>=<value>[,<field>=<value>]...
 
 These are the available fields:
 

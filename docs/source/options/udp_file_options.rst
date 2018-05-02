@@ -3,7 +3,7 @@ UDP file options
 
 UDP file is of the form::
 
-    udp://{ip}:{port}[?{option}[&{option}]...]
+    udp://<ip>:<port>[?<option>[&<option>]...]
 
 Here is the list of supported options:
 
@@ -11,17 +11,17 @@ Here is the list of supported options:
 
     Allow or disallow reusing UDP sockets.
 
-:interface={addr}:
+:interface=<addr>:
 
     Multicast group interface address. Only the packets sent to this address are
     received. Default to "0.0.0.0" if not specified.
 
-:source={addr}:
+:source=<addr>:
 
     Multicast source ip address. Only the packets sent from this source address
     are received. Enables Source Specific Multicast (SSM) if set.
 
-:timeout={microseconds}:
+:timeout=<microseconds>:
 
     UDP timeout in microseconds.
 

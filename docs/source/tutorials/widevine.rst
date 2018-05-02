@@ -15,7 +15,7 @@ Synopsis
 
 AES signing::
 
-    $ packager {stream_descriptor} [stream_descriptor] ... \
+    $ packager <stream_descriptor> ... \
       --enable_widevine_encryption \
       --key_server_url <key_server_url> \
       --content_id <content_id> \
@@ -25,7 +25,7 @@ AES signing::
 
 RSA signing::
 
-    $ packager {stream_descriptor} [stream_descriptor] ... \
+    $ packager <stream_descriptor> ... \
       --enable_widevine_encryption \
       --key_server_url <key_server_url> \
       --content_id <content_id> \
