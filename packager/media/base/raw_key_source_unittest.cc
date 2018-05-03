@@ -80,10 +80,8 @@ TEST(RawKeySourceTest, Success) {
   EXPECT_HEX_EQ(kKeyHex, key_from_drm_label.key);
   EXPECT_HEX_EQ(kIvHex, key_from_drm_label.iv);
   ASSERT_EQ(2u, key_from_drm_label.key_system_info.size());
-  EXPECT_HEX_EQ(kPsshBox1Hex,
-                key_from_drm_label.key_system_info[0].CreateBox());
-  EXPECT_HEX_EQ(kPsshBox2Hex,
-                key_from_drm_label.key_system_info[1].CreateBox());
+  EXPECT_HEX_EQ(kPsshBox1Hex, key_from_drm_label.key_system_info[0].psshs);
+  EXPECT_HEX_EQ(kPsshBox2Hex, key_from_drm_label.key_system_info[1].psshs);
 
   // Using Key ID.
   EncryptionKey key_from_key_id;
@@ -98,10 +96,8 @@ TEST(RawKeySourceTest, Success) {
   EXPECT_HEX_EQ(kKey2Hex, key_from_drm_label.key);
   EXPECT_HEX_EQ(kIvHex, key_from_drm_label.iv);
   ASSERT_EQ(2u, key_from_drm_label.key_system_info.size());
-  EXPECT_HEX_EQ(kPsshBox1Hex,
-                key_from_drm_label.key_system_info[0].CreateBox());
-  EXPECT_HEX_EQ(kPsshBox2Hex,
-                key_from_drm_label.key_system_info[1].CreateBox());
+  EXPECT_HEX_EQ(kPsshBox1Hex, key_from_drm_label.key_system_info[0].psshs);
+  EXPECT_HEX_EQ(kPsshBox2Hex, key_from_drm_label.key_system_info[1].psshs);
 }
 
 TEST(RawKeySourceTest, EmptyPssh) {
@@ -122,7 +118,7 @@ TEST(RawKeySourceTest, EmptyPssh) {
   EXPECT_HEX_EQ(kKeyHex, key.key);
   EXPECT_HEX_EQ(kIvHex, key.iv);
   ASSERT_EQ(1u, key.key_system_info.size());
-  EXPECT_HEX_EQ(kDefaultPsshBoxHex, key.key_system_info[0].CreateBox());
+  EXPECT_HEX_EQ(kDefaultPsshBoxHex, key.key_system_info[0].psshs);
 }
 
 TEST(RawKeySourceTest, Failure) {

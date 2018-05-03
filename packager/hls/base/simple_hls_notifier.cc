@@ -131,15 +131,16 @@ MediaInfo MakeMediaInfoPathsRelativeToPlaylist(
 bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_box,
                         const std::vector<uint8_t>& key_id,
                         std::string* pssh_json) {
-  media::ProtectionSystemSpecificInfo pssh_info;
-  if (!pssh_info.Parse(pssh_box.data(), pssh_box.size())) {
+  std::unique_ptr<media::PsshBoxBuilder> pssh_builder =
+      media::PsshBoxBuilder::ParseFromBox(pssh_box.data(), pssh_box.size());
+  if (!pssh_builder) {
     LOG(ERROR) << "Failed to parse PSSH box.";
     return false;
   }
 
   media::WidevinePsshData pssh_proto;
-  if (!pssh_proto.ParseFromArray(pssh_info.pssh_data().data(),
-                                 pssh_info.pssh_data().size())) {
+  if (!pssh_proto.ParseFromArray(pssh_builder->pssh_data().data(),
+                                 pssh_builder->pssh_data().size())) {
     LOG(ERROR) << "Failed to parse protection_system_specific_data.";
     return false;
   }

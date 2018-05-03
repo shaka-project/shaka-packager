@@ -212,7 +212,7 @@ Status MP4Muxer::InitializeMuxer() {
           streams()[i]->encryption_config().key_system_info;
       moov->pssh.resize(key_system_info.size());
       for (size_t j = 0; j < key_system_info.size(); j++)
-        moov->pssh[j].raw_box = key_system_info[j].CreateBox();
+        moov->pssh[j].raw_box = key_system_info[j].psshs;
     }
   }
 

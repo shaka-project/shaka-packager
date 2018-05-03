@@ -22,7 +22,7 @@ namespace shaka {
 namespace media {
 
 struct MuxerOptions;
-class ProtectionSystemSpecificInfo;
+struct ProtectionSystemSpecificInfo;
 class StreamInfo;
 
 /// MuxerListener is an event handler that can be registered to a muxer.

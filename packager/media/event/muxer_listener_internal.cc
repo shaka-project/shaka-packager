@@ -217,10 +217,9 @@ void SetContentProtectionFields(
   for (const ProtectionSystemSpecificInfo& info : key_system_info) {
     MediaInfo::ProtectedContent::ContentProtectionEntry* entry =
         protected_content->add_content_protection_entry();
-    if (!info.system_id().empty())
-      entry->set_uuid(CreateUUIDString(info.system_id()));
+    entry->set_uuid(CreateUUIDString(info.system_id));
 
-    const std::vector<uint8_t> pssh = info.CreateBox();
+    const std::vector<uint8_t>& pssh = info.psshs;
     entry->set_pssh(pssh.data(), pssh.size());
   }
 }

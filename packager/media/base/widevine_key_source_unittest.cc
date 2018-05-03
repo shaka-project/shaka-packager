@@ -217,44 +217,29 @@ class WidevineKeySourceTest : public Test {
             1 + (add_common_pssh_ ? 1 : 0) + (add_playready_pssh_ ? 1 : 0);
         ASSERT_EQ(num_key_system_info, encryption_key.key_system_info.size());
         EXPECT_EQ(GetMockKeyId(stream_label), ToString(encryption_key.key_id));
-        EXPECT_EQ(GetMockPsshData(),
-                  ToString(encryption_key.key_system_info[0].pssh_data()));
+
+        const std::vector<uint8_t>& pssh =
+            encryption_key.key_system_info[0].psshs;
+        std::unique_ptr<PsshBoxBuilder> pssh_builder =
+            PsshBoxBuilder::ParseFromBox(pssh.data(), pssh.size());
+        ASSERT_TRUE(pssh_builder);
+        EXPECT_EQ(GetMockPsshData(), ToString(pssh_builder->pssh_data()));
 
         if (add_common_pssh_) {
-          // Each of the keys contains all the key IDs.
           const std::vector<uint8_t> common_system_id(
               kCommonSystemId, kCommonSystemId + arraysize(kCommonSystemId));
           ASSERT_EQ(common_system_id,
-                    encryption_key.key_system_info[1].system_id());
-
-          const std::vector<std::vector<uint8_t>>& key_ids =
-              encryption_key.key_system_info[1].key_ids();
-          ASSERT_EQ(arraysize(kStreamLabels), key_ids.size());
-          for (const std::string& stream_label : kStreamLabels) {
-            // Because they are stored in a std::set, the order may change.
-            const std::string key_id_str = GetMockKeyId(stream_label);
-            const std::vector<uint8_t> key_id(key_id_str.begin(),
-                                              key_id_str.end());
-            EXPECT_THAT(key_ids, testing::Contains(key_id));
-          }
+                    encryption_key.key_system_info[1].system_id);
         }
 
         if (add_playready_pssh_) {
           const std::vector<uint8_t> playready_system_id(
               kPlayReadySystemId,
               kPlayReadySystemId + arraysize(kPlayReadySystemId));
-
           // PlayReady pssh index depends on if there has common pssh box.
           const uint8_t playready_index = 1 + (add_common_pssh_ ? 1 : 0);
-          ASSERT_EQ(
-              playready_system_id,
-              encryption_key.key_system_info[playready_index].system_id());
-          const std::vector<std::vector<uint8_t>>& key_ids =
-              encryption_key.key_system_info[playready_index].key_ids();
-
-          // Each of the keys contains its corresponding key ID.
-          ASSERT_EQ(1u, key_ids.size());
-          EXPECT_EQ(ToString(key_ids[0]), GetMockKeyId(stream_label));
+          ASSERT_EQ(playready_system_id,
+                    encryption_key.key_system_info[playready_index].system_id);
         }
       }
     }

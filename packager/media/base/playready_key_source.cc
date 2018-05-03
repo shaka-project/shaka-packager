@@ -151,11 +151,13 @@ Status SetKeyInformationFromServerResponse(const std::string& response,
     LOG(ERROR) << "Cannot parse pssh data, " << pssh_data_b64;
     return Status(error::SERVER_ERROR, "Cannot parse pssh.");
   }
-  ProtectionSystemSpecificInfo info;
-  info.add_key_id(encryption_key->key_id);
-  info.set_system_id(kPlayReadySystemId, arraysize(kPlayReadySystemId));
-  info.set_pssh_data(pssh_data);
-  encryption_key->key_system_info.push_back(info);
+
+  PsshBoxBuilder pssh_builder;
+  pssh_builder.add_key_id(encryption_key->key_id);
+  pssh_builder.set_system_id(kPlayReadySystemId, arraysize(kPlayReadySystemId));
+  pssh_builder.set_pssh_data(pssh_data);
+  encryption_key->key_system_info.push_back(
+      {pssh_builder.system_id(), pssh_builder.CreateBox()});
   return Status::OK;
 }
 

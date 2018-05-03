@@ -21,12 +21,7 @@ namespace shaka {
 
 namespace media {
 
-// A string containing the escaped PSSH box (for use with a MediaInfo proto).
-// This is a full v0 PSSH box with the Widevine system ID and the PSSH data
-// 'pssh'
-const char kExpectedDefaultPsshBox[] =
-  "\\000\\000\\000$pssh\\000\\000\\000\\000\\000\\001\\002\\003\\004\\005"
-  "\\006\\007\\010\\t\\n\\013\\014\\r\\016\\017\\000\\000\\000\\004pssh";
+const char kExpectedDefaultPsshBox[] = "expected_pssh_box";
 const char kExpectedDefaultMediaInfo[] =
     "video_info {\n"
     "  codec: 'avc1.010101'\n"

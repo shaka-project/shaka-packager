@@ -53,7 +53,7 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
   }
   for (const ProtectionSystemSpecificInfo& info : key_system_infos) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
-        stream_id_, key_id, info.system_id(), iv, info.CreateBox());
+        stream_id_, key_id, info.system_id, iv, info.psshs);
     LOG_IF(WARNING, !result) << "Failed to add encryption info.";
   }
 }
@@ -71,8 +71,7 @@ void HlsNotifyMuxerListener::OnEncryptionStart() {
 
   for (const ProtectionSystemSpecificInfo& info : next_key_system_infos_) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
-        stream_id_, next_key_id_, info.system_id(), next_iv_,
-        info.CreateBox());
+        stream_id_, next_key_id_, info.system_id, next_iv_, info.psshs);
     LOG_IF(WARNING, !result) << "Failed to add encryption info";
   }
   next_key_id_.clear();

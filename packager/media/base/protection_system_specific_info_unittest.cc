@@ -67,25 +67,37 @@ TEST_F(PsshTest, ParseBoxes_SupportsV0) {
   std::vector<ProtectionSystemSpecificInfo> info;
   ASSERT_TRUE(ProtectionSystemSpecificInfo::ParseBoxes(
       v0_box_.data(), v0_box_.size(), &info));
-  ASSERT_EQ(1u, info.size());
 
-  ASSERT_EQ(0u, info[0].key_ids().size());
-  EXPECT_EQ(test_system_id_, info[0].system_id());
-  EXPECT_EQ(test_pssh_data_, info[0].pssh_data());
-  EXPECT_EQ(0, info[0].pssh_box_version());
+  ASSERT_EQ(1u, info.size());
+  EXPECT_EQ(test_system_id_, info[0].system_id);
+
+  std::unique_ptr<PsshBoxBuilder> pssh_builder =
+      PsshBoxBuilder::ParseFromBox(info[0].psshs.data(), info[0].psshs.size());
+  ASSERT_TRUE(pssh_builder);
+
+  ASSERT_EQ(0u, pssh_builder->key_ids().size());
+  EXPECT_EQ(test_system_id_, pssh_builder->system_id());
+  EXPECT_EQ(test_pssh_data_, pssh_builder->pssh_data());
+  EXPECT_EQ(0, pssh_builder->pssh_box_version());
 }
 
 TEST_F(PsshTest, ParseBoxes_SupportsV1) {
   std::vector<ProtectionSystemSpecificInfo> info;
   ASSERT_TRUE(ProtectionSystemSpecificInfo::ParseBoxes(
       v1_box_.data(), v1_box_.size(), &info));
-  ASSERT_EQ(1u, info.size());
 
-  ASSERT_EQ(1u, info[0].key_ids().size());
-  EXPECT_EQ(test_system_id_, info[0].system_id());
-  EXPECT_EQ(test_key_id_, info[0].key_ids()[0]);
-  EXPECT_EQ(test_pssh_data_, info[0].pssh_data());
-  EXPECT_EQ(1, info[0].pssh_box_version());
+  ASSERT_EQ(1u, info.size());
+  EXPECT_EQ(test_system_id_, info[0].system_id);
+
+  std::unique_ptr<PsshBoxBuilder> pssh_builder =
+      PsshBoxBuilder::ParseFromBox(info[0].psshs.data(), info[0].psshs.size());
+  ASSERT_TRUE(pssh_builder);
+
+  ASSERT_EQ(1u, pssh_builder->key_ids().size());
+  EXPECT_EQ(test_system_id_, pssh_builder->system_id());
+  EXPECT_EQ(test_key_id_, pssh_builder->key_ids()[0]);
+  EXPECT_EQ(test_pssh_data_, pssh_builder->pssh_data());
+  EXPECT_EQ(1, pssh_builder->pssh_box_version());
 }
 
 TEST_F(PsshTest, ParseBoxes_SupportsConcatenatedBoxes) {
@@ -95,45 +107,57 @@ TEST_F(PsshTest, ParseBoxes_SupportsConcatenatedBoxes) {
   data.insert(data.end(), v1_box_.begin(), v1_box_.end());
 
   std::vector<ProtectionSystemSpecificInfo> info;
-  ASSERT_TRUE(ProtectionSystemSpecificInfo::ParseBoxes(data.data(),
-                                                         data.size(), &info));
+  ASSERT_TRUE(ProtectionSystemSpecificInfo::ParseBoxes(data.data(), data.size(),
+                                                       &info));
   ASSERT_EQ(3u, info.size());
 
-  ASSERT_EQ(1u, info[0].key_ids().size());
-  EXPECT_EQ(test_system_id_, info[0].system_id());
-  EXPECT_EQ(test_key_id_, info[0].key_ids()[0]);
-  EXPECT_EQ(test_pssh_data_, info[0].pssh_data());
-  EXPECT_EQ(1, info[0].pssh_box_version());
+  std::unique_ptr<PsshBoxBuilder> pssh_builder =
+      PsshBoxBuilder::ParseFromBox(info[0].psshs.data(), info[0].psshs.size());
+  ASSERT_TRUE(pssh_builder);
 
-  ASSERT_EQ(0u, info[1].key_ids().size());
-  EXPECT_EQ(test_system_id_, info[1].system_id());
-  EXPECT_EQ(test_pssh_data_, info[1].pssh_data());
-  EXPECT_EQ(0, info[1].pssh_box_version());
+  ASSERT_EQ(1u, pssh_builder->key_ids().size());
+  EXPECT_EQ(test_system_id_, pssh_builder->system_id());
+  EXPECT_EQ(test_key_id_, pssh_builder->key_ids()[0]);
+  EXPECT_EQ(test_pssh_data_, pssh_builder->pssh_data());
+  EXPECT_EQ(1, pssh_builder->pssh_box_version());
 
-  ASSERT_EQ(1u, info[2].key_ids().size());
-  EXPECT_EQ(test_system_id_, info[2].system_id());
-  EXPECT_EQ(test_key_id_, info[2].key_ids()[0]);
-  EXPECT_EQ(test_pssh_data_, info[2].pssh_data());
-  EXPECT_EQ(1, info[2].pssh_box_version());
+  pssh_builder =
+      PsshBoxBuilder::ParseFromBox(info[1].psshs.data(), info[1].psshs.size());
+  ASSERT_TRUE(pssh_builder);
+
+  ASSERT_EQ(0u, pssh_builder->key_ids().size());
+  EXPECT_EQ(test_system_id_, pssh_builder->system_id());
+  EXPECT_EQ(test_pssh_data_, pssh_builder->pssh_data());
+  EXPECT_EQ(0, pssh_builder->pssh_box_version());
+
+  pssh_builder =
+      PsshBoxBuilder::ParseFromBox(info[2].psshs.data(), info[2].psshs.size());
+  ASSERT_TRUE(pssh_builder);
+
+  ASSERT_EQ(1u, pssh_builder->key_ids().size());
+  EXPECT_EQ(test_system_id_, pssh_builder->system_id());
+  EXPECT_EQ(test_key_id_, pssh_builder->key_ids()[0]);
+  EXPECT_EQ(test_pssh_data_, pssh_builder->pssh_data());
+  EXPECT_EQ(1, pssh_builder->pssh_box_version());
 }
 
 TEST_F(PsshTest, CreateBox_MakesV0Boxes) {
-  ProtectionSystemSpecificInfo info;
-  info.set_system_id(kTestSystemIdArray, arraysize(kTestSystemIdArray));
-  info.set_pssh_data(test_pssh_data_);
-  info.set_pssh_box_version(0);
+  PsshBoxBuilder pssh_builder;
+  pssh_builder.set_system_id(kTestSystemIdArray, arraysize(kTestSystemIdArray));
+  pssh_builder.set_pssh_data(test_pssh_data_);
+  pssh_builder.set_pssh_box_version(0);
 
-  EXPECT_EQ(v0_box_, info.CreateBox());
+  EXPECT_EQ(v0_box_, pssh_builder.CreateBox());
 }
 
 TEST_F(PsshTest, CreateBox_MakesV1Boxes) {
-  ProtectionSystemSpecificInfo info;
-  info.add_key_id(test_key_id_);
-  info.set_system_id(kTestSystemIdArray, arraysize(kTestSystemIdArray));
-  info.set_pssh_data(test_pssh_data_);
-  info.set_pssh_box_version(1);
+  PsshBoxBuilder pssh_builder;
+  pssh_builder.add_key_id(test_key_id_);
+  pssh_builder.set_system_id(kTestSystemIdArray, arraysize(kTestSystemIdArray));
+  pssh_builder.set_pssh_data(test_pssh_data_);
+  pssh_builder.set_pssh_box_version(1);
 
-  EXPECT_EQ(v1_box_, info.CreateBox());
+  EXPECT_EQ(v1_box_, pssh_builder.CreateBox());
 }
 
 }  // namespace media

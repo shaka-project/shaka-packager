@@ -121,22 +121,12 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
 // Verify that NotifyEncryptionUpdate() is not called before OnMediaStart() is
 // called.
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyBeforeMediaStart) {
-  ProtectionSystemSpecificInfo info;
-  std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  info.set_system_id(system_id.data(), system_id.size());
-  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
-  info.set_pssh_data(pssh_data);
-
   std::vector<uint8_t> key_id(16, 0x05);
-  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
-  key_system_infos.push_back(info);
-
   std::vector<uint8_t> iv(16, 0x54);
 
   EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
-                                  iv, key_system_infos);
+                                  iv, GetDefaultKeySystemInfo());
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
@@ -158,22 +148,15 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
 // OnEncryptionStart() should call MuxerListener::NotifyEncryptionUpdate() after
 // OnEncryptionInfoReady() and OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
-  ProtectionSystemSpecificInfo info;
   std::vector<uint8_t> system_id(kAnySystemId,
                                  kAnySystemId + arraysize(kAnySystemId));
-  info.set_system_id(system_id.data(), system_id.size());
-  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
-  info.set_pssh_data(pssh_data);
-
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
-  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
-  key_system_infos.push_back(info);
-
   std::vector<uint8_t> iv(16, 0x54);
 
   EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
-                                  iv, key_system_infos);
+                                  iv, {{system_id, pssh}});
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
   ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
@@ -189,8 +172,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
                          MuxerListener::kContainerMpeg2ts);
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
-  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, key_id, system_id, iv,
-                                                     info.CreateBox()))
+  EXPECT_CALL(mock_notifier_,
+              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh))
       .WillOnce(Return(true));
   listener_.OnEncryptionStart();
 }
@@ -199,22 +182,15 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
 // HlsNotiifer::NotifyEncryptionUpdate() should be called by the end of
 // OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
-  ProtectionSystemSpecificInfo info;
   std::vector<uint8_t> system_id(kAnySystemId,
                                  kAnySystemId + arraysize(kAnySystemId));
-  info.set_system_id(system_id.data(), system_id.size());
-  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
-  info.set_pssh_data(pssh_data);
-
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
-  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
-  key_system_infos.push_back(info);
-
   std::vector<uint8_t> iv(16, 0x54);
 
   EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
-                                  iv, key_system_infos);
+                                  iv, {{system_id, pssh}});
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
   ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
@@ -228,8 +204,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
   // It doesn't really matter when this is called, could be called right away in
   // OnEncryptionStart() if that is possible. Just matters that it is called by
   // the time OnMediaStart() returns.
-  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, key_id, system_id, iv,
-                                                     info.CreateBox()))
+  EXPECT_CALL(mock_notifier_,
+              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh))
       .WillOnce(Return(true));
   listener_.OnEncryptionStart();
   listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
@@ -239,22 +215,12 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStartBeforeMediaStart) {
 // NotifyEncryptionUpdate() should not be called if NotifyNewStream() fails in
 // OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, NoEncryptionUpdateIfNotifyNewStreamFails) {
-  ProtectionSystemSpecificInfo info;
-  std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  info.set_system_id(system_id.data(), system_id.size());
-  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
-  info.set_pssh_data(pssh_data);
-
   std::vector<uint8_t> key_id(16, 0x05);
-  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
-  key_system_infos.push_back(info);
-
   std::vector<uint8_t> iv(16, 0x54);
 
   EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
-                                  iv, key_system_infos);
+                                  iv, GetDefaultKeySystemInfo());
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
   EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
@@ -283,44 +249,27 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
   listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
                          MuxerListener::kContainerMpeg2ts);
 
-  ProtectionSystemSpecificInfo info;
   std::vector<uint8_t> system_id(kAnySystemId,
                                  kAnySystemId + arraysize(kAnySystemId));
-  info.set_system_id(system_id.data(), system_id.size());
-  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
-  info.set_pssh_data(pssh_data);
-
+  std::vector<uint8_t> pssh(kAnyData, kAnyData + arraysize(kAnyData));
   std::vector<uint8_t> key_id(16, 0x05);
-  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
-  key_system_infos.push_back(info);
-
   std::vector<uint8_t> iv(16, 0x54);
 
-  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, key_id, system_id, iv,
-                                                     info.CreateBox()))
+  EXPECT_CALL(mock_notifier_,
+              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh))
       .WillOnce(Return(true));
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
-                                  iv, key_system_infos);
+                                  iv, {{system_id, pssh}});
 }
 
 // Verify that if protection scheme is specified in OnEncryptionInfoReady(),
 // the information is copied to MediaInfo in OnMediaStart().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyWithProtectionScheme) {
-  ProtectionSystemSpecificInfo info;
-  std::vector<uint8_t> system_id(kAnySystemId,
-                                 kAnySystemId + arraysize(kAnySystemId));
-  info.set_system_id(system_id.data(), system_id.size());
-  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
-  info.set_pssh_data(pssh_data);
-
   std::vector<uint8_t> key_id(16, 0x05);
-  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
-  key_system_infos.push_back(info);
-
   std::vector<uint8_t> iv(16, 0x54);
 
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc, key_id,
-                                  iv, key_system_infos);
+                                  iv, GetDefaultKeySystemInfo());
   ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
 
   ON_CALL(mock_notifier_,

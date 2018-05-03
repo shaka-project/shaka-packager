@@ -46,10 +46,9 @@ void MpdNotifyMuxerListener::OnEncryptionInfoReady(
   DCHECK_EQ(protection_scheme, protection_scheme_);
 
   for (const ProtectionSystemSpecificInfo& info : key_system_info) {
-    std::string drm_uuid = internal::CreateUUIDString(info.system_id());
-    std::vector<uint8_t> new_pssh = info.CreateBox();
+    std::string drm_uuid = internal::CreateUUIDString(info.system_id);
     bool updated = mpd_notifier_->NotifyEncryptionUpdate(
-        notification_id_, drm_uuid, key_id, new_pssh);
+        notification_id_, drm_uuid, key_id, info.psshs);
     LOG_IF(WARNING, !updated) << "Failed to update encryption info.";
   }
 }

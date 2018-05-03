@@ -275,7 +275,7 @@ void Segmenter::FinalizeFragmentForKeyRotation(
         encryption_config.key_system_info;
     moof_->pssh.resize(system_info.size());
     for (size_t i = 0; i < system_info.size(); i++)
-      moof_->pssh[i].raw_box = system_info[i].CreateBox();
+      moof_->pssh[i].raw_box = system_info[i].psshs;
   } else {
     LOG(WARNING)
         << "Key rotation and no pssh in stream may not work well together.";

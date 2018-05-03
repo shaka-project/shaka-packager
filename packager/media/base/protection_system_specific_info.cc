@@ -6,81 +6,98 @@
 
 #include "packager/media/base/protection_system_specific_info.h"
 
+#include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/rcheck.h"
+
+#define RETURN_NULL_IF_FALSE(x)                         \
+  do {                                                  \
+    if (!(x)) {                                         \
+      LOG(ERROR) << "Failure while processing: " << #x; \
+      return nullptr;                                   \
+    }                                                   \
+  } while (0)
 
 namespace shaka {
 namespace media {
 
 namespace {
 const size_t kSystemIdSize = 16u;
+// 4-byte size, 4-byte fourcc, 4-byte version_and_flags.
+const size_t kPsshBoxHeaderSize = 12u;
 const size_t kKeyIdSize = 16u;
 }  // namespace
-
-ProtectionSystemSpecificInfo::ProtectionSystemSpecificInfo()
-    : version_(0) {}
-ProtectionSystemSpecificInfo::~ProtectionSystemSpecificInfo() {}
 
 bool ProtectionSystemSpecificInfo::ParseBoxes(
     const uint8_t* data,
     size_t data_size,
-    std::vector<ProtectionSystemSpecificInfo>* pssh_boxes) {
-  pssh_boxes->clear();
+    std::vector<ProtectionSystemSpecificInfo>* pssh_infos) {
+  pssh_infos->clear();
   BufferReader reader(data, data_size);
   while (reader.HasBytes(1)) {
-    size_t start_position = reader.pos();
     uint32_t size;
     RCHECK(reader.Read4(&size));
     RCHECK(reader.SkipBytes(size - 4));
+    RCHECK(size > kPsshBoxHeaderSize + kSystemIdSize);
 
-    pssh_boxes->push_back(ProtectionSystemSpecificInfo());
-    RCHECK(pssh_boxes->back().Parse(data + start_position, size));
+    pssh_infos->push_back(
+        {std::vector<uint8_t>(data + kPsshBoxHeaderSize,
+                              data + kPsshBoxHeaderSize + kSystemIdSize),
+         std::vector<uint8_t>(data, data + size)});
+
+    data += size;
   }
 
   return true;
 }
 
-bool ProtectionSystemSpecificInfo::Parse(const uint8_t* data,
-                                         size_t data_size) {
+std::unique_ptr<PsshBoxBuilder> PsshBoxBuilder::ParseFromBox(
+    const uint8_t* data,
+    size_t data_size) {
+  std::unique_ptr<PsshBoxBuilder> pssh_builder(new PsshBoxBuilder);
+  BufferReader reader(data, data_size);
+
   uint32_t size;
   uint32_t box_type;
   uint32_t version_and_flags;
-  BufferReader reader(data, data_size);
+  RETURN_NULL_IF_FALSE(reader.Read4(&size));
+  RETURN_NULL_IF_FALSE(reader.Read4(&box_type));
+  RETURN_NULL_IF_FALSE(size == data_size);
+  RETURN_NULL_IF_FALSE(box_type == FOURCC_pssh);
+  RETURN_NULL_IF_FALSE(reader.Read4(&version_and_flags));
 
-  RCHECK(reader.Read4(&size));
-  RCHECK(reader.Read4(&box_type));
-  RCHECK(size == data_size);
-  RCHECK(box_type == FOURCC_pssh);
-  RCHECK(reader.Read4(&version_and_flags));
+  pssh_builder->version_ = (version_and_flags >> 24);
+  RETURN_NULL_IF_FALSE(pssh_builder->version_ < 2);
 
-  version_ = (version_and_flags >> 24);
-  RCHECK(version_ < 2);
-  RCHECK(reader.ReadToVector(&system_id_, kSystemIdSize));
+  RETURN_NULL_IF_FALSE(
+      reader.ReadToVector(&pssh_builder->system_id_, kSystemIdSize));
 
-  if (version_ == 1) {
+  if (pssh_builder->version_ == 1) {
     uint32_t key_id_count;
-    RCHECK(reader.Read4(&key_id_count));
+    RETURN_NULL_IF_FALSE(reader.Read4(&key_id_count));
 
-    key_ids_.resize(key_id_count);
+    pssh_builder->key_ids_.resize(key_id_count);
     for (uint32_t i = 0; i < key_id_count; i++) {
-      RCHECK(reader.ReadToVector(&key_ids_[i], kKeyIdSize));
+      RETURN_NULL_IF_FALSE(
+          reader.ReadToVector(&pssh_builder->key_ids_[i], kKeyIdSize));
     }
   }
 
   // TODO: Consider parsing key IDs from Widevine PSSH data.
   uint32_t pssh_data_size;
-  RCHECK(reader.Read4(&pssh_data_size));
-  RCHECK(reader.ReadToVector(&pssh_data_, pssh_data_size));
+  RETURN_NULL_IF_FALSE(reader.Read4(&pssh_data_size));
+  RETURN_NULL_IF_FALSE(
+      reader.ReadToVector(&pssh_builder->pssh_data_, pssh_data_size));
 
   // We should be at the end of the data.  The reader should be initialized to
   // the data and size according to the size field of the box; therefore it
   // is an error if there are bytes remaining.
-  RCHECK(!reader.HasBytes(1));
-  return true;
+  RETURN_NULL_IF_FALSE(!reader.HasBytes(1));
+  return pssh_builder;
 }
 
-std::vector<uint8_t> ProtectionSystemSpecificInfo::CreateBox() const {
+std::vector<uint8_t> PsshBoxBuilder::CreateBox() const {
   DCHECK_EQ(kSystemIdSize, system_id_.size());
 
   const uint32_t box_type = FOURCC_pssh;

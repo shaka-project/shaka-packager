@@ -493,11 +493,11 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
-  media::ProtectionSystemSpecificInfo pssh_info;
-  pssh_info.set_pssh_data(pssh_data);
-  pssh_info.set_system_id(widevine_system_id_.data(),
-                          widevine_system_id_.size());
-  pssh_info.add_key_id(any_key_id);
+  media::PsshBoxBuilder pssh_builder;
+  pssh_builder.set_pssh_data(pssh_data);
+  pssh_builder.set_system_id(widevine_system_id_.data(),
+                             widevine_system_id_.size());
+  pssh_builder.add_key_id(any_key_id);
 
   const char kExpectedJson[] =
       "{"
@@ -508,7 +508,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
   std::string expected_pssh_base64;
-  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  const std::vector<uint8_t> pssh_box = pssh_builder.CreateBox();
   base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
@@ -554,13 +554,13 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
-  media::ProtectionSystemSpecificInfo pssh_info;
-  pssh_info.set_pssh_data(pssh_data);
-  pssh_info.set_system_id(widevine_system_id_.data(),
-                          widevine_system_id_.size());
+  media::PsshBoxBuilder pssh_builder;
+  pssh_builder.set_pssh_data(pssh_data);
+  pssh_builder.set_system_id(widevine_system_id_.data(),
+                             widevine_system_id_.size());
 
   std::string expected_pssh_base64;
-  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  const std::vector<uint8_t> pssh_box = pssh_builder.CreateBox();
   base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
@@ -647,12 +647,12 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
-  media::ProtectionSystemSpecificInfo pssh_info;
-  pssh_info.set_pssh_data(pssh_data);
-  pssh_info.set_system_id(widevine_system_id_.data(),
-                          widevine_system_id_.size());
-  pssh_info.add_key_id(first_keyid);
-  pssh_info.add_key_id(second_keyid);
+  media::PsshBoxBuilder pssh_builder;
+  pssh_builder.set_pssh_data(pssh_data);
+  pssh_builder.set_system_id(widevine_system_id_.data(),
+                             widevine_system_id_.size());
+  pssh_builder.add_key_id(first_keyid);
+  pssh_builder.add_key_id(second_keyid);
 
   const char kExpectedJson[] =
       "{"
@@ -663,7 +663,7 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
   std::string expected_pssh_base64;
-  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  const std::vector<uint8_t> pssh_box = pssh_builder.CreateBox();
   base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
@@ -762,14 +762,8 @@ TEST_F(SimpleHlsNotifierTest, WidevineCencEncryptionScheme) {
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
-  media::ProtectionSystemSpecificInfo pssh_info;
-  pssh_info.set_pssh_data(pssh_data);
-  pssh_info.set_system_id(widevine_system_id_.data(),
-                          widevine_system_id_.size());
-  pssh_info.add_key_id(any_key_id);
-
   std::string expected_pssh_base64;
-  const std::vector<uint8_t> pssh_box = pssh_info.CreateBox();
+  const std::vector<uint8_t> pssh_box = {'p', 's', 's', 'h'};
   base::Base64Encode(std::string(pssh_box.begin(), pssh_box.end()),
                      &expected_pssh_base64);
 
@@ -814,11 +808,11 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
-  media::ProtectionSystemSpecificInfo pssh_info;
-  pssh_info.set_pssh_data(pssh_data);
-  pssh_info.set_system_id(widevine_system_id_.data(),
-                          widevine_system_id_.size());
-  pssh_info.add_key_id(any_key_id);
+  media::PsshBoxBuilder pssh_builder;
+  pssh_builder.set_pssh_data(pssh_data);
+  pssh_builder.set_system_id(widevine_system_id_.data(),
+                             widevine_system_id_.size());
+  pssh_builder.add_key_id(any_key_id);
 
   EXPECT_CALL(*mock_media_playlist,
               AddEncryptionInfo(
@@ -835,7 +829,7 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
                 "WVwcm92aWRlciIJY29udGVudGlk"),
           StrEq("0x11223344112233441122334411223344"), StrEq(""),
           StrEq("urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"), StrEq("1")));
-  std::vector<uint8_t> pssh_as_vec = pssh_info.CreateBox();
+  std::vector<uint8_t> pssh_as_vec = pssh_builder.CreateBox();
   std::string pssh_in_string(pssh_as_vec.begin(), pssh_as_vec.end());
   std::string base_64_encoded_pssh;
   base::Base64Encode(pssh_in_string, &base_64_encoded_pssh);
@@ -845,7 +839,7 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id,
       std::vector<uint8_t>(kAnyKeyId, kAnyKeyId + arraysize(kAnyKeyId)),
-      widevine_system_id_, empty_iv, pssh_info.CreateBox()));
+      widevine_system_id_, empty_iv, pssh_builder.CreateBox()));
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {

@@ -179,13 +179,18 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
         return Status(error::PARSER_FAILURE, "Error parsing the PSSH boxes.");
       }
       for (const auto& info : protection_systems_info) {
+        std::unique_ptr<PsshBoxBuilder> pssh_builder =
+            PsshBoxBuilder::ParseFromBox(info.psshs.data(), info.psshs.size());
+        if (!pssh_builder)
+          return Status(error::PARSER_FAILURE, "Error parsing the PSSH box.");
         // Use Widevine PSSH if available otherwise construct a Widevine PSSH
         // from the first available key ids.
-        if (info.system_id() == widevine_system_id) {
-          pssh_data = info.pssh_data();
+        if (info.system_id == widevine_system_id) {
+          pssh_data = pssh_builder->pssh_data();
           break;
-        } else if (pssh_data.empty() && !info.key_ids().empty()) {
-          pssh_data = GenerateWidevinePsshDataFromKeyIds(info.key_ids());
+        } else if (pssh_data.empty() && !pssh_builder->key_ids().empty()) {
+          pssh_data =
+              GenerateWidevinePsshDataFromKeyIds(pssh_builder->key_ids());
           // Continue to see if there is any Widevine PSSH. The KeyId generated
           // PSSH is only used if a Widevine PSSH could not be found.
           continue;
@@ -558,17 +563,19 @@ bool WidevineKeySource::ExtractEncryptionKey(
       if (!GetKeyIdFromTrack(*track_dict, &encryption_key->key_id))
         return false;
 
-      ProtectionSystemSpecificInfo info;
-      info.add_key_id(encryption_key->key_id);
-      info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
-      info.set_pssh_box_version(0);
-
       std::vector<uint8_t> pssh_data;
       if (!GetPsshDataFromTrack(*track_dict, &pssh_data))
         return false;
-      info.set_pssh_data(pssh_data);
 
-      encryption_key->key_system_info.push_back(info);
+      PsshBoxBuilder pssh_builder;
+      pssh_builder.add_key_id(encryption_key->key_id);
+      pssh_builder.set_system_id(kWidevineSystemId,
+                                 arraysize(kWidevineSystemId));
+      pssh_builder.set_pssh_box_version(0);
+      pssh_builder.set_pssh_data(pssh_data);
+
+      encryption_key->key_system_info.push_back(
+          {pssh_builder.system_id(), pssh_builder.CreateBox()});
     }
     encryption_key_map[stream_label] = std::move(encryption_key);
   }
