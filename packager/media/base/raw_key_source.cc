@@ -11,6 +11,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
+#include "packager/status_macros.h"
 
 namespace {
 const char kEmptyDrmLabel[] = "";
@@ -61,9 +62,7 @@ Status RawKeySource::GetKey(const std::vector<uint8_t>& key_id,
 Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
                                         const std::string& stream_label,
                                         EncryptionKey* key) {
-  Status status = GetKey(stream_label, key);
-  if (!status.ok())
-    return status;
+  RETURN_IF_ERROR(GetKey(stream_label, key));
 
   // A naive key rotation algorithm is implemented here by left rotating the
   // key, key_id and pssh. Note that this implementation is only intended for
@@ -78,33 +77,21 @@ Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
               key->key.begin() + (crypto_period_index % key->key.size()),
               key->key.end());
 
-  for (auto& key_system : key->key_system_info) {
-    if (key_system.system_id() !=
-        std::vector<uint8_t>(std::begin(kCommonSystemId),
-                             std::end(kCommonSystemId))) {
-      LOG(WARNING) << "For key rotation with raw key source, only common key "
-                      "system is supported.";
-    }
-    std::vector<uint8_t> pssh_data = key_system.pssh_data();
-    if (!pssh_data.empty()) {
-      std::rotate(pssh_data.begin(),
-                  pssh_data.begin() + (crypto_period_index % pssh_data.size()),
-                  pssh_data.end());
-      key_system.set_pssh_data(pssh_data);
-    }
+  // Clear |key->key_system_info| to prepare for update. The original
+  // |key_system_info| is saved as it may still be useful later.
+  std::vector<ProtectionSystemSpecificInfo> original_key_system_info;
+  key->key_system_info.swap(original_key_system_info);
 
-    // Rotate the key_ids in pssh as well if exists.
-    // Save a local copy of the key ids before clearing the key ids in
-    // |key_system|. The key ids will be updated and added back later.
-    std::vector<std::vector<uint8_t>> key_ids_copy = key_system.key_ids();
-    key_system.clear_key_ids();
-    for (std::vector<uint8_t>& key_id : key_ids_copy) {
-      std::rotate(key_id.begin(),
-                  key_id.begin() + (crypto_period_index % key_id.size()),
-                  key_id.end());
-      key_system.add_key_id(key_id);
-    }
-  }
+  EncryptionKeyMap encryption_key_map;
+  encryption_key_map[stream_label].reset(new EncryptionKey(*key));
+  RETURN_IF_ERROR(UpdateProtectionSystemInfo(&encryption_key_map));
+  key->key_system_info = encryption_key_map[stream_label]->key_system_info;
+
+  // It is possible that the generated |key_system_info| is empty. This happens
+  // when RawKeyParams.pssh is specified. Restore the original key system info
+  // in this case.
+  if (key->key_system_info.empty())
+    key->key_system_info.swap(original_key_system_info);
 
   return Status::OK;
 }
