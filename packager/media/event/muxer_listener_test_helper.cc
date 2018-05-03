@@ -110,19 +110,5 @@ std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo() {
   return key_system_info;
 }
 
-void ExpectMediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual) {
-  ASSERT_TRUE(MediaInfoEqual(expect, actual));
-}
-
-bool MediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual) {
-  // I found out here
-  // https://groups.google.com/forum/#!msg/protobuf/5sOExQkB2eQ/ZSBNZI0K54YJ
-  // that the best way to check equality is to serialize and check equality.
-  std::string expect_serialized = expect.SerializeAsString();
-  std::string actual_serialized = actual.SerializeAsString();
-  EXPECT_EQ(expect_serialized, actual_serialized);
-  return expect_serialized == actual_serialized;
-}
-
 }  // namespace media
 }  // namespace shaka

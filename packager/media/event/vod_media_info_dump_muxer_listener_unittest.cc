@@ -4,7 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
+#include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 
 #include <vector>
@@ -39,19 +41,22 @@ namespace media {
 
 namespace {
 
-void ExpectTextFormatMediaInfoEqual(const std::string& expect,
-                                    const std::string& actual) {
-  MediaInfo expect_media_info;
+MATCHER_P(FileContentEqualsProto, expected_protobuf, "") {
+  std::string temp_file_media_info_str;
+  CHECK(File::ReadFileToString(arg.c_str(), &temp_file_media_info_str));
+  CHECK(!temp_file_media_info_str.empty());
+
+  MediaInfo expected_media_info;
   MediaInfo actual_media_info;
   typedef ::google::protobuf::TextFormat TextFormat;
-  ASSERT_TRUE(TextFormat::ParseFromString(expect, &expect_media_info))
-      << "Failed to parse " << std::endl << expect;
-  ASSERT_TRUE(TextFormat::ParseFromString(actual, &actual_media_info))
-      << "Failed to parse " << std::endl <<  actual;
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectMediaInfoEqual(expect_media_info, actual_media_info))
-      << "Expect:" << std::endl << expect << std::endl
-      << "Actual:" << std::endl << actual;
+  CHECK(TextFormat::ParseFromString(expected_protobuf, &expected_media_info));
+  CHECK(TextFormat::ParseFromString(temp_file_media_info_str,
+                                    &actual_media_info));
+
+  *result_listener << actual_media_info.ShortDebugString();
+
+  return ::google::protobuf::util::MessageDifferencer::Equals(
+      actual_media_info, expected_media_info);
 }
 
 }  // namespace
@@ -103,16 +108,6 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     listener_->OnMediaEnd(params.media_ranges, params.duration_seconds);
   }
 
-  void ExpectTempFileToEqual(const std::string& expected_protobuf) {
-    std::string temp_file_media_info_str;
-    ASSERT_TRUE(File::ReadFileToString(temp_file_path_.AsUTF8Unsafe().c_str(),
-                                       &temp_file_media_info_str));
-    ASSERT_TRUE(!temp_file_media_info_str.empty());
-
-    ASSERT_NO_FATAL_FAILURE((ExpectTextFormatMediaInfoEqual(
-        expected_protobuf, temp_file_media_info_str)));
-  }
-
  protected:
   base::FilePath temp_file_path_;
   std::unique_ptr<VodMediaInfoDumpMuxerListener> listener_;
@@ -151,7 +146,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
-  ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
+              FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
@@ -194,7 +190,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "  protection_scheme: 'cenc'\n"
       "}\n";
 
-  ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
+              FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 // Verify that VideoStreamInfo with non-0 pixel_{width,height} is set in the
@@ -231,7 +228,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
-  ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
+              FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
@@ -272,7 +270,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckBandwidth) {
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
-  ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
+  EXPECT_THAT(temp_file_path_.AsUTF8Unsafe(),
+              FileContentEqualsProto(kExpectedProtobufOutput));
 }
 
 }  // namespace media

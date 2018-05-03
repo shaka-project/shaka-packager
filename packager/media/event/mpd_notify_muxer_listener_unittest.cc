@@ -8,6 +8,7 @@
 
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
+#include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <vector>
@@ -92,7 +93,8 @@ class MpdNotifyMuxerListenerTest : public ::testing::TestWithParam<MpdType> {
 
 MATCHER_P(ExpectMediaInfoEq, expected_text_format, "") {
   const MediaInfo expected = ConvertToMediaInfo(expected_text_format);
-  return MediaInfoEqual(expected, arg);
+  *result_listener << arg.ShortDebugString();
+  return ::google::protobuf::util::MessageDifferencer::Equals(arg, expected);
 }
 
 TEST_F(MpdNotifyMuxerListenerTest, VodClearContent) {

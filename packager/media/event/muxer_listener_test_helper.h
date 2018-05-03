@@ -100,12 +100,6 @@ std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo();
 // Sets "default" values for muxer_options for testing.
 void SetDefaultMuxerOptions(MuxerOptions* muxer_options);
 
-// Expect that expect and actual are equal.
-void ExpectMediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual);
-
-// Returns true if expect and actual are equal.
-bool MediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual);
-
 }  // namespace media
 
 }  // namespace shaka
