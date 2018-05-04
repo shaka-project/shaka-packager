@@ -109,6 +109,7 @@
         'widevine_pssh_generator.h'
       ],
       'dependencies': [
+        'widevine_common_encryption_proto',
         'widevine_pssh_data_proto',
         '../../base/base.gyp:base',
         '../../packager.gyp:status',
@@ -122,6 +123,18 @@
       'target_name': 'widevine_pssh_data_proto',
       'type': '<(component)',
       'sources': ['widevine_pssh_data.proto'],
+      'variables': {
+        'proto_in_dir': '.',
+        'proto_out_dir': 'packager/media/base',
+      },
+      'includes': [
+        '../../protoc.gypi',
+      ],
+    },
+    {
+      'target_name': 'widevine_common_encryption_proto',
+      'type': '<(component)',
+      'sources': ['widevine_common_encryption.proto'],
       'variables': {
         'proto_in_dir': '.',
         'proto_out_dir': 'packager/media/base',

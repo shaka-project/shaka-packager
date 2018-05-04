@@ -1,0 +1,155 @@
+// Copyright 2018 Google LLC. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+// This file defines Widevine Common Encryption Request and Response proto
+// format.
+
+syntax = "proto2";
+
+package shaka;
+
+enum ModularDrmType { WIDEVINE = 0; }
+
+message CommonEncryptionRequest {
+  enum ProtectionScheme {
+    UNSPECIFIED = 0;    // Defaults to 'cenc'
+    CENC = 1667591779;  // 'cenc' (AES-CTR) = 0x63656E63
+    CBC1 = 1667392305;  // 'cbc1' (AES-CBC) = 0x63626331
+    CENS = 1667591795;  // 'cens' (AES-CTR subsample) =
+                        // 0x63656E73
+    CBCS = 1667392371;  //'cbcs' (AES-CBC subsample) = 0x63626373
+  };
+  // An identifier supplied by a content provider, used to identify
+  // a piece of content and derive key IDs and content keys.
+  optional bytes content_id = 1;
+
+  // A policy name that refers to a stored policy in Widevine service.
+  optional string policy = 2;
+
+  // A list of tracks whose PSSHes and keys should be returned.
+  message Track { optional string type = 1; }
+  repeated Track tracks = 3;
+
+  // Indicates the drm system types whose PSSH should be generated. An empty
+  // list implies [ WIDEVINE ].
+  repeated ModularDrmType drm_types = 4;
+
+  // Optional starting period, if multiple keys are being requested for content
+  // that will rotate keys.
+  optional uint32 first_crypto_period_index = 8;
+
+  // Optional count of periods to return keys for, starting with
+  // first_crypto_period_index. If this count is set, then
+  // first_crypto_period_index must be provided in the request as well.
+  optional uint32 crypto_period_count = 9 [default = 1];
+
+  // 'pssh' box data which can be used in lieu of the content_id field in order
+  // to request keys for Widevine CENC content.
+  optional bytes pssh_data = 10;
+
+  // Widevine asset ID which can be used in lieu of the content_id field in
+  // order to request keys for Widevine "Classic" packaged content.
+  optional uint32 asset_id = 11;
+
+  // Optional value which can be used to indicate a group.
+  // If present the CommonEncryptionResponse will contain pssh data belonging
+  // to this group.
+  optional bytes group_id = 12;
+
+  // Optional value representing the duration of each crypto period in seconds.
+  optional uint32 crypto_period_seconds = 13;
+
+  // Protection scheme identifying the encryption algorithm. The protection
+  // scheme is represented as a uint32 value. The uint32 contains 4 bytes each
+  // representing a single ascii character in one of the 4CC protection scheme
+  // values.
+  // The protection scheme to set in the generated 'pssh' box data.
+  // This protection scheme value may be encoded into the content. If the
+  // protection scheme is available in the content, it will supercede this
+  // value.
+  optional ProtectionScheme protection_scheme = 14;
+
+  // Enable entitlement license if set to true.
+  optional bool enable_entitlement_license = 16;
+}
+
+message CommonEncryptionResponse {
+  // Indicates the result of the operation.
+  enum Status {
+    OK = 0;
+    SIGNATURE_FAILED = 1;
+    CONTENT_ID_MISSING = 2;
+    POLICY_UNKNOWN = 3;
+    TRACK_TYPE_MISSING = 4;
+    TRACK_TYPE_UNKNOWN = 5;
+    MALFORMED_REQUEST = 6;
+    ACCESS_DENIED = 7;
+    INTERNAL_ERROR = 8;
+    INVALID_WIDEVINE_PSSH = 9;
+    TOO_MANY_CONTENT_SPECIFIERS = 10;
+    ASSET_NOT_FOUND = 11;
+    ASSET_MISSING_KEY = 12;
+    CONTENT_ID_MISMATCH = 13;
+    KEY_ID_MISMATCH = 14;
+    INVALID_GROUP_TRACK_TYPE = 15;
+    KEY_ROTATION_WITH_UNSUPPORTED_DRM_TYPE = 16;
+    NO_REQUESTED_CRYPTO_PERIODS = 17;
+  };
+  optional Status status = 1;
+
+  // A list of DRM systems whose PSSH is returned.
+  message Drm {
+    // The DRM system, e.g. widevine or playready.
+    optional ModularDrmType type = 1;
+
+    // Registered system Id for the DRM system.
+    optional string system_id = 2;
+  }
+  repeated Drm drm = 3;
+
+  // A list of tracks and their PSSH and key data. If crypto_period_count
+  // was given in the request, then there will be a separate Track message
+  // in the response for each period.
+  message Track {
+    // Track type. SD, HD, UHD1, UHD2 or AUDIO.
+    optional string type = 1;
+    optional bytes key_id = 2;
+    optional bytes key = 3;
+    optional bytes iv = 4;
+
+    message Pssh {
+      optional ModularDrmType drm_type = 1;
+      // Contains only PSSH data, i.e. no PSSH box header.
+      // Can be omitted if |boxes| is present.
+      // This field should become deprecated as it may not be populated when
+      // entitlement licenses become more widely used.
+      optional bytes data = 2;
+      // Contains full PSSH boxes (there can be more than one PSSH box).
+      // Always populated.
+      optional bytes boxes = 3;
+    }
+    repeated Pssh pssh = 5;
+    optional uint32 crypto_period_index = 6;
+  }
+  repeated Track tracks = 4;
+
+  // The content_id associated with the response.  The content_id is either
+  // the content_id from the request or from the PSSH in the request.
+  optional bytes content_id = 6;
+}
+
+// A generic protobuf used as the request format of various Modular DRM APIs.
+message SignedModularDrmRequest {
+  optional bytes request = 1;
+  optional bytes signature = 2;
+  // Identifies the entity sending / signing the request.
+  optional string signer = 3;
+}
+
+message SignedModularDrmResponse {
+  optional bytes response = 1;
+  optional bytes signature = 2;
+}
