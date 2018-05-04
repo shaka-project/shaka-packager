@@ -10,13 +10,13 @@
 
 #include "packager/base/base64.h"
 #include "packager/base/files/file_path.h"
-#include "packager/base/json/json_writer.h"
 #include "packager/base/logging.h"
 #include "packager/base/optional.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/proto_json_util.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/widevine_key_source.h"
@@ -150,31 +150,21 @@ bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_box,
     return false;
   }
 
-  base::DictionaryValue pssh_dict;
-  pssh_dict.SetString("provider", pssh_proto.provider());
-  if (pssh_proto.has_content_id()) {
-    std::string content_id_base64;
-    base::Base64Encode(base::StringPiece(pssh_proto.content_id().data(),
-                                         pssh_proto.content_id().size()),
-                       &content_id_base64);
-    pssh_dict.SetString("content_id", content_id_base64);
+  media::WidevineHeader widevine_header;
+  widevine_header.set_provider(pssh_proto.provider());
+  if (pssh_proto.has_content_id())
+    widevine_header.set_content_id(pssh_proto.content_id());
+  // Place the current |key_id| to the front and converts all key_id to hex
+  // format.
+  widevine_header.add_key_ids(base::HexEncode(key_id.data(), key_id.size()));
+  for (const std::string& key_id_in_pssh : pssh_proto.key_id()) {
+    const std::string key_id_hex =
+        base::HexEncode(key_id_in_pssh.data(), key_id_in_pssh.size());
+    if (widevine_header.key_ids(0) != key_id_hex)
+      widevine_header.add_key_ids(key_id_hex);
   }
-  base::ListValue* key_ids = new base::ListValue();
 
-  key_ids->AppendString(base::HexEncode(key_id.data(), key_id.size()));
-  for (const std::string& id : pssh_proto.key_id()) {
-    if (key_id.size() == id.size() &&
-        memcmp(key_id.data(), id.data(), id.size()) == 0) {
-      continue;
-    }
-    key_ids->AppendString(base::HexEncode(id.data(), id.size()));
-  }
-  pssh_dict.Set("key_ids", key_ids);
-
-  if (!base::JSONWriter::Write(pssh_dict, pssh_json)) {
-    LOG(ERROR) << "Failed to write to JSON.";
-    return false;
-  }
+  *pssh_json = media::MessageToJsonString(widevine_header);
   return true;
 }
 

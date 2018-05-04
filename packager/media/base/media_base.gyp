@@ -77,6 +77,8 @@
         'producer_consumer_queue.h',
         'protection_system_specific_info.cc',
         'protection_system_specific_info.h',
+        'proto_json_util.cc',
+        'proto_json_util.h',
         'pssh_generator.cc',
         'pssh_generator.h',
         'pssh_generator_util.cc',

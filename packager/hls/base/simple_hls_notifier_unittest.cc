@@ -500,10 +500,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevine) {
   pssh_builder.add_key_id(any_key_id);
 
   const char kExpectedJson[] =
-      "{"
-      "\"content_id\":\"Y29udGVudGlk\","
-      "\"key_ids\":[\"11223344112233441122334411223344\"],"
-      "\"provider\":\"someprovider\"}";
+      R"({"key_ids":["11223344112233441122334411223344"],)"
+      R"("provider":"someprovider","content_id":"Y29udGVudGlk"})";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
@@ -547,10 +545,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWidevineNoKeyidsInPssh) {
                                  widevine_pssh_data_str.end());
 
   const char kExpectedJson[] =
-      "{"
-      "\"content_id\":\"Y29udGVudGlk\","
-      "\"key_ids\":[\"11223344112233441122334411223344\"],"
-      "\"provider\":\"someprovider\"}";
+      R"({"key_ids":["11223344112233441122334411223344"],)"
+      R"("provider":"someprovider","content_id":"Y29udGVudGlk"})";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
@@ -655,10 +651,10 @@ TEST_F(SimpleHlsNotifierTest, WidevineMultipleKeyIdsNoContentIdInPssh) {
   pssh_builder.add_key_id(second_keyid);
 
   const char kExpectedJson[] =
-      "{"
-      "\"key_ids\":[\"22222222222222222222222222222222\","
-      "\"11111111111111111111111111111111\"],"
-      "\"provider\":\"someprovider\"}";
+      R"({)"
+      R"("key_ids":["22222222222222222222222222222222",)"
+      R"("11111111111111111111111111111111"],)"
+      R"("provider":"someprovider"})";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 
@@ -801,10 +797,8 @@ TEST_F(SimpleHlsNotifierTest, WidevineNotifyEncryptionUpdateEmptyIv) {
                                  widevine_pssh_data_str.end());
 
   const char kExpectedJson[] =
-      "{"
-      "\"content_id\":\"Y29udGVudGlk\","
-      "\"key_ids\":[\"11223344112233441122334411223344\"],"
-      "\"provider\":\"someprovider\"}";
+      R"({"key_ids":["11223344112233441122334411223344"],)"
+      R"("provider":"someprovider","content_id":"Y29udGVudGlk"})";
   std::string expected_json_base64;
   base::Base64Encode(kExpectedJson, &expected_json_base64);
 

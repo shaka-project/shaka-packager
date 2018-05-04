@@ -7,7 +7,6 @@
 // This file defines Widevine Pssh Data proto format.
 
 syntax = "proto2";
-option optimize_for = LITE_RUNTIME;
 
 package shaka.media;
 
@@ -39,4 +38,19 @@ message WidevinePsshData {
   // of the following 4CC values: 'cenc' (AES-CTR), 'cbc1' (AES-CBC),
   // 'cens' (AES-CTR subsample), 'cbcs' (AES-CBC subsample).
   optional uint32 protection_scheme = 9;
+}
+
+// Derived from WidevinePsshData. The JSON format of this proto is used in
+// Widevine HLS DRM signaling v1.
+// We cannot build JSON from WidevinePsshData as |key_id| is required to be in
+// hex format, while |bytes| type is translated to base64 by JSON formatter, so
+// we have to use |string| type and do hex conversion in the code.
+message WidevineHeader {
+  repeated string key_ids = 2;
+
+  // Content provider name.
+  optional string provider = 3;
+
+  // A content identifier, specified by content provider.
+  optional bytes content_id = 4;
 }
