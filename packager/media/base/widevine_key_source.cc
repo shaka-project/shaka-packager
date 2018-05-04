@@ -8,16 +8,16 @@
 
 #include "packager/base/base64.h"
 #include "packager/base/bind.h"
-#include "packager/base/json/json_reader.h"
-#include "packager/base/json/json_writer.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/network_util.h"
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/proto_json_util.h"
 #include "packager/media/base/pssh_generator_util.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/request_signer.h"
+#include "packager/media/base/widevine_common_encryption.pb.h"
 #include "packager/media/base/widevine_pssh_generator.h"
 
 namespace shaka {
@@ -25,11 +25,6 @@ namespace media {
 namespace {
 
 const bool kEnableKeyRotation = true;
-
-const char kLicenseStatusOK[] = "OK";
-// Server may return INTERNAL_ERROR intermittently, which is a transient error
-// and the next client request may succeed without problem.
-const char kLicenseStatusTransientError[] = "INTERNAL_ERROR";
 
 // Number of times to retry requesting keys in case of a transient error from
 // the server.
@@ -42,73 +37,24 @@ const int kDefaultCryptoPeriodCount = 10;
 const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
 const int kKeyFetchTimeoutInSeconds = 60;  // 1 minute.
 
-bool Base64StringToBytes(const std::string& base64_string,
-                         std::vector<uint8_t>* bytes) {
-  DCHECK(bytes);
-  std::string str;
-  if (!base::Base64Decode(base64_string, &str))
-    return false;
-  bytes->assign(str.begin(), str.end());
-  return true;
-}
-
-void BytesToBase64String(const std::vector<uint8_t>& bytes,
-                         std::string* base64_string) {
-  DCHECK(base64_string);
-  base::Base64Encode(base::StringPiece(reinterpret_cast<const char*>
-                                       (bytes.data()), bytes.size()),
-                     base64_string);
-}
-
-bool GetKeyFromTrack(const base::DictionaryValue& track_dict,
-                     std::vector<uint8_t>* key) {
-  DCHECK(key);
-  std::string key_base64_string;
-  RCHECK(track_dict.GetString("key", &key_base64_string));
-  VLOG(2) << "Key:" << key_base64_string;
-  RCHECK(Base64StringToBytes(key_base64_string, key));
-  return true;
-}
-
-bool GetKeyIdFromTrack(const base::DictionaryValue& track_dict,
-                       std::vector<uint8_t>* key_id) {
-  DCHECK(key_id);
-  std::string key_id_base64_string;
-  RCHECK(track_dict.GetString("key_id", &key_id_base64_string));
-  VLOG(2) << "Keyid:" << key_id_base64_string;
-  RCHECK(Base64StringToBytes(key_id_base64_string, key_id));
-  return true;
-}
-
-bool GetPsshDataFromTrack(const base::DictionaryValue& track_dict,
-                          std::vector<uint8_t>* pssh_data) {
-  DCHECK(pssh_data);
-
-  const base::ListValue* pssh_list;
-  RCHECK(track_dict.GetList("pssh", &pssh_list));
-  // Invariant check. We don't want to crash in release mode if possible.
-  // The following code handles it gracefully if GetSize() does not return 1.
-  DCHECK_EQ(1u, pssh_list->GetSize());
-
-  const base::DictionaryValue* pssh_dict;
-  RCHECK(pssh_list->GetDictionary(0, &pssh_dict));
-  std::string drm_type;
-  RCHECK(pssh_dict->GetString("drm_type", &drm_type));
-  if (drm_type != "WIDEVINE") {
-    LOG(ERROR) << "Expecting drm_type 'WIDEVINE', get '" << drm_type << "'.";
-    return false;
+CommonEncryptionRequest::ProtectionScheme ToCommonEncryptionProtectionScheme(
+    FourCC protection_scheme) {
+  switch (protection_scheme) {
+    case FOURCC_cenc:
+      return CommonEncryptionRequest::CENC;
+    case FOURCC_cbcs:
+    case kAppleSampleAesProtectionScheme:
+      // Treat sample aes as a variant of cbcs.
+      return CommonEncryptionRequest::CBCS;
+    case FOURCC_cbc1:
+      return CommonEncryptionRequest::CBC1;
+    case FOURCC_cens:
+      return CommonEncryptionRequest::CENS;
+    default:
+      LOG(WARNING) << "Ignore unrecognized protection scheme "
+                   << FourCCToString(protection_scheme);
+      return CommonEncryptionRequest::UNSPECIFIED;
   }
-  std::string pssh_data_base64_string;
-  RCHECK(pssh_dict->GetString("data", &pssh_data_base64_string));
-
-  VLOG(2) << "Pssh Data:" << pssh_data_base64_string;
-  RCHECK(Base64StringToBytes(pssh_data_base64_string, pssh_data));
-  return true;
-}
-
-bool IsProtectionSchemeValid(FourCC protection_scheme) {
-  return protection_scheme == FOURCC_cenc || protection_scheme == FOURCC_cbcs ||
-         protection_scheme == FOURCC_cbc1 || protection_scheme == FOURCC_cens;
 }
 
 }  // namespace
@@ -145,22 +91,12 @@ WidevineKeySource::~WidevineKeySource() {
 Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
                                     const std::string& policy) {
   base::AutoLock scoped_lock(lock_);
-  request_dict_.Clear();
-  std::string content_id_base64_string;
-  BytesToBase64String(content_id, &content_id_base64_string);
-  request_dict_.SetString("content_id", content_id_base64_string);
-  request_dict_.SetString("policy", policy);
-
-  FourCC protection_scheme = protection_scheme_;
-  // Treat sample aes as a variant of cbcs.
-  if (protection_scheme == kAppleSampleAesProtectionScheme)
-    protection_scheme = FOURCC_cbcs;
-  if (IsProtectionSchemeValid(protection_scheme)) {
-    request_dict_.SetInteger("protection_scheme", protection_scheme);
-  } else {
-    LOG(WARNING) << "Ignore unrecognized protection scheme "
-                 << FourCCToString(protection_scheme);
-  }
+  common_encryption_request_.reset(new CommonEncryptionRequest);
+  common_encryption_request_->set_content_id(content_id.data(),
+                                             content_id.size());
+  common_encryption_request_->set_policy(policy);
+  common_encryption_request_->set_protection_scheme(
+      ToCommonEncryptionProtectionScheme(protection_scheme_));
 
   return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
@@ -217,15 +153,12 @@ Status WidevineKeySource::FetchKeys(EmeInitDataType init_data_type,
   const bool widevine_classic =
       init_data_type == EmeInitDataType::WIDEVINE_CLASSIC;
   base::AutoLock scoped_lock(lock_);
-  request_dict_.Clear();
+  common_encryption_request_.reset(new CommonEncryptionRequest);
   if (widevine_classic) {
-    // Javascript/JSON does not support int64_t or unsigned numbers. Use double
-    // instead as 32-bit integer can be lossless represented using double.
-    request_dict_.SetDouble("asset_id", asset_id);
+    common_encryption_request_->set_asset_id(asset_id);
   } else {
-    std::string pssh_data_base64_string;
-    BytesToBase64String(pssh_data, &pssh_data_base64_string);
-    request_dict_.SetString("pssh_data", pssh_data_base64_string);
+    common_encryption_request_->set_pssh_data(pssh_data.data(),
+                                              pssh_data.size());
   }
   return FetchKeysInternal(!kEnableKeyRotation, 0, widevine_classic);
 }
@@ -336,10 +269,8 @@ void WidevineKeySource::FetchKeysTask() {
 Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
                                             uint32_t first_crypto_period_index,
                                             bool widevine_classic) {
-  std::string request;
-  FillRequest(enable_key_rotation,
-              first_crypto_period_index,
-              &request);
+  CommonEncryptionRequest request;
+  FillRequest(enable_key_rotation, first_crypto_period_index, &request);
 
   std::string message;
   Status status = GenerateKeyMessage(request, &message);
@@ -357,23 +288,15 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
     if (status.ok()) {
       VLOG(1) << "Retry [" << i << "] Response:" << raw_response;
 
-      std::string response;
-      if (!DecodeResponse(raw_response, &response)) {
-        return Status(error::SERVER_ERROR,
-                      "Failed to decode response '" + raw_response + "'.");
-      }
-
       bool transient_error = false;
-      if (ExtractEncryptionKey(enable_key_rotation,
-                               widevine_classic,
-                               response,
-                               &transient_error))
+      if (ExtractEncryptionKey(enable_key_rotation, widevine_classic,
+                               raw_response, &transient_error))
         return Status::OK;
 
       if (!transient_error) {
         return Status(
             error::SERVER_ERROR,
-            "Failed to extract encryption key from '" + response + "'.");
+            "Failed to extract encryption key from '" + raw_response + "'.");
       }
     } else if (status.error_code() != error::TIME_OUT) {
       return status;
@@ -392,104 +315,48 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
 
 void WidevineKeySource::FillRequest(bool enable_key_rotation,
                                     uint32_t first_crypto_period_index,
-                                    std::string* request) {
+                                    CommonEncryptionRequest* request) {
+  DCHECK(common_encryption_request_);
   DCHECK(request);
-  DCHECK(!request_dict_.empty());
+  *request = *common_encryption_request_;
 
-  // Build tracks.
-  base::ListValue* tracks = new base::ListValue();
+  request->add_tracks()->set_type("SD");
+  request->add_tracks()->set_type("HD");
+  request->add_tracks()->set_type("UHD1");
+  request->add_tracks()->set_type("UHD2");
+  request->add_tracks()->set_type("AUDIO");
 
-  base::DictionaryValue* track_sd = new base::DictionaryValue();
-  track_sd->SetString("type", "SD");
-  tracks->Append(track_sd);
-  base::DictionaryValue* track_hd = new base::DictionaryValue();
-  track_hd->SetString("type", "HD");
-  tracks->Append(track_hd);
-  base::DictionaryValue* track_uhd1 = new base::DictionaryValue();
-  track_uhd1->SetString("type", "UHD1");
-  tracks->Append(track_uhd1);
-  base::DictionaryValue* track_uhd2 = new base::DictionaryValue();
-  track_uhd2->SetString("type", "UHD2");
-  tracks->Append(track_uhd2);
-  base::DictionaryValue* track_audio = new base::DictionaryValue();
-  track_audio->SetString("type", "AUDIO");
-  tracks->Append(track_audio);
+  request->add_drm_types(ModularDrmType::WIDEVINE);
 
-  request_dict_.Set("tracks", tracks);
-
-  // Build DRM types.
-  base::ListValue* drm_types = new base::ListValue();
-  drm_types->AppendString("WIDEVINE");
-  request_dict_.Set("drm_types", drm_types);
-
-  // Build key rotation fields.
   if (enable_key_rotation) {
-    // Javascript/JSON does not support int64_t or unsigned numbers. Use double
-    // instead as 32-bit integer can be lossless represented using double.
-    request_dict_.SetDouble("first_crypto_period_index",
-                            first_crypto_period_index);
-    request_dict_.SetInteger("crypto_period_count", crypto_period_count_);
+    request->set_first_crypto_period_index(first_crypto_period_index);
+    request->set_crypto_period_count(crypto_period_count_);
   }
 
-  // Set group id if present.
-  if (!group_id_.empty()) {
-    std::string group_id_base64;
-    BytesToBase64String(group_id_, &group_id_base64);
-    request_dict_.SetString("group_id", group_id_base64);
-  }
-
-  base::JSONWriter::WriteWithOptions(
-      request_dict_,
-      // Write doubles that have no fractional part as a normal integer, i.e.
-      // without using exponential notation or appending a '.0'.
-      base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION, request);
+  if (!group_id_.empty())
+    request->set_group_id(group_id_.data(), group_id_.size());
 }
 
-Status WidevineKeySource::GenerateKeyMessage(const std::string& request,
-                                             std::string* message) {
+Status WidevineKeySource::GenerateKeyMessage(
+    const CommonEncryptionRequest& request,
+    std::string* message) {
   DCHECK(message);
 
-  std::string request_base64_string;
-  base::Base64Encode(request, &request_base64_string);
-
-  base::DictionaryValue request_dict;
-  request_dict.SetString("request", request_base64_string);
+  SignedModularDrmRequest signed_request;
+  signed_request.set_request(MessageToJsonString(request));
 
   // Sign the request.
   if (signer_) {
     std::string signature;
-    if (!signer_->GenerateSignature(request, &signature))
+    if (!signer_->GenerateSignature(signed_request.request(), &signature))
       return Status(error::INTERNAL_ERROR, "Signature generation failed.");
 
-    std::string signature_base64_string;
-    base::Base64Encode(signature, &signature_base64_string);
-
-    request_dict.SetString("signature", signature_base64_string);
-    request_dict.SetString("signer", signer_->signer_name());
+    signed_request.set_signature(signature);
+    signed_request.set_signer(signer_->signer_name());
   }
 
-  base::JSONWriter::Write(request_dict, message);
+  *message = MessageToJsonString(signed_request);
   return Status::OK;
-}
-
-bool WidevineKeySource::DecodeResponse(
-    const std::string& raw_response,
-    std::string* response) {
-  DCHECK(response);
-
-  // Extract base64 formatted response from JSON formatted raw response.
-  std::unique_ptr<base::Value> root(base::JSONReader::Read(raw_response));
-  if (!root) {
-    LOG(ERROR) << "'" << raw_response << "' is not in JSON format.";
-    return false;
-  }
-  const base::DictionaryValue* response_dict = NULL;
-  RCHECK(root->GetAsDictionary(&response_dict));
-
-  std::string response_base64_string;
-  RCHECK(response_dict->GetString("response", &response_base64_string));
-  RCHECK(base::Base64Decode(response_base64_string, response));
-  return true;
 }
 
 bool WidevineKeySource::ExtractEncryptionKey(
@@ -500,46 +367,45 @@ bool WidevineKeySource::ExtractEncryptionKey(
   DCHECK(transient_error);
   *transient_error = false;
 
-  std::unique_ptr<base::Value> root(base::JSONReader::Read(response));
-  if (!root) {
-    LOG(ERROR) << "'" << response << "' is not in JSON format.";
+  SignedModularDrmResponse signed_response_proto;
+  if (!JsonStringToMessage(response, &signed_response_proto)) {
+    LOG(ERROR) << "Failed to convert JSON to proto: " << response;
     return false;
   }
 
-  const base::DictionaryValue* license_dict = NULL;
-  RCHECK(root->GetAsDictionary(&license_dict));
+  CommonEncryptionResponse response_proto;
+  if (!JsonStringToMessage(signed_response_proto.response(), &response_proto)) {
+    LOG(ERROR) << "Failed to convert JSON to proto: "
+               << signed_response_proto.response();
+    return false;
+  }
 
-  std::string license_status;
-  RCHECK(license_dict->GetString("status", &license_status));
-  if (license_status != kLicenseStatusOK) {
+  if (response_proto.status() != CommonEncryptionResponse::OK) {
     LOG(ERROR) << "Received non-OK license response: " << response;
-    *transient_error = (license_status == kLicenseStatusTransientError);
+    // Server may return INTERNAL_ERROR intermittently, which is a transient
+    // error and the next client request may succeed without problem.
+    *transient_error =
+        (response_proto.status() == CommonEncryptionResponse::INTERNAL_ERROR);
     return false;
   }
 
-  const base::ListValue* tracks;
-  RCHECK(license_dict->GetList("tracks", &tracks));
-  // Should have at least one track per crypto_period.
-  RCHECK(enable_key_rotation ? tracks->GetSize() >= 1 * crypto_period_count_
-                             : tracks->GetSize() >= 1);
+  RCHECK(enable_key_rotation
+             ? response_proto.tracks_size() >= crypto_period_count_
+             : response_proto.tracks_size() >= 1);
 
-  int current_crypto_period_index = first_crypto_period_index_;
+  uint32_t current_crypto_period_index = first_crypto_period_index_;
 
   EncryptionKeyMap encryption_key_map;
-  for (size_t i = 0; i < tracks->GetSize(); ++i) {
-    const base::DictionaryValue* track_dict;
-    RCHECK(tracks->GetDictionary(i, &track_dict));
+  for (const auto& track : response_proto.tracks()) {
+    VLOG(2) << "track " << track.ShortDebugString();
 
     if (enable_key_rotation) {
-      int crypto_period_index;
-      RCHECK(
-          track_dict->GetInteger("crypto_period_index", &crypto_period_index));
-      if (crypto_period_index != current_crypto_period_index) {
-        if (crypto_period_index != current_crypto_period_index + 1) {
+      if (track.crypto_period_index() != current_crypto_period_index) {
+        if (track.crypto_period_index() != current_crypto_period_index + 1) {
           LOG(ERROR) << "Expecting crypto period index "
                      << current_crypto_period_index << " or "
                      << current_crypto_period_index + 1 << "; Seen "
-                     << crypto_period_index << " at track " << i;
+                     << track.crypto_period_index();
           return false;
         }
         if (!PushToKeyPool(&encryption_key_map))
@@ -548,24 +414,25 @@ bool WidevineKeySource::ExtractEncryptionKey(
       }
     }
 
-    std::string stream_label;
-    RCHECK(track_dict->GetString("type", &stream_label));
+    const std::string& stream_label = track.type();
     RCHECK(encryption_key_map.find(stream_label) == encryption_key_map.end());
-    VLOG(2) << "drm label:" << stream_label;
 
     std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
-
-    if (!GetKeyFromTrack(*track_dict, &encryption_key->key))
-      return false;
+    encryption_key->key.assign(track.key().begin(), track.key().end());
 
     // Get key ID and PSSH data for CENC content only.
     if (!widevine_classic) {
-      if (!GetKeyIdFromTrack(*track_dict, &encryption_key->key_id))
-        return false;
+      encryption_key->key_id.assign(track.key_id().begin(),
+                                    track.key_id().end());
 
-      std::vector<uint8_t> pssh_data;
-      if (!GetPsshDataFromTrack(*track_dict, &pssh_data))
+      if (track.pssh_size() != 1) {
+        LOG(ERROR) << "Expecting one and only one pssh, seeing "
+                   << track.pssh_size();
         return false;
+      }
+      const auto& pssh_proto = track.pssh(0);
+      const std::vector<uint8_t> pssh_data(pssh_proto.data().begin(),
+                                           pssh_proto.data().end());
 
       PsshBoxBuilder pssh_builder;
       pssh_builder.add_key_id(encryption_key->key_id);

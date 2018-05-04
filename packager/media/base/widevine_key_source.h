@@ -10,12 +10,14 @@
 #include <map>
 #include <memory>
 #include "packager/base/synchronization/waitable_event.h"
-#include "packager/base/values.h"
 #include "packager/media/base/closure_thread.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 
 namespace shaka {
+
+class CommonEncryptionRequest;
+
 namespace media {
 
 class KeyFetcher;
@@ -91,13 +93,11 @@ class WidevineKeySource : public KeySource {
   // |request| should not be NULL.
   void FillRequest(bool enable_key_rotation,
                    uint32_t first_crypto_period_index,
-                   std::string* request);
-  // Base64 escape and format the request. Optionally sign the request if a
-  // signer is provided. |message| should not be NULL. Return OK on success.
-  Status GenerateKeyMessage(const std::string& request, std::string* message);
-  // Decode |response| from JSON formatted |raw_response|.
-  // |response| should not be NULL.
-  bool DecodeResponse(const std::string& raw_response, std::string* response);
+                   CommonEncryptionRequest* request);
+  // Get request in JSON string. Optionally sign the request if a signer is
+  // provided. |message| should not be NULL. Return OK on success.
+  Status GenerateKeyMessage(const CommonEncryptionRequest& request,
+                            std::string* message);
   // Extract encryption key from |response|, which is expected to be properly
   // formatted. |transient_error| will be set to true if it fails and the
   // failure is because of a transient error from the server. |transient_error|
@@ -116,9 +116,9 @@ class WidevineKeySource : public KeySource {
   std::unique_ptr<KeyFetcher> key_fetcher_;
   std::string server_url_;
   std::unique_ptr<RequestSigner> signer_;
-  base::DictionaryValue request_dict_;
+  std::unique_ptr<CommonEncryptionRequest> common_encryption_request_;
 
-  const uint32_t crypto_period_count_;
+  const int crypto_period_count_;
   FourCC protection_scheme_;
   base::Lock lock_;
   bool key_production_started_;

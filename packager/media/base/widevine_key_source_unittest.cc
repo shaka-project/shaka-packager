@@ -52,26 +52,25 @@ const char kLicenseStatusTransientError[] = "INTERNAL_ERROR";
 const char kLicenseStatusUnknownError[] = "UNKNOWN_ERROR";
 
 const char kExpectedRequestMessageFormat[] =
-    "{\"content_id\":\"%s\",\"drm_types\":[\"WIDEVINE\"],\"policy\":\"%s\","
-    "\"protection_scheme\":%d,"
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
-    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
+    R"({"content_id":"%s","policy":"%s",)"
+    R"("tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
+    R"({"type":"UHD2"},{"type":"AUDIO"}],)"
+    R"("drm_types":["WIDEVINE"],"protection_scheme":"%s"})";
 const char kExpectedRequestMessageWithAssetIdFormat[] =
-    "{\"asset_id\":%u,\"drm_types\":[\"WIDEVINE\"],"
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
-    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
+    R"({"tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
+    R"({"type":"UHD2"},{"type":"AUDIO"}],)"
+    R"("drm_types":["WIDEVINE"],"asset_id":%u})";
 const char kExpectedRequestMessageWithPsshFormat[] =
-    "{\"drm_types\":[\"WIDEVINE\"],\"pssh_data\":\"%s\","
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
-    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
+    R"({"tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
+    R"({"type":"UHD2"},{"type":"AUDIO"}],)"
+    R"("drm_types":["WIDEVINE"],"pssh_data":"%s"})";
 const char kExpectedSignedMessageFormat[] =
-    "{\"request\":\"%s\",\"signature\":\"%s\",\"signer\":\"%s\"}";
-const char kTrackFormat[] =
-    "{\"type\":\"%s\",\"key_id\":\"%s\",\"key\":"
-    "\"%s\",\"pssh\":[{\"drm_type\":\"WIDEVINE\",\"data\":\"%s\"}]}";
-const char kClassicTrackFormat[] = "{\"type\":\"%s\",\"key\":\"%s\"}";
-const char kLicenseResponseFormat[] = "{\"status\":\"%s\",\"tracks\":[%s]}";
-const char kHttpResponseFormat[] = "{\"response\":\"%s\"}";
+    R"({"request":"%s","signature":"%s","signer":"%s"})";
+const char kTrackFormat[] = R"({"type":"%s","key_id":"%s","key":"%s",)"
+                            R"("pssh":[{"drm_type":"WIDEVINE","data":"%s"}]})";
+const char kClassicTrackFormat[] = R"({"type":"%s","key":"%s"})";
+const char kLicenseResponseFormat[] = R"({"status":"%s","tracks":[%s]})";
+const char kHttpResponseFormat[] = R"({"response":"%s"})";
 const uint8_t kRequestPsshBox[] = {
     0,    0,    0,    44,   'p',  's',  's',  'h',  0,    0,    0,
     0,    0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8,
@@ -187,11 +186,21 @@ class WidevineKeySourceTest : public Test {
   }
 
  protected:
-  FourCC GetExpectedProtectionScheme() {
-    // Apple SAMPLE-AES is considered as a variation of cbcs.
-    if (protection_scheme_ == kAppleSampleAesProtectionScheme)
-      return FOURCC_cbcs;
-    return protection_scheme_;
+  std::string GetExpectedProtectionScheme() {
+    switch (protection_scheme_) {
+      case FOURCC_cenc:
+        return "CENC";
+      case FOURCC_cbcs:
+      case kAppleSampleAesProtectionScheme:
+        // Apple SAMPLE-AES is considered as a variation of cbcs.
+        return "CBCS";
+      case FOURCC_cbc1:
+        return "CBC1";
+      case FOURCC_cens:
+        return "CENS";
+      default:
+        return "UNKNOWN";
+    }
   }
 
   void CreateWidevineKeySource() {
@@ -330,7 +339,7 @@ class WidevineKeySourceParameterizedTest
 TEST_P(WidevineKeySourceParameterizedTest, HttpFetchFailure) {
   std::string expected_message = base::StringPrintf(
       kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy,
-      GetExpectedProtectionScheme());
+      GetExpectedProtectionScheme().c_str());
   EXPECT_CALL(*mock_request_signer_,
               GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
@@ -447,16 +456,17 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusClassicOK) {
 namespace {
 
 const char kCryptoPeriodRequestMessageFormat[] =
-    "{\"content_id\":\"%s\",\"crypto_period_count\":%u,\"drm_types\":["
-    "\"WIDEVINE\"],\"first_crypto_period_index\":%u,\"policy\":\"%s\","
-    "\"protection_scheme\":%d,"
-    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"UHD1\"},"
-    "{\"type\":\"UHD2\"},{\"type\":\"AUDIO\"}]}";
+    R"({"content_id":"%s","policy":"%s",)"
+    R"("tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
+    R"({"type":"UHD2"},{"type":"AUDIO"}],)"
+    R"("drm_types":["WIDEVINE"],)"
+    R"("first_crypto_period_index":%u,"crypto_period_count":%u,)"
+    R"("protection_scheme":"%s"})";
 
 const char kCryptoPeriodTrackFormat[] =
-    "{\"type\":\"%s\",\"key_id\":\"%s\",\"key\":"
-    "\"%s\",\"pssh\":[{\"drm_type\":\"WIDEVINE\",\"data\":\"\"}], "
-    "\"crypto_period_index\":%u}";
+    R"({"type":"%s","key_id":"%s","key":"%s",)"
+    R"("pssh":[{"drm_type":"WIDEVINE","data":""}], )"
+    R"("crypto_period_index":%u})";
 
 std::string GetMockKey(const std::string& track_type, uint32_t index) {
   // The key must be 16 characters, in case the key is needed to generate a
@@ -515,8 +525,8 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
         kFirstCryptoPeriodIndex - 1 + i * kCryptoPeriodCount;
     std::string expected_message = base::StringPrintf(
         kCryptoPeriodRequestMessageFormat, Base64Encode(kContentId).c_str(),
-        kCryptoPeriodCount, first_crypto_period_index, kPolicy,
-        GetExpectedProtectionScheme());
+        kPolicy, first_crypto_period_index, kCryptoPeriodCount,
+        GetExpectedProtectionScheme().c_str());
     EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
         .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
