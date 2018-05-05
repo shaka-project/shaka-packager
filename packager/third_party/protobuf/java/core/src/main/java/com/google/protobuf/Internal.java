@@ -60,6 +60,26 @@ public final class Internal {
   static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
   /**
+   * Throws an appropriate {@link NullPointerException} if the given objects is {@code null}.
+   */
+  static <T> T checkNotNull(T obj) {
+    if (obj == null) {
+      throw new NullPointerException();
+    }
+    return obj;
+  }
+
+  /**
+   * Throws an appropriate {@link NullPointerException} if the given objects is {@code null}.
+   */
+  static <T> T checkNotNull(T obj, String message) {
+    if (obj == null) {
+      throw new NullPointerException(message);
+    }
+    return obj;
+  }
+
+  /**
    * Helper called by generated code to construct default values for string
    * fields.
    * <p>
@@ -410,6 +430,11 @@ public final class Internal {
       CodedInputStream.newInstance(EMPTY_BYTE_ARRAY);
 
 
+  /** Helper method to merge two MessageLite instances. */
+  static Object mergeMessage(Object destination, Object source) {
+    return ((MessageLite) destination).toBuilder().mergeFrom((MessageLite) source).buildPartial();
+  }
+
   /**
    * Provides an immutable view of {@code List<T>} around a {@code List<F>}.
    *
@@ -611,12 +636,12 @@ public final class Internal {
     int getInt(int index);
 
     /**
-     * Like {@link #add(Integer)} but more efficient in that it doesn't box the element.
+     * Like {@link #add(Object)} but more efficient in that it doesn't box the element.
      */
     void addInt(int element);
 
     /**
-     * Like {@link #set(int, Integer)} but more efficient in that it doesn't box the element.
+     * Like {@link #set(int, Object)} but more efficient in that it doesn't box the element.
      */
     int setInt(int index, int element);
 
@@ -639,12 +664,12 @@ public final class Internal {
     boolean getBoolean(int index);
 
     /**
-     * Like {@link #add(Boolean)} but more efficient in that it doesn't box the element.
+     * Like {@link #add(Object)} but more efficient in that it doesn't box the element.
      */
     void addBoolean(boolean element);
 
     /**
-     * Like {@link #set(int, Boolean)} but more efficient in that it doesn't box the element.
+     * Like {@link #set(int, Object)} but more efficient in that it doesn't box the element.
      */
     boolean setBoolean(int index, boolean element);
 
@@ -667,12 +692,12 @@ public final class Internal {
     long getLong(int index);
 
     /**
-     * Like {@link #add(Long)} but more efficient in that it doesn't box the element.
+     * Like {@link #add(Object)} but more efficient in that it doesn't box the element.
      */
     void addLong(long element);
 
     /**
-     * Like {@link #set(int, Long)} but more efficient in that it doesn't box the element.
+     * Like {@link #set(int, Object)} but more efficient in that it doesn't box the element.
      */
     long setLong(int index, long element);
 
@@ -695,12 +720,12 @@ public final class Internal {
     double getDouble(int index);
 
     /**
-     * Like {@link #add(Double)} but more efficient in that it doesn't box the element.
+     * Like {@link #add(Object)} but more efficient in that it doesn't box the element.
      */
     void addDouble(double element);
 
     /**
-     * Like {@link #set(int, Double)} but more efficient in that it doesn't box the element.
+     * Like {@link #set(int, Object)} but more efficient in that it doesn't box the element.
      */
     double setDouble(int index, double element);
 
@@ -723,12 +748,12 @@ public final class Internal {
     float getFloat(int index);
 
     /**
-     * Like {@link #add(Float)} but more efficient in that it doesn't box the element.
+     * Like {@link #add(Object)} but more efficient in that it doesn't box the element.
      */
     void addFloat(float element);
 
     /**
-     * Like {@link #set(int, Float)} but more efficient in that it doesn't box the element.
+     * Like {@link #set(int, Object)} but more efficient in that it doesn't box the element.
      */
     float setFloat(int index, float element);
 

@@ -35,11 +35,9 @@ import com.google.protobuf.UnittestLite.TestAllTypesLite;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.Bar;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.Foo;
-
-import junit.framework.TestCase;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import junit.framework.TestCase;
 
 /**
  * Tests for {@link UnknownFieldSetLite}.
@@ -53,6 +51,14 @@ public class UnknownFieldSetLiteTest extends TestCase {
 
     assertEquals(0, unknownFields.getSerializedSize());
     assertEquals(ByteString.EMPTY, toByteString(unknownFields));
+  }
+
+  public void testEmptyInstance() {
+    UnknownFieldSetLite instance = UnknownFieldSetLite.newInstance();
+
+    assertEquals(0, instance.getSerializedSize());
+    assertEquals(ByteString.EMPTY, toByteString(instance));
+    assertEquals(UnknownFieldSetLite.getDefaultInstance(), instance);
   }
 
   public void testMergeFieldFrom() throws IOException {

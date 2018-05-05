@@ -36,7 +36,6 @@ import "google/protobuf/unittest.proto";
 
 option java_package = "com.google.protobuf";
 option java_outer_classname = "FieldPresenceTestProto";
-option java_generate_equals_and_hash = true;
 
 message TestAllTypes {
   enum NestedEnum {
@@ -54,6 +53,7 @@ message TestAllTypes {
   NestedEnum optional_nested_enum = 4;
   NestedMessage optional_nested_message = 5;
   protobuf_unittest.TestRequired optional_proto2_message = 6;
+  NestedMessage optional_lazy_message = 7 [lazy=true];
 
   oneof oneof_field {
     int32 oneof_int32 = 11;
@@ -81,6 +81,7 @@ message TestOptionalFieldsOnly {
   TestAllTypes.NestedEnum optional_nested_enum = 4;
   TestAllTypes.NestedMessage optional_nested_message = 5;
   protobuf_unittest.TestRequired optional_proto2_message = 6;
+  TestAllTypes.NestedMessage optional_lazy_message = 7 [lazy=true];
 }
 
 message TestRepeatedFieldsOnly {

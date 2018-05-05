@@ -38,6 +38,8 @@ using Google.Protobuf.WellKnownTypes;
 using Google.Protobuf.Reflection;
 
 using static Google.Protobuf.JsonParserTest; // For WrapInQuotes
+using System.IO;
+using Google.Protobuf.Collections;
 
 namespace Google.Protobuf
 {
@@ -50,7 +52,7 @@ namespace Google.Protobuf
         [Test]
         public void DefaultValues_WhenOmitted()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(formatDefaultValues: false));
+            var formatter = JsonFormatter.Default;
 
             AssertJson("{ }", formatter.Format(new ForeignMessage()));
             AssertJson("{ }", formatter.Format(new TestAllTypes()));
@@ -60,8 +62,37 @@ namespace Google.Protobuf
         [Test]
         public void DefaultValues_WhenIncluded()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(formatDefaultValues: true));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
             AssertJson("{ 'c': 0 }", formatter.Format(new ForeignMessage()));
+        }
+
+        [Test]
+        public void EnumAllowAlias()
+        {
+            var message = new TestEnumAllowAlias
+            {
+                Value = TestEnumWithDupValue.Foo2,
+            };
+            var actualText = JsonFormatter.Default.Format(message);
+            var expectedText = "{ 'value': 'FOO1' }";
+            AssertJson(expectedText, actualText);
+        }
+
+        [Test]
+        public void EnumAsInt()
+        {
+            var message = new TestAllTypes
+            {
+                SingleForeignEnum = ForeignEnum.ForeignBar,
+                RepeatedForeignEnum = { ForeignEnum.ForeignBaz, (ForeignEnum) 100, ForeignEnum.ForeignFoo }
+            };
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatEnumsAsIntegers(true));
+            var actualText = formatter.Format(message);
+            var expectedText = "{ " +
+                               "'singleForeignEnum': 5, " +
+                               "'repeatedForeignEnum': [ 6, 100, 4 ]" +
+                               " }";
+            AssertJson(expectedText, actualText);
         }
 
         [Test]
@@ -227,10 +258,16 @@ namespace Google.Protobuf
         [Test]
         [TestCase("foo_bar", "fooBar")]
         [TestCase("bananaBanana", "bananaBanana")]
-        [TestCase("BANANABanana", "bananaBanana")]
-        public void ToCamelCase(string original, string expected)
+        [TestCase("BANANABanana", "BANANABanana")]
+        [TestCase("simple", "simple")]
+        [TestCase("ACTION_AND_ADVENTURE", "ACTIONANDADVENTURE")]
+        [TestCase("action_and_adventure", "actionAndAdventure")]
+        [TestCase("kFoo", "kFoo")]
+        [TestCase("HTTPServer", "HTTPServer")]
+        [TestCase("CLIENT", "CLIENT")]
+        public void ToJsonName(string original, string expected)
         {
-            Assert.AreEqual(expected, JsonFormatter.ToCamelCase(original));
+            Assert.AreEqual(expected, JsonFormatter.ToJsonName(original));
         }
 
         [Test]
@@ -246,9 +283,9 @@ namespace Google.Protobuf
             }
 
             // We should get the same result both with and without "format default values".
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(false));
+            var formatter = JsonFormatter.Default;
             AssertJson(expectedJson, formatter.Format(message));
-            formatter = new JsonFormatter(new JsonFormatter.Settings(true));
+            formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
             AssertJson(expectedJson, formatter.Format(message));
         }
 
@@ -280,7 +317,7 @@ namespace Google.Protobuf
         {
             // The actual JSON here is very large because there are lots of fields. Just test a couple of them.
             var message = new TestWellKnownTypes { Int32Field = 10 };
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(true));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
             var actualJson = formatter.Format(message);
             Assert.IsTrue(actualJson.Contains("\"int64Field\": null"));
             Assert.IsFalse(actualJson.Contains("\"int32Field\": null"));
@@ -289,7 +326,7 @@ namespace Google.Protobuf
         [Test]
         public void OutputIsInNumericFieldOrder_NoDefaults()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(false));
+            var formatter = JsonFormatter.Default;
             var message = new TestJsonFieldOrdering { PlainString = "p1", PlainInt32 = 2 };
             AssertJson("{ 'plainString': 'p1', 'plainInt32': 2 }", formatter.Format(message));
             message = new TestJsonFieldOrdering { O1Int32 = 5, O2String = "o2", PlainInt32 = 10, PlainString = "plain" };
@@ -301,7 +338,7 @@ namespace Google.Protobuf
         [Test]
         public void OutputIsInNumericFieldOrder_WithDefaults()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(true));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
             var message = new TestJsonFieldOrdering();
             AssertJson("{ 'plainString': '', 'plainInt32': 0 }", formatter.Format(message));
             message = new TestJsonFieldOrdering { O1Int32 = 5, O2String = "o2", PlainInt32 = 10, PlainString = "plain" };
@@ -465,7 +502,7 @@ namespace Google.Protobuf
         [Test]
         public void AnyWellKnownType()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(false, TypeRegistry.FromMessages(Timestamp.Descriptor)));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithTypeRegistry(TypeRegistry.FromMessages(Timestamp.Descriptor)));
             var timestamp = new DateTime(1673, 6, 19, 12, 34, 56, DateTimeKind.Utc).ToTimestamp();
             var any = Any.Pack(timestamp);
             AssertJson("{ '@type': 'type.googleapis.com/google.protobuf.Timestamp', 'value': '1673-06-19T12:34:56Z' }", formatter.Format(any));
@@ -474,7 +511,7 @@ namespace Google.Protobuf
         [Test]
         public void AnyMessageType()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(false, TypeRegistry.FromMessages(TestAllTypes.Descriptor)));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithTypeRegistry(TypeRegistry.FromMessages(TestAllTypes.Descriptor)));
             var message = new TestAllTypes { SingleInt32 = 10, SingleNestedMessage = new TestAllTypes.Types.NestedMessage { Bb = 20 } };
             var any = Any.Pack(message);
             AssertJson("{ '@type': 'type.googleapis.com/protobuf_unittest.TestAllTypes', 'singleInt32': 10, 'singleNestedMessage': { 'bb': 20 } }", formatter.Format(any));
@@ -483,7 +520,7 @@ namespace Google.Protobuf
         [Test]
         public void AnyMessageType_CustomPrefix()
         {
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(false, TypeRegistry.FromMessages(TestAllTypes.Descriptor)));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithTypeRegistry(TypeRegistry.FromMessages(TestAllTypes.Descriptor)));
             var message = new TestAllTypes { SingleInt32 = 10 };
             var any = Any.Pack(message, "foo.bar/baz");
             AssertJson("{ '@type': 'foo.bar/baz/protobuf_unittest.TestAllTypes', 'singleInt32': 10 }", formatter.Format(any));
@@ -493,7 +530,7 @@ namespace Google.Protobuf
         public void AnyNested()
         {
             var registry = TypeRegistry.FromMessages(TestWellKnownTypes.Descriptor, TestAllTypes.Descriptor);
-            var formatter = new JsonFormatter(new JsonFormatter.Settings(false, registry));
+            var formatter = new JsonFormatter(JsonFormatter.Settings.Default.WithTypeRegistry(registry));
 
             // Nest an Any as the value of an Any.
             var doubleNestedMessage = new TestAllTypes { SingleInt32 = 20 };
@@ -510,6 +547,67 @@ namespace Google.Protobuf
             var message = new TestAllTypes();
             var any = Any.Pack(message);
             Assert.Throws<InvalidOperationException>(() => JsonFormatter.Default.Format(any));
+        }
+
+        [Test]
+        [TestCase(typeof(BoolValue), true, "true")]
+        [TestCase(typeof(Int32Value), 32, "32")]
+        [TestCase(typeof(Int64Value), 32L, "\"32\"")]
+        [TestCase(typeof(UInt32Value), 32U, "32")]
+        [TestCase(typeof(UInt64Value), 32UL, "\"32\"")]
+        [TestCase(typeof(StringValue), "foo", "\"foo\"")]
+        [TestCase(typeof(FloatValue), 1.5f, "1.5")]
+        [TestCase(typeof(DoubleValue), 1.5d, "1.5")]
+        public void Wrappers_Standalone(System.Type wrapperType, object value, string expectedJson)
+        {
+            IMessage populated = (IMessage)Activator.CreateInstance(wrapperType);
+            populated.Descriptor.Fields[WrappersReflection.WrapperValueFieldNumber].Accessor.SetValue(populated, value);
+            Assert.AreEqual(expectedJson, JsonFormatter.Default.Format(populated));
+        }
+
+        // Sanity tests for WriteValue. Not particularly comprehensive, as it's all covered above already,
+        // as FormatMessage uses WriteValue.
+
+        [TestCase(null, "null")]
+        [TestCase(1, "1")]
+        [TestCase(1L, "'1'")]
+        [TestCase(0.5f, "0.5")]
+        [TestCase(0.5d, "0.5")]
+        [TestCase("text", "'text'")]
+        [TestCase("x\ny", @"'x\ny'")]
+        [TestCase(ForeignEnum.ForeignBar, "'FOREIGN_BAR'")]
+        public void WriteValue_Constant(object value, string expectedJson)
+        {
+            AssertWriteValue(value, expectedJson);
+        }
+
+        [Test]
+        public void WriteValue_Timestamp()
+        {
+            var value = new DateTime(1673, 6, 19, 12, 34, 56, DateTimeKind.Utc).ToTimestamp();
+            AssertWriteValue(value, "'1673-06-19T12:34:56Z'");
+        }
+
+        [Test]
+        public void WriteValue_Message()
+        {
+            var value = new TestAllTypes { SingleInt32 = 100, SingleInt64 = 3210987654321L };
+            AssertWriteValue(value, "{ 'singleInt32': 100, 'singleInt64': '3210987654321' }");
+        }
+
+        [Test]
+        public void WriteValue_List()
+        {
+            var value = new RepeatedField<int> { 1, 2, 3 };
+            AssertWriteValue(value, "[ 1, 2, 3 ]");
+        }
+
+        private static void AssertWriteValue(object value, string expectedJson)
+        {
+            var writer = new StringWriter();
+            JsonFormatter.Default.WriteValue(writer, value);
+            string actual = writer.ToString();
+            AssertJson(expectedJson, actual);
         }
 
         /// <summary>

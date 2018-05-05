@@ -28,7 +28,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Author: ksroka@google.com (Krzysztof Sroka)
+// Defines classes for field comparison.
 
 #ifndef GOOGLE_PROTOBUF_UTIL_FIELD_COMPARATOR_H__
 #define GOOGLE_PROTOBUF_UTIL_FIELD_COMPARATOR_H__
@@ -167,7 +167,7 @@ class LIBPROTOBUF_EXPORT DefaultFieldComparator : public FieldComparator {
   };
 
   // Defines the map to store the tolerances for floating point comparison.
-  typedef map<const FieldDescriptor*, Tolerance> ToleranceMap;
+  typedef std::map<const FieldDescriptor*, Tolerance> ToleranceMap;
 
   // The following methods get executed when CompareFields is called for the
   // basic types (instead of submessages). They return true on success. One

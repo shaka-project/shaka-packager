@@ -81,7 +81,7 @@ class ImmutableMessageFieldLiteGenerator : public ImmutableFieldLiteGenerator {
 
  protected:
   const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+  std::map<string, string> variables_;
   const int messageBitIndex_;
   const int builderBitIndex_;
   Context* context_;
@@ -105,6 +105,7 @@ class ImmutableMessageOneofFieldLiteGenerator
   void GenerateParsingCode(io::Printer* printer) const;
   void GenerateSerializationCode(io::Printer* printer) const;
   void GenerateSerializedSizeCode(io::Printer* printer) const;
+
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ImmutableMessageOneofFieldLiteGenerator);
@@ -135,11 +136,12 @@ class RepeatedImmutableMessageFieldLiteGenerator
   void GenerateEqualsCode(io::Printer* printer) const;
   void GenerateHashCode(io::Printer* printer) const;
 
+
   string GetBoxedType() const;
 
  protected:
   const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+  std::map<string, string> variables_;
   const int messageBitIndex_;
   const int builderBitIndex_;
   Context* context_;

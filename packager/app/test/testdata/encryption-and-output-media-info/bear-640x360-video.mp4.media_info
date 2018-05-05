@@ -18,7 +18,7 @@ index_range {
   end: 1158
 }
 media_file_name: "bear-640x360-video.mp4"
-media_duration_seconds: 2.7360666
+media_duration_seconds: 2.73606658
 reference_time_scale: 30000
 container_type: CONTAINER_MP4
 protected_content {

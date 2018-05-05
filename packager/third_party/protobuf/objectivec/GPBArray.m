@@ -32,6 +32,12 @@
 
 #import "GPBMessage_PackagePrivate.h"
 
+// Direct access is use for speed, to avoid even internally declaring things
+// read/write, etc. The warning is enabled in the project to ensure code calling
+// protos can turn on -Wdirect-ivar-access without issues.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdirect-ivar-access"
+
 // Mutable arrays use an internal buffer that can always hold a multiple of this elements.
 #define kChunkSize 16
 #define CapacityFromCount(x) (((x / kChunkSize) + 1) * kChunkSize)
@@ -158,15 +164,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 //%  [super dealloc];
 //%}
 //%
-//%- (BOOL)isEqual:(GPB##NAME##Array *)other {
+//%- (BOOL)isEqual:(id)other {
 //%  if (self == other) {
 //%    return YES;
 //%  }
 //%  if (![other isKindOfClass:[GPB##NAME##Array class]]) {
 //%    return NO;
 //%  }
-//%  return (_count == other->_count
-//%          && memcmp(_values, other->_values, (_count * sizeof(TYPE))) == 0);
+//%  GPB##NAME##Array *otherArray = other;
+//%  return (_count == otherArray->_count
+//%          && memcmp(_values, otherArray->_values, (_count * sizeof(TYPE))) == 0);
 //%}
 //%
 //%- (NSUInteger)hash {
@@ -188,7 +195,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 //%}
 //%
 //%- (void)enumerate##ACCESSOR_NAME##ValuesWithBlock:(void (^)(TYPE value, NSUInteger idx, BOOL *stop))block {
-//%  [self enumerate##ACCESSOR_NAME##ValuesWithOptions:0 usingBlock:block];
+//%  [self enumerate##ACCESSOR_NAME##ValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 //%}
 //%
 //%- (void)enumerate##ACCESSOR_NAME##ValuesWithOptions:(NSEnumerationOptions)opts
@@ -368,15 +375,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBInt32Array *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBInt32Array class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(int32_t))) == 0);
+  GPBInt32Array *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(int32_t))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -398,7 +406,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(int32_t value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -615,15 +623,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBUInt32Array *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBUInt32Array class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(uint32_t))) == 0);
+  GPBUInt32Array *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(uint32_t))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -645,7 +654,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(uint32_t value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -862,15 +871,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBInt64Array *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBInt64Array class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(int64_t))) == 0);
+  GPBInt64Array *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(int64_t))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -892,7 +902,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(int64_t value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -1109,15 +1119,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBUInt64Array *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBUInt64Array class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(uint64_t))) == 0);
+  GPBUInt64Array *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(uint64_t))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -1139,7 +1150,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(uint64_t value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -1356,15 +1367,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBFloatArray *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBFloatArray class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(float))) == 0);
+  GPBFloatArray *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(float))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -1386,7 +1398,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(float value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -1603,15 +1615,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBDoubleArray *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBDoubleArray class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(double))) == 0);
+  GPBDoubleArray *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(double))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -1633,7 +1646,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(double value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -1850,15 +1863,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBBoolArray *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBBoolArray class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(BOOL))) == 0);
+  GPBBoolArray *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(BOOL))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -1880,7 +1894,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(BOOL value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -2121,15 +2135,16 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
   [super dealloc];
 }
 
-- (BOOL)isEqual:(GPBEnumArray *)other {
+- (BOOL)isEqual:(id)other {
   if (self == other) {
     return YES;
   }
   if (![other isKindOfClass:[GPBEnumArray class]]) {
     return NO;
   }
-  return (_count == other->_count
-          && memcmp(_values, other->_values, (_count * sizeof(int32_t))) == 0);
+  GPBEnumArray *otherArray = other;
+  return (_count == otherArray->_count
+          && memcmp(_values, otherArray->_values, (_count * sizeof(int32_t))) == 0);
 }
 
 - (NSUInteger)hash {
@@ -2151,7 +2166,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateRawValuesWithBlock:(void (^)(int32_t value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateRawValuesWithOptions:0 usingBlock:block];
+  [self enumerateRawValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateRawValuesWithOptions:(NSEnumerationOptions)opts
@@ -2203,7 +2218,7 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 - (void)enumerateValuesWithBlock:(void (^)(int32_t value, NSUInteger idx, BOOL *stop))block {
-  [self enumerateValuesWithOptions:0 usingBlock:block];
+  [self enumerateValuesWithOptions:(NSEnumerationOptions)0 usingBlock:block];
 }
 
 - (void)enumerateValuesWithOptions:(NSEnumerationOptions)opts
@@ -2504,14 +2519,14 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 
 - (id)copyWithZone:(NSZone *)zone {
   if (_array == nil) {
-    _array = [[NSMutableArray alloc] init];
+    return [[NSMutableArray allocWithZone:zone] init];
   }
   return [_array copyWithZone:zone];
 }
 
 - (id)mutableCopyWithZone:(NSZone *)zone {
   if (_array == nil) {
-    _array = [[NSMutableArray alloc] init];
+    return [[NSMutableArray allocWithZone:zone] init];
   }
   return [_array mutableCopyWithZone:zone];
 }
@@ -2532,3 +2547,5 @@ static BOOL ArrayDefault_IsValidValue(int32_t value) {
 }
 
 @end
+
+#pragma clang diagnostic pop

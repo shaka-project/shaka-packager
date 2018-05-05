@@ -1,9 +1,9 @@
 unchanged:
 --- protobuf-cleaned/src/google/protobuf/arenastring.cc	2015-12-30 13:21:46.000000000 -0800
 +++ protobuf-patched/src/google/protobuf/arenastring.cc	2016-03-31 13:25:40.888006485 -0700
-@@ -48,6 +48,23 @@
-   }
- }
+@@ -37,6 +37,20 @@
+ namespace protobuf {
+ namespace internal {
  
 +::std::string* ArenaStringPtr::MutableNoArena(
 +     const ::std::string* default_value) {
@@ -13,25 +13,22 @@ unchanged:
 +  return ptr_;
 +}
 +
-+
 +void ArenaStringPtr::DestroyNoArena(const ::std::string* default_value) {
 +  if (ptr_ != default_value) {
 +    delete ptr_;
 +  }
 +  ptr_ = NULL;
 +}
-+
-+
+ 
  }  // namespace internal
  }  // namespace protobuf
- }  // namespace google
 only in patch2:
 unchanged:
 --- protobuf-cleaned/src/google/protobuf/arenastring.h	2015-12-30 13:21:46.000000000 -0800
 +++ protobuf-patched/src/google/protobuf/arenastring.h	2016-03-31 13:25:40.888006485 -0700
-@@ -219,12 +219,7 @@
-     return *ptr_;
-   }
+@@ -214,12 +214,7 @@ struct LIBPROTOBUF_EXPORT ArenaStringPtr {
+ 
+   inline const ::std::string& GetNoArena() const { return *ptr_; }
  
 -  inline ::std::string* MutableNoArena(const ::std::string* default_value) {
 -    if (ptr_ == default_value) {
@@ -43,7 +40,7 @@ unchanged:
  
    inline ::std::string* ReleaseNoArena(const ::std::string* default_value) {
      if (ptr_ == default_value) {
-@@ -248,12 +243,7 @@
+@@ -243,11 +238,7 @@ struct LIBPROTOBUF_EXPORT ArenaStringPtr {
      }
    }
  
@@ -51,7 +48,6 @@ unchanged:
 -    if (ptr_ != default_value) {
 -      delete ptr_;
 -    }
--    ptr_ = NULL;
 -  }
 +  void DestroyNoArena(const ::std::string* default_value);
  

@@ -51,14 +51,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Immutable sequence of bytes.  Substring is supported by sharing the reference
- * to the immutable underlying bytes, as with {@link String}.  Concatenation is
- * likewise supported without copying (long strings) by building a tree of
- * pieces in {@link RopeByteString}.
- * <p>
- * Like {@link String}, the contents of a {@link ByteString} can never be
- * observed to change, not even in the presence of a data race or incorrect
- * API usage in the client code.
+ * Immutable sequence of bytes. Substring is supported by sharing the reference to the immutable
+ * underlying bytes. Concatenation is likewise supported without copying (long strings) by building
+ * a tree of pieces in {@link RopeByteString}.
+ *
+ * <p>Like {@link String}, the contents of a {@link ByteString} can never be observed to change, not
+ * even in the presence of a data race or incorrect API usage in the client code.
  *
  * @author crazybob@google.com Bob Lee
  * @author kenton@google.com Kenton Varda
@@ -87,17 +85,17 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
    * Empty {@code ByteString}.
    */
   public static final ByteString EMPTY = new LiteralByteString(Internal.EMPTY_BYTE_ARRAY);
-  
-  /** 
+
+  /**
    * An interface to efficiently copy {@code byte[]}.
-   * 
-   * <p>One of the noticable costs of copying a byte[] into a new array using 
-   * {@code System.arraycopy} is nullification of a new buffer before the copy. It has been shown 
+   *
+   * <p>One of the noticeable costs of copying a byte[] into a new array using
+   * {@code System.arraycopy} is nullification of a new buffer before the copy. It has been shown
    * the Hotspot VM is capable to intrisicfy {@code Arrays.copyOfRange} operation to avoid this
    * expensive nullification and provide substantial performance gain. Unfortunately this does not
    * hold on Android runtimes and could make the copy slightly slower due to additional code in
    * the {@code Arrays.copyOfRange}. Thus we provide two different implementation for array copier
-   * for Hotspot and Android runtimes. 
+   * for Hotspot and Android runtimes.
    */
   private interface ByteArrayCopier {
     /**
@@ -105,7 +103,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
      */
     byte[] copyFrom(byte[] bytes, int offset, int size);
   }
-  
+
   /** Implementation of {@code ByteArrayCopier} which uses {@link System#arraycopy}. */
   private static final class SystemByteArrayCopier implements ByteArrayCopier {
     @Override
@@ -115,7 +113,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
       return copy;
     }
   }
-  
+
   /** Implementation of {@code ByteArrayCopier} which uses {@link Arrays#copyOfRange}. */
   private static final class ArraysByteArrayCopier implements ByteArrayCopier {
     @Override
@@ -123,7 +121,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
       return Arrays.copyOfRange(bytes, offset, offset + size);
     }
   }
-  
+
   private static final ByteArrayCopier byteArrayCopier;
   static {
     boolean isAndroid = true;
@@ -132,7 +130,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
     } catch (ClassNotFoundException e) {
       isAndroid = false;
     }
-    
+
     byteArrayCopier = isAndroid ? new SystemByteArrayCopier() : new ArraysByteArrayCopier();
   }
 
@@ -309,7 +307,19 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
   public static ByteString copyFrom(byte[] bytes) {
     return copyFrom(bytes, 0, bytes.length);
   }
-  
+
+  /**
+   * Wraps the given bytes into a {@code ByteString}. Intended for internal only usage.
+   */
+  static ByteString wrap(ByteBuffer buffer) {
+    if (buffer.hasArray()) {
+      final int offset = buffer.arrayOffset();
+      return ByteString.wrap(buffer.array(), offset + buffer.position(), buffer.remaining());
+    } else {
+      return new NioByteString(buffer);
+    }
+  }
+
   /**
    * Wraps the given bytes into a {@code ByteString}. Intended for internal only
    * usage to force a classload of ByteString before LiteralByteString.
@@ -402,7 +412,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
    * immutable tree of byte arrays ("chunks") of the stream data.  The
    * first chunk is small, with subsequent chunks each being double
    * the size, up to 8K.
-   * 
+   *
    * <p>Each byte read from the input stream will be copied twice to ensure
    * that the resulting ByteString is truly immutable.
    *
@@ -553,7 +563,9 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
   // Create a balanced concatenation of the next "length" elements from the
   // iterable.
   private static ByteString balancedConcat(Iterator<ByteString> iterator, int length) {
-    assert length >= 1;
+    if (length < 1) {
+      throw new IllegalArgumentException(String.format("length (%s) must be >= 1", length));
+    }
     ByteString result;
     if (length == 1) {
       result = iterator.next();
@@ -678,6 +690,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
    * @see UnsafeByteOperations#unsafeWriteTo(ByteString, ByteOutput)
    */
   abstract void writeTo(ByteOutput byteOutput) throws IOException;
+
 
   /**
    * Constructs a read-only {@code java.nio.ByteBuffer} whose content
@@ -819,6 +832,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
     protected final boolean isBalanced() {
       return true;
     }
+
 
     /**
      * Check equality of the substring of given length of this object starting at
@@ -1226,7 +1240,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
     return String.format("<ByteString@%s size=%d>",
         Integer.toHexString(System.identityHashCode(this)), size());
   }
-  
+
   /**
    * This class implements a {@link com.google.protobuf.ByteString} backed by a
    * single array of bytes, contiguous in memory. It supports substring by
@@ -1450,7 +1464,7 @@ public abstract class ByteString implements Iterable<Byte>, Serializable {
       return 0;
     }
   }
-  
+
   /**
    * This class is used to represent the substring of a {@link ByteString} over a
    * single byte array. In terms of the public API of {@link ByteString}, you end

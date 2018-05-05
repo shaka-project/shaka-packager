@@ -74,7 +74,7 @@ module Google
         :include?, :index, :inspect, :join,
         :pack, :permutation, :product, :pretty_print, :pretty_print_cycle,
         :rassoc, :repeated_combination, :repeated_permutation, :reverse,
-        :rindex, :rotate, :sample, :shuffle, :shelljoin, :slice,
+        :rindex, :rotate, :sample, :shuffle, :shelljoin,
         :to_s, :transpose, :uniq, :|
 
 
@@ -173,7 +173,7 @@ module Google
           external_enumerator.each_with_index do |val, i|
             result = yield(val)
             results << result
-            #nil means no change occured from yield; usually occurs when #to_a is called
+            #nil means no change occurred from yield; usually occurs when #to_a is called
             if result
               repeated_field[i] = result if result != val
             end

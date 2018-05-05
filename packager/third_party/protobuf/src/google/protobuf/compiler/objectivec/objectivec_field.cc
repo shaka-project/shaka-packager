@@ -49,7 +49,7 @@ namespace objectivec {
 namespace {
 
 void SetCommonFieldVariables(const FieldDescriptor* descriptor,
-                             map<string, string>* variables) {
+                             std::map<string, string>* variables) {
   string camel_case_name = FieldName(descriptor);
   string raw_field_name;
   if (descriptor->type() == FieldDescriptor::TYPE_GROUP) {
@@ -64,7 +64,7 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
 
   SourceLocation location;
   if (descriptor->GetSourceLocation(&location)) {
-    (*variables)["comments"] = BuildCommentsString(location);
+    (*variables)["comments"] = BuildCommentsString(location, true);
   } else {
     (*variables)["comments"] = "\n";
   }
@@ -93,7 +93,7 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
     field_flags.push_back("GPBFieldHasEnumDescriptor");
   }
 
-  (*variables)["fieldflags"] = BuildFlagsString(field_flags);
+  (*variables)["fieldflags"] = BuildFlagsString(FLAGTYPE_FIELD, field_flags);
 
   (*variables)["default"] = DefaultValue(descriptor);
   (*variables)["default_name"] = GPBGenericValueFieldName(descriptor);
@@ -178,7 +178,7 @@ void FieldGenerator::GenerateCFunctionImplementations(
 }
 
 void FieldGenerator::DetermineForwardDeclarations(
-    set<string>* fwd_decls) const {
+    std::set<string>* fwd_decls) const {
   // Nothing
 }
 
@@ -228,8 +228,8 @@ int FieldGenerator::ExtraRuntimeHasBitsNeeded(void) const {
 void FieldGenerator::SetExtraRuntimeHasBitsBase(int index_base) {
   // NOTE: src/google/protobuf/compiler/plugin.cc makes use of cerr for some
   // error cases, so it seems to be ok to use as a back door for errors.
-  cerr << "Error: should have overriden SetExtraRuntimeHasBitsBase()." << endl;
-  cerr.flush();
+  std::cerr << "Error: should have overridden SetExtraRuntimeHasBitsBase()." << std::endl;
+  std::cerr.flush();
   abort();
 }
 
@@ -335,7 +335,7 @@ void ObjCObjFieldGenerator::GeneratePropertyDeclaration(
   if (WantsHasProperty()) {
     printer->Print(
         variables_,
-        "/// Test to see if @c $name$ has been set.\n"
+        "/** Test to see if @c $name$ has been set. */\n"
         "@property(nonatomic, readwrite) BOOL has$capitalized_name$$deprecated_attribute$;\n");
   }
   if (IsInitName(variables_.find("name")->second)) {
@@ -387,7 +387,7 @@ void RepeatedFieldGenerator::GeneratePropertyDeclaration(
       "$comments$"
       "$array_comment$"
       "@property(nonatomic, readwrite, strong, null_resettable) $array_property_type$ *$name$$storage_attribute$$deprecated_attribute$;\n"
-      "/// The number of items in @c $name$ without causing the array to be created.\n"
+      "/** The number of items in @c $name$ without causing the array to be created. */\n"
       "@property(nonatomic, readonly) NSUInteger $name$_Count$deprecated_attribute$;\n");
   if (IsInitName(variables_.find("name")->second)) {
     // If property name starts with init we need to annotate it to get past ARC.

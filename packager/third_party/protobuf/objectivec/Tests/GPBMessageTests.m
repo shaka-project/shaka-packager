@@ -1082,6 +1082,20 @@
   [repeatedStringArray release];
 }
 
+- (void)testSetOverAutocreatedArrayAndSetAgain {
+  // Ensure when dealing with replacing an array it is handled being either
+  // an autocreated one or a straight NSArray.
+
+  // The real test here is that nothing crashes while doing the work.
+  TestAllTypes *message = [TestAllTypes message];
+  [message.repeatedStringArray addObject:@"foo"];
+  XCTAssertEqual(message.repeatedStringArray_Count, (NSUInteger)1);
+  message.repeatedStringArray = [NSMutableArray arrayWithObjects:@"bar", @"bar2", nil];
+  XCTAssertEqual(message.repeatedStringArray_Count, (NSUInteger)2);
+  message.repeatedStringArray = [NSMutableArray arrayWithObject:@"baz"];
+  XCTAssertEqual(message.repeatedStringArray_Count, (NSUInteger)1);
+}
+
 - (void)testReplaceAutocreatedArray {
   // Replacing array should orphan the old one and cause its creator to become
   // visible.
@@ -1171,7 +1185,7 @@
   XCTAssertFalse([message2.a hasA]);
 
   // But adding an element to the map should.
-  [message.a.a.iToI setValue:100 forKey:200];
+  [message.a.a.iToI setInt32:100 forKey:200];
   XCTAssertTrue([message hasA]);
   XCTAssertTrue([message.a hasA]);
   XCTAssertEqual([message.a.a.iToI count], (NSUInteger)1);
@@ -1190,7 +1204,7 @@
   message1a.a.iToI = message1b.a.iToI;
   XCTAssertTrue([message1a hasA]);
   XCTAssertFalse([message1b hasA]);
-  [message1a.a.iToI setValue:1 forKey:2];
+  [message1a.a.iToI setInt32:1 forKey:2];
   XCTAssertTrue([message1a hasA]);
   XCTAssertTrue([message1b hasA]);
   XCTAssertEqual(message1a.a.iToI, message1b.a.iToI);
@@ -1224,7 +1238,7 @@
   // with different objects that are equal).
   TestRecursiveMessageWithRepeatedField *message3 =
       [TestRecursiveMessageWithRepeatedField message];
-  message3.iToI = [GPBInt32Int32Dictionary dictionaryWithValue:10 forKey:20];
+  message3.iToI = [GPBInt32Int32Dictionary dictionaryWithInt32:10 forKey:20];
   message3.strToStr =
       [NSMutableDictionary dictionaryWithObject:@"abc" forKey:@"123"];
   XCTAssertNotNil(message.iToI);
@@ -1281,6 +1295,23 @@
   [strToStr release];
 }
 
+- (void)testSetOverAutocreatedMapAndSetAgain {
+  // Ensure when dealing with replacing a map it is handled being either
+  // an autocreated one or a straight NSDictionary.
+
+  // The real test here is that nothing crashes while doing the work.
+  TestRecursiveMessageWithRepeatedField *message =
+      [TestRecursiveMessageWithRepeatedField message];
+  message.strToStr[@"foo"] = @"bar";
+  XCTAssertEqual(message.strToStr_Count, (NSUInteger)1);
+  message.strToStr =
+      [NSMutableDictionary dictionaryWithObjectsAndKeys:@"bar", @"key1", @"baz", @"key2", nil];
+  XCTAssertEqual(message.strToStr_Count, (NSUInteger)2);
+  message.strToStr =
+      [NSMutableDictionary dictionaryWithObject:@"baz" forKey:@"mumble"];
+  XCTAssertEqual(message.strToStr_Count, (NSUInteger)1);
+}
+
 - (void)testReplaceAutocreatedMap {
   // Replacing map should orphan the old one and cause its creator to become
   // visible.
@@ -1292,7 +1323,7 @@
     XCTAssertFalse([message hasA]);
     GPBInt32Int32Dictionary *iToI = [message.a.iToI retain];
     XCTAssertEqual(iToI->_autocreator, message.a);  // Pointer comparision
-    message.a.iToI = [GPBInt32Int32Dictionary dictionaryWithValue:6 forKey:7];
+    message.a.iToI = [GPBInt32Int32Dictionary dictionaryWithInt32:6 forKey:7];
     XCTAssertTrue([message hasA]);
     XCTAssertNotEqual(message.a.iToI, iToI);  // Pointer comparision
     XCTAssertNil(iToI->_autocreator);

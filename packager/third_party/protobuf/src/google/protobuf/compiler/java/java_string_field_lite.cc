@@ -62,7 +62,7 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
                            int builderBitIndex,
                            const FieldGeneratorInfo* info,
                            ClassNameResolver* name_resolver,
-                           map<string, string>* variables) {
+                           std::map<string, string>* variables) {
   SetCommonFieldVariables(descriptor, info, variables);
 
   (*variables)["empty_list"] =
@@ -72,7 +72,8 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
   (*variables)["default_init"] =
       "= " + ImmutableDefaultValue(descriptor, name_resolver);
   (*variables)["capitalized_type"] = "String";
-  (*variables)["tag"] = SimpleItoa(WireFormat::MakeTag(descriptor));
+  (*variables)["tag"] =
+      SimpleItoa(static_cast<int32>(WireFormat::MakeTag(descriptor)));
   (*variables)["tag_size"] = SimpleItoa(
       WireFormat::TagSize(descriptor->number(), GetType(descriptor)));
   (*variables)["null_check"] =
@@ -84,6 +85,7 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
   // by the proto compiler
   (*variables)["deprecation"] = descriptor->options().deprecated()
       ? "@java.lang.Deprecated " : "";
+  (*variables)["required"] = descriptor->is_required() ? "true" : "false";
 
   if (SupportFieldPresence(descriptor->file())) {
     // For singular messages and builders, one bit is used for the hasField bit.
@@ -293,6 +295,7 @@ GenerateFieldBuilderInitializationCode(io::Printer* printer)  const {
   // noop for strings
 }
 
+
 void ImmutableStringFieldLiteGenerator::
 GenerateInitializationCode(io::Printer* printer) const {
   printer->Print(variables_, "$name$_ = $default$;\n");
@@ -464,6 +467,7 @@ GenerateMembers(io::Printer* printer) const {
     "  $oneof_name$_ = value.toStringUtf8();\n"
     "}\n");
 }
+
 
 void ImmutableStringOneofFieldLiteGenerator::
 GenerateBuilderMembers(io::Printer* printer) const {
@@ -760,6 +764,7 @@ void RepeatedImmutableStringFieldLiteGenerator::
 GenerateFieldBuilderInitializationCode(io::Printer* printer)  const {
   // noop for strings
 }
+
 
 void RepeatedImmutableStringFieldLiteGenerator::
 GenerateInitializationCode(io::Printer* printer) const {

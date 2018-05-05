@@ -55,7 +55,7 @@ class LIBPROTOBUF_EXPORT AnnotationCollector {
   // before end_offset are associated with the SourceCodeInfo-style path.
   virtual void AddAnnotation(size_t begin_offset, size_t end_offset,
                              const string& file_path,
-                             const vector<int>& path) = 0;
+                             const std::vector<int>& path) = 0;
 
   virtual ~AnnotationCollector() {}
 };
@@ -73,7 +73,8 @@ class AnnotationProtoCollector : public AnnotationCollector {
 
   // Override for AnnotationCollector::AddAnnotation.
   virtual void AddAnnotation(size_t begin_offset, size_t end_offset,
-                             const string& file_path, const vector<int>& path) {
+                             const string& file_path,
+                             const std::vector<int>& path) {
     typename AnnotationProto::Annotation* annotation =
         annotation_proto_->add_annotation();
     for (int i = 0; i < path.size(); ++i) {
@@ -195,9 +196,29 @@ class LIBPROTOBUF_EXPORT Printer {
       // of building the location path.
       return;
     }
-    vector<int> path;
+    std::vector<int> path;
     descriptor->GetLocationPath(&path);
     Annotate(begin_varname, end_varname, descriptor->file()->name(), path);
+  }
+
+  // Link a subsitution variable emitted by the last call to Print to the file
+  // with path file_name.
+  void Annotate(const char* varname, const string& file_name) {
+    Annotate(varname, varname, file_name);
+  }
+
+  // Link the output range defined by the substitution variables as emitted by
+  // the last call to Print to the file with path file_name. The range begins
+  // at begin_varname's value and ends after the last character of the value
+  // substituted for end_varname.
+  void Annotate(const char* begin_varname, const char* end_varname,
+                const string& file_name) {
+    if (annotation_collector_ == NULL) {
+      // Annotations aren't turned on for this Printer.
+      return;
+    }
+    std::vector<int> empty_path;
+    Annotate(begin_varname, end_varname, file_name, empty_path);
   }
 
   // Print some text after applying variable substitutions.  If a particular
@@ -205,7 +226,7 @@ class LIBPROTOBUF_EXPORT Printer {
   // substituted are identified by their names surrounded by delimiter
   // characters (as given to the constructor).  The variable bindings are
   // defined by the given map.
-  void Print(const map<string, string>& variables, const char* text);
+  void Print(const std::map<string, string>& variables, const char* text);
 
   // Like the first Print(), except the substitutions are given as parameters.
   void Print(const char* text);
@@ -288,7 +309,7 @@ class LIBPROTOBUF_EXPORT Printer {
   // substituted for end_varname. Note that begin_varname and end_varname
   // may refer to the same variable.
   void Annotate(const char* begin_varname, const char* end_varname,
-                const string& file_path, const vector<int>& path);
+                const string& file_path, const std::vector<int>& path);
 
   const char variable_delimiter_;
 
@@ -311,13 +332,14 @@ class LIBPROTOBUF_EXPORT Printer {
   // start offset is the beginning of the substitution; the end offset is the
   // last byte of the substitution plus one (such that (end - start) is the
   // length of the substituted string).
-  map<string, pair<size_t, size_t> > substitutions_;
+  std::map<string, std::pair<size_t, size_t> > substitutions_;
 
   // Returns true and sets range to the substitution range in the output for
   // varname if varname was used once in the last call to Print. If varname
   // was not used, or if it was used multiple times, returns false (and
   // fails a debug assertion).
-  bool GetSubstitutionRange(const char* varname, pair<size_t, size_t>* range);
+  bool GetSubstitutionRange(const char* varname,
+                            std::pair<size_t, size_t>* range);
 
   // If non-null, annotation_collector_ is used to store annotations about
   // generated code.

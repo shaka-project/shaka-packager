@@ -80,11 +80,12 @@ class ImmutablePrimitiveFieldLiteGenerator
   void GenerateEqualsCode(io::Printer* printer) const;
   void GenerateHashCode(io::Printer* printer) const;
 
+
   string GetBoxedType() const;
 
  protected:
   const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+  std::map<string, string> variables_;
   const int messageBitIndex_;
   const int builderBitIndex_;
   Context* context_;
@@ -109,6 +110,7 @@ class ImmutablePrimitiveOneofFieldLiteGenerator
   void GenerateParsingCode(io::Printer* printer) const;
   void GenerateSerializationCode(io::Printer* printer) const;
   void GenerateSerializedSizeCode(io::Printer* printer) const;
+
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ImmutablePrimitiveOneofFieldLiteGenerator);
@@ -142,11 +144,12 @@ class RepeatedImmutablePrimitiveFieldLiteGenerator
   void GenerateEqualsCode(io::Printer* printer) const;
   void GenerateHashCode(io::Printer* printer) const;
 
+
   string GetBoxedType() const;
 
  private:
   const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+  std::map<string, string> variables_;
   const int messageBitIndex_;
   const int builderBitIndex_;
   Context* context_;

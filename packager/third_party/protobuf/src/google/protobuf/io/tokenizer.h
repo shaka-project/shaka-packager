@@ -191,7 +191,7 @@ class LIBPROTOBUF_EXPORT Tokenizer {
   //    * grault. */
   //   optional int32 grault = 6;
   bool NextWithComments(string* prev_trailing_comments,
-                        vector<string>* detached_comments,
+                        std::vector<string>* detached_comments,
                         string* next_leading_comments);
 
   // Parse helpers ---------------------------------------------------
@@ -329,7 +329,7 @@ class LIBPROTOBUF_EXPORT Tokenizer {
   // depending on what was read.  This needs to know if the first
   // character was a zero in order to correctly recognize hex and octal
   // numbers.
-  // It also needs to know if the first characted was a . to parse floating
+  // It also needs to know if the first character was a . to parse floating
   // point correctly.
   TokenType ConsumeNumber(bool started_with_zero, bool started_with_dot);
 

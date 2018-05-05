@@ -178,6 +178,45 @@ VALUE Message_method_missing(int argc, VALUE* argv, VALUE _self) {
   }
 }
 
+VALUE Message_respond_to_missing(int argc, VALUE* argv, VALUE _self) {
+  MessageHeader* self;
+  VALUE method_name, method_str;
+  char* name;
+  size_t name_len;
+  bool setter;
+  const upb_oneofdef* o;
+  const upb_fielddef* f;
+
+  TypedData_Get_Struct(_self, MessageHeader, &Message_type, self);
+  if (argc < 1) {
+    rb_raise(rb_eArgError, "Expected method name as first argument.");
+  }
+  method_name = argv[0];
+  if (!SYMBOL_P(method_name)) {
+    rb_raise(rb_eArgError, "Expected symbol as method name.");
+  }
+  method_str = rb_id2str(SYM2ID(method_name));
+  name = RSTRING_PTR(method_str);
+  name_len = RSTRING_LEN(method_str);
+  setter = false;
+
+  // Setters have names that end in '='.
+  if (name[name_len - 1] == '=') {
+    setter = true;
+    name_len--;
+  }
+
+  // See if this name corresponds to either a oneof or field in this message.
+  if (!upb_msgdef_lookupname(self->descriptor->msgdef, name, name_len, &f,
+                             &o)) {
+    return rb_call_super(argc, argv);
+  }
+  if (o != NULL) {
+    return setter ? Qfalse : Qtrue;
+  }
+  return Qtrue;
+}
+
 int Message_initialize_kwarg(VALUE key, VALUE val, VALUE _self) {
   MessageHeader* self;
   VALUE method_str;
@@ -305,6 +344,9 @@ VALUE Message_deep_copy(VALUE _self) {
 VALUE Message_eq(VALUE _self, VALUE _other) {
   MessageHeader* self;
   MessageHeader* other;
+  if (TYPE(_self) != TYPE(_other)) {
+    return Qfalse;
+  }
   TypedData_Get_Struct(_self, MessageHeader, &Message_type, self);
   TypedData_Get_Struct(_other, MessageHeader, &Message_type, other);
 
@@ -352,7 +394,12 @@ VALUE Message_inspect(VALUE _self) {
   return str;
 }
 
-
+/*
+ * call-seq:
+ *     Message.to_h => {}
+ *
+ * Returns the message as a Ruby Hash object, with keys as symbols.
+ */
 VALUE Message_to_h(VALUE _self) {
   MessageHeader* self;
   VALUE hash;
@@ -368,8 +415,13 @@ VALUE Message_to_h(VALUE _self) {
     VALUE msg_value = layout_get(self->descriptor->layout, Message_data(self),
                                  field);
     VALUE msg_key   = ID2SYM(rb_intern(upb_fielddef_name(field)));
-    if (upb_fielddef_label(field) == UPB_LABEL_REPEATED) {
+    if (upb_fielddef_ismap(field)) {
+      msg_value = Map_to_h(msg_value);
+    } else if (upb_fielddef_label(field) == UPB_LABEL_REPEATED) {
       msg_value = RepeatedField_to_ary(msg_value);
+    } else if (msg_value != Qnil &&
+               upb_fielddef_type(field) == UPB_TYPE_MESSAGE) {
+      msg_value = Message_to_h(msg_value);
     }
     rb_hash_aset(hash, msg_key, msg_value);
   }
@@ -459,6 +511,8 @@ VALUE build_class_from_descriptor(Descriptor* desc) {
 
   rb_define_method(klass, "method_missing",
                    Message_method_missing, -1);
+  rb_define_method(klass, "respond_to_missing?",
+                   Message_respond_to_missing, -1);
   rb_define_method(klass, "initialize", Message_initialize, -1);
   rb_define_method(klass, "dup", Message_dup, 0);
   // Also define #clone so that we don't inherit Object#clone.

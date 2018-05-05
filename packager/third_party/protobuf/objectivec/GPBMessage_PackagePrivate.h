@@ -70,17 +70,12 @@ typedef struct GPBMessage_Storage *GPBMessage_StoragePtr;
   // Use of readOnlySemaphore_ must be prefaced by a call to
   // GPBPrepareReadOnlySemaphore to ensure it has been created. This allows
   // readOnlySemaphore_ to be only created when actually needed.
-  dispatch_once_t readOnlySemaphoreCreationOnce_;
   dispatch_semaphore_t readOnlySemaphore_;
 }
 
 // Gets an extension value without autocreating the result if not found. (i.e.
 // returns nil if the extension is not set)
 - (id)getExistingExtension:(GPBExtensionDescriptor *)extension;
-
-// Returns an array of GPBExtensionDescriptor* for all the extensions currently
-// in use on the message.  They are sorted by field number.
-- (NSArray *)sortedExtensionsInUse;
 
 // Parses a message of this type from the input and merges it with this
 // message.
@@ -109,11 +104,7 @@ CF_EXTERN_C_BEGIN
 
 
 // Call this before using the readOnlySemaphore_. This ensures it is created only once.
-NS_INLINE void GPBPrepareReadOnlySemaphore(GPBMessage *self) {
-  dispatch_once(&self->readOnlySemaphoreCreationOnce_, ^{
-    self->readOnlySemaphore_ = dispatch_semaphore_create(1);
-  });
-}
+void GPBPrepareReadOnlySemaphore(GPBMessage *self);
 
 // Returns a new instance that was automatically created by |autocreator| for
 // its field |field|.

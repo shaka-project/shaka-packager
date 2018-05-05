@@ -32,6 +32,7 @@
 
 goog.require('goog.crypt.base64');
 goog.require('goog.testing.asserts');
+goog.require('jspb.BinaryWriter');
 goog.require('jspb.Message');
 
 // CommonJS-LoadFromFile: ../testbinary_pb proto.jspb.test
@@ -86,6 +87,9 @@ goog.require('proto.jspb.test.extendRepeatedSint64List');
 goog.require('proto.jspb.test.extendRepeatedStringList');
 goog.require('proto.jspb.test.extendRepeatedUint32List');
 goog.require('proto.jspb.test.extendRepeatedUint64List');
+
+// CommonJS-LoadFromFile: ../node_modules/google-protobuf/google/protobuf/any_pb proto.google.protobuf
+goog.require('proto.google.protobuf.Any');
 
 
 var suite = {};
@@ -194,8 +198,6 @@ function bytesCompare(arr, expected) {
  * @param {proto.jspb.test.TestAllTypes} copy
  */
 function checkAllFields(original, copy) {
-  assertTrue(jspb.Message.equals(original, copy));
-
   assertEquals(copy.getOptionalInt32(), -42);
   assertEquals(copy.getOptionalInt64(), -0x7fffffff00000000);
   assertEquals(copy.getOptionalUint32(), 0x80000000);
@@ -270,6 +272,9 @@ function checkAllFields(original, copy) {
   assertElementsEquals(copy.getPackedRepeatedFloatList(), [1.5]);
   assertElementsEquals(copy.getPackedRepeatedDoubleList(), [-1.5]);
 
+
+  // Check last so we get more granular errors first.
+  assertTrue(jspb.Message.equals(original, copy));
 }
 
 
@@ -278,8 +283,7 @@ function checkAllFields(original, copy) {
  * @param {!proto.jspb.test.TestExtendable} msg
  */
 function checkExtensions(msg) {
-  assertEquals(-42,
-      msg.getExtension(proto.jspb.test.extendOptionalInt32));
+  assertEquals(0, msg.getExtension(proto.jspb.test.extendOptionalInt32));
   assertEquals(-0x7fffffff00000000,
       msg.getExtension(proto.jspb.test.extendOptionalInt64));
   assertEquals(0x80000000,
@@ -496,7 +500,7 @@ describe('protoBinaryTest', function() {
     msg.setRepeatedBytesList([BYTES_B64, BYTES_B64]);
     assertGetters();
 
-    msg.setRepeatedBytesList(null);
+    msg.setRepeatedBytesList([]);
     assertEquals(0, msg.getRepeatedBytesList().length);
     assertEquals(0, msg.getRepeatedBytesList_asB64().length);
     assertEquals(0, msg.getRepeatedBytesList_asU8().length);
@@ -507,8 +511,7 @@ describe('protoBinaryTest', function() {
    * @param {proto.jspb.test.TestExtendable} msg
    */
   function fillExtensions(msg) {
-    msg.setExtension(
-        proto.jspb.test.extendOptionalInt32, -42);
+    msg.setExtension(proto.jspb.test.extendOptionalInt32, 0);
     msg.setExtension(
         proto.jspb.test.extendOptionalInt64, -0x7fffffff00000000);
     msg.setExtension(
@@ -624,5 +627,37 @@ describe('protoBinaryTest', function() {
     var encoded = msg.serializeBinary();
     var decoded = proto.jspb.test.TestExtendable.deserializeBinary(encoded);
     checkExtensions(decoded);
+  });
+
+  /**
+   * Tests that unknown extensions don't cause deserialization failure.
+   */
+  it('testUnknownExtension', function() {
+    var msg = new proto.jspb.test.TestExtendable();
+    fillExtensions(msg);
+    var writer = new jspb.BinaryWriter();
+    writer.writeBool((1 << 29) - 1, true);
+    proto.jspb.test.TestExtendable.serializeBinaryToWriter(msg, writer);
+    var encoded = writer.getResultBuffer();
+    var decoded = proto.jspb.test.TestExtendable.deserializeBinary(encoded);
+    checkExtensions(decoded);
+  });
+
+  it('testAnyWellKnownType', function() {
+    var any = new proto.google.protobuf.Any();
+    var msg = new proto.jspb.test.TestAllTypes();
+
+    fillAllFields(msg);
+
+    any.pack(msg.serializeBinary(), 'jspb.test.TestAllTypes');
+
+    assertEquals('type.googleapis.com/jspb.test.TestAllTypes',
+                 any.getTypeUrl());
+
+    var msg2 = any.unpack(
+        proto.jspb.test.TestAllTypes.deserializeBinary,
+        'jspb.test.TestAllTypes');
+
+    checkAllFields(msg, msg2);
   });
 });

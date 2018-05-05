@@ -30,11 +30,12 @@
 
 package com.google.protobuf;
 
+import static com.google.protobuf.Internal.checkNotNull;
+
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.OneofDescriptor;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -297,7 +298,7 @@ public final class DynamicMessage extends AbstractMessage {
         } catch (InvalidProtocolBufferException e) {
           throw e.setUnfinishedMessage(builder.buildPartial());
         } catch (IOException e) {
-          throw new InvalidProtocolBufferException(e.getMessage())
+          throw new InvalidProtocolBufferException(e)
               .setUnfinishedMessage(builder.buildPartial());
         }
         return builder.buildPartial();
@@ -526,6 +527,14 @@ public final class DynamicMessage extends AbstractMessage {
           fields.clearField(oldField);
         }
         oneofCases[index] = field;
+      } else if (field.getFile().getSyntax() == Descriptors.FileDescriptor.Syntax.PROTO3) {
+        if (!field.isRepeated()
+            && field.getJavaType() != FieldDescriptor.JavaType.MESSAGE
+            && value.equals(field.getDefaultValue())) {
+          // In proto3, setting a field to its default value is equivalent to clearing the field.
+          fields.clearField(field);
+          return this;
+        }
       }
       fields.setField(field, value);
       return this;
@@ -623,9 +632,7 @@ public final class DynamicMessage extends AbstractMessage {
     /** Verifies that the value is EnumValueDescriptor and matches Enum Type. */
     private void ensureSingularEnumValueDescriptor(
         FieldDescriptor field, Object value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
+      checkNotNull(value);
       if (!(value instanceof EnumValueDescriptor)) {
         throw new IllegalArgumentException(
           "DynamicMessage should use EnumValueDescriptor to set Enum Value.");

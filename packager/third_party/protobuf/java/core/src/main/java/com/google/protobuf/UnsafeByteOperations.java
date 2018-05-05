@@ -42,6 +42,23 @@ import java.nio.ByteBuffer;
  * guaranteed that the buffer backing the {@link ByteString} will never change! Mutation of a
  * {@link ByteString} can lead to unexpected and undesirable consequences in your application,
  * and will likely be difficult to debug. Proceed with caution!
+ *
+ * <p>This can have a number of significant side affects that have
+ * spooky-action-at-a-distance-like behavior. In particular, if the bytes value changes out from
+ * under a Protocol Buffer:
+ * <ul>
+ * <li>serialization may throw
+ * <li>serialization may succeed but the wrong bytes may be written out
+ * <li>messages are no longer threadsafe
+ * <li>hashCode may be incorrect
+ *   <ul>
+ *   <li>can result in a permanent memory leak when used as a key in a long-lived HashMap
+ *   <li> the semantics of many programs may be violated if this is the case
+ *   </ul>
+ * </ul>
+ * Each of these issues will occur in parts of the code base that are entirely distinct from the
+ * parts of the code base modifying the buffer. In fact, both parts of the code base may be correct
+ * - it is the bridging with the unsafe operations that was in error!
  */
 @ExperimentalApi
 public final class UnsafeByteOperations {
@@ -50,16 +67,34 @@ public final class UnsafeByteOperations {
   /**
    * An unsafe operation that returns a {@link ByteString} that is backed by the provided buffer.
    *
+   * @param buffer the buffer to be wrapped
+   * @return a {@link ByteString} backed by the provided buffer
+   */
+  public static ByteString unsafeWrap(byte[] buffer) {
+    return ByteString.wrap(buffer);
+  }
+
+  /**
+   * An unsafe operation that returns a {@link ByteString} that is backed by a subregion of the
+   * provided buffer.
+   *
+   * @param buffer the buffer to be wrapped
+   * @param offset the offset of the wrapped region
+   * @param length the number of bytes of the wrapped region
+   * @return a {@link ByteString} backed by the provided buffer
+   */
+  public static ByteString unsafeWrap(byte[] buffer, int offset, int length) {
+    return ByteString.wrap(buffer, offset, length);
+  }
+
+  /**
+   * An unsafe operation that returns a {@link ByteString} that is backed by the provided buffer.
+   *
    * @param buffer the Java NIO buffer to be wrapped
    * @return a {@link ByteString} backed by the provided buffer
    */
   public static ByteString unsafeWrap(ByteBuffer buffer) {
-    if (buffer.hasArray()) {
-      final int offset = buffer.arrayOffset();
-      return ByteString.wrap(buffer.array(), offset + buffer.position(), buffer.remaining());
-    } else {
-      return new NioByteString(buffer);
-    }
+    return ByteString.wrap(buffer);
   }
 
   /**
@@ -81,4 +116,5 @@ public final class UnsafeByteOperations {
   public static void unsafeWriteTo(ByteString bytes, ByteOutput output) throws IOException {
     bytes.writeTo(output);
   }
+
 }

@@ -47,11 +47,11 @@
 #include <google/protobuf/testing/file.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/descriptor.h>
-#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/substitute.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/stubs/map_util.h>
+#include <google/protobuf/stubs/strutil.h>
 
 namespace google {
 namespace protobuf {
@@ -293,7 +293,7 @@ class DiskSourceTreeTest : public testing::Test {
   DiskSourceTree source_tree_;
 
   // Paths of two on-disk directories to use during the test.
-  vector<string> dirnames_;
+  std::vector<string> dirnames_;
 };
 
 TEST_F(DiskSourceTreeTest, MapRoot) {

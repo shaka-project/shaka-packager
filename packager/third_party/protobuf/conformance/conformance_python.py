@@ -38,8 +38,9 @@ See conformance.proto for more information.
 import struct
 import sys
 import os
-from google.protobuf import message
 from google.protobuf import json_format
+from google.protobuf import message
+from google.protobuf import test_messages_proto3_pb2
 import conformance_pb2
 
 sys.stdout = os.fdopen(sys.stdout.fileno(), 'wb', 0)
@@ -52,9 +53,9 @@ class ProtocolError(Exception):
   pass
 
 def do_test(request):
-  test_message = conformance_pb2.TestAllTypes()
+  test_message = test_messages_proto3_pb2.TestAllTypes()
   response = conformance_pb2.ConformanceResponse()
-  test_message = conformance_pb2.TestAllTypes()
+  test_message = test_messages_proto3_pb2.TestAllTypes()
 
   try:
     if request.WhichOneof('payload') == 'protobuf_payload':
@@ -67,7 +68,7 @@ def do_test(request):
     elif request.WhichOneof('payload') == 'json_payload':
       try:
         json_format.Parse(request.json_payload, test_message)
-      except json_format.ParseError as e:
+      except Exception as e:
         response.parse_error = str(e)
         return response
 
@@ -81,7 +82,11 @@ def do_test(request):
       response.protobuf_payload = test_message.SerializeToString()
 
     elif request.requested_output_format == conformance_pb2.JSON:
-      response.json_payload = json_format.MessageToJson(test_message)
+      try:
+        response.json_payload = json_format.MessageToJson(test_message)
+      except Exception as e:
+        response.serialize_error = str(e)
+        return response
 
   except Exception as e:
     response.runtime_error = str(e)

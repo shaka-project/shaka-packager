@@ -499,6 +499,14 @@ namespace Google.Protobuf.Collections
         }
 
         [Test]
+        public void KeysCopyTo()
+        {
+            var map = new MapField<string, string> { { "foo", "bar" }, { "x", "y" } };
+            var keys = map.Keys.ToArray(); // Uses CopyTo internally
+            CollectionAssert.AreEquivalent(new[] { "foo", "x" }, keys);
+        }
+
+        [Test]
         public void ValuesContains()
         {
             var map = new MapField<string, string> { { "foo", "bar" }, { "x", "y" } };
@@ -508,6 +516,14 @@ namespace Google.Protobuf.Collections
             Assert.IsFalse(values.Contains("1"));
             // Values can be null, so this makes sense
             Assert.IsFalse(values.Contains(null));
+        }
+
+        [Test]
+        public void ValuesCopyTo()
+        {
+            var map = new MapField<string, string> { { "foo", "bar" }, { "x", "y" } };
+            var values = map.Values.ToArray(); // Uses CopyTo internally
+            CollectionAssert.AreEquivalent(new[] { "bar", "y" }, values);
         }
 
         [Test]
@@ -523,6 +539,22 @@ namespace Google.Protobuf.Collections
             var map = new MapField<byte, string> { { 10, "foo" } };
             Assert.Throws<ArgumentException>(() => map.ToString());
         }
+
+#if !NET35
+        [Test]
+        public void IDictionaryKeys_Equals_IReadOnlyDictionaryKeys()
+        {
+            var map = new MapField<string, string> { { "foo", "bar" }, { "x", "y" } };
+            CollectionAssert.AreEquivalent(((IDictionary<string, string>)map).Keys, ((IReadOnlyDictionary<string, string>)map).Keys);
+        }
+
+        [Test]
+        public void IDictionaryValues_Equals_IReadOnlyDictionaryValues()
+        {
+            var map = new MapField<string, string> { { "foo", "bar" }, { "x", "y" } };
+            CollectionAssert.AreEquivalent(((IDictionary<string, string>)map).Values, ((IReadOnlyDictionary<string, string>)map).Values);
+        }
+#endif
 
         private static KeyValuePair<TKey, TValue> NewKeyValuePair<TKey, TValue>(TKey key, TValue value)
         {

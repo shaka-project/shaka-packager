@@ -101,6 +101,7 @@ class LIBPROTOBUF_EXPORT ObjectWriter {
   // Renders a Null value.
   virtual ObjectWriter* RenderNull(StringPiece name) = 0;
 
+
   // Renders a DataPiece object to a ObjectWriter.
   static void RenderDataPieceTo(const DataPiece& data, StringPiece name,
                                 ObjectWriter* ow);
@@ -117,6 +118,13 @@ class LIBPROTOBUF_EXPORT ObjectWriter {
   bool use_strict_base64_decoding() const {
     return use_strict_base64_decoding_;
   }
+
+  // Whether empty strings should be rendered for the next name for Start/Render
+  // calls. This setting is only valid until the next key is rendered, after
+  // which it gets reset.
+  // It is up to the derived classes to interpret this and render accordingly.
+  // Default implementation ignores this setting.
+  virtual void empty_name_ok_for_next_key() {}
 
  protected:
   ObjectWriter() : use_strict_base64_decoding_(true) {}

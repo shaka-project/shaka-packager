@@ -59,7 +59,7 @@ bool CppGenerator::Generate(const FileDescriptor* file,
                             const string& parameter,
                             GeneratorContext* generator_context,
                             string* error) const {
-  vector<pair<string, string> > options;
+  std::vector<std::pair<string, string> > options;
   ParseGeneratorParameter(parameter, &options);
 
   // -----------------------------------------------------------------
@@ -98,6 +98,8 @@ bool CppGenerator::Generate(const FileDescriptor* file,
       file_options.annotation_guard_name = options[i].second;
     } else if (options[i].first == "lite") {
       file_options.enforce_lite = true;
+    } else if (options[i].first == "table_driven_parsing") {
+      file_options.table_driven_parsing = true;
     } else {
       *error = "Unknown generator option: " + options[i].first;
       return false;

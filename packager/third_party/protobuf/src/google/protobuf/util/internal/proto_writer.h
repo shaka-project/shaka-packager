@@ -32,8 +32,8 @@
 #define GOOGLE_PROTOBUF_UTIL_CONVERTER_PROTO_WRITER_H__
 
 #include <deque>
-#include <google/protobuf/stubs/hash.h>
 #include <string>
+#include <vector>
 
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/coded_stream.h>
@@ -45,6 +45,7 @@
 #include <google/protobuf/util/internal/structured_objectwriter.h>
 #include <google/protobuf/util/type_resolver.h>
 #include <google/protobuf/stubs/bytestream.h>
+#include <google/protobuf/stubs/hash.h>
 
 namespace google {
 namespace protobuf {
@@ -80,32 +81,32 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
   virtual ~ProtoWriter();
 
   // ObjectWriter methods.
-  virtual ProtoWriter* StartObject(StringPiece name);
-  virtual ProtoWriter* EndObject();
-  virtual ProtoWriter* StartList(StringPiece name);
-  virtual ProtoWriter* EndList();
-  virtual ProtoWriter* RenderBool(StringPiece name, bool value) {
+  ProtoWriter* StartObject(StringPiece name);
+  ProtoWriter* EndObject();
+  ProtoWriter* StartList(StringPiece name);
+  ProtoWriter* EndList();
+  ProtoWriter* RenderBool(StringPiece name, bool value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderInt32(StringPiece name, int32 value) {
+  ProtoWriter* RenderInt32(StringPiece name, int32 value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderUint32(StringPiece name, uint32 value) {
+  ProtoWriter* RenderUint32(StringPiece name, uint32 value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderInt64(StringPiece name, int64 value) {
+  ProtoWriter* RenderInt64(StringPiece name, int64 value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderUint64(StringPiece name, uint64 value) {
+  ProtoWriter* RenderUint64(StringPiece name, uint64 value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderDouble(StringPiece name, double value) {
+  ProtoWriter* RenderDouble(StringPiece name, double value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderFloat(StringPiece name, float value) {
+  ProtoWriter* RenderFloat(StringPiece name, float value) {
     return RenderDataPiece(name, DataPiece(value));
   }
-  virtual ProtoWriter* RenderString(StringPiece name, StringPiece value) {
+  ProtoWriter* RenderString(StringPiece name, StringPiece value) {
     return RenderDataPiece(name,
                            DataPiece(value, use_strict_base64_decoding()));
   }
@@ -113,9 +114,10 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
     return RenderDataPiece(
         name, DataPiece(value, false, use_strict_base64_decoding()));
   }
-  virtual ProtoWriter* RenderNull(StringPiece name) {
+  ProtoWriter* RenderNull(StringPiece name) {
     return RenderDataPiece(name, DataPiece::NullData());
   }
+
 
   // Renders a DataPiece 'value' into a field whose wire type is determined
   // from the given field 'name'.
@@ -141,6 +143,14 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
   ErrorListener* listener() { return listener_; }
 
   const TypeInfo* typeinfo() { return typeinfo_; }
+
+  void set_ignore_unknown_fields(bool ignore_unknown_fields) {
+    ignore_unknown_fields_ = ignore_unknown_fields;
+  }
+
+  void set_use_lower_camel_for_enums(bool use_lower_camel_for_enums) {
+    use_lower_camel_for_enums_ = use_lower_camel_for_enums;
+  }
 
  protected:
   class LIBPROTOBUF_EXPORT ProtoElement : public BaseElement, public LocationTrackerInterface {
@@ -179,12 +189,14 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
       return static_cast<ProtoElement*>(BaseElement::parent());
     }
 
-    // Returns true if the index is already taken by a preceeding oneof input.
+    // Returns true if the index is already taken by a preceding oneof input.
     bool IsOneofIndexTaken(int32 index);
 
     // Marks the oneof 'index' as taken. Future inputs to this oneof will
     // generate an error.
     void TakeOneofIndex(int32 index);
+
+    bool proto3() { return proto3_; }
 
    private:
     // Used for access to variables of the enclosing instance of
@@ -197,6 +209,9 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
 
     // TypeInfo to lookup types.
     const TypeInfo* typeinfo_;
+
+    // Whether the type_ is proto3 or not.
+    bool proto3_;
 
     // Additional variables if this element is a message:
     // (Root element is always a message).
@@ -213,7 +228,7 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
 
     // Set of oneof indices already seen for the type_. Used to validate
     // incoming messages so no more than one oneof is set.
-    hash_set<int32> oneof_indices_;
+    std::vector<bool> oneof_indices_;
 
     GOOGLE_DISALLOW_IMPLICIT_CONSTRUCTORS(ProtoElement);
   };
@@ -227,7 +242,7 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
   ProtoWriter(const TypeInfo* typeinfo, const google::protobuf::Type& type,
               strings::ByteSink* output, ErrorListener* listener);
 
-  virtual ProtoElement* element() { return element_.get(); }
+  ProtoElement* element() { return element_.get(); }
 
   // Helper methods for calling ErrorListener. See error_listener.h.
   void InvalidName(StringPiece unknown_name, StringPiece message);
@@ -240,7 +255,8 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
 
   // Lookup the field in the current element. Looks in the base descriptor
   // and in any extension. This will report an error if the field cannot be
-  // found or if multiple matching extensions are found.
+  // found when ignore_unknown_names_ is false or if multiple matching
+  // extensions are found.
   const google::protobuf::Field* Lookup(StringPiece name);
 
   // Lookup the field type in the type descriptor. Returns NULL if the type
@@ -292,6 +308,13 @@ class LIBPROTOBUF_EXPORT ProtoWriter : public StructuredObjectWriter {
 
   // Indicates whether we finished writing root message completely.
   bool done_;
+
+  // If true, don't report unknown field names to the listener.
+  bool ignore_unknown_fields_;
+
+  // If true, check if enum name in camel case or without underscore matches the
+  // field name.
+  bool use_lower_camel_for_enums_;
 
   // Variable for internal state processing:
   // element_    : the current element.

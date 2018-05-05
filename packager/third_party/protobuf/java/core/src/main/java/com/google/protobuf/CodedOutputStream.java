@@ -30,18 +30,17 @@
 
 package com.google.protobuf;
 
+import static com.google.protobuf.WireFormat.FIXED_32_SIZE;
+import static com.google.protobuf.WireFormat.FIXED_64_SIZE;
+import static com.google.protobuf.WireFormat.MAX_VARINT_SIZE;
 import static java.lang.Math.max;
 
 import com.google.protobuf.Utf8.UnpairedSurrogateException;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,13 +58,8 @@ import java.util.logging.Logger;
  */
 public abstract class CodedOutputStream extends ByteOutput {
   private static final Logger logger = Logger.getLogger(CodedOutputStream.class.getName());
-  private static final sun.misc.Unsafe UNSAFE = getUnsafe();
-  private static final boolean HAS_UNSAFE_ARRAY_OPERATIONS = supportsUnsafeArrayOperations();
-  private static final long ARRAY_BASE_OFFSET = byteArrayBaseOffset();
-
-  private static final int FIXED_32_SIZE = 4;
-  private static final int FIXED_64_SIZE = 8;
-  private static final int MAX_VARINT_SIZE = 10;
+  private static final boolean HAS_UNSAFE_ARRAY_OPERATIONS = UnsafeUtil.hasUnsafeArrayOperations();
+  private static final long ARRAY_BASE_OFFSET = UnsafeUtil.getArrayBaseOffset();
 
   /**
    * @deprecated Use {@link #computeFixed32SizeNoTag(int)} instead.
@@ -138,15 +132,66 @@ public abstract class CodedOutputStream extends ByteOutput {
     return new ArrayEncoder(flatArray, offset, length);
   }
 
-  /**
-   * Create a new {@code CodedOutputStream} that writes to the given {@link ByteBuffer}.
-   */
-  public static CodedOutputStream newInstance(ByteBuffer byteBuffer) {
-    if (byteBuffer.hasArray()) {
-      return new NioHeapEncoder(byteBuffer);
+  /** Create a new {@code CodedOutputStream} that writes to the given {@link ByteBuffer}. */
+  public static CodedOutputStream newInstance(ByteBuffer buffer) {
+    if (buffer.hasArray()) {
+      return new HeapNioEncoder(buffer);
     }
-    return new NioEncoder(byteBuffer);
+    if (buffer.isDirect() && !buffer.isReadOnly()) {
+      return UnsafeDirectNioEncoder.isSupported()
+          ? newUnsafeInstance(buffer)
+          : newSafeInstance(buffer);
+    }
+    throw new IllegalArgumentException("ByteBuffer is read-only");
   }
+
+  /** For testing purposes only. */
+  static CodedOutputStream newUnsafeInstance(ByteBuffer buffer) {
+    return new UnsafeDirectNioEncoder(buffer);
+  }
+
+  /** For testing purposes only. */
+  static CodedOutputStream newSafeInstance(ByteBuffer buffer) {
+    return new SafeDirectNioEncoder(buffer);
+  }
+
+  /**
+   * Configures serialization to be deterministic.
+   *
+   * <p>The deterministic serialization guarantees that for a given binary, equal (defined by the
+   * {@code equals()} methods in protos) messages will always be serialized to the same bytes. This
+   * implies:
+   *
+   * <ul>
+   * <li>repeated serialization of a message will return the same bytes
+   * <li>different processes of the same binary (which may be executing on different machines) will
+   *     serialize equal messages to the same bytes.
+   * </ul>
+   *
+   * <p>Note the deterministic serialization is NOT canonical across languages; it is also unstable
+   * across different builds with schema changes due to unknown fields. Users who need canonical
+   * serialization, e.g. persistent storage in a canonical form, fingerprinting, etc, should define
+   * their own canonicalization specification and implement the serializer using reflection APIs
+   * rather than relying on this API.
+   *
+   * <p> Once set, the serializer will:  (Note this is an implementation detail and may subject to
+   * change in the future)
+   *
+   * <ul>
+   * <li> sort map entries by keys in lexicographical order or numerical order. Note: For string
+   *     keys, the order is based on comparing the Unicode value of each character in the strings.
+   *     The order may be different from the deterministic serialization in other languages where
+   *     maps are sorted on the lexicographical order of the UTF8 encoded keys.
+   * </ul>
+   */
+  public void useDeterministicSerialization() {
+    serializationDeterministic = true;
+  }
+
+  boolean isSerializationDeterministic() {
+    return serializationDeterministic;
+  }
+  private boolean serializationDeterministic;
 
   /**
    * Create a new {@code CodedOutputStream} that writes to the given {@link ByteBuffer}.
@@ -869,7 +914,7 @@ public abstract class CodedOutputStream extends ByteOutput {
     return computeLengthDelimitedFieldSize(value.getSerializedSize());
   }
 
-  private static int computeLengthDelimitedFieldSize(int fieldLength) {
+  static int computeLengthDelimitedFieldSize(int fieldLength) {
     return computeUInt32SizeNoTag(fieldLength) + fieldLength;
   }
 
@@ -945,8 +990,16 @@ public abstract class CodedOutputStream extends ByteOutput {
       super(MESSAGE);
     }
 
+    OutOfSpaceException(String explanationMessage) {
+      super(MESSAGE + ": " + explanationMessage);
+    }
+
     OutOfSpaceException(Throwable cause) {
       super(MESSAGE, cause);
+    }
+
+    OutOfSpaceException(String explanationMessage, Throwable cause) {
+      super(MESSAGE + ": " + explanationMessage, cause);
     }
   }
 
@@ -1250,8 +1303,8 @@ public abstract class CodedOutputStream extends ByteOutput {
       try {
         buffer[position++] = value;
       } catch (IndexOutOfBoundsException e) {
-        throw new OutOfSpaceException(new IndexOutOfBoundsException(
-            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1)));
+        throw new OutOfSpaceException(
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1), e);
       }
     }
 
@@ -1271,11 +1324,11 @@ public abstract class CodedOutputStream extends ByteOutput {
         long pos = ARRAY_BASE_OFFSET + position;
         while (true) {
           if ((value & ~0x7F) == 0) {
-            UNSAFE.putByte(buffer, pos++, (byte) value);
+            UnsafeUtil.putByte(buffer, pos++, (byte) value);
             position++;
             return;
           } else {
-            UNSAFE.putByte(buffer, pos++, (byte) ((value & 0x7F) | 0x80));
+            UnsafeUtil.putByte(buffer, pos++, (byte) ((value & 0x7F) | 0x80));
             position++;
             value >>>= 7;
           }
@@ -1293,8 +1346,7 @@ public abstract class CodedOutputStream extends ByteOutput {
           }
         } catch (IndexOutOfBoundsException e) {
           throw new OutOfSpaceException(
-              new IndexOutOfBoundsException(
-                  String.format("Pos: %d, limit: %d, len: %d", position, limit, 1)));
+              String.format("Pos: %d, limit: %d, len: %d", position, limit, 1), e);
         }
       }
     }
@@ -1308,8 +1360,7 @@ public abstract class CodedOutputStream extends ByteOutput {
         buffer[position++] = (byte) ((value >> 24) & 0xFF);
       } catch (IndexOutOfBoundsException e) {
         throw new OutOfSpaceException(
-            new IndexOutOfBoundsException(
-                String.format("Pos: %d, limit: %d, len: %d", position, limit, 1)));
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1), e);
       }
     }
 
@@ -1319,11 +1370,11 @@ public abstract class CodedOutputStream extends ByteOutput {
         long pos = ARRAY_BASE_OFFSET + position;
         while (true) {
           if ((value & ~0x7FL) == 0) {
-            UNSAFE.putByte(buffer, pos++, (byte) value);
+            UnsafeUtil.putByte(buffer, pos++, (byte) value);
             position++;
             return;
           } else {
-            UNSAFE.putByte(buffer, pos++, (byte) (((int) value & 0x7F) | 0x80));
+            UnsafeUtil.putByte(buffer, pos++, (byte) (((int) value & 0x7F) | 0x80));
             position++;
             value >>>= 7;
           }
@@ -1341,8 +1392,7 @@ public abstract class CodedOutputStream extends ByteOutput {
           }
         } catch (IndexOutOfBoundsException e) {
           throw new OutOfSpaceException(
-              new IndexOutOfBoundsException(
-                  String.format("Pos: %d, limit: %d, len: %d", position, limit, 1)));
+              String.format("Pos: %d, limit: %d, len: %d", position, limit, 1), e);
         }
       }
     }
@@ -1360,8 +1410,7 @@ public abstract class CodedOutputStream extends ByteOutput {
         buffer[position++] = (byte) ((int) (value >> 56) & 0xFF);
       } catch (IndexOutOfBoundsException e) {
         throw new OutOfSpaceException(
-            new IndexOutOfBoundsException(
-                String.format("Pos: %d, limit: %d, len: %d", position, limit, 1)));
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1), e);
       }
     }
 
@@ -1372,8 +1421,7 @@ public abstract class CodedOutputStream extends ByteOutput {
         position += length;
       } catch (IndexOutOfBoundsException e) {
         throw new OutOfSpaceException(
-            new IndexOutOfBoundsException(
-                String.format("Pos: %d, limit: %d, len: %d", position, limit, length)));
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, length), e);
       }
     }
 
@@ -1390,8 +1438,7 @@ public abstract class CodedOutputStream extends ByteOutput {
         position += length;
       } catch (IndexOutOfBoundsException e) {
         throw new OutOfSpaceException(
-            new IndexOutOfBoundsException(
-                String.format("Pos: %d, limit: %d, len: %d", position, limit, length)));
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, length), e);
       }
     }
 
@@ -1454,11 +1501,11 @@ public abstract class CodedOutputStream extends ByteOutput {
    * A {@link CodedOutputStream} that writes directly to a heap {@link ByteBuffer}. Writes are
    * done directly to the underlying array. The buffer position is only updated after a flush.
    */
-  private static final class NioHeapEncoder extends ArrayEncoder {
+  private static final class HeapNioEncoder extends ArrayEncoder {
     private final ByteBuffer byteBuffer;
     private int initialPosition;
 
-    NioHeapEncoder(ByteBuffer byteBuffer) {
+    HeapNioEncoder(ByteBuffer byteBuffer) {
       super(byteBuffer.array(), byteBuffer.arrayOffset() + byteBuffer.position(),
           byteBuffer.remaining());
       this.byteBuffer = byteBuffer;
@@ -1473,14 +1520,15 @@ public abstract class CodedOutputStream extends ByteOutput {
   }
 
   /**
-   * A {@link CodedOutputStream} that writes directly to a {@link ByteBuffer}.
+   * A {@link CodedOutputStream} that writes directly to a direct {@link ByteBuffer}, using only
+   * safe operations..
    */
-  private static final class NioEncoder extends CodedOutputStream {
+  private static final class SafeDirectNioEncoder extends CodedOutputStream {
     private final ByteBuffer originalBuffer;
     private final ByteBuffer buffer;
     private final int initialPosition;
 
-    NioEncoder(ByteBuffer buffer) {
+    SafeDirectNioEncoder(ByteBuffer buffer) {
       this.originalBuffer = buffer;
       this.buffer = buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN);
       initialPosition = buffer.position();
@@ -1783,6 +1831,356 @@ public abstract class CodedOutputStream extends ByteOutput {
   }
 
   /**
+   * A {@link CodedOutputStream} that writes directly to a direct {@link ByteBuffer} using {@code
+   * sun.misc.Unsafe}.
+   */
+  private static final class UnsafeDirectNioEncoder extends CodedOutputStream {
+    private final ByteBuffer originalBuffer;
+    private final ByteBuffer buffer;
+    private final long address;
+    private final long initialPosition;
+    private final long limit;
+    private final long oneVarintLimit;
+    private long position;
+
+    UnsafeDirectNioEncoder(ByteBuffer buffer) {
+      this.originalBuffer = buffer;
+      this.buffer = buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN);
+      address = UnsafeUtil.addressOffset(buffer);
+      initialPosition = address + buffer.position();
+      limit = address + buffer.limit();
+      oneVarintLimit = limit - MAX_VARINT_SIZE;
+      position = initialPosition;
+    }
+
+    static boolean isSupported() {
+      return UnsafeUtil.hasUnsafeByteBufferOperations() && UnsafeUtil.hasUnsafeCopyMemory();
+    }
+
+    @Override
+    public void writeTag(int fieldNumber, int wireType) throws IOException {
+      writeUInt32NoTag(WireFormat.makeTag(fieldNumber, wireType));
+    }
+
+    @Override
+    public void writeInt32(int fieldNumber, int value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_VARINT);
+      writeInt32NoTag(value);
+    }
+
+    @Override
+    public void writeUInt32(int fieldNumber, int value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_VARINT);
+      writeUInt32NoTag(value);
+    }
+
+    @Override
+    public void writeFixed32(int fieldNumber, int value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_FIXED32);
+      writeFixed32NoTag(value);
+    }
+
+    @Override
+    public void writeUInt64(int fieldNumber, long value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_VARINT);
+      writeUInt64NoTag(value);
+    }
+
+    @Override
+    public void writeFixed64(int fieldNumber, long value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_FIXED64);
+      writeFixed64NoTag(value);
+    }
+
+    @Override
+    public void writeBool(int fieldNumber, boolean value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_VARINT);
+      write((byte) (value ? 1 : 0));
+    }
+
+    @Override
+    public void writeString(int fieldNumber, String value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      writeStringNoTag(value);
+    }
+
+    @Override
+    public void writeBytes(int fieldNumber, ByteString value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      writeBytesNoTag(value);
+    }
+
+    @Override
+    public void writeByteArray(int fieldNumber, byte[] value) throws IOException {
+      writeByteArray(fieldNumber, value, 0, value.length);
+    }
+
+    @Override
+    public void writeByteArray(int fieldNumber, byte[] value, int offset, int length)
+        throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      writeByteArrayNoTag(value, offset, length);
+    }
+
+    @Override
+    public void writeByteBuffer(int fieldNumber, ByteBuffer value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      writeUInt32NoTag(value.capacity());
+      writeRawBytes(value);
+    }
+
+    @Override
+    public void writeMessage(int fieldNumber, MessageLite value) throws IOException {
+      writeTag(fieldNumber, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      writeMessageNoTag(value);
+    }
+
+    @Override
+    public void writeMessageSetExtension(int fieldNumber, MessageLite value) throws IOException {
+      writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
+      writeUInt32(WireFormat.MESSAGE_SET_TYPE_ID, fieldNumber);
+      writeMessage(WireFormat.MESSAGE_SET_MESSAGE, value);
+      writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_END_GROUP);
+    }
+
+    @Override
+    public void writeRawMessageSetExtension(int fieldNumber, ByteString value) throws IOException {
+      writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_START_GROUP);
+      writeUInt32(WireFormat.MESSAGE_SET_TYPE_ID, fieldNumber);
+      writeBytes(WireFormat.MESSAGE_SET_MESSAGE, value);
+      writeTag(WireFormat.MESSAGE_SET_ITEM, WireFormat.WIRETYPE_END_GROUP);
+    }
+
+    @Override
+    public void writeMessageNoTag(MessageLite value) throws IOException {
+      writeUInt32NoTag(value.getSerializedSize());
+      value.writeTo(this);
+    }
+
+    @Override
+    public void write(byte value) throws IOException {
+      if (position >= limit) {
+        throw new OutOfSpaceException(
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1));
+      }
+      UnsafeUtil.putByte(position++, value);
+    }
+
+    @Override
+    public void writeBytesNoTag(ByteString value) throws IOException {
+      writeUInt32NoTag(value.size());
+      value.writeTo(this);
+    }
+
+    @Override
+    public void writeByteArrayNoTag(byte[] value, int offset, int length) throws IOException {
+      writeUInt32NoTag(length);
+      write(value, offset, length);
+    }
+
+    @Override
+    public void writeRawBytes(ByteBuffer value) throws IOException {
+      if (value.hasArray()) {
+        write(value.array(), value.arrayOffset(), value.capacity());
+      } else {
+        ByteBuffer duplicated = value.duplicate();
+        duplicated.clear();
+        write(duplicated);
+      }
+    }
+
+    @Override
+    public void writeInt32NoTag(int value) throws IOException {
+      if (value >= 0) {
+        writeUInt32NoTag(value);
+      } else {
+        // Must sign-extend.
+        writeUInt64NoTag(value);
+      }
+    }
+
+    @Override
+    public void writeUInt32NoTag(int value) throws IOException {
+      if (position <= oneVarintLimit) {
+        // Optimization to avoid bounds checks on each iteration.
+        while (true) {
+          if ((value & ~0x7F) == 0) {
+            UnsafeUtil.putByte(position++, (byte) value);
+            return;
+          } else {
+            UnsafeUtil.putByte(position++, (byte) ((value & 0x7F) | 0x80));
+            value >>>= 7;
+          }
+        }
+      } else {
+        while (position < limit) {
+          if ((value & ~0x7F) == 0) {
+            UnsafeUtil.putByte(position++, (byte) value);
+            return;
+          } else {
+            UnsafeUtil.putByte(position++, (byte) ((value & 0x7F) | 0x80));
+            value >>>= 7;
+          }
+        }
+        throw new OutOfSpaceException(
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1));
+      }
+    }
+
+    @Override
+    public void writeFixed32NoTag(int value) throws IOException {
+      buffer.putInt(bufferPos(position), value);
+      position += FIXED_32_SIZE;
+    }
+
+    @Override
+    public void writeUInt64NoTag(long value) throws IOException {
+      if (position <= oneVarintLimit) {
+        // Optimization to avoid bounds checks on each iteration.
+        while (true) {
+          if ((value & ~0x7FL) == 0) {
+            UnsafeUtil.putByte(position++, (byte) value);
+            return;
+          } else {
+            UnsafeUtil.putByte(position++, (byte) (((int) value & 0x7F) | 0x80));
+            value >>>= 7;
+          }
+        }
+      } else {
+        while (position < limit) {
+          if ((value & ~0x7FL) == 0) {
+            UnsafeUtil.putByte(position++, (byte) value);
+            return;
+          } else {
+            UnsafeUtil.putByte(position++, (byte) (((int) value & 0x7F) | 0x80));
+            value >>>= 7;
+          }
+        }
+        throw new OutOfSpaceException(
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, 1));
+      }
+    }
+
+    @Override
+    public void writeFixed64NoTag(long value) throws IOException {
+      buffer.putLong(bufferPos(position), value);
+      position += FIXED_64_SIZE;
+    }
+
+    @Override
+    public void write(byte[] value, int offset, int length) throws IOException {
+      if (value == null
+          || offset < 0
+          || length < 0
+          || (value.length - length) < offset
+          || (limit - length) < position) {
+        if (value == null) {
+          throw new NullPointerException("value");
+        }
+        throw new OutOfSpaceException(
+            String.format("Pos: %d, limit: %d, len: %d", position, limit, length));
+      }
+
+      UnsafeUtil.copyMemory(
+          value, UnsafeUtil.getArrayBaseOffset() + offset, null, position, length);
+      position += length;
+    }
+
+    @Override
+    public void writeLazy(byte[] value, int offset, int length) throws IOException {
+      write(value, offset, length);
+    }
+
+    @Override
+    public void write(ByteBuffer value) throws IOException {
+      try {
+        int length = value.remaining();
+        repositionBuffer(position);
+        buffer.put(value);
+        position += length;
+      } catch (BufferOverflowException e) {
+        throw new OutOfSpaceException(e);
+      }
+    }
+
+    @Override
+    public void writeLazy(ByteBuffer value) throws IOException {
+      write(value);
+    }
+
+    @Override
+    public void writeStringNoTag(String value) throws IOException {
+      long prevPos = position;
+      try {
+        // UTF-8 byte length of the string is at least its UTF-16 code unit length (value.length()),
+        // and at most 3 times of it. We take advantage of this in both branches below.
+        int maxEncodedSize = value.length() * Utf8.MAX_BYTES_PER_CHAR;
+        int maxLengthVarIntSize = computeUInt32SizeNoTag(maxEncodedSize);
+        int minLengthVarIntSize = computeUInt32SizeNoTag(value.length());
+        if (minLengthVarIntSize == maxLengthVarIntSize) {
+          // Save the current position and increment past the length field. We'll come back
+          // and write the length field after the encoding is complete.
+          int stringStart = bufferPos(position) + minLengthVarIntSize;
+          buffer.position(stringStart);
+
+          // Encode the string.
+          Utf8.encodeUtf8(value, buffer);
+
+          // Write the length and advance the position.
+          int length = buffer.position() - stringStart;
+          writeUInt32NoTag(length);
+          position += length;
+        } else {
+          // Calculate and write the encoded length.
+          int length = Utf8.encodedLength(value);
+          writeUInt32NoTag(length);
+
+          // Write the string and advance the position.
+          repositionBuffer(position);
+          Utf8.encodeUtf8(value, buffer);
+          position += length;
+        }
+      } catch (UnpairedSurrogateException e) {
+        // Roll back the change and convert to an IOException.
+        position = prevPos;
+        repositionBuffer(position);
+
+        // TODO(nathanmittler): We should throw an IOException here instead.
+        inefficientWriteStringNoTag(value, e);
+      } catch (IllegalArgumentException e) {
+        // Thrown by buffer.position() if out of range.
+        throw new OutOfSpaceException(e);
+      } catch (IndexOutOfBoundsException e) {
+        throw new OutOfSpaceException(e);
+      }
+    }
+
+    @Override
+    public void flush() {
+      // Update the position of the original buffer.
+      originalBuffer.position(bufferPos(position));
+    }
+
+    @Override
+    public int spaceLeft() {
+      return (int) (limit - position);
+    }
+
+    @Override
+    public int getTotalBytesWritten() {
+      return (int) (position - initialPosition);
+    }
+
+    private void repositionBuffer(long pos) {
+      buffer.position(bufferPos(pos));
+    }
+
+    private int bufferPos(long pos) {
+      return (int) (pos - address);
+    }
+  }
+
+  /**
    * Abstract base class for buffered encoders.
    */
   private abstract static class AbstractBufferedEncoder extends CodedOutputStream {
@@ -1855,10 +2253,10 @@ public abstract class CodedOutputStream extends ByteOutput {
         long pos = originalPos;
         while (true) {
           if ((value & ~0x7F) == 0) {
-            UNSAFE.putByte(buffer, pos++, (byte) value);
+            UnsafeUtil.putByte(buffer, pos++, (byte) value);
             break;
           } else {
-            UNSAFE.putByte(buffer, pos++, (byte) ((value & 0x7F) | 0x80));
+            UnsafeUtil.putByte(buffer, pos++, (byte) ((value & 0x7F) | 0x80));
             value >>>= 7;
           }
         }
@@ -1890,10 +2288,10 @@ public abstract class CodedOutputStream extends ByteOutput {
         long pos = originalPos;
         while (true) {
           if ((value & ~0x7FL) == 0) {
-            UNSAFE.putByte(buffer, pos++, (byte) value);
+            UnsafeUtil.putByte(buffer, pos++, (byte) value);
             break;
           } else {
-            UNSAFE.putByte(buffer, pos++, (byte) (((int) value & 0x7F) | 0x80));
+            UnsafeUtil.putByte(buffer, pos++, (byte) (((int) value & 0x7F) | 0x80));
             value >>>= 7;
           }
         }
@@ -2599,66 +2997,5 @@ public abstract class CodedOutputStream extends ByteOutput {
       out.write(buffer, 0, position);
       position = 0;
     }
-  }
-
-  /**
-   * Gets the {@code sun.misc.Unsafe} instance, or {@code null} if not available on this
-   * platform.
-   */
-  private static sun.misc.Unsafe getUnsafe() {
-    sun.misc.Unsafe unsafe = null;
-    try {
-      unsafe = AccessController.doPrivileged(new PrivilegedExceptionAction<sun.misc.Unsafe>() {
-        @Override
-        public sun.misc.Unsafe run() throws Exception {
-          Class<sun.misc.Unsafe> k = sun.misc.Unsafe.class;
-
-          for (Field f : k.getDeclaredFields()) {
-            f.setAccessible(true);
-            Object x = f.get(null);
-            if (k.isInstance(x)) {
-              return k.cast(x);
-            }
-          }
-          // The sun.misc.Unsafe field does not exist.
-          return null;
-        }
-      });
-    } catch (Throwable e) {
-      // Catching Throwable here due to the fact that Google AppEngine raises NoClassDefFoundError
-      // for Unsafe.
-    }
-
-    logger.log(Level.FINEST, "sun.misc.Unsafe: {}",
-        unsafe != null ? "available" : "unavailable");
-    return unsafe;
-  }
-
-  /**
-   * Indicates whether or not unsafe array operations are supported on this platform.
-   */
-  // TODO(nathanmittler): Add support for Android's MemoryBlock.
-  private static boolean supportsUnsafeArrayOperations() {
-    boolean supported = false;
-    if (UNSAFE != null) {
-      try {
-        UNSAFE.getClass().getMethod("arrayBaseOffset", Class.class);
-        UNSAFE.getClass().getMethod("putByte", Object.class, long.class, byte.class);
-        supported = true;
-      } catch (Throwable e) {
-        // Do nothing.
-      }
-    }
-    logger.log(Level.FINEST, "Unsafe array operations: {}",
-        supported ? "available" : "unavailable");
-    return supported;
-  }
-
-  /**
-   * Get the base offset for byte arrays, or {@code -1} if {@code sun.misc.Unsafe} is not
-   * available.
-   */
-  private static <T> int byteArrayBaseOffset() {
-    return HAS_UNSAFE_ARRAY_OPERATIONS ? UNSAFE.arrayBaseOffset(byte[].class) : -1;
   }
 }

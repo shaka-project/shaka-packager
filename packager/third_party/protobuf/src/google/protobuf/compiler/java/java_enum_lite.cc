@@ -49,22 +49,12 @@ namespace protobuf {
 namespace compiler {
 namespace java {
 
-namespace {
-bool EnumHasCustomOptions(const EnumDescriptor* descriptor) {
-  if (descriptor->options().unknown_fields().field_count() > 0) return true;
-  for (int i = 0; i < descriptor->value_count(); ++i) {
-    const EnumValueDescriptor* value = descriptor->value(i);
-    if (value->options().unknown_fields().field_count() > 0) return true;
-  }
-  return false;
-}
-}  // namespace
-
 EnumLiteGenerator::EnumLiteGenerator(const EnumDescriptor* descriptor,
-                             bool immutable_api,
-                             Context* context)
-  : descriptor_(descriptor), immutable_api_(immutable_api),
-    name_resolver_(context->GetNameResolver())  {
+                                     bool immutable_api, Context* context)
+    : descriptor_(descriptor),
+      immutable_api_(immutable_api),
+      context_(context),
+      name_resolver_(context->GetNameResolver()) {
   for (int i = 0; i < descriptor_->value_count(); i++) {
     const EnumValueDescriptor* value = descriptor_->value(i);
     const EnumValueDescriptor* canonical_value =
@@ -85,14 +75,16 @@ EnumLiteGenerator::~EnumLiteGenerator() {}
 
 void EnumLiteGenerator::Generate(io::Printer* printer) {
   WriteEnumDocComment(printer, descriptor_);
+  MaybePrintGeneratedAnnotation(context_, printer, descriptor_, immutable_api_);
   printer->Print(
-    "public enum $classname$\n"
-    "    implements com.google.protobuf.Internal.EnumLite {\n",
-    "classname", descriptor_->name());
+      "public enum $classname$\n"
+      "    implements com.google.protobuf.Internal.EnumLite {\n",
+      "classname", descriptor_->name());
+  printer->Annotate("classname", descriptor_);
   printer->Indent();
 
   for (int i = 0; i < canonical_values_.size(); i++) {
-    map<string, string> vars;
+    std::map<string, string> vars;
     vars["name"] = canonical_values_[i]->name();
     vars["number"] = SimpleItoa(canonical_values_[i]->number());
     WriteEnumValueDocComment(printer, canonical_values_[i]);
@@ -114,7 +106,7 @@ void EnumLiteGenerator::Generate(io::Printer* printer) {
   // -----------------------------------------------------------------
 
   for (int i = 0; i < aliases_.size(); i++) {
-    map<string, string> vars;
+    std::map<string, string> vars;
     vars["classname"] = descriptor_->name();
     vars["name"] = aliases_[i].value->name();
     vars["canonical_name"] = aliases_[i].canonical_value->name();
@@ -124,7 +116,7 @@ void EnumLiteGenerator::Generate(io::Printer* printer) {
   }
 
   for (int i = 0; i < descriptor_->value_count(); i++) {
-    map<string, string> vars;
+    std::map<string, string> vars;
     vars["name"] = descriptor_->value(i)->name();
     vars["number"] = SimpleItoa(descriptor_->value(i)->number());
     WriteEnumValueDocComment(printer, descriptor_->value(i));
@@ -136,22 +128,30 @@ void EnumLiteGenerator::Generate(io::Printer* printer) {
   // -----------------------------------------------------------------
 
   printer->Print(
-    "\n"
-    "public final int getNumber() {\n"
-    "  return value;\n"
-    "}\n"
-    "\n"
-    "/**\n"
-    " * @deprecated Use {@link #forNumber(int)} instead.\n"
-    " */\n"
-    "@java.lang.Deprecated\n"
-    "public static $classname$ valueOf(int value) {\n"
-    "  return forNumber(value);\n"
-    "}\n"
-    "\n"
-    "public static $classname$ forNumber(int value) {\n"
-    "  switch (value) {\n",
-    "classname", descriptor_->name());
+      "\n"
+      "public final int getNumber() {\n");
+  if (SupportUnknownEnumValue(descriptor_->file())) {
+    printer->Print(
+        "  if (this == UNRECOGNIZED) {\n"
+        "    throw new java.lang.IllegalArgumentException(\n"
+        "        \"Can't get the number of an unknown enum value.\");\n"
+        "  }\n");
+  }
+  printer->Print(
+      "  return value;\n"
+      "}\n"
+      "\n"
+      "/**\n"
+      " * @deprecated Use {@link #forNumber(int)} instead.\n"
+      " */\n"
+      "@java.lang.Deprecated\n"
+      "public static $classname$ valueOf(int value) {\n"
+      "  return forNumber(value);\n"
+      "}\n"
+      "\n"
+      "public static $classname$ forNumber(int value) {\n"
+      "  switch (value) {\n",
+      "classname", descriptor_->name());
   printer->Indent();
   printer->Indent();
 

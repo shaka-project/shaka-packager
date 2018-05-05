@@ -10,7 +10,6 @@ using scg = global::System.Collections.Generic;
 namespace Google.Protobuf.WellKnownTypes {
 
   /// <summary>Holder for reflection information generated from google/protobuf/struct.proto</summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public static partial class StructReflection {
 
     #region Descriptor
@@ -36,7 +35,7 @@ namespace Google.Protobuf.WellKnownTypes {
             "Lmdvb2dsZS5wcm90b2J1Zi5WYWx1ZSobCglOdWxsVmFsdWUSDgoKTlVMTF9W",
             "QUxVRRAAQoEBChNjb20uZ29vZ2xlLnByb3RvYnVmQgtTdHJ1Y3RQcm90b1AB",
             "WjFnaXRodWIuY29tL2dvbGFuZy9wcm90b2J1Zi9wdHlwZXMvc3RydWN0O3N0",
-            "cnVjdHBioAEBogIDR1BCqgIeR29vZ2xlLlByb3RvYnVmLldlbGxLbm93blR5",
+            "cnVjdHBi+AEBogIDR1BCqgIeR29vZ2xlLlByb3RvYnVmLldlbGxLbm93blR5",
             "cGVzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
@@ -51,14 +50,14 @@ namespace Google.Protobuf.WellKnownTypes {
   }
   #region Enums
   /// <summary>
-  ///  `NullValue` is a singleton enumeration to represent the null value for the
-  ///  `Value` type union.
+  /// `NullValue` is a singleton enumeration to represent the null value for the
+  /// `Value` type union.
   ///
-  ///   The JSON representation for `NullValue` is JSON `null`.
+  ///  The JSON representation for `NullValue` is JSON `null`.
   /// </summary>
   public enum NullValue {
     /// <summary>
-    ///  Null value.
+    /// Null value.
     /// </summary>
     [pbr::OriginalName("NULL_VALUE")] NullValue = 0,
   }
@@ -67,38 +66,43 @@ namespace Google.Protobuf.WellKnownTypes {
 
   #region Messages
   /// <summary>
-  ///  `Struct` represents a structured data value, consisting of fields
-  ///  which map to dynamically typed values. In some languages, `Struct`
-  ///  might be supported by a native representation. For example, in
-  ///  scripting languages like JS a struct is represented as an
-  ///  object. The details of that representation are described together
-  ///  with the proto support for the language.
+  /// `Struct` represents a structured data value, consisting of fields
+  /// which map to dynamically typed values. In some languages, `Struct`
+  /// might be supported by a native representation. For example, in
+  /// scripting languages like JS a struct is represented as an
+  /// object. The details of that representation are described together
+  /// with the proto support for the language.
   ///
-  ///  The JSON representation for `Struct` is JSON object.
+  /// The JSON representation for `Struct` is JSON object.
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class Struct : pb::IMessage<Struct> {
     private static readonly pb::MessageParser<Struct> _parser = new pb::MessageParser<Struct>(() => new Struct());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<Struct> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::Google.Protobuf.WellKnownTypes.StructReflection.Descriptor.MessageTypes[0]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Struct() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Struct(Struct other) : this() {
       fields_ = other.fields_.Clone();
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Struct Clone() {
       return new Struct(this);
     }
@@ -109,16 +113,19 @@ namespace Google.Protobuf.WellKnownTypes {
         = new pbc::MapField<string, global::Google.Protobuf.WellKnownTypes.Value>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::Google.Protobuf.WellKnownTypes.Value.Parser), 10);
     private readonly pbc::MapField<string, global::Google.Protobuf.WellKnownTypes.Value> fields_ = new pbc::MapField<string, global::Google.Protobuf.WellKnownTypes.Value>();
     /// <summary>
-    ///  Unordered map of dynamically typed values.
+    /// Unordered map of dynamically typed values.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::MapField<string, global::Google.Protobuf.WellKnownTypes.Value> Fields {
       get { return fields_; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Struct);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(Struct other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -130,26 +137,31 @@ namespace Google.Protobuf.WellKnownTypes {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= Fields.GetHashCode();
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       fields_.WriteTo(output, _map_fields_codec);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       size += fields_.CalculateSize(_map_fields_codec);
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(Struct other) {
       if (other == null) {
         return;
@@ -157,6 +169,7 @@ namespace Google.Protobuf.WellKnownTypes {
       fields_.Add(other.fields_);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -175,32 +188,36 @@ namespace Google.Protobuf.WellKnownTypes {
   }
 
   /// <summary>
-  ///  `Value` represents a dynamically typed value which can be either
-  ///  null, a number, a string, a boolean, a recursive struct value, or a
-  ///  list of values. A producer of value is expected to set one of that
-  ///  variants, absence of any variant indicates an error.
+  /// `Value` represents a dynamically typed value which can be either
+  /// null, a number, a string, a boolean, a recursive struct value, or a
+  /// list of values. A producer of value is expected to set one of that
+  /// variants, absence of any variant indicates an error.
   ///
-  ///  The JSON representation for `Value` is JSON value.
+  /// The JSON representation for `Value` is JSON value.
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class Value : pb::IMessage<Value> {
     private static readonly pb::MessageParser<Value> _parser = new pb::MessageParser<Value>(() => new Value());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<Value> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::Google.Protobuf.WellKnownTypes.StructReflection.Descriptor.MessageTypes[1]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Value() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Value(Value other) : this() {
       switch (other.KindCase) {
         case KindOneofCase.NullValue:
@@ -225,6 +242,7 @@ namespace Google.Protobuf.WellKnownTypes {
 
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Value Clone() {
       return new Value(this);
     }
@@ -232,8 +250,9 @@ namespace Google.Protobuf.WellKnownTypes {
     /// <summary>Field number for the "null_value" field.</summary>
     public const int NullValueFieldNumber = 1;
     /// <summary>
-    ///  Represents a null value.
+    /// Represents a null value.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Google.Protobuf.WellKnownTypes.NullValue NullValue {
       get { return kindCase_ == KindOneofCase.NullValue ? (global::Google.Protobuf.WellKnownTypes.NullValue) kind_ : 0; }
       set {
@@ -245,8 +264,9 @@ namespace Google.Protobuf.WellKnownTypes {
     /// <summary>Field number for the "number_value" field.</summary>
     public const int NumberValueFieldNumber = 2;
     /// <summary>
-    ///  Represents a double value.
+    /// Represents a double value.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public double NumberValue {
       get { return kindCase_ == KindOneofCase.NumberValue ? (double) kind_ : 0D; }
       set {
@@ -258,8 +278,9 @@ namespace Google.Protobuf.WellKnownTypes {
     /// <summary>Field number for the "string_value" field.</summary>
     public const int StringValueFieldNumber = 3;
     /// <summary>
-    ///  Represents a string value.
+    /// Represents a string value.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string StringValue {
       get { return kindCase_ == KindOneofCase.StringValue ? (string) kind_ : ""; }
       set {
@@ -271,8 +292,9 @@ namespace Google.Protobuf.WellKnownTypes {
     /// <summary>Field number for the "bool_value" field.</summary>
     public const int BoolValueFieldNumber = 4;
     /// <summary>
-    ///  Represents a boolean value.
+    /// Represents a boolean value.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool BoolValue {
       get { return kindCase_ == KindOneofCase.BoolValue ? (bool) kind_ : false; }
       set {
@@ -284,8 +306,9 @@ namespace Google.Protobuf.WellKnownTypes {
     /// <summary>Field number for the "struct_value" field.</summary>
     public const int StructValueFieldNumber = 5;
     /// <summary>
-    ///  Represents a structured value.
+    /// Represents a structured value.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Google.Protobuf.WellKnownTypes.Struct StructValue {
       get { return kindCase_ == KindOneofCase.StructValue ? (global::Google.Protobuf.WellKnownTypes.Struct) kind_ : null; }
       set {
@@ -297,8 +320,9 @@ namespace Google.Protobuf.WellKnownTypes {
     /// <summary>Field number for the "list_value" field.</summary>
     public const int ListValueFieldNumber = 6;
     /// <summary>
-    ///  Represents a repeated `Value`.
+    /// Represents a repeated `Value`.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Google.Protobuf.WellKnownTypes.ListValue ListValue {
       get { return kindCase_ == KindOneofCase.ListValue ? (global::Google.Protobuf.WellKnownTypes.ListValue) kind_ : null; }
       set {
@@ -319,19 +343,23 @@ namespace Google.Protobuf.WellKnownTypes {
       ListValue = 6,
     }
     private KindOneofCase kindCase_ = KindOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public KindOneofCase KindCase {
       get { return kindCase_; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearKind() {
       kindCase_ = KindOneofCase.None;
       kind_ = null;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as Value);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(Value other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -349,6 +377,7 @@ namespace Google.Protobuf.WellKnownTypes {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       if (kindCase_ == KindOneofCase.NullValue) hash ^= NullValue.GetHashCode();
@@ -361,10 +390,12 @@ namespace Google.Protobuf.WellKnownTypes {
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       if (kindCase_ == KindOneofCase.NullValue) {
         output.WriteRawTag(8);
@@ -392,6 +423,7 @@ namespace Google.Protobuf.WellKnownTypes {
       }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       if (kindCase_ == KindOneofCase.NullValue) {
@@ -415,6 +447,7 @@ namespace Google.Protobuf.WellKnownTypes {
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(Value other) {
       if (other == null) {
         return;
@@ -442,6 +475,7 @@ namespace Google.Protobuf.WellKnownTypes {
 
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
@@ -491,33 +525,38 @@ namespace Google.Protobuf.WellKnownTypes {
   }
 
   /// <summary>
-  ///  `ListValue` is a wrapper around a repeated field of values.
+  /// `ListValue` is a wrapper around a repeated field of values.
   ///
-  ///  The JSON representation for `ListValue` is JSON array.
+  /// The JSON representation for `ListValue` is JSON array.
   /// </summary>
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public sealed partial class ListValue : pb::IMessage<ListValue> {
     private static readonly pb::MessageParser<ListValue> _parser = new pb::MessageParser<ListValue>(() => new ListValue());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<ListValue> Parser { get { return _parser; } }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::Google.Protobuf.WellKnownTypes.StructReflection.Descriptor.MessageTypes[2]; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ListValue() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ListValue(ListValue other) : this() {
       values_ = other.values_.Clone();
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ListValue Clone() {
       return new ListValue(this);
     }
@@ -528,16 +567,19 @@ namespace Google.Protobuf.WellKnownTypes {
         = pb::FieldCodec.ForMessage(10, global::Google.Protobuf.WellKnownTypes.Value.Parser);
     private readonly pbc::RepeatedField<global::Google.Protobuf.WellKnownTypes.Value> values_ = new pbc::RepeatedField<global::Google.Protobuf.WellKnownTypes.Value>();
     /// <summary>
-    ///  Repeated field of dynamically typed values.
+    /// Repeated field of dynamically typed values.
     /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pbc::RepeatedField<global::Google.Protobuf.WellKnownTypes.Value> Values {
       get { return values_; }
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ListValue);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Equals(ListValue other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -549,26 +591,31 @@ namespace Google.Protobuf.WellKnownTypes {
       return true;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= values_.GetHashCode();
       return hash;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       values_.WriteTo(output, _repeated_values_codec);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
       size += values_.CalculateSize(_repeated_values_codec);
       return size;
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(ListValue other) {
       if (other == null) {
         return;
@@ -576,6 +623,7 @@ namespace Google.Protobuf.WellKnownTypes {
       values_.Add(other.values_);
     }
 
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {

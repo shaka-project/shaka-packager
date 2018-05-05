@@ -59,7 +59,7 @@ namespace cpp {
 using internal::WireFormat;
 
 void SetCommonFieldVariables(const FieldDescriptor* descriptor,
-                             map<string, string>* variables,
+                             std::map<string, string>* variables,
                              const Options& options) {
   (*variables)["name"] = FieldName(descriptor);
   (*variables)["index"] = SimpleItoa(descriptor->index());
@@ -78,7 +78,7 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
   (*variables)["deprecation"] = descriptor->options().deprecated()
       ? " PROTOBUF_DEPRECATED" : "";
   (*variables)["deprecated_attr"] = descriptor->options().deprecated()
-      ? "PROTOBUF_DEPRECATED_ATTR " : "";
+      ? "GOOGLE_PROTOBUF_DEPRECATED_ATTR " : "";
 
   (*variables)["cppget"] = "Get";
 
@@ -98,7 +98,7 @@ void SetCommonFieldVariables(const FieldDescriptor* descriptor,
 }
 
 void SetCommonOneofFieldVariables(const FieldDescriptor* descriptor,
-                                  map<string, string>* variables) {
+                                  std::map<string, string>* variables) {
   const string prefix = descriptor->containing_oneof()->name() + "_.";
   (*variables)["oneof_prefix"] = prefix;
   (*variables)["oneof_name"] = descriptor->containing_oneof()->name();

@@ -1,17 +1,3 @@
-unchanged:
---- protobuf-cleaned/src/google/protobuf/compiler/cpp/cpp_file.cc	2015-12-30 13:21:46.000000000 -0800
-+++ protobuf-patched/src/google/protobuf/compiler/cpp/cpp_file.cc	2016-03-31 13:25:40.252007316 -0700
-@@ -337,7 +337,7 @@
-           "namespace {\n"
-           "\n"
-           "static void MergeFromFail(int line) GOOGLE_ATTRIBUTE_COLD;\n"
--          "static void MergeFromFail(int line) {\n"
-+          "GOOGLE_ATTRIBUTE_NOINLINE static void MergeFromFail(int line) {\n"
-           "  GOOGLE_CHECK(false) << __FILE__ << \":\" << line;\n"
-           "}\n"
-           "\n"
-only in patch2:
-unchanged:
 --- protobuf-cleaned/src/google/protobuf/compiler/cpp/cpp_message.cc	2015-12-30 13:21:46.000000000 -0800
 +++ protobuf-patched/src/google/protobuf/compiler/cpp/cpp_message.cc	2016-03-31 13:25:40.888006485 -0700
 @@ -1035,7 +1035,7 @@

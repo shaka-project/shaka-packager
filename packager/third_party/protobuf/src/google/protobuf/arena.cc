@@ -30,10 +30,13 @@
 
 #include <google/protobuf/arena.h>
 
+#include <algorithm>
+#include <limits>
+
 
 #ifdef ADDRESS_SANITIZER
 #include <sanitizer/asan_interface.h>
-#endif
+#endif  // ADDRESS_SANITIZER
 
 namespace google {
 namespace protobuf {
@@ -59,6 +62,7 @@ void Arena::Init() {
   lifecycle_id_ = lifecycle_id_generator_.GetNext();
   blocks_ = 0;
   hint_ = 0;
+  space_allocated_ = 0;
   owns_first_block_ = true;
   cleanup_list_ = 0;
 
@@ -125,26 +129,20 @@ Arena::Block* Arena::NewBlock(void* me, Block* my_last_block, size_t n,
   } else {
     size = start_block_size;
   }
-  if (n > size - kHeaderSize) {
-    // TODO(sanjay): Check if n + kHeaderSize would overflow
-    size = kHeaderSize + n;
-  }
+  // Verify that n + kHeaderSize won't overflow.
+  GOOGLE_CHECK_LE(n, std::numeric_limits<size_t>::max() - kHeaderSize);
+  size = std::max(size, kHeaderSize + n);
 
   Block* b = reinterpret_cast<Block*>(options_.block_alloc(size));
   b->pos = kHeaderSize + n;
   b->size = size;
-  if (b->avail() == 0) {
-    // Do not attempt to reuse this block.
-    b->owner = NULL;
-  } else {
-    b->owner = me;
-  }
+  b->owner = me;
 #ifdef ADDRESS_SANITIZER
   // Poison the rest of the block for ASAN. It was unpoisoned by the underlying
   // malloc but it's not yet usable until we return it as part of an allocation.
   ASAN_POISON_MEMORY_REGION(
       reinterpret_cast<char*>(b) + b->pos, b->size - b->pos);
-#endif
+#endif  // ADDRESS_SANITIZER
   return b;
 }
 
@@ -160,6 +158,7 @@ void Arena::AddBlockInternal(Block* b) {
     // Direct future allocations to this block.
     google::protobuf::internal::Release_Store(&hint_, reinterpret_cast<google::protobuf::internal::AtomicWord>(b));
   }
+  space_allocated_ += b->size;
 }
 
 void Arena::AddListNode(void* elem, void (*cleanup)(void*)) {
@@ -208,7 +207,7 @@ void* Arena::AllocFromBlock(Block* b, size_t n) {
   b->pos = p + n;
 #ifdef ADDRESS_SANITIZER
   ASAN_UNPOISON_MEMORY_REGION(reinterpret_cast<char*>(b) + p, n);
-#endif
+#endif  // ADDRESS_SANITIZER
   return reinterpret_cast<char*>(b) + p;
 }
 
@@ -223,20 +222,13 @@ void* Arena::SlowAlloc(size_t n) {
   }
   b = NewBlock(me, b, n, options_.start_block_size, options_.max_block_size);
   AddBlock(b);
-  if (b->owner == me) {  // If this block can be reused (see NewBlock()).
-    SetThreadCacheBlock(b);
-  }
+  SetThreadCacheBlock(b);
   return reinterpret_cast<char*>(b) + kHeaderSize;
 }
 
 uint64 Arena::SpaceAllocated() const {
-  uint64 space_allocated = 0;
-  Block* b = reinterpret_cast<Block*>(google::protobuf::internal::NoBarrier_Load(&blocks_));
-  while (b != NULL) {
-    space_allocated += (b->size);
-    b = b->next;
-  }
-  return space_allocated;
+  MutexLock l(&blocks_lock_);
+  return space_allocated_;
 }
 
 uint64 Arena::SpaceUsed() const {
@@ -249,17 +241,8 @@ uint64 Arena::SpaceUsed() const {
   return space_used;
 }
 
-pair<uint64, uint64> Arena::SpaceAllocatedAndUsed() const {
-  uint64 allocated = 0;
-  uint64 used = 0;
-
-  Block* b = reinterpret_cast<Block*>(google::protobuf::internal::NoBarrier_Load(&blocks_));
-  while (b != NULL) {
-    allocated += b->size;
-    used += (b->pos - kHeaderSize);
-    b = b->next;
-  }
-  return std::make_pair(allocated, used);
+std::pair<uint64, uint64> Arena::SpaceAllocatedAndUsed() const {
+  return std::make_pair(SpaceAllocated(), SpaceUsed());
 }
 
 uint64 Arena::FreeBlocks() {
@@ -270,9 +253,19 @@ uint64 Arena::FreeBlocks() {
     space_allocated += (b->size);
     Block* next = b->next;
     if (next != NULL) {
+#ifdef ADDRESS_SANITIZER
+      // This memory was provided by the underlying allocator as unpoisoned, so
+      // return it in an unpoisoned state.
+      ASAN_UNPOISON_MEMORY_REGION(reinterpret_cast<char*>(b), b->size);
+#endif  // ADDRESS_SANITIZER
       options_.block_dealloc(b, b->size);
     } else {
       if (owns_first_block_) {
+#ifdef ADDRESS_SANITIZER
+        // This memory was provided by the underlying allocator as unpoisoned,
+        // so return it in an unpoisoned state.
+        ASAN_UNPOISON_MEMORY_REGION(reinterpret_cast<char*>(b), b->size);
+#endif  // ADDRESS_SANITIZER
         options_.block_dealloc(b, b->size);
       } else {
         // User passed in the first block, skip free'ing the memory.
@@ -283,6 +276,7 @@ uint64 Arena::FreeBlocks() {
   }
   blocks_ = 0;
   hint_ = 0;
+  space_allocated_ = 0;
   if (!owns_first_block_) {
     // Make the first block that was passed in through ArenaOptions
     // available for reuse.

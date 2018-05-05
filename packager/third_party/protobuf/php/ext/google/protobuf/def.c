@@ -1,147 +1,338 @@
+// Protocol Buffers - Google's data interchange format
+// Copyright 2008 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #include "protobuf.h"
+
+const char* const kReservedNames[] = {"Empty", "ECHO", "ARRAY"};
+const int kReservedNamesSize = 3;
+
+// Forward declare.
+static void descriptor_init_c_instance(Descriptor* intern TSRMLS_DC);
+static void descriptor_free_c(Descriptor* object TSRMLS_DC);
+
+static void enum_descriptor_init_c_instance(EnumDescriptor* intern TSRMLS_DC);
+static void enum_descriptor_free_c(EnumDescriptor* object TSRMLS_DC);
+
+static void descriptor_pool_free_c(DescriptorPool* object TSRMLS_DC);
+static void descriptor_pool_init_c_instance(DescriptorPool* pool TSRMLS_DC);
 
 // -----------------------------------------------------------------------------
 // Common Utilities
 // -----------------------------------------------------------------------------
 
-void check_upb_status(const upb_status* status, const char* msg) {
+static void check_upb_status(const upb_status* status, const char* msg) {
   if (!upb_ok(status)) {
-    zend_error("%s: %s\n", msg, upb_status_errmsg(status));
+    zend_error(E_ERROR, "%s: %s\n", msg, upb_status_errmsg(status));
   }
 }
 
+static void upb_filedef_free(void *r) {
+  upb_filedef *f = *(upb_filedef **)r;
+  size_t i;
 
-static upb_def *check_notfrozen(const upb_def *def) {
-  if (upb_def_isfrozen(def)) {
-    zend_error(E_ERROR,
-               "Attempt to modify a frozen descriptor. Once descriptors are "
-               "added to the descriptor pool, they may not be modified.");
+  for (i = 0; i < upb_filedef_depcount(f); i++) {
+    upb_filedef_unref(upb_filedef_dep(f, i), f);
   }
-  return (upb_def *)def;
+
+  upb_inttable_uninit(&f->defs);
+  upb_inttable_uninit(&f->deps);
+  upb_gfree((void *)f->name);
+  upb_gfree((void *)f->package);
+  upb_gfree(f);
 }
 
-static upb_msgdef *check_msgdef_notfrozen(const upb_msgdef *def) {
-  return upb_downcast_msgdef_mutable(check_notfrozen((const upb_def *)def));
-}
+// Camel-case the field name and append "Entry" for generated map entry name.
+// e.g. map<KeyType, ValueType> foo_map => FooMapEntry
+static void append_map_entry_name(char *result, const char *field_name,
+                                  int pos) {
+  bool cap_next = true;
+  int i;
 
-static upb_fielddef *check_fielddef_notfrozen(const upb_fielddef *def) {
-  return upb_downcast_fielddef_mutable(check_notfrozen((const upb_def *)def));
-}
-
-#define PROTOBUF_WRAP_INTERN(wrapper, intern, intern_dtor)            \
-  Z_TYPE_P(wrapper) = IS_OBJECT;                                      \
-  Z_OBJVAL_P(wrapper)                                                 \
-      .handle = zend_objects_store_put(                               \
-      intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, \
-      intern_dtor, NULL TSRMLS_CC);                                   \
-  Z_OBJVAL_P(wrapper).handlers = zend_get_std_object_handlers();
-
-#define PROTOBUF_SETUP_ZEND_WRAPPER(class_name, class_name_lower, wrapper,    \
-                                    intern)                                   \
-  Z_TYPE_P(wrapper) = IS_OBJECT;                                              \
-  class_name *intern = ALLOC(class_name);                                     \
-  memset(intern, 0, sizeof(class_name));                                      \
-  class_name_lower##_init_c_instance(intern TSRMLS_CC);                       \
-  Z_OBJVAL_P(wrapper)                                                         \
-      .handle = zend_objects_store_put(intern, NULL, class_name_lower##_free, \
-                                       NULL TSRMLS_CC);                       \
-  Z_OBJVAL_P(wrapper).handlers = zend_get_std_object_handlers();
-
-#define PROTOBUF_CREATE_ZEND_WRAPPER(class_name, class_name_lower, wrapper, \
-                                     intern)                                \
-  MAKE_STD_ZVAL(wrapper);                                                   \
-  PROTOBUF_SETUP_ZEND_WRAPPER(class_name, class_name_lower, wrapper, intern);
-
-#define DEFINE_CLASS(name, name_lower, string_name)                          \
-  zend_class_entry *name_lower##_type;                                       \
-  void name_lower##_init(TSRMLS_D) {                                         \
-    zend_class_entry class_type;                                             \
-    INIT_CLASS_ENTRY(class_type, string_name, name_lower##_methods);         \
-    name_lower##_type = zend_register_internal_class(&class_type TSRMLS_CC); \
-    name_lower##_type->create_object = name_lower##_create;                  \
-  }                                                                          \
-  name *php_to_##name_lower(zval *val TSRMLS_DC) {                           \
-    return (name *)zend_object_store_get_object(val TSRMLS_CC);              \
-  }                                                                          \
-  void name_lower##_free(void *object TSRMLS_DC) {                           \
-    name *intern = (name *)object;                                           \
-    name_lower##_free_c(intern TSRMLS_CC);                                   \
-    efree(object);                                                           \
-  }                                                                          \
-  zend_object_value name_lower##_create(zend_class_entry *ce TSRMLS_DC) {    \
-    zend_object_value return_value;                                          \
-    name *intern = (name *)emalloc(sizeof(name));                            \
-    memset(intern, 0, sizeof(name));                                         \
-    name_lower##_init_c_instance(intern TSRMLS_CC);                          \
-    return_value.handle = zend_objects_store_put(                            \
-        intern, (zend_objects_store_dtor_t)zend_objects_destroy_object,      \
-        name_lower##_free, NULL TSRMLS_CC);                                  \
-    return_value.handlers = zend_get_std_object_handlers();                  \
-    return return_value;                                                     \
+  for (i = 0; i < strlen(field_name); ++i) {
+    if (field_name[i] == '_') {
+      cap_next = true;
+    } else if (cap_next) {
+      // Note: Do not use ctype.h due to locales.
+      if ('a' <= field_name[i] && field_name[i] <= 'z') {
+        result[pos++] = field_name[i] - 'a' + 'A';
+      } else {
+        result[pos++] = field_name[i];
+      }
+      cap_next = false;
+    } else {
+      result[pos++] = field_name[i];
+    }
   }
+  strcat(result, "Entry");
+}
+
+#define CHECK_UPB(code, msg)             \
+  do {                                   \
+    upb_status status = UPB_STATUS_INIT; \
+    code;                                \
+    check_upb_status(&status, msg);      \
+  } while (0)
+
+// Define PHP class
+#define DEFINE_PROTOBUF_INIT_CLASS(CLASSNAME, CAMELNAME, LOWERNAME) \
+  PHP_PROTO_INIT_CLASS_START(CLASSNAME, CAMELNAME, LOWERNAME)       \
+  PHP_PROTO_INIT_CLASS_END
+
+#define DEFINE_PROTOBUF_CREATE(NAME, LOWERNAME)  \
+  PHP_PROTO_OBJECT_CREATE_START(NAME, LOWERNAME) \
+  LOWERNAME##_init_c_instance(intern TSRMLS_CC); \
+  PHP_PROTO_OBJECT_CREATE_END(NAME, LOWERNAME)
+
+#define DEFINE_PROTOBUF_FREE(CAMELNAME, LOWERNAME)  \
+  PHP_PROTO_OBJECT_FREE_START(CAMELNAME, LOWERNAME) \
+  LOWERNAME##_free_c(intern TSRMLS_CC);             \
+  PHP_PROTO_OBJECT_FREE_END
+
+#define DEFINE_PROTOBUF_DTOR(CAMELNAME, LOWERNAME)  \
+  PHP_PROTO_OBJECT_DTOR_START(CAMELNAME, LOWERNAME) \
+  PHP_PROTO_OBJECT_DTOR_END
+
+#define DEFINE_CLASS(NAME, LOWERNAME, string_name) \
+  zend_class_entry *LOWERNAME##_type;              \
+  zend_object_handlers *LOWERNAME##_handlers;      \
+  DEFINE_PROTOBUF_FREE(NAME, LOWERNAME)            \
+  DEFINE_PROTOBUF_DTOR(NAME, LOWERNAME)            \
+  DEFINE_PROTOBUF_CREATE(NAME, LOWERNAME)          \
+  DEFINE_PROTOBUF_INIT_CLASS(string_name, NAME, LOWERNAME)
+
+// -----------------------------------------------------------------------------
+// GPBType
+// -----------------------------------------------------------------------------
+
+zend_class_entry* gpb_type_type;
+
+static zend_function_entry gpb_type_methods[] = {
+  ZEND_FE_END
+};
+
+void gpb_type_init(TSRMLS_D) {
+  zend_class_entry class_type;
+  INIT_CLASS_ENTRY(class_type, "Google\\Protobuf\\Internal\\GPBType",
+                   gpb_type_methods);
+  gpb_type_type = zend_register_internal_class(&class_type TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("DOUBLE"),  1 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("FLOAT"),   2 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("INT64"),   3 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("UINT64"),  4 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("INT32"),   5 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("FIXED64"), 6 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("FIXED32"), 7 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("BOOL"),    8 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("STRING"),  9 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("GROUP"),   10 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("MESSAGE"), 11 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("BYTES"),   12 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("UINT32"),  13 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("ENUM"),    14 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("SFIXED32"),
+                                   15 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("SFIXED64"),
+                                   16 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("SINT32"), 17 TSRMLS_CC);
+  zend_declare_class_constant_long(gpb_type_type, STR("SINT64"), 18 TSRMLS_CC);
+}
+
+// -----------------------------------------------------------------------------
+// Descriptor
+// -----------------------------------------------------------------------------
+
+static zend_function_entry descriptor_methods[] = {
+  ZEND_FE_END
+};
+
+DEFINE_CLASS(Descriptor, descriptor, "Google\\Protobuf\\Internal\\Descriptor");
+
+static void descriptor_free_c(Descriptor *self TSRMLS_DC) {
+  if (self->layout) {
+    free_layout(self->layout);
+  }
+  if (self->fill_handlers) {
+    upb_handlers_unref(self->fill_handlers, &self->fill_handlers);
+  }
+  if (self->fill_method) {
+    upb_pbdecodermethod_unref(self->fill_method, &self->fill_method);
+  }
+  if (self->json_fill_method) {
+    upb_json_parsermethod_unref(self->json_fill_method,
+                                &self->json_fill_method);
+  }
+  if (self->pb_serialize_handlers) {
+    upb_handlers_unref(self->pb_serialize_handlers,
+                       &self->pb_serialize_handlers);
+  }
+  if (self->json_serialize_handlers) {
+    upb_handlers_unref(self->json_serialize_handlers,
+                       &self->json_serialize_handlers);
+  }
+  if (self->json_serialize_handlers_preserve) {
+    upb_handlers_unref(self->json_serialize_handlers_preserve,
+                       &self->json_serialize_handlers_preserve);
+  }
+}
+
+static void descriptor_init_c_instance(Descriptor *desc TSRMLS_DC) {
+  // zend_object_std_init(&desc->std, descriptor_type TSRMLS_CC);
+  desc->msgdef = NULL;
+  desc->layout = NULL;
+  desc->klass = NULL;
+  desc->fill_handlers = NULL;
+  desc->fill_method = NULL;
+  desc->json_fill_method = NULL;
+  desc->pb_serialize_handlers = NULL;
+  desc->json_serialize_handlers = NULL;
+  desc->json_serialize_handlers_preserve = NULL;
+}
+
+// -----------------------------------------------------------------------------
+// EnumDescriptor
+// -----------------------------------------------------------------------------
+
+static zend_function_entry enum_descriptor_methods[] = {
+  ZEND_FE_END
+};
+
+DEFINE_CLASS(EnumDescriptor, enum_descriptor,
+             "Google\\Protobuf\\Internal\\EnumDescriptor");
+
+static void enum_descriptor_free_c(EnumDescriptor *self TSRMLS_DC) {
+}
+
+static void enum_descriptor_init_c_instance(EnumDescriptor *self TSRMLS_DC) {
+  // zend_object_std_init(&self->std, enum_descriptor_type TSRMLS_CC);
+  self->enumdef = NULL;
+  self->klass = NULL;
+}
+
+// -----------------------------------------------------------------------------
+// FieldDescriptor
+// -----------------------------------------------------------------------------
+
+upb_fieldtype_t to_fieldtype(upb_descriptortype_t type) {
+  switch (type) {
+#define CASE(descriptor_type, type)           \
+  case UPB_DESCRIPTOR_TYPE_##descriptor_type: \
+    return UPB_TYPE_##type;
+
+  CASE(FLOAT,    FLOAT);
+  CASE(DOUBLE,   DOUBLE);
+  CASE(BOOL,     BOOL);
+  CASE(STRING,   STRING);
+  CASE(BYTES,    BYTES);
+  CASE(MESSAGE,  MESSAGE);
+  CASE(GROUP,    MESSAGE);
+  CASE(ENUM,     ENUM);
+  CASE(INT32,    INT32);
+  CASE(INT64,    INT64);
+  CASE(UINT32,   UINT32);
+  CASE(UINT64,   UINT64);
+  CASE(SINT32,   INT32);
+  CASE(SINT64,   INT64);
+  CASE(FIXED32,  UINT32);
+  CASE(FIXED64,  UINT64);
+  CASE(SFIXED32, INT32);
+  CASE(SFIXED64, INT64);
+
+#undef CONVERT
+
+  }
+
+  zend_error(E_ERROR, "Unknown field type.");
+  return 0;
+}
 
 // -----------------------------------------------------------------------------
 // DescriptorPool
 // -----------------------------------------------------------------------------
 
 static zend_function_entry descriptor_pool_methods[] = {
-  PHP_ME(DescriptorPool, addMessage, NULL, ZEND_ACC_PUBLIC)
-  PHP_ME(DescriptorPool, finalize, NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(DescriptorPool, getGeneratedPool, NULL,
+         ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+  PHP_ME(DescriptorPool, internalAddGeneratedFile, NULL, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
 
 DEFINE_CLASS(DescriptorPool, descriptor_pool,
-             "Google\\Protobuf\\DescriptorPool");
+             "Google\\Protobuf\\Internal\\DescriptorPool");
 
+// wrapper of generated pool
+#if PHP_MAJOR_VERSION < 7
+zval* generated_pool_php;
+#else
+zend_object *generated_pool_php;
+#endif
 DescriptorPool *generated_pool;  // The actual generated pool
 
-ZEND_FUNCTION(get_generated_pool) {
-  if (PROTOBUF_G(generated_pool) == NULL) {
-    MAKE_STD_ZVAL(PROTOBUF_G(generated_pool));
-    Z_TYPE_P(PROTOBUF_G(generated_pool)) = IS_OBJECT;
-    generated_pool = ALLOC(DescriptorPool);
-    descriptor_pool_init_c_instance(generated_pool TSRMLS_CC);
-    Z_OBJ_HANDLE_P(PROTOBUF_G(generated_pool)) = zend_objects_store_put(
-        generated_pool, NULL,
-        (zend_objects_free_object_storage_t)descriptor_pool_free, NULL TSRMLS_CC);
-    Z_OBJ_HT_P(PROTOBUF_G(generated_pool)) = zend_get_std_object_handlers();
+static void init_generated_pool_once(TSRMLS_D) {
+  if (generated_pool_php == NULL) {
+#if PHP_MAJOR_VERSION < 7
+    MAKE_STD_ZVAL(generated_pool_php);
+    ZVAL_OBJ(generated_pool_php, descriptor_pool_type->create_object(
+                                     descriptor_pool_type TSRMLS_CC));
+    generated_pool = UNBOX(DescriptorPool, generated_pool_php);
+#else
+    generated_pool_php =
+        descriptor_pool_type->create_object(descriptor_pool_type TSRMLS_CC);
+    generated_pool = (DescriptorPool *)((char *)generated_pool_php -
+                                        XtOffsetOf(DescriptorPool, std));
+#endif
   }
-  RETURN_ZVAL(PROTOBUF_G(generated_pool), 1, 0);
 }
 
-void descriptor_pool_init_c_instance(DescriptorPool* pool TSRMLS_DC) {
-  zend_object_std_init(&pool->std, descriptor_pool_type TSRMLS_CC);
-  pool->symtab = upb_symtab_new(&pool->symtab);
+static void descriptor_pool_init_c_instance(DescriptorPool *pool TSRMLS_DC) {
+  // zend_object_std_init(&pool->std, descriptor_pool_type TSRMLS_CC);
+  pool->symtab = upb_symtab_new();
 
   ALLOC_HASHTABLE(pool->pending_list);
   zend_hash_init(pool->pending_list, 1, NULL, ZVAL_PTR_DTOR, 0);
 }
 
-void descriptor_pool_free_c(DescriptorPool *pool TSRMLS_DC) {
-  upb_symtab_unref(pool->symtab, &pool->symtab);
+static void descriptor_pool_free_c(DescriptorPool *pool TSRMLS_DC) {
+  upb_symtab_free(pool->symtab);
+
   zend_hash_destroy(pool->pending_list);
   FREE_HASHTABLE(pool->pending_list);
 }
 
-PHP_METHOD(DescriptorPool, addMessage) {
-  char *name = NULL;
-  int str_len;
-  if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &str_len) ==
-      FAILURE) {
-    return;
+static void validate_enumdef(const upb_enumdef *enumdef) {
+  // Verify that an entry exists with integer value 0. (This is the default
+  // value.)
+  const char *lookup = upb_enumdef_iton(enumdef, 0);
+  if (lookup == NULL) {
+    zend_error(E_USER_ERROR,
+               "Enum definition does not contain a value for '0'.");
   }
-
-  zval* retval = NULL;
-  PROTOBUF_CREATE_ZEND_WRAPPER(MessageBuilderContext, message_builder_context,
-                               retval, context);
-
-  MAKE_STD_ZVAL(context->pool);
-  ZVAL_ZVAL(context->pool, getThis(), 1, 0);
-
-  Descriptor *desc = php_to_descriptor(context->descriptor TSRMLS_CC);
-  Descriptor_name_set(desc, name);
-
-  RETURN_ZVAL(retval, 0, 1);
 }
 
 static void validate_msgdef(const upb_msgdef* msgdef) {
@@ -157,225 +348,205 @@ static void validate_msgdef(const upb_msgdef* msgdef) {
   }
 }
 
-PHP_METHOD(DescriptorPool, finalize) {
-  DescriptorPool *self = php_to_descriptor_pool(getThis() TSRMLS_CC);
-  Bucket *temp;
-  int i, num;
-
-  num = zend_hash_num_elements(self->pending_list);
-  upb_def **defs = emalloc(sizeof(upb_def *) * num);
-
-  for (i = 0, temp = self->pending_list->pListHead; temp != NULL;
-       temp = temp->pListNext) {
-    zval *def_php = *(zval **)temp->pData;
-    Descriptor* desc = php_to_descriptor(def_php TSRMLS_CC);
-    defs[i] = (upb_def *)desc->msgdef;
-    validate_msgdef((const upb_msgdef *)defs[i++]);
-  }
-
-  CHECK_UPB(upb_symtab_add(self->symtab, (upb_def **)defs, num, NULL, &status),
-            "Unable to add defs to DescriptorPool");
-
-  for (temp = self->pending_list->pListHead; temp != NULL;
-       temp = temp->pListNext) {
-    // zval *def_php = *(zval **)temp->pData;
-    // Descriptor* desc = php_to_descriptor(def_php TSRMLS_CC);
-    build_class_from_descriptor((zval *)temp->pDataPtr TSRMLS_CC);
-  }
-
-  FREE(defs);
-  zend_hash_destroy(self->pending_list);
-  zend_hash_init(self->pending_list, 1, NULL, ZVAL_PTR_DTOR, 0);
+PHP_METHOD(DescriptorPool, getGeneratedPool) {
+  init_generated_pool_once(TSRMLS_C);
+#if PHP_MAJOR_VERSION < 7
+  RETURN_ZVAL(generated_pool_php, 1, 0);
+#else
+  ++GC_REFCOUNT(generated_pool_php);
+  RETURN_OBJ(generated_pool_php);
+#endif
 }
 
-// -----------------------------------------------------------------------------
-// Descriptor
-// -----------------------------------------------------------------------------
+static void classname_no_prefix(const char *fullname, const char *package_name,
+                                char *class_name) {
+  size_t i = 0, j;
+  bool first_char = true, is_reserved = false;
+  size_t pkg_name_len = package_name == NULL ? 0 : strlen(package_name);
+  size_t message_name_start = package_name == NULL ? 0 : pkg_name_len + 1;
+  size_t message_len = (strlen(fullname) - message_name_start);
 
-static zend_function_entry descriptor_methods[] = {
-  ZEND_FE_END
-};
-
-DEFINE_CLASS(Descriptor, descriptor, "Google\\Protobuf\\Descriptor");
-
-void descriptor_free_c(Descriptor *self TSRMLS_DC) {
-  upb_msg_field_iter iter;
-  upb_msg_field_begin(&iter, self->msgdef);
-  while (!upb_msg_field_done(&iter)) {
-    upb_fielddef *fielddef = upb_msg_iter_field(&iter);
-    upb_fielddef_unref(fielddef, &fielddef);
-    upb_msg_field_next(&iter);
-  }
-  upb_msgdef_unref(self->msgdef, &self->msgdef);
-  if (self->layout) {
-    free_layout(self->layout);
-  }
-}
-
-static void descriptor_add_field(Descriptor *desc,
-                                 const upb_fielddef *fielddef) {
-  upb_msgdef *mut_def = check_msgdef_notfrozen(desc->msgdef);
-  upb_fielddef *mut_field_def = check_fielddef_notfrozen(fielddef);
-  CHECK_UPB(upb_msgdef_addfield(mut_def, mut_field_def, NULL, &status),
-            "Adding field to Descriptor failed");
-  // add_def_obj(fielddef, obj);
-}
-
-void descriptor_init_c_instance(Descriptor* desc TSRMLS_DC) {
-  zend_object_std_init(&desc->std, descriptor_type TSRMLS_CC);
-  desc->msgdef = upb_msgdef_new(&desc->msgdef);
-  desc->layout = NULL;
-  // MAKE_STD_ZVAL(intern->klass);
-  // ZVAL_NULL(intern->klass);
-  desc->pb_serialize_handlers = NULL;
-}
-
-void Descriptor_name_set(Descriptor *desc, const char *name) {
-  upb_msgdef *mut_def = check_msgdef_notfrozen(desc->msgdef);
-  CHECK_UPB(upb_msgdef_setfullname(mut_def, name, &status),
-            "Error setting Descriptor name");
-}
-
-// -----------------------------------------------------------------------------
-// FieldDescriptor
-// -----------------------------------------------------------------------------
-
-static void field_descriptor_name_set(const upb_fielddef* fielddef,
-                                      const char *name) {
-  upb_fielddef *mut_def = check_fielddef_notfrozen(fielddef);
-  CHECK_UPB(upb_fielddef_setname(mut_def, name, &status),
-            "Error setting FieldDescriptor name");
-}
-
-static void field_descriptor_label_set(const upb_fielddef* fielddef,
-                                       upb_label_t upb_label) {
-  upb_fielddef *mut_def = check_fielddef_notfrozen(fielddef);
-  upb_fielddef_setlabel(mut_def, upb_label);
-}
-
-upb_fieldtype_t string_to_descriptortype(const char *type) {
-#define CONVERT(upb, str)   \
-  if (!strcmp(type, str)) { \
-    return UPB_DESCRIPTOR_TYPE_##upb;  \
-  }
-
-  CONVERT(FLOAT, "float");
-  CONVERT(DOUBLE, "double");
-  CONVERT(BOOL, "bool");
-  CONVERT(STRING, "string");
-  CONVERT(BYTES, "bytes");
-  CONVERT(MESSAGE, "message");
-  CONVERT(GROUP, "group");
-  CONVERT(ENUM, "enum");
-  CONVERT(INT32, "int32");
-  CONVERT(INT64, "int64");
-  CONVERT(UINT32, "uint32");
-  CONVERT(UINT64, "uint64");
-  CONVERT(SINT32, "sint32");
-  CONVERT(SINT64, "sint64");
-  CONVERT(FIXED32, "fixed32");
-  CONVERT(FIXED64, "fixed64");
-  CONVERT(SFIXED32, "sfixed32");
-  CONVERT(SFIXED64, "sfixed64");
-
-#undef CONVERT
-
-  zend_error(E_ERROR, "Unknown field type.");
-  return 0;
-}
-
-static void field_descriptor_type_set(const upb_fielddef* fielddef,
-                                      const char *type) {
-  upb_fielddef *mut_def = check_fielddef_notfrozen(fielddef);
-  upb_fielddef_setdescriptortype(mut_def, string_to_descriptortype(type));
-}
-
-static void field_descriptor_number_set(const upb_fielddef* fielddef,
-                                        int number) {
-  upb_fielddef *mut_def = check_fielddef_notfrozen(fielddef);
-  CHECK_UPB(upb_fielddef_setnumber(mut_def, number, &status),
-            "Error setting field number");
-}
-
-// -----------------------------------------------------------------------------
-// MessageBuilderContext
-// -----------------------------------------------------------------------------
-
-static zend_function_entry message_builder_context_methods[] = {
-    PHP_ME(MessageBuilderContext, finalizeToPool, NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(MessageBuilderContext, optional, NULL, ZEND_ACC_PUBLIC)
-    {NULL, NULL, NULL}
-};
-
-DEFINE_CLASS(MessageBuilderContext, message_builder_context,
-             "Google\\Protobuf\\Internal\\MessageBuilderContext");
-
-void message_builder_context_free_c(MessageBuilderContext *context TSRMLS_DC) {
-  zval_ptr_dtor(&context->descriptor);
-  zval_ptr_dtor(&context->pool);
-}
-
-void message_builder_context_init_c_instance(
-    MessageBuilderContext *context TSRMLS_DC) {
-  zend_object_std_init(&context->std, message_builder_context_type TSRMLS_CC);
-  PROTOBUF_CREATE_ZEND_WRAPPER(Descriptor, descriptor, context->descriptor,
-                               desc);
-}
-
-static void msgdef_add_field(Descriptor *desc, upb_label_t upb_label,
-                             const char *name, const char *type, int number,
-                             const char *type_class) {
-  upb_fielddef *fielddef = upb_fielddef_new(&fielddef);
-  upb_fielddef_setpacked(fielddef, false);
-
-  field_descriptor_label_set(fielddef, upb_label);
-  field_descriptor_name_set(fielddef, name);
-  field_descriptor_type_set(fielddef, type);
-  field_descriptor_number_set(fielddef, number);
-
-// //   if (type_class != Qnil) {
-// //     if (TYPE(type_class) != T_STRING) {
-// //       rb_raise(rb_eArgError, "Expected string for type class");
-// //     }
-// //     // Make it an absolute type name by prepending a dot.
-// //     type_class = rb_str_append(rb_str_new2("."), type_class);
-// //     rb_funcall(fielddef, rb_intern("submsg_name="), 1, type_class);
-// //   }
-  descriptor_add_field(desc, fielddef);
-}
-
-PHP_METHOD(MessageBuilderContext, optional) {
-  MessageBuilderContext *self = php_to_message_builder_context(getThis() TSRMLS_CC);
-  Descriptor *desc = php_to_descriptor(self->descriptor TSRMLS_CC);
-  // VALUE name, type, number, type_class;
-  const char *name, *type, *type_class;
-  int number, name_str_len, type_str_len, type_class_str_len;
-  if (ZEND_NUM_ARGS() == 3) {
-    if (zend_parse_parameters(3 TSRMLS_CC, "ssl", &name,
-                              &name_str_len, &type, &type_str_len, &number) == FAILURE) {
-      return;
+  // Submessage is concatenated with its containing messages by '_'.
+  for (j = message_name_start; j < message_name_start + message_len; j++) {
+    if (fullname[j] == '.') {
+      class_name[i++] = '_';
+    } else {
+      class_name[i++] = fullname[j];
     }
-  } else {
-    if (zend_parse_parameters(4 TSRMLS_CC, "ssls", &name,
-                              &name_str_len, &type, &type_str_len, &number, &type_class,
-                              &type_class_str_len) == FAILURE) {
-      return;
+  }
+}
+
+static const char *classname_prefix(const char *classname,
+                                    const char *prefix_given,
+                                    const char *package_name) {
+  size_t i;
+  bool is_reserved = false;
+
+  if (prefix_given != NULL && strcmp(prefix_given, "") != 0) {
+    return prefix_given;
+  }
+
+  for (i = 0; i < kReservedNamesSize; i++) {
+    if (strcmp(kReservedNames[i], classname) == 0) {
+      is_reserved = true;
+      break;
     }
   }
 
-  msgdef_add_field(desc, UPB_LABEL_OPTIONAL, name, type, number, type_class);
+  if (is_reserved) {
+    if (package_name != NULL && strcmp("google.protobuf", package_name) == 0) {
+      return "GPB";
+    } else {
+      return "PB";
+    }
+  }
 
-  zval_copy_ctor(getThis());
-  RETURN_ZVAL(getThis(), 1, 0);
+  return "";
 }
 
-PHP_METHOD(MessageBuilderContext, finalizeToPool) {
-  MessageBuilderContext *self = php_to_message_builder_context(getThis() TSRMLS_CC);
-  DescriptorPool *pool = php_to_descriptor_pool(self->pool TSRMLS_CC);
-  Descriptor* desc = php_to_descriptor(self->descriptor TSRMLS_CC);
+static void convert_to_class_name_inplace(const char *package,
+                                          const char *namespace_given,
+                                          const char *prefix, char *classname) {
+  size_t prefix_len = prefix == NULL ? 0 : strlen(prefix);
+  size_t classname_len = strlen(classname);
+  int i = 0, j;
+  bool first_char = true;
 
-  Z_ADDREF_P(self->descriptor);
-  zend_hash_next_index_insert(pool->pending_list, &self->descriptor,
-                              sizeof(zval *), NULL);
-  RETURN_ZVAL(self->pool, 1, 0);
+  size_t package_len = package == NULL ? 0 : strlen(package);
+  size_t namespace_given_len =
+      namespace_given == NULL ? 0 : strlen(namespace_given);
+  bool use_namespace_given = namespace_given != NULL;
+  size_t namespace_len =
+      use_namespace_given ? namespace_given_len : package_len;
+
+  int offset = namespace_len != 0 ? 2 : 0;
+
+  for (j = 0; j < classname_len; j++) {
+    classname[namespace_len + prefix_len + classname_len + offset - 1 - j] =
+        classname[classname_len - j - 1];
+  }
+
+  if (namespace_len != 0) {
+    classname[i++] = '\\';
+    for (j = 0; j < namespace_len; j++) {
+      if (use_namespace_given) {
+        classname[i++] = namespace_given[j];
+        continue;
+      }
+      // php packages are divided by '\'.
+      if (package[j] == '.') {
+        classname[i++] = '\\';
+        first_char = true;
+      } else if (first_char) {
+        // PHP package uses camel case.
+        if (package[j] < 'A' || package[j] > 'Z') {
+          classname[i++] = package[j] + 'A' - 'a';
+        } else {
+          classname[i++] = package[j];
+        }
+        first_char = false;
+      } else {
+        classname[i++] = package[j];
+      }
+    }
+    classname[i++] = '\\';
+  }
+
+  memcpy(classname + i, prefix, prefix_len);
+}
+
+PHP_METHOD(DescriptorPool, internalAddGeneratedFile) {
+  char *data = NULL;
+  PHP_PROTO_SIZE data_len;
+  upb_filedef **files;
+  size_t i;
+
+  if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &data, &data_len) ==
+      FAILURE) {
+    return;
+  }
+
+  DescriptorPool *pool = UNBOX(DescriptorPool, getThis());
+  CHECK_UPB(files = upb_loaddescriptor(data, data_len, &pool, &status),
+            "Parse binary descriptors to internal descriptors failed");
+
+  // This method is called only once in each file.
+  assert(files[0] != NULL);
+  assert(files[1] == NULL);
+
+  CHECK_UPB(upb_symtab_addfile(pool->symtab, files[0], &status),
+            "Unable to add file to DescriptorPool");
+
+  // For each enum/message, we need its PHP class, upb descriptor and its PHP
+  // wrapper. These information are needed later for encoding, decoding and type
+  // checking. However, sometimes we just have one of them. In order to find
+  // them quickly, here, we store the mapping for them.
+  for (i = 0; i < upb_filedef_defcount(files[0]); i++) {
+    const upb_def *def = upb_filedef_def(files[0], i);
+    switch (upb_def_type(def)) {
+#define CASE_TYPE(def_type, def_type_lower, desc_type, desc_type_lower)        \
+  case UPB_DEF_##def_type: {                                                   \
+    CREATE_HASHTABLE_VALUE(desc, desc_php, desc_type, desc_type_lower##_type); \
+    const upb_##def_type_lower *def_type_lower =                               \
+        upb_downcast_##def_type_lower(def);                                    \
+    desc->def_type_lower = def_type_lower;                                     \
+    add_def_obj(desc->def_type_lower, desc_php);                               \
+    /* Unlike other messages, MapEntry is shared by all map fields and doesn't \
+     * have generated PHP class.*/                                             \
+    if (upb_def_type(def) == UPB_DEF_MSG &&                                    \
+        upb_msgdef_mapentry(upb_downcast_msgdef(def))) {                       \
+      break;                                                                   \
+    }                                                                          \
+    /* Prepend '.' to package name to make it absolute. In the 5 additional    \
+     * bytes allocated, one for '.', one for trailing 0, and 3 for 'GPB' if    \
+     * given message is google.protobuf.Empty.*/                               \
+    const char *fullname = upb_##def_type_lower##_fullname(def_type_lower);    \
+    const char *php_namespace = upb_filedef_phpnamespace(files[0]);            \
+    const char *prefix_given = upb_filedef_phpprefix(files[0]);                \
+    size_t classname_len = strlen(fullname) + 5;                               \
+    if (prefix_given != NULL) {                                                \
+      classname_len += strlen(prefix_given);                                   \
+    }                                                                          \
+    if (php_namespace != NULL) {                                               \
+      classname_len += strlen(php_namespace);                                  \
+    }                                                                          \
+    char *classname = ecalloc(sizeof(char), classname_len);                    \
+    const char *package = upb_filedef_package(files[0]);                       \
+    classname_no_prefix(fullname, package, classname);                         \
+    const char *prefix = classname_prefix(classname, prefix_given, package);   \
+    convert_to_class_name_inplace(package, php_namespace, prefix, classname);  \
+    PHP_PROTO_CE_DECLARE pce;                                                  \
+    if (php_proto_zend_lookup_class(classname, strlen(classname), &pce) ==     \
+        FAILURE) {                                                             \
+      zend_error(E_ERROR, "Generated message class %s hasn't been defined",    \
+                 classname);                                                   \
+      return;                                                                  \
+    } else {                                                                   \
+      desc->klass = PHP_PROTO_CE_UNREF(pce);                                   \
+    }                                                                          \
+    add_ce_obj(desc->klass, desc_php);                                         \
+    efree(classname);                                                          \
+    break;                                                                     \
+  }
+
+      CASE_TYPE(MSG, msgdef, Descriptor, descriptor)
+      CASE_TYPE(ENUM, enumdef, EnumDescriptor, enum_descriptor)
+#undef CASE_TYPE
+
+      default:
+        break;
+    }
+  }
+
+  for (i = 0; i < upb_filedef_defcount(files[0]); i++) {
+    const upb_def *def = upb_filedef_def(files[0], i);
+    if (upb_def_type(def) == UPB_DEF_MSG) {
+      const upb_msgdef *msgdef = upb_downcast_msgdef(def);
+      PHP_PROTO_HASHTABLE_VALUE desc_php = get_def_obj(msgdef);
+      build_class_from_descriptor(desc_php TSRMLS_CC);
+    }
+  }
+
+  upb_filedef_unref(files[0], &pool);
+  upb_gfree(files);
 }

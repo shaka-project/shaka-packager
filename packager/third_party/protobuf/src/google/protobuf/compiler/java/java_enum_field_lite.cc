@@ -58,7 +58,7 @@ void SetEnumVariables(const FieldDescriptor* descriptor,
                       int builderBitIndex,
                       const FieldGeneratorInfo* info,
                       ClassNameResolver* name_resolver,
-                      map<string, string>* variables) {
+                      std::map<string, string>* variables) {
   SetCommonFieldVariables(descriptor, info, variables);
 
   (*variables)["type"] =
@@ -68,13 +68,15 @@ void SetEnumVariables(const FieldDescriptor* descriptor,
   (*variables)["default"] = ImmutableDefaultValue(descriptor, name_resolver);
   (*variables)["default_number"] = SimpleItoa(
       descriptor->default_value_enum()->number());
-  (*variables)["tag"] = SimpleItoa(internal::WireFormat::MakeTag(descriptor));
+  (*variables)["tag"] =
+      SimpleItoa(static_cast<int32>(internal::WireFormat::MakeTag(descriptor)));
   (*variables)["tag_size"] = SimpleItoa(
       internal::WireFormat::TagSize(descriptor->number(), GetType(descriptor)));
   // TODO(birdo): Add @deprecated javadoc when generating javadoc is supported
   // by the proto compiler
   (*variables)["deprecation"] = descriptor->options().deprecated()
       ? "@java.lang.Deprecated " : "";
+  (*variables)["required"] = descriptor->is_required() ? "true" : "false";
 
   if (SupportFieldPresence(descriptor->file())) {
     // For singular messages and builders, one bit is used for the hasField bit.
@@ -258,7 +260,9 @@ GenerateFieldBuilderInitializationCode(io::Printer* printer)  const {
 
 void ImmutableEnumFieldLiteGenerator::
 GenerateInitializationCode(io::Printer* printer) const {
-  printer->Print(variables_, "$name$_ = $default_number$;\n");
+  if (!IsDefaultValueJavaDefault(descriptor_)) {
+    printer->Print(variables_, "$name$_ = $default_number$;\n");
+  }
 }
 
 void ImmutableEnumFieldLiteGenerator::
@@ -309,6 +313,7 @@ void ImmutableEnumFieldLiteGenerator::
 GenerateParsingDoneCode(io::Printer* printer) const {
   // noop for enums
 }
+
 
 void ImmutableEnumFieldLiteGenerator::
 GenerateSerializationCode(io::Printer* printer) const {
@@ -418,6 +423,7 @@ GenerateMembers(io::Printer* printer) const {
     "  }\n"
     "}\n");
 }
+
 
 void ImmutableEnumOneofFieldLiteGenerator::
 GenerateBuilderMembers(io::Printer* printer) const {
@@ -703,6 +709,7 @@ GenerateMembers(io::Printer* printer) const {
   }
 }
 
+
 void RepeatedImmutableEnumFieldLiteGenerator::
 GenerateBuilderMembers(io::Printer* printer) const {
   WriteFieldDocComment(printer, descriptor_);
@@ -885,8 +892,8 @@ GenerateSerializationCode(io::Printer* printer) const {
   if (descriptor_->options().packed()) {
     printer->Print(variables_,
       "if (get$capitalized_name$List().size() > 0) {\n"
-      "  output.writeRawVarint32($tag$);\n"
-      "  output.writeRawVarint32($name$MemoizedSerializedSize);\n"
+      "  output.writeUInt32NoTag($tag$);\n"
+      "  output.writeUInt32NoTag($name$MemoizedSerializedSize);\n"
       "}\n"
       "for (int i = 0; i < $name$_.size(); i++) {\n"
       "  output.writeEnumNoTag($name$_.getInt(i));\n"
@@ -918,7 +925,7 @@ GenerateSerializedSizeCode(io::Printer* printer) const {
       "if (!get$capitalized_name$List().isEmpty()) {"
       "  size += $tag_size$;\n"
       "  size += com.google.protobuf.CodedOutputStream\n"
-      "    .computeRawVarint32Size(dataSize);\n"
+      "    .computeUInt32SizeNoTag(dataSize);\n"
       "}");
   } else {
     printer->Print(variables_,

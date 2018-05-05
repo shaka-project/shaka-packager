@@ -249,11 +249,11 @@ bool Parser::ConsumeNumber(double* output, const char* error) {
     input_->Next();
     return true;
   } else if (LookingAt("inf")) {
-    *output = numeric_limits<double>::infinity();
+    *output = std::numeric_limits<double>::infinity();
     input_->Next();
     return true;
   } else if (LookingAt("nan")) {
-    *output = numeric_limits<double>::quiet_NaN();
+    *output = std::numeric_limits<double>::quiet_NaN();
     input_->Next();
     return true;
   } else {
@@ -282,7 +282,7 @@ bool Parser::TryConsumeEndOfDeclaration(
     const char* text, const LocationRecorder* location) {
   if (LookingAt(text)) {
     string leading, trailing;
-    vector<string> detached;
+    std::vector<string> detached;
     input_->NextWithComments(&trailing, &detached, &leading);
 
     // Save the leading comments for next time, and recall the leading comments
@@ -404,7 +404,7 @@ void Parser::LocationRecorder::RecordLegacyLocation(const Message* descriptor,
 
 void Parser::LocationRecorder::AttachComments(
     string* leading, string* trailing,
-    vector<string>* detached_comments) const {
+    std::vector<string>* detached_comments) const {
   GOOGLE_CHECK(!location_->has_leading_comments());
   GOOGLE_CHECK(!location_->has_trailing_comments());
 
@@ -487,7 +487,7 @@ bool Parser::ValidateEnum(const EnumDescriptorProto* proto) {
     return false;
   }
 
-  set<int> used_values;
+  std::set<int> used_values;
   bool has_duplicates = false;
   for (int i = 0; i < proto->value_size(); ++i) {
     const EnumValueDescriptorProto enum_value = proto->value(i);
@@ -525,7 +525,6 @@ bool Parser::Parse(io::Tokenizer* input, FileDescriptorProto* file) {
   SourceCodeInfo source_code_info;
   source_code_info_ = &source_code_info;
 
-  vector<string> top_doc_comments;
   if (LookingAtType(io::Tokenizer::TYPE_START)) {
     // Advance to first token.
     input_->NextWithComments(NULL, &upcoming_detached_comments_,
@@ -571,6 +570,7 @@ bool Parser::Parse(io::Tokenizer* input, FileDescriptorProto* file) {
 
   input_ = NULL;
   source_code_info_ = NULL;
+  assert(file != NULL);
   source_code_info.Swap(file->mutable_source_code_info());
   return !had_errors_;
 }
@@ -1373,7 +1373,7 @@ bool Parser::ParseOption(Message* options,
           value_location.AddPath(
               UninterpretedOption::kNegativeIntValueFieldNumber);
           uninterpreted_option->set_negative_int_value(
-              -static_cast<int64>(value));
+              static_cast<int64>(-value));
         } else {
           value_location.AddPath(
               UninterpretedOption::kPositiveIntValueFieldNumber);
@@ -1628,6 +1628,16 @@ bool Parser::ParseOneof(OneofDescriptorProto* oneof_decl,
     if (AtEnd()) {
       AddError("Reached end of input in oneof definition (missing '}').");
       return false;
+    }
+
+    if (LookingAt("option")) {
+      LocationRecorder option_location(
+          oneof_location, OneofDescriptorProto::kOptionsFieldNumber);
+      if (!ParseOption(oneof_decl->mutable_options(), option_location,
+                       containing_file, OPTION_STATEMENT)) {
+        return false;
+      }
+      continue;
     }
 
     // Print a nice error if the user accidentally tries to place a label
@@ -2079,7 +2089,7 @@ bool SourceLocationTable::Find(
     const Message* descriptor,
     DescriptorPool::ErrorCollector::ErrorLocation location,
     int* line, int* column) const {
-  const pair<int, int>* result =
+  const std::pair<int, int>* result =
       FindOrNull(location_map_, std::make_pair(descriptor, location));
   if (result == NULL) {
     *line   = -1;

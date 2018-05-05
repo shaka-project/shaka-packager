@@ -156,7 +156,7 @@ const FieldDescriptor** SortFieldsByNumber(const Descriptor* descriptor) {
   for (int i = 0; i < descriptor->field_count(); i++) {
     fields[i] = descriptor->field(i);
   }
-  sort(fields, fields + descriptor->field_count(), FieldOrderingByNumber());
+  std::sort(fields, fields + descriptor->field_count(), FieldOrderingByNumber());
   return fields;
 }
 
@@ -168,7 +168,7 @@ const FieldDescriptor** SortFieldsByStorageSize(const Descriptor* descriptor) {
   for (int i = 0; i < descriptor->field_count(); i++) {
     fields[i] = descriptor->field(i);
   }
-  sort(fields, fields + descriptor->field_count(),
+  std::sort(fields, fields + descriptor->field_count(),
        FieldOrderingByStorageSize());
   return fields;
 }
@@ -180,7 +180,10 @@ MessageGenerator::MessageGenerator(const string& root_classname,
     : root_classname_(root_classname),
       descriptor_(descriptor),
       field_generators_(descriptor, options),
-      class_name_(ClassName(descriptor_)) {
+      class_name_(ClassName(descriptor_)),
+      deprecated_attribute_(
+          GetOptionalDeprecatedAttribute(descriptor, descriptor->file(), false, true)) {
+
   for (int i = 0; i < descriptor_->extension_count(); i++) {
     extension_generators_.push_back(
         new ExtensionGenerator(class_name_, descriptor_->extension(i)));
@@ -230,7 +233,7 @@ void MessageGenerator::GenerateStaticVariablesInitialization(
   }
 }
 
-void MessageGenerator::DetermineForwardDeclarations(set<string>* fwd_decls) {
+void MessageGenerator::DetermineForwardDeclarations(std::set<string>* fwd_decls) {
   if (!IsMapEntryMessage(descriptor_)) {
     for (int i = 0; i < descriptor_->field_count(); i++) {
       const FieldDescriptor* fieldDescriptor = descriptor_->field(i);
@@ -244,6 +247,22 @@ void MessageGenerator::DetermineForwardDeclarations(set<string>* fwd_decls) {
        iter != nested_message_generators_.end(); ++iter) {
     (*iter)->DetermineForwardDeclarations(fwd_decls);
   }
+}
+
+bool MessageGenerator::IncludesOneOfDefinition() const {
+  if (!oneof_generators_.empty()) {
+    return true;
+  }
+
+  for (vector<MessageGenerator*>::const_iterator iter =
+           nested_message_generators_.begin();
+       iter != nested_message_generators_.end(); ++iter) {
+    if ((*iter)->IncludesOneOfDefinition()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void MessageGenerator::GenerateEnumHeader(io::Printer* printer) {
@@ -315,7 +334,7 @@ void MessageGenerator::GenerateMessageHeader(io::Printer* printer) {
   string message_comments;
   SourceLocation location;
   if (descriptor_->GetSourceLocation(&location)) {
-    message_comments = BuildCommentsString(location);
+    message_comments = BuildCommentsString(location, false);
   } else {
     message_comments = "";
   }
@@ -323,7 +342,7 @@ void MessageGenerator::GenerateMessageHeader(io::Printer* printer) {
   printer->Print(
       "$comments$$deprecated_attribute$@interface $classname$ : GPBMessage\n\n",
       "classname", class_name_,
-      "deprecated_attribute", GetOptionalDeprecatedAttribute(descriptor_, false, true),
+      "deprecated_attribute", deprecated_attribute_,
       "comments", message_comments);
 
   vector<char> seen_oneofs(descriptor_->oneof_decl_count(), 0);
@@ -380,6 +399,14 @@ void MessageGenerator::GenerateSource(io::Printer* printer) {
         "\n",
         "classname", class_name_);
 
+    if (!deprecated_attribute_.empty()) {
+      // No warnings when compiling the impl of this deprecated class.
+      printer->Print(
+          "#pragma clang diagnostic push\n"
+          "#pragma clang diagnostic ignored \"-Wdeprecated-implementations\"\n"
+          "\n");
+    }
+
     printer->Print("@implementation $classname$\n\n",
                    "classname", class_name_);
 
@@ -403,7 +430,7 @@ void MessageGenerator::GenerateSource(io::Printer* printer) {
       sorted_extensions.push_back(descriptor_->extension_range(i));
     }
 
-    sort(sorted_extensions.begin(), sorted_extensions.end(),
+    std::sort(sorted_extensions.begin(), sorted_extensions.end(),
          ExtensionRangeOrdering());
 
     // Assign has bits:
@@ -487,7 +514,7 @@ void MessageGenerator::GenerateSource(io::Printer* printer) {
           "    };\n");
     }
 
-    map<string, string> vars;
+    std::map<string, string> vars;
     vars["classname"] = class_name_;
     vars["rootclassname"] = root_classname_;
     vars["fields"] = has_fields ? "fields" : "NULL";
@@ -505,7 +532,8 @@ void MessageGenerator::GenerateSource(io::Printer* printer) {
     if (descriptor_->options().message_set_wire_format()) {
       init_flags.push_back("GPBDescriptorInitializationFlag_WireFormat");
     }
-    vars["init_flags"] = BuildFlagsString(init_flags);
+    vars["init_flags"] = BuildFlagsString(FLAGTYPE_DESCRIPTOR_INITIALIZATION,
+                                          init_flags);
 
     printer->Print(
         vars,
@@ -563,6 +591,19 @@ void MessageGenerator::GenerateSource(io::Printer* printer) {
           "    [localDescriptor setupExtensionRanges:ranges\n"
           "                                    count:(uint32_t)(sizeof(ranges) / sizeof(GPBExtensionRange))];\n");
     }
+    if (descriptor_->containing_type() != NULL) {
+      string parent_class_name = ClassName(descriptor_->containing_type());
+      printer->Print(
+          "    [localDescriptor setupContainingMessageClassName:GPBStringifySymbol($parent_name$)];\n",
+          "parent_name", parent_class_name);
+    }
+    string suffix_added;
+    ClassName(descriptor_, &suffix_added);
+    if (suffix_added.size() > 0) {
+      printer->Print(
+          "    [localDescriptor setupMessageClassNameSuffix:@\"$suffix$\"];\n",
+          "suffix", suffix_added);
+    }
     printer->Print(
         "    NSAssert(descriptor == nil, @\"Startup recursed!\");\n"
         "    descriptor = localDescriptor;\n"
@@ -570,6 +611,12 @@ void MessageGenerator::GenerateSource(io::Printer* printer) {
         "  return descriptor;\n"
         "}\n\n"
         "@end\n\n");
+
+    if (!deprecated_attribute_.empty()) {
+      printer->Print(
+          "#pragma clang diagnostic pop\n"
+          "\n");
+    }
 
     for (int i = 0; i < descriptor_->field_count(); i++) {
       field_generators_.get(descriptor_->field(i))

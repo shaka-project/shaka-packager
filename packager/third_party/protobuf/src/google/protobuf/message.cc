@@ -46,9 +46,9 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/descriptor.pb.h>
-#include <google/protobuf/map_field.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_util.h>
+#include <google/protobuf/map_field.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/strutil.h>
@@ -61,8 +61,6 @@ namespace protobuf {
 
 using internal::WireFormat;
 using internal::ReflectionOps;
-
-Message::~Message() {}
 
 void Message::MergeFrom(const Message& from) {
   const Descriptor* descriptor = GetDescriptor();
@@ -98,12 +96,12 @@ bool Message::IsInitialized() const {
   return ReflectionOps::IsInitialized(*this);
 }
 
-void Message::FindInitializationErrors(vector<string>* errors) const {
+void Message::FindInitializationErrors(std::vector<string>* errors) const {
   return ReflectionOps::FindInitializationErrors(*this, "", errors);
 }
 
 string Message::InitializationErrorString() const {
-  vector<string> errors;
+  std::vector<string> errors;
   FindInitializationErrors(&errors);
   return Join(errors, ", ");
 }
@@ -132,12 +130,12 @@ bool Message::ParsePartialFromFileDescriptor(int file_descriptor) {
   return ParsePartialFromZeroCopyStream(&input) && input.GetErrno() == 0;
 }
 
-bool Message::ParseFromIstream(istream* input) {
+bool Message::ParseFromIstream(std::istream* input) {
   io::IstreamInputStream zero_copy_input(input);
   return ParseFromZeroCopyStream(&zero_copy_input) && input->eof();
 }
 
-bool Message::ParsePartialFromIstream(istream* input) {
+bool Message::ParsePartialFromIstream(std::istream* input) {
   io::IstreamInputStream zero_copy_input(input);
   return ParsePartialFromZeroCopyStream(&zero_copy_input) && input->eof();
 }
@@ -148,9 +146,9 @@ void Message::SerializeWithCachedSizes(
   WireFormat::SerializeWithCachedSizes(*this, GetCachedSize(), output);
 }
 
-int Message::ByteSize() const {
-  int size = WireFormat::ByteSize(*this);
-  SetCachedSize(size);
+size_t Message::ByteSizeLong() const {
+  size_t size = WireFormat::ByteSize(*this);
+  SetCachedSize(internal::ToCachedSize(size));
   return size;
 }
 
@@ -160,8 +158,8 @@ void Message::SetCachedSize(int /* size */) const {
                 "Must implement one or the other.";
 }
 
-int Message::SpaceUsed() const {
-  return GetReflection()->SpaceUsed(*this);
+size_t Message::SpaceUsedLong() const {
+  return GetReflection()->SpaceUsedLong(*this);
 }
 
 bool Message::SerializeToFileDescriptor(int file_descriptor) const {
@@ -174,7 +172,7 @@ bool Message::SerializePartialToFileDescriptor(int file_descriptor) const {
   return SerializePartialToZeroCopyStream(&output);
 }
 
-bool Message::SerializeToOstream(ostream* output) const {
+bool Message::SerializeToOstream(std::ostream* output) const {
   {
     io::OstreamOutputStream zero_copy_output(output);
     if (!SerializeToZeroCopyStream(&zero_copy_output)) return false;
@@ -182,7 +180,7 @@ bool Message::SerializeToOstream(ostream* output) const {
   return output->good();
 }
 
-bool Message::SerializePartialToOstream(ostream* output) const {
+bool Message::SerializePartialToOstream(std::ostream* output) const {
   io::OstreamOutputStream zero_copy_output(output);
   return SerializePartialToZeroCopyStream(&zero_copy_output);
 }
@@ -227,38 +225,6 @@ void* Reflection::MutableRawRepeatedString(
 }
 
 
-// Default EnumValue API implementations. Real reflection implementations should
-// override these. However, there are several legacy implementations that do
-// not, and cannot easily be changed at the same time as the Reflection API, so
-// we provide these for now.
-// TODO: Remove these once all Reflection implementations are updated.
-int Reflection::GetEnumValue(const Message& message,
-                             const FieldDescriptor* field) const {
-  GOOGLE_LOG(FATAL) << "Unimplemented EnumValue API.";
-  return 0;
-}
-void Reflection::SetEnumValue(Message* message,
-                  const FieldDescriptor* field,
-                  int value) const {
-  GOOGLE_LOG(FATAL) << "Unimplemented EnumValue API.";
-}
-int Reflection::GetRepeatedEnumValue(
-    const Message& message,
-    const FieldDescriptor* field, int index) const {
-  GOOGLE_LOG(FATAL) << "Unimplemented EnumValue API.";
-  return 0;
-}
-void Reflection::SetRepeatedEnumValue(Message* message,
-                                  const FieldDescriptor* field, int index,
-                                  int value) const {
-  GOOGLE_LOG(FATAL) << "Unimplemented EnumValue API.";
-}
-void Reflection::AddEnumValue(Message* message,
-                  const FieldDescriptor* field,
-                  int value) const {
-  GOOGLE_LOG(FATAL) << "Unimplemented EnumValue API.";
-}
-
 MapIterator Reflection::MapBegin(
     Message* message,
     const FieldDescriptor* field) const {
@@ -301,8 +267,8 @@ class GeneratedMessageFactory : public MessageFactory {
   hash_map<const char*, RegistrationFunc*,
            hash<const char*>, streq> file_map_;
 
-  // Initialized lazily, so requires locking.
   Mutex mutex_;
+  // Initialized lazily, so requires locking.
   hash_map<const Descriptor*, const Message*> type_map_;
 };
 
@@ -485,8 +451,8 @@ struct ShutdownRepeatedFieldRegister {
 
 namespace internal {
 template<>
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
-// Note: force noinline to workaround MSVC 2015 compiler bug, issue #240
+#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+// Note: force noinline to workaround MSVC compiler bug with /Zc:inline, issue #240
 GOOGLE_ATTRIBUTE_NOINLINE
 #endif
 Message* GenericTypeHandler<Message>::NewFromPrototype(
@@ -494,8 +460,8 @@ Message* GenericTypeHandler<Message>::NewFromPrototype(
   return prototype->New(arena);
 }
 template<>
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
-// Note: force noinline to workaround MSVC 2015 compiler bug, issue #240
+#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+// Note: force noinline to workaround MSVC compiler bug with /Zc:inline, issue #240
 GOOGLE_ATTRIBUTE_NOINLINE
 #endif
 google::protobuf::Arena* GenericTypeHandler<Message>::GetArena(
@@ -503,8 +469,8 @@ google::protobuf::Arena* GenericTypeHandler<Message>::GetArena(
   return value->GetArena();
 }
 template<>
-#if defined(_MSC_VER) && (_MSC_VER >= 1900)
-// Note: force noinline to workaround MSVC 2015 compiler bug, issue #240
+#if defined(_MSC_VER) && (_MSC_VER >= 1800)
+// Note: force noinline to workaround MSVC compiler bug with /Zc:inline, issue #240
 GOOGLE_ATTRIBUTE_NOINLINE
 #endif
 void* GenericTypeHandler<Message>::GetMaybeArenaPointer(

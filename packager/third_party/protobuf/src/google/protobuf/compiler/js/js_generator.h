@@ -28,12 +28,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// Generates JavaScript code for a given .proto file.
+//
 #ifndef GOOGLE_PROTOBUF_COMPILER_JS_GENERATOR_H__
 #define GOOGLE_PROTOBUF_COMPILER_JS_GENERATOR_H__
 
 #include <string>
 #include <set>
 
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/stubs/common.h>
 #include <google/protobuf/compiler/code_generator.h>
 
 namespace google {
@@ -51,45 +55,75 @@ namespace compiler {
 namespace js {
 
 struct GeneratorOptions {
-  // Add a `goog.requires()` call for each enum type used. If not set, a forward
-  // declaration with `goog.forwardDeclare` is produced instead.
-  bool add_require_for_enums;
-  // Set this as a test-only module via `goog.setTestOnly();`.
-  bool testonly;
   // Output path.
   string output_dir;
   // Namespace prefix.
   string namespace_prefix;
+  // Enable binary-format support?
+  bool binary;
+  // What style of imports should be used.
+  enum ImportStyle {
+    kImportClosure,   // goog.require()
+    kImportCommonJs,  // require()
+    kImportBrowser,   // no import statements
+    kImportEs6,       // import { member } from ''
+  } import_style;
+
+  GeneratorOptions()
+      : output_dir("."),
+        namespace_prefix(""),
+        binary(false),
+        import_style(kImportClosure),
+        add_require_for_enums(false),
+        testonly(false),
+        library(""),
+        error_on_name_conflict(false),
+        extension(".js"),
+        one_output_file_per_input_file(false) {}
+
+  bool ParseFromOptions(
+      const std::vector< std::pair< string, string > >& options,
+      string* error);
+
+  // Returns the file name extension to use for generated code.
+  string GetFileNameExtension() const {
+    return import_style == kImportClosure ? extension : "_pb.js";
+  }
+
+  enum OutputMode {
+    // Create an output file for each input .proto file.
+    kOneOutputFilePerInputFile,
+    // Create an output file for each type.
+    kOneOutputFilePerType,
+    // Put everything in a single file named by the library option.
+    kEverythingInOneFile,
+  };
+
+  // Indicates how to output the generated code based on the provided options.
+  OutputMode output_mode() const;
+
+  // The remaining options are only relevant when we are using kImportClosure.
+
+  // Add a `goog.requires()` call for each enum type used. If not set, a
+  // forward declaration with `goog.forwardDeclare` is produced instead.
+  bool add_require_for_enums;
+  // Set this as a test-only module via `goog.setTestOnly();`.
+  bool testonly;
   // Create a library with name <name>_lib.js rather than a separate .js file
   // per type?
   string library;
   // Error if there are two types that would generate the same output file?
   bool error_on_name_conflict;
-  // Enable binary-format support?
-  bool binary;
-  // What style of imports should be used.
-  enum ImportStyle {
-    IMPORT_CLOSURE,    // goog.require()
-    IMPORT_COMMONJS,   // require()
-    IMPORT_BROWSER,    // no import statements
-    IMPORT_ES6,        // import { member } from ''
-  } import_style;
-
-  GeneratorOptions()
-      : add_require_for_enums(false),
-        testonly(false),
-        output_dir("."),
-        namespace_prefix(""),
-        library(""),
-        error_on_name_conflict(false),
-        binary(false),
-        import_style(IMPORT_CLOSURE) {}
-
-  bool ParseFromOptions(
-      const vector< pair< string, string > >& options,
-      string* error);
+  // The extension to use for output file names.
+  string extension;
+  // Create a separate output file for each input file?
+  bool one_output_file_per_input_file;
 };
 
+// CodeGenerator implementation which generates a JavaScript source file and
+// header.  If you create your own protocol compiler binary and you want it to
+// support JavaScript output, you can do so by registering an instance of this
+// CodeGenerator with the CommandLineInterface in your main() function.
 class LIBPROTOC_EXPORT Generator : public CodeGenerator {
  public:
   Generator() {}
@@ -105,7 +139,7 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
 
   virtual bool HasGenerateAll() const { return true; }
 
-  virtual bool GenerateAll(const vector<const FileDescriptor*>& files,
+  virtual bool GenerateAll(const std::vector<const FileDescriptor*>& files,
                            const string& parameter,
                            GeneratorContext* context,
                            string* error) const;
@@ -117,7 +151,7 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
   // Generate goog.provides() calls.
   void FindProvides(const GeneratorOptions& options,
                     io::Printer* printer,
-                    const vector<const FileDescriptor*>& file,
+                    const std::vector<const FileDescriptor*>& file,
                     std::set<string>* provided) const;
   void FindProvidesForFile(const GeneratorOptions& options,
                            io::Printer* printer,
@@ -134,7 +168,7 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
   // For extension fields at file scope.
   void FindProvidesForFields(const GeneratorOptions& options,
                              io::Printer* printer,
-                             const vector<const FieldDescriptor*>& fields,
+                             const std::vector<const FieldDescriptor*>& fields,
                              std::set<string>* provided) const;
   // Print the goog.provides() found by the methods above.
   void GenerateProvides(const GeneratorOptions& options,
@@ -146,10 +180,10 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
                         io::Printer* printer) const;
 
   // Generate goog.requires() calls.
-  void GenerateRequiresForLibrary(const GeneratorOptions& options,
-                                  io::Printer* printer,
-                                  const vector<const FileDescriptor*>& files,
-                                  std::set<string>* provided) const;
+  void GenerateRequiresForLibrary(
+      const GeneratorOptions& options, io::Printer* printer,
+      const std::vector<const FileDescriptor*>& files,
+      std::set<string>* provided) const;
   void GenerateRequiresForMessage(const GeneratorOptions& options,
                         io::Printer* printer,
                         const Descriptor* desc,
@@ -157,15 +191,13 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
   // For extension fields at file scope.
   void GenerateRequiresForExtensions(
       const GeneratorOptions& options, io::Printer* printer,
-      const vector<const FieldDescriptor*>& fields,
+      const std::vector<const FieldDescriptor*>& fields,
       std::set<string>* provided) const;
   void GenerateRequiresImpl(const GeneratorOptions& options,
-                            io::Printer* printer,
-                            std::set<string>* required,
+                            io::Printer* printer, std::set<string>* required,
                             std::set<string>* forwards,
-                            std::set<string>* provided,
-                            bool require_jspb,
-                            bool require_extension) const;
+                            std::set<string>* provided, bool require_jspb,
+                            bool require_extension, bool require_map) const;
   void FindRequiresForMessage(const GeneratorOptions& options,
                               const Descriptor* desc,
                               std::set<string>* required,
@@ -186,9 +218,9 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
 
   // Generate definitions for all message classes and enums in all files,
   // processing the files in dependence order.
-  void GenerateFilesInDepOrder(const GeneratorOptions& options,
-                               io::Printer* printer,
-                               const vector<const FileDescriptor*>& file) const;
+  void GenerateFilesInDepOrder(
+      const GeneratorOptions& options, io::Printer* printer,
+      const std::vector<const FileDescriptor*>& file) const;
   // Helper for above.
   void GenerateFileAndDeps(const GeneratorOptions& options,
                            io::Printer* printer,
@@ -200,6 +232,11 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
   void GenerateClassesAndEnums(const GeneratorOptions& options,
                                io::Printer* printer,
                                const FileDescriptor* file) const;
+
+  void GenerateFieldValueExpression(io::Printer* printer,
+                                    const char* obj_reference,
+                                    const FieldDescriptor* field,
+                                    bool use_default) const;
 
   // Generate definition for one class.
   void GenerateClass(const GeneratorOptions& options,
@@ -269,6 +306,17 @@ class LIBPROTOC_EXPORT Generator : public CodeGenerator {
   void GenerateExtension(const GeneratorOptions& options,
                          io::Printer* printer,
                          const FieldDescriptor* field) const;
+
+  // Generate addFoo() method for repeated primitive fields.
+  void GenerateRepeatedPrimitiveHelperMethods(const GeneratorOptions& options,
+                                              io::Printer* printer,
+                                              const FieldDescriptor* field,
+                                              bool untyped) const;
+
+  // Generate addFoo() method for repeated message fields.
+  void GenerateRepeatedMessageHelperMethods(const GeneratorOptions& options,
+                                            io::Printer* printer,
+                                            const FieldDescriptor* field) const;
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(Generator);
 };

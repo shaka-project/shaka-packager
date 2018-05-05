@@ -251,17 +251,6 @@ namespace Google.Protobuf.Reflection
                     "Dependencies passed to FileDescriptor.BuildFrom() don't match " +
                     "those listed in the FileDescriptorProto.");
             }
-            for (int i = 0; i < proto.Dependency.Count; i++)
-            {
-                if (dependencies[i].Name != proto.Dependency[i])
-                {
-                    throw new DescriptorValidationException(
-                        result,
-                        "Dependencies passed to FileDescriptor.BuildFrom() don't match " +
-                        "those listed in the FileDescriptorProto. Expected: " +
-                        proto.Dependency[i] + " but was: " + dependencies[i].Name);
-                }
-            }
 
             result.CrossLink();
             return result;
@@ -340,5 +329,10 @@ namespace Google.Protobuf.Reflection
         /// The file descriptor for <c>descriptor.proto</c>.
         /// </value>
         public static FileDescriptor DescriptorProtoFileDescriptor { get { return DescriptorReflection.Descriptor; } }
+
+        /// <summary>
+        /// The (possibly empty) set of custom options for this file.
+        /// </summary>
+        public CustomOptions CustomOptions => Proto.Options?.CustomOptions ?? CustomOptions.Empty;
     }
 }

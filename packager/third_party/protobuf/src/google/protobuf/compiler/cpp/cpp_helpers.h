@@ -144,17 +144,12 @@ string DefaultValue(const FieldDescriptor* field);
 // Convert a file name into a valid identifier.
 string FilenameIdentifier(const string& filename);
 
-// Return the name of the AddDescriptors() function for a given file.
-string GlobalAddDescriptorsName(const string& filename);
-
-// Return the name of the AssignDescriptors() function for a given file.
-string GlobalAssignDescriptorsName(const string& filename);
+// For each .proto file generates a unique namespace. In this namespace global
+// definitions are put to prevent collisions.
+string FileLevelNamespace(const string& filename);
 
 // Return the qualified C++ name for a file level symbol.
 string QualifiedFileLevelSymbol(const string& package, const string& name);
-
-// Return the name of the ShutdownFile() function for a given file.
-string GlobalShutdownFileName(const string& filename);
 
 // Escape C++ trigraphs by escaping question marks to \?
 string EscapeTrigraphs(const string& to_escape);
@@ -223,22 +218,6 @@ inline bool HasFastArraySerialization(const FileDescriptor* file,
 bool StaticInitializersForced(const FileDescriptor* file,
                               const Options& options);
 
-// Prints 'with_static_init' if static initializers have to be used for the
-// provided file. Otherwise emits both 'with_static_init' and
-// 'without_static_init' using #ifdef.
-void PrintHandlingOptionalStaticInitializers(
-    const FileDescriptor* file, const Options& options, io::Printer* printer,
-    const char* with_static_init, const char* without_static_init,
-    const char* var1 = NULL, const string& val1 = "", const char* var2 = NULL,
-    const string& val2 = "");
-
-void PrintHandlingOptionalStaticInitializers(const map<string, string>& vars,
-                                             const FileDescriptor* file,
-                                             const Options& options,
-                                             io::Printer* printer,
-                                             const char* with_static_init,
-                                             const char* without_static_init);
-
 
 inline bool IsMapEntryMessage(const Descriptor* descriptor) {
   return descriptor->options().map_entry();
@@ -282,13 +261,13 @@ bool IsWellKnownMessage(const FileDescriptor* descriptor);
 
 void GenerateUtf8CheckCodeForString(const FieldDescriptor* field,
                                     const Options& options, bool for_parse,
-                                    const map<string, string>& variables,
+                                    const std::map<string, string>& variables,
                                     const char* parameters,
                                     io::Printer* printer);
 
 void GenerateUtf8CheckCodeForCord(const FieldDescriptor* field,
                                   const Options& options, bool for_parse,
-                                  const map<string, string>& variables,
+                                  const std::map<string, string>& variables,
                                   const char* parameters, io::Printer* printer);
 
 inline ::google::protobuf::FileOptions_OptimizeMode GetOptimizeFor(
@@ -297,6 +276,73 @@ inline ::google::protobuf::FileOptions_OptimizeMode GetOptimizeFor(
       ? FileOptions::LITE_RUNTIME
       : file->options().optimize_for();
 }
+
+bool HasWeakFields(const Descriptor* desc);
+bool HasWeakFields(const FileDescriptor* desc);
+
+// Returns true if the "required" restriction check should be ignored for the
+// given field.
+inline static bool ShouldIgnoreRequiredFieldCheck(const FieldDescriptor* field,
+                                                  const Options& options) {
+  return false;
+}
+
+struct SCC {
+  std::vector<const Descriptor*> descriptors;
+};
+
+struct MessageAnalysis {
+  bool is_recursive;
+  bool contains_cord;
+  bool contains_extension;
+  bool contains_required;
+};
+
+// This class is used in FileGenerator, to ensure linear instead of
+// quadratic performance, if we do this per message we would get O(V*(V+E)).
+// Logically this is just only used in message.cc, but in the header for
+// FileGenerator to help share it.
+class LIBPROTOC_EXPORT SCCAnalyzer {
+ public:
+  explicit SCCAnalyzer(const Options& options) : options_(options), index_(0) {}
+  ~SCCAnalyzer() {
+    for (int i = 0; i < garbage_bin_.size(); i++) delete garbage_bin_[i];
+  }
+
+  const SCC* GetSCC(const Descriptor* descriptor) {
+    if (cache_.count(descriptor)) return cache_[descriptor].scc;
+    return DFS(descriptor).scc;
+  }
+
+  MessageAnalysis GetSCCAnalysis(const SCC* scc);
+
+  bool HasRequiredFields(const Descriptor* descriptor) {
+    MessageAnalysis result = GetSCCAnalysis(GetSCC(descriptor));
+    return result.contains_required || result.contains_extension;
+  }
+
+ private:
+  struct NodeData {
+    const SCC* scc;  // if null it means its still on the stack
+    int index;
+    int lowlink;
+  };
+
+  Options options_;
+  std::map<const Descriptor*, NodeData> cache_;
+  std::map<const SCC*, MessageAnalysis> analysis_cache_;
+  std::vector<const Descriptor*> stack_;
+  int index_;
+  std::vector<SCC*> garbage_bin_;
+
+  SCC* CreateSCC() {
+    garbage_bin_.push_back(new SCC());
+    return garbage_bin_.back();
+  }
+
+  // Tarjan's Strongly Connected Components algo
+  NodeData DFS(const Descriptor* descriptor);
+};
 
 }  // namespace cpp
 }  // namespace compiler

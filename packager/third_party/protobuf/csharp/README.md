@@ -1,16 +1,13 @@
 This directory contains the C# Protocol Buffers runtime library.
 
-Status: Beta - ready for external testing
-=========================================
-
 Usage
 =====
 
 The easiest way how to use C# protobufs is via the `Google.Protobuf`
 NuGet package. Just add the NuGet package to your VS project.
 
-Besides C# runtime library, the NuGet package also contains 
-precompiled version of `protoc.exe` and a copy of well known `.proto`
+You will also want to install the `Google.Protobuf.Tools` NuGet package, which
+contains precompiled version of `protoc.exe` and a copy of well known `.proto`
 files under the package's `tools` directory.
 
 To generate C# files from your `.proto` files, invoke `protoc` with the 
@@ -34,16 +31,41 @@ which only uses features from C# 3 and earlier.
 Building
 ========
 
-Open the `src/Google.Protobuf.sln` solution in Visual Studio 2015 or
-later. You should be able to run the NUnit test from Test Explorer
-(you might need to install NUnit Visual Studio add-in).
+Open the `src/Google.Protobuf.sln` solution in Visual Studio 2017 or
+later.
 
 Although *users* of this project are only expected to have Visual
 Studio 2012 or later, *developers* of the library are required to
-have Visual Studio 2015 or later, as the library uses C# 6 features
-in its implementation. These features have no impact when using the
-compiled code - they're only relevant when building the
-`Google.Protobuf` assembly.
+have Visual Studio 2017 or later, as the library uses C# 6 features
+in its implementation, as well as the new Visual Studio 2017 csproj 
+format. These features have no impact when using the compiled code - 
+they're only relevant when building the `Google.Protobuf` assembly.
+
+Testing
+=======
+
+The unit tests use [NUnit 3](https://github.com/nunit/nunit). NUnit doesn't yet
+support `dotnet test`, so for now the test project is a console application 
+using NUnitLite. Simply run `Google.Protobuf.Test.exe` to run the unit tests 
+directly, or else use `dotnet run`.
+
+.NET 3.5
+========
+
+We don't officially support .NET 3.5. However, there has been some effort 
+to make enabling .NET 3.5 support relatively painless in case you require it. 
+There's no guarantee that this will continue in the future, so rely on .NET 
+3.5 support at your peril.
+
+To enable .NET 3.5 support, you must edit the `TargetFrameworks` elements of 
+[src/Google.Protobuf/Google.Protobuf.csproj](src/Google.Protobuf/Google.Protobuf.csproj) 
+(and [src/Google.Protobuf.Test/Google.Protobuf.Test.csproj](src/Google.Protobuf.Test/Google.Protobuf.Test.csproj) 
+if you want to run the unit tests): 
+
+Open the .csproj file in a text editor and simply add `net35` to the list of 
+target frameworks, noting that the `TargetFrameworks` element appears twice in 
+the file (once in the first `PropertyGroup` element, and again in the second 
+`PropertyGroup` element, i.e., the one with the conditional).
 
 History of C# protobufs
 =======================

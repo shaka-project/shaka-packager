@@ -62,7 +62,7 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
                            int builderBitIndex,
                            const FieldGeneratorInfo* info,
                            ClassNameResolver* name_resolver,
-                           map<string, string>* variables) {
+                           std::map<string, string>* variables) {
   SetCommonFieldVariables(descriptor, info, variables);
 
   (*variables)["empty_list"] = "com.google.protobuf.LazyStringArrayList.EMPTY";
@@ -71,7 +71,8 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
   (*variables)["default_init"] =
       "= " + ImmutableDefaultValue(descriptor, name_resolver);
   (*variables)["capitalized_type"] = "String";
-  (*variables)["tag"] = SimpleItoa(WireFormat::MakeTag(descriptor));
+  (*variables)["tag"] =
+      SimpleItoa(static_cast<int32>(WireFormat::MakeTag(descriptor)));
   (*variables)["tag_size"] = SimpleItoa(
       WireFormat::TagSize(descriptor->number(), GetType(descriptor)));
   (*variables)["null_check"] =
@@ -79,9 +80,11 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
       "    throw new NullPointerException();\n"
       "  }\n";
   (*variables)["writeString"] =
-      "com.google.protobuf.GeneratedMessage.writeString";
+      "com.google.protobuf.GeneratedMessage" + GeneratedCodeVersionSuffix() +
+      ".writeString";
   (*variables)["computeStringSize"] =
-      "com.google.protobuf.GeneratedMessage.computeStringSize";
+      "com.google.protobuf.GeneratedMessage" + GeneratedCodeVersionSuffix() +
+      ".computeStringSize";
 
   // TODO(birdo): Add @deprecated javadoc when generating javadoc is supported
   // by the proto compiler
@@ -712,7 +715,13 @@ void RepeatedImmutableStringFieldGenerator::
 GenerateInterfaceMembers(io::Printer* printer) const {
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,
-    "$deprecation$com.google.protobuf.ProtocolStringList\n"
+    // NOTE: the same method in the implementation class actually returns
+    // com.google.protobuf.ProtocolStringList (a subclass of List). It's
+    // changed between protobuf 2.5.0 release and protobuf 2.6.1 release.
+    // To retain binary compatibility with both 2.5.0 and 2.6.1 generated
+    // code, we make this interface method return List so both methods
+    // with different return types exist in the compiled byte code.
+    "$deprecation$java.util.List<java.lang.String>\n"
     "    get$capitalized_name$List();\n");
   WriteFieldDocComment(printer, descriptor_);
   printer->Print(variables_,

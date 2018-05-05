@@ -42,14 +42,13 @@
 
 #include <google/protobuf/compiler/parser.h>
 
+#include <google/protobuf/unittest.pb.h>
+#include <google/protobuf/unittest_custom_options.pb.h>
 #include <google/protobuf/io/tokenizer.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/descriptor.pb.h>
-#include <google/protobuf/wire_format.h>
 #include <google/protobuf/text_format.h>
-#include <google/protobuf/unittest.pb.h>
-#include <google/protobuf/unittest_custom_options.pb.h>
-#include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/wire_format.h>
 #include <google/protobuf/stubs/substitute.h>
 #include <google/protobuf/stubs/map_util.h>
 
@@ -2218,7 +2217,7 @@ class SourceInfoTest : public ParserTest {
       const char* expected_leading_comments,
       const char* expected_trailing_comments,
       const char* expected_leading_detached_comments) {
-    pair<SpanMap::iterator, SpanMap::iterator> range =
+    std::pair<SpanMap::iterator, SpanMap::iterator> range =
         spans_.equal_range(SpanKey(descriptor_proto, field, index));
 
     if (start_marker == '\0') {
@@ -2229,8 +2228,8 @@ class SourceInfoTest : public ParserTest {
         return true;
       }
     } else {
-      pair<int, int> start_pos = FindOrDie(markers_, start_marker);
-      pair<int, int> end_pos = FindOrDie(markers_, end_marker);
+      std::pair<int, int> start_pos = FindOrDie(markers_, start_marker);
+      std::pair<int, int> end_pos = FindOrDie(markers_, end_marker);
 
       RepeatedField<int> expected_span;
       expected_span.Add(start_pos.first);
@@ -2295,9 +2294,9 @@ class SourceInfoTest : public ParserTest {
     }
   };
 
-  typedef multimap<SpanKey, const SourceCodeInfo::Location*> SpanMap;
+  typedef std::multimap<SpanKey, const SourceCodeInfo::Location*> SpanMap;
   SpanMap spans_;
-  map<char, pair<int, int> > markers_;
+  std::map<char, std::pair<int, int> > markers_;
   string text_without_markers_;
 
   void ExtractMarkers(const char* text) {

@@ -35,7 +35,6 @@ import static java.util.Collections.singletonList;
 
 import com.google.protobuf.UnittestImportLite.ImportEnumLite;
 import com.google.protobuf.UnittestImportPublicLite.PublicImportMessageLite;
-import com.google.protobuf.UnittestLite;
 import com.google.protobuf.UnittestLite.ForeignEnumLite;
 import com.google.protobuf.UnittestLite.ForeignMessageLite;
 import com.google.protobuf.UnittestLite.TestAllExtensionsLite;
@@ -46,20 +45,15 @@ import com.google.protobuf.UnittestLite.TestAllTypesLite.OneofFieldCase;
 import com.google.protobuf.UnittestLite.TestAllTypesLite.OptionalGroup;
 import com.google.protobuf.UnittestLite.TestAllTypesLite.RepeatedGroup;
 import com.google.protobuf.UnittestLite.TestAllTypesLiteOrBuilder;
+import com.google.protobuf.UnittestLite.TestHugeFieldNumbersLite;
 import com.google.protobuf.UnittestLite.TestNestedExtensionLite;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.Bar;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.BarPrime;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.Foo;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.TestOneofEquals;
 import protobuf_unittest.lite_equals_and_hash.LiteEqualsAndHash.TestRecursiveOneof;
-
+import java.nio.ByteBuffer;
 import junit.framework.TestCase;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 /**
  * Test lite runtime.
@@ -138,7 +132,6 @@ public class LiteTest extends TestCase {
     assertEquals(7, message2.getExtension(
         UnittestLite.optionalNestedMessageExtensionLite).getBb());
   }
-  
   
   public void testClone() {
     TestAllTypesLite.Builder expected = TestAllTypesLite.newBuilder()
@@ -1433,6 +1426,12 @@ public class LiteTest extends TestCase {
     assertToStringEquals("", TestAllTypesLite.getDefaultInstance());
   }
 
+  public void testToStringScalarFieldsSuffixedWithList() throws Exception {
+    assertToStringEquals("deceptively_named_list: 7", TestAllTypesLite.newBuilder()
+        .setDeceptivelyNamedList(7)
+        .build());
+  }
+
   public void testToStringPrimitives() throws Exception {
     TestAllTypesLite proto = TestAllTypesLite.newBuilder()
         .setOptionalInt32(1)
@@ -1630,7 +1629,7 @@ public class LiteTest extends TestCase {
       fail();
     } catch (InvalidProtocolBufferException expected) {}
   }
-  
+
   public void testMergeFrom_sanity() throws Exception {
     TestAllTypesLite one = TestUtilLite.getAllLiteSetBuilder().build();
     byte[] bytes = one.toByteArray();
@@ -1642,7 +1641,19 @@ public class LiteTest extends TestCase {
     assertEquals(two, one);
     assertEquals(one.hashCode(), two.hashCode());
   }
-  
+
+  public void testMergeFromNoLazyFieldSharing() throws Exception {
+    TestAllTypesLite.Builder sourceBuilder = TestAllTypesLite.newBuilder().setOptionalLazyMessage(
+        TestAllTypesLite.NestedMessage.newBuilder().setBb(1));
+    TestAllTypesLite.Builder targetBuilder =
+        TestAllTypesLite.newBuilder().mergeFrom(sourceBuilder.build());
+    assertEquals(1, sourceBuilder.getOptionalLazyMessage().getBb());
+    // now change the sourceBuilder, and target value shouldn't be affected.
+    sourceBuilder.setOptionalLazyMessage(
+        TestAllTypesLite.NestedMessage.newBuilder().setBb(2));
+    assertEquals(1, targetBuilder.getOptionalLazyMessage().getBb());
+  }
+
   public void testEquals_notEqual() throws Exception {
     TestAllTypesLite one = TestUtilLite.getAllLiteSetBuilder().build();
     byte[] bytes = one.toByteArray();
@@ -2164,6 +2175,24 @@ public class LiteTest extends TestCase {
     assertFalse(bar.equals(barPrime));
   }
 
+  public void testEqualsAndHashCodeForTrickySchemaTypes() {
+    Foo foo1 = Foo.newBuilder()
+        .build();
+    Foo foo2 = Foo.newBuilder()
+        .setSint64(1)
+        .build();
+    Foo foo3 = Foo.newBuilder()
+        .putMyMap("key", "value2")
+        .build();
+    Foo foo4 = Foo.newBuilder()
+        .setMyGroup(Foo.MyGroup.newBuilder().setValue(4).build())
+        .build();
+
+    assertEqualsAndHashCodeAreFalse(foo1, foo2);
+    assertEqualsAndHashCodeAreFalse(foo1, foo3);
+    assertEqualsAndHashCodeAreFalse(foo1, foo4);
+  }
+
   public void testOneofEquals() throws Exception {
     TestOneofEquals.Builder builder = TestOneofEquals.newBuilder();
     TestOneofEquals message1 = builder.build();
@@ -2202,6 +2231,21 @@ public class LiteTest extends TestCase {
     assertEqualsAndHashCodeAreFalse(fooWithOnlyValue, fooWithValueAndUnknownFields);
     assertEqualsAndHashCodeAreFalse(fooWithValueAndExtension, fooWithValueAndUnknownFields);
   }
+
+  public void testEqualsAndHashCodeWithExtensions() throws InvalidProtocolBufferException {
+    Foo fooWithOnlyValue = Foo.newBuilder()
+        .setValue(1)
+        .build();
+
+    Foo fooWithValueAndExtension = fooWithOnlyValue.toBuilder()
+        .setValue(1)
+        .setExtension(Bar.fooExt, Bar.newBuilder()
+            .setName("name")
+            .build())
+        .build();
+
+    assertEqualsAndHashCodeAreFalse(fooWithOnlyValue, fooWithValueAndExtension);
+  }
   
   // Test to ensure we avoid a class cast exception with oneofs.
   public void testEquals_oneOfMessages() {
@@ -2217,6 +2261,25 @@ public class LiteTest extends TestCase {
     assertFalse(other.equals(mine));
   }
 
+  public void testHugeFieldNumbers() throws InvalidProtocolBufferException {
+    TestHugeFieldNumbersLite message =
+        TestHugeFieldNumbersLite.newBuilder()
+            .setOptionalInt32(1)
+            .addRepeatedInt32(2)
+            .setOptionalEnum(ForeignEnumLite.FOREIGN_LITE_FOO)
+            .setOptionalString("xyz")
+            .setOptionalMessage(ForeignMessageLite.newBuilder().setC(3).build())
+            .build();
+
+    TestHugeFieldNumbersLite parsedMessage =
+        TestHugeFieldNumbersLite.parseFrom(message.toByteArray());
+    assertEquals(1, parsedMessage.getOptionalInt32());
+    assertEquals(2, parsedMessage.getRepeatedInt32(0));
+    assertEquals(ForeignEnumLite.FOREIGN_LITE_FOO, parsedMessage.getOptionalEnum());
+    assertEquals("xyz", parsedMessage.getOptionalString());
+    assertEquals(3, parsedMessage.getOptionalMessage().getC());
+  }
+
   private void assertEqualsAndHashCodeAreFalse(Object o1, Object o2) {
     assertFalse(o1.equals(o2));
     assertFalse(o1.hashCode() == o2.hashCode());
@@ -2225,5 +2288,94 @@ public class LiteTest extends TestCase {
   public void testRecursiveHashcode() {
     // This tests that we don't infinite loop.
     TestRecursiveOneof.getDefaultInstance().hashCode();
+  }
+
+  public void testParseFromByteBuffer() throws Exception {
+    TestAllTypesLite message =
+        TestAllTypesLite.newBuilder()
+            .setOptionalInt32(123)
+            .addRepeatedString("hello")
+            .setOptionalNestedMessage(TestAllTypesLite.NestedMessage.newBuilder().setBb(7))
+            .build();
+
+    TestAllTypesLite copy =
+        TestAllTypesLite.parseFrom(message.toByteString().asReadOnlyByteBuffer());
+
+    assertEquals(message, copy);
+  }
+
+  public void testParseFromByteBufferThrows() {
+    try {
+      TestAllTypesLite.parseFrom(ByteBuffer.wrap(new byte[] { 0x5 }));
+      fail();
+    } catch (InvalidProtocolBufferException expected) {
+    }
+
+    TestAllTypesLite message =
+        TestAllTypesLite.newBuilder()
+            .setOptionalInt32(123)
+            .addRepeatedString("hello")
+            .build();
+
+    ByteBuffer buffer = ByteBuffer.wrap(message.toByteArray(), 0, message.getSerializedSize() - 1);
+    try {
+      TestAllTypesLite.parseFrom(buffer);
+      fail();
+    } catch (InvalidProtocolBufferException expected) {
+      assertEquals(
+          TestAllTypesLite.newBuilder()
+              .setOptionalInt32(123)
+              .build(),
+          expected.getUnfinishedMessage());
+    }
+  }
+
+  public void testParseFromByteBuffer_extensions() throws Exception {
+    TestAllExtensionsLite message =
+        TestAllExtensionsLite.newBuilder()
+            .setExtension(UnittestLite.optionalInt32ExtensionLite, 123)
+            .addExtension(UnittestLite.repeatedStringExtensionLite, "hello")
+            .setExtension(
+                UnittestLite.optionalNestedEnumExtensionLite, TestAllTypesLite.NestedEnum.BAZ)
+            .setExtension(
+                UnittestLite.optionalNestedMessageExtensionLite,
+                TestAllTypesLite.NestedMessage.newBuilder().setBb(7).build())
+            .build();
+
+    ExtensionRegistryLite registry = ExtensionRegistryLite.newInstance();
+    UnittestLite.registerAllExtensions(registry);
+
+    TestAllExtensionsLite copy =
+        TestAllExtensionsLite.parseFrom(message.toByteString().asReadOnlyByteBuffer(), registry);
+
+    assertEquals(message, copy);
+  }
+
+  public void testParseFromByteBufferThrows_extensions() {
+    ExtensionRegistryLite registry = ExtensionRegistryLite.newInstance();
+    UnittestLite.registerAllExtensions(registry);
+    try {
+      TestAllExtensionsLite.parseFrom(ByteBuffer.wrap(new byte[] { 0x5 }), registry);
+      fail();
+    } catch (InvalidProtocolBufferException expected) {
+    }
+
+    TestAllExtensionsLite message =
+        TestAllExtensionsLite.newBuilder()
+            .setExtension(UnittestLite.optionalInt32ExtensionLite, 123)
+            .addExtension(UnittestLite.repeatedStringExtensionLite, "hello")
+            .build();
+
+    ByteBuffer buffer = ByteBuffer.wrap(message.toByteArray(), 0, message.getSerializedSize() - 1);
+    try {
+      TestAllExtensionsLite.parseFrom(buffer, registry);
+      fail();
+    } catch (InvalidProtocolBufferException expected) {
+      assertEquals(
+          TestAllExtensionsLite.newBuilder()
+              .setExtension(UnittestLite.optionalInt32ExtensionLite, 123)
+              .build(),
+          expected.getUnfinishedMessage());
+    }
   }
 }

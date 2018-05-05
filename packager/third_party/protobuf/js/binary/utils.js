@@ -430,7 +430,7 @@ jspb.utils.joinHash64 = function(bitsLow, bitsHigh) {
 
 /**
  * Individual digits for number->string conversion.
- * @const {!Array.<number>}
+ * @const {!Array.<string>}
  */
 jspb.utils.DIGITS = [
   '0', '1', '2', '3', '4', '5', '6', '7',
@@ -613,7 +613,17 @@ jspb.utils.decimalStringToHash64 = function(dec) {
     muladd(1, 1);
   }
 
-  return String.fromCharCode.apply(null, resultBytes);
+  return goog.crypt.byteArrayToString(resultBytes);
+};
+
+
+/**
+ * Converts a signed or unsigned decimal string into two 32-bit halves, and
+ * stores them in the temp variables listed above.
+ * @param {string} value The decimal string to convert.
+ */
+jspb.utils.splitDecimalString = function(value) {
+  jspb.utils.splitHash64(jspb.utils.decimalStringToHash64(value));
 };
 
 

@@ -36,12 +36,15 @@
 // a descriptor as it doesn't use the classes/enums.
 #import "google/protobuf/Descriptor.pbobjc.m"
 
+#import "google/protobuf/AnyTest.pbobjc.m"
 #import "google/protobuf/MapProto2Unittest.pbobjc.m"
 #import "google/protobuf/MapUnittest.pbobjc.m"
 #import "google/protobuf/Unittest.pbobjc.m"
 #import "google/protobuf/UnittestArena.pbobjc.m"
 #import "google/protobuf/UnittestCustomOptions.pbobjc.m"
 #import "google/protobuf/UnittestCycle.pbobjc.m"
+#import "google/protobuf/UnittestDeprecated.pbobjc.m"
+#import "google/protobuf/UnittestDeprecatedFile.pbobjc.m"
 #import "google/protobuf/UnittestDropUnknownFields.pbobjc.m"
 #import "google/protobuf/UnittestEmbedOptimizeFor.pbobjc.m"
 #import "google/protobuf/UnittestEmpty.pbobjc.m"
@@ -62,3 +65,11 @@
 #import "google/protobuf/UnittestPreserveUnknownEnum.pbobjc.m"
 #import "google/protobuf/UnittestRuntimeProto2.pbobjc.m"
 #import "google/protobuf/UnittestRuntimeProto3.pbobjc.m"
+
+#import "google/protobuf/UnittestExtensionChainA.pbobjc.m"
+#import "google/protobuf/UnittestExtensionChainB.pbobjc.m"
+#import "google/protobuf/UnittestExtensionChainC.pbobjc.m"
+#import "google/protobuf/UnittestExtensionChainD.pbobjc.m"
+#import "google/protobuf/UnittestExtensionChainE.pbobjc.m"
+// See GPBUnittestProtos2.m for for "UnittestExtensionChainF.pbobjc.m"
+#import "google/protobuf/UnittestExtensionChainG.pbobjc.m"

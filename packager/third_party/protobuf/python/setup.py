@@ -5,6 +5,7 @@ import glob
 import os
 import subprocess
 import sys
+import platform
 
 # We must use setuptools, not distutils, because we need to use the
 # namespace_packages option for the "google" package.
@@ -76,7 +77,9 @@ def generate_proto(source, require = True):
       sys.exit(-1)
 
 def GenerateUnittestProtos():
+  generate_proto("../src/google/protobuf/any_test.proto", False)
   generate_proto("../src/google/protobuf/map_unittest.proto", False)
+  generate_proto("../src/google/protobuf/test_messages_proto3.proto", False)
   generate_proto("../src/google/protobuf/unittest_arena.proto", False)
   generate_proto("../src/google/protobuf/unittest_no_arena.proto", False)
   generate_proto("../src/google/protobuf/unittest_no_arena_import.proto", False)
@@ -94,6 +97,7 @@ def GenerateUnittestProtos():
   generate_proto("google/protobuf/internal/descriptor_pool_test2.proto", False)
   generate_proto("google/protobuf/internal/factory_test1.proto", False)
   generate_proto("google/protobuf/internal/factory_test2.proto", False)
+  generate_proto("google/protobuf/internal/file_options_test.proto", False)
   generate_proto("google/protobuf/internal/import_test_package/inner.proto", False)
   generate_proto("google/protobuf/internal/import_test_package/outer.proto", False)
   generate_proto("google/protobuf/internal/missing_enum_values.proto", False)
@@ -186,6 +190,12 @@ if __name__ == '__main__':
     if "clang" in os.popen('$CC --version 2> /dev/null').read():
       extra_compile_args.append('-Wno-shorten-64-to-32')
 
+    v, _, _ = platform.mac_ver()
+    if v:
+      v = float('.'.join(v.split('.')[:2]))
+      if v >= 10.12:
+        extra_compile_args.append('-std=c++11')
+
     if warnings_as_errors in sys.argv:
       extra_compile_args.append('-Werror')
       sys.argv.remove(warnings_as_errors)
@@ -219,11 +229,12 @@ if __name__ == '__main__':
       name='protobuf',
       version=GetVersion(),
       description='Protocol Buffers',
+      download_url='https://github.com/google/protobuf/releases',
       long_description="Protocol Buffers are Google's data interchange format",
       url='https://developers.google.com/protocol-buffers/',
       maintainer='protobuf@googlegroups.com',
       maintainer_email='protobuf@googlegroups.com',
-      license='New BSD License',
+      license='3-Clause BSD License',
       classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",

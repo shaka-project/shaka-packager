@@ -3230,7 +3230,7 @@ void TestUtil::ReflectionTester::RemoveLastRepeatedsViaReflection(
     Message* message) {
   const Reflection* reflection = message->GetReflection();
 
-  vector<const FieldDescriptor*> output;
+  std::vector<const FieldDescriptor*> output;
   reflection->ListFields(*message, &output);
   for (int i=0; i<output.size(); ++i) {
     const FieldDescriptor* field = output[i];
@@ -3244,7 +3244,7 @@ void TestUtil::ReflectionTester::ReleaseLastRepeatedsViaReflection(
     Message* message, bool expect_extensions_notnull) {
   const Reflection* reflection = message->GetReflection();
 
-  vector<const FieldDescriptor*> output;
+  std::vector<const FieldDescriptor*> output;
   reflection->ListFields(*message, &output);
   for (int i=0; i<output.size(); ++i) {
     const FieldDescriptor* field = output[i];
@@ -3263,7 +3263,7 @@ void TestUtil::ReflectionTester::ReleaseLastRepeatedsViaReflection(
 void TestUtil::ReflectionTester::SwapRepeatedsViaReflection(Message* message) {
   const Reflection* reflection = message->GetReflection();
 
-  vector<const FieldDescriptor*> output;
+  std::vector<const FieldDescriptor*> output;
   reflection->ListFields(*message, &output);
   for (int i=0; i<output.size(); ++i) {
     const FieldDescriptor* field = output[i];
@@ -3278,7 +3278,7 @@ SetAllocatedOptionalMessageFieldsToNullViaReflection(
     Message* message) {
   const Reflection* reflection = message->GetReflection();
 
-  vector<const FieldDescriptor*> fields;
+  std::vector<const FieldDescriptor*> fields;
   reflection->ListFields(*message, &fields);
 
   for (int i = 0; i < fields.size(); ++i) {
@@ -3298,7 +3298,7 @@ SetAllocatedOptionalMessageFieldsToMessageViaReflection(
   const Reflection* from_reflection = from_message->GetReflection();
   const Reflection* to_reflection = to_message->GetReflection();
 
-  vector<const FieldDescriptor*> fields;
+  std::vector<const FieldDescriptor*> fields;
   from_reflection->ListFields(*from_message, &fields);
 
   for (int i = 0; i < fields.size(); ++i) {
@@ -3332,7 +3332,11 @@ void TestUtil::ReflectionTester::ExpectMessagesReleasedViaReflection(
         break;
       case NOT_NULL:
         EXPECT_TRUE(released != NULL);
-        EXPECT_EQ(&sub_message, released);
+        if (message->GetArena() == NULL) {
+          // released message must be same as sub_message if source message is
+          // not on arena.
+          EXPECT_EQ(&sub_message, released);
+        }
         break;
       case CAN_BE_NULL:
         break;

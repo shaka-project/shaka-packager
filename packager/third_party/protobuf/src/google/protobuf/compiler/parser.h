@@ -71,7 +71,7 @@ class LIBPROTOBUF_EXPORT Parser {
   // it.  Returns true if no errors occurred, false otherwise.
   bool Parse(io::Tokenizer* input, FileDescriptorProto* file);
 
-  // Optional fetaures:
+  // Optional features:
 
   // DEPRECATED:  New code should use the SourceCodeInfo embedded in the
   //   FileDescriptorProto.
@@ -257,7 +257,7 @@ class LIBPROTOBUF_EXPORT Parser {
     // TODO(kenton):  See comment on TryConsumeEndOfDeclaration(), above, for
     //   why this is const.
     void AttachComments(string* leading, string* trailing,
-                        vector<string>* detached_comments) const;
+                        std::vector<string>* detached_comments) const;
 
    private:
     // Indexes of parent and current location in the parent
@@ -520,7 +520,7 @@ class LIBPROTOBUF_EXPORT Parser {
   // detached comments will be put into the leading_detached_comments field for
   // the next element (See SourceCodeInfo.Location in descriptor.proto), when
   // ConsumeEndOfDeclaration() is called.
-  vector<string> upcoming_detached_comments_;
+  std::vector<string> upcoming_detached_comments_;
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(Parser);
 };
@@ -556,9 +556,9 @@ class LIBPROTOBUF_EXPORT SourceLocationTable {
   void Clear();
 
  private:
-  typedef map<
-    pair<const Message*, DescriptorPool::ErrorCollector::ErrorLocation>,
-    pair<int, int> > LocationMap;
+  typedef std::map<
+    std::pair<const Message*, DescriptorPool::ErrorCollector::ErrorLocation>,
+    std::pair<int, int> > LocationMap;
   LocationMap location_map_;
 };
 

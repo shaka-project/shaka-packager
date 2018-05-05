@@ -34,18 +34,19 @@ import com.google.protobuf.AbstractMessageLite.Builder.LimitedInputStream;
 import com.google.protobuf.GeneratedMessageLite.EqualsVisitor.NotEqualsException;
 import com.google.protobuf.Internal.BooleanList;
 import com.google.protobuf.Internal.DoubleList;
+import com.google.protobuf.Internal.EnumLiteMap;
 import com.google.protobuf.Internal.FloatList;
 import com.google.protobuf.Internal.IntList;
 import com.google.protobuf.Internal.LongList;
 import com.google.protobuf.Internal.ProtobufList;
 import com.google.protobuf.WireFormat.FieldType;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -59,15 +60,15 @@ import java.util.Map;
  */
 public abstract class GeneratedMessageLite<
     MessageType extends GeneratedMessageLite<MessageType, BuilderType>,
-    BuilderType extends GeneratedMessageLite.Builder<MessageType, BuilderType>> 
+    BuilderType extends GeneratedMessageLite.Builder<MessageType, BuilderType>>
         extends AbstractMessageLite<MessageType, BuilderType> {
 
   /** For use by generated code only. Lazily initialized to reduce allocations. */
   protected UnknownFieldSetLite unknownFields = UnknownFieldSetLite.getDefaultInstance();
-  
+
   /** For use by generated code only.  */
   protected int memoizedSerializedSize = -1;
-  
+
   @Override
   @SuppressWarnings("unchecked") // Guaranteed by runtime.
   public final Parser<MessageType> getParserForType() {
@@ -113,7 +114,7 @@ public abstract class GeneratedMessageLite<
     }
     return memoizedHashCode;
   }
-  
+
   @SuppressWarnings("unchecked") // Guaranteed by runtime
   int hashCode(HashCodeVisitor visitor) {
     if (memoizedHashCode == 0) {
@@ -125,18 +126,19 @@ public abstract class GeneratedMessageLite<
     }
     return memoizedHashCode;
   }
-  
+
   @SuppressWarnings("unchecked") // Guaranteed by isInstance + runtime
   @Override
   public boolean equals(Object other) {
     if (this == other) {
       return true;
     }
-    
+
     if (!getDefaultInstanceForType().getClass().isInstance(other)) {
       return false;
     }
-    
+
+
     try {
       visit(EqualsVisitor.INSTANCE, (MessageType) other);
     } catch (NotEqualsException e) {
@@ -144,7 +146,7 @@ public abstract class GeneratedMessageLite<
     }
     return true;
   }
-  
+
   /**
    * Same as {@link #equals(Object)} but throws {@code NotEqualsException}.
    */
@@ -153,7 +155,7 @@ public abstract class GeneratedMessageLite<
     if (this == other) {
       return true;
     }
-    
+
     if (!getDefaultInstanceForType().getClass().isInstance(other)) {
       return false;
     }
@@ -161,7 +163,7 @@ public abstract class GeneratedMessageLite<
     visit(visitor, (MessageType) other);
     return true;
   }
-  
+
   // The general strategy for unknown fields is to use an UnknownFieldSetLite that is treated as
   // mutable during the parsing constructor and immutable after. This allows us to avoid
   // any unnecessary intermediary allocations while reducing the generated code size.
@@ -174,10 +176,10 @@ public abstract class GeneratedMessageLite<
       unknownFields = UnknownFieldSetLite.newInstance();
     }
   }
-  
+
   /**
    * Called by subclasses to parse an unknown field. For use by generated code only.
-   * 
+   *
    * @return {@code true} unless the tag is an end-group tag.
    */
   protected boolean parseUnknownField(int tag, CodedInputStream input) throws IOException {
@@ -185,7 +187,7 @@ public abstract class GeneratedMessageLite<
     if (WireFormat.getTagWireType(tag) == WireFormat.WIRETYPE_END_GROUP) {
       return false;
     }
-    
+
     ensureUnknownFieldsInitialized();
     return unknownFields.mergeFieldFrom(tag, input);
   }
@@ -197,7 +199,7 @@ public abstract class GeneratedMessageLite<
     ensureUnknownFieldsInitialized();
     unknownFields.mergeVarintField(tag, value);
   }
-  
+
   /**
    * Called by subclasses to parse an unknown field. For use by generated code only.
    */
@@ -205,7 +207,7 @@ public abstract class GeneratedMessageLite<
     ensureUnknownFieldsInitialized();
     unknownFields.mergeLengthDelimitedField(fieldNumber, value);
   }
-  
+
   /**
    * Called by subclasses to complete parsing. For use by generated code only.
    */
@@ -221,6 +223,7 @@ public abstract class GeneratedMessageLite<
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public final BuilderType toBuilder() {
     BuilderType builder = (BuilderType) dynamicMethod(MethodToInvoke.NEW_BUILDER);
     builder.mergeFrom((MessageType) this);
@@ -292,7 +295,7 @@ public abstract class GeneratedMessageLite<
     dynamicMethod(MethodToInvoke.VISIT, visitor, other);
     unknownFields = visitor.visitUnknownFields(unknownFields, other.unknownFields);
   }
-  
+
   /**
    * Merge some unknown fields into the {@link UnknownFieldSetLite} for this
    * message.
@@ -359,9 +362,9 @@ public abstract class GeneratedMessageLite<
       if (isBuilt) {
         return instance;
       }
-      
+
       instance.makeImmutable();
-      
+
       isBuilt = true;
       return instance;
     }
@@ -374,24 +377,24 @@ public abstract class GeneratedMessageLite<
       }
       return result;
     }
-    
+
     @Override
     protected BuilderType internalMergeFrom(MessageType message) {
       return mergeFrom(message);
     }
-    
+
     /** All subclasses implement this. */
     public BuilderType mergeFrom(MessageType message) {
       copyOnWrite();
       instance.visit(MergeFromVisitor.INSTANCE, message);
       return (BuilderType) this;
     }
-    
+
     @Override
     public MessageType getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
     @Override
     public BuilderType mergeFrom(
         com.google.protobuf.CodedInputStream input,
@@ -454,6 +457,7 @@ public abstract class GeneratedMessageLite<
      */
     protected FieldSet<ExtensionDescriptor> extensions = FieldSet.newFieldSet();
 
+    @SuppressWarnings("unchecked")
     protected final void mergeExtensionFields(final MessageType other) {
       if (extensions.isImmutable()) {
         extensions = extensions.clone();
@@ -466,12 +470,12 @@ public abstract class GeneratedMessageLite<
       super.visit(visitor, other);
       extensions = visitor.visitExtensions(extensions, other.extensions);
     }
-    
+
     /**
      * Parse an unknown field or an extension. For use by generated code only.
-     * 
+     *
      * <p>For use by generated code only.
-     * 
+     *
      * @return {@code true} unless the tag is an end-group tag.
      */
     protected <MessageType extends MessageLite> boolean parseUnknownField(
@@ -479,7 +483,6 @@ public abstract class GeneratedMessageLite<
         CodedInputStream input,
         ExtensionRegistryLite extensionRegistry,
         int tag) throws IOException {
-      int wireType = WireFormat.getTagWireType(tag);
       int fieldNumber = WireFormat.getTagFieldNumber(tag);
 
       // TODO(dweis): How much bytecode would be saved by not requiring the generated code to
@@ -487,6 +490,17 @@ public abstract class GeneratedMessageLite<
       GeneratedExtension<MessageType, ?> extension = extensionRegistry.findLiteExtensionByNumber(
           defaultInstance, fieldNumber);
 
+      return parseExtension(input, extensionRegistry, extension, tag, fieldNumber);
+    }
+
+    private boolean parseExtension(
+        CodedInputStream input,
+        ExtensionRegistryLite extensionRegistry,
+        GeneratedExtension<?, ?> extension,
+        int tag,
+        int fieldNumber)
+        throws IOException {
+      int wireType = WireFormat.getTagWireType(tag);
       boolean unknown = false;
       boolean packed = false;
       if (extension == null) {
@@ -508,7 +522,7 @@ public abstract class GeneratedMessageLite<
       if (unknown) {  // Unknown field or wrong wire type.  Skip.
         return parseUnknownField(tag, input);
       }
-
+      
       if (packed) {
         int length = input.readRawVarint32();
         int limit = input.pushLimit(length);
@@ -587,10 +601,148 @@ public abstract class GeneratedMessageLite<
                               extension.singularToFieldSetType(value));
         }
       }
-
       return true;
     }
     
+    /**
+     * Parse an unknown field or an extension. For use by generated code only.
+     *
+     * <p>For use by generated code only.
+     *
+     * @return {@code true} unless the tag is an end-group tag.
+     */
+    protected <MessageType extends MessageLite> boolean parseUnknownFieldAsMessageSet(
+        MessageType defaultInstance,
+        CodedInputStream input,
+        ExtensionRegistryLite extensionRegistry,
+        int tag)
+        throws IOException {
+
+      if (tag == WireFormat.MESSAGE_SET_ITEM_TAG) {
+        mergeMessageSetExtensionFromCodedStream(defaultInstance, input, extensionRegistry);
+        return true;
+      }
+
+      // TODO(dweis): Do we really want to support non message set wire format in message sets?
+      // Full runtime does... So we do for now.
+      int wireType = WireFormat.getTagWireType(tag);
+      if (wireType == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
+        return parseUnknownField(defaultInstance, input, extensionRegistry, tag);
+      } else {
+        // TODO(dweis): Should we throw on invalid input? Full runtime does not...
+        return input.skipField(tag);
+      }
+    }
+
+    /**
+     * Merges the message set from the input stream; requires message set wire format.
+     * 
+     * @param defaultInstance the default instance of the containing message we are parsing in
+     * @param input the stream to parse from
+     * @param extensionRegistry the registry to use when parsing
+     */
+    private <MessageType extends MessageLite> void mergeMessageSetExtensionFromCodedStream(
+        MessageType defaultInstance,
+        CodedInputStream input,
+        ExtensionRegistryLite extensionRegistry)
+        throws IOException {
+      // The wire format for MessageSet is:
+      //   message MessageSet {
+      //     repeated group Item = 1 {
+      //       required int32 typeId = 2;
+      //       required bytes message = 3;
+      //     }
+      //   }
+      // "typeId" is the extension's field number.  The extension can only be
+      // a message type, where "message" contains the encoded bytes of that
+      // message.
+      //
+      // In practice, we will probably never see a MessageSet item in which
+      // the message appears before the type ID, or where either field does not
+      // appear exactly once.  However, in theory such cases are valid, so we
+      // should be prepared to accept them.
+
+      int typeId = 0;
+      ByteString rawBytes = null; // If we encounter "message" before "typeId"
+      GeneratedExtension<?, ?> extension = null;
+
+      // Read bytes from input, if we get it's type first then parse it eagerly,
+      // otherwise we store the raw bytes in a local variable.
+      while (true) {
+        final int tag = input.readTag();
+        if (tag == 0) {
+          break;
+        }
+
+        if (tag == WireFormat.MESSAGE_SET_TYPE_ID_TAG) {
+          typeId = input.readUInt32();
+          if (typeId != 0) {
+            extension = extensionRegistry.findLiteExtensionByNumber(defaultInstance, typeId);
+          }
+
+        } else if (tag == WireFormat.MESSAGE_SET_MESSAGE_TAG) {
+          if (typeId != 0) {
+            if (extension != null) {
+              // We already know the type, so we can parse directly from the
+              // input with no copying.  Hooray!
+              eagerlyMergeMessageSetExtension(input, extension, extensionRegistry, typeId);
+              rawBytes = null;
+              continue;
+            }
+          }
+          // We haven't seen a type ID yet or we want parse message lazily.
+          rawBytes = input.readBytes();
+
+        } else { // Unknown tag. Skip it.
+          if (!input.skipField(tag)) {
+            break; // End of group
+          }
+        }
+      }
+      input.checkLastTagWas(WireFormat.MESSAGE_SET_ITEM_END_TAG);
+
+      // Process the raw bytes.
+      if (rawBytes != null && typeId != 0) { // Zero is not a valid type ID.
+        if (extension != null) { // We known the type
+          mergeMessageSetExtensionFromBytes(rawBytes, extensionRegistry, extension);
+        } else { // We don't know how to parse this. Ignore it.
+          if (rawBytes != null) {
+            mergeLengthDelimitedField(typeId, rawBytes);
+          }
+        }
+      }
+    }
+
+    private void eagerlyMergeMessageSetExtension(
+        CodedInputStream input,
+        GeneratedExtension<?, ?> extension,
+        ExtensionRegistryLite extensionRegistry,
+        int typeId)
+        throws IOException {
+      int fieldNumber = typeId;
+      int tag = WireFormat.makeTag(typeId, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      parseExtension(input, extensionRegistry, extension, tag, fieldNumber);
+    }
+
+    private void mergeMessageSetExtensionFromBytes(
+        ByteString rawBytes,
+        ExtensionRegistryLite extensionRegistry,
+        GeneratedExtension<?, ?> extension)
+        throws IOException {
+      MessageLite.Builder subBuilder = null;
+      MessageLite existingValue = (MessageLite) extensions.getField(extension.descriptor);
+      if (existingValue != null) {
+        subBuilder = existingValue.toBuilder();
+      }
+      if (subBuilder == null) {
+        subBuilder = extension.getMessageDefaultInstance().newBuilderForType();
+      }
+      rawBytes.newCodedInput().readMessage(subBuilder, extensionRegistry);
+      MessageLite value = subBuilder.build();
+
+      extensions.setField(extension.descriptor, extension.singularToFieldSetType(value));
+    }
+
     private void verifyExtensionContainingType(
         final GeneratedExtension<MessageType, ?> extension) {
       if (extension.getContainingTypeDefaultInstance() !=
@@ -607,7 +759,7 @@ public abstract class GeneratedMessageLite<
     public final <Type> boolean hasExtension(final ExtensionLite<MessageType, Type> extension) {
       GeneratedExtension<MessageType, Type> extensionLite =
           checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       return extensions.hasField(extensionLite.descriptor);
     }
@@ -618,7 +770,7 @@ public abstract class GeneratedMessageLite<
         final ExtensionLite<MessageType, List<Type>> extension) {
       GeneratedExtension<MessageType, List<Type>> extensionLite =
           checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       return extensions.getRepeatedFieldCount(extensionLite.descriptor);
     }
@@ -629,7 +781,7 @@ public abstract class GeneratedMessageLite<
     public final <Type> Type getExtension(final ExtensionLite<MessageType, Type> extension) {
       GeneratedExtension<MessageType, Type> extensionLite =
           checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       final Object value = extensions.getField(extensionLite.descriptor);
       if (value == null) {
@@ -660,7 +812,7 @@ public abstract class GeneratedMessageLite<
     @Override
     protected final void makeImmutable() {
       super.makeImmutable();
-      
+
       extensions.makeImmutable();
     }
 
@@ -734,7 +886,7 @@ public abstract class GeneratedMessageLite<
       implements ExtendableMessageOrBuilder<MessageType, BuilderType> {
     protected ExtendableBuilder(MessageType defaultInstance) {
       super(defaultInstance);
-      
+
       // TODO(dweis): This is kind of an unnecessary clone since we construct a
       //     new instance in the parent constructor which makes the extensions
       //     immutable. This extra allocation shouldn't matter in practice
@@ -753,7 +905,7 @@ public abstract class GeneratedMessageLite<
       if (!isBuilt) {
         return;
       }
-      
+
       super.copyOnWrite();
       instance.extensions = instance.extensions.clone();
     }
@@ -807,21 +959,13 @@ public abstract class GeneratedMessageLite<
       return instance.getExtension(extension, index);
     }
 
-    // This is implemented here only to work around an apparent bug in the
-    // Java compiler and/or build system.  See bug #1898463.  The mere presence
-    // of this dummy clone() implementation makes it go away.
-    @Override
-    public BuilderType clone() {
-      return super.clone();
-    }
-    
     /** Set the value of an extension. */
     public final <Type> BuilderType setExtension(
         final ExtensionLite<MessageType, Type> extension,
         final Type value) {
       GeneratedExtension<MessageType, Type> extensionLite =
           checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       copyOnWrite();
       instance.extensions.setField(extensionLite.descriptor, extensionLite.toFieldSetType(value));
@@ -834,7 +978,7 @@ public abstract class GeneratedMessageLite<
         final int index, final Type value) {
       GeneratedExtension<MessageType, List<Type>> extensionLite =
           checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       copyOnWrite();
       instance.extensions.setRepeatedField(
@@ -848,7 +992,7 @@ public abstract class GeneratedMessageLite<
         final Type value) {
       GeneratedExtension<MessageType, List<Type>> extensionLite =
           checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       copyOnWrite();
       instance.extensions.addRepeatedField(
@@ -860,7 +1004,7 @@ public abstract class GeneratedMessageLite<
     public final <Type> BuilderType clearExtension(
         final ExtensionLite<MessageType, ?> extension) {
       GeneratedExtension<MessageType, ?> extensionLite = checkIsLite(extension);
-      
+
       verifyExtensionContainingType(extensionLite);
       copyOnWrite();
       instance.extensions.clearField(extensionLite.descriptor);
@@ -1013,6 +1157,7 @@ public abstract class GeneratedMessageLite<
     }
   }
 
+
   /**
    * Lite equivalent to {@link GeneratedMessage.GeneratedExtension}.
    *
@@ -1157,7 +1302,7 @@ public abstract class GeneratedMessageLite<
     public static SerializedForm of(MessageLite message) {
       return new SerializedForm(message);
     }
-    
+
     private static final long serialVersionUID = 0L;
 
     private final String messageClassName;
@@ -1191,7 +1336,7 @@ public abstract class GeneratedMessageLite<
       } catch (ClassNotFoundException e) {
         throw new RuntimeException("Unable to find proto buffer class: " + messageClassName, e);
       } catch (NoSuchFieldException e) {
-        throw new RuntimeException("Unable to find DEFAULT_INSTANCE in " + messageClassName, e);
+        return readResolveFallback();
       } catch (SecurityException e) {
         throw new RuntimeException("Unable to call DEFAULT_INSTANCE in " + messageClassName, e);
       } catch (IllegalAccessException e) {
@@ -1200,8 +1345,35 @@ public abstract class GeneratedMessageLite<
         throw new RuntimeException("Unable to understand proto buffer", e);
       }
     }
+
+    /**
+     * @deprecated from v3.0.0-beta-3+, for compatibility with v2.5.0 and v2.6.1 generated code.
+     */
+    @Deprecated
+    private Object readResolveFallback() throws ObjectStreamException {
+      try {
+        Class<?> messageClass = Class.forName(messageClassName);
+        java.lang.reflect.Field defaultInstanceField =
+            messageClass.getDeclaredField("defaultInstance");
+        defaultInstanceField.setAccessible(true);
+        MessageLite defaultInstance = (MessageLite) defaultInstanceField.get(null);
+        return defaultInstance.newBuilderForType()
+            .mergeFrom(asBytes)
+            .buildPartial();
+      } catch (ClassNotFoundException e) {
+        throw new RuntimeException("Unable to find proto buffer class: " + messageClassName, e);
+      } catch (NoSuchFieldException e) {
+        throw new RuntimeException("Unable to find defaultInstance in " + messageClassName, e);
+      } catch (SecurityException e) {
+        throw new RuntimeException("Unable to call defaultInstance in " + messageClassName, e);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Unable to call parsePartialFrom", e);
+      } catch (InvalidProtocolBufferException e) {
+        throw new RuntimeException("Unable to understand proto buffer", e);
+      }
+    }
   }
-  
+
   /**
    * Checks that the {@link Extension} is Lite and returns it as a
    * {@link GeneratedExtension}.
@@ -1215,7 +1387,7 @@ public abstract class GeneratedMessageLite<
     if (!extension.isLite()) {
       throw new IllegalArgumentException("Expected a lite extension.");
     }
-    
+
     return (GeneratedExtension<MessageType, T>) extension;
   }
 
@@ -1227,8 +1399,8 @@ public abstract class GeneratedMessageLite<
   protected static final <T extends GeneratedMessageLite<T, ?>> boolean isInitialized(
       T message, boolean shouldMemoize) {
     return message.dynamicMethod(MethodToInvoke.IS_INITIALIZED, shouldMemoize) != null;
-  } 
-  
+  }
+
   protected static final <T extends GeneratedMessageLite<T, ?>> void makeImmutable(T message) {
     message.dynamicMethod(MethodToInvoke.MAKE_IMMUTABLE);
   }
@@ -1246,7 +1418,7 @@ public abstract class GeneratedMessageLite<
   protected static LongList emptyLongList() {
     return LongArrayList.emptyList();
   }
-  
+
   protected static LongList mutableCopy(LongList list) {
     int size = list.size();
     return list.mutableCopyWithCapacity(
@@ -1256,7 +1428,7 @@ public abstract class GeneratedMessageLite<
   protected static FloatList emptyFloatList() {
     return FloatArrayList.emptyList();
   }
-  
+
   protected static FloatList mutableCopy(FloatList list) {
     int size = list.size();
     return list.mutableCopyWithCapacity(
@@ -1266,7 +1438,7 @@ public abstract class GeneratedMessageLite<
   protected static DoubleList emptyDoubleList() {
     return DoubleArrayList.emptyList();
   }
-  
+
   protected static DoubleList mutableCopy(DoubleList list) {
     int size = list.size();
     return list.mutableCopyWithCapacity(
@@ -1276,7 +1448,7 @@ public abstract class GeneratedMessageLite<
   protected static BooleanList emptyBooleanList() {
     return BooleanArrayList.emptyList();
   }
-  
+
   protected static BooleanList mutableCopy(BooleanList list) {
     int size = list.size();
     return list.mutableCopyWithCapacity(
@@ -1286,7 +1458,7 @@ public abstract class GeneratedMessageLite<
   protected static <E> ProtobufList<E> emptyProtobufList() {
     return ProtobufArrayList.emptyList();
   }
-  
+
   protected static <E> ProtobufList<E> mutableCopy(ProtobufList<E> list) {
     int size = list.size();
     return list.mutableCopyWithCapacity(
@@ -1300,20 +1472,20 @@ public abstract class GeneratedMessageLite<
    */
   protected static class DefaultInstanceBasedParser<T extends GeneratedMessageLite<T, ?>>
       extends AbstractParser<T> {
-    
+
     private T defaultInstance;
-    
+
     public DefaultInstanceBasedParser(T defaultInstance) {
       this.defaultInstance = defaultInstance;
     }
-    
+
     @Override
     public T parsePartialFrom(CodedInputStream input, ExtensionRegistryLite extensionRegistry)
         throws InvalidProtocolBufferException {
       return GeneratedMessageLite.parsePartialFrom(defaultInstance, input, extensionRegistry);
     }
   }
-  
+
   /**
    * A static helper method for parsing a partial from input using the extension registry and the
    * instance.
@@ -1335,14 +1507,14 @@ public abstract class GeneratedMessageLite<
     }
     return result;
   }
-  
+
   protected static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
       T defaultInstance,
       CodedInputStream input)
       throws InvalidProtocolBufferException {
     return parsePartialFrom(defaultInstance, input, ExtensionRegistryLite.getEmptyRegistry());
   }
-  
+
   /**
    * Helper method to check if message is initialized.
    *
@@ -1361,6 +1533,20 @@ public abstract class GeneratedMessageLite<
 
   // Validates last tag.
   protected static <T extends GeneratedMessageLite<T, ?>> T parseFrom(
+      T defaultInstance, ByteBuffer data, ExtensionRegistryLite extensionRegistry)
+      throws InvalidProtocolBufferException {
+    return checkMessageInitialized(
+        parseFrom(defaultInstance, CodedInputStream.newInstance(data), extensionRegistry));
+  }
+
+  // Validates last tag.
+  protected static <T extends GeneratedMessageLite<T, ?>> T parseFrom(
+      T defaultInstance, ByteBuffer data) throws InvalidProtocolBufferException {
+    return parseFrom(defaultInstance, data, ExtensionRegistryLite.getEmptyRegistry());
+  }
+
+  // Validates last tag.
+  protected static <T extends GeneratedMessageLite<T, ?>> T parseFrom(
       T defaultInstance, ByteString data)
       throws InvalidProtocolBufferException {
     return checkMessageInitialized(
@@ -1373,7 +1559,7 @@ public abstract class GeneratedMessageLite<
       throws InvalidProtocolBufferException {
     return checkMessageInitialized(parsePartialFrom(defaultInstance, data, extensionRegistry));
   }
-  
+
   // This is a special case since we want to verify that the last tag is 0. We assume we exhaust the
   // ByteString.
   private static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
@@ -1393,7 +1579,7 @@ public abstract class GeneratedMessageLite<
       throw e;
     }
   }
-  
+
   // This is a special case since we want to verify that the last tag is 0. We assume we exhaust the
   // ByteString.
   private static <T extends GeneratedMessageLite<T, ?>> T parsePartialFrom(
@@ -1477,7 +1663,7 @@ public abstract class GeneratedMessageLite<
     return checkMessageInitialized(
         parsePartialDelimitedFrom(defaultInstance, input, extensionRegistry));
   }
-  
+
   private static <T extends GeneratedMessageLite<T, ?>> T parsePartialDelimitedFrom(
       T defaultInstance,
       InputStream input,
@@ -1530,13 +1716,12 @@ public abstract class GeneratedMessageLite<
     Object visitOneofLazyMessage(boolean minePresent, Object mine, Object other);
     Object visitOneofMessage(boolean minePresent, Object mine, Object other);
     void visitOneofNotSet(boolean minePresent);
-    
+
     /**
      * Message fields use null sentinals.
      */
     <T extends MessageLite> T visitMessage(T mine, T other);
-    LazyFieldLite visitLazyMessage(
-        boolean minePresent, LazyFieldLite mine, boolean otherPresent, LazyFieldLite other);
+    LazyFieldLite visitLazyMessage(LazyFieldLite mine, LazyFieldLite other);
 
     <T> ProtobufList<T> visitList(ProtobufList<T> mine, ProtobufList<T> other);
     BooleanList visitBooleanList(BooleanList mine, BooleanList other);
@@ -1686,7 +1871,7 @@ public abstract class GeneratedMessageLite<
       }
       throw NOT_EQUALS;
     }
-    
+
     @Override
     public Object visitOneofMessage(boolean minePresent, Object mine, Object other) {
       if (minePresent && ((GeneratedMessageLite<?, ?>) mine).equals(this, (MessageLite) other)) {
@@ -1694,7 +1879,7 @@ public abstract class GeneratedMessageLite<
       }
       throw NOT_EQUALS;
     }
-    
+
     @Override
     public void visitOneofNotSet(boolean minePresent) {
       if (minePresent) {
@@ -1716,13 +1901,17 @@ public abstract class GeneratedMessageLite<
 
       return mine;
     }
-    
+
     @Override
     public LazyFieldLite visitLazyMessage(
-        boolean minePresent, LazyFieldLite mine, boolean otherPresent, LazyFieldLite other) {
-      if (!minePresent && !otherPresent) {
-        return mine;
-      } else if (minePresent && otherPresent && mine.equals(other)) {
+        LazyFieldLite mine, LazyFieldLite other) {
+      if (mine == null && other == null) {
+        return null;
+      }
+      if (mine == null || other == null) {
+        throw NOT_EQUALS;
+      }
+      if (mine.equals(other)) {
         return mine;
       }
       throw NOT_EQUALS;
@@ -1808,13 +1997,13 @@ public abstract class GeneratedMessageLite<
   /**
    * Implements hashCode by accumulating state.
    */
-  private static class HashCodeVisitor implements Visitor {
+  static class HashCodeVisitor implements Visitor {
 
     // The caller must ensure that the visitor is invoked parameterized with this and this such that
     // other is this. This is required due to how oneof cases are handled. See the class comment
     // on Visitor for more information.
-    
-    private int hashCode = 0;
+
+    int hashCode = 0;
 
     @Override
     public boolean visitBoolean(
@@ -1909,7 +2098,7 @@ public abstract class GeneratedMessageLite<
       hashCode = (53 * hashCode) + mine.hashCode();
       return mine;
     }
-    
+
     @Override
     public Object visitOneofMessage(boolean minePresent, Object mine, Object other) {
       return visitMessage((MessageLite) mine, (MessageLite) other);
@@ -1918,7 +2107,7 @@ public abstract class GeneratedMessageLite<
     @Override
     public void visitOneofNotSet(boolean minePresent) {
       if (minePresent) {
-        throw new IllegalStateException(); // Can't happen if other == this. 
+        throw new IllegalStateException(); // Can't happen if other == this.
       }
     }
 
@@ -1939,9 +2128,14 @@ public abstract class GeneratedMessageLite<
     }
 
     @Override
-    public LazyFieldLite visitLazyMessage(
-        boolean minePresent, LazyFieldLite mine, boolean otherPresent, LazyFieldLite other) {
-      hashCode = (53 * hashCode) + mine.hashCode();
+    public LazyFieldLite visitLazyMessage(LazyFieldLite mine, LazyFieldLite other) {
+      final int protoHash;
+      if (mine != null) {
+        protoHash = mine.hashCode();
+      } else {
+        protoHash = 37;
+      }
+      hashCode = (53 * hashCode) + protoHash;
       return mine;
     }
 
@@ -1996,7 +2190,7 @@ public abstract class GeneratedMessageLite<
       hashCode = (53 * hashCode) + mine.hashCode();
       return mine;
     }
-    
+
     @Override
     public <K, V> MapFieldLite<K, V> visitMap(MapFieldLite<K, V> mine, MapFieldLite<K, V> other) {
       hashCode = (53 * hashCode) + mine.hashCode();
@@ -2064,7 +2258,7 @@ public abstract class GeneratedMessageLite<
 
     @Override
     public Object visitOneofDouble(boolean minePresent, Object mine, Object other) {
-      return other;      
+      return other;
     }
 
     @Override
@@ -2074,29 +2268,26 @@ public abstract class GeneratedMessageLite<
 
     @Override
     public Object visitOneofLong(boolean minePresent, Object mine, Object other) {
-      return other;      
+      return other;
     }
 
     @Override
     public Object visitOneofString(boolean minePresent, Object mine, Object other) {
-      return other;      
+      return other;
     }
 
     @Override
     public Object visitOneofByteString(boolean minePresent, Object mine, Object other) {
-      return other;      
+      return other;
     }
 
     @Override
     public Object visitOneofLazyMessage(boolean minePresent, Object mine, Object other) {
-      if (minePresent) {
-        LazyFieldLite lazy = (LazyFieldLite) mine;
-        lazy.merge((LazyFieldLite) other);
-        return lazy;
-      }
-      return other;
+      LazyFieldLite lazy = minePresent ? (LazyFieldLite) mine : new LazyFieldLite();
+      lazy.merge((LazyFieldLite) other);
+      return lazy;
     }
-    
+
     @Override
     public Object visitOneofMessage(boolean minePresent, Object mine, Object other) {
       if (minePresent) {
@@ -2104,7 +2295,7 @@ public abstract class GeneratedMessageLite<
       }
       return other;
     }
-    
+
     @Override
     public void visitOneofNotSet(boolean minePresent) {
       return;
@@ -2121,12 +2312,13 @@ public abstract class GeneratedMessageLite<
     }
 
     @Override
-    public LazyFieldLite visitLazyMessage(
-        boolean minePresent, LazyFieldLite mine, boolean otherPresent, LazyFieldLite other) {
-      // LazyFieldLite's are never null so we can just copy across. Necessary to avoid leakage
-      // from builder into immutable message.
-      // TODO(dweis): Change to null sentinels?
-      mine.merge(other);
+    public LazyFieldLite visitLazyMessage(LazyFieldLite mine, LazyFieldLite other) {
+      if (other != null) {
+        if (mine == null) {
+          mine = new LazyFieldLite();
+        }
+        mine.merge(other);
+      }
       return mine;
     }
 
@@ -2140,7 +2332,7 @@ public abstract class GeneratedMessageLite<
         }
         mine.addAll(other);
       }
-      
+
       return size > 0 ? mine : other;
     }
 
@@ -2154,7 +2346,7 @@ public abstract class GeneratedMessageLite<
         }
         mine.addAll(other);
       }
-      
+
       return size > 0 ? mine : other;
     }
 
@@ -2168,7 +2360,7 @@ public abstract class GeneratedMessageLite<
         }
         mine.addAll(other);
       }
-      
+
       return size > 0 ? mine : other;
     }
 
@@ -2182,7 +2374,7 @@ public abstract class GeneratedMessageLite<
         }
         mine.addAll(other);
       }
-      
+
       return size > 0 ? mine : other;
     }
 
@@ -2196,7 +2388,7 @@ public abstract class GeneratedMessageLite<
         }
         mine.addAll(other);
       }
-      
+
       return size > 0 ? mine : other;
     }
 
@@ -2210,7 +2402,7 @@ public abstract class GeneratedMessageLite<
         }
         mine.addAll(other);
       }
-      
+
       return size > 0 ? mine : other;
     }
 
@@ -2232,10 +2424,15 @@ public abstract class GeneratedMessageLite<
       return other == UnknownFieldSetLite.getDefaultInstance()
           ? mine : UnknownFieldSetLite.mutableCopyOf(mine, other);
     }
-    
+
     @Override
     public <K, V> MapFieldLite<K, V> visitMap(MapFieldLite<K, V> mine, MapFieldLite<K, V> other) {
-      mine.mergeFrom(other);
+      if (!other.isEmpty()) {
+        if (!mine.isMutable()) {
+          mine = mine.mutableCopy();
+        }
+        mine.mergeFrom(other);
+      }
       return mine;
     }
   }

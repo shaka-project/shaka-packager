@@ -73,7 +73,7 @@ class MessageDifferencer::MultipleFieldsMapKeyComparator
  public:
   MultipleFieldsMapKeyComparator(
       MessageDifferencer* message_differencer,
-      const vector<vector<const FieldDescriptor*> >& key_field_paths)
+      const std::vector<std::vector<const FieldDescriptor*> >& key_field_paths)
         : message_differencer_(message_differencer),
           key_field_paths_(key_field_paths) {
     GOOGLE_CHECK(!key_field_paths_.empty());
@@ -85,14 +85,14 @@ class MessageDifferencer::MultipleFieldsMapKeyComparator
       MessageDifferencer* message_differencer,
       const FieldDescriptor* key)
         : message_differencer_(message_differencer) {
-    vector<const FieldDescriptor*> key_field_path;
+    std::vector<const FieldDescriptor*> key_field_path;
     key_field_path.push_back(key);
     key_field_paths_.push_back(key_field_path);
   }
   virtual bool IsMatch(
       const Message& message1,
       const Message& message2,
-      const vector<SpecificField>& parent_fields) const {
+      const std::vector<SpecificField>& parent_fields) const {
     for (int i = 0; i < key_field_paths_.size(); ++i) {
       if (!IsMatchInternal(message1, message2, parent_fields,
                            key_field_paths_[i], 0)) {
@@ -105,11 +105,11 @@ class MessageDifferencer::MultipleFieldsMapKeyComparator
   bool IsMatchInternal(
       const Message& message1,
       const Message& message2,
-      const vector<SpecificField>& parent_fields,
-      const vector<const FieldDescriptor*>& key_field_path,
+      const std::vector<SpecificField>& parent_fields,
+      const std::vector<const FieldDescriptor*>& key_field_path,
       int path_index) const {
     const FieldDescriptor* field = key_field_path[path_index];
-    vector<SpecificField> current_parent_fields(parent_fields);
+    std::vector<SpecificField> current_parent_fields(parent_fields);
     if (path_index == key_field_path.size() - 1) {
       if (field->is_repeated()) {
         if (!message_differencer_->CompareRepeatedField(
@@ -146,7 +146,7 @@ class MessageDifferencer::MultipleFieldsMapKeyComparator
     }
   }
   MessageDifferencer* message_differencer_;
-  vector<vector<const FieldDescriptor*> > key_field_paths_;
+  std::vector<std::vector<const FieldDescriptor*> > key_field_paths_;
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MultipleFieldsMapKeyComparator);
 };
 
@@ -283,10 +283,10 @@ void MessageDifferencer::TreatAsMap(const FieldDescriptor* field,
 
 void MessageDifferencer::TreatAsMapWithMultipleFieldsAsKey(
     const FieldDescriptor* field,
-    const vector<const FieldDescriptor*>& key_fields) {
-  vector<vector<const FieldDescriptor*> > key_field_paths;
+    const std::vector<const FieldDescriptor*>& key_fields) {
+  std::vector<std::vector<const FieldDescriptor*> > key_field_paths;
   for (int i = 0; i < key_fields.size(); ++i) {
-    vector<const FieldDescriptor*> key_field_path;
+    std::vector<const FieldDescriptor*> key_field_path;
     key_field_path.push_back(key_fields[i]);
     key_field_paths.push_back(key_field_path);
   }
@@ -295,14 +295,15 @@ void MessageDifferencer::TreatAsMapWithMultipleFieldsAsKey(
 
 void MessageDifferencer::TreatAsMapWithMultipleFieldPathsAsKey(
     const FieldDescriptor* field,
-    const vector<vector<const FieldDescriptor*> >& key_field_paths) {
+    const std::vector<std::vector<const FieldDescriptor*> >& key_field_paths) {
   GOOGLE_CHECK(field->is_repeated()) << "Field must be repeated: "
                               << field->full_name();
   GOOGLE_CHECK_EQ(FieldDescriptor::CPPTYPE_MESSAGE, field->cpp_type())
       << "Field has to be message type.  Field name is: "
       << field->full_name();
   for (int i = 0; i < key_field_paths.size(); ++i) {
-    const vector<const FieldDescriptor*>& key_field_path = key_field_paths[i];
+    const std::vector<const FieldDescriptor*>& key_field_path =
+        key_field_paths[i];
     for (int j = 0; j < key_field_path.size(); ++j) {
       const FieldDescriptor* parent_field =
           j == 0 ? field : key_field_path[j - 1];
@@ -390,7 +391,7 @@ bool MessageDifferencer::FieldBefore(const FieldDescriptor* field1,
 
 bool MessageDifferencer::Compare(const Message& message1,
                                  const Message& message2) {
-  vector<SpecificField> parent_fields;
+  std::vector<SpecificField> parent_fields;
 
   bool result = false;
 
@@ -411,20 +412,20 @@ bool MessageDifferencer::Compare(const Message& message1,
 bool MessageDifferencer::CompareWithFields(
     const Message& message1,
     const Message& message2,
-    const vector<const FieldDescriptor*>& message1_fields_arg,
-    const vector<const FieldDescriptor*>& message2_fields_arg) {
+    const std::vector<const FieldDescriptor*>& message1_fields_arg,
+    const std::vector<const FieldDescriptor*>& message2_fields_arg) {
   if (message1.GetDescriptor() != message2.GetDescriptor()) {
     GOOGLE_LOG(DFATAL) << "Comparison between two messages with different "
                 << "descriptors.";
     return false;
   }
 
-  vector<SpecificField> parent_fields;
+  std::vector<SpecificField> parent_fields;
 
   bool result = false;
 
-  vector<const FieldDescriptor*> message1_fields(message1_fields_arg);
-  vector<const FieldDescriptor*> message2_fields(message2_fields_arg);
+  std::vector<const FieldDescriptor*> message1_fields(message1_fields_arg);
+  std::vector<const FieldDescriptor*> message2_fields(message2_fields_arg);
 
   std::sort(message1_fields.begin(), message1_fields.end(), FieldBefore);
   std::sort(message2_fields.begin(), message2_fields.end(), FieldBefore);
@@ -451,7 +452,7 @@ bool MessageDifferencer::CompareWithFields(
 bool MessageDifferencer::Compare(
     const Message& message1,
     const Message& message2,
-    vector<SpecificField>* parent_fields) {
+    std::vector<SpecificField>* parent_fields) {
   const Descriptor* descriptor1 = message1.GetDescriptor();
   const Descriptor* descriptor2 = message2.GetDescriptor();
   if (descriptor1 != descriptor2) {
@@ -466,6 +467,10 @@ bool MessageDifferencer::Compare(
     google::protobuf::scoped_ptr<Message> data1;
     google::protobuf::scoped_ptr<Message> data2;
     if (UnpackAny(message1, &data1) && UnpackAny(message2, &data2)) {
+      // Avoid DFATAL for different descriptors in google.protobuf.Any payloads.
+      if (data1->GetDescriptor() != data2->GetDescriptor()) {
+        return false;
+      }
       return Compare(*data1, *data2, parent_fields);
     }
   }
@@ -473,8 +478,11 @@ bool MessageDifferencer::Compare(
   const Reflection* reflection2 = message2.GetReflection();
 
   // Retrieve all the set fields, including extensions.
-  vector<const FieldDescriptor*> message1_fields;
-  vector<const FieldDescriptor*> message2_fields;
+  std::vector<const FieldDescriptor*> message1_fields;
+  message1_fields.reserve(1 + message1.GetDescriptor()->field_count());
+
+  std::vector<const FieldDescriptor*> message2_fields;
+  message2_fields.reserve(1 + message2.GetDescriptor()->field_count());
 
   reflection1->ListFields(message1, &message1_fields);
   reflection2->ListFields(message2, &message2_fields);
@@ -511,15 +519,15 @@ bool MessageDifferencer::Compare(
 bool MessageDifferencer::CompareRequestedFieldsUsingSettings(
     const Message& message1,
     const Message& message2,
-    const vector<const FieldDescriptor*>& message1_fields,
-    const vector<const FieldDescriptor*>& message2_fields,
-    vector<SpecificField>* parent_fields) {
+    const std::vector<const FieldDescriptor*>& message1_fields,
+    const std::vector<const FieldDescriptor*>& message2_fields,
+    std::vector<SpecificField>* parent_fields) {
   if (scope_ == FULL) {
     if (message_field_comparison_ == EQUIVALENT) {
       // We need to merge the field lists of both messages (i.e.
       // we are merely checking for a difference in field values,
       // rather than the addition or deletion of fields).
-      vector<const FieldDescriptor*> fields_union;
+      std::vector<const FieldDescriptor*> fields_union;
       CombineFields(message1_fields, FULL, message2_fields, FULL,
                     &fields_union);
       return CompareWithFieldsInternal(message1, message2, fields_union,
@@ -541,7 +549,7 @@ bool MessageDifferencer::CompareRequestedFieldsUsingSettings(
       // but only the intersection for message2.  This way, any fields
       // only present in message2 will be ignored, but any fields only
       // present in message1 will be marked as a difference.
-      vector<const FieldDescriptor*> fields_intersection;
+      std::vector<const FieldDescriptor*> fields_intersection;
       CombineFields(message1_fields, PARTIAL, message2_fields, PARTIAL,
                     &fields_intersection);
       return CompareWithFieldsInternal(message1, message2, message1_fields,
@@ -551,11 +559,11 @@ bool MessageDifferencer::CompareRequestedFieldsUsingSettings(
 }
 
 void MessageDifferencer::CombineFields(
-    const vector<const FieldDescriptor*>& fields1,
+    const std::vector<const FieldDescriptor*>& fields1,
     Scope fields1_scope,
-    const vector<const FieldDescriptor*>& fields2,
+    const std::vector<const FieldDescriptor*>& fields2,
     Scope fields2_scope,
-    vector<const FieldDescriptor*>* combined_fields) {
+    std::vector<const FieldDescriptor*>* combined_fields) {
 
   int index1 = 0;
   int index2 = 0;
@@ -585,9 +593,9 @@ void MessageDifferencer::CombineFields(
 bool MessageDifferencer::CompareWithFieldsInternal(
     const Message& message1,
     const Message& message2,
-    const vector<const FieldDescriptor*>& message1_fields,
-    const vector<const FieldDescriptor*>& message2_fields,
-    vector<SpecificField>* parent_fields) {
+    const std::vector<const FieldDescriptor*>& message1_fields,
+    const std::vector<const FieldDescriptor*>& message2_fields,
+    std::vector<SpecificField>* parent_fields) {
   bool isDifferent = false;
   int field_index1 = 0;
   int field_index2 = 0;
@@ -623,6 +631,7 @@ bool MessageDifferencer::CompareWithFieldsInternal(
       }
 
       if (reporter_ != NULL) {
+        assert(field1 != NULL);
         int count = field1->is_repeated() ?
             reflection1->FieldSize(message1, field1) : 1;
 
@@ -703,6 +712,7 @@ bool MessageDifferencer::CompareWithFieldsInternal(
     }
 
     bool fieldDifferent = false;
+    assert(field1 != NULL);
     if (field1->is_repeated()) {
       fieldDifferent = !CompareRepeatedField(message1, message2, field1,
                                              parent_fields);
@@ -741,13 +751,12 @@ bool MessageDifferencer::CompareWithFieldsInternal(
   return !isDifferent;
 }
 
-bool MessageDifferencer::IsMatch(const FieldDescriptor* repeated_field,
-                                 const MapKeyComparator* key_comparator,
-                                 const Message* message1,
-                                 const Message* message2,
-                                 const vector<SpecificField>& parent_fields,
-                                 int index1, int index2) {
-  vector<SpecificField> current_parent_fields(parent_fields);
+bool MessageDifferencer::IsMatch(
+    const FieldDescriptor* repeated_field,
+    const MapKeyComparator* key_comparator, const Message* message1,
+    const Message* message2, const std::vector<SpecificField>& parent_fields,
+    int index1, int index2) {
+  std::vector<SpecificField> current_parent_fields(parent_fields);
   if (repeated_field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE) {
     return CompareFieldValueUsingParentFields(
         *message1, *message2, repeated_field, index1, index2,
@@ -787,7 +796,7 @@ bool MessageDifferencer::CompareRepeatedField(
     const Message& message1,
     const Message& message2,
     const FieldDescriptor* repeated_field,
-    vector<SpecificField>* parent_fields) {
+    std::vector<SpecificField>* parent_fields) {
   // the input FieldDescriptor is guaranteed to be repeated field.
   const Reflection* reflection1 = message1.GetReflection();
   const Reflection* reflection2 = message2.GetReflection();
@@ -808,8 +817,8 @@ bool MessageDifferencer::CompareRepeatedField(
 
   // These two list are used for store the index of the correspondent
   // element in peer repeated field.
-  vector<int> match_list1;
-  vector<int> match_list2;
+  std::vector<int> match_list1;
+  std::vector<int> match_list2;
 
   // Try to match indices of the repeated fields. Return false if match fails
   // and there's no detailed report needed.
@@ -844,7 +853,8 @@ bool MessageDifferencer::CompareRepeatedField(
       parent_fields->pop_back();
       fieldDifferent = true;
     } else if (reporter_ != NULL &&
-               specific_field.index != specific_field.new_index) {
+               specific_field.index != specific_field.new_index &&
+               !specific_field.field->is_map()) {
       parent_fields->push_back(specific_field);
       reporter_->ReportMoved(message1, message2, *parent_fields);
       parent_fields->pop_back();
@@ -872,6 +882,7 @@ bool MessageDifferencer::CompareRepeatedField(
 
   for (int i = 0; i < count1; ++i) {
     if (match_list1[i] != -1) continue;
+    assert(reporter_ != NULL);
     specific_field.index = i;
     parent_fields->push_back(specific_field);
     reporter_->ReportDeleted(message1, message2, *parent_fields);
@@ -893,7 +904,7 @@ bool MessageDifferencer::CompareFieldValue(const Message& message1,
 bool MessageDifferencer::CompareFieldValueUsingParentFields(
     const Message& message1, const Message& message2,
     const FieldDescriptor* field, int index1, int index2,
-    vector<SpecificField>* parent_fields) {
+    std::vector<SpecificField>* parent_fields) {
   FieldContext field_context(parent_fields);
   FieldComparator::ComparisonResult result = GetFieldComparisonResult(
       message1, message2, field, index1, index2, &field_context);
@@ -932,7 +943,7 @@ bool MessageDifferencer::CompareFieldValueUsingParentFields(
 }
 
 bool MessageDifferencer::CheckPathChanged(
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   for (int i = 0; i < field_path.size(); ++i) {
     if (field_path[i].index != field_path[i].new_index) return true;
   }
@@ -956,7 +967,7 @@ bool MessageDifferencer::IsIgnored(
     const Message& message1,
     const Message& message2,
     const FieldDescriptor* field,
-    const vector<SpecificField>& parent_fields) {
+    const std::vector<SpecificField>& parent_fields) {
   if (ignored_fields_.find(field) != ignored_fields_.end()) {
     return true;
   }
@@ -971,7 +982,8 @@ bool MessageDifferencer::IsIgnored(
 
 bool MessageDifferencer::IsUnknownFieldIgnored(
     const Message& message1, const Message& message2,
-    const SpecificField& field, const vector<SpecificField>& parent_fields) {
+    const SpecificField& field,
+    const std::vector<SpecificField>& parent_fields) {
   for (int i = 0; i < ignore_criteria_.size(); ++i) {
     if (ignore_criteria_[i]->IsUnknownFieldIgnored(message1, message2, field,
                                                    parent_fields)) {
@@ -993,7 +1005,7 @@ const MessageDifferencer::MapKeyComparator* MessageDifferencer
 
 namespace {
 
-typedef pair<int, const UnknownField*> IndexUnknownFieldPair;
+typedef std::pair<int, const UnknownField*> IndexUnknownFieldPair;
 
 struct UnknownFieldOrdering {
   inline bool operator()(const IndexUnknownFieldPair& a,
@@ -1044,7 +1056,7 @@ bool MessageDifferencer::CompareUnknownFields(
     const Message& message1, const Message& message2,
     const google::protobuf::UnknownFieldSet& unknown_field_set1,
     const google::protobuf::UnknownFieldSet& unknown_field_set2,
-    vector<SpecificField>* parent_field) {
+    std::vector<SpecificField>* parent_field) {
   // Ignore unknown fields in EQUIVALENT mode.
   if (message_field_comparison_ == EQUIVALENT) return true;
 
@@ -1060,8 +1072,8 @@ bool MessageDifferencer::CompareUnknownFields(
   // two sets -- that is, differing values for the same tag.  We use
   // IndexUnknownFieldPairs to keep track of the field's original index for
   // reporting purposes.
-  vector<IndexUnknownFieldPair> fields1;  // unknown_field_set1, sorted
-  vector<IndexUnknownFieldPair> fields2;  // unknown_field_set2, sorted
+  std::vector<IndexUnknownFieldPair> fields1;  // unknown_field_set1, sorted
+  std::vector<IndexUnknownFieldPair> fields2;  // unknown_field_set2, sorted
   fields1.reserve(unknown_field_set1.field_count());
   fields2.reserve(unknown_field_set2.field_count());
 
@@ -1264,7 +1276,7 @@ class MaximumMatcher {
   // the x-th node on the right side is matched to y-th node on the left side.
   // match_list1[i] == -1 means the node is not matched. Same with match_list2.
   MaximumMatcher(int count1, int count2, NodeMatchCallback* callback,
-                 vector<int>* match_list1, vector<int>* match_list2);
+                 std::vector<int>* match_list1, std::vector<int>* match_list2);
   // Find a maximum match and return the number of matched node pairs.
   // If early_return is true, this method will return 0 immediately when it
   // finds that not all nodes on the left side can be matched.
@@ -1276,21 +1288,21 @@ class MaximumMatcher {
   // Find an argumenting path starting from the node v on the left side. If a
   // path can be found, update match_list2_ to reflect the path and return
   // true.
-  bool FindArgumentPathDFS(int v, vector<bool>* visited);
+  bool FindArgumentPathDFS(int v, std::vector<bool>* visited);
 
   int count1_;
   int count2_;
   google::protobuf::scoped_ptr<NodeMatchCallback> match_callback_;
-  map<pair<int, int>, bool> cached_match_results_;
-  vector<int>* match_list1_;
-  vector<int>* match_list2_;
+  std::map<std::pair<int, int>, bool> cached_match_results_;
+  std::vector<int>* match_list1_;
+  std::vector<int>* match_list2_;
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MaximumMatcher);
 };
 
 MaximumMatcher::MaximumMatcher(int count1, int count2,
                                NodeMatchCallback* callback,
-                               vector<int>* match_list1,
-                               vector<int>* match_list2)
+                               std::vector<int>* match_list1,
+                               std::vector<int>* match_list2)
     : count1_(count1), count2_(count2), match_callback_(callback),
       match_list1_(match_list1), match_list2_(match_list2) {
   match_list1_->assign(count1, -1);
@@ -1300,7 +1312,7 @@ MaximumMatcher::MaximumMatcher(int count1, int count2,
 int MaximumMatcher::FindMaximumMatch(bool early_return) {
   int result = 0;
   for (int i = 0; i < count1_; ++i) {
-    vector<bool> visited(count1_);
+    std::vector<bool> visited(count1_);
     if (FindArgumentPathDFS(i, &visited)) {
       ++result;
     } else if (early_return) {
@@ -1318,8 +1330,9 @@ int MaximumMatcher::FindMaximumMatch(bool early_return) {
 }
 
 bool MaximumMatcher::Match(int left, int right) {
-  pair<int, int> p(left, right);
-  map<pair<int, int>, bool>::iterator it = cached_match_results_.find(p);
+  std::pair<int, int> p(left, right);
+  std::map<std::pair<int, int>, bool>::iterator it =
+      cached_match_results_.find(p);
   if (it != cached_match_results_.end()) {
     return it->second;
   }
@@ -1327,7 +1340,7 @@ bool MaximumMatcher::Match(int left, int right) {
   return cached_match_results_[p];
 }
 
-bool MaximumMatcher::FindArgumentPathDFS(int v, vector<bool>* visited) {
+bool MaximumMatcher::FindArgumentPathDFS(int v, std::vector<bool>* visited) {
   (*visited)[v] = true;
   // We try to match those un-matched nodes on the right side first. This is
   // the step that the navie greedy matching algorithm uses. In the best cases
@@ -1363,9 +1376,9 @@ bool MessageDifferencer::MatchRepeatedFieldIndices(
     const Message& message1,
     const Message& message2,
     const FieldDescriptor* repeated_field,
-    const vector<SpecificField>& parent_fields,
-    vector<int>* match_list1,
-    vector<int>* match_list2) {
+    const std::vector<SpecificField>& parent_fields,
+    std::vector<int>* match_list1,
+    std::vector<int>* match_list2) {
   const int count1 =
       message1.GetReflection()->FieldSize(message1, repeated_field);
   const int count2 =
@@ -1383,11 +1396,11 @@ bool MessageDifferencer::MatchRepeatedFieldIndices(
   if (key_comparator != NULL || IsTreatedAsSet(repeated_field)) {
     if (scope_ == PARTIAL) {
       // When partial matching is enabled, Compare(a, b) && Compare(a, c)
-      // doesn't neccessarily imply Compare(b, c). Therefore a naive greedy
+      // doesn't necessarily imply Compare(b, c). Therefore a naive greedy
       // algorithm will fail to find a maximum matching.
       // Here we use the argumenting path algorithm.
       MaximumMatcher::NodeMatchCallback* callback =
-          ::google::protobuf::internal::NewPermanentCallback(
+          NewPermanentCallback(
               this, &MessageDifferencer::IsMatch,
               repeated_field, key_comparator,
               &message1, &message2, parent_fields);
@@ -1480,7 +1493,7 @@ MessageDifferencer::StreamReporter::~StreamReporter() {
 }
 
 void MessageDifferencer::StreamReporter::PrintPath(
-    const vector<SpecificField>& field_path, bool left_side) {
+    const std::vector<SpecificField>& field_path, bool left_side) {
   for (int i = 0; i < field_path.size(); ++i) {
     if (i > 0) {
       printer_->Print(".");
@@ -1494,6 +1507,10 @@ void MessageDifferencer::StreamReporter::PrintPath(
                         specific_field.field->full_name());
       } else {
         printer_->PrintRaw(specific_field.field->name());
+      }
+      if (specific_field.field->is_map()) {
+        // Don't print index in a map field; they are semantically unordered.
+        continue;
       }
     } else {
       printer_->PrintRaw(SimpleItoa(specific_field.unknown_field_number));
@@ -1509,7 +1526,7 @@ void MessageDifferencer::StreamReporter::PrintPath(
 
 void MessageDifferencer::
 StreamReporter::PrintValue(const Message& message,
-                           const vector<SpecificField>& field_path,
+                           const std::vector<SpecificField>& field_path,
                            bool left_side) {
   const SpecificField& specific_field = field_path.back();
   const FieldDescriptor* field = specific_field.field;
@@ -1582,7 +1599,7 @@ void MessageDifferencer::StreamReporter::Print(const string& str) {
 void MessageDifferencer::StreamReporter::ReportAdded(
     const Message& message1,
     const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   printer_->Print("added: ");
   PrintPath(field_path, false);
   printer_->Print(": ");
@@ -1593,7 +1610,7 @@ void MessageDifferencer::StreamReporter::ReportAdded(
 void MessageDifferencer::StreamReporter::ReportDeleted(
     const Message& message1,
     const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   printer_->Print("deleted: ");
   PrintPath(field_path, true);
   printer_->Print(": ");
@@ -1604,7 +1621,7 @@ void MessageDifferencer::StreamReporter::ReportDeleted(
 void MessageDifferencer::StreamReporter::ReportModified(
     const Message& message1,
     const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   if (!report_modified_aggregates_ && field_path.back().field == NULL) {
     if (field_path.back().unknown_field_type == UnknownField::TYPE_GROUP) {
       // Any changes to the subfields have already been printed.
@@ -1634,7 +1651,7 @@ void MessageDifferencer::StreamReporter::ReportModified(
 void MessageDifferencer::StreamReporter::ReportMoved(
     const Message& message1,
     const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   printer_->Print("moved: ");
   PrintPath(field_path, true);
   printer_->Print(" -> ");
@@ -1647,7 +1664,7 @@ void MessageDifferencer::StreamReporter::ReportMoved(
 void MessageDifferencer::StreamReporter::ReportMatched(
     const Message& message1,
     const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   printer_->Print("matched: ");
   PrintPath(field_path, true);
   if (CheckPathChanged(field_path)) {
@@ -1662,7 +1679,7 @@ void MessageDifferencer::StreamReporter::ReportMatched(
 void MessageDifferencer::StreamReporter::ReportIgnored(
     const Message& message1,
     const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   printer_->Print("ignored: ");
   PrintPath(field_path, true);
   if (CheckPathChanged(field_path)) {
@@ -1674,7 +1691,7 @@ void MessageDifferencer::StreamReporter::ReportIgnored(
 
 void MessageDifferencer::StreamReporter::ReportUnknownFieldIgnored(
     const Message& message1, const Message& message2,
-    const vector<SpecificField>& field_path) {
+    const std::vector<SpecificField>& field_path) {
   printer_->Print("ignored: ");
   PrintPath(field_path, true);
   if (CheckPathChanged(field_path)) {

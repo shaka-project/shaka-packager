@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.google.protobuf</groupId>
     <artifactId>protobuf-parent</artifactId>
-    <version>3.0.0-beta-3</version>
+    <version>3.0.0</version>
   </parent>
 
   <artifactId>protobuf-lite</artifactId>
@@ -76,10 +76,38 @@
 
       <!-- Only compile a subset of the files -->
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${generated.sources.lite.dir}</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-generated-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${generated.testsources.lite.dir}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <generatedSourcesDirectory>${generated.sources.lite.dir}</generatedSourcesDirectory>
-          <generatedTestSourcesDirectory>${generated.testsources.lite.dir}</generatedTestSourcesDirectory>
           <includes>
             <include>**/AbstractMessageLite.java</include>
             <include>**/AbstractParser.java</include>
@@ -109,6 +137,7 @@
             <include>**/MutabilityOracle.java</include>
             <include>**/NioByteString.java</include>
             <include>**/Parser.java</include>
+            <include>**/PrimitiveNonBoxingCollection.java</include>
             <include>**/ProtobufArrayList.java</include>
             <include>**/ProtocolStringList.java</include>
             <include>**/RopeByteString.java</include>
