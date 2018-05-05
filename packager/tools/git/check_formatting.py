@@ -36,6 +36,12 @@ import subprocess
 import sys
 
 if __name__ == '__main__':
+  is_pre_commit_hook = len(sys.argv) == 1
+  if not is_pre_commit_hook:
+    output = subprocess.check_output(['git', 'log', '--pretty=full', '-1'])
+    if 'disable-clang-format' in output:
+      sys.exit(0)
+
   command = ['git', 'clang-format', '--style', 'Chromium']
   command += sys.argv[1:]
   output = subprocess.check_output(command + ['--diff'])
