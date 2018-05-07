@@ -55,6 +55,10 @@ void BufferWriter::AppendVector(const std::vector<uint8_t>& v) {
   buf_.insert(buf_.end(), v.begin(), v.end());
 }
 
+void BufferWriter::AppendString(const std::string& s) {
+  buf_.insert(buf_.end(), s.begin(), s.end());
+}
+
 void BufferWriter::AppendArray(const uint8_t* buf, size_t size) {
   buf_.insert(buf_.end(), buf, buf + size);
 }

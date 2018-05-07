@@ -48,6 +48,7 @@ class BufferWriter {
   void AppendNBytes(uint64_t v, size_t num_bytes);
 
   void AppendVector(const std::vector<uint8_t>& v);
+  void AppendString(const std::string& s);
   void AppendArray(const uint8_t* buf, size_t size);
   void AppendBuffer(const BufferWriter& buffer);
 

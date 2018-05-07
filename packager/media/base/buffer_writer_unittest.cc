@@ -110,6 +110,18 @@ TEST_F(BufferWriterTest, AppendVector) {
   ASSERT_EQ(v, data_read);
 }
 
+TEST_F(BufferWriterTest, AppendString) {
+  const char kTestData[] = "test_data";
+  writer_->AppendString(kTestData);
+  // -1 to remove the null terminating character.
+  ASSERT_EQ(strlen(kTestData), writer_->Size());
+
+  CreateReader();
+  std::string data_read;
+  ASSERT_TRUE(reader_->ReadToString(&data_read, strlen(kTestData)));
+  ASSERT_EQ(kTestData, data_read);
+}
+
 TEST_F(BufferWriterTest, AppendArray) {
   writer_->AppendArray(kuint8Array, sizeof(kuint8Array));
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
