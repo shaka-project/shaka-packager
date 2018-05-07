@@ -53,6 +53,9 @@ class CueAlignmentHandler : public MediaHandler {
 
   // Internal handling functions for different stream data.
   Status OnStreamInfo(std::unique_ptr<StreamData> data);
+
+  Status OnVideoSample(std::unique_ptr<StreamData> sample);
+  Status OnNonVideoSample(std::unique_ptr<StreamData> sample);
   Status OnSample(std::unique_ptr<StreamData> sample);
 
   // Update stream states with new sync point.
