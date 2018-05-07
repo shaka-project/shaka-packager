@@ -1726,7 +1726,15 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
 
 MediaContainerName DetermineContainerFromFormatName(
     const std::string& format_name) {
-  if (base::EqualsCaseInsensitiveASCII(format_name, "webm")) {
+  if (base::EqualsCaseInsensitiveASCII(format_name, "aac") ||
+      base::EqualsCaseInsensitiveASCII(format_name, "adts")) {
+    return CONTAINER_AAC;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ac3")) {
+    return CONTAINER_AC3;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ec3") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "eac3")) {
+    return CONTAINER_EAC3;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "webm")) {
     return CONTAINER_WEBM;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "m4a") ||
              base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||

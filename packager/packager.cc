@@ -218,15 +218,17 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
                     "All TS segments must be self-initializing. Stream "
                     "descriptors 'output' or 'init_segment' are not allowed.");
     }
-  } else if (output_format == CONTAINER_WEBVTT) {
-    // There is no need for an init segment when outputting to WebVTT because
-    // there is no initialization data.
+  } else if (output_format == CONTAINER_WEBVTT ||
+             output_format == CONTAINER_AAC || output_format == CONTAINER_AC3 ||
+             output_format == CONTAINER_EAC3) {
+    // There is no need for an init segment when outputting because there is no
+    // initialization data.
     if (stream.segment_template.length() && stream.output.length()) {
       return Status(
           error::INVALID_ARGUMENT,
-          "Segmented WebVTT output cannot have an init segment. Do not specify "
-          "stream descriptors 'output' or 'init_segment' when using "
-          "'segment_template' with WebVtt.");
+          "Segmented WebVTT or PackedAudio output cannot have an init segment. "
+          "Do not specify stream descriptors 'output' or 'init_segment' when "
+          "using 'segment_template'.");
     }
   } else {
     // For any other format, if there is a segment template, there must be an
@@ -386,8 +388,11 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   // Use Sample AES in MPEG2TS.
   // TODO(kqyang): Consider adding a new flag to enable Sample AES as we
   // will support CENC in TS in the future.
-  if (GetOutputFormat(stream) == CONTAINER_MPEG2TS) {
-    VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS.";
+  if (GetOutputFormat(stream) == CONTAINER_MPEG2TS ||
+      GetOutputFormat(stream) == CONTAINER_AAC ||
+      GetOutputFormat(stream) == CONTAINER_AC3 ||
+      GetOutputFormat(stream) == CONTAINER_EAC3) {
+    VLOG(1) << "Use Apple Sample AES encryption for MPEG2TS or Packed Audio.";
     encryption_params.protection_scheme = kAppleSampleAesProtectionScheme;
   }
 

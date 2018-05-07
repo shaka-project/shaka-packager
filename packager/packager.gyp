@@ -36,6 +36,7 @@
         'media/event/media_event.gyp:media_event',
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
+        'media/formats/packed_audio/packed_audio.gyp:packed_audio',
         'media/formats/webm/webm.gyp:webm',
         'media/formats/webvtt/webvtt.gyp:webvtt',
         'media/formats/wvm/wvm.gyp:wvm',

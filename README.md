@@ -16,28 +16,30 @@ Shaka Packager supports:
   - [HLS](https://developer.apple.com/streaming/)
 - Key systems:
   - [Widevine](http://www.widevine.com/)
-  - [PlayReady](https://www.microsoft.com/playready/)<sup>1</sup>
-  - [Fairplay](https://developer.apple.com/streaming/fps/)<sup>1</sup>
+  - [PlayReady](https://www.microsoft.com/playready/)¹
+  - [Fairplay](https://developer.apple.com/streaming/fps/)¹
 - Encryption standards:
   - [CENC](https://en.wikipedia.org/wiki/MPEG_Common_Encryption)
   - [SAMPLE-AES](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/HLS_Sample_Encryption/Intro/Intro.html)
 - Media Containers and codecs
 
-  |      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     |
-  |:-----------------:|:------------:|:------------:|:------------:|:-----------:|
-  |    H264 (AVC)     |    I / O     |      -       |     I / O    |      I      |
-  |    H265 (HEVC)    |    I / O     |      -       |       I      |      -      |
-  |       VP8         |    I / O     |    I / O     |       -      |      -      |
-  |       VP9         |    I / O     |    I / O     |       -      |      -      |
-  |       AAC         |    I / O     |      -       |     I / O    |      I      |
-  |  Dolby AC3/EAC3   |    I / O     |      -       |       I      |      -      |
-  |       DTS         |    I / O     |      -       |       -      |      -      |
-  |       FLAC        |    I / O     |      -       |       -      |      -      |
-  |       Opus        |   *I / O*    |    I / O     |       -      |      -      |
-  |      Vorbis       |      -       |    I / O     |       -      |      -      |
+  |      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     | Packed Audio²|
+  |:-----------------:|:------------:|:------------:|:------------:|:-----------:|:------------:|
+  |    H264 (AVC)     |    I / O     |      -       |     I / O    |      I      |       -      |
+  |    H265 (HEVC)    |    I / O     |      -       |       I      |      -      |       -      |
+  |       VP8         |    I / O     |    I / O     |       -      |      -      |       -      |
+  |       VP9         |    I / O     |    I / O     |       -      |      -      |       -      |
+  |       AAC         |    I / O     |      -       |     I / O    |      I      |       O      |
+  |  Dolby AC3/EAC3   |    I / O     |      -       |       I      |      -      |       O      |
+  |       DTS         |    I / O     |      -       |       -      |      -      |       -      |
+  |       FLAC        |    I / O     |      -       |       -      |      -      |       -      |
+  |       Opus        |    I / O³    |    I / O     |       -      |      -      |       -      |
+  |      Vorbis       |      -       |    I / O     |       -      |      -      |       -      |
 
-  ** I for input and O for output.
-  ** Opus support in ISO-BMFF is experimental.
+  NOTES:
+  - I for input and O for output.
+  - ²: https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-3.4
+  - ³: Opus support in ISO-BMFF is experimental.
 - Subtitles
   - WebVTT in both text form and embedded in MP4
   - TTML in text form (DASH only)

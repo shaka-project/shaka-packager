@@ -46,6 +46,9 @@ void SetMediaInfoContainerType(MuxerListener::ContainerType container_type,
     case MuxerListener::kContainerMpeg2ts:
       media_info->set_container_type(MediaInfo::CONTAINER_MPEG2_TS);
       break;
+    case MuxerListener::kContainerPackedAudio:
+      media_info->set_container_type(MediaInfo::CONTAINER_PACKED_AUDIO);
+      break;
     case MuxerListener::kContainerWebM:
       media_info->set_container_type(MediaInfo::CONTAINER_WEBM);
       break;

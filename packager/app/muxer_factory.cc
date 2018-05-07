@@ -11,6 +11,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
+#include "packager/media/formats/packed_audio/packed_audio_writer.h"
 #include "packager/media/formats/webm/webm_muxer.h"
 #include "packager/packager.h"
 
@@ -34,6 +35,11 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
   std::shared_ptr<Muxer> muxer;
 
   switch (output_format) {
+    case CONTAINER_AAC:
+    case CONTAINER_AC3:
+    case CONTAINER_EAC3:
+      muxer = std::make_shared<PackedAudioWriter>(options);
+      break;
     case CONTAINER_WEBM:
       muxer = std::make_shared<webm::WebMMuxer>(options);
       break;

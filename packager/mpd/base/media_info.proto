@@ -17,6 +17,7 @@ message MediaInfo {
     CONTAINER_MPEG2_TS= 2;
     CONTAINER_WEBM = 3;
     CONTAINER_TEXT = 4;
+    CONTAINER_PACKED_AUDIO = 5;
   }
 
   message VideoInfo {
