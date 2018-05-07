@@ -229,12 +229,8 @@ inline bool operator==(const Language& lhs,
   return lhs.code == rhs.code;
 }
 
-inline bool operator==(const PrivFrame& lhs, const PrivFrame& rhs) {
-  return lhs.owner == rhs.owner && lhs.value == rhs.value;
-}
-
 inline bool operator==(const ID3v2& lhs, const ID3v2& rhs) {
-  return lhs.language == rhs.language && lhs.private_frame == rhs.private_frame;
+  return lhs.language == rhs.language && lhs.id3v2_data == rhs.id3v2_data;
 }
 
 inline bool operator==(const Metadata& lhs, const Metadata& rhs) {

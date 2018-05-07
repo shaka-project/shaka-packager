@@ -237,24 +237,12 @@ struct Language {
   std::string code;
 };
 
-/// Implemented per http://id3.org/id3v2.4.0-frames.
-struct PrivFrame {
-  bool ReadWrite(BoxBuffer* buffer);
-  uint32_t ComputeSize() const;
-
-  std::string owner;
-  std::string value;
-};
-
-/// Implemented per http://mp4ra.org/specs.html#id3v2 and
-///                 http://id3.org/id3v2.4.0-structure.
+/// Implemented per http://mp4ra.org/#/references.
 struct ID3v2 : FullBox {
   DECLARE_BOX_METHODS(ID3v2);
 
   Language language;
-
-  /// We only support PrivateFrame in ID3. Other frames are ignored.
-  PrivFrame private_frame;
+  std::vector<uint8_t> id3v2_data;
 };
 
 struct Metadata : FullBox {

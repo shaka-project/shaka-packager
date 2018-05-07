@@ -309,13 +309,12 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(ID3v2* id3v2) {
     id3v2->language.code = "eng";
-    id3v2->private_frame.owner = "shaka-packager";
-    id3v2->private_frame.value = "version 1.2.0-debug";
+    id3v2->id3v2_data.assign(std::begin(kData16Bytes), std::end(kData16Bytes));
   }
 
   void Modify(ID3v2* id3v2) {
     id3v2->language.code = "fre";
-    id3v2->private_frame.value = "version 1.3.1-release";
+    id3v2->id3v2_data.assign(std::begin(kData8Bytes), std::end(kData8Bytes));
   }
 
   void Fill(Metadata* metadata) {

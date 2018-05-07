@@ -10,6 +10,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/id3_tag.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
@@ -92,8 +93,10 @@ Status Segmenter::Initialize(
   if (!version.empty()) {
     moov_->metadata.handler.handler_type = FOURCC_ID32;
     moov_->metadata.id3v2.language.code = "eng";
-    moov_->metadata.id3v2.private_frame.owner = GetPackagerProjectUrl();
-    moov_->metadata.id3v2.private_frame.value = version;
+
+    Id3Tag id3_tag;
+    id3_tag.AddPrivateFrame(GetPackagerProjectUrl(), version);
+    CHECK(id3_tag.WriteToVector(&moov_->metadata.id3v2.id3v2_data));
   }
   return DoInitialize();
 }

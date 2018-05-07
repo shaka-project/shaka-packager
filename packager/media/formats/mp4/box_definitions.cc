@@ -67,11 +67,6 @@ bool IsIvSizeValid(uint8_t per_sample_iv_size) {
 // bit(5) Reserved // 0
 const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
 
-// ID3v2 header: http://id3.org/id3v2.4.0-structure
-const uint32_t kID3v2HeaderSize = 10;
-const char kID3v2Identifier[] = "ID3";
-const uint16_t kID3v2Version = 0x0400;  // id3v2.4.0
-
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
   return a <= std::numeric_limits<uint32_t>::max();
@@ -1328,84 +1323,24 @@ uint32_t Language::ComputeSize() const {
   return 2;
 }
 
-bool PrivFrame::ReadWrite(BoxBuffer* buffer) {
-  FourCC fourcc = FOURCC_PRIV;
-  RCHECK(buffer->ReadWriteFourCC(&fourcc));
-  if (fourcc != FOURCC_PRIV) {
-    VLOG(1) << "Skip unrecognized id3 frame during read: "
-            << FourCCToString(fourcc);
-    return true;
-  }
-
-  uint32_t frame_size = static_cast<uint32_t>(owner.size() + 1 + value.size());
-  // size should be encoded as synchsafe integer, which is not support here.
-  // We don't expect frame_size to be larger than 0x7F. Synchsafe integers less
-  // than 0x7F is encoded in the same way as normal integer.
-  DCHECK_LT(frame_size, 0x7Fu);
-  uint16_t flags = 0;
-  RCHECK(buffer->ReadWriteUInt32(&frame_size) &&
-         buffer->ReadWriteUInt16(&flags));
-
-  if (buffer->Reading()) {
-    std::string str;
-    RCHECK(buffer->ReadWriteString(&str, frame_size));
-    // |owner| is null terminated.
-    size_t pos = str.find('\0');
-    RCHECK(pos < str.size());
-    owner = str.substr(0, pos);
-    value = str.substr(pos + 1);
-  } else {
-    uint8_t byte = 0;  // Null terminating byte between owner and value.
-    RCHECK(buffer->ReadWriteString(&owner, owner.size()) &&
-           buffer->ReadWriteUInt8(&byte) &&
-           buffer->ReadWriteString(&value, value.size()));
-  }
-  return true;
-}
-
-uint32_t PrivFrame::ComputeSize() const {
-  if (owner.empty() && value.empty())
-    return 0;
-  const uint32_t kFourCCSize = 4;
-  return kFourCCSize +
-         static_cast<uint32_t>(sizeof(uint32_t) + sizeof(uint16_t) +
-                               owner.size() + 1 + value.size());
-}
-
 ID3v2::ID3v2() {}
 ID3v2::~ID3v2() {}
 
 FourCC ID3v2::BoxType() const { return FOURCC_ID32; }
 
 bool ID3v2::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         language.ReadWrite(buffer));
-
-  // Read/Write ID3v2 header
-  std::string id3v2_identifier = kID3v2Identifier;
-  uint16_t version = kID3v2Version;
-  // We only support PrivateFrame in ID3.
-  uint32_t data_size = private_frame.ComputeSize();
-  // size should be encoded as synchsafe integer, which is not support here.
-  // We don't expect data_size to be larger than 0x7F. Synchsafe integers less
-  // than 0x7F is encoded in the same way as normal integer.
-  DCHECK_LT(data_size, 0x7Fu);
-  uint8_t flags = 0;
-  RCHECK(buffer->ReadWriteString(&id3v2_identifier, id3v2_identifier.size()) &&
-         buffer->ReadWriteUInt16(&version) &&
-         buffer->ReadWriteUInt8(&flags) &&
-         buffer->ReadWriteUInt32(&data_size));
-
-  RCHECK(private_frame.ReadWrite(buffer));
+  RCHECK(ReadWriteHeaderInternal(buffer) && language.ReadWrite(buffer) &&
+         buffer->ReadWriteVector(&id3v2_data, buffer->Reading()
+                                                  ? buffer->BytesLeft()
+                                                  : id3v2_data.size()));
   return true;
 }
 
 size_t ID3v2::ComputeSizeInternal() {
-  uint32_t private_frame_size = private_frame.ComputeSize();
-  // Skip ID3v2 box generation if there is no private frame.
-  return private_frame_size == 0 ? 0 : HeaderSize() + language.ComputeSize() +
-                                           kID3v2HeaderSize +
-                                           private_frame_size;
+  // Skip ID3v2 box generation if there is no id3 data.
+  return id3v2_data.size() == 0
+             ? 0
+             : HeaderSize() + language.ComputeSize() + id3v2_data.size();
 }
 
 Metadata::Metadata() {}
