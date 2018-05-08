@@ -56,6 +56,11 @@ CueAlignmentHandler::CueAlignmentHandler(SyncPointQueue* sync_points)
 Status CueAlignmentHandler::InitializeInternal() {
   sync_points_->AddThread();
   stream_states_.resize(num_input_streams());
+
+  // Get the first hint for the stream. Use a negative hint so that if there is
+  // suppose to be a sync point at zero, we will still respect it.
+  hint_ = sync_points_->GetHint(-1);
+
   return Status::OK;
 }
 
@@ -106,9 +111,6 @@ Status CueAlignmentHandler::OnStreamInfo(std::unique_ptr<StreamData> data) {
   // Keep a copy of the stream info so that we can check type and check
   // timescale.
   stream_state.info = data->stream_info;
-  // Get the first hint for the stream. Use a negative hint so that if there is
-  // suppose to be a sync point at zero, we will still respect it.
-  stream_state.next_cue_hint = sync_points_->GetHint(-1);
 
   return Dispatch(std::move(data));
 }
@@ -129,8 +131,7 @@ Status CueAlignmentHandler::OnSample(std::unique_ptr<StreamData> sample) {
 
   if (stream_state.info->stream_type() == kStreamVideo) {
     const double sample_time = TimeInSeconds(*stream_state.info, *sample);
-    if (sample->media_sample->is_key_frame() &&
-        sample_time >= stream_state.next_cue_hint) {
+    if (sample->media_sample->is_key_frame() && sample_time >= hint_) {
       std::shared_ptr<const CueEvent> next_sync =
           sync_points_->PromoteAt(sample_time);
       if (!next_sync) {
@@ -162,14 +163,7 @@ Status CueAlignmentHandler::OnSample(std::unique_ptr<StreamData> sample) {
   // to wait for all streams to converge on a hint so that we can get the next
   // sync point.
   if (EveryoneWaitingAtHint()) {
-    // All streams should have the same hint right now.
-    const double next_cue_hint = stream_state.next_cue_hint;
-    for (const StreamState& stream_state : stream_states_) {
-      DCHECK_EQ(next_cue_hint, stream_state.next_cue_hint);
-    }
-
-    std::shared_ptr<const CueEvent> next_sync =
-        sync_points_->GetNext(next_cue_hint);
+    std::shared_ptr<const CueEvent> next_sync = sync_points_->GetNext(hint_);
     if (!next_sync) {
       // This happens only if the job is cancelled.
       return Status(error::CANCELLED, "SyncPointQueue is cancelled.");
@@ -186,8 +180,8 @@ Status CueAlignmentHandler::OnSample(std::unique_ptr<StreamData> sample) {
 
 Status CueAlignmentHandler::UseNewSyncPoint(
     std::shared_ptr<const CueEvent> new_sync) {
-  const double new_hint = sync_points_->GetHint(new_sync->time_in_seconds);
-  DCHECK_GT(new_hint, new_sync->time_in_seconds);
+  hint_ = sync_points_->GetHint(new_sync->time_in_seconds);
+  DCHECK_GT(hint_, new_sync->time_in_seconds);
 
   Status status;
   for (StreamState& stream_state : stream_states_) {
@@ -202,16 +196,13 @@ Status CueAlignmentHandler::UseNewSyncPoint(
       return Status(error::INVALID_ARGUMENT, "Cue events too close together");
     }
 
-    // Add the cue and update the hint. The cue will always be used over the
-    // hint, so hint should always be greater than the latest cue.
     stream_state.cue = new_sync;
-    stream_state.next_cue_hint = new_hint;
 
     while (status.ok() && !stream_state.samples.empty()) {
       std::unique_ptr<StreamData>& sample = stream_state.samples.front();
       const double sample_time_in_seconds =
           TimeInSeconds(*stream_state.info, *sample);
-      if (sample_time_in_seconds >= stream_state.next_cue_hint) {
+      if (sample_time_in_seconds >= hint_) {
         DCHECK(!stream_state.cue);
         break;
       }
@@ -249,7 +240,7 @@ Status CueAlignmentHandler::AcceptSample(std::unique_ptr<StreamData> sample,
   if (stream_state->samples.empty()) {
     const double sample_time_in_seconds =
         TimeInSeconds(*stream_state->info, *sample);
-    if (sample_time_in_seconds < stream_state->next_cue_hint) {
+    if (sample_time_in_seconds < hint_) {
       Status status;
       if (stream_state->cue) {
         status.Update(DispatchCueIfNeeded(stream_index, sample_time_in_seconds,
@@ -280,7 +271,7 @@ Status CueAlignmentHandler::DispatchCueIfNeeded(
   DCHECK(stream_state->cue);
   if (next_sample_time_in_seconds < stream_state->cue->time_in_seconds)
     return Status::OK;
-  DCHECK_LT(stream_state->cue->time_in_seconds, stream_state->next_cue_hint);
+  DCHECK_LT(stream_state->cue->time_in_seconds, hint_);
   return DispatchCueEvent(stream_index, std::move(stream_state->cue));
 }
 

@@ -44,14 +44,6 @@ class CueAlignmentHandler : public MediaHandler {
     // it is not set, the next cue is not determined.
     // This is set but not really used by video stream.
     std::shared_ptr<const CueEvent> cue;
-    // If |cue| is set, this is the hint for the cue after |cue|, i.e. next next
-    // cue; otherwise this is the hint for the next cue. This holds the time in
-    // seconds of the scheduled (unpromoted) next or next next cue's time. This
-    // is essentially the barrier for the sample stream. Non video samples after
-    // this barrier must wait until the |cue| is determined and thus the next
-    // hint to be determined; video samples will promote the hint to cue when
-    // seeing the first key frame after |next_cue_hint|.
-    double next_cue_hint = 0;
   };
 
   // MediaHandler overrides.
@@ -80,6 +72,16 @@ class CueAlignmentHandler : public MediaHandler {
 
   SyncPointQueue* const sync_points_ = nullptr;
   std::vector<StreamState> stream_states_;
+
+  // A common hint used by all streams. When a new cue is given to all streams,
+  // the hint will be updated. The hint will always be larger than any cue. The
+  // hint represents the min time in seconds for the next cue appear. The hints
+  // are based off the un-promoted cue event times in |sync_points_|.
+  //
+  // When a video stream passes the hint, it will promote the corresponding cue
+  // event. If all streams get to the hint and there are no video streams, the
+  // thread will block until |sync_points_| gives back a promoted cue event.
+  double hint_;
 };
 
 }  // namespace media
