@@ -40,10 +40,9 @@ class CueAlignmentHandler : public MediaHandler {
     // If set, the stream is pending to be flushed.
     bool to_be_flushed = false;
 
-    // If set, it points to the next cue it has to send downstream. Note that if
-    // it is not set, the next cue is not determined. We store the stream data
-    // so that we don't need a stream index to send it out.
-    std::unique_ptr<StreamData> cue;
+    // A list of cues that the stream should inject between media samples. When
+    // there are no cues, the stream should run up to the hint.
+    std::list<std::unique_ptr<StreamData>> cues;
   };
 
   // MediaHandler overrides.

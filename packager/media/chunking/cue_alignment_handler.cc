@@ -102,19 +102,20 @@ Status CueAlignmentHandler::OnFlushRequest(size_t stream_index) {
     if (stream.info->stream_type() == kStreamVideo) {
       DCHECK_EQ(stream.samples.size(), 0u)
           << "Video streams should not store samples";
-      DCHECK(!stream.cue) << "Video streams should not store cues";
+      DCHECK_EQ(stream.cues.size(), 0u)
+          << "Video streams should not store cues";
     }
 
     if (!stream.samples.empty()) {
-      LOG(WARNING) << "Unexpected data seen on stream.";
+      LOG(WARNING) << "Unexpected samples seen on stream. Skipping samples";
     }
   }
 
-  // Go through all the streams and dispatch any remaining samples.
+  // Go through all the streams and dispatch any remaining cues.
   for (StreamState& stream : stream_states_) {
-    while (!stream.samples.empty()) {
-      RETURN_IF_ERROR(Dispatch(std::move(stream.samples.front())));
-      stream.samples.pop_front();
+    while (stream.cues.size()) {
+      RETURN_IF_ERROR(Dispatch(std::move(stream.cues.front())));
+      stream.cues.pop_front();
     }
   }
 
@@ -151,8 +152,9 @@ Status CueAlignmentHandler::OnVideoSample(std::unique_ptr<StreamData> sample) {
     }
 
     RETURN_IF_ERROR(UseNewSyncPoint(std::move(next_sync)));
-    DCHECK(stream.cue);
-    RETURN_IF_ERROR(Dispatch(std::move(stream.cue)));
+    DCHECK_EQ(stream.cues.size(), 1u);
+    RETURN_IF_ERROR(Dispatch(std::move(stream.cues.front())));
+    stream.cues.pop_front();
   }
 
   return Dispatch(std::move(sample));
@@ -213,26 +215,10 @@ Status CueAlignmentHandler::UseNewSyncPoint(
   hint_ = sync_points_->GetHint(new_sync->time_in_seconds);
   DCHECK_GT(hint_, new_sync->time_in_seconds);
 
-  // No stream should be so out of sync with the others that they would
-  // still be working on an old cue.
-  for (auto& stream : stream_states_) {
-    if (!stream.cue) {
-      continue;
-    }
-
-    // TODO(kqyang): Could this happen for text when there are no text samples
-    // between the two cues?
-    LOG(ERROR) << "Found two cue events that are too close together. One at "
-               << stream.cue->cue_event->time_in_seconds << " and the other at "
-               << new_sync->time_in_seconds;
-    return Status(error::INVALID_ARGUMENT, "Cue events too close together");
-  }
-
-  // Add the cue to each stream and give them each a chance to run through their
-  // samples.
-  for (size_t index = 0; index < stream_states_.size(); index++) {
-    StreamState& stream = stream_states_[index];
-    stream.cue = StreamData::FromCueEvent(index, new_sync);
+  for (size_t stream_index = 0; stream_index < stream_states_.size();
+       stream_index++) {
+    StreamState& stream = stream_states_[stream_index];
+    stream.cues.push_back(StreamData::FromCueEvent(stream_index, new_sync));
 
     RETURN_IF_ERROR(RunThroughSamples(&stream));
   }
@@ -249,48 +235,43 @@ bool CueAlignmentHandler::EveryoneWaitingAtHint() const {
   return true;
 }
 
-// Accept Sample will either:
-//  1. Send the sample downstream, as it comes before the next sync point and
-//     therefore can skip the buffering.
-//  2. Save the sample in the buffer as it comes after the next sync point.
 Status CueAlignmentHandler::AcceptSample(std::unique_ptr<StreamData> sample,
-                                         StreamState* stream_state) {
+                                         StreamState* stream) {
   DCHECK(sample);
   DCHECK(sample->media_sample || sample->text_sample);
-  DCHECK(stream_state);
+  DCHECK(stream);
 
   // Need to cache the stream index as we will lose the pointer when we add
   // the sample to the queue.
   const size_t stream_index = sample->stream_index;
 
-  stream_state->samples.push_back(std::move(sample));
+  stream->samples.push_back(std::move(sample));
 
-  if (stream_state->samples.size() > kMaxBufferSize) {
+  if (stream->samples.size() > kMaxBufferSize) {
     LOG(ERROR) << "Stream " << stream_index << " has buffered "
-               << stream_state->samples.size() << " when the max is "
+               << stream->samples.size() << " when the max is "
                << kMaxBufferSize;
     return Status(error::INVALID_ARGUMENT,
                   "Streams are not properly multiplexed.");
   }
 
-  return RunThroughSamples(stream_state);
+  return RunThroughSamples(stream);
 }
 
 Status CueAlignmentHandler::RunThroughSamples(StreamState* stream) {
   // Step through all our samples until we find where we can insert the cue.
   // Think of this as a merge sort.
-  while (stream->cue && stream->samples.size()) {
-    const double sample_time_in_seconds =
+  while (stream->cues.size() && stream->samples.size()) {
+    const double cue_time = stream->cues.front()->cue_event->time_in_seconds;
+    const double sample_time =
         TimeInSeconds(*stream->info, *stream->samples.front());
-    const double cue_time_in_seconds = stream->cue->cue_event->time_in_seconds;
 
-    // The cue can go out now. So let it, but we can't let the sample out yet
-    // because we need to check it with the hint.
-    if (cue_time_in_seconds <= sample_time_in_seconds) {
-      RETURN_IF_ERROR(Dispatch(std::move(stream->cue)));
-    } else {
+    if (sample_time < cue_time) {
       RETURN_IF_ERROR(Dispatch(std::move(stream->samples.front())));
       stream->samples.pop_front();
+    } else {
+      RETURN_IF_ERROR(Dispatch(std::move(stream->cues.front())));
+      stream->cues.pop_front();
     }
   }
 
