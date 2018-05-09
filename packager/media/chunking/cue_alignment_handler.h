@@ -41,9 +41,9 @@ class CueAlignmentHandler : public MediaHandler {
     bool to_be_flushed = false;
 
     // If set, it points to the next cue it has to send downstream. Note that if
-    // it is not set, the next cue is not determined.
-    // This is set but not really used by video stream.
-    std::shared_ptr<const CueEvent> cue;
+    // it is not set, the next cue is not determined. We store the stream data
+    // so that we don't need a stream index to send it out.
+    std::unique_ptr<StreamData> cue;
   };
 
   // MediaHandler overrides.
@@ -68,10 +68,8 @@ class CueAlignmentHandler : public MediaHandler {
   Status AcceptSample(std::unique_ptr<StreamData> sample,
                       StreamState* stream_state);
 
-  // Dispatch the cue if the new sample comes at or after it.
-  Status DispatchCueIfNeeded(size_t stream_index,
-                             double next_sample_time_in_seconds,
-                             StreamState* stream_state);
+  // Dispatch all samples and cues (in the correct order) for the given stream.
+  Status RunThroughSamples(StreamState* stream);
 
   SyncPointQueue* const sync_points_ = nullptr;
   std::vector<StreamState> stream_states_;
