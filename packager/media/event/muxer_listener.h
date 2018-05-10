@@ -36,7 +36,8 @@ class MuxerListener {
     kContainerMp4,
     kContainerMpeg2ts,
     kContainerWebM,
-    kContainerText
+    kContainerText,
+    kContainerPackedAudio,
   };
 
   /// Structure for specifying ranges within a media file. This is mainly for

@@ -15,6 +15,8 @@
       'sources': [
         'packed_audio_segmenter.cc',
         'packed_audio_segmenter.h',
+        'packed_audio_writer.cc',
+        'packed_audio_writer.h',
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
@@ -26,11 +28,14 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'packed_audio_segmenter_unittest.cc',
+        'packed_audio_writer_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../base/media_base.gyp:media_handler_test_base',
         '../../codecs/codecs.gyp:codecs',
+        '../../event/media_event.gyp:mock_muxer_listener',
         '../../test/media_test.gyp:media_test_support',
         'packed_audio',
       ],
