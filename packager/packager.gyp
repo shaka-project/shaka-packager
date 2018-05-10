@@ -199,6 +199,7 @@
         'media/event/media_event.gyp:media_event_unittest',
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',
         'media/formats/mp4/mp4.gyp:mp4_unittest',
+        'media/formats/packed_audio/packed_audio.gyp:packed_audio_unittest',
         'media/formats/webm/webm.gyp:webm_unittest',
         'media/formats/webvtt/webvtt.gyp:webvtt_unittest',
         'media/formats/wvm/wvm.gyp:wvm_unittest',

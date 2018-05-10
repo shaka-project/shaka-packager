@@ -20,23 +20,27 @@ class BufferWriter;
 class Id3Tag {
  public:
   Id3Tag() = default;
-  ~Id3Tag() = default;
+  virtual ~Id3Tag() = default;
 
   /// Add a "Private Frame".
   /// See http://id3.org/id3v2.4.0-frames 4.27.
   /// @owner contains the owner identifier.
   /// @data contains the data for this private frame.
-  void AddPrivateFrame(const std::string& owner, const std::string& data);
+  // This function is made virtual for testing.
+  virtual void AddPrivateFrame(const std::string& owner,
+                               const std::string& data);
 
   /// Write the ID3 tag to a buffer.
   /// @param buffer_writer points to the @a BufferWriter to write to.
   /// @return true on success.
-  bool WriteToBuffer(BufferWriter* buffer_writer);
+  // This function is made virtual for testing.
+  virtual bool WriteToBuffer(BufferWriter* buffer_writer);
 
   /// Write the ID3 tag to vector.
   /// @param output points to the vector to write to.
   /// @return true on success.
-  bool WriteToVector(std::vector<uint8_t>* output);
+  // This function is made virtual for testing.
+  virtual bool WriteToVector(std::vector<uint8_t>* output);
 
  private:
   Id3Tag(const Id3Tag&) = delete;
