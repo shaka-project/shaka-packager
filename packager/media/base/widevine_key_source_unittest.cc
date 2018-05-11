@@ -56,6 +56,12 @@ const char kExpectedRequestMessageFormat[] =
     R"("tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
     R"({"type":"UHD2"},{"type":"AUDIO"}],)"
     R"("drm_types":["WIDEVINE"],"protection_scheme":"%s"})";
+const char kExpectedRequestMessageFormatWithEntitlement[] =
+    R"({"content_id":"%s","policy":"%s",)"
+    R"("tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
+    R"({"type":"UHD2"},{"type":"AUDIO"}],)"
+    R"("drm_types":["WIDEVINE"],"protection_scheme":"%s",)"
+    R"("enable_entitlement_license":true})";
 const char kExpectedRequestMessageWithAssetIdFormat[] =
     R"({"tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
     R"({"type":"UHD2"},{"type":"AUDIO"}],)"
@@ -68,6 +74,9 @@ const char kExpectedSignedMessageFormat[] =
     R"({"request":"%s","signature":"%s","signer":"%s"})";
 const char kTrackFormat[] = R"({"type":"%s","key_id":"%s","key":"%s",)"
                             R"("pssh":[{"drm_type":"WIDEVINE","data":"%s"}]})";
+const char kTrackFormatWithBoxes[] =
+    R"({"type":"%s","key_id":"%s","key":"%s",)"
+    R"("pssh":[{"drm_type":"WIDEVINE","data":"%s","boxes":"%s"}]})";
 const char kClassicTrackFormat[] = R"({"type":"%s","key":"%s"})";
 const char kLicenseResponseFormat[] = R"({"status":"%s","tracks":[%s]})";
 const char kHttpResponseFormat[] = R"({"response":"%s"})";
@@ -113,6 +122,21 @@ std::string GetMockKey(const std::string& track_type) {
 
 std::string GetMockPsshData() {
   return kRequestPsshData;
+}
+
+std::string GenerateMockLicenseResponseWithBoxes(const std::string& boxes) {
+  const std::string kTrackTypes[] = {"SD", "HD", "UHD1", "UHD2", "AUDIO"};
+  std::string tracks;
+  for (size_t i = 0; i < 5; ++i) {
+    if (!tracks.empty())
+      tracks += ",";
+    tracks += base::StringPrintf(
+        kTrackFormatWithBoxes, kTrackTypes[i].c_str(),
+        Base64Encode(GetMockKeyId(kTrackTypes[i])).c_str(),
+        Base64Encode(GetMockKey(kTrackTypes[i])).c_str(),
+        Base64Encode(GetMockPsshData()).c_str(), boxes.c_str());
+  }
+  return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
 }
 
 std::string GenerateMockLicenseResponse() {
@@ -323,6 +347,26 @@ TEST_F(WidevineKeySourceTest, NoRetryOnUnknownError) {
             widevine_key_source_->FetchKeys(content_id_, kPolicy).error_code());
 }
 
+TEST_F(WidevineKeySourceTest, BoxesInResponse) {
+  const char kMockBoxes[] = "mock_pssh_boxes";
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponseWithBoxes(
+                                            Base64Encode(kMockBoxes)))
+                               .c_str());
+
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+
+  CreateWidevineKeySource();
+  ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
+
+  const char kHdStreamLabel[] = "HD";
+  EncryptionKey encryption_key;
+  ASSERT_OK(widevine_key_source_->GetKey(kHdStreamLabel, &encryption_key));
+  ASSERT_EQ(1u, encryption_key.key_system_info.size());
+  ASSERT_EQ(kMockBoxes, ToString(encryption_key.key_system_info.front().psshs));
+}
+
 class WidevineKeySourceParameterizedTest
     : public WidevineKeySourceTest,
       public WithParamInterface<std::tr1::tuple<bool, bool, FourCC>> {
@@ -451,6 +495,21 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusClassicOK) {
       std::vector<uint8_t>(std::begin(kClassicAssetIdBytes),
                            std::end(kClassicAssetIdBytes))));
   VerifyKeys(true);
+}
+
+TEST_P(WidevineKeySourceParameterizedTest, VerifyEntitlementLicenseRequest) {
+  const std::string expected_message =
+      base::StringPrintf(kExpectedRequestMessageFormatWithEntitlement,
+                         Base64Encode(kContentId).c_str(), kPolicy,
+                         GetExpectedProtectionScheme().c_str());
+  EXPECT_CALL(*mock_request_signer_,
+              GenerateSignature(StrEq(expected_message), _))
+      .WillOnce(Return(false));
+
+  CreateWidevineKeySource();
+  widevine_key_source_->set_enable_entitlement_license(true);
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
+  ASSERT_NOT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
 
 namespace {

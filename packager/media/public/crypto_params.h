@@ -59,6 +59,8 @@ struct WidevineEncryptionParams {
   WidevineSigner signer;
   /// Group identifier, if present licenses will belong to this group.
   std::vector<uint8_t> group_id;
+  /// Enables entitlement license when set to true.
+  bool enable_entitlement_license;
 };
 
 /// PlayReady encryption parameters.

@@ -6,6 +6,8 @@
 
 #include "packager/media/base/protection_system_specific_info.h"
 
+#include <map>
+
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/fourccs.h"
@@ -33,7 +35,9 @@ bool ProtectionSystemSpecificInfo::ParseBoxes(
     const uint8_t* data,
     size_t data_size,
     std::vector<ProtectionSystemSpecificInfo>* pssh_infos) {
+  std::map<std::vector<uint8_t>, size_t> info_map;
   pssh_infos->clear();
+
   BufferReader reader(data, data_size);
   while (reader.HasBytes(1)) {
     uint32_t size;
@@ -41,10 +45,17 @@ bool ProtectionSystemSpecificInfo::ParseBoxes(
     RCHECK(reader.SkipBytes(size - 4));
     RCHECK(size > kPsshBoxHeaderSize + kSystemIdSize);
 
-    pssh_infos->push_back(
-        {std::vector<uint8_t>(data + kPsshBoxHeaderSize,
-                              data + kPsshBoxHeaderSize + kSystemIdSize),
-         std::vector<uint8_t>(data, data + size)});
+    const std::vector<uint8_t> system_id(
+        data + kPsshBoxHeaderSize, data + kPsshBoxHeaderSize + kSystemIdSize);
+    auto iter = info_map.find(system_id);
+    if (iter != info_map.end()) {
+      ProtectionSystemSpecificInfo& info = (*pssh_infos)[iter->second];
+      info.psshs.insert(info.psshs.end(), data, data + size);
+    } else {
+      pssh_infos->push_back(
+          {system_id, std::vector<uint8_t>(data, data + size)});
+      info_map[system_id] = pssh_infos->size() - 1;
+    }
 
     data += size;
   }
@@ -63,7 +74,6 @@ std::unique_ptr<PsshBoxBuilder> PsshBoxBuilder::ParseFromBox(
   uint32_t version_and_flags;
   RETURN_NULL_IF_FALSE(reader.Read4(&size));
   RETURN_NULL_IF_FALSE(reader.Read4(&box_type));
-  RETURN_NULL_IF_FALSE(size == data_size);
   RETURN_NULL_IF_FALSE(box_type == FOURCC_pssh);
   RETURN_NULL_IF_FALSE(reader.Read4(&version_and_flags));
 
@@ -90,10 +100,7 @@ std::unique_ptr<PsshBoxBuilder> PsshBoxBuilder::ParseFromBox(
   RETURN_NULL_IF_FALSE(
       reader.ReadToVector(&pssh_builder->pssh_data_, pssh_data_size));
 
-  // We should be at the end of the data.  The reader should be initialized to
-  // the data and size according to the size field of the box; therefore it
-  // is an error if there are bytes remaining.
-  RETURN_NULL_IF_FALSE(!reader.HasBytes(1));
+  // Ignore extra data if there is any.
   return pssh_builder;
 }
 

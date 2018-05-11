@@ -81,6 +81,8 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         widevine_key_source->set_signer(std::move(request_signer));
       }
       widevine_key_source->set_group_id(widevine.group_id);
+      widevine_key_source->set_enable_entitlement_license(
+          widevine.enable_entitlement_license);
 
       Status status =
           widevine_key_source->FetchKeys(widevine.content_id, widevine.policy);

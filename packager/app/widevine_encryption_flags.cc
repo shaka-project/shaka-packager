@@ -59,6 +59,9 @@ DEFINE_int32(crypto_period_duration,
              "Crypto period duration in seconds. If it is non-zero, key "
              "rotation is enabled.");
 DEFINE_hex_bytes(group_id, "", "Identifier for a group of licenses (hex).");
+DEFINE_bool(enable_entitlement_license,
+            false,
+            "Enable entitlement license when using Widevine key server.");
 
 namespace shaka {
 namespace {

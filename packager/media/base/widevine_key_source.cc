@@ -57,6 +57,24 @@ CommonEncryptionRequest::ProtectionScheme ToCommonEncryptionProtectionScheme(
   }
 }
 
+ProtectionSystemSpecificInfo ProtectionSystemInfoFromPsshProto(
+    const CommonEncryptionResponse::Track::Pssh& pssh_proto) {
+  PsshBoxBuilder pssh_builder;
+  pssh_builder.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+
+  if (pssh_proto.has_boxes()) {
+    return {pssh_builder.system_id(),
+            std::vector<uint8_t>(pssh_proto.boxes().begin(),
+                                 pssh_proto.boxes().end())};
+  } else {
+    pssh_builder.set_pssh_box_version(0);
+    const std::vector<uint8_t> pssh_data(pssh_proto.data().begin(),
+                                         pssh_proto.data().end());
+    pssh_builder.set_pssh_data(pssh_data);
+    return {pssh_builder.system_id(), pssh_builder.CreateBox()};
+  }
+}
+
 }  // namespace
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
@@ -73,7 +91,8 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url,
       key_production_started_(false),
       start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED),
-      first_crypto_period_index_(0) {
+      first_crypto_period_index_(0),
+      enable_entitlement_license_(false) {
   key_production_thread_.Start();
 }
 
@@ -97,6 +116,8 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
   common_encryption_request_->set_policy(policy);
   common_encryption_request_->set_protection_scheme(
       ToCommonEncryptionProtectionScheme(protection_scheme_));
+  if (enable_entitlement_license_)
+    common_encryption_request_->set_enable_entitlement_license(true);
 
   return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
@@ -216,10 +237,6 @@ void WidevineKeySource::set_signer(std::unique_ptr<RequestSigner> signer) {
 void WidevineKeySource::set_key_fetcher(
     std::unique_ptr<KeyFetcher> key_fetcher) {
   key_fetcher_ = std::move(key_fetcher);
-}
-
-void WidevineKeySource::set_group_id(const std::vector<uint8_t>& group_id) {
-  group_id_ = group_id;
 }
 
 Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
@@ -430,19 +447,8 @@ bool WidevineKeySource::ExtractEncryptionKey(
                    << track.pssh_size();
         return false;
       }
-      const auto& pssh_proto = track.pssh(0);
-      const std::vector<uint8_t> pssh_data(pssh_proto.data().begin(),
-                                           pssh_proto.data().end());
-
-      PsshBoxBuilder pssh_builder;
-      pssh_builder.add_key_id(encryption_key->key_id);
-      pssh_builder.set_system_id(kWidevineSystemId,
-                                 arraysize(kWidevineSystemId));
-      pssh_builder.set_pssh_box_version(0);
-      pssh_builder.set_pssh_data(pssh_data);
-
       encryption_key->key_system_info.push_back(
-          {pssh_builder.system_id(), pssh_builder.CreateBox()});
+          ProtectionSystemInfoFromPsshProto(track.pssh(0)));
     }
     encryption_key_map[stream_label] = std::move(encryption_key);
   }

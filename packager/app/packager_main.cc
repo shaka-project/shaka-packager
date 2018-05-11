@@ -323,6 +323,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
       widevine.content_id = FLAGS_content_id_bytes;
       widevine.policy = FLAGS_policy;
       widevine.group_id = FLAGS_group_id_bytes;
+      widevine.enable_entitlement_license = FLAGS_enable_entitlement_license;
       if (!GetWidevineSigner(&widevine.signer))
         return base::nullopt;
       break;
