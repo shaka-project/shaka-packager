@@ -1006,6 +1006,23 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
+  def testHlsAudioVideoTextWithAdCues(self):
+    streams = [
+        self._GetStream('audio',
+                        hls=True,
+                        segmented=True),
+        self._GetStream('video',
+                        hls=True,
+                        segmented=True),
+        self._GetStream('text',
+                        hls=True,
+                        segmented=True,
+                        test_file='bear-subtitle-english.vtt')
+    ]
+    flags = self._GetFlags(output_hls=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('hls-audio-video-text-with-ad-cues')
+
   def testPackageWebmSubsampleEncryption(self):
     streams = [
         self._GetStream('video',
