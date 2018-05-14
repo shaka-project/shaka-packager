@@ -7,10 +7,13 @@
 bear-subtitle-english-text-1.vtt
 #EXTINF:1.000,
 bear-subtitle-english-text-2.vtt
-#EXTINF:1.000,
+#EXTINF:0.068,
 bear-subtitle-english-text-3.vtt
+#EXT-X-PLACEMENT-OPPORTUNITY
 #EXTINF:1.000,
 bear-subtitle-english-text-4.vtt
 #EXTINF:1.000,
 bear-subtitle-english-text-5.vtt
+#EXTINF:1.000,
+bear-subtitle-english-text-6.vtt
 #EXT-X-ENDLIST

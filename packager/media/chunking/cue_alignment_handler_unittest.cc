@@ -493,6 +493,65 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
   ASSERT_OK(FlushAll({kTextStream}));
 }
 
+TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
+  const size_t kTextStream = 0;
+
+  const int64_t kSampleDuration = 1000;
+
+  const int64_t kSample0Start = 0;
+  const int64_t kSample0End = kSample0Start + kSampleDuration;
+  const int64_t kSample1Start = kSample0End;
+  const int64_t kSample1End = kSample1Start + kSampleDuration;
+  const int64_t kSample2Start = kSample1End;
+  const int64_t kSample2End = kSample2Start + kSampleDuration;
+
+  const double kCueTimeInSeconds =
+      static_cast<double>(kSample2Start + kSample2End) / kMsTimeScale;
+
+  // Put the cue between the start and end of the last sample.
+  Cuepoint cue;
+  cue.start_time_in_seconds = kCueTimeInSeconds;
+
+  AdCueGeneratorParams params;
+  params.cue_points.push_back(cue);
+
+  SyncPointQueue sync_points(params);
+  std::shared_ptr<MediaHandler> handler =
+      std::make_shared<CueAlignmentHandler>(&sync_points);
+  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                                       kNoSettings, kNoPayload)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                                       kNoSettings, kNoPayload)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(kNoId, kSample2Start, kSample2End,
+                                       kNoSettings, kNoPayload)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsCueEvent(kParent, kCueTimeInSeconds)));
+    EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
+  }
+
+  auto stream_info = GetTextStreamInfo();
+  auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
+  auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
+  auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
+
+  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(stream_info)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_0)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_1)));
+  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_2)));
+
+  ASSERT_OK(FlushAll({kTextStream}));
+}
+
 TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
   const size_t kTextStream = 0;
   const size_t kAudioStream = 1;

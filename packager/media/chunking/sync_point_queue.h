@@ -47,6 +47,11 @@ class SyncPointQueue {
   /// unpromoted cues before the cue will be discarded.
   std::shared_ptr<const CueEvent> PromoteAt(double time_in_seconds);
 
+  /// @return True if there are more cues after the given hint. The hint must
+  ///         be a hint returned from |GetHint|. Using any other value results
+  ///         in undefined behavior.
+  bool HasMore(double hint_in_seconds) const;
+
  private:
   SyncPointQueue(const SyncPointQueue&) = delete;
   SyncPointQueue& operator=(const SyncPointQueue&) = delete;

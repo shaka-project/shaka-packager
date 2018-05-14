@@ -87,6 +87,10 @@ std::shared_ptr<const CueEvent> SyncPointQueue::PromoteAt(
   return PromoteAtNoLocking(time_in_seconds);
 }
 
+bool SyncPointQueue::HasMore(double hint_in_seconds) const {
+  return hint_in_seconds < std::numeric_limits<double>::max();
+}
+
 std::shared_ptr<const CueEvent> SyncPointQueue::PromoteAtNoLocking(
     double time_in_seconds) {
   lock_.AssertAcquired();

@@ -50,6 +50,19 @@ double TimeInSeconds(const StreamInfo& info, const StreamData& data) {
 
   return static_cast<double>(scaled_time) / time_scale;
 }
+
+Status GetNextCue(double hint,
+                  SyncPointQueue* sync_points,
+                  std::shared_ptr<const CueEvent>* out_cue) {
+  DCHECK(sync_points);
+  DCHECK(out_cue);
+
+  *out_cue = sync_points->GetNext(hint);
+
+  // |*out_cue| will only be null if the job was cancelled.
+  return *out_cue ? Status::OK
+                  : Status(error::CANCELLED, "SyncPointQueue is cancelled.");
+}
 }  // namespace
 
 CueAlignmentHandler::CueAlignmentHandler(SyncPointQueue* sync_points)
@@ -105,14 +118,24 @@ Status CueAlignmentHandler::OnFlushRequest(size_t stream_index) {
       DCHECK_EQ(stream.cues.size(), 0u)
           << "Video streams should not store cues";
     }
-
-    if (!stream.samples.empty()) {
-      LOG(WARNING) << "Unexpected samples seen on stream. Skipping samples";
-    }
   }
 
-  // Go through all the streams and dispatch any remaining cues.
+  // It is possible that we did not get all the cues. |hint_| will get updated
+  // when we call |UseNextSyncPoint|.
+  while (sync_points_->HasMore(hint_)) {
+    std::shared_ptr<const CueEvent> next_cue;
+    RETURN_IF_ERROR(GetNextCue(hint_, sync_points_, &next_cue));
+    RETURN_IF_ERROR(UseNewSyncPoint(std::move(next_cue)));
+  }
+
+  // Now that there are new cues, it may be possible to dispatch some of the
+  // samples that may be left waiting.
   for (StreamState& stream : stream_states_) {
+    RETURN_IF_ERROR(RunThroughSamples(&stream));
+    DCHECK_EQ(stream.samples.size(), 0u);
+
+    // It is possible for there to be cues that come after all the samples. Make
+    // sure to send them out too.
     while (stream.cues.size()) {
       RETURN_IF_ERROR(Dispatch(std::move(stream.cues.front())));
       stream.cues.pop_front();
@@ -177,12 +200,8 @@ Status CueAlignmentHandler::OnNonVideoSample(
   // to wait for all streams to converge on a hint so that we can get the next
   // sync point.
   if (EveryoneWaitingAtHint()) {
-    std::shared_ptr<const CueEvent> next_sync = sync_points_->GetNext(hint_);
-    if (!next_sync) {
-      // This happens only if the job is cancelled.
-      return Status(error::CANCELLED, "SyncPointQueue is cancelled.");
-    }
-
+    std::shared_ptr<const CueEvent> next_sync;
+    RETURN_IF_ERROR(GetNextCue(hint_, sync_points_, &next_sync));
     RETURN_IF_ERROR(UseNewSyncPoint(next_sync));
   }
 
