@@ -1,3 +1,33 @@
+## [2.1.0] - 2018-05-22
+### Added
+- Support Widevine and Playready PSSH generation internally in packager (#245).
+  Documentation will be updated later.
+- Support removing segments outside of live window in DASH and HLS (#223).
+- Support UTCTiming for DASH (#311).
+- Support approximate SegmentTimeline (#330) under flag
+  --allow_approximate_segment_timeline. The flag is disabled by default and it
+  will be enabled in a later release.
+- Support UDP Source Specific Multicast (SSM) (#332).
+- Support elementary audio (Packed Audio) for HLS (#342).
+- Support FLAC codec (#345).
+- Support AAC with program_config_element (#387).
+- Support Widevine entitlement license with dual PSSH.
+- Add license notice in --licenses.
+
+### Changed
+- Ignore unsupported audio codec in the source content (#395). This allows other
+  supported streams to be processed and packaged.
+
+### Fixed
+- Fix bitrate for DASH on-demand profile too (#376).
+- Fix Ad Cues and EXT-X-KEY tag handling in HLS iFrames only playlist
+  (#378, #396).
+- Skip Style and Region Blocks in the source instead of failing (#380).
+- Fix potential slice header size off by one byte in H265 (#383).
+- Fix potential partial DASH segments during live packaging (#386).
+- Fix incorrect BOM used in WEBVTT header (#397).
+- Fix TS mimetype in DASH.
+
 ## [2.0.3] - 2018-04-23
 ### Changed
 - Removed --pto_adjustment flag (related to #368).
@@ -318,6 +348,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.1.0]: https://github.com/google/shaka-packager/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/google/shaka-packager/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/google/shaka-packager/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/google/shaka-packager/compare/v2.0.0...v2.0.1
