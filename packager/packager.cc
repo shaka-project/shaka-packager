@@ -16,6 +16,7 @@
 #include "packager/base/at_exit.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
+#include "packager/base/optional.h"
 #include "packager/base/path_service.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
@@ -142,26 +143,48 @@ bool DetermineTextFileCodec(const std::string& file, std::string* out) {
 }
 
 MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
-  MediaContainerName output_format = CONTAINER_UNKNOWN;
   if (!descriptor.output_format.empty()) {
-    output_format = DetermineContainerFromFormatName(descriptor.output_format);
-    if (output_format == CONTAINER_UNKNOWN) {
+    MediaContainerName format =
+        DetermineContainerFromFormatName(descriptor.output_format);
+    if (format == CONTAINER_UNKNOWN) {
       LOG(ERROR) << "Unable to determine output format from '"
                  << descriptor.output_format << "'.";
     }
-  } else {
-    const std::string& output_name = descriptor.output.empty()
-                                         ? descriptor.segment_template
-                                         : descriptor.output;
-    if (output_name.empty())
-      return CONTAINER_UNKNOWN;
-    output_format = DetermineContainerFromFileName(output_name);
-    if (output_format == CONTAINER_UNKNOWN) {
-      LOG(ERROR) << "Unable to determine output format from '" << output_name
-                 << "'.";
+    return format;
+  }
+
+  base::Optional<MediaContainerName> format_from_output;
+  base::Optional<MediaContainerName> format_from_segment;
+  if (!descriptor.output.empty()) {
+    format_from_output = DetermineContainerFromFileName(descriptor.output);
+    if (format_from_output.value() == CONTAINER_UNKNOWN) {
+      LOG(ERROR) << "Unable to determine output format from '"
+                 << descriptor.output << "'.";
     }
   }
-  return output_format;
+  if (!descriptor.segment_template.empty()) {
+    format_from_segment =
+        DetermineContainerFromFileName(descriptor.segment_template);
+    if (format_from_segment.value() == CONTAINER_UNKNOWN) {
+      LOG(ERROR) << "Unable to determine output format from '"
+                 << descriptor.segment_template << "'.";
+    }
+  }
+
+  if (format_from_output && format_from_segment) {
+    if (format_from_output.value() != format_from_segment.value()) {
+      LOG(ERROR) << "Output format determined from '" << descriptor.output
+                 << "' differs from output format determined from '"
+                 << descriptor.segment_template << "'.";
+      return CONTAINER_UNKNOWN;
+    }
+  }
+
+  if (format_from_output)
+    return format_from_output.value();
+  if (format_from_segment)
+    return format_from_segment.value();
+  return CONTAINER_UNKNOWN;
 }
 
 Status ValidateStreamDescriptor(bool dump_stream_info,

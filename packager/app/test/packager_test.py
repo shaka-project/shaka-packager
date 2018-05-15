@@ -1618,6 +1618,18 @@ class PackagerCommandParsingTest(PackagerAppTest):
     # Expect the test to fail but we do not expect a crash.
     self.assertEqual(packaging_result, 1)
 
+  def testInconsistentOutputAndSegmentTemplateFormat(self):
+    test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
+    video_output_prefix = os.path.join(self.tmp_dir, 'video')
+
+    packaging_result = self.packager.Package([
+        'input=%s,stream=video,init_segment=%s-init.mp4,'
+        'segment_template=%s-$Number$.webm' %
+        (test_file, video_output_prefix, video_output_prefix),
+    ], self._GetFlags())
+    # Expect the test to fail but we do not expect a crash.
+    self.assertEqual(packaging_result, 1)
+
 
 if __name__ == '__main__':
   unittest.main()
