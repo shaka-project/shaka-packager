@@ -92,11 +92,11 @@ def _UpdateMpdTimes(mpd_filepath):
 
 
 def GetExtension(stream_descriptor, output_format):
+  if output_format:
+    return output_format
   # TODO(rkuroiwa): Support ttml.
   if stream_descriptor == 'text':
     return 'vtt'
-  if output_format:
-    return output_format
   # Default to mp4.
   return 'mp4'
 
