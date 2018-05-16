@@ -81,7 +81,7 @@ TEST_F(WebVttParserTest, ParseOnlyHeader) {
 
 TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
   const char* text =
-      "\xFE\xFFWEBVTT\n"
+      "\xEF\xBB\xBFWEBVTT\n"
       "\n";
 
   ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
