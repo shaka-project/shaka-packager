@@ -185,6 +185,9 @@ class MediaPlaylist {
                            uint64_t duration,
                            uint64_t start_byte_offset,
                            uint64_t size);
+  // Adjust the duration of the last SegmentInfoEntry to end on
+  // |next_timestamp|.
+  void AdjustLastSegmentInfoEntryDuration(uint64_t next_timestamp);
   // Remove elements from |entries_| for live profile. Increments
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
@@ -231,7 +234,6 @@ class MediaPlaylist {
     uint64_t timestamp;
     uint64_t start_byte_offset;
     uint64_t size;
-    uint64_t duration;
     std::string segment_file_name;
   };
   std::list<KeyFrameInfo> key_frames_;

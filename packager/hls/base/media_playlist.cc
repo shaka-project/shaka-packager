@@ -151,6 +151,7 @@ class SegmentInfoEntry : public HlsEntry {
   std::string ToString() override;
   double start_time() const { return start_time_; }
   double duration() const { return duration_; }
+  void set_duration(double duration) { duration_ = duration; }
 
  private:
   SegmentInfoEntry(const SegmentInfoEntry&) = delete;
@@ -158,7 +159,7 @@ class SegmentInfoEntry : public HlsEntry {
 
   const std::string file_name_;
   const double start_time_;
-  const double duration_;
+  double duration_;
   const bool use_byte_range_;
   const uint64_t start_byte_offset_;
   const uint64_t segment_file_size_;
@@ -379,20 +380,20 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   if (stream_type_ == MediaPlaylistStreamType::kVideoIFramesOnly) {
     if (key_frames_.empty())
       return;
-    // Skip the last entry as the duration of the key frames are defined by the
-    // next key frame, which we don't know yet.
-    for (auto iter = key_frames_.begin(); iter != std::prev(key_frames_.end());
-         ++iter) {
-      const std::string& segment_file_name =
-          iter->segment_file_name.empty() ? file_name : iter->segment_file_name;
-      AddSegmentInfoEntry(segment_file_name, iter->timestamp, iter->duration,
+
+    AdjustLastSegmentInfoEntryDuration(key_frames_.front().timestamp);
+
+    for (auto iter = key_frames_.begin(); iter != key_frames_.end(); ++iter) {
+      // Last entry duration may be adjusted later when the next iframe becomes
+      // available.
+      const uint64_t next_timestamp = std::next(iter) == key_frames_.end()
+                                          ? (start_time + duration)
+                                          : std::next(iter)->timestamp;
+      AddSegmentInfoEntry(file_name, iter->timestamp,
+                          next_timestamp - iter->timestamp,
                           iter->start_byte_offset, iter->size);
     }
-
-    key_frames_.erase(key_frames_.begin(), std::prev(key_frames_.end()));
-    KeyFrameInfo& key_frame = key_frames_.front();
-    key_frame.segment_file_name = file_name;
-    key_frame.duration = start_time + duration - key_frame.timestamp;
+    key_frames_.clear();
     return;
   }
   return AddSegmentInfoEntry(file_name, start_time, duration, start_byte_offset,
@@ -410,9 +411,6 @@ void MediaPlaylist::AddKeyFrame(uint64_t timestamp,
     }
     stream_type_ = MediaPlaylistStreamType::kVideoIFramesOnly;
     use_byte_range_ = true;
-  }
-  if (!key_frames_.empty()) {
-    key_frames_.back().duration = timestamp - key_frames_.back().timestamp;
   }
   key_frames_.push_back({timestamp, start_byte_offset, size});
 }
@@ -439,18 +437,6 @@ void MediaPlaylist::AddPlacementOpportunity() {
 }
 
 bool MediaPlaylist::WriteToFile(const std::string& file_path) {
-  if (!key_frames_.empty() &&
-      hls_params_.playlist_type == HlsPlaylistType::kVod) {
-    // Flush remaining key frames. This assumes |WriteToFile| is only called
-    // once at the end of the file in VOD.
-    CHECK_EQ(key_frames_.size(), 1u);
-    const KeyFrameInfo& key_frame = key_frames_.front();
-    AddSegmentInfoEntry(key_frame.segment_file_name, key_frame.timestamp,
-                        key_frame.duration, key_frame.start_byte_offset,
-                        key_frame.size);
-    key_frames_.clear();
-  }
-
   if (!target_duration_set_) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
@@ -546,6 +532,25 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
       use_byte_range_, start_byte_offset, size, previous_segment_end_offset_));
   previous_segment_end_offset_ = start_byte_offset + size - 1;
   SlideWindow();
+}
+
+void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(
+    uint64_t next_timestamp) {
+  if (time_scale_ == 0)
+    return;
+
+  const double scaled_next_timestamp =
+      static_cast<double>(next_timestamp) / time_scale_;
+
+  for (auto iter = entries_.rbegin(); iter != entries_.rend(); ++iter) {
+    if (iter->get()->type() == HlsEntry::EntryType::kExtInf) {
+      SegmentInfoEntry* segment_info =
+          reinterpret_cast<SegmentInfoEntry*>(iter->get());
+      segment_info->set_duration(scaled_next_timestamp -
+                                 segment_info->start_time());
+      break;
+    }
+  }
 }
 
 void MediaPlaylist::SlideWindow() {

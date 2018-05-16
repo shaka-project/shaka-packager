@@ -811,7 +811,7 @@ TEST_F(IFrameMediaPlaylistTest, SingleSegment) {
       "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
-      "#EXT-X-TARGETDURATION:9\n"
+      "#EXT-X-TARGETDURATION:8\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-I-FRAMES-ONLY\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
@@ -862,6 +862,49 @@ TEST_F(IFrameMediaPlaylistTest, MultiSegment) {
       "#EXTINF:9.000,\n"
       "#EXT-X-BYTERANGE:6345@5000\n"
       "file1.ts\n"
+      "#EXTINF:4.000,\n"
+      "#EXT-X-BYTERANGE:2345@1000\n"
+      "file2.ts\n"
+      "#EXTINF:25.000,\n"
+      "#EXT-X-BYTERANGE:12345\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(IFrameMediaPlaylistTest, MultiSegmentWithPlacementOpportunity) {
+  valid_video_media_info_.set_reference_time_scale(90000);
+  valid_video_media_info_.set_segment_template_url("file$Number$.ts");
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+
+  media_playlist_->AddKeyFrame(0, 1000, 2345);
+  media_playlist_->AddKeyFrame(2 * kTimeScale, 5000, 6345);
+  media_playlist_->AddSegment("file1.ts", 0, 10 * kTimeScale, kZeroByteOffset,
+                              kMBytes);
+  media_playlist_->AddPlacementOpportunity();
+  media_playlist_->AddKeyFrame(11 * kTimeScale, 1000, 2345);
+  media_playlist_->AddKeyFrame(15 * kTimeScale, 3345, 12345);
+  media_playlist_->AddSegment("file2.ts", 10 * kTimeScale, 30 * kTimeScale,
+                              kZeroByteOffset, 5 * kMBytes);
+
+  const char kExpectedOutput[] =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-TARGETDURATION:25\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-I-FRAMES-ONLY\n"
+      "#EXTINF:2.000,\n"
+      "#EXT-X-BYTERANGE:2345@1000\n"
+      "file1.ts\n"
+      "#EXTINF:9.000,\n"
+      "#EXT-X-BYTERANGE:6345@5000\n"
+      "file1.ts\n"
+      "#EXT-X-PLACEMENT-OPPORTUNITY\n"
       "#EXTINF:4.000,\n"
       "#EXT-X-BYTERANGE:2345@1000\n"
       "file2.ts\n"
