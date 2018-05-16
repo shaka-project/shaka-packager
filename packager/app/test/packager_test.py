@@ -552,24 +552,24 @@ class PackagerFunctionalTest(PackagerAppTest):
                   '\nExpecting: \n %s\n\nBut seeing: \n%s' %
                   (expected_stream_info, stream_info))
 
-  def testPackageFirstStream(self):
+  def testFirstStream(self):
     self.assertPackageSuccess(
         self._GetStreams(['0']), self._GetFlags(output_dash=True))
     self._CheckTestResults('first-stream')
 
-  def testPackageText(self):
+  def testText(self):
     self.assertPackageSuccess(
         self._GetStreams(['text'], test_files=['subtitle-english.vtt']),
         self._GetFlags(output_dash=True))
     self._CheckTestResults('text')
 
   # Probably one of the most common scenarios is to package audio and video.
-  def testPackageAudioVideo(self):
+  def testAudioVideo(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']), self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video')
 
-  def testPackageAudioVideoWithTrickPlay(self):
+  def testAudioVideoWithTrickPlay(self):
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
@@ -579,7 +579,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video-with-trick-play')
 
-  def testPackageAudioVideoWithTwoTrickPlay(self):
+  def testAudioVideoWithTwoTrickPlay(self):
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
@@ -590,7 +590,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video-with-two-trick-play')
 
-  def testPackageAudioVideoWithTwoTrickPlayDecreasingRate(self):
+  def testAudioVideoWithTwoTrickPlayDecreasingRate(self):
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
@@ -603,37 +603,37 @@ class PackagerFunctionalTest(PackagerAppTest):
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
 
-  def testPackageAudioVideoWithLanguageOverride(self):
+  def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], language='por'),
         self._GetFlags(default_language='por', output_dash=True))
     self._CheckTestResults('audio-video-with-language-override')
 
-  def testPackageAudioVideoWithLanguageOverrideUsingMixingCode(self):
+  def testAudioVideoWithLanguageOverrideUsingMixingCode(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], language='por'),
         self._GetFlags(default_language='pt', output_dash=True))
     self._CheckTestResults('audio-video-with-language-override')
 
-  def testPackageAudioVideoWithLanguageOverrideUsingMixingCode2(self):
+  def testAudioVideoWithLanguageOverrideUsingMixingCode2(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], language='pt'),
         self._GetFlags(default_language='por', output_dash=True))
     self._CheckTestResults('audio-video-with-language-override')
 
-  def testPackageAudioVideoWithLanguageOverrideUsingTwoCharacterCode(self):
+  def testAudioVideoWithLanguageOverrideUsingTwoCharacterCode(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], language='pt'),
         self._GetFlags(default_language='pt', output_dash=True))
     self._CheckTestResults('audio-video-with-language-override')
 
-  def testPackageAudioVideoWithLanguageOverrideWithSubtag(self):
+  def testAudioVideoWithLanguageOverrideWithSubtag(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], language='por-BR'),
         self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
 
-  def testPackageAacHe(self):
+  def testAacHe(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio'], test_files=['bear-640x360-aac_he-silent_right.mp4']),
@@ -641,7 +641,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('acc-he')
 
   # Package all video, audio, and text.
-  def testPackageVideoAudioText(self):
+  def testVideoAudioText(self):
     audio_video_streams = self._GetStreams(['audio', 'video'])
     text_stream = self._GetStreams(['text'],
                                    test_files=['subtitle-english.vtt'])
@@ -649,7 +649,7 @@ class PackagerFunctionalTest(PackagerAppTest):
                               self._GetFlags(output_dash=True))
     self._CheckTestResults('video-audio-text')
 
-  def testPackageAvcAacTs(self):
+  def testAvcAacTs(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -661,7 +661,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_hls=True))
     self._CheckTestResults('avc-aac-ts')
 
-  def testPackageAvcAacTsLanguage(self):
+  def testAvcAacTsLanguage(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -674,7 +674,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_hls=True, default_language='por'))
     self._CheckTestResults('avc-aac-ts-language')
 
-  def testPackageAvcAacTsLanguageUsingTwoCharacterCode(self):
+  def testAvcAacTsLanguageUsingTwoCharacterCode(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -687,7 +687,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_hls=True, default_language='pt'))
     self._CheckTestResults('avc-aac-ts-language')
 
-  def testPackageAvcAc3Ts(self):
+  def testAvcAc3Ts(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -699,14 +699,14 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_hls=True))
     self._CheckTestResults('avc-ac3-ts')
 
-  def testPackageAvcAc3TsToMp4(self):
+  def testAvcAc3TsToMp4(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio', 'video'], hls=True, test_files=['bear-640x360-ac3.ts']),
         self._GetFlags(output_hls=True))
     self._CheckTestResults('avc-ac3-ts-to-mp4')
 
-  def testPackageAvcTsLivePlaylist(self):
+  def testAvcTsLivePlaylist(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio', 'video'],
@@ -720,7 +720,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             time_shift_buffer_depth=0.5))
     self._CheckTestResults('avc-ts-live-playlist')
 
-  def testPackageAvcTsLivePlaylistWithKeyRotation(self):
+  def testAvcTsLivePlaylistWithKeyRotation(self):
     self.packager.Package(
         self._GetStreams(
             ['audio', 'video'],
@@ -736,7 +736,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             time_shift_buffer_depth=0.5))
     self._CheckTestResults('avc-ts-live-playlist-with-key-rotation')
 
-  def testPackageAvcTsEventPlaylist(self):
+  def testAvcTsEventPlaylist(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio', 'video'],
@@ -750,7 +750,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             time_shift_buffer_depth=0.5))
     self._CheckTestResults('avc-ts-event-playlist')
 
-  def testPackageAvcTsLivePlaylistWithSegmentDeletion(self):
+  def testAvcTsLivePlaylistWithSegmentDeletion(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio'],
@@ -766,7 +766,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             preserved_segments_outside_live_window=1))
     self._CheckTestResults('avc-ts-live-playlist-with-segment-deletion')
 
-  def testPackageAvcTsDashDynamicWithSegmentDeletion(self):
+  def testAvcTsDashDynamicWithSegmentDeletion(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio'],
@@ -781,7 +781,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             preserved_segments_outside_live_window=1))
     self._CheckTestResults('avc-ts-dash-dynamic-with-segment-deletion')
 
-  def testPackageAvcTsLivePlaylistAndDashDynamicWithSegmentDeletion(self):
+  def testAvcTsLivePlaylistAndDashDynamicWithSegmentDeletion(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio'],
@@ -799,7 +799,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults(
         'avc-ts-live-playlist-dash-dynamic-with-segment-deletion')
 
-  def testPackageVp8Webm(self):
+  def testVp8Webm(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'],
                          output_format='webm',
@@ -807,7 +807,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vp8-webm')
 
-  def testPackageVp9Webm(self):
+  def testVp9Webm(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'],
                          output_format='webm',
@@ -815,7 +815,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vp9-webm')
 
-  def testPackageVp9WebmWithBlockgroup(self):
+  def testVp9WebmWithBlockgroup(self):
     self.assertPackageSuccess(
         self._GetStreams(['video'],
                          output_format='webm',
@@ -823,7 +823,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vp9-webm-with-blockgroup')
 
-  def testPackageVorbisWebm(self):
+  def testVorbisWebm(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio'],
                          output_format='webm',
@@ -831,7 +831,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vorbis-webm')
 
-  def testPackageEncryption(self):
+  def testEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True))
@@ -841,7 +841,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   # Test deprecated flag --enable_fixed_key_encryption, which is still
   # supported currently.
-  def testPackageEncryptionUsingFixedKey(self):
+  def testEncryptionUsingFixedKey(self):
     flags = self._GetFlags(output_dash=True) + [
         '--enable_fixed_key_encryption', '--key_id={0}'.format(
             self.encryption_key_id), '--key={0}'.format(self.encryption_key),
@@ -853,7 +853,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionMultiKeys(self):
+  def testEncryptionMultiKeys(self):
     audio_key_id = '10111213141516171819202122232425'
     audio_key = '11121314151617181920212223242526'
     video_key_id = '20212223242526272829303132333435'
@@ -875,7 +875,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.encryption_key = video_key
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionMultiKeysWithStreamLabel(self):
+  def testEncryptionMultiKeysWithStreamLabel(self):
     audio_key_id = '20212223242526272829303132333435'
     audio_key = '21222324252627282930313233343536'
     video_key_id = '10111213141516171819202122232425'
@@ -904,7 +904,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.encryption_key = video_key
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionOfOnlyVideoStream(self):
+  def testEncryptionOfOnlyVideoStream(self):
     streams = [
         self._GetStream('audio', skip_encryption=True),
         self._GetStream('video')
@@ -915,7 +915,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('encryption-of-only-video-stream')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionAndTrickPlay(self):
+  def testEncryptionAndTrickPlay(self):
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
@@ -931,7 +931,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   # TODO(hmchen): Add a test case that SD and HD AdapatationSet share one trick
   # play stream.
-  def testPackageEncryptionAndTwoTrickPlays(self):
+  def testEncryptionAndTwoTrickPlays(self):
     streams = [
         self._GetStream('audio'),
         self._GetStream('video'),
@@ -947,7 +947,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
     self._VerifyDecryption(self.output[3], 'bear-640x360-v-trick-2-golden.mp4')
 
-  def testPackageEncryptionAndNoClearLead(self):
+  def testEncryptionAndNoClearLead(self):
     streams = [
         self._GetStream('audio'),
         self._GetStream('video')
@@ -960,7 +960,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionAndNoPsshInStream(self):
+  def testEncryptionAndNoPsshInStream(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
@@ -969,7 +969,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionCbc1(self):
+  def testEncryptionCbc1(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
@@ -978,7 +978,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionCens(self):
+  def testEncryptionCens(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
@@ -987,7 +987,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionCbcs(self):
+  def testEncryptionCbcs(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
@@ -998,7 +998,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionAndAdCues(self):
+  def testEncryptionAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True, ad_cues='1.5'))
@@ -1023,7 +1023,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('hls-audio-video-text-with-ad-cues')
 
-  def testPackageWebmSubsampleEncryption(self):
+  def testWebmSubsampleEncryption(self):
     streams = [
         self._GetStream('video',
                         output_format='webm',
@@ -1035,7 +1035,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0],
                            'bear-320x180-vp9-altref-dec-golden.webm')
 
-  def testPackageWebmVp9FullSampleEncryption(self):
+  def testWebmVp9FullSampleEncryption(self):
     streams = [
         self._GetStream('video',
                         output_format='webm',
@@ -1049,7 +1049,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0],
                            'bear-320x180-vp9-altref-dec-golden.webm')
 
-  def testPackageAvcTsWithEncryption(self):
+  def testAvcTsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -1061,7 +1061,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('avc-ts-with-encryption')
 
-  def testPackageAvcTsWithEncryptionAndFairplay(self):
+  def testAvcTsWithEncryptionAndFairplay(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -1073,7 +1073,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_hls=True, fairplay=True))
     self._CheckTestResults('avc-ts-with-encryption-and-fairplay')
 
-  def testPackageAvcAc3TsWithEncryption(self):
+  def testAvcAc3TsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(
@@ -1085,7 +1085,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('avc-ac3-ts-with-encryption')
 
-  def testPackageAvcTsWithEncryptionExerciseEmulationPrevention(self):
+  def testAvcTsWithEncryptionExerciseEmulationPrevention(self):
     self.encryption_key = 'ad7e9786def9159db6724be06dfcde7a'
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
@@ -1101,7 +1101,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults(
         'avc-ts-with-encryption-exercise-emulation-prevention')
 
-  def testPackageWebmWithEncryption(self):
+  def testWebmWithEncryption(self):
     streams = [
         self._GetStream('video',
                         output_format='webm',
@@ -1113,7 +1113,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('webm-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.webm')
 
-  def testPackageHevcWithEncryption(self):
+  def testHevcWithEncryption(self):
     streams = [
         self._GetStream('video', test_file='bear-640x360-hevc.mp4')
     ]
@@ -1123,7 +1123,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('hevc-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-hevc-golden.mp4')
 
-  def testPackageVp8Mp4WithEncryption(self):
+  def testVp8Mp4WithEncryption(self):
     streams = [
         self._GetStream('video',
                         output_format='mp4',
@@ -1135,7 +1135,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('vp8-mp4-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.mp4')
 
-  def testPackageOpusVp9Mp4WithEncryption(self):
+  def testOpusVp9Mp4WithEncryption(self):
     streams = [
         self._GetStream('audio',
                         output_format='mp4',
@@ -1151,7 +1151,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-320x240-opus-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-320x240-vp9-golden.mp4')
 
-  def testPackageFlacWithEncryption(self):
+  def testFlacWithEncryption(self):
     streams = [
         self._GetStream(
             'audio', output_format='mp4', test_file='bear-flac.mp4'),
@@ -1162,7 +1162,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('flac-with-encryption')
     self._VerifyDecryption(self.output[0], 'bear-flac-golden.mp4')
 
-  def testPackageWvmInput(self):
+  def testWvmInput(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'
     self.assertPackageSuccess(
         self._GetStreams(
@@ -1178,7 +1178,7 @@ class PackagerFunctionalTest(PackagerAppTest):
       'libpackager shared_library does not support '
       '--strip_parameter_set_nalus flag.'
   )
-  def testPackageWvmInputWithoutStrippingParameterSetNalus(self):
+  def testWvmInputWithoutStrippingParameterSetNalus(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'
     self.assertPackageSuccess(
         self._GetStreams(
@@ -1188,7 +1188,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     # Output timescale is 90000.
     self._CheckTestResults('wvm-input-without-stripping-parameters-set-nalus')
 
-  def testPackageEncryptionAndRandomIv(self):
+  def testEncryptionAndRandomIv(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, random_iv=True, output_dash=True))
@@ -1204,7 +1204,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionAndRealClock(self):
+  def testEncryptionAndRealClock(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True, use_fake_clock=False))
@@ -1220,7 +1220,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
-  def testPackageEncryptionAndNonDashIfIop(self):
+  def testEncryptionAndNonDashIfIop(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, dash_if_iop=False, output_dash=True))
@@ -1228,33 +1228,33 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-non-iop-golden.mpd')
 
-  def testPackageEncryptionAndOutputMediaInfo(self):
+  def testEncryptionAndOutputMediaInfo(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_media_info=True))
     self._CheckTestResults('encryption-and-output-media-info')
 
-  def testPackageHlsSingleSegmentMp4Encrypted(self):
+  def testHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('hls-single-segment-mp4-encrypted')
 
-  def testPackageEc3AndHlsSingleSegmentMp4Encrypted(self):
+  def testEc3AndHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(
         self._GetStreams(
             ['audio', 'video'], hls=True, test_files=['bear-640x360-ec3.mp4']),
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('ec3-and-hls-single-segment-mp4-encrypted')
 
-  def testPackageHlsSingleSegmentMp4EncryptedAndAdCues(self):
+  def testHlsSingleSegmentMp4EncryptedAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], hls=True),
         self._GetFlags(encryption=True, output_hls=True, ad_cues='1.5'))
     self._CheckTestResults('hls-single-segment-mp4-encrypted-and-ad-cues')
 
   # Test HLS with multi-segment mp4 and content in subdirectories.
-  def testPackageHlsMultiSegmentMp4WithCustomPath(self):
+  def testHlsMultiSegmentMp4WithCustomPath(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
     # {tmp}/audio/audio-init.mp4, {tmp}/audio/audio-1.m4s etc.
     audio_output_prefix = os.path.join(self.tmp_dir, 'audio', 'audio')
@@ -1274,7 +1274,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self._CheckTestResults('hls-multi-segment-mp4-with-custom-path')
 
-  def testPackageLiveProfile(self):
+  def testLiveProfile(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(
@@ -1285,7 +1285,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             'http://foo.bar/check_me_for_the_date_header'))
     self._CheckTestResults('live-profile')
 
-  def testPackageLiveProfileWithWebM(self):
+  def testLiveProfileWithWebM(self):
     streams = self._GetStreams(
         ['audio', 'video'],
         segmented=True,
@@ -1297,33 +1297,33 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('live-profile-with-webm')
 
-  def testPackageLiveStaticProfile(self):
+  def testLiveStaticProfile(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(output_dash=True, generate_static_mpd=True))
     self._CheckTestResults('live-static-profile')
 
-  def testPackageLiveStaticProfileAndAdCues(self):
+  def testLiveStaticProfileAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(
             output_dash=True, generate_static_mpd=True, ad_cues='1.5'))
     self._CheckTestResults('live-static-profile-and-ad-cues')
 
-  def testPackageLiveProfileAndEncryption(self):
+  def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('live-profile-and-encryption')
 
-  def testPackageLiveProfileAndEncryptionAndNonDashIfIop(self):
+  def testLiveProfileAndEncryptionAndNonDashIfIop(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, dash_if_iop=False, output_dash=True))
     self._CheckTestResults(
         'live-profile-and-encryption-and-non-dash-if-iop')
 
-  def testPackageLiveProfileAndEncryptionAndMultFiles(self):
+  def testLiveProfileAndEncryptionAndMultFiles(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'],
                          segmented=True,
@@ -1337,13 +1337,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
     #                   schema.
 
-  def testPackageLiveProfileAndKeyRotation(self):
+  def testLiveProfileAndKeyRotation(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(encryption=True, key_rotation=True, output_dash=True))
     self._CheckTestResults('live-profile-and-key-rotation')
 
-  def testPackageLiveProfileAndKeyRotationAndNoPsshInStream(self):
+  def testLiveProfileAndKeyRotationAndNoPsshInStream(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(
@@ -1354,7 +1354,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults(
         'live-profile-and-key-rotation-and-no-pssh-in-stream')
 
-  def testPackageLiveProfileAndKeyRotationAndNonDashIfIop(self):
+  def testLiveProfileAndKeyRotationAndNonDashIfIop(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(
@@ -1466,67 +1466,67 @@ class PackagerFunctionalTest(PackagerAppTest):
 
 class PackagerCommandParsingTest(PackagerAppTest):
 
-  def testPackageEncryptionWithIncorrectKeyIdLength1(self):
+  def testEncryptionWithIncorrectKeyIdLength1(self):
     self.encryption_key_id = self.encryption_key_id[0:-2]
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithIncorrectKeyIdLength2(self):
+  def testEncryptionWithIncorrectKeyIdLength2(self):
     self.encryption_key_id += '12'
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithInvalidKeyIdValue(self):
+  def testEncryptionWithInvalidKeyIdValue(self):
     self.encryption_key_id = self.encryption_key_id[0:-1] + 'g'
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithIncorrectKeyLength1(self):
+  def testEncryptionWithIncorrectKeyLength1(self):
     self.encryption_key = self.encryption_key[0:-2]
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithIncorrectKeyLength2(self):
+  def testEncryptionWithIncorrectKeyLength2(self):
     self.encryption_key += '12'
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithInvalidKeyValue(self):
+  def testEncryptionWithInvalidKeyValue(self):
     self.encryption_key = self.encryption_key[0:-1] + 'g'
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithIncorrectIvLength1(self):
+  def testEncryptionWithIncorrectIvLength1(self):
     self.encryption_iv = self.encryption_iv[0:-2]
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithIncorrectIvLength2(self):
+  def testEncryptionWithIncorrectIvLength2(self):
     self.encryption_iv += '12'
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithInvalidIvValue(self):
+  def testEncryptionWithInvalidIvValue(self):
     self.encryption_iv = self.encryption_iv[0:-1] + 'g'
     packaging_result = self.packager.Package(
         self._GetStreams(['video']), self._GetFlags(encryption=True))
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithInvalidPsshValue1(self):
+  def testEncryptionWithInvalidPsshValue1(self):
     packaging_result = self.packager.Package(
         self._GetStreams(['video']),
         self._GetFlags(encryption=True) + ['--pssh=ag'])
     self.assertEqual(packaging_result, 1)
 
-  def testPackageEncryptionWithInvalidPsshValue2(self):
+  def testEncryptionWithInvalidPsshValue2(self):
     packaging_result = self.packager.Package(
         self._GetStreams(['video']),
         self._GetFlags(encryption=True) + ['--pssh=1122'])
@@ -1610,7 +1610,7 @@ class PackagerCommandParsingTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']), flags)
     self.assertEqual(packaging_result, 1)
 
-  def testPackageAudioVideoWithNotExistText(self):
+  def testAudioVideoWithNotExistText(self):
     audio_video_stream = self._GetStreams(['audio', 'video'])
     text_stream = self._GetStreams(['text'], test_files=['not-exist.vtt'])
     packaging_result = self.packager.Package(audio_video_stream + text_stream,
