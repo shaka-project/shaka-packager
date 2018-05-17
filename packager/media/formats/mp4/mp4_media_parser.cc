@@ -392,8 +392,19 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
       switch (actual_format) {
         case FOURCC_mp4a:
+          max_bitrate = entry.esds.es_descriptor.max_bitrate();
+          avg_bitrate = entry.esds.es_descriptor.avg_bitrate();
+
           codec = ObjectTypeToCodec(entry.esds.es_descriptor.object_type());
-          if (codec == kUnknownCodec) {
+          if (codec == kCodecAAC) {
+            const AACAudioSpecificConfig& aac_audio_specific_config =
+                entry.esds.aac_audio_specific_config;
+            num_channels = aac_audio_specific_config.GetNumChannels();
+            sampling_frequency =
+                aac_audio_specific_config.GetSamplesPerSecond();
+            audio_object_type = aac_audio_specific_config.GetAudioObjectType();
+            codec_config = entry.esds.es_descriptor.decoder_specific_info();
+          } else if (codec == kUnknownCodec) {
             // Intentionally not to fail in the parser as there may be multiple
             // streams in the source content, which allows the supported stream
             // to be packaged. An error will be returned if the unsupported
@@ -402,17 +413,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                          << static_cast<int>(
                                 entry.esds.es_descriptor.object_type())
                          << " in stsd.es_desriptor.";
-          } else if (codec == kCodecAAC) {
-            const AACAudioSpecificConfig& aac_audio_specific_config =
-                entry.esds.aac_audio_specific_config;
-            num_channels = aac_audio_specific_config.GetNumChannels();
-            sampling_frequency =
-                aac_audio_specific_config.GetSamplesPerSecond();
-            audio_object_type = aac_audio_specific_config.GetAudioObjectType();
-            codec_config = entry.esds.es_descriptor.decoder_specific_info();
-          } else {
-            max_bitrate = entry.esds.es_descriptor.max_bitrate();
-            avg_bitrate = entry.esds.es_descriptor.avg_bitrate();
           }
           break;
         case FOURCC_dtsc:
