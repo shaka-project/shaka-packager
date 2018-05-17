@@ -59,12 +59,13 @@ bool ReadESSize(BitReader* reader, uint32_t* size) {
 const size_t kHeaderSize = 2;
 const size_t kMaxDecoderSpecificInfoSize = 64;
 const uint32_t kUnknownBitrate = 0;
+const size_t kBitsInByte = 8;
 
 }  // namespace
 
 ESDescriptor::ESDescriptor()
     : esid_(0),
-      object_type_(kForbidden),
+      object_type_(ObjectType::kForbidden),
       max_bitrate_(kUnknownBitrate),
       avg_bitrate_(kUnknownBitrate) {}
 
@@ -109,11 +110,16 @@ bool ESDescriptor::ParseDecoderConfigDescriptor(BitReader* reader) {
   RCHECK(tag == kDecoderConfigDescrTag);
   RCHECK(ReadESSize(reader, &size));
 
+  const size_t start_pos = reader->bit_position();
   RCHECK(reader->ReadBits(8, &object_type_));
   RCHECK(reader->ReadBits(32, &dummy));
   RCHECK(reader->ReadBits(32, &max_bitrate_));
   RCHECK(reader->ReadBits(32, &avg_bitrate_));
-  RCHECK(ParseDecoderSpecificInfo(reader));
+  const size_t fields_bits = reader->bit_position() - start_pos;
+
+  const bool has_child_tags = size * kBitsInByte > fields_bits;
+  if (has_child_tags)
+    RCHECK(ParseDecoderSpecificInfo(reader));
 
   return true;
 }

@@ -373,7 +373,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Fill(ElementaryStreamDescriptor* esds) {
     const uint8_t kDecoderSpecificInfo[] = {18, 16};
     esds->es_descriptor.set_esid(1);
-    esds->es_descriptor.set_object_type(kISO_14496_3);
+    esds->es_descriptor.set_object_type(ObjectType::kISO_14496_3);
     std::vector<uint8_t> decoder_specific_info(
         kDecoderSpecificInfo,
         kDecoderSpecificInfo + sizeof(kDecoderSpecificInfo));

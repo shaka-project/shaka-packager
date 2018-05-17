@@ -1579,7 +1579,7 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
 
 size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
-  if (es_descriptor.object_type() == kForbidden)
+  if (es_descriptor.object_type() == ObjectType::kForbidden)
     return 0;
   return HeaderSize() + es_descriptor.ComputeSize();
 }

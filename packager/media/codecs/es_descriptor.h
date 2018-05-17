@@ -18,7 +18,7 @@ class BufferWriter;
 
 // The following values are extracted from ISO 14496 Part 1 Table 5 -
 // objectTypeIndication Values. Only values currently in use are included.
-enum ObjectType {
+enum class ObjectType : uint8_t {
   kForbidden = 0,
   kISO_14496_3 = 0x40,         // MPEG4 AAC
   kISO_13818_7_AAC_LC = 0x67,  // MPEG2 AAC-LC
@@ -62,12 +62,15 @@ class ESDescriptor {
 
   /// @return true if the stream is AAC.
   bool IsAAC() const {
-    return object_type_ == kISO_14496_3 || object_type_ == kISO_13818_7_AAC_LC;
+    return object_type_ == ObjectType::kISO_14496_3 ||
+           object_type_ == ObjectType::kISO_13818_7_AAC_LC;
   }
 
   bool IsDTS() const {
-    return object_type_ == kDTSC || object_type_ == kDTSE ||
-           object_type_ == kDTSH || object_type_ == kDTSL;
+    return object_type_ == ObjectType::kDTSC ||
+           object_type_ == ObjectType::kDTSE ||
+           object_type_ == ObjectType::kDTSH ||
+           object_type_ == ObjectType::kDTSL;
   }
 
  private:

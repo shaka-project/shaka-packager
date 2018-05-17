@@ -96,8 +96,24 @@ Codec FourCCToCodec(FourCC fourcc) {
   }
 }
 
-// Default DTS audio number of channels for 5.1 channel layout.
-const uint8_t kDtsAudioNumChannels = 6;
+Codec ObjectTypeToCodec(ObjectType object_type) {
+  switch (object_type) {
+    case ObjectType::kISO_14496_3:
+    case ObjectType::kISO_13818_7_AAC_LC:
+      return kCodecAAC;
+    case ObjectType::kDTSC:
+      return kCodecDTSC;
+    case ObjectType::kDTSE:
+      return kCodecDTSE;
+    case ObjectType::kDTSH:
+      return kCodecDTSH;
+    case ObjectType::kDTSL:
+      return kCodecDTSL;
+    default:
+      return kUnknownCodec;
+  }
+}
+
 const uint64_t kNanosecondsPerSecond = 1000000000ull;
 
 }  // namespace
@@ -366,8 +382,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const AudioSampleEntry& entry = samp_descr.audio_entries[desc_idx];
       const FourCC actual_format = entry.GetActualFormat();
       Codec codec = FourCCToCodec(actual_format);
-      uint8_t num_channels = 0;
-      uint32_t sampling_frequency = 0;
+      uint8_t num_channels = entry.channelcount;
+      uint32_t sampling_frequency = entry.samplerate;
       uint64_t codec_delay_ns = 0;
       uint8_t audio_object_type = 0;
       uint32_t max_bitrate = 0;
@@ -376,10 +392,17 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
       switch (actual_format) {
         case FOURCC_mp4a:
-          // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
-          // supported MPEG2 AAC variants.
-          if (entry.esds.es_descriptor.IsAAC()) {
-            codec = kCodecAAC;
+          codec = ObjectTypeToCodec(entry.esds.es_descriptor.object_type());
+          if (codec == kUnknownCodec) {
+            // Intentionally not to fail in the parser as there may be multiple
+            // streams in the source content, which allows the supported stream
+            // to be packaged. An error will be returned if the unsupported
+            // stream is passed to the muxer.
+            LOG(WARNING) << "Unsupported audio object type "
+                         << static_cast<int>(
+                                entry.esds.es_descriptor.object_type())
+                         << " in stsd.es_desriptor.";
+          } else if (codec == kCodecAAC) {
             const AACAudioSpecificConfig& aac_audio_specific_config =
                 entry.esds.aac_audio_specific_config;
             num_channels = aac_audio_specific_config.GetNumChannels();
@@ -387,42 +410,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                 aac_audio_specific_config.GetSamplesPerSecond();
             audio_object_type = aac_audio_specific_config.GetAudioObjectType();
             codec_config = entry.esds.es_descriptor.decoder_specific_info();
-            break;
-          } else if (entry.esds.es_descriptor.IsDTS()) {
-            ObjectType audio_type = entry.esds.es_descriptor.object_type();
-            switch (audio_type) {
-              case kDTSC:
-                codec = kCodecDTSC;
-                break;
-              case kDTSE:
-                codec = kCodecDTSE;
-                break;
-              case kDTSH:
-                codec = kCodecDTSH;
-                break;
-              case kDTSL:
-                codec = kCodecDTSL;
-                break;
-              default:
-                LOG(ERROR) << "Unsupported audio type " << audio_type
-                           << " in stsd box.";
-                return false;
-            }
-            num_channels = entry.channelcount;
-            // For dts audio in esds, current supported number of channels is 6
-            // as the only supported channel layout is 5.1.
-            if (num_channels != kDtsAudioNumChannels) {
-              LOG(ERROR) << "Unsupported channel count " << num_channels
-                         << " for audio type " << audio_type << ".";
-              return false;
-            }
-            sampling_frequency = entry.samplerate;
+          } else {
             max_bitrate = entry.esds.es_descriptor.max_bitrate();
             avg_bitrate = entry.esds.es_descriptor.avg_bitrate();
-          } else {
-            LOG(ERROR) << "Unsupported audio format 0x" << std::hex
-                       << actual_format << " in stsd box.";
-            return false;
           }
           break;
         case FOURCC_dtsc:
@@ -437,36 +427,32 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_config = entry.ddts.extra_data;
           max_bitrate = entry.ddts.max_bitrate;
           avg_bitrate = entry.ddts.avg_bitrate;
-          num_channels = entry.channelcount;
-          sampling_frequency = entry.samplerate;
           break;
         case FOURCC_ac_3:
           codec_config = entry.dac3.data;
           num_channels = static_cast<uint8_t>(GetAc3NumChannels(codec_config));
-          sampling_frequency = entry.samplerate;
           break;
         case FOURCC_ec_3:
           codec_config = entry.dec3.data;
           num_channels = static_cast<uint8_t>(GetEc3NumChannels(codec_config));
-          sampling_frequency = entry.samplerate;
           break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;
-          num_channels = entry.channelcount;
-          sampling_frequency = entry.samplerate;
           break;
         case FOURCC_Opus:
           codec_config = entry.dops.opus_identification_header;
-          num_channels = entry.channelcount;
-          sampling_frequency = entry.samplerate;
-          RCHECK(sampling_frequency != 0);
           codec_delay_ns =
               entry.dops.preskip * kNanosecondsPerSecond / sampling_frequency;
           break;
         default:
-          LOG(ERROR) << "Unsupported audio format 0x" << std::hex
-                     << actual_format << " in stsd box.";
-          return false;
+          // Intentionally not to fail in the parser as there may be multiple
+          // streams in the source content, which allows the supported stream to
+          // be packaged.
+          // An error will be returned if the unsupported stream is passed to
+          // the muxer.
+          LOG(WARNING) << "Unsupported audio format '"
+                       << FourCCToString(actual_format) << "' in stsd box.";
+          break;
       }
 
       // Extract possible seek preroll.
@@ -592,9 +578,14 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           break;
         }
         default:
-          LOG(ERROR) << "Unsupported video format "
-                     << FourCCToString(actual_format) << " in stsd box.";
-        return false;
+          // Intentionally not to fail in the parser as there may be multiple
+          // streams in the source content, which allows the supported stream to
+          // be packaged.
+          // An error will be returned if the unsupported stream is passed to
+          // the muxer.
+          LOG(WARNING) << "Unsupported video format '"
+                       << FourCCToString(actual_format) << "' in stsd box.";
+          break;
       }
 
       // The stream will be decrypted if a |decryptor_source_| is available.

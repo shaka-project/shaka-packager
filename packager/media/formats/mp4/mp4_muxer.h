@@ -45,13 +45,13 @@ class MP4Muxer : public Muxer {
 
   // Generate Audio/Video Track box.
   void InitializeTrak(const StreamInfo* info, Track* trak);
-  void GenerateAudioTrak(const AudioStreamInfo* audio_info,
+  bool GenerateAudioTrak(const AudioStreamInfo* audio_info,
                          Track* trak,
                          uint32_t track_id);
-  void GenerateVideoTrak(const VideoStreamInfo* video_info,
+  bool GenerateVideoTrak(const VideoStreamInfo* video_info,
                          Track* trak,
                          uint32_t track_id);
-  void GenerateTextTrak(const TextStreamInfo* video_info,
+  bool GenerateTextTrak(const TextStreamInfo* video_info,
                         Track* trak,
                         uint32_t track_id);
 

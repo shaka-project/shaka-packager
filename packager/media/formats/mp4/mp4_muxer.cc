@@ -175,6 +175,7 @@ Status MP4Muxer::InitializeMuxer() {
 
   // Initialize tracks.
   for (uint32_t i = 0; i < streams().size(); ++i) {
+    const StreamInfo* stream = streams()[i].get();
     Track& trak = moov->tracks[i];
     trak.header.track_id = i + 1;
 
@@ -182,34 +183,29 @@ Status MP4Muxer::InitializeMuxer() {
     trex.track_id = trak.header.track_id;
     trex.default_sample_description_index = 1;
 
-    switch (streams()[i]->stream_type()) {
+    bool generate_trak_result = false;
+    switch (stream->stream_type()) {
       case kStreamVideo:
-        GenerateVideoTrak(
-            static_cast<const VideoStreamInfo*>(streams()[i].get()),
-            &trak,
-            i + 1);
+        generate_trak_result = GenerateVideoTrak(
+            static_cast<const VideoStreamInfo*>(stream), &trak, i + 1);
         break;
       case kStreamAudio:
-        GenerateAudioTrak(
-            static_cast<const AudioStreamInfo*>(streams()[i].get()),
-            &trak,
-            i + 1);
+        generate_trak_result = GenerateAudioTrak(
+            static_cast<const AudioStreamInfo*>(stream), &trak, i + 1);
         break;
       case kStreamText:
-        GenerateTextTrak(
-            static_cast<const TextStreamInfo*>(streams()[i].get()),
-            &trak,
-            i + 1);
+        generate_trak_result = GenerateTextTrak(
+            static_cast<const TextStreamInfo*>(stream), &trak, i + 1);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
-                         << streams()[i]->stream_type();
+                         << stream->stream_type();
     }
+    if (!generate_trak_result)
+      return Status(error::MUXER_FAILURE, "Failed to generate trak.");
 
-    if (streams()[i]->is_encrypted() &&
-        options().mp4_params.include_pssh_in_stream) {
-      const auto& key_system_info =
-          streams()[i]->encryption_config().key_system_info;
+    if (stream->is_encrypted() && options().mp4_params.include_pssh_in_stream) {
+      const auto& key_system_info = stream->encryption_config().key_system_info;
       moov->pssh.resize(key_system_info.size());
       for (size_t j = 0; j < key_system_info.size(); j++)
         moov->pssh[j].raw_box = key_system_info[j].psshs;
@@ -286,7 +282,7 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
   }
 }
 
-void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
+bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
                                  Track* trak,
                                  uint32_t track_id) {
   InitializeTrak(video_info, trak);
@@ -331,9 +327,10 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
     GenerateSinf(entry.format, video_info->encryption_config(), &entry.sinf);
     entry.format = FOURCC_encv;
   }
+  return true;
 }
 
-void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
+bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
                                  Track* trak,
                                  uint32_t track_id) {
   InitializeTrak(audio_info, trak);
@@ -345,7 +342,8 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
   switch(audio_info->codec()){
     case kCodecAAC:
-      audio.esds.es_descriptor.set_object_type(kISO_14496_3);  // MPEG4 AAC.
+      audio.esds.es_descriptor.set_object_type(
+          ObjectType::kISO_14496_3);  // MPEG4 AAC.
       audio.esds.es_descriptor.set_esid(track_id);
       audio.esds.es_descriptor.set_decoder_specific_info(
           audio_info->codec_config());
@@ -376,8 +374,8 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.dops.opus_identification_header = audio_info->codec_config();
       break;
     default:
-      NOTIMPLEMENTED();
-      break;
+      NOTIMPLEMENTED() << " Unsupported audio codec " << audio_info->codec();
+      return false;
   }
 
   if (audio_info->codec() == kCodecAC3 || audio_info->codec() == kCodecEAC3) {
@@ -434,11 +432,11 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
         SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
   } else if (audio_info->seek_preroll_ns() != 0) {
     LOG(WARNING) << "Unexpected seek preroll for codec " << audio_info->codec();
-    return;
   }
+  return true;
 }
 
-void MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
+bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
                                 Track* trak,
                                 uint32_t track_id) {
   InitializeTrak(text_info, trak);
@@ -457,10 +455,11 @@ void MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
         trak->media.information.sample_table.description;
     sample_description.type = kText;
     sample_description.text_entries.push_back(webvtt);
-    return;
+    return true;
   }
   NOTIMPLEMENTED() << text_info->codec_string()
                    << " handling not implemented yet.";
+  return false;
 }
 
 base::Optional<Range> MP4Muxer::GetInitRangeStartAndEnd() {
