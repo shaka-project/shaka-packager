@@ -43,10 +43,10 @@ Examples
 
 The examples below uses the H264 streams created in :doc:`encoding`.
 
-* TS output::
+* TS output with elementary audio::
 
     $ packager \
-      'in=h264_baseline_360p_600.mp4,stream=audio,segment_template=audio/$Number$.ts,playlist_name=audio/main.m3u8,hls_group_id=audio,hls_name=ENGLISH' \
+      'in=h264_baseline_360p_600.mp4,stream=audio,segment_template=audio/$Number$.aac,playlist_name=audio/main.m3u8,hls_group_id=audio,hls_name=ENGLISH' \
       'in=input_text.vtt,stream=text,segment_template=text/$Number$.vtt,playlist_name=text/main.m3u8,hls_group_id=text,hls_name=ENGLISH' \
       'in=h264_baseline_360p_600.mp4,stream=video,segment_template=h264_360p/$Number$.ts,playlist_name=h264_360p/main.m3u8,iframe_playlist_name=h264_360p/iframe.m3u8' \
       'in=h264_main_480p_1000.mp4,stream=video,segment_template=h264_480p/$Number$.ts,playlist_name=h264_480p/main.m3u8,iframe_playlist_name=h264_480p/iframe.m3u8' \
