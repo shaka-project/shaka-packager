@@ -660,7 +660,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
-        self._GetFlags(output_hls=True))
+        self._GetFlags(output_hls=True, output_dash=True))
     self._CheckTestResults('avc-aac-ts')
 
   def testAvcAacTsLanguage(self):

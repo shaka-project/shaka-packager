@@ -50,7 +50,7 @@ void TsMuxer::FireOnMediaStartEvent() {
   if (!muxer_listener())
     return;
   muxer_listener()->OnMediaStart(options(), *streams().front(), kTsTimescale,
-                                 MuxerListener::kContainerWebM);
+                                 MuxerListener::kContainerMpeg2ts);
 }
 
 void TsMuxer::FireOnMediaEndEvent() {
