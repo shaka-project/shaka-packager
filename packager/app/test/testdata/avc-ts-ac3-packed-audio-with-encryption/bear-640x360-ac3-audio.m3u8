@@ -1,0 +1,14 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:0.975,
+bear-640x360-ac3-audio-1.ac3
+#EXT-X-DISCONTINUITY
+#EXT-X-KEY:METHOD=SAMPLE-AES,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",IV=0x3334353637383930,KEYFORMAT="identity"
+#EXTINF:1.010,
+bear-640x360-ac3-audio-2.ac3
+#EXTINF:0.801,
+bear-640x360-ac3-audio-3.ac3
+#EXT-X-ENDLIST

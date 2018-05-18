@@ -223,7 +223,9 @@ class PackagerAppTest(unittest.TestCase):
       if base_ext in ['ts', 'mp4'] and descriptor == 'video':
         stream.Append('iframe_playlist_name', output_file_name + '-iframe.m3u8')
 
-    requires_init_segment = segmented and base_ext not in ['ts', 'vtt']
+    requires_init_segment = segmented and base_ext not in [
+        'aac', 'ac3', 'ec3', 'ts', 'vtt'
+    ]
 
     output_file_path = os.path.join(self.tmp_dir, output_file_name)
 
@@ -1061,6 +1063,27 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('avc-ts-with-encryption')
 
+  def testAvcTsAacPackedAudioWithEncryption(self):
+    # Currently we only support live packaging for ts.
+    streams = [
+        self._GetStream(
+            'audio',
+            output_format='aac',
+            segmented=True,
+            hls=True,
+            test_file='bear-640x360.ts'),
+        self._GetStream(
+            'video',
+            output_format='ts',
+            segmented=True,
+            hls=True,
+            test_file='bear-640x360.ts')
+    ]
+    flags = self._GetFlags(encryption=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('avc-ts-aac-packed-audio-with-encryption')
+
   def testAvcTsWithEncryptionAndFairplay(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
@@ -1084,6 +1107,27 @@ class PackagerFunctionalTest(PackagerAppTest):
             test_files=['bear-640x360-ac3.ts']),
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('avc-ac3-ts-with-encryption')
+
+  def testAvcTsAc3PackedAudioWithEncryption(self):
+    # Currently we only support live packaging for ts.
+    streams = [
+        self._GetStream(
+            'audio',
+            output_format='ac3',
+            segmented=True,
+            hls=True,
+            test_file='bear-640x360-ac3.ts'),
+        self._GetStream(
+            'video',
+            output_format='ts',
+            segmented=True,
+            hls=True,
+            test_file='bear-640x360-ac3.ts')
+    ]
+    flags = self._GetFlags(encryption=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('avc-ts-ac3-packed-audio-with-encryption')
 
   def testAvcTsWithEncryptionExerciseEmulationPrevention(self):
     self.encryption_key = 'ad7e9786def9159db6724be06dfcde7a'
@@ -1246,6 +1290,26 @@ class PackagerFunctionalTest(PackagerAppTest):
             ['audio', 'video'], hls=True, test_files=['bear-640x360-ec3.mp4']),
         self._GetFlags(encryption=True, output_hls=True))
     self._CheckTestResults('ec3-and-hls-single-segment-mp4-encrypted')
+
+  def testEc3PackedAudioEncrypted(self):
+    streams = [
+        self._GetStream(
+            'audio',
+            output_format='ec3',
+            segmented=True,
+            hls=True,
+            test_file='bear-640x360-ec3.mp4'),
+        self._GetStream(
+            'video',
+            output_format='ts',
+            segmented=True,
+            hls=True,
+            test_file='bear-640x360-ec3.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('ec3-packed-audio-encrypted')
 
   def testHlsSingleSegmentMp4EncryptedAndAdCues(self):
     self.assertPackageSuccess(
