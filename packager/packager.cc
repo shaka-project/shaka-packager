@@ -493,7 +493,7 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   MuxerOptions muxer_options = CreateMuxerOptions(stream, packaging_params);
   muxer_options.bandwidth = stream.bandwidth ? stream.bandwidth : 256;
 
-  auto output = std::make_shared<WebVttSegmentedOutputHandler>(
+  auto output = std::make_shared<WebVttTextOutputHandler>(
       muxer_options, std::move(muxer_listener));
 
   std::unique_ptr<FileReader> reader;

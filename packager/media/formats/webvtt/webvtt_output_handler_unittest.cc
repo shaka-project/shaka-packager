@@ -47,14 +47,14 @@ class WebVttSegmentedOutputTest : public MediaHandlerTestBase {
     std::unique_ptr<MockMuxerListener> muxer_listener(new MockMuxerListener);
     muxer_listener_ = muxer_listener.get();
 
-    out_ = std::make_shared<WebVttSegmentedOutputHandler>(
-        muxer_options, std::move(muxer_listener));
+    out_ = std::make_shared<WebVttTextOutputHandler>(muxer_options,
+                                                     std::move(muxer_listener));
 
     ASSERT_OK(SetUpAndInitializeGraph(out_, kInputCount, kOutputCount));
   }
 
   MockMuxerListener* muxer_listener_ = nullptr;
-  std::shared_ptr<WebVttSegmentedOutputHandler> out_;
+  std::shared_ptr<WebVttTextOutputHandler> out_;
 };
 
 TEST_F(WebVttSegmentedOutputTest, WithNoSegmentAndWithNoSamples) {

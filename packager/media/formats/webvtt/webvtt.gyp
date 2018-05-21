@@ -17,6 +17,8 @@
         'text_padder.h',
         'text_readers.cc',
         'text_readers.h',
+        'webvtt_file_buffer.cc',
+        'webvtt_file_buffer.h',
         'webvtt_output_handler.cc',
         'webvtt_output_handler.h',
         'webvtt_parser.cc',
