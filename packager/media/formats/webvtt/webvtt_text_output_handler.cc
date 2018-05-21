@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_output_handler.h"
+#include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
 
 #include <algorithm>  // needed for min and max
 

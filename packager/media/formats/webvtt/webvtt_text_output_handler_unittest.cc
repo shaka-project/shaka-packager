@@ -12,7 +12,7 @@
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/formats/webvtt/webvtt_output_handler.h"
+#include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {
