@@ -13,8 +13,6 @@
       'target_name': 'webvtt',
       'type': '<(component)',
       'sources': [
-        'cue.cc',
-        'cue.h',
         'text_padder.cc',
         'text_padder.h',
         'text_readers.cc',
