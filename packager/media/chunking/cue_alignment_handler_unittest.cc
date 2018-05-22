@@ -81,7 +81,7 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithNoCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -125,7 +125,7 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithNoCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -173,7 +173,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -223,7 +223,7 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kThreeInput, kThreeOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kThreeInput, kThreeOutput));
 
   {
     testing::InSequence s;
@@ -347,7 +347,7 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -401,7 +401,7 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -459,7 +459,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -518,7 +518,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
     testing::InSequence s;
@@ -579,7 +579,7 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
   SyncPointQueue sync_points(params);
   std::shared_ptr<MediaHandler> handler =
       std::make_shared<CueAlignmentHandler>(&sync_points);
-  SetUpAndInitializeGraph(handler, kThreeInput, kThreeOutput);
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kThreeInput, kThreeOutput));
 
   {
     testing::InSequence s;
