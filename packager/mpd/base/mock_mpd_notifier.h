@@ -37,10 +37,8 @@ class MockMpdNotifier : public MpdNotifier {
                     const std::string& drm_uuid,
                     const std::vector<uint8_t>& new_key_id,
                     const std::vector<uint8_t>& new_pssh));
-  MOCK_METHOD2(
-      AddContentProtectionElement,
-      bool(uint32_t container_id,
-           const ContentProtectionElement& content_protection_element));
+  MOCK_METHOD2(NotifyMediaInfoUpdate,
+               bool(uint32_t container_id, const MediaInfo& media_info));
   MOCK_METHOD0(Flush, bool());
 };
 

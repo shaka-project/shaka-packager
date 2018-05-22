@@ -44,7 +44,7 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_infos) {
-  if (!media_started_) {
+  if (!stream_id_) {
     next_key_id_ = key_id;
     next_iv_ = iv;
     next_key_system_infos_ = key_system_infos;
@@ -53,13 +53,13 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
   }
   for (const ProtectionSystemSpecificInfo& info : key_system_infos) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
-        stream_id_, key_id, info.system_id, iv, info.psshs);
+        stream_id_.value(), key_id, info.system_id, iv, info.psshs);
     LOG_IF(WARNING, !result) << "Failed to add encryption info.";
   }
 }
 
 void HlsNotifyMuxerListener::OnEncryptionStart() {
-  if (!media_started_) {
+  if (!stream_id_) {
     must_notify_encryption_start_ = true;
     return;
   }
@@ -71,7 +71,7 @@ void HlsNotifyMuxerListener::OnEncryptionStart() {
 
   for (const ProtectionSystemSpecificInfo& info : next_key_system_infos_) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
-        stream_id_, next_key_id_, info.system_id, next_iv_, info.psshs);
+        stream_id_.value(), next_key_id_, info.system_id, next_iv_, info.psshs);
     LOG_IF(WARNING, !result) << "Failed to add encryption info";
   }
   next_key_id_.clear();
@@ -84,31 +84,36 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                           const StreamInfo& stream_info,
                                           uint32_t time_scale,
                                           ContainerType container_type) {
-  MediaInfo media_info;
+  std::unique_ptr<MediaInfo> media_info(new MediaInfo);
   if (!internal::GenerateMediaInfo(muxer_options, stream_info, time_scale,
-                                   container_type, &media_info)) {
+                                   container_type, media_info.get())) {
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
   if (protection_scheme_ != FOURCC_NULL) {
     internal::SetContentProtectionFields(protection_scheme_, next_key_id_,
-                                         next_key_system_infos_, &media_info);
+                                         next_key_system_infos_,
+                                         media_info.get());
   }
 
-  media_info_ = media_info;
-  if (!media_info_.has_segment_template()) {
+  // The content may be splitted into multiple files, but their MediaInfo
+  // should be compatible.
+  if (media_info_ &&
+      !internal::IsMediaInfoCompatible(*media_info, *media_info_)) {
+    LOG(WARNING) << "Incompatible MediaInfo " << media_info->ShortDebugString()
+                 << " vs " << media_info_->ShortDebugString()
+                 << ". The result manifest may not be playable.";
+  }
+  media_info_ = std::move(media_info);
+
+  if (!media_info_->has_segment_template()) {
     return;
   }
 
-  const bool result = hls_notifier_->NotifyNewStream(
-      media_info, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
-      &stream_id_);
-  if (!result) {
-    LOG(WARNING) << "Failed to notify new stream.";
+  if (!NotifyNewStream())
     return;
-  }
+  DCHECK(stream_id_);
 
-  media_started_ = true;
   if (must_notify_encryption_start_) {
     OnEncryptionStart();
   }
@@ -118,36 +123,35 @@ void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
 
 void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
+  DCHECK(media_info_);
   // TODO(kqyang): Should we just Flush here to avoid calling Flush explicitly?
   // Don't flush the notifier here. Flushing here would write all the playlists
   // before all Media Playlists are read. Which could cause problems
   // setting the correct EXT-X-TARGETDURATION.
-  if (media_info_.has_segment_template()) {
+  if (media_info_->has_segment_template()) {
     return;
   }
   if (media_ranges.init_range) {
-    shaka::Range* init_range = media_info_.mutable_init_range();
+    shaka::Range* init_range = media_info_->mutable_init_range();
     init_range->set_begin(media_ranges.init_range.value().start);
     init_range->set_end(media_ranges.init_range.value().end);
   }
   if (media_ranges.index_range) {
-    shaka::Range* index_range = media_info_.mutable_index_range();
+    shaka::Range* index_range = media_info_->mutable_index_range();
     index_range->set_begin(media_ranges.index_range.value().start);
     index_range->set_end(media_ranges.index_range.value().end);
   }
 
-  // TODO(rkuroiwa): Make this a method. This is the same as OnMediaStart().
-  const bool result = hls_notifier_->NotifyNewStream(
-      media_info_, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
-      &stream_id_);
-  if (!result) {
-    LOG(WARNING) << "Failed to notify new stream for VOD.";
-    return;
+  if (!stream_id_) {
+    if (!NotifyNewStream())
+      return;
+    DCHECK(stream_id_);
+  } else {
+    // HLS is not interested in MediaInfo update.
   }
 
   // TODO(rkuroiwa); Keep track of which (sub)segments are encrypted so that the
   // notification is sent right before the enecrypted (sub)segments.
-  media_started_ = true;
   if (must_notify_encryption_start_) {
     OnEncryptionStart();
   }
@@ -163,7 +167,7 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
           if (subsegment_index < num_subsegments) {
             const Range& range = subsegment_ranges[subsegment_index];
             hls_notifier_->NotifyNewSegment(
-                stream_id_, media_info_.media_file_name(),
+                stream_id_.value(), media_info_->media_file_name(),
                 event_info.segment_info.start_time,
                 event_info.segment_info.duration, range.start,
                 range.end + 1 - range.start);
@@ -175,14 +179,14 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
             const uint64_t segment_start_offset =
                 subsegment_ranges[subsegment_index].start;
             hls_notifier_->NotifyKeyFrame(
-                stream_id_, event_info.key_frame.timestamp,
+                stream_id_.value(), event_info.key_frame.timestamp,
                 segment_start_offset +
                     event_info.key_frame.start_offset_in_segment,
                 event_info.key_frame.size);
           }
           break;
         case EventInfoType::kCue:
-          hls_notifier_->NotifyCueEvent(stream_id_,
+          hls_notifier_->NotifyCueEvent(stream_id_.value(),
                                         event_info.cue_event_info.timestamp);
           break;
       }
@@ -194,13 +198,14 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                    << event_info_.size() << ").";
     }
   }
+  event_info_.clear();
 }
 
 void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           uint64_t start_time,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
-  if (!media_info_.has_segment_template()) {
+  if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kSegment;
     event_info.segment_info = {start_time, duration, segment_file_size};
@@ -209,8 +214,8 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
     // For multisegment, it always starts from the beginning of the file.
     const size_t kStartingByteOffset = 0u;
     const bool result = hls_notifier_->NotifyNewSegment(
-        stream_id_, file_name, start_time, duration, kStartingByteOffset,
-        segment_file_size);
+        stream_id_.value(), file_name, start_time, duration,
+        kStartingByteOffset, segment_file_size);
     LOG_IF(WARNING, !result) << "Failed to add new segment.";
   }
 }
@@ -220,14 +225,14 @@ void HlsNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
                                         uint64_t size) {
   if (!iframes_only_)
     return;
-  if (!media_info_.has_segment_template()) {
+  if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kKeyFrame;
     event_info.key_frame = {timestamp, start_byte_offset, size};
     event_info_.push_back(event_info);
   } else {
-    const bool result = hls_notifier_->NotifyKeyFrame(stream_id_, timestamp,
-                                                      start_byte_offset, size);
+    const bool result = hls_notifier_->NotifyKeyFrame(
+        stream_id_.value(), timestamp, start_byte_offset, size);
     LOG_IF(WARNING, !result) << "Failed to add new segment.";
   }
 }
@@ -235,14 +240,29 @@ void HlsNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
 void HlsNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
                                         const std::string& cue_data) {
   // Not using |cue_data| at this moment.
-  if (!media_info_.has_segment_template()) {
+  if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kCue;
     event_info.cue_event_info = {timestamp};
     event_info_.push_back(event_info);
   } else {
-    hls_notifier_->NotifyCueEvent(stream_id_, timestamp);
+    hls_notifier_->NotifyCueEvent(stream_id_.value(), timestamp);
   }
+}
+
+bool HlsNotifyMuxerListener::NotifyNewStream() {
+  DCHECK(media_info_);
+
+  uint32_t stream_id;
+  const bool result = hls_notifier_->NotifyNewStream(
+      *media_info_, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
+      &stream_id);
+  if (!result) {
+    LOG(WARNING) << "Failed to notify new stream for VOD.";
+    return false;
+  }
+  stream_id_ = stream_id;
+  return true;
 }
 
 }  // namespace media

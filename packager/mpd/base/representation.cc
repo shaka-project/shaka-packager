@@ -286,7 +286,7 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
 
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
-    LOG(ERROR) << "Failed to add VOD segment info.";
+    LOG(ERROR) << "Failed to add VOD info.";
     return xml::scoped_xml_ptr<xmlNode>();
   }
 

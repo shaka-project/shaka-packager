@@ -145,6 +145,8 @@ class Representation {
   /// @return ID number for <Representation>.
   uint32_t id() const { return id_; }
 
+  void set_media_info(const MediaInfo& media_info) { media_info_ = media_info; }
+
  protected:
   /// @param media_info is a MediaInfo containing information on the media.
   ///        @a media_info.bandwidth is required for 'static' profile. If @a

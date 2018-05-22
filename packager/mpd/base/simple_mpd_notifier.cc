@@ -165,6 +165,22 @@ bool SimpleMpdNotifier::NotifyEncryptionUpdate(
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyMediaInfoUpdate(uint32_t container_id,
+                                              const MediaInfo& media_info) {
+  base::AutoLock auto_lock(lock_);
+  auto it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+
+  MediaInfo adjusted_media_info(media_info);
+  MpdBuilder::MakePathsRelativeToMpd(output_path_, &adjusted_media_info);
+
+  it->second->set_media_info(adjusted_media_info);
+  return true;
+}
+
 bool SimpleMpdNotifier::Flush() {
   base::AutoLock auto_lock(lock_);
   return WriteMpdToFile(output_path_, mpd_builder_.get());

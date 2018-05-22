@@ -92,6 +92,13 @@ class MpdNotifier {
                                       const std::vector<uint8_t>& new_key_id,
                                       const std::vector<uint8_t>& new_pssh) = 0;
 
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @param media_info is the new MediaInfo. Note that codec related
+  ///        information cannot be updated.
+  virtual bool NotifyMediaInfoUpdate(uint32_t container_id,
+                                     const MediaInfo& media_info) = 0;
+
   /// Call this method to force a flush. Implementations might not write out
   /// the MPD to a stream (file, stdout, etc.) when the MPD is updated, this
   /// forces a flush.

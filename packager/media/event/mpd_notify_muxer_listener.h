@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "packager/base/optional.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/event_info.h"
 #include "packager/media/event/muxer_listener.h"
@@ -60,8 +61,10 @@ class MpdNotifyMuxerListener : public MuxerListener {
   MpdNotifyMuxerListener(const MpdNotifyMuxerListener&) = delete;
   MpdNotifyMuxerListener& operator=(const MpdNotifyMuxerListener&) = delete;
 
+  bool NotifyNewContainer();
+
   MpdNotifier* const mpd_notifier_ = nullptr;
-  uint32_t notification_id_ = 0;
+  base::Optional<uint32_t> notification_id_;
   std::unique_ptr<MediaInfo> media_info_;
 
   bool is_encrypted_ = false;

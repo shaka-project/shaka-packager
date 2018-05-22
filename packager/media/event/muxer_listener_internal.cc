@@ -6,6 +6,7 @@
 
 #include "packager/media/event/muxer_listener_internal.h"
 
+#include <google/protobuf/util/message_differencer.h>
 #include <math.h>
 
 #include "packager/base/logging.h"
@@ -18,6 +19,8 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/ec3_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
+
+using ::google::protobuf::util::MessageDifferencer;
 
 namespace shaka {
 namespace media {
@@ -174,6 +177,19 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
     media_info->set_bandwidth(muxer_options.bandwidth);
 
   return true;
+}
+
+bool IsMediaInfoCompatible(const MediaInfo& media_info1,
+                           const MediaInfo& media_info2) {
+  return media_info1.reference_time_scale() ==
+             media_info2.reference_time_scale() &&
+         media_info1.container_type() == media_info2.container_type() &&
+         MessageDifferencer::Equals(media_info1.video_info(),
+                                    media_info2.video_info()) &&
+         MessageDifferencer::Equals(media_info1.audio_info(),
+                                    media_info2.audio_info()) &&
+         MessageDifferencer::Equals(media_info1.text_info(),
+                                    media_info2.text_info());
 }
 
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,

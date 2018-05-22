@@ -7,8 +7,10 @@
 #ifndef PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 #define PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_
 
+#include <memory>
 #include <string>
 
+#include "packager/base/optional.h"
 #include "packager/media/event/event_info.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -71,14 +73,15 @@ class HlsNotifyMuxerListener : public MuxerListener {
   HlsNotifyMuxerListener(const HlsNotifyMuxerListener&) = delete;
   HlsNotifyMuxerListener& operator=(const HlsNotifyMuxerListener&) = delete;
 
+  bool NotifyNewStream();
+
   const std::string playlist_name_;
   const bool iframes_only_;
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
   hls::HlsNotifier* const hls_notifier_;
-  uint32_t stream_id_ = 0;
+  base::Optional<uint32_t> stream_id_;
 
-  bool media_started_ = false;
   bool must_notify_encryption_start_ = false;
   // Cached encryption info before OnMediaStart() is called.
   std::vector<uint8_t> next_key_id_;
@@ -88,7 +91,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
 
   // MediaInfo passed to Notifier::OnNewStream(). Mainly for single segment
   // playlists.
-  MediaInfo media_info_;
+  std::unique_ptr<MediaInfo> media_info_;
   // Even information for delayed function calls (NotifyNewSegment and
   // NotifyCueEvent) after NotifyNewStream is called in OnMediaEnd. Only needed
   // for on-demand as the functions are called immediately in live mode.

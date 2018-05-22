@@ -33,6 +33,11 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        MuxerListener::ContainerType container_type,
                        MediaInfo* media_info);
 
+/// @return True if @a media_info1 and @a media_info2 are compatible. MediaInfos
+///         are considered to be compatible if codec and container are the same.
+bool IsMediaInfoCompatible(const MediaInfo& media_info1,
+                           const MediaInfo& media_info2);
+
 /// @param[in,out] media_info points to the MediaInfo object to be filled.
 /// @return true on success, false otherwise.
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,
