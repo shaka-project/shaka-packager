@@ -18,76 +18,35 @@
 namespace shaka {
 namespace media {
 
-class DisplayAction;
-
-class DisplayActionCompare {
- public:
-  bool operator()(const std::shared_ptr<DisplayAction>& left,
-                  const std::shared_ptr<DisplayAction>& right) const;
-};
-
-// Take text samples, convert them to Mp4 boxes, and send them down stream.
-// Virtual methods should only be overridden for testing only.
+// A media handler that should come after the cue aligner and segmenter and
+// should come before the muxer. This handler is to convert text samples
+// to media samples so that they can be sent to a mp4 muxer.
 class WebVttToMp4Handler : public MediaHandler {
  public:
   WebVttToMp4Handler() = default;
-
- protected:
-  // |Process| and |OnFlushRequest| need to be protected so that it can be
-  // called for testing.
-  Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status OnFlushRequest(size_t input_stream_index) override;
-
-  // This is made protected-virtual so that we can override it for testing.
-  virtual void WriteCue(const std::string& id,
-                        const std::string& settings,
-                        const std::string& payload,
-                        BufferWriter* out);
+  virtual ~WebVttToMp4Handler() override = default;
 
  private:
   WebVttToMp4Handler(const WebVttToMp4Handler&) = delete;
   WebVttToMp4Handler& operator=(const WebVttToMp4Handler&) = delete;
 
   Status InitializeInternal() override;
+  Status Process(std::unique_ptr<StreamData> stream_data) override;
 
-  // Merge and send all samples in the queue downstream while the head of the
-  // queue's time is less than |cutoff|. |cutoff| is needed as we can only
-  // merge and send samples when we are sure no new samples will appear before
-  // the next action.
-  Status ProcessUpToTime(int64_t cutoff_time);
+  Status OnStreamInfo(std::unique_ptr<StreamData> stream_data);
+  Status OnCueEvent(std::unique_ptr<StreamData> stream_data);
+  Status OnSegmentInfo(std::unique_ptr<StreamData> stream_data);
+  Status OnTextSample(std::unique_ptr<StreamData> stream_data);
 
-  // Merge together all TextSamples in |samples| into a single MP4 box and
-  // pass the box downstream.
-  Status MergeAndSendSamples(const std::list<const TextSample*>& samples,
-                             int64_t start_time,
-                             int64_t end_time);
+  Status DispatchCurrentSegment(int64_t segment_start, int64_t segment_end);
+  Status MergeDispatchSamples(int64_t start_in_seconds,
+                              int64_t end_in_seconds,
+                              const std::list<const TextSample*>& state);
 
-  Status SendEmptySample(int64_t start_time, int64_t end_time);
-
-  // Get a new id for the next action.
-  uint64_t NextActionId();
-
-  int64_t next_change_ = 0;
+  std::list<std::shared_ptr<const TextSample>> current_segment_;
 
   // This is the current state of the box we are writing.
   BufferWriter box_writer_;
-
-  // |actions_| is a time sorted list of actions that affect the timeline (e.g.
-  //  adding or removing a cue). |active_| is the list of all cues that are
-  // currently on screen.
-  // When the cue is to be on screen, it is added to |active_|. When it is time
-  // for the cue to come off screen, it is removed from |active_|.
-  // As |actions_| has a shared pointer to the cue, |active_| can use normal
-  // pointers as the pointer will be valid and it makes the |remove| call
-  // easier.
-
-  std::priority_queue<std::shared_ptr<DisplayAction>,
-                      std::vector<std::shared_ptr<DisplayAction>>,
-                      DisplayActionCompare>
-      actions_;
-  std::list<const TextSample*> active_;
-
-  uint64_t next_id_ = 0;
 };
 
 }  // namespace media

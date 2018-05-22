@@ -16,7 +16,6 @@
 namespace shaka {
 namespace media {
 
-std::string StreamDataTypeToString(StreamDataType stream_data_type);
 std::string BoolToString(bool value);
 
 MATCHER_P(IsStreamInfo, stream_index, "") {

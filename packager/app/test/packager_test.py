@@ -1047,6 +1047,24 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('hls-audio-video-text-with-ad-cues')
 
+  def testVttTextToMp4WithAdCues(self):
+    streams = [
+        self._GetStream('audio',
+                        hls=True,
+                        segmented=True),
+        self._GetStream('video',
+                        hls=True,
+                        segmented=True),
+        self._GetStream('text',
+                        hls=True,
+                        segmented=True,
+                        test_file='bear-subtitle-english.vtt',
+                        output_format='mp4')
+    ]
+    flags = self._GetFlags(output_hls=True, ad_cues='1.5')
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
+
   def testWebmSubsampleEncryption(self):
     streams = [
         self._GetStream('video',

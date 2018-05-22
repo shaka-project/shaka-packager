@@ -62,26 +62,6 @@ const uint8_t kData[]{
 namespace shaka {
 namespace media {
 
-std::string StreamDataTypeToString(StreamDataType stream_data_type) {
-  switch (stream_data_type) {
-    case StreamDataType::kStreamInfo:
-      return "stream info";
-    case StreamDataType::kMediaSample:
-      return "media sample";
-    case StreamDataType::kTextSample:
-      return "text sample";
-    case StreamDataType::kSegmentInfo:
-      return "segment info";
-    case StreamDataType::kScte35Event:
-      return "scte35 event";
-    case StreamDataType::kCueEvent:
-      return "cue event";
-    case StreamDataType::kUnknown:
-      return "unknown";
-  }
-  return "unknown";
-}
-
 std::string BoolToString(bool value) {
   return value ? "true" : "false";
 }

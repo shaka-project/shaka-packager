@@ -475,6 +475,16 @@ Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
   return Status::OK;
 }
 
+std::unique_ptr<TextChunker> CreateTextChunker(
+    const ChunkingParams& chunking_params) {
+  const float segment_length_in_seconds =
+      chunking_params.segment_duration_in_seconds;
+  const uint64_t segment_length_in_ms =
+      static_cast<uint64_t>(segment_length_in_seconds * 1000);
+
+  return std::unique_ptr<TextChunker>(new TextChunker(segment_length_in_ms));
+}
+
 Status CreateHlsTextJob(const StreamDescriptor& stream,
                         const PackagingParams& packaging_params,
                         std::unique_ptr<MuxerListener> muxer_listener,
@@ -488,11 +498,6 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
                   "Cannot output text (" + stream.input +
                       ") to HLS with no segment template");
   }
-
-  const float segment_length_in_seconds =
-      packaging_params.chunking_params.segment_duration_in_seconds;
-  const uint64_t segment_length_in_ms =
-      static_cast<uint64_t>(segment_length_in_seconds * 1000);
 
   // Text files are usually small and since the input is one file;
   // there's no way for the player to do ranged requests. So set this
@@ -513,15 +518,13 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   auto cue_aligner = sync_points
                          ? std::make_shared<CueAlignmentHandler>(sync_points)
                          : nullptr;
-  auto chunker = std::make_shared<TextChunker>(segment_length_in_ms);
+  auto chunker = CreateTextChunker(packaging_params.chunking_params);
 
-  RETURN_IF_ERROR(
-      ChainHandlers({parser, std::move(padder), std::move(cue_aligner),
-                     std::move(chunker), std::move(output)}));
+  job_manager->Add("Segmented Text Job", parser);
 
-  job_manager->Add("Segmented Text Job", std::move(parser));
-
-  return Status::OK;
+  return ChainHandlers({std::move(parser), std::move(padder),
+                        std::move(cue_aligner), std::move(chunker),
+                        std::move(output)});
 }
 
 Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
@@ -530,8 +533,6 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
                                 SyncPointQueue* sync_points,
                                 MuxerFactory* muxer_factory,
                                 std::shared_ptr<OriginHandler>* root) {
-  // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
-
   std::unique_ptr<FileReader> reader;
   RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
 
@@ -539,18 +540,25 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
   auto padder = std::make_shared<TextPadder>(kNoDuration);
+
   auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
-  auto chunker =
-      std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
   auto muxer = muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
   muxer->SetMuxerListener(std::move(muxer_listener));
 
-  RETURN_IF_ERROR(
-      ChainHandlers({parser, std::move(padder), std::move(text_to_mp4),
-                     std::move(chunker), std::move(muxer)}));
-  *root = std::move(parser);
+  // Optional Cue Alignment Handler
+  std::shared_ptr<MediaHandler> cue_aligner;
+  if (sync_points) {
+    cue_aligner = std::make_shared<CueAlignmentHandler>(sync_points);
+  }
 
-  return Status::OK;
+  std::shared_ptr<MediaHandler> chunker =
+      CreateTextChunker(packaging_params.chunking_params);
+
+  *root = parser;
+
+  return ChainHandlers({std::move(parser), std::move(padder),
+                        std::move(cue_aligner), std::move(chunker),
+                        std::move(text_to_mp4), std::move(muxer)});
 }
 
 Status CreateTextJobs(

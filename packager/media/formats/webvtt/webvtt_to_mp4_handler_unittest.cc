@@ -15,368 +15,535 @@ namespace shaka {
 namespace media {
 namespace {
 const size_t kStreamIndex = 0;
+const bool kSubSegment = true;
 const bool kEncrypted = true;
-
-const size_t kInputCount = 1;
-const size_t kOutputCount = 1;
-const size_t kInputIndex = 0;
-const size_t kOutputIndex = 0;
-
-const char* kId[] = {"cue 1 id", "cue 2 id", "cue 3 id"};
-const char* kPayload[] = {"cue 1 payload", "cue 2 payload", "cue 3 payload"};
-const char* kNoSettings = "";
-
-// These all refer to the samples. To make them easier to use in their
-// correct context, they have purposely short names.
-const size_t kA = 0;
-const size_t kB = 1;
-const size_t kC = 2;
-
 }  // namespace
-
-class TestableWebVttToMp4Handler : public WebVttToMp4Handler {
- public:
-  MOCK_METHOD3(OnWriteCue,
-               void(const std::string& id,
-                    const std::string& settings,
-                    const std::string& payload));
-
- protected:
-  void WriteCue(const std::string& id,
-                const std::string& settings,
-                const std::string& payload,
-                BufferWriter* out) {
-    OnWriteCue(id, settings, payload);
-    // We need to write something out or else media sample will think it is the
-    // end of the stream.
-    out->AppendInt(0);
-  }
-};
 
 class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
  protected:
-  void SetUp() {
-    mp4_handler_ = std::make_shared<TestableWebVttToMp4Handler>();
-    ASSERT_OK(SetUpAndInitializeGraph(mp4_handler_, kInputCount, kOutputCount));
+  Status SetUpTestGraph() {
+    const size_t kOneInput = 1;
+    const size_t kOneOutput = 1;
+
+    auto handler = std::make_shared<WebVttToMp4Handler>();
+    return SetUpAndInitializeGraph(handler, kOneInput, kOneOutput);
   }
 
-  std::shared_ptr<TestableWebVttToMp4Handler> mp4_handler_;
+  FakeInputMediaHandler* In() {
+    const size_t kInputIndex = 0;
+    return Input(kInputIndex);
+  }
+
+  MockOutputMediaHandler* Out() {
+    const size_t kOutputIndex = 0;
+    return Output(kOutputIndex);
+  }
+
+  Status DispatchStream() {
+    auto info = GetTextStreamInfo();
+    return In()->Dispatch(
+        StreamData::FromStreamInfo(kStreamIndex, std::move(info)));
+  }
+
+  Status DispatchText(int64_t start_time, int64_t end_time) {
+    const std::string kId = "id";
+    const std::string kPayload = "payload";
+
+    auto sample = GetTextSample(kId, start_time, end_time, kPayload);
+    return In()->Dispatch(
+        StreamData::FromTextSample(kStreamIndex, std::move(sample)));
+  }
+
+  Status DispatchSegment(int64_t start_time, int64_t end_time) {
+    DCHECK_GT(end_time, start_time);
+
+    const bool kIsSubSegment = true;
+    int64_t duration = end_time - start_time;
+
+    auto segment = GetSegmentInfo(start_time, duration, !kIsSubSegment);
+    return In()->Dispatch(
+        StreamData::FromSegmentInfo(kStreamIndex, std::move(segment)));
+  }
+
+  Status Flush() { return In()->FlushAllDownstreams(); }
 };
 
 // Verify that when the stream starts at a non-zero value, the gap at the
 // start will be filled.
-// |    [----A----]
+//
+// |[-- SEGMENT ------------]|
+// |         [--- SAMPLE ---]|
+// |[- GAP -]                |
+//
 TEST_F(WebVttToMp4HandlerTest, NonZeroStartTime) {
-  const int64_t kGapStart = 0;
-  const int64_t kGapEnd = 100;
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kGapStart = kSegmentStart;
+  const int64_t kGapEnd = kGapStart + 200;
   const int64_t kGapDuration = kGapEnd - kGapStart;
 
-  const char* kSampleId = kId[0];
-  const char* kSamplePayload = kPayload[0];
   const int64_t kSampleStart = kGapEnd;
-  const int64_t kSampleDuration = 500;
-  const int64_t kSampleEnd = kSampleStart + kSampleDuration;
+  const int64_t kSampleEnd = kSegmentEnd;
+  const int64_t kSampleDuration = kSampleEnd - kSampleStart;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
-    // Empty Cue to fill gap
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kGapStart, kGapDuration,
-                                        !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
+    // Gap
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGapStart,
+                                                kGapDuration, !kEncrypted)));
     // Sample
-    EXPECT_CALL(*mp4_handler_,
-                OnWriteCue(kSampleId, kNoSettings, kSamplePayload));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kSampleStart,
-                                        kSampleDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kSampleStart,
+                                                kSampleDuration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
 
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInputIndex)
-                ->Dispatch(StreamData::FromTextSample(
-                    kStreamIndex, GetTextSample(kSampleId, kSampleStart,
-                                                kSampleEnd, kSamplePayload))));
-
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
 }
 
 // Verify the cues are grouped correctly when the cues do not overlap at all.
 // An empty cue should be inserted between the two as there is a gap.
 //
-// [----A---]  [---B---]
+// |[-- SEGMENT --------------------------]|
+// |[-- SAMPLE --]           [-- SAMPLE --]|
+// |              [-- GAP --]              |
+//
 TEST_F(WebVttToMp4HandlerTest, NoOverlap) {
-  const int64_t kDuration = 1000;
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
 
-  const char* kSample1Id = kId[0];
-  const char* kSample1Payload = kPayload[0];
-  const int64_t kSample1Start = 0;
-  const int64_t kSample1End = kSample1Start + kDuration;
+  const int64_t kSample1Start = kSegmentStart;
+  const int64_t kSample1End = kSample1Start + 1000;
+  const int64_t kSample1Duration = kSample1End - kSample1Start;
 
-  // Make sample 2 be just a little after sample 1.
-  const char* kSample2Id = kId[1];
-  const char* kSample2Payload = kPayload[1];
-  const int64_t kSample2Start = kSample1End + 100;
-  const int64_t kSample2End = kSample2Start + kDuration;
+  const int64_t kSample2Start = kSegmentEnd - 1000;
+  const int64_t kSample2End = kSegmentEnd;
+  const int64_t kSample2Duration = kSample2End - kSample2Start;
 
   const int64_t kGapStart = kSample1End;
-  const int64_t kGapDuration = kSample2Start - kSample1End;
+  const int64_t kGapEnd = kSample2Start;
+  const int64_t kGapDuration = kGapEnd - kGapStart;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+
     // Sample 1
-    EXPECT_CALL(*mp4_handler_,
-                OnWriteCue(kSample1Id, kNoSettings, kSample1Payload));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kSample1Start, kDuration,
-                                        !kEncrypted)));
-
-    // Empty Cue to fill gap
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kGapStart, kGapDuration,
-                                        !kEncrypted)));
-
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kSample1Start,
+                                        kSample1Duration, !kEncrypted)));
+    // Gap
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGapStart,
+                                                kGapDuration, !kEncrypted)));
     // Sample 2
-    EXPECT_CALL(*mp4_handler_,
-                OnWriteCue(kSample2Id, kNoSettings, kSample2Payload));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kSample2Start, kDuration,
-                                        !kEncrypted)));
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kSample2Start,
+                                        kSample2Duration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
 
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(
-      Input(kInputIndex)
-          ->Dispatch(StreamData::FromTextSample(
-              kStreamIndex, GetTextSample(kSample1Id, kSample1Start,
-                                          kSample1End, kSample1Payload))));
-
-  ASSERT_OK(
-      Input(kInputIndex)
-          ->Dispatch(StreamData::FromTextSample(
-              kStreamIndex, GetTextSample(kSample2Id, kSample2Start,
-                                          kSample2End, kSample2Payload))));
-
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kSample2Start, kSample2End));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
 }
 
 // Verify the cues are grouped correctly when one cue overlaps another cue at
 // one end.
 //
-// [-------A-------]
-//         [-------B------]
+// |[-- SEGMENT -----------------]|
+// |[-- SAMPLE --------]          |
+// |           [------- SAMPLE --]|
 TEST_F(WebVttToMp4HandlerTest, Overlap) {
-  const int64_t kStart[] = {0, 500};
-  const int64_t kEnd[] = {1000, 1500};
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kSample1Start = kSegmentStart;
+  const int64_t kSample1End = kSegmentEnd - 3000;
+
+  const int64_t kSample2Start = kSegmentStart + 3000;
+  const int64_t kSample2End = kSegmentEnd;
+
+  const int64_t kOnlySample1Start = kSample1Start;
+  const int64_t kOnlySample1End = kSample2Start;
+  const int64_t kOnlySample1Duration = kOnlySample1End - kOnlySample1Start;
+
+  const int64_t kSample1AndSample2Start = kSample2Start;
+  const int64_t kSample1AndSample2End = kSample1End;
+  const int64_t kSample1AndSample2Duration =
+      kSample1AndSample2End - kSample1AndSample2Start;
+
+  const int64_t kOnlySample2Start = kSample1End;
+  const int64_t kOnlySample2End = kSample2End;
+  const int64_t kOnlySample2Duration = kOnlySample2End - kOnlySample2Start;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
-    // Sample A
-    EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[kA], kNoSettings, kPayload[kA]));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kA],
-                                        kStart[kB] - kStart[kA], !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
-    // Sample A and B
-    for (size_t i = kA; i <= kB; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kB],
-                                        kEnd[kA] - kStart[kB], !kEncrypted)));
+    // Sample 1
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kOnlySample1Start,
+                                        kOnlySample1Duration, !kEncrypted)));
+    // Sample 1 and Sample 2
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(
+                            kStreamIndex, kSample1AndSample2Start,
+                            kSample1AndSample2Duration, !kEncrypted)));
+    // Sample 2
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kOnlySample2Start,
+                                        kOnlySample2Duration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
 
-    // Sample B
-    EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[kB], kNoSettings, kPayload[kB]));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kEnd[kA],
-                                        kEnd[kB] - kEnd[kA], !kEncrypted)));
-
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  for (size_t i = kA; i <= kB; i++) {
-    ASSERT_OK(Input(kInputIndex)
-                  ->Dispatch(StreamData::FromTextSample(
-                      kStreamIndex,
-                      GetTextSample(kId[i], kStart[i], kEnd[i], kPayload[i]))));
-  }
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kSample2Start, kSample2End));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
 }
 
 // Verify the cues are grouped correctly when one cue starts before and ends
 // after another cue.
 //
-// [-------------A-------------]
-//    [----------B----------]
+// |[-- SEGMENT -----------------]|
+// |[-- SAMPLE ------------------]|
+// |      [------- SAMPLE --]     |
+//
 TEST_F(WebVttToMp4HandlerTest, Contains) {
-  const int64_t kStart[] = {0, 100};
-  const int64_t kEnd[] = {1000, 900};
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kSample1Start = kSegmentStart;
+  const int64_t kSample1End = kSegmentEnd;
+
+  const int64_t kSample2Start = kSegmentStart + 1000;
+  const int64_t kSample2End = kSegmentEnd - 1000;
+
+  const int64_t kBeforeSample2Start = kSample1Start;
+  const int64_t kBeforeSample2End = kSample2Start;
+  const int64_t kBeforeSample2Duration =
+      kBeforeSample2End - kBeforeSample2Start;
+
+  const int64_t kDuringSample2Start = kSample2Start;
+  const int64_t kDuringSample2End = kSample2End;
+  const int64_t kDuringSample2Duration =
+      kDuringSample2End - kDuringSample2Start;
+
+  const int64_t kAfterSample2Start = kSample2End;
+  const int64_t kAfterSample2End = kSample1End;
+  const int64_t kAfterSample2Duration = kAfterSample2End - kAfterSample2Start;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
-    // Sample A
-    EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[kA], kNoSettings, kPayload[kA]));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kA],
-                                        kStart[kB] - kStart[kA], !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
-    // Sample A and B
-    for (size_t i = kA; i <= kB; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kB],
-                                        kEnd[kB] - kStart[kB], !kEncrypted)));
+    // Sample 1
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kBeforeSample2Start,
+                                        kBeforeSample2Duration, !kEncrypted)));
+    // Sample 1 and Sample 2
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kDuringSample2Start,
+                                        kDuringSample2Duration, !kEncrypted)));
+    // Sample 1 Again
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kAfterSample2Start,
+                                        kAfterSample2Duration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
 
-    // Sample A
-    EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[kA], kNoSettings, kPayload[kA]));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kEnd[kB],
-                                        kEnd[kA] - kEnd[kB], !kEncrypted)));
-
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  for (size_t i = kA; i <= kB; i++) {
-    ASSERT_OK(Input(kInputIndex)
-                  ->Dispatch(StreamData::FromTextSample(
-                      kStreamIndex,
-                      GetTextSample(kId[i], kStart[i], kEnd[i], kPayload[i]))));
-  }
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kSample2Start, kSample2End));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
 }
 
 // Verify that when two cues are completely on top of each other, that there
 // is no extra boxes sent out.
 //
-// [----------A----------]
-// [----------B----------]
+// |[-- SEGMENT -----------------]|
+// |[-- SAMPLE ------------------]|
+// |[-- SAMPLE ------------------]|
+//
 TEST_F(WebVttToMp4HandlerTest, ExactOverlap) {
-  const int64_t kStart = 0;
-  const int64_t kDuration = 1000;
-  const int64_t kEnd = kStart + kDuration;
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kSampleStart = kSegmentStart;
+  const int64_t kSampleEnd = kSegmentEnd;
+  const int64_t kSampleDuration = kSampleEnd - kSampleStart;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
-    // Sample A and B
-    for (size_t i = kA; i <= kB; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(
-        *Output(kOutputIndex),
-        OnProcess(IsMediaSample(kStreamIndex, kStart, kDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    // Both Samples
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kSampleStart,
+                                                kSampleDuration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
+
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  for (size_t i = kA; i <= kB; i++) {
-    ASSERT_OK(Input(kInputIndex)
-                  ->Dispatch(StreamData::FromTextSample(
-                      kStreamIndex,
-                      GetTextSample(kId[i], kStart, kEnd, kPayload[i]))));
-  }
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchText(kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
 }
 
 // Verify that when two cues are completely on top of each other, that there
 // is no extra boxes sent out.
 //
-// [----A----]
-// [--------B--------]
-// [------------C------------]
+// |[-- SEGMENT -----------------]|
+// |[-- SAMPLE ------------------]|
+// |[-- SAMPLE ------------]      |
+// |[-- SAMPLE ------]            |
 TEST_F(WebVttToMp4HandlerTest, OverlapStartWithStaggerEnd) {
-  const int64_t kStart = 0;
-  const int64_t kEnd[] = {1000, 2000, 3000};
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kSample1Start = kSegmentStart;
+  const int64_t kSample1End = kSegmentEnd;
+
+  const int64_t kSample2Start = kSegmentStart;
+  const int64_t kSample2End = kSegmentEnd - 1000;
+
+  const int64_t kSample3Start = kSegmentStart;
+  const int64_t kSample3End = kSegmentEnd - 2000;
+
+  const int64_t kThreeSamplesStart = kSegmentStart;
+  const int64_t kThreeSamplesEnd = kSample3End;
+  const int64_t kThreeSamplesDuration = kThreeSamplesEnd - kThreeSamplesStart;
+
+  const int64_t kTwoSamplesStart = kSample3End;
+  const int64_t kTwoSamplesEnd = kSample2End;
+  const int64_t kTwoSamplesDuration = kTwoSamplesEnd - kTwoSamplesStart;
+
+  const int64_t kOneSampleStart = kSample2End;
+  const int64_t kOneSampleEnd = kSample1End;
+  const int64_t kOneSampleDuration = kOneSampleEnd - kOneSampleStart;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
-    // Sample A, B, and C
-    for (size_t i = kA; i <= kC; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(
-        *Output(kOutputIndex),
-        OnProcess(IsMediaSample(kStreamIndex, kStart, kEnd[kA], !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
-    // Sample B and C
-    for (size_t i = kB; i <= kC; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kEnd[kA],
-                                        kEnd[kB] - kEnd[kA], !kEncrypted)));
+    // Three Samples
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kThreeSamplesStart,
+                                        kThreeSamplesDuration, !kEncrypted)));
+    // Two Samples
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kTwoSamplesStart,
+                                        kTwoSamplesDuration, !kEncrypted)));
+    // One Sample
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kOneSampleStart,
+                                        kOneSampleDuration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
 
-    // Sample C
-    EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[kC], kNoSettings, kPayload[kC]));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kEnd[kB],
-                                        kEnd[kC] - kEnd[kB], !kEncrypted)));
-
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  for (size_t i = kA; i <= kC; i++) {
-    ASSERT_OK(Input(kInputIndex)
-                  ->Dispatch(StreamData::FromTextSample(
-                      kStreamIndex,
-                      GetTextSample(kId[i], kStart, kEnd[i], kPayload[i]))));
-  }
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kSample3Start, kSample3End));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
 }
 
 // Verify that when two cues are completely on top of each other, that there
 // is no extra boxes sent out.
 //
-// [------------A------------]
-//         [--------B--------]
-//                 [----C----]
+// |[-- SEGMENT -----------------]|
+// |[-- SAMPLE ------------------]|
+// |      [-- SAMPLE ------------]|
+// |            [-- SAMPLE ------]|
 TEST_F(WebVttToMp4HandlerTest, StaggerStartWithOverlapEnd) {
-  const int64_t kStart[] = {0, 100, 200};
-  const int64_t kEnd = 1000;
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kSample1Start = kSegmentStart;
+  const int64_t kSample1End = kSegmentEnd;
+
+  const int64_t kSample2Start = kSegmentStart + 1000;
+  const int64_t kSample2End = kSegmentEnd;
+
+  const int64_t kSample3Start = kSegmentStart + 2000;
+  const int64_t kSample3End = kSegmentEnd;
+
+  const int64_t kOneSampleStart = kSample1Start;
+  const int64_t kOneSampleEnd = kSample2Start;
+  const int64_t kOneSampleDuration = kOneSampleEnd - kOneSampleStart;
+
+  const int64_t kTwoSamplesStart = kSample2Start;
+  const int64_t kTwoSamplesEnd = kSample3Start;
+  const int64_t kTwoSamplesDuration = kTwoSamplesEnd - kTwoSamplesStart;
+
+  const int64_t kThreeSamplesStart = kSample3Start;
+  const int64_t kThreeSamplesEnd = kSample3End;
+  const int64_t kThreeSamplesDuration = kThreeSamplesEnd - kThreeSamplesStart;
+
+  ASSERT_OK(SetUpTestGraph());
 
   {
     testing::InSequence s;
 
-    // Sample A
-    EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[kA], kNoSettings, kPayload[kA]));
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kA],
-                                        kStart[kB] - kStart[kA], !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
-    // Sample A and B
-    for (size_t i = kA; i <= kB; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kB],
-                                        kStart[kC] - kStart[kB], !kEncrypted)));
+    // One Sample
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kOneSampleStart,
+                                        kOneSampleDuration, !kEncrypted)));
+    // Two Samples
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kTwoSamplesStart,
+                                        kTwoSamplesDuration, !kEncrypted)));
+    // Three Samples
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kThreeSamplesStart,
+                                        kThreeSamplesDuration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
 
-    // Sample A, B, and C
-    for (size_t i = kA; i <= kC; i++) {
-      EXPECT_CALL(*mp4_handler_, OnWriteCue(kId[i], kNoSettings, kPayload[i]));
-    }
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsMediaSample(kStreamIndex, kStart[kC],
-                                        kEnd - kStart[kC], !kEncrypted)));
-
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
 
-  for (size_t i = kA; i <= kC; i++) {
-    ASSERT_OK(Input(kInputIndex)
-                  ->Dispatch(StreamData::FromTextSample(
-                      kStreamIndex,
-                      GetTextSample(kId[i], kStart[i], kEnd, kPayload[i]))));
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kSample3Start, kSample3End));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
+}
+
+// The text chunking handler will repeat text samples that cross over a segment
+// boundary. We need to know that this handler will be okay with those repeated
+// samples.
+//
+// |[------ SEGMENT ------]|[------ SEGMENT ------]|
+// |        [--- SAMPLE ---|--------]              |
+// |- GAP -]               |         [- GAP ------]|
+TEST_F(WebVttToMp4HandlerTest, CrossSegmentSamples) {
+  const int64_t kSegmentDuration = 10000;
+  const int64_t kGapDuration = 1000;
+
+  const int64_t kSegment1Start = 0;
+  const int64_t kSegment1End = 10000;
+
+  const int64_t kSegment2Start = 10000;
+  const int64_t kSegment2End = 20000;
+
+  const int64_t kGap1Start = 0;
+  const int64_t kGap2Start = 19000;
+
+  const int64_t kSampleStart = 1000;
+  const int64_t kSampleEnd = 19000;
+
+  const int64_t kSamplePart1Start = 1000;
+  const int64_t kSamplePart1Duration = 9000;
+
+  const int64_t kSamplePart2Start = 10000;
+  const int64_t kSamplePart2Duration = 9000;
+
+  ASSERT_OK(SetUpTestGraph());
+
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+
+    // Gap, Sample, Segment
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGap1Start,
+                                                kGapDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kSamplePart1Start,
+                                        kSamplePart1Duration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
+
+    // Sample, Gap, Segment
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kSamplePart2Start,
+                                        kSamplePart2Duration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGap2Start,
+                                                kGapDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
+
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
   }
-  ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
+
+  ASSERT_OK(DispatchStream());
+  ASSERT_OK(DispatchText(kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchSegment(kSegment1Start, kSegment1End));
+  ASSERT_OK(DispatchText(kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchSegment(kSegment2Start, kSegment2End));
+  ASSERT_OK(Flush());
 }
 }  // namespace media
 }  // namespace shaka

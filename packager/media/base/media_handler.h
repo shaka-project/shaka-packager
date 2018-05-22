@@ -29,6 +29,8 @@ enum class StreamDataType {
   kCueEvent,
 };
 
+std::string StreamDataTypeToString(StreamDataType type);
+
 // Scte35Event represents cuepoint markers in input streams. It will be used
 // to represent out of band cuepoint markers too.
 struct Scte35Event {

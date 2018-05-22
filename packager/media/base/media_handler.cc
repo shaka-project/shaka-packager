@@ -9,6 +9,26 @@
 namespace shaka {
 namespace media {
 
+std::string StreamDataTypeToString(StreamDataType type) {
+  switch (type) {
+    case StreamDataType::kStreamInfo:
+      return "stream info";
+    case StreamDataType::kMediaSample:
+      return "media sample";
+    case StreamDataType::kTextSample:
+      return "text sample";
+    case StreamDataType::kSegmentInfo:
+      return "segment info";
+    case StreamDataType::kScte35Event:
+      return "scte35 event";
+    case StreamDataType::kCueEvent:
+      return "cue event";
+    case StreamDataType::kUnknown:
+      return "unknown";
+  }
+  return "unknown";
+}
+
 Status MediaHandler::SetHandler(size_t output_stream_index,
                                 std::shared_ptr<MediaHandler> handler) {
   if (output_handlers_.find(output_stream_index) != output_handlers_.end()) {
