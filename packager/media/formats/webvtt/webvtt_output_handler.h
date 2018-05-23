@@ -23,10 +23,11 @@ class WebVttTextOutputHandler : public MediaHandler {
  public:
   WebVttTextOutputHandler(const MuxerOptions& muxer_options,
                           std::unique_ptr<MuxerListener> muxer_listener);
-  // TODO(vaage): Add missing default destructor.
+  virtual ~WebVttTextOutputHandler() = default;
 
  private:
-  // TODO(vaage): Add missing deleted copy and assign constructors.
+  WebVttTextOutputHandler(const WebVttTextOutputHandler&) = delete;
+  WebVttTextOutputHandler& operator=(const WebVttTextOutputHandler&) = delete;
 
   Status InitializeInternal() override;
   Status Process(std::unique_ptr<StreamData> stream_data) override;
