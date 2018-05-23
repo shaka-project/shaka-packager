@@ -95,19 +95,29 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa5b34dcc690e695f64846a8293335967"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5b50bc57ebd9691db6fbed256cd763e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aa5b50bc57ebd9691db6fbed256cd763e">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:aa5b50bc57ebd9691db6fbed256cd763e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
+<tr class="memitem:a8f16841c5d413f7fa09502a31c2db61d inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a id="a8f16841c5d413f7fa09502a31c2db61d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags)</td></tr>
+<tr class="separator:a8f16841c5d413f7fa09502a31c2db61d inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aea32604de0ad9489731d188c50e7accf"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html">RawKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aea32604de0ad9489731d188c50e7accf">Create</a> (const <a class="el" href="../../d0/db4/structshaka_1_1RawKeyParams.html">RawKeyParams</a> &amp;raw_key)</td></tr>
-<tr class="separator:aea32604de0ad9489731d188c50e7accf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a8c725fd07b4faa86f2bc39049858b"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html">RawKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#af5a8c725fd07b4faa86f2bc39049858b">Create</a> (const <a class="el" href="../../d0/db4/structshaka_1_1RawKeyParams.html">RawKeyParams</a> &amp;raw_key, int protection_system_flags)</td></tr>
+<tr class="separator:af5a8c725fd07b4faa86f2bc39049858b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
+<tr class="memitem:a8cb007e01d91f38d64cad4ba47f1208a inherit pro_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a8cb007e01d91f38d64cad4ba47f1208a">UpdateProtectionSystemInfo</a> (EncryptionKeyMap *encryption_key_map)</td></tr>
+<tr class="separator:a8cb007e01d91f38d64cad4ba47f1208a inherit pro_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A key source that uses raw keys for encryption. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d60/raw__key__source_8h_source.html#l00034">34</a> of file <a class="el" href="../../dd/d60/raw__key__source_8h_source.html">raw_key_source.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d60/raw__key__source_8h_source.html#l00027">27</a> of file <a class="el" href="../../dd/d60/raw__key__source_8h_source.html">raw_key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aea32604de0ad9489731d188c50e7accf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea32604de0ad9489731d188c50e7accf">&#9670;&nbsp;</a></span>Create()</h2>
+<a id="af5a8c725fd07b4faa86f2bc39049858b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5a8c725fd07b4faa86f2bc39049858b">&#9670;&nbsp;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -119,8 +129,18 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">std::unique_ptr&lt; <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html">RawKeySource</a> &gt; shaka::media::RawKeySource::Create </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="../../d0/db4/structshaka_1_1RawKeyParams.html">RawKeyParams</a> &amp;&#160;</td>
-          <td class="paramname"><em>raw_key</em></td><td>)</td>
+          <td class="paramname"><em>raw_key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>protection_system_flags</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -136,7 +156,7 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00104">104</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00099">99</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -184,7 +204,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00022">22</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00025">25</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -239,7 +259,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00059">59</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00062">62</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -287,7 +307,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00028">28</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -335,7 +355,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html#l00048">48</a> of file <a class="el" href="../../d4/dd6/raw__key__source_8cc_source.html">raw_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -346,7 +366,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:11:01 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

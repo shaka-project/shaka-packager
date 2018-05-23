@@ -64,7 +64,7 @@
 <li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
 <li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
 <li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
-<li><a class="reference internal" href="#playready-encryption-options">Playready encryption options</a></li>
+<li><a class="reference internal" href="#playready-encryption-options">PlayReady encryption options</a></li>
 </ul>
 </li>
 </ul>
@@ -131,7 +131,7 @@ Instructions are available at <a class="reference internal" href="docker_instruc
 </div>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager {stream_descriptor} [{stream_descriptor}] ... \
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
            [--dump_stream_info] \
            [Chunking Options] \
            [MP4 Output Options] \
@@ -145,7 +145,7 @@ Instructions are available at <a class="reference internal" href="docker_instruc
 <p>There can be multiple <em>stream_descriptor</em> with input from the same “file” or
 multiple different “files”.</p>
 <p>Stream descriptor is of the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">field</span><span class="p">}</span><span class="o">=</span><span class="p">{</span><span class="n">value</span><span class="p">}[,{</span><span class="n">field</span><span class="p">}</span><span class="o">=</span><span class="p">{</span><span class="n">value</span><span class="p">}]</span><span class="o">...</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">field</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="p">[,</span><span class="o">&lt;</span><span class="n">field</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span><span class="p">]</span><span class="o">...</span>
 </pre></div>
 </div>
 <p>These are the available fields:</p>
@@ -317,10 +317,15 @@ static mpd regardless of the value of this flag.</td></tr>
 </tr>
 <tr><td>&#160;</td><td>MPD output file name.</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--base_urls <var>&lt;comma separated url&gt;</var></span></kbd></td>
+<kbd><span class="option">--base_urls <var>&lt;comma_separated_urls&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Comma separated BaseURLs for the MPD. The values will be added  as &lt;BaseURL&gt;
-element(s) immediately under the &lt;MPD&gt; element.</td></tr>
+<tr><td>&#160;</td><td><dl class="first docutils">
+<dt>Comma separated BaseURLs for the MPD:</dt>
+<dd><strong>&lt;url&gt;[,&lt;url&gt;]…</strong>.</dd>
+</dl>
+<p class="last">The values will be added as &lt;BaseURL&gt; element(s) immediately under the &lt;MPD&gt;
+element.</p>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--min_buffer_time <var>&lt;seconds&gt;</var></span></kbd></td>
 </tr>
@@ -342,11 +347,43 @@ This value is used for dynamic MPD only.</td></tr>
 <tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
 presentations, in seconds.</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
+above) are automatically removed except for the most recent X segments
+defined by this parameter. This is needed to accommodate latencies in
+various stages of content serving pipeline, so that the segments stay
+accessible as they may still be accessed by the player.</p>
+<p class="last">The segments are not removed if the value is zero.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--utc_timing <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><dl class="first docutils">
+<dt>Comma separated UTCTiming schemeIdUri and value pairs for the MPD:</dt>
+<dd><strong>&lt;scheme_id_uri&gt;=&lt;value&gt;[,&lt;scheme_id_uri&gt;=&lt;value&gt;]…</strong></dd>
+</dl>
+<p class="last">This value is used for dynamic MPD only.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Any audio/text tracks tagged with this language will have
 &lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
 choose the correct default language for the content.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--allow_approximate_segment_timeline</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">For live profile only.</p>
+<p>If enabled, segments with close duration (i.e. with difference less than
+one sample) are considered to have the same duration. This enables
+MPD generator to generate less SegmentTimeline entries. If all segments
+are of the same duration except the last one, we will do further
+optimization to use <a class="reference external" href="mailto:SegmentTemplate&#37;&#52;&#48;duration">SegmentTemplate<span>&#64;</span>duration</a> instead and omit
+SegmentTimeline completely.</p>
+<p class="last">Ignored if $Time$ is used in segment template, since $Time$ requires
+accurate Segment Timeline.</p>
+</td></tr>
 </tbody>
 </table>
 </div>
@@ -383,6 +420,16 @@ omitted.</td></tr>
 <tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for LIVE playlists, in
 seconds.</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
+above) are automatically removed except for the most recent X segments
+defined by this parameter. This is needed to accommodate latencies in
+various stages of content serving pipeline, so that the segments stay
+accessible as they may still be accessed by the player.</p>
+<p class="last">The segments are not removed if the value is zero.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>The first audio/text rendition in a group tagged with this language will
@@ -398,14 +445,14 @@ correct default language for the content.</td></tr>
 <ul class="simple">
 <li>Raw key: keys are provided in command line</li>
 <li>Widevine: fetches keys from Widevine key server</li>
-<li>Playready: fetches keys from Playready key server</li>
+<li>PlayReady: fetches keys from PlayReady key server</li>
 </ul>
 <p>Different key providers cannot be specified at the same time.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">--</span><span class="n">enable_widevine_encryption</span> <span class="p">{</span><span class="n">Widevine</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="p">}]</span> \
-<span class="p">[</span><span class="o">--</span><span class="n">enable_widevine_decryption</span> <span class="p">{</span><span class="n">Widevine</span> <span class="n">Decryption</span> <span class="n">Options</span><span class="p">}]</span> \
-<span class="p">[</span><span class="o">--</span><span class="n">enable_raw_key_encryption</span> <span class="p">{</span><span class="n">Raw</span> <span class="n">Key</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="p">}]</span> \
-<span class="p">[</span><span class="o">--</span><span class="n">enable_raw_key_decryption</span> <span class="p">{</span><span class="n">Raw</span> <span class="n">Key</span> <span class="n">Decryption</span> <span class="n">Options</span><span class="p">}]</span> \
-<span class="p">[</span><span class="o">--</span><span class="n">enable_playready_encryption</span> <span class="p">{</span><span class="n">Playready</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">--</span><span class="n">enable_widevine_encryption</span> <span class="o">&lt;</span><span class="n">Widevine</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="o">&gt;</span><span class="p">]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_widevine_decryption</span> <span class="o">&lt;</span><span class="n">Widevine</span> <span class="n">Decryption</span> <span class="n">Options</span><span class="o">&gt;</span><span class="p">]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_raw_key_encryption</span> <span class="o">&lt;</span><span class="n">Raw</span> <span class="n">Key</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="o">&gt;</span><span class="p">]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_raw_key_decryption</span> <span class="o">&lt;</span><span class="n">Raw</span> <span class="n">Key</span> <span class="n">Decryption</span> <span class="n">Options</span><span class="o">&gt;</span><span class="p">]</span> \
+<span class="p">[</span><span class="o">--</span><span class="n">enable_playready_encryption</span> <span class="o">&lt;</span><span class="n">PlayReady</span> <span class="n">Encryption</span> <span class="n">Options</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="general-encryption-options">
@@ -448,7 +495,7 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td><p class="first"><strong>key_info_string</strong> is of the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=</span><span class="p">{</span><span class="n">label</span><span class="p">}:</span><span class="n">key_id</span><span class="o">=</span><span class="p">{</span><span class="n">key_id</span><span class="p">}:</span><span class="n">key</span><span class="o">=</span><span class="p">{</span><span class="n">key</span><span class="p">}</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p><em>label</em> can be an arbitrary string or a predefined DRM label like AUDIO,
@@ -555,7 +602,7 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
 </table>
 </div>
 <div class="section" id="playready-encryption-options">
-<h3>Playready encryption options<a class="headerlink" href="#playready-encryption-options" title="Permalink to this headline">¶</a></h3>
+<h3>PlayReady encryption options<a class="headerlink" href="#playready-encryption-options" title="Permalink to this headline">¶</a></h3>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -567,7 +614,7 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--playready_server_url <var>&lt;url&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Playready packaging server url.</td></tr>
+<tr><td>&#160;</td><td>PlayReady packaging server url.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--program_identifier <var>&lt;program_identifier&gt;</var></span></kbd></td>
 </tr>
@@ -575,11 +622,11 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--playready_key_id <var>&lt;hex&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Playready key id in hex.</td></tr>
+<tr><td>&#160;</td><td>PlayReady key id in hex.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--playready_key <var>&lt;hex&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Playready key in hex.</td></tr>
+<tr><td>&#160;</td><td>PlayReady key in hex.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--ca_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>

@@ -2,6 +2,7 @@ var searchData=
 [
   ['range',['Range',['../d9/de0/structshaka_1_1media_1_1Range.html',1,'shaka::media']]],
   ['rawkeyparams',['RawKeyParams',['../d0/db4/structshaka_1_1RawKeyParams.html',1,'shaka']]],
+  ['rawkeypsshgenerator',['RawKeyPsshGenerator',['../d3/db3/classshaka_1_1media_1_1RawKeyPsshGenerator.html',1,'shaka::media']]],
   ['rawkeysource',['RawKeySource',['../db/dd0/classshaka_1_1media_1_1RawKeySource.html',1,'shaka::media']]],
   ['replicator',['Replicator',['../d3/d1a/classshaka_1_1media_1_1Replicator.html',1,'shaka::media']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html',1,'shaka']]],

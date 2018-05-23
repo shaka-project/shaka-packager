@@ -102,6 +102,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a165f1237a3c70abe524289837f3b135d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1a1231fb13e0bc97cdea5fc239184bf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">NotifyEncryptionUpdate</a> (uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) override</td></tr>
 <tr class="separator:ae1a1231fb13e0bc97cdea5fc239184bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a811c3721117dcc6aac9595a8311e70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6a811c3721117dcc6aac9595a8311e70">NotifyMediaInfoUpdate</a> (uint32_t container_id, const MediaInfo &amp;media_info) override</td></tr>
+<tr class="separator:a6a811c3721117dcc6aac9595a8311e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ea622a21a5807775bb2d998fa04658f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a8ea622a21a5807775bb2d998fa04658f">Flush</a> () override</td></tr>
 <tr class="separator:a8ea622a21a5807775bb2d998fa04658f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classshaka_1_1MpdNotifier"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1MpdNotifier')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html">shaka::MpdNotifier</a></td></tr>
@@ -150,7 +152,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00149">149</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00184">184</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -180,7 +182,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ad6171481d6fb437767b1f5b9e0dac1a3">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00032">32</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -228,7 +230,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a74fed9807b9584387e5da5f0fd28d54d">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00097">97</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00100">100</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -290,7 +292,54 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#acf6a0bde4fc907053cc9f1ff9a38b59a">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00125">125</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00144">144</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+
+</div>
+</div>
+<a id="a6a811c3721117dcc6aac9595a8311e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a811c3721117dcc6aac9595a8311e70">&#9670;&nbsp;</a></span>NotifyMediaInfoUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::SimpleMpdNotifier::NotifyMediaInfoUpdate </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>container_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MediaInfo &amp;&#160;</td>
+          <td class="paramname"><em>media_info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a3f4aabd86ec08e5ff427120ed39fda29">NotifyNewContainer()</a>. </td></tr>
+    <tr><td class="paramname">media_info</td><td>is the new MediaInfo. Note that codec related information cannot be updated. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">shaka::MpdNotifier</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00168">168</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -338,7 +387,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae10c06fe6022a1020fc889de389be430">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00049">49</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -400,7 +449,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a100236a249477afcda4f50e4914f0eee">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00083">83</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00086">86</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -448,7 +497,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 
 <p>Implements <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a721edf600dc9165e96e4b6c154a2d4f6">shaka::MpdNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00071">71</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html#l00074">74</a> of file <a class="el" href="../../d2/d7b/simple__mpd__notifier_8cc_source.html">simple_mpd_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -459,7 +508,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>SimpleMpdNotifierTes
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:46 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

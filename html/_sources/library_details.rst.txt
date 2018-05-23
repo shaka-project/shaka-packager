@@ -23,7 +23,7 @@ Shaka Packager Library (Continued)
 
 .. doxygenstruct:: shaka::WidevineEncryptionParams
 
-.. doxygenstruct:: shaka::PlayreadyEncryptionParams
+.. doxygenstruct:: shaka::PlayReadyEncryptionParams
 
 .. doxygenstruct:: shaka::RawKeyEncryptionParams
 

@@ -89,6 +89,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:a546dcdf68c8a0a5e188f84b5c9fca9dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc19a9eebbfe20c3f9fe03dd452e4b1b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#adc19a9eebbfe20c3f9fe03dd452e4b1b">time_shift_buffer_depth</a> = 0</td></tr>
 <tr class="separator:adc19a9eebbfe20c3f9fe03dd452e4b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa471aaa93cb7c95996902648e376c2e6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#aa471aaa93cb7c95996902648e376c2e6">preserved_segments_outside_live_window</a> = 0</td></tr>
+<tr class="separator:aa471aaa93cb7c95996902648e376c2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68414aff0f65059c2d05c8d168aadf5f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#a68414aff0f65059c2d05c8d168aadf5f">key_uri</a></td></tr>
 <tr class="separator:a68414aff0f65059c2d05c8d168aadf5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abeea3a7ebfe7b2d1e29b3e4445bfd113"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#abeea3a7ebfe7b2d1e29b3e4445bfd113">default_language</a></td></tr>
@@ -129,7 +131,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>The renditions tagged with this language will have 'DEFAULT' set to 'YES' in 'EXT-X-MEDIA' tag. This allows the player to choose the correct default language for the content. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00041">41</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00048">48</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
 
 </div>
 </div>
@@ -146,7 +148,24 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Defines the key uri for "identity" and "com.apple.streamingkeydelivery" key formats. Ignored if the playlist is not encrypted or not using the above key formats. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00037">37</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00044">44</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
+
+</div>
+</div>
+<a id="aa471aaa93cb7c95996902648e376c2e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa471aaa93cb7c95996902648e376c2e6">&#9670;&nbsp;</a></span>preserved_segments_outside_live_window</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::HlsParams::preserved_segments_outside_live_window = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Segments outside the live window (defined by 'time_shift_buffer_depth' above) are automatically removed except for the most recent X segments defined by this parameter. This is needed to accommodate latencies in various stages of content serving pipeline, so that the segments stay accessible as they may still be accessed by the player. The segments are not removed if the value is zero. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00040">40</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
 
 </div>
 </div>
@@ -173,7 +192,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:44 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:50 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

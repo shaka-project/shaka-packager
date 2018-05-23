@@ -65,23 +65,33 @@
             
   <div class="section" id="udp-file-options">
 <h1>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h1>
-<p>UDP file is of the form udp://ip:port[?options]. Here is the list of supported
-options:</p>
+<p>UDP file is of the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>udp://&lt;ip&gt;:&lt;port&gt;[?&lt;option&gt;[&amp;&lt;option&gt;]...]
+</pre></div>
+</div>
+<p>Here is the list of supported options:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;, source=&lt;addr&gt;:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address is
+<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address are
 received. Default to “0.0.0.0” if not specified.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
+<tr class="field-odd field"><th class="field-name">source=&lt;addr&gt;:</th><td class="field-body">Multicast source ip address. Only the packets sent from this source address
+are received. Enables Source Specific Multicast (SSM) if set.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
 </tr>
 </tbody>
 </table>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>udp://224.1.2.30:88?interface=10.11.12.13&amp;reuse=1
+</pre></div>
+</div>
 </div>
 
 

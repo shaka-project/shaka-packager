@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['include_5fcommon_5fpssh',['include_common_pssh',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a5985f2d6fbe33273654695050757d0b0',1,'shaka::WidevineEncryptionParams']]],
   ['index_5frange',['index_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#aa15231fb064efc4b56800df24b074b29',1,'shaka::media::MuxerListener::MediaRanges']]],
   ['init_5frange',['init_range',['../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#a6070da9ce7fab251c82b25a4020373c0',1,'shaka::media::MuxerListener::MediaRanges']]],
   ['inject_5ffake_5fclock',['inject_fake_clock',['../d6/d62/structshaka_1_1TestParams.html#a90ba653c71c94709b8ef3e7c3cc07e6c',1,'shaka::TestParams']]],

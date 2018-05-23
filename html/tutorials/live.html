@@ -126,28 +126,58 @@ See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FF
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Packager does not support removing old segments internally. The user is
-resposible for setting up a cron job to do so.</p>
+<p class="last">Packager supports removing old segments automatically. See
+<cite>preserved_segments_outside_live_window</cite> option in
+<a class="reference internal" href="../options/dash_options.html"><span class="doc">DASH options</span></a> or <a class="reference internal" href="../options/hls_options.html"><span class="doc">HLS options</span></a> for details.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Shaka Packager ensures all segments referenced in DASH manifest / HLS
+playlists are available, by updating the manifest / playlists only after a
+segment is completed.</p>
+<p>However, if content is not served directly from packaging output location,
+extra care must be taken outside of packager to avoid updating manifest /
+playlists without updating media segments.</p>
+<p>Here is an example flow that avoids potential race condition. The following
+steps should be done SERIALLY AND IN ORDER in every sync loop when uploading
+manifest / playlists and media segments to content server:</p>
+<blockquote class="last">
+<div><ol class="arabic simple">
+<li>Upload manifest / playlists under different names</li>
+<li>Upload / Sync media segments</li>
+<li>Rename uploaded manifest / playlists back to the original names</li>
+</ol>
+</div></blockquote>
 </div>
 <div class="section" id="udp-file-options">
 <h3>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h3>
-<p>UDP file is of the form udp://ip:port[?options]. Here is the list of supported
-options:</p>
+<p>UDP file is of the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>udp://&lt;ip&gt;:&lt;port&gt;[?&lt;option&gt;[&amp;&lt;option&gt;]...]
+</pre></div>
+</div>
+<p>Here is the list of supported options:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;, source=&lt;addr&gt;:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address is
+<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address are
 received. Default to “0.0.0.0” if not specified.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
+<tr class="field-odd field"><th class="field-name">source=&lt;addr&gt;:</th><td class="field-body">Multicast source ip address. Only the packets sent from this source address
+are received. Enables Source Specific Multicast (SSM) if set.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
 </tr>
 </tbody>
 </table>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>udp://224.1.2.30:88?interface=10.11.12.13&amp;reuse=1
+</pre></div>
+</div>
 </div>
 <div class="section" id="segment-template-formatting">
 <h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>

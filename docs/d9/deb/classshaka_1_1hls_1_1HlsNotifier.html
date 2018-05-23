@@ -81,9 +81,9 @@ Inheritance diagram for shaka::hls::HlsNotifier:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae0ae240f27a464667e4627dad48e1bf6"><td class="memItemLeft" align="right" valign="top"><a id="ae0ae240f27a464667e4627dad48e1bf6"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>HlsNotifier</b> (<a class="el" href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">HlsPlaylistType</a> <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a55ffbb2f446eb5a2affd9f75c845674d">playlist_type</a>)</td></tr>
-<tr class="separator:ae0ae240f27a464667e4627dad48e1bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeff7cc5e10b69f1338df5135cd446ee9"><td class="memItemLeft" align="right" valign="top"><a id="aeff7cc5e10b69f1338df5135cd446ee9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>HlsNotifier</b> (const <a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html">HlsParams</a> &amp;<a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a56af7fda2e9c5e1d376ba8a73ecb188c">hls_params</a>)</td></tr>
+<tr class="separator:aeff7cc5e10b69f1338df5135cd446ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bd9273a1893899036e640c1e35fbaff"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a8bd9273a1893899036e640c1e35fbaff">Init</a> ()=0</td></tr>
 <tr class="separator:a8bd9273a1893899036e640c1e35fbaff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b85f6e4c2798f2634cd535011c230a2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a2b85f6e4c2798f2634cd535011c230a2">NotifyNewStream</a> (const MediaInfo &amp;media_info, const std::string &amp;playlist_name, const std::string &amp;stream_name, const std::string &amp;group_id, uint32_t *stream_id)=0</td></tr>
@@ -98,8 +98,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a310fadabce7f3ac4a3313631340b880f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d788d47d01aee4f75c7b55251d69edf"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a5d788d47d01aee4f75c7b55251d69edf">Flush</a> ()=0</td></tr>
 <tr class="separator:a5d788d47d01aee4f75c7b55251d69edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55ffbb2f446eb5a2affd9f75c845674d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">HlsPlaylistType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a55ffbb2f446eb5a2affd9f75c845674d">playlist_type</a> () const</td></tr>
-<tr class="separator:a55ffbb2f446eb5a2affd9f75c845674d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56af7fda2e9c5e1d376ba8a73ecb188c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html">HlsParams</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a56af7fda2e9c5e1d376ba8a73ecb188c">hls_params</a> () const</td></tr>
+<tr class="separator:a56af7fda2e9c5e1d376ba8a73ecb188c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -130,6 +130,34 @@ Public Member Functions</h2></td></tr>
 <p>Process any current buffered states/resources. </p><dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#a153fe931c8e6fe3e585ebd925d75d229">shaka::hls::SimpleHlsNotifier</a>.</p>
+
+</div>
+</div>
+<a id="a56af7fda2e9c5e1d376ba8a73ecb188c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56af7fda2e9c5e1d376ba8a73ecb188c">&#9670;&nbsp;</a></span>hls_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html">HlsParams</a>&amp; shaka::hls::HlsNotifier::hls_params </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The HLS parameters. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html#l00095">95</a> of file <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html">hls_notifier.h</a>.</p>
 
 </div>
 </div>
@@ -472,41 +500,13 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a55ffbb2f446eb5a2affd9f75c845674d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55ffbb2f446eb5a2affd9f75c845674d">&#9670;&nbsp;</a></span>playlist_type()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d">HlsPlaylistType</a> shaka::hls::HlsNotifier::playlist_type </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>the playlist type. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html#l00096">96</a> of file <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html">hls_notifier.h</a>.</p>
-
-</div>
-</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>packager/hls/base/<a class="el" href="../../d1/d1e/hls__notifier_8h_source.html">hls_notifier.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:46 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

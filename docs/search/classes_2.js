@@ -21,7 +21,7 @@ var searchData=
   ['contentencoding',['ContentEncoding',['../dc/da6/classshaka_1_1media_1_1ContentEncoding.html',1,'shaka::media']]],
   ['contentprotectionelement',['ContentProtectionElement',['../da/d43/structshaka_1_1ContentProtectionElement.html',1,'shaka']]],
   ['continuitycounter',['ContinuityCounter',['../d8/dd6/classshaka_1_1media_1_1mp2t_1_1ContinuityCounter.html',1,'shaka::media::mp2t']]],
-  ['cue',['Cue',['../dd/dce/structshaka_1_1media_1_1Cue.html',1,'shaka::media']]],
+  ['cuealignmenthandler',['CueAlignmentHandler',['../da/dab/classshaka_1_1media_1_1CueAlignmentHandler.html',1,'shaka::media']]],
   ['cueevent',['CueEvent',['../da/d93/structshaka_1_1media_1_1CueEvent.html',1,'shaka::media']]],
   ['cueeventinfo',['CueEventInfo',['../d6/d46/structshaka_1_1media_1_1CueEventInfo.html',1,'shaka::media']]],
   ['cueidbox',['CueIDBox',['../d5/d09/structshaka_1_1media_1_1mp4_1_1CueIDBox.html',1,'shaka::media::mp4']]],

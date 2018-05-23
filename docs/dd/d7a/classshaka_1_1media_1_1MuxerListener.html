@@ -100,14 +100,15 @@ Public Types</h2></td></tr>
 <b>kContainerMpeg2ts</b>, 
 <b>kContainerWebM</b>, 
 <br />
-&#160;&#160;<b>kContainerText</b>
+&#160;&#160;<b>kContainerText</b>, 
+<b>kContainerPackedAudio</b>
 <br />
  }</td></tr>
 <tr class="separator:a6e15ef9264cd3edbfef748d626dd91ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab521acca727bbe01aa15c751325c0001"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab521acca727bbe01aa15c751325c0001">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info)=0</td></tr>
+<tr class="memitem:ab521acca727bbe01aa15c751325c0001"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab521acca727bbe01aa15c751325c0001">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info)=0</td></tr>
 <tr class="separator:ab521acca727bbe01aa15c751325c0001"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a897463091f0effa647a8e2822f48b2ee"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">OnEncryptionStart</a> ()=0</td></tr>
 <tr class="separator:a897463091f0effa647a8e2822f48b2ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,7 +163,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called when there is a new Ad <a class="el" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>, which should align with (sub)segments. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Called when there is a new Ad Cue, which should align with (sub)segments. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">timestamp</td><td>indicate the cue timestamp. </td></tr>
     <tr><td class="paramname">cue_data</td><td>is the data of the cue. </td></tr>
@@ -210,7 +211,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>key_system_info</em>&#160;</td>
         </tr>
         <tr>
@@ -522,7 +523,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:11:00 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['bandwidthestimator',['BandwidthEstimator',['../d2/d6f/classBandwidthEstimator.html',1,'']]],
+  ['bandwidthestimator',['BandwidthEstimator',['../da/d2c/classshaka_1_1BandwidthEstimator.html',1,'shaka']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html',1,'shaka::media']]],
   ['bitwriter',['BitWriter',['../dc/d76/classshaka_1_1media_1_1BitWriter.html',1,'shaka::media']]],
   ['blockreader',['BlockReader',['../df/d0d/classshaka_1_1media_1_1BlockReader.html',1,'shaka::media']]],

@@ -82,10 +82,15 @@ static mpd regardless of the value of this flag.</td></tr>
 </tr>
 <tr><td>&#160;</td><td>MPD output file name.</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--base_urls <var>&lt;comma separated url&gt;</var></span></kbd></td>
+<kbd><span class="option">--base_urls <var>&lt;comma_separated_urls&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Comma separated BaseURLs for the MPD. The values will be added  as &lt;BaseURL&gt;
-element(s) immediately under the &lt;MPD&gt; element.</td></tr>
+<tr><td>&#160;</td><td><dl class="first docutils">
+<dt>Comma separated BaseURLs for the MPD:</dt>
+<dd><strong>&lt;url&gt;[,&lt;url&gt;]…</strong>.</dd>
+</dl>
+<p class="last">The values will be added as &lt;BaseURL&gt; element(s) immediately under the &lt;MPD&gt;
+element.</p>
+</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--min_buffer_time <var>&lt;seconds&gt;</var></span></kbd></td>
 </tr>
@@ -107,11 +112,43 @@ This value is used for dynamic MPD only.</td></tr>
 <tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
 presentations, in seconds.</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
+above) are automatically removed except for the most recent X segments
+defined by this parameter. This is needed to accommodate latencies in
+various stages of content serving pipeline, so that the segments stay
+accessible as they may still be accessed by the player.</p>
+<p class="last">The segments are not removed if the value is zero.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--utc_timing <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><dl class="first docutils">
+<dt>Comma separated UTCTiming schemeIdUri and value pairs for the MPD:</dt>
+<dd><strong>&lt;scheme_id_uri&gt;=&lt;value&gt;[,&lt;scheme_id_uri&gt;=&lt;value&gt;]…</strong></dd>
+</dl>
+<p class="last">This value is used for dynamic MPD only.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Any audio/text tracks tagged with this language will have
 &lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
 choose the correct default language for the content.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--allow_approximate_segment_timeline</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">For live profile only.</p>
+<p>If enabled, segments with close duration (i.e. with difference less than
+one sample) are considered to have the same duration. This enables
+MPD generator to generate less SegmentTimeline entries. If all segments
+are of the same duration except the last one, we will do further
+optimization to use <a class="reference external" href="mailto:SegmentTemplate&#37;&#52;&#48;duration">SegmentTemplate<span>&#64;</span>duration</a> instead and omit
+SegmentTimeline completely.</p>
+<p class="last">Ignored if $Time$ is used in segment template, since $Time$ requires
+accurate Segment Timeline.</p>
+</td></tr>
 </tbody>
 </table>
 </div>

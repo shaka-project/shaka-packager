@@ -83,8 +83,8 @@ Inheritance diagram for shaka::media::WidevineKeySource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a93480a98e423d0456482844ac629bd2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a93480a98e423d0456482844ac629bd2e">WidevineKeySource</a> (const std::string &amp;server_url, bool add_common_pssh)</td></tr>
-<tr class="separator:a93480a98e423d0456482844ac629bd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdd5fdb275505b6ea352978958b09b60"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#afdd5fdb275505b6ea352978958b09b60">WidevineKeySource</a> (const std::string &amp;server_url, int protection_systems_flags)</td></tr>
+<tr class="separator:afdd5fdb275505b6ea352978958b09b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fb9680be887d3b9367e015029f909f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a6fb9680be887d3b9367e015029f909f2">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</td></tr>
 <tr class="separator:a6fb9680be887d3b9367e015029f909f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a80dce958737dd984f3dfd3722a570e"><td class="memItemLeft" align="right" valign="top"><a id="a1a80dce958737dd984f3dfd3722a570e"></a>
@@ -98,6 +98,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="memitem:af09d7590d0326c0958b0594cacf12ad6"><td class="memItemLeft" align="right" valign="top"><a id="af09d7590d0326c0958b0594cacf12ad6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (const std::vector&lt; uint8_t &gt; &amp;group_id)</td></tr>
 <tr class="separator:af09d7590d0326c0958b0594cacf12ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c3184b7e345f5529bea0158f850113"><td class="memItemLeft" align="right" valign="top"><a id="a47c3184b7e345f5529bea0158f850113"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_enable_entitlement_license</b> (bool enable_entitlement_license)</td></tr>
+<tr class="separator:a47c3184b7e345f5529bea0158f850113"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">KeySource implementation overrides.</div></td></tr>
 <tr class="memitem:aeea3e62921c176aa6be1f0a95f03b6cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#aeea3e62921c176aa6be1f0a95f03b6cf">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data) override</td></tr>
 <tr class="separator:aeea3e62921c176aa6be1f0a95f03b6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,14 +110,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 <tr class="separator:a59699cd998290adae74e6596ba44fdc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a783cd4a9bf35fe2a7a610806bfda8e62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a783cd4a9bf35fe2a7a610806bfda8e62">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:a783cd4a9bf35fe2a7a610806bfda8e62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
+<tr class="memitem:a8f16841c5d413f7fa09502a31c2db61d inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a id="a8f16841c5d413f7fa09502a31c2db61d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags)</td></tr>
+<tr class="separator:a8f16841c5d413f7fa09502a31c2db61d inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
+<tr class="memitem:a8cb007e01d91f38d64cad4ba47f1208a inherit pro_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a8cb007e01d91f38d64cad4ba47f1208a">UpdateProtectionSystemInfo</a> (EncryptionKeyMap *encryption_key_map)</td></tr>
+<tr class="separator:a8cb007e01d91f38d64cad4ba47f1208a inherit pro_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html">WidevineKeySource</a> talks to the Widevine encryption service to acquire the encryption keys. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html#l00031">31</a> of file <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html">widevine_key_source.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html#l00029">29</a> of file <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html">widevine_key_source.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a93480a98e423d0456482844ac629bd2e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a93480a98e423d0456482844ac629bd2e">&#9670;&nbsp;</a></span>WidevineKeySource()</h2>
+<a id="afdd5fdb275505b6ea352978958b09b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdd5fdb275505b6ea352978958b09b60">&#9670;&nbsp;</a></span>WidevineKeySource()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -128,8 +141,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>add_common_pssh</em>&#160;</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>protection_systems_flags</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -141,11 +154,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">server_url</td><td>is the Widevine common encryption server url. </td></tr>
+    <tr><td class="paramname">proteciton_systems_flags</td><td>is the flags indicating which PSSH should be included. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00130">130</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00080">80</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -194,7 +208,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00181">181</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00125">125</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -232,7 +246,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00158">158</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00110">110</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -287,7 +301,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00264">264</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00211">211</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -335,7 +349,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00240">240</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00187">187</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -383,7 +397,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00251">251</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00198">198</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -409,7 +423,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00290">290</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00237">237</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -435,7 +449,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00286">286</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html#l00233">233</a> of file <a class="el" href="../../d5/d89/widevine__key__source_8cc_source.html">widevine_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -446,7 +460,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_group_id</b> (con
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:56 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:11:07 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

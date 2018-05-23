@@ -89,7 +89,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acee68189d58b4a0e28f778a54f6738cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#acee68189d58b4a0e28f778a54f6738cb">HlsNotifyMuxerListener</a> (const std::string &amp;playlist_name, bool iframes_only, const std::string &amp;ext_x_media_name, const std::string &amp;ext_x_media_group_id, <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html">hls::HlsNotifier</a> *hls_notifier)</td></tr>
 <tr class="separator:acee68189d58b4a0e28f778a54f6738cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
-<tr class="memitem:a8be7a524212bdd401150aa6bcb374792"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a8be7a524212bdd401150aa6bcb374792">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
+<tr class="memitem:a8be7a524212bdd401150aa6bcb374792"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a8be7a524212bdd401150aa6bcb374792">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
 <tr class="separator:a8be7a524212bdd401150aa6bcb374792"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49b4187f39abe517768364f7ecb280f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a49b4187f39abe517768364f7ecb280f9">OnEncryptionStart</a> () override</td></tr>
 <tr class="separator:a49b4187f39abe517768364f7ecb280f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,7 +115,8 @@ Additional Inherited Members</h2></td></tr>
 <b>kContainerMpeg2ts</b>, 
 <b>kContainerWebM</b>, 
 <br />
-&#160;&#160;<b>kContainerText</b>
+&#160;&#160;<b>kContainerText</b>, 
+<b>kContainerPackedAudio</b>
 <br />
  }</td></tr>
 <tr class="separator:a6e15ef9264cd3edbfef748d626dd91ae inherit pub_types_classshaka_1_1media_1_1MuxerListener"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,7 +124,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> that uses HlsNotifier. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8a/hls__notify__muxer__listener_8h_source.html#l00025">25</a> of file <a class="el" href="../../d2/d8a/hls__notify__muxer__listener_8h_source.html">hls_notify_muxer_listener.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8a/hls__notify__muxer__listener_8h_source.html#l00027">27</a> of file <a class="el" href="../../d2/d8a/hls__notify__muxer__listener_8h_source.html">hls_notify_muxer_listener.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="acee68189d58b4a0e28f778a54f6738cb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acee68189d58b4a0e28f778a54f6738cb">&#9670;&nbsp;</a></span>HlsNotifyMuxerListener()</h2>
@@ -217,7 +218,7 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called when there is a new Ad <a class="el" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>, which should align with (sub)segments. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Called when there is a new Ad Cue, which should align with (sub)segments. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">timestamp</td><td>indicate the cue timestamp. </td></tr>
     <tr><td class="paramname">cue_data</td><td>is the data of the cue. </td></tr>
@@ -227,7 +228,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab241c43b2de818758b340cba9cc7c9ae">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00236">236</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00240">240</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -267,7 +268,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>key_system_info</em>&#160;</td>
         </tr>
         <tr>
@@ -378,7 +379,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a1276239a5fd8f86fd522b8c2b741904f">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00219">219</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00223">223</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -425,7 +426,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00120">120</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00124">124</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -486,7 +487,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00084">84</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00083">83</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -547,7 +548,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00200">200</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00204">204</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -583,7 +584,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00118">118</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00122">122</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -594,7 +595,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:49 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:57 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -87,10 +87,10 @@ Inheritance diagram for shaka::media::PlayReadyKeySource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2d85b64ad09aec73b84a26071a9c059e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a2d85b64ad09aec73b84a26071a9c059e">PlayReadyKeySource</a> (const std::string &amp;server_url)</td></tr>
-<tr class="separator:a2d85b64ad09aec73b84a26071a9c059e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11f5940080bf569c4c3dca1fe4bd9ce1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a11f5940080bf569c4c3dca1fe4bd9ce1">PlayReadyKeySource</a> (const std::string &amp;server_url, const std::string &amp;client_cert_file, const std::string &amp;client_cert_private_key_file, const std::string &amp;client_cert_private_key_password)</td></tr>
-<tr class="separator:a11f5940080bf569c4c3dca1fe4bd9ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0469af64099c7382bcc4bd1647bbc9db"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0469af64099c7382bcc4bd1647bbc9db">PlayReadyKeySource</a> (const std::string &amp;server_url, int protection_scheme_flags)</td></tr>
+<tr class="separator:a0469af64099c7382bcc4bd1647bbc9db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53b8fc494e59b372dd2322b20f39e5fc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a53b8fc494e59b372dd2322b20f39e5fc">PlayReadyKeySource</a> (const std::string &amp;server_url, const std::string &amp;client_cert_file, const std::string &amp;client_cert_private_key_file, const std::string &amp;client_cert_private_key_password, int protection_scheme_flags)</td></tr>
+<tr class="separator:a53b8fc494e59b372dd2322b20f39e5fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5efb834e8fc43340767a56519908637"><td class="memItemLeft" align="right" valign="top"><a id="ae5efb834e8fc43340767a56519908637"></a>
 virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>FetchKeysWithProgramIdentifier</b> (const std::string &amp;program_identifier)</td></tr>
 <tr class="separator:ae5efb834e8fc43340767a56519908637"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,19 +107,29 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:a41c393f477ff4b723aa448b35e9ee896"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af53a97f0812b07e766c83e128b807c01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:af53a97f0812b07e766c83e128b807c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
+<tr class="memitem:a8f16841c5d413f7fa09502a31c2db61d inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a id="a8f16841c5d413f7fa09502a31c2db61d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags)</td></tr>
+<tr class="separator:a8f16841c5d413f7fa09502a31c2db61d inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a76f18b778d83492e5b7ed90637124b2c"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a76f18b778d83492e5b7ed90637124b2c">CreateFromKeyAndKeyId</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key)</td></tr>
-<tr class="separator:a76f18b778d83492e5b7ed90637124b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d2c2abf7deb4ea04aa11b268155c50b"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a4d2c2abf7deb4ea04aa11b268155c50b">CreateFromKeyAndKeyId</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;key)</td></tr>
+<tr class="separator:a4d2c2abf7deb4ea04aa11b268155c50b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
+<tr class="memitem:a8cb007e01d91f38d64cad4ba47f1208a inherit pro_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a8cb007e01d91f38d64cad4ba47f1208a">UpdateProtectionSystemInfo</a> (EncryptionKeyMap *encryption_key_map)</td></tr>
+<tr class="separator:a8cb007e01d91f38d64cad4ba47f1208a inherit pro_methods_classshaka_1_1media_1_1KeySource"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A key source that uses playready for encryption. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d00/playready__key__source_8h_source.html#l00024">24</a> of file <a class="el" href="../../df/d00/playready__key__source_8h_source.html">playready_key_source.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d00/playready__key__source_8h_source.html#l00020">20</a> of file <a class="el" href="../../df/d00/playready__key__source_8h_source.html">playready_key_source.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2d85b64ad09aec73b84a26071a9c059e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d85b64ad09aec73b84a26071a9c059e">&#9670;&nbsp;</a></span>PlayReadyKeySource() <span class="overload">[1/2]</span></h2>
+<a id="a0469af64099c7382bcc4bd1647bbc9db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0469af64099c7382bcc4bd1647bbc9db">&#9670;&nbsp;</a></span>PlayReadyKeySource() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -128,24 +138,35 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">shaka::media::PlayReadyKeySource::PlayReadyKeySource </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>server_url</em></td><td>)</td>
+          <td class="paramname"><em>server_url</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>protection_scheme_flags</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Creates a new <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html" title="A key source that uses playready for encryption. ">PlayReadyKeySource</a> from the given packaging information. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">server_url</td><td>PlayReady packaging server url. </td></tr>
+    <tr><td class="paramname">proteciton_systems_flags</td><td>is the flags indicating which PSSH should be included. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00160">160</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00063">63</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
-<a id="a11f5940080bf569c4c3dca1fe4bd9ce1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11f5940080bf569c4c3dca1fe4bd9ce1">&#9670;&nbsp;</a></span>PlayReadyKeySource() <span class="overload">[2/2]</span></h2>
+<a id="a53b8fc494e59b372dd2322b20f39e5fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53b8fc494e59b372dd2322b20f39e5fc">&#9670;&nbsp;</a></span>PlayReadyKeySource() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -172,7 +193,13 @@ Static Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>client_cert_private_key_password</em>&#160;</td>
+          <td class="paramname"><em>client_cert_private_key_password</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>protection_scheme_flags</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -187,17 +214,18 @@ Static Public Member Functions</h2></td></tr>
     <tr><td class="paramname">client_cert_file</td><td>absolute path to a client certificate. </td></tr>
     <tr><td class="paramname">client_cert_private_key_file</td><td>absolute path to the private file for the client certificate. </td></tr>
     <tr><td class="paramname">client_cert_private_key_password</td><td>password for the private key. </td></tr>
+    <tr><td class="paramname">proteciton_systems_flags</td><td>is the flags indicating which PSSH should be included. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00166">166</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00070">70</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a76f18b778d83492e5b7ed90637124b2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76f18b778d83492e5b7ed90637124b2c">&#9670;&nbsp;</a></span>CreateFromKeyAndKeyId()</h2>
+<a id="a4d2c2abf7deb4ea04aa11b268155c50b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d2c2abf7deb4ea04aa11b268155c50b">&#9670;&nbsp;</a></span>CreateFromKeyAndKeyId()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,7 +234,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt; <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a> &gt; shaka::media::PlayReadyKeySource::CreateFromKeyAndKeyId </td>
+          <td class="memname">static std::unique_ptr&lt;<a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html">PlayReadyKeySource</a>&gt; shaka::media::PlayReadyKeySource::CreateFromKeyAndKeyId </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>key_id</em>, </td>
@@ -230,8 +258,6 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Creates a new <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html" title="A key source that uses playready for encryption. ">PlayReadyKeySource</a> from the given data. Returns null if the strings are invalid. Note: GetKey on the created key source will always return the same key for all track types. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00184">184</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -279,7 +305,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00306">306</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00200">200</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -334,7 +360,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00333">333</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00227">227</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -382,7 +408,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00312">312</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00206">206</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -430,7 +456,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">shaka::media::KeySource</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00323">323</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00217">217</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -441,7 +467,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:11:00 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

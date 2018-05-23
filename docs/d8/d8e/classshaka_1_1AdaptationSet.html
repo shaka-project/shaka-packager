@@ -103,8 +103,8 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a124e3c1ba5e3209f3214a556ecae28c3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a124e3c1ba5e3209f3214a556ecae28c3">AddRepresentation</a> (const MediaInfo &amp;media_info)</td></tr>
 <tr class="separator:a124e3c1ba5e3209f3214a556ecae28c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36be389c5d0120b4c798f3046da5af8a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a36be389c5d0120b4c798f3046da5af8a">CopyRepresentationWithTimeOffset</a> (const <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> &amp;representation, uint64_t presentation_time_offset)</td></tr>
-<tr class="separator:a36be389c5d0120b4c798f3046da5af8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48a144f36f6ba4736f683f102582fabc"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a48a144f36f6ba4736f683f102582fabc">CopyRepresentation</a> (const <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> &amp;representation)</td></tr>
+<tr class="separator:a48a144f36f6ba4736f683f102582fabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28c52febc71a581ebec2c1308f6ea15c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a28c52febc71a581ebec2c1308f6ea15c">AddContentProtectionElement</a> (const <a class="el" href="../../da/d43/structshaka_1_1ContentProtectionElement.html">ContentProtectionElement</a> &amp;element)</td></tr>
 <tr class="separator:a28c52febc71a581ebec2c1308f6ea15c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8a28838bf1bbc1ad8f5b80961fe33c2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#ae8a28838bf1bbc1ad8f5b80961fe33c2">UpdateContentProtectionPssh</a> (const std::string &amp;drm_uuid, const std::string &amp;pssh)</td></tr>
@@ -115,8 +115,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af988e3a6d8b0d3ede66e3f3aea992d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40532ecbed5f71de85bde0cb7eb1ef9d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a40532ecbed5f71de85bde0cb7eb1ef9d">ForceSetSegmentAlignment</a> (bool segment_alignment)</td></tr>
 <tr class="separator:a40532ecbed5f71de85bde0cb7eb1ef9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af934da43aef6260e7e7a469d9f796661"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#af934da43aef6260e7e7a469d9f796661">AddAdaptationSetSwitching</a> (uint32_t adaptation_set_id)</td></tr>
-<tr class="separator:af934da43aef6260e7e7a469d9f796661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a979cef296d0e67c271641a0c3146e8f3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a979cef296d0e67c271641a0c3146e8f3">AddAdaptationSetSwitching</a> (const <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> *adaptation_set)</td></tr>
+<tr class="separator:a979cef296d0e67c271641a0c3146e8f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c4f483919b62a28c3a9061b3384f68b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a4c4f483919b62a28c3a9061b3384f68b">has_id</a> () const</td></tr>
+<tr class="separator:a4c4f483919b62a28c3a9061b3384f68b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a960b899f0badc0b1623220e1caaa76eb"><td class="memItemLeft" align="right" valign="top"><a id="a960b899f0badc0b1623220e1caaa76eb"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>id</b> () const</td></tr>
 <tr class="separator:a960b899f0badc0b1623220e1caaa76eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,16 +128,18 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>id</b> () const</
 <tr class="separator:afcfb8f59204f6ec2f5dcd9cbd81dddf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37904780833b552b7f95f124ffd10456"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a37904780833b552b7f95f124ffd10456">OnSetFrameRateForRepresentation</a> (uint32_t representation_id, uint32_t frame_duration, uint32_t timescale)</td></tr>
 <tr class="separator:a37904780833b552b7f95f124ffd10456"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77c5aeacd170e402d2d37d3bf3956833"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a77c5aeacd170e402d2d37d3bf3956833">AddTrickPlayReferenceId</a> (uint32_t id)</td></tr>
-<tr class="separator:a77c5aeacd170e402d2d37d3bf3956833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834d1c61e34db517169b802b8a11eeda"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a834d1c61e34db517169b802b8a11eeda">AddTrickPlayReference</a> (const <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> *adaptation_set)</td></tr>
+<tr class="separator:a834d1c61e34db517169b802b8a11eeda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4acfcdbaf3fbd87982398cfb14c5616c"><td class="memItemLeft" align="right" valign="top"><a id="a4acfcdbaf3fbd87982398cfb14c5616c"></a>
 const std::list&lt; <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetRepresentations</b> () const</td></tr>
 <tr class="separator:a4acfcdbaf3fbd87982398cfb14c5616c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9642eb0276b8f455d096c2e380ab9ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#ac9642eb0276b8f455d096c2e380ab9ac">IsVideo</a> () const</td></tr>
+<tr class="separator:ac9642eb0276b8f455d096c2e380ab9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a78925e61038e8bbd776652a539edb129"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a78925e61038e8bbd776652a539edb129">AdaptationSet</a> (uint32_t adaptation_set_id, const std::string &amp;lang, const <a class="el" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a> &amp;mpd_options, base::AtomicSequenceNumber *representation_counter)</td></tr>
-<tr class="separator:a78925e61038e8bbd776652a539edb129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4e96321642dc738e5c21511746fcb1f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#ac4e96321642dc738e5c21511746fcb1f">AdaptationSet</a> (const std::string &amp;language, const <a class="el" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a> &amp;mpd_options, base::AtomicSequenceNumber *representation_counter)</td></tr>
+<tr class="separator:ac4e96321642dc738e5c21511746fcb1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -149,10 +153,10 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> class provides methods to add Representations and &lt;ContentProtection&gt; elements to the <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> element. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00037">37</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00038">38</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a78925e61038e8bbd776652a539edb129"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78925e61038e8bbd776652a539edb129">&#9670;&nbsp;</a></span>AdaptationSet()</h2>
+<a id="ac4e96321642dc738e5c21511746fcb1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4e96321642dc738e5c21511746fcb1f">&#9670;&nbsp;</a></span>AdaptationSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -163,14 +167,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
         <tr>
           <td class="memname">shaka::AdaptationSet::AdaptationSet </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>adaptation_set_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>lang</em>, </td>
+          <td class="paramname"><em>language</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -198,8 +196,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">adaptation_set_id</td><td>is an ID number for this <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. </td></tr>
-    <tr><td class="paramname">lang</td><td>is the language of this <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. Mainly relevant for audio. </td></tr>
+    <tr><td class="paramname">language</td><td>is the language of this <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. Mainly relevant for audio. </td></tr>
     <tr><td class="paramname">mpd_options</td><td>is the options for this MPD. </td></tr>
     <tr><td class="paramname">mpd_type</td><td>is the type of this MPD. </td></tr>
     <tr><td class="paramname">representation_counter</td><td>is a Counter for assigning ID numbers to <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>. It can not be NULL. </td></tr>
@@ -207,13 +204,13 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00170">170</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00169">169</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af934da43aef6260e7e7a469d9f796661"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af934da43aef6260e7e7a469d9f796661">&#9670;&nbsp;</a></span>AddAdaptationSetSwitching()</h2>
+<a id="a979cef296d0e67c271641a0c3146e8f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a979cef296d0e67c271641a0c3146e8f3">&#9670;&nbsp;</a></span>AddAdaptationSetSwitching()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -224,8 +221,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
         <tr>
           <td class="memname">void shaka::AdaptationSet::AddAdaptationSetSwitching </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>adaptation_set_id</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> *&#160;</td>
+          <td class="paramname"><em>adaptation_set</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -235,14 +232,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Adds the id of the adaptation set this adaptation set can switch to. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Adds the adaptation set this adaptation set can switch to. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">adaptation_set_id</td><td>is the id of the switchable adaptation set. </td></tr>
+    <tr><td class="paramname">adaptation_set</td><td>points to the switchable adaptation set. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00347">347</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00346">346</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -276,7 +273,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00220">220</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00216">216</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -311,7 +308,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>On success, returns a pointer to <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>. Otherwise returns NULL. The returned pointer is owned by the <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> instance. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00185">185</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00182">182</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -345,12 +342,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00232">232</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00228">228</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
-<a id="a77c5aeacd170e402d2d37d3bf3956833"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77c5aeacd170e402d2d37d3bf3956833">&#9670;&nbsp;</a></span>AddTrickPlayReferenceId()</h2>
+<a id="a834d1c61e34db517169b802b8a11eeda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834d1c61e34db517169b802b8a11eeda">&#9670;&nbsp;</a></span>AddTrickPlayReference()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -359,10 +356,10 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void shaka::AdaptationSet::AddTrickPlayReferenceId </td>
+          <td class="memname">void shaka::AdaptationSet::AddTrickPlayReference </td>
           <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>id</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> *&#160;</td>
+          <td class="paramname"><em>adaptation_set</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -372,9 +369,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Add the id of the adaptation set this trick play adaptation set belongs to. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Add the adaptation set this trick play adaptation set belongs to. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">id</td><td>the id of the reference (or main) adapation set. </td></tr>
+    <tr><td class="paramname">adaptation_set</td><td>points to the reference (or main) adapation set. </td></tr>
   </table>
   </dd>
 </dl>
@@ -383,8 +380,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 
 </div>
 </div>
-<a id="a36be389c5d0120b4c798f3046da5af8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36be389c5d0120b4c798f3046da5af8a">&#9670;&nbsp;</a></span>CopyRepresentationWithTimeOffset()</h2>
+<a id="a48a144f36f6ba4736f683f102582fabc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48a144f36f6ba4736f683f102582fabc">&#9670;&nbsp;</a></span>CopyRepresentation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -393,21 +390,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> * shaka::AdaptationSet::CopyRepresentationWithTimeOffset </td>
+          <td class="memname"><a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> * shaka::AdaptationSet::CopyRepresentation </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> &amp;&#160;</td>
-          <td class="paramname"><em>representation</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>representation</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>presentation_time_offset</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -419,13 +406,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 <p>Copy a <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> instance from <em>representation</em> in another <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. One use case is to duplicate <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> in different periods. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">representation</td><td>is an existing <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> to be cloned from. </td></tr>
-    <tr><td class="paramname">presentation_time_offset</td><td>is the presentation time offset for the new <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> instance. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>On success, returns a pointer to <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>. Otherwise returns NULL. The returned pointer is owned by the <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> instance. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00204">204</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00201">201</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -459,7 +445,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00341">341</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00340">340</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -479,7 +465,55 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><div class="memdoc">
 <p>Makes a copy of <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> xml element with its child <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> and ContentProtection elements. </p><dl class="section return"><dt>Returns</dt><dd>On success returns a non-NULL scoped_xml_ptr. Otherwise returns a NULL scoped_xml_ptr. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00242">242</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00238">238</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+
+</div>
+</div>
+<a id="a4c4f483919b62a28c3a9061b3384f68b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c4f483919b62a28c3a9061b3384f68b">&#9670;&nbsp;</a></span>has_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::AdaptationSet::has_id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if id is set, false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00122">122</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
+
+</div>
+</div>
+<a id="ac9642eb0276b8f455d096c2e380ab9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9642eb0276b8f455d096c2e380ab9ac">&#9670;&nbsp;</a></span>IsVideo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::AdaptationSet::IsVideo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if it is a video <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00387">387</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -600,7 +634,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00128">128</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00129">129</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
 
 </div>
 </div>
@@ -646,7 +680,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </dl>
 <dl class="section attention"><dt>Attention</dt><dd>This might get removed once DASH IF IOP specification makes a a clear guideline on how to handle key rotation. Also to get this working with shaka-player, this method <em>DOES NOT</em> update the PSSH element. Instead, it removes the element regardless of the content of <em>pssh</em>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00226">226</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00222">222</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -657,7 +691,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:44 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:49 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -79,6 +79,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dfd/structshaka_1_1AdCueGeneratorParams.html">AdCueGeneratorParams</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="../../de/deb/structshaka_1_1Cuepoint.html">Cuepoint</a> generator related parameters.  <a href="../../dd/dfd/structshaka_1_1AdCueGeneratorParams.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d2c/classshaka_1_1BandwidthEstimator.html">BandwidthEstimator</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da8/structshaka_1_1BufferCallbackParams.html">BufferCallbackParams</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer callback params.  <a href="../../d9/da8/structshaka_1_1BufferCallbackParams.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,7 +152,7 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de1/classshaka_1_1Period.html">Period</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/df5/structshaka_1_1PlayreadyEncryptionParams.html">PlayreadyEncryptionParams</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d47/structshaka_1_1PlayReadyEncryptionParams.html">PlayReadyEncryptionParams</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/db4/structshaka_1_1RawKeyParams.html">RawKeyParams</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw key encryption/decryption parameters, i.e. with key parameters provided.  <a href="../../d0/db4/structshaka_1_1RawKeyParams.html#details">More...</a><br /></td></tr>
@@ -208,7 +210,7 @@ Enumerations</h2></td></tr>
 <tr class="separator:ab63a3c00cdbf61cfb6dd7a2497b26f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a539b99ce5c34193e294bc544437e9185"><td class="memItemLeft" align="right" valign="top"><a id="a539b99ce5c34193e294bc544437e9185"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a539b99ce5c34193e294bc544437e9185">KeyProvider</a> { <b>kNone</b> = 0, 
 <b>kWidevine</b> = 1, 
-<b>kPlayready</b> = 2, 
+<b>kPlayReady</b> = 2, 
 <b>kRawKey</b> = 3
  }<tr class="memdesc:a539b99ce5c34193e294bc544437e9185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encryption / decryption key providers. <br /></td></tr>
 </td></tr>
@@ -299,8 +301,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>AtLeastOneTrue</b> (b
 <tr class="memitem:a4bcee6af421b1475706656f20706cf42"><td class="memItemLeft" align="right" valign="top"><a id="a4bcee6af421b1475706656f20706cf42"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>OnlyOneTrue</b> (bool b1, bool b2, bool b3)</td></tr>
 <tr class="separator:a4bcee6af421b1475706656f20706cf42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adac592409e758489bad365323d070f31"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">DoubleToString</a> (double value)</td></tr>
-<tr class="separator:adac592409e758489bad365323d070f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c2ea2c3e7055657ca68a6b8e285d4d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a> (const std::string &amp;data, std::string *uuid_format)</td></tr>
 <tr class="separator:a4c2ea2c3e7055657ca68a6b8e285d4d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59fa73d86d8dfdfa58b6f1e52833a361"><td class="memItemLeft" align="right" valign="top"><a id="a59fa73d86d8dfdfa58b6f1e52833a361"></a>
@@ -406,7 +406,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00368">368</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00369">369</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
 
 </div>
 </div>
@@ -443,34 +443,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00373">373</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
-
-</div>
-</div>
-<a id="adac592409e758489bad365323d070f31"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adac592409e758489bad365323d070f31">&#9670;&nbsp;</a></span>DoubleToString()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string shaka::DoubleToString </td>
-          <td>(</td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>value</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Converts double to string. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">value</td><td>is the input double data. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>value formatted in string. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00197">197</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00374">374</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
 
 </div>
 </div>
@@ -534,7 +507,7 @@ const char&#160;</td><td class="memItemRight" valign="bottom"><b>kPsshElementNam
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00204">204</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html#l00205">205</a> of file <a class="el" href="../../db/dfb/mpd__utils_8cc_source.html">mpd_utils.cc</a>.</p>
 
 </div>
 </div>
@@ -774,7 +747,7 @@ template&lt;class FlagType &gt; </div>
 </div><div class="memdoc">
 <p>Validate PlayReady encryption flags. </p><dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00033">33</a> of file <a class="el" href="../../df/dfc/playready__key__encryption__flags_8cc_source.html">playready_key_encryption_flags.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/dfc/playready__key__encryption__flags_8cc_source.html#l00034">34</a> of file <a class="el" href="../../df/dfc/playready__key__encryption__flags_8cc_source.html">playready_key_encryption_flags.cc</a>.</p>
 
 </div>
 </div>
@@ -814,7 +787,7 @@ template&lt;class FlagType &gt; </div>
 </div><div class="memdoc">
 <p>Validate widevine encryption/decryption flags. </p><dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d42/widevine__encryption__flags_8cc_source.html#l00073">73</a> of file <a class="el" href="../../d0/d42/widevine__encryption__flags_8cc_source.html">widevine_encryption_flags.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d42/widevine__encryption__flags_8cc_source.html#l00071">71</a> of file <a class="el" href="../../d0/d42/widevine__encryption__flags_8cc_source.html">widevine_encryption_flags.cc</a>.</p>
 
 </div>
 </div>
@@ -858,7 +831,7 @@ template&lt;class FlagType &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:44 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:49 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

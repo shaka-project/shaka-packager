@@ -84,7 +84,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad831c8140c8031f4dc985f5602e4b831"><td class="memItemLeft" align="right" valign="top"><a id="ad831c8140c8031f4dc985f5602e4b831"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AddListener</b> (std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt; listener)</td></tr>
 <tr class="separator:ad831c8140c8031f4dc985f5602e4b831"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a445b97bf06c20a44ae5d0fef926cbd9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a445b97bf06c20a44ae5d0fef926cbd9f">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
+<tr class="memitem:a445b97bf06c20a44ae5d0fef926cbd9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a445b97bf06c20a44ae5d0fef926cbd9f">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
 <tr class="separator:a445b97bf06c20a44ae5d0fef926cbd9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40a2b9e923b6a6e255ee5632bffc1134"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a40a2b9e923b6a6e255ee5632bffc1134">OnEncryptionStart</a> () override</td></tr>
 <tr class="separator:a40a2b9e923b6a6e255ee5632bffc1134"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,7 +110,8 @@ Additional Inherited Members</h2></td></tr>
 <b>kContainerMpeg2ts</b>, 
 <b>kContainerWebM</b>, 
 <br />
-&#160;&#160;<b>kContainerText</b>
+&#160;&#160;<b>kContainerText</b>, 
+<b>kContainerPackedAudio</b>
 <br />
  }</td></tr>
 <tr class="separator:a6e15ef9264cd3edbfef748d626dd91ae inherit pub_types_classshaka_1_1media_1_1MuxerListener"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,7 +153,7 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called when there is a new Ad <a class="el" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>, which should align with (sub)segments. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Called when there is a new Ad Cue, which should align with (sub)segments. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">timestamp</td><td>indicate the cue timestamp. </td></tr>
     <tr><td class="paramname">cue_data</td><td>is the data of the cue. </td></tr>
@@ -202,7 +203,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="../../d0/d86/structshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>key_system_info</em>&#160;</td>
         </tr>
         <tr>
@@ -529,7 +530,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:48 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:55 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

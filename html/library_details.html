@@ -317,9 +317,9 @@
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams24generate_static_live_mpdE">
-<span id="shaka::MpdParams::generate_static_live_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1ab5a09b17ee41a0960e813bd0c72bf4f6"></span>bool <code class="descname">generate_static_live_mpd</code> = false<a class="headerlink" href="#_CPPv2N5shaka9MpdParams24generate_static_live_mpdE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Generate static MPD for live profile. Note that this flag has no effect for on-demand profile, in which case static MPD is always used. </p>
+<dt id="_CPPv2N5shaka9MpdParams21minimum_update_periodE">
+<span id="shaka::MpdParams::minimum_update_period__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a4a5dafe570fd7e35749ce12d83ca9559"></span>double <code class="descname">minimum_update_period</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams21minimum_update_periodE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set MPD attribute, which indicates to the player how often to refresh the MPD in seconds. For dynamic MPD only. </p>
 </dd></dl>
 
 <dl class="member">
@@ -329,9 +329,9 @@
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams21minimum_update_periodE">
-<span id="shaka::MpdParams::minimum_update_period__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a4a5dafe570fd7e35749ce12d83ca9559"></span>double <code class="descname">minimum_update_period</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams21minimum_update_periodE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set MPD attribute, which indicates to the player how often to refresh the MPD in seconds. For dynamic MPD only. </p>
+<dt id="_CPPv2N5shaka9MpdParams38preserved_segments_outside_live_windowE">
+<span id="shaka::MpdParams::preserved_segments_outside_live_window__s"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a84378ed480ed2e9b8915afd9c349b458"></span>size_t <code class="descname">preserved_segments_outside_live_window</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams38preserved_segments_outside_live_windowE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Segments outside the live window (defined by ‘time_shift_buffer_depth’ above) are automatically removed except for the most recent X segments defined by this parameter. This is needed to accommodate latencies in various stages of content serving pipeline, so that the segments stay accessible as they may still be accessed by the player. The segments are not removed if the value is zero. </p>
 </dd></dl>
 
 <dl class="member">
@@ -341,9 +341,21 @@
 </dd></dl>
 
 <dl class="member">
+<dt id="_CPPv2N5shaka9MpdParams24generate_static_live_mpdE">
+<span id="shaka::MpdParams::generate_static_live_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1ab5a09b17ee41a0960e813bd0c72bf4f6"></span>bool <code class="descname">generate_static_live_mpd</code> = false<a class="headerlink" href="#_CPPv2N5shaka9MpdParams24generate_static_live_mpdE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Generate static MPD for live profile. Note that this flag has no effect for on-demand profile, in which case static MPD is always used. </p>
+</dd></dl>
+
+<dl class="member">
 <dt id="_CPPv2N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE">
 <span id="shaka::MpdParams::generate_dash_if_iop_compliant_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aa1b2ec6746586d4981655cee62669ba2"></span>bool <code class="descname">generate_dash_if_iop_compliant_mpd</code> = true<a class="headerlink" href="#_CPPv2N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to generate DASH-IF IOP compliant MPD. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE">
+<span id="shaka::MpdParams::allow_approximate_segment_timeline__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1af4424dc23f81ff4000584db2866f24c9"></span>bool <code class="descname">allow_approximate_segment_timeline</code> = false<a class="headerlink" href="#_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>For live profile only. If enabled, segments with close duration (i.e. with difference less than one sample) are considered to have the same duration. This enables MPD generator to generate less SegmentTimeline entries. If all segments are of the same duration except the last one, we will do further optimization to use SegmentTemplate instead and omit SegmentTimeline completely. Ignored if $Time$ is used in segment template, since $Time$ requires accurate Segment Timeline. </p>
 </dd></dl>
 
 </div>
@@ -356,6 +368,12 @@
 </dd></dl>
 
 </div>
+<dl class="class">
+<dt id="_CPPv2N5shaka9MpdParams9UtcTimingE">
+<span id="shaka::MpdParams::UtcTiming"></span><span class="target" id="d3/d6e/structshaka_1_1MpdParams_1_1UtcTiming"></span><em class="property">struct </em><code class="descname">UtcTiming</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams9UtcTimingE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>UTCTimings. For dynamic MPD only. </p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -386,6 +404,12 @@
 <dt id="_CPPv2N5shaka9HlsParams23time_shift_buffer_depthE">
 <span id="shaka::HlsParams::time_shift_buffer_depth__double"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1adc19a9eebbfe20c3f9fe03dd452e4b1b"></span>double <code class="descname">time_shift_buffer_depth</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9HlsParams23time_shift_buffer_depthE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Defines the live window, or the guaranteed duration of the time shifting buffer for ‘live’ playlists. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka9HlsParams38preserved_segments_outside_live_windowE">
+<span id="shaka::HlsParams::preserved_segments_outside_live_window__s"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1aa471aaa93cb7c95996902648e376c2e6"></span>size_t <code class="descname">preserved_segments_outside_live_window</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9HlsParams38preserved_segments_outside_live_windowE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Segments outside the live window (defined by ‘time_shift_buffer_depth’ above) are automatically removed except for the most recent X segments defined by this parameter. This is needed to accommodate latencies in various stages of content serving pipeline, so that the segments stay accessible as they may still be accessed by the player. The segments are not removed if the value is zero. </p>
 </dd></dl>
 
 <dl class="member">
@@ -441,8 +465,8 @@
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka10kPlayreadyE">
-<span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a0ccb03800e1b8279005477c90719197f"></span><code class="descname">kPlayready</code> = 2<a class="headerlink" href="#_CPPv2N5shaka10kPlayreadyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv2N5shaka10kPlayReadyE">
+<span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185abb168dc0fb1aa1f4aca8a756f711e51f"></span><code class="descname">kPlayReady</code> = 2<a class="headerlink" href="#_CPPv2N5shaka10kPlayReadyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
@@ -525,12 +549,6 @@
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams19include_common_psshE">
-<span id="shaka::WidevineEncryptionParams::include_common_pssh__b"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a5985f2d6fbe33273654695050757d0b0"></span>bool <code class="descname">include_common_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams19include_common_psshE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Generates and includes an additional v1 PSSH box for the common system ID. See: <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>. </p>
-</dd></dl>
-
-<dl class="member">
 <dt id="_CPPv2N5shaka24WidevineEncryptionParams10content_idE">
 <span id="shaka::WidevineEncryptionParams::content_id__std::vector:uint8_t:"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a6b9770524a9507d0a9a3606ceef23075"></span>std::vector&lt;uint8_t&gt; <code class="descname">content_id</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams10content_idE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Content identifier. </p>
@@ -554,61 +572,55 @@
 <dd><p>Group identifier, if present licenses will belong to this group. </p>
 </dd></dl>
 
+<dl class="member">
+<dt id="_CPPv2N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE">
+<span id="shaka::WidevineEncryptionParams::enable_entitlement_license__b"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a47239bcc571757930ba89e8831013234"></span>bool <code class="descname">enable_entitlement_license</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enables entitlement license when set to true. </p>
+</dd></dl>
+
 </div>
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParamsE">
-<span id="shaka::PlayreadyEncryptionParams"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">PlayreadyEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Playready encryption parameters. Two different modes of playready key acquisition is supported: (1) Fetch from a key server. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. (2) Provide the raw key directly. Both <code class="docutils literal"><span class="pre">key_id</span></code> and <code class="docutils literal"><span class="pre">key</span></code> are required. We are planning to merge this mode with <code class="docutils literal"><span class="pre">RawKeyParams</span></code>. </p>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParamsE">
+<span id="shaka::PlayReadyEncryptionParams"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">PlayReadyEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>PlayReady encryption parameters. Two different modes of playready key acquisition is supported: (1) Fetch from a key server. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. (2) Provide the raw key directly. Both <code class="docutils literal"><span class="pre">key_id</span></code> and <code class="docutils literal"><span class="pre">key</span></code> are required. We are planning to merge this mode with <code class="docutils literal"><span class="pre">RawKeyParams</span></code>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams14key_server_urlE">
-<span id="shaka::PlayreadyEncryptionParams::key_server_url__ss"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1a3a31b3002f86834b1799279bf5b5fc11"></span>std::string <code class="descname">key_server_url</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Playready license / key server URL. </p>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams14key_server_urlE">
+<span id="shaka::PlayReadyEncryptionParams::key_server_url__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1ac5298ee04e36296e8dd4b7a56e8bc464"></span>std::string <code class="descname">key_server_url</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>PlayReady license / key server URL. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams18program_identifierE">
-<span id="shaka::PlayreadyEncryptionParams::program_identifier__ss"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1a74199b0293ca77eaac30aea53a9ec2aa"></span>std::string <code class="descname">program_identifier</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams18program_identifierE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Playready program identifier. </p>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams18program_identifierE">
+<span id="shaka::PlayReadyEncryptionParams::program_identifier__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a8716552505d244227bf93c4878071f2d"></span>std::string <code class="descname">program_identifier</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams18program_identifierE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>PlayReady program identifier. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams7ca_fileE">
-<span id="shaka::PlayreadyEncryptionParams::ca_file__ss"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1a745d002043a10ae7c01983fe5fe93846"></span>std::string <code class="descname">ca_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams7ca_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams7ca_fileE">
+<span id="shaka::PlayReadyEncryptionParams::ca_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1aff3107b2636f730056c6c5a673376226"></span>std::string <code class="descname">ca_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams7ca_fileE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Absolute path to the Certificate Authority file for the server cert in PEM format. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams16client_cert_fileE">
-<span id="shaka::PlayreadyEncryptionParams::client_cert_file__ss"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1afdc9477270b8a626163940cddff4fa8c"></span>std::string <code class="descname">client_cert_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams16client_cert_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams16client_cert_fileE">
+<span id="shaka::PlayReadyEncryptionParams::client_cert_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a8e3c7d3b038b602e09589e0fda0aad66"></span>std::string <code class="descname">client_cert_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams16client_cert_fileE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Absolute path to client certificate file. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams28client_cert_private_key_fileE">
-<span id="shaka::PlayreadyEncryptionParams::client_cert_private_key_file__ss"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1af6f3b909425a27e17a7d6e473d7eb8ac"></span>std::string <code class="descname">client_cert_private_key_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams28client_cert_private_key_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE">
+<span id="shaka::PlayReadyEncryptionParams::client_cert_private_key_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a63e0f55b12ef1a0305bd51315322b153"></span>std::string <code class="descname">client_cert_private_key_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Absolute path to the private key file. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams32client_cert_private_key_passwordE">
-<span id="shaka::PlayreadyEncryptionParams::client_cert_private_key_password__ss"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1a2d492f0c28b5d291ef512aa0248dc8ba"></span>std::string <code class="descname">client_cert_private_key_password</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams32client_cert_private_key_passwordE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE">
+<span id="shaka::PlayReadyEncryptionParams::client_cert_private_key_password__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a672dbcea4caa427b3fd83e1a2e329859"></span>std::string <code class="descname">client_cert_private_key_password</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Password to the private key file. </p>
-</dd></dl>
-
-<dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams6key_idE">
-<span id="shaka::PlayreadyEncryptionParams::key_id__std::vector:uint8_t:"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1a872107e40137be5a6c1f932db67c2a9d"></span>std::vector&lt;uint8_t&gt; <code class="descname">key_id</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams6key_idE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Provides a raw Playready KeyId. </p>
-</dd></dl>
-
-<dl class="member">
-<dt id="_CPPv2N5shaka25PlayreadyEncryptionParams3keyE">
-<span id="shaka::PlayreadyEncryptionParams::key__std::vector:uint8_t:"></span><span class="target" id="d3/df5/structshaka_1_1PlayreadyEncryptionParams_1a2ba545b465d64da1ac9458ba45338f76"></span>std::vector&lt;uint8_t&gt; <code class="descname">key</code><a class="headerlink" href="#_CPPv2N5shaka25PlayreadyEncryptionParams3keyE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Provides a raw Playready Key. </p>
 </dd></dl>
 
 </div>
@@ -632,6 +644,24 @@
 <dt id="_CPPv2N5shaka16EncryptionParams12key_providerE">
 <span id="shaka::EncryptionParams::key_provider__KeyProvider"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1adcf61ebf8d129a5bcf3f159b9b076eed"></span><a class="reference internal" href="#_CPPv2N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a> <code class="descname">key_provider</code> = KeyProvider::kNone<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams12key_providerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies the key provider, which determines which key provider is used and which encryption params is valid. ‘kNone’ means not to encrypt the streams. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka16EncryptionParams20generate_common_psshE">
+<span id="shaka::EncryptionParams::generate_common_pssh__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a43faba59aed96c5311c6432407c0c385"></span>bool <code class="descname">generate_common_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams20generate_common_psshE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When it is true, generate a v1 PSSH box for the common system ID. See: <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>. The flag is default to be true if enable_raw_key_encryption is set and no other pssh flags are specified. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka16EncryptionParams23generate_playready_psshE">
+<span id="shaka::EncryptionParams::generate_playready_pssh__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1ab68c561d374950d61d3507a2221b5a87"></span>bool <code class="descname">generate_playready_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams23generate_playready_psshE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When it is true, include a PlayReady PSSH box. A playready PSSH is always generated regardless of the value of generate_playready_pssh for enable_playready_encryption. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka16EncryptionParams22generate_widevine_psshE">
+<span id="shaka::EncryptionParams::generate_widevine_pssh__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1aea05bd8db0f473ce1466ebcacceb9881"></span>bool <code class="descname">generate_widevine_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams22generate_widevine_psshE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>When it is true, include a widevine PSSH box. A widevine PSSH is always generated regardless of the value of generate_widevine_pssh for enable_widevine_encryption. </p>
 </dd></dl>
 
 <dl class="member">

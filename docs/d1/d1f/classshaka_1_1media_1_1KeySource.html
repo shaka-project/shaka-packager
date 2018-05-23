@@ -64,6 +64,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="../../d2/d5b/classshaka_1_1media_1_1KeySource-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::media::KeySource Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -88,6 +89,9 @@ Inheritance diagram for shaka::media::KeySource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a8f16841c5d413f7fa09502a31c2db61d"><td class="memItemLeft" align="right" valign="top"><a id="a8f16841c5d413f7fa09502a31c2db61d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags)</td></tr>
+<tr class="separator:a8f16841c5d413f7fa09502a31c2db61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td></tr>
 <tr class="separator:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af56c833453d65297c4dc96c9d2f83e1a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a> (const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
@@ -96,11 +100,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34340247a575bc693d14c3bef9102258"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:a34340247a575bc693d14c3bef9102258"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a8cb007e01d91f38d64cad4ba47f1208a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a8cb007e01d91f38d64cad4ba47f1208a">UpdateProtectionSystemInfo</a> (EncryptionKeyMap *encryption_key_map)</td></tr>
+<tr class="separator:a8cb007e01d91f38d64cad4ba47f1208a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> is responsible for encryption key acquisition. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00045">45</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00050">50</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a38dc8e7c48f86e2b3ab3c1ffe0d7916f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">&#9670;&nbsp;</a></span>FetchKeys()</h2>
@@ -144,7 +153,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#a0849f7000c4ab37139cc9c9ea1a031f3">shaka::media::RawKeySource</a>, and <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#aeea3e62921c176aa6be1f0a95f03b6cf">shaka::media::WidevineKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a6311482a3f3ddec70da595f0dc1580ae">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#aeea3e62921c176aa6be1f0a95f03b6cf">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#a0849f7000c4ab37139cc9c9ea1a031f3">shaka::media::RawKeySource</a>.</p>
 
 </div>
 </div>
@@ -197,7 +206,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aa5b50bc57ebd9691db6fbed256cd763e">shaka::media::RawKeySource</a>, and <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a783cd4a9bf35fe2a7a610806bfda8e62">shaka::media::WidevineKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a783cd4a9bf35fe2a7a610806bfda8e62">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aa5b50bc57ebd9691db6fbed256cd763e">shaka::media::RawKeySource</a>.</p>
 
 </div>
 </div>
@@ -243,7 +252,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#a29b20968ba46f1ad3c206b8173fa6f7a">shaka::media::RawKeySource</a>, and <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ae7fa01a2f2f91e26e45b54146c929580">shaka::media::WidevineKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a0d2e038e477a5a2bc903292977fc65bd">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ae7fa01a2f2f91e26e45b54146c929580">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#a29b20968ba46f1ad3c206b8173fa6f7a">shaka::media::RawKeySource</a>.</p>
 
 </div>
 </div>
@@ -289,7 +298,41 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, or an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a41c393f477ff4b723aa448b35e9ee896">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aa5b34dcc690e695f64846a8293335967">shaka::media::RawKeySource</a>, and <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a59699cd998290adae74e6596ba44fdc3">shaka::media::WidevineKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a41c393f477ff4b723aa448b35e9ee896">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a59699cd998290adae74e6596ba44fdc3">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aa5b34dcc690e695f64846a8293335967">shaka::media::RawKeySource</a>.</p>
+
+</div>
+</div>
+<a id="a8cb007e01d91f38d64cad4ba47f1208a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb007e01d91f38d64cad4ba47f1208a">&#9670;&nbsp;</a></span>UpdateProtectionSystemInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a> shaka::media::KeySource::UpdateProtectionSystemInfo </td>
+          <td>(</td>
+          <td class="paramtype">EncryptionKeyMap *&#160;</td>
+          <td class="paramname"><em>encryption_key_map</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update the protection sysmtem specific info for the encryption keys. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">encryption_key_map</td><td>is a map of encryption keys for all tracks. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -300,7 +343,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:50 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:58 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

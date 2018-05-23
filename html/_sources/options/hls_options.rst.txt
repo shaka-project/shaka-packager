@@ -27,6 +27,16 @@ HLS options
     Guaranteed duration of the time shifting buffer for LIVE playlists, in
     seconds.
 
+--preserved_segments_outside_live_window <num_segments>
+
+    Segments outside the live window (defined by `time_shift_buffer_depth`
+    above) are automatically removed except for the most recent X segments
+    defined by this parameter. This is needed to accommodate latencies in
+    various stages of content serving pipeline, so that the segments stay
+    accessible as they may still be accessed by the player.
+
+    The segments are not removed if the value is zero.
+
 --default_language <language>
 
     The first audio/text rendition in a group tagged with this language will

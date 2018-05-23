@@ -2,6 +2,8 @@ var searchData=
 [
   ['tag',['Tag',['../d1/d7e/classshaka_1_1hls_1_1Tag.html',1,'shaka::hls']]],
   ['testparams',['TestParams',['../d6/d62/structshaka_1_1TestParams.html',1,'shaka']]],
+  ['textchunker',['TextChunker',['../d5/d3e/classshaka_1_1media_1_1TextChunker.html',1,'shaka::media']]],
+  ['textpadder',['TextPadder',['../d8/df8/classshaka_1_1media_1_1TextPadder.html',1,'shaka::media']]],
   ['textsample',['TextSample',['../db/d1f/classshaka_1_1media_1_1TextSample.html',1,'shaka::media']]],
   ['textsampleentry',['TextSampleEntry',['../d7/dc3/structshaka_1_1media_1_1mp4_1_1TextSampleEntry.html',1,'shaka::media::mp4']]],
   ['textstreaminfo',['TextStreamInfo',['../db/dab/classshaka_1_1media_1_1TextStreamInfo.html',1,'shaka::media']]],

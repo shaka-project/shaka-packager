@@ -89,6 +89,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>ReadBits</b> (size_t 
 <tr class="separator:a4ab20ef220c76072eaecb982aba0541d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98bbbbc849a3fadc1a136662174d470e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a98bbbbc849a3fadc1a136662174d470e">SkipBitsConditional</a> (bool condition, size_t num_bits)</td></tr>
 <tr class="separator:a98bbbbc849a3fadc1a136662174d470e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0b44ad45f2afcfecd23c64ae5644694"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ab0b44ad45f2afcfecd23c64ae5644694">SkipToNextByte</a> ()</td></tr>
+<tr class="separator:ab0b44ad45f2afcfecd23c64ae5644694"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d349253d5cc8f9aa33f1ca2ea94677c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a7d349253d5cc8f9aa33f1ca2ea94677c">SkipBytes</a> (size_t num_bytes)</td></tr>
 <tr class="separator:a7d349253d5cc8f9aa33f1ca2ea94677c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94b03de069b0054ee4a534b12644a986"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a94b03de069b0054ee4a534b12644a986">bits_available</a> () const</td></tr>
@@ -163,7 +165,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>ReadBits</b> (size_t 
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The current bit position. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00090">90</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00094">94</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
 
 </div>
 </div>
@@ -191,7 +193,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>ReadBits</b> (size_t 
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of bits available for reading. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00085">85</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00089">89</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
 
 </div>
 </div>
@@ -339,6 +341,26 @@ template&lt;typename T &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>false if the current position is not byte aligned or if the given number of bytes cannot be skipped (not enough bytes in the stream), true otherwise. </dd></dl>
 
+<p class="definition">Definition at line <a class="el" href="../../d5/de0/bit__reader_8cc_source.html#l00063">63</a> of file <a class="el" href="../../d5/de0/bit__reader_8cc_source.html">bit_reader.cc</a>.</p>
+
+</div>
+</div>
+<a id="ab0b44ad45f2afcfecd23c64ae5644694"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b44ad45f2afcfecd23c64ae5644694">&#9670;&nbsp;</a></span>SkipToNextByte()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::BitReader::SkipToNextByte </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Skip a number of bits so the stream is byte aligned to the initial data. There could be 0 to 7 bits skipped. </p>
+
 <p class="definition">Definition at line <a class="el" href="../../d5/de0/bit__reader_8cc_source.html#l00054">54</a> of file <a class="el" href="../../d5/de0/bit__reader_8cc_source.html">bit_reader.cc</a>.</p>
 
 </div>
@@ -350,7 +372,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:48 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:55 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

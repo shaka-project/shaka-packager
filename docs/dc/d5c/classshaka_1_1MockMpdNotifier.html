@@ -102,9 +102,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a04b7ece7b40d0d18cfe54041fc82f949"><td class="memItemLeft" align="right" valign="top"><a id="a04b7ece7b40d0d18cfe54041fc82f949"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD4</b> (<a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#acf6a0bde4fc907053cc9f1ff9a38b59a">NotifyEncryptionUpdate</a>, bool(uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh))</td></tr>
 <tr class="separator:a04b7ece7b40d0d18cfe54041fc82f949"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c55d2768ffc1bf38fd26bd3acb99e2d"><td class="memItemLeft" align="right" valign="top"><a id="a9c55d2768ffc1bf38fd26bd3acb99e2d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD2</b> (AddContentProtectionElement, bool(uint32_t container_id, const <a class="el" href="../../da/d43/structshaka_1_1ContentProtectionElement.html">ContentProtectionElement</a> &amp;content_protection_element))</td></tr>
-<tr class="separator:a9c55d2768ffc1bf38fd26bd3acb99e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6df99b4cc0b3aa787b52304bfb68998"><td class="memItemLeft" align="right" valign="top"><a id="ae6df99b4cc0b3aa787b52304bfb68998"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD2</b> (<a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">NotifyMediaInfoUpdate</a>, bool(uint32_t container_id, const MediaInfo &amp;media_info))</td></tr>
+<tr class="separator:ae6df99b4cc0b3aa787b52304bfb68998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44328a43b59bb7145f5d634c1f89ad7d"><td class="memItemLeft" align="right" valign="top"><a id="a44328a43b59bb7145f5d634c1f89ad7d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MOCK_METHOD0</b> (<a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a>, bool())</td></tr>
 <tr class="separator:a44328a43b59bb7145f5d634c1f89ad7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,6 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a74fed9807b9584387e5da5f0fd28d54d inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf6a0bde4fc907053cc9f1ff9a38b59a inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#acf6a0bde4fc907053cc9f1ff9a38b59a">NotifyEncryptionUpdate</a> (uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh)=0</td></tr>
 <tr class="separator:acf6a0bde4fc907053cc9f1ff9a38b59a inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d55e7b557c624954b4e05edf6bd83d1 inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">NotifyMediaInfoUpdate</a> (uint32_t container_id, const MediaInfo &amp;media_info)=0</td></tr>
+<tr class="separator:a4d55e7b557c624954b4e05edf6bd83d1 inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8149126f4793506bef385d067561dbf inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a> ()=0</td></tr>
 <tr class="separator:af8149126f4793506bef385d067561dbf inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28714ebd081aa9244aca2beb85c78d37 inherit pub_methods_classshaka_1_1MpdNotifier"><td class="memItemLeft" align="right" valign="top">DashProfile&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">dash_profile</a> () const</td></tr>
@@ -141,7 +143,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:45 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:50 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -96,6 +96,16 @@ omitted.</td></tr>
 <tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for LIVE playlists, in
 seconds.</td></tr>
 <tr><td class="option-group" colspan="2">
+<kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first">Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
+above) are automatically removed except for the most recent X segments
+defined by this parameter. This is needed to accommodate latencies in
+various stages of content serving pipeline, so that the segments stay
+accessible as they may still be accessed by the player.</p>
+<p class="last">The segments are not removed if the value is zero.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>The first audio/text rendition in a group tagged with this language will

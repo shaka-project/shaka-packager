@@ -99,6 +99,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a74fed9807b9584387e5da5f0fd28d54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf6a0bde4fc907053cc9f1ff9a38b59a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#acf6a0bde4fc907053cc9f1ff9a38b59a">NotifyEncryptionUpdate</a> (uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh)=0</td></tr>
 <tr class="separator:acf6a0bde4fc907053cc9f1ff9a38b59a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d55e7b557c624954b4e05edf6bd83d1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a4d55e7b557c624954b4e05edf6bd83d1">NotifyMediaInfoUpdate</a> (uint32_t container_id, const MediaInfo &amp;media_info)=0</td></tr>
+<tr class="separator:a4d55e7b557c624954b4e05edf6bd83d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8149126f4793506bef385d067561dbf"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#af8149126f4793506bef385d067561dbf">Flush</a> ()=0</td></tr>
 <tr class="separator:af8149126f4793506bef385d067561dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28714ebd081aa9244aca2beb85c78d37"><td class="memItemLeft" align="right" valign="top">DashProfile&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#a28714ebd081aa9244aca2beb85c78d37">dash_profile</a> () const</td></tr>
@@ -135,7 +137,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The dash profile for this object. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html#l00101">101</a> of file <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html">mpd_notifier.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html#l00108">108</a> of file <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html">mpd_notifier.h</a>.</p>
 
 </div>
 </div>
@@ -219,7 +221,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The mpd type for this object. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html#l00104">104</a> of file <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html">mpd_notifier.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html#l00111">111</a> of file <a class="el" href="../../d7/d15/mpd__notifier_8h_source.html">mpd_notifier.h</a>.</p>
 
 </div>
 </div>
@@ -326,6 +328,51 @@ Public Member Functions</h2></td></tr>
 <dl class="section attention"><dt>Attention</dt><dd>This might change or get removed once DASH IF IOP specification writes a clear guideline on how to handle key rotation. </dd></dl>
 
 <p>Implemented in <a class="el" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#ae1a1231fb13e0bc97cdea5fc239184bf">shaka::SimpleMpdNotifier</a>.</p>
+
+</div>
+</div>
+<a id="a4d55e7b557c624954b4e05edf6bd83d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d55e7b557c624954b4e05edf6bd83d1">&#9670;&nbsp;</a></span>NotifyMediaInfoUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool shaka::MpdNotifier::NotifyMediaInfoUpdate </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>container_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const MediaInfo &amp;&#160;</td>
+          <td class="paramname"><em>media_info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae10c06fe6022a1020fc889de389be430">NotifyNewContainer()</a>. </td></tr>
+    <tr><td class="paramname">media_info</td><td>is the new MediaInfo. Note that codec related information cannot be updated. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="../../d8/de1/classshaka_1_1SimpleMpdNotifier.html#a6a811c3721117dcc6aac9595a8311e70">shaka::SimpleMpdNotifier</a>.</p>
 
 </div>
 </div>
@@ -487,7 +534,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 10 2018 15:36:45 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 23 2018 16:10:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
