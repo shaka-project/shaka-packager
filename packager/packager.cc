@@ -219,6 +219,13 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
     }
   }
 
+  if (stream.output.find('$') != std::string::npos) {
+    // "$" is only allowed if the output file name is a template, which is
+    // used to support one file per Representation per Period when there are
+    // Ad Cues.
+    RETURN_IF_ERROR(ValidateSegmentTemplate(stream.output));
+  }
+
   // There are some specifics that must be checked based on which format
   // we are writing to.
   const MediaContainerName output_format = GetOutputFormat(stream);

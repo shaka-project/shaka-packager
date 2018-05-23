@@ -151,6 +151,7 @@ class PackagerAppTest(unittest.TestCase):
                  drm_label=None,
                  skip_encryption=None,
                  bandwidth=None,
+                 split_content_on_ad_cues=False,
                  test_file=None):
     """Get a stream descriptor as a string.
 
@@ -174,6 +175,8 @@ class PackagerAppTest(unittest.TestCase):
       skip_encryption: If set to true, the stream will not be encrypted.
       bandwidth: The expected bandwidth value that should be listed in the
           manifest.
+      split_content_on_ad_cues: If set to true, the output file will be split
+          into multiple files, with a total of NumAdCues + 1 files.
       test_file: Specify the input file to use. If the input file is not
           specify, a default file will be used.
 
@@ -238,7 +241,10 @@ class PackagerAppTest(unittest.TestCase):
       seg_template = '%s-$Number$.%s' % (output_file_path, segment_ext)
       stream.Append('segment_template', seg_template)
     else:
-      output_file_path += '.' +  base_ext
+      if split_content_on_ad_cues:
+        output_file_path += '$Number$.' +  base_ext
+      else:
+        output_file_path += '.' +  base_ext
       stream.Append('output', output_file_path)
 
     if bandwidth:
@@ -1015,6 +1021,14 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('encryption-and-ad-cues')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testEncryptionAndAdCuesSplitContent(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['audio', 'video'], hls=True, split_content_on_ad_cues=True),
+        self._GetFlags(
+            encryption=True, output_dash=True, output_hls=True, ad_cues='1.5'))
+    self._CheckTestResults('encryption-and-ad-cues-split-content')
 
   def testHlsAudioVideoTextWithAdCues(self):
     streams = [

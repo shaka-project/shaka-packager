@@ -9,15 +9,22 @@
 #include <algorithm>
 
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/muxer_util.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
 namespace {
 const bool kInitialEncryptionInfo = true;
+const int64_t kStartTime = 0;
 }  // namespace
 
-Muxer::Muxer(const MuxerOptions& options)
-    : options_(options), cancelled_(false), clock_(NULL) {}
+Muxer::Muxer(const MuxerOptions& options) : options_(options) {
+  // "$" is only allowed if the output file name is a template, which is used to
+  // support one file per Representation per Period when there are Ad Cues.
+  if (options_.output_file_name.find("$") != std::string::npos)
+    output_file_template_ = options_.output_file_name;
+}
 
 Muxer::~Muxer() {}
 
@@ -39,16 +46,7 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
   switch (stream_data->stream_data_type) {
     case StreamDataType::kStreamInfo:
       streams_.push_back(std::move(stream_data->stream_info));
-      if (muxer_listener_ && streams_.back()->is_encrypted()) {
-        const EncryptionConfig& encryption_config =
-            streams_.back()->encryption_config();
-        muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo, encryption_config.protection_scheme,
-            encryption_config.key_id, encryption_config.constant_iv,
-            encryption_config.key_system_info);
-        current_key_id_ = encryption_config.key_id;
-      }
-      return InitializeMuxer();
+      return ReinitializeMuxer(kStartTime);
     case StreamDataType::kSegmentInfo: {
       const auto& segment_info = *stream_data->segment_info;
       if (muxer_listener_ && segment_info.is_encrypted) {
@@ -80,6 +78,12 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
             static_cast<int64_t>(time_in_seconds * time_scale);
         muxer_listener_->OnCueEvent(scaled_time,
                                     stream_data->cue_event->cue_data);
+
+        // Finalize and re-initialize Muxer to generate different content files.
+        if (!output_file_template_.empty()) {
+          RETURN_IF_ERROR(Finalize());
+          RETURN_IF_ERROR(ReinitializeMuxer(scaled_time));
+        }
       }
       break;
     default:
@@ -89,6 +93,30 @@ Status Muxer::Process(std::unique_ptr<StreamData> stream_data) {
   }
   // No dispatch for muxer.
   return Status::OK;
+}
+
+Status Muxer::OnFlushRequest(size_t input_stream_index) {
+  return Finalize();
+}
+
+Status Muxer::ReinitializeMuxer(int64_t timestamp) {
+  if (muxer_listener_ && streams_.back()->is_encrypted()) {
+    const EncryptionConfig& encryption_config =
+        streams_.back()->encryption_config();
+    muxer_listener_->OnEncryptionInfoReady(
+        kInitialEncryptionInfo, encryption_config.protection_scheme,
+        encryption_config.key_id, encryption_config.constant_iv,
+        encryption_config.key_system_info);
+    current_key_id_ = encryption_config.key_id;
+  }
+  if (!output_file_template_.empty()) {
+    // Update |output_file_name| with an actual file name, which will be used by
+    // the subclasses.
+    options_.output_file_name =
+        GetSegmentName(output_file_template_, timestamp, output_file_index_++,
+                       options_.bandwidth);
+  }
+  return InitializeMuxer();
 }
 
 }  // namespace media

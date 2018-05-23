@@ -160,6 +160,26 @@ void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
   }
 }
 
+// Adjust MediaInfo for compatibility comparison. MediaInfos are considered to
+// be compatible if codec and container are the same.
+MediaInfo GetCompatibleComparisonMediaInfo(const MediaInfo& media_info) {
+  MediaInfo adjusted_media_info;
+  adjusted_media_info.set_reference_time_scale(
+      media_info.reference_time_scale());
+  adjusted_media_info.set_container_type(media_info.container_type());
+  if (media_info.has_video_info()) {
+    *adjusted_media_info.mutable_video_info() = media_info.video_info();
+    adjusted_media_info.mutable_video_info()->clear_frame_duration();
+  }
+  if (media_info.has_audio_info()) {
+    *adjusted_media_info.mutable_audio_info() = media_info.audio_info();
+  }
+  if (media_info.has_text_info()) {
+    *adjusted_media_info.mutable_text_info() = media_info.text_info();
+  }
+  return adjusted_media_info;
+}
+
 }  // namespace
 
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
@@ -181,15 +201,9 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 
 bool IsMediaInfoCompatible(const MediaInfo& media_info1,
                            const MediaInfo& media_info2) {
-  return media_info1.reference_time_scale() ==
-             media_info2.reference_time_scale() &&
-         media_info1.container_type() == media_info2.container_type() &&
-         MessageDifferencer::Equals(media_info1.video_info(),
-                                    media_info2.video_info()) &&
-         MessageDifferencer::Equals(media_info1.audio_info(),
-                                    media_info2.audio_info()) &&
-         MessageDifferencer::Equals(media_info1.text_info(),
-                                    media_info2.text_info());
+  return MessageDifferencer::Equals(
+      GetCompatibleComparisonMediaInfo(media_info1),
+      GetCompatibleComparisonMediaInfo(media_info2));
 }
 
 bool SetVodInformation(const MuxerListener::MediaRanges& media_ranges,

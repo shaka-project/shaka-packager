@@ -63,7 +63,7 @@ class Muxer : public MediaHandler {
   /// @{
   Status InitializeInternal() override { return Status::OK; }
   Status Process(std::unique_ptr<StreamData> stream_data) override;
-  Status OnFlushRequest(size_t input_stream_index) override { return Finalize(); }
+  Status OnFlushRequest(size_t input_stream_index) override;
   /// @}
 
   const MuxerOptions& options() const { return options_; }
@@ -72,6 +72,13 @@ class Muxer : public MediaHandler {
   base::Clock* clock() { return clock_; }
 
  private:
+  Muxer(const Muxer&) = delete;
+  Muxer& operator=(const Muxer&) = delete;
+
+  // Re-initialize Muxer. Could be called on StreamInfo or CueEvent.
+  // |timestamp| may be used to set the output file name.
+  Status ReinitializeMuxer(int64_t timestamp);
+
   // Initialize the muxer.
   virtual Status InitializeMuxer() = 0;
 
@@ -92,14 +99,17 @@ class Muxer : public MediaHandler {
   std::vector<std::shared_ptr<const StreamInfo>> streams_;
   std::vector<uint8_t> current_key_id_;
   bool encryption_started_ = false;
-  bool cancelled_;
+  bool cancelled_ = false;
 
   std::unique_ptr<MuxerListener> muxer_listener_;
   std::unique_ptr<ProgressListener> progress_listener_;
   // An external injected clock, can be NULL.
-  base::Clock* clock_;
+  base::Clock* clock_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(Muxer);
+  // In VOD single segment case with Ad Cues, |output_file_name| is allowed to
+  // be a template. In this case, there will be NumAdCues + 1 files generated.
+  std::string output_file_template_;
+  size_t output_file_index_ = 0;
 };
 
 }  // namespace media
