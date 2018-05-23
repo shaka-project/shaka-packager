@@ -521,8 +521,8 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
       static_cast<double>(start_time) / time_scale_;
   const double segment_duration_seconds =
       static_cast<double>(duration) / time_scale_;
-  if (segment_duration_seconds > longest_segment_duration_)
-    longest_segment_duration_ = segment_duration_seconds;
+  longest_segment_duration_ =
+      std::max(longest_segment_duration_, segment_duration_seconds);
 
   const int kBitsInByte = 8;
   const uint64_t bitrate = kBitsInByte * size / segment_duration_seconds;
@@ -539,15 +539,19 @@ void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(
   if (time_scale_ == 0)
     return;
 
-  const double scaled_next_timestamp =
+  const double next_timestamp_seconds =
       static_cast<double>(next_timestamp) / time_scale_;
 
   for (auto iter = entries_.rbegin(); iter != entries_.rend(); ++iter) {
     if (iter->get()->type() == HlsEntry::EntryType::kExtInf) {
       SegmentInfoEntry* segment_info =
           reinterpret_cast<SegmentInfoEntry*>(iter->get());
-      segment_info->set_duration(scaled_next_timestamp -
-                                 segment_info->start_time());
+
+      const double segment_duration_seconds =
+          next_timestamp_seconds - segment_info->start_time();
+      segment_info->set_duration(segment_duration_seconds);
+      longest_segment_duration_ =
+          std::max(longest_segment_duration_, segment_duration_seconds);
       break;
     }
   }

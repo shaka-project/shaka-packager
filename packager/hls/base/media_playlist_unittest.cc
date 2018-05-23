@@ -811,7 +811,7 @@ TEST_F(IFrameMediaPlaylistTest, SingleSegment) {
       "#EXT-X-VERSION:6\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
-      "#EXT-X-TARGETDURATION:8\n"
+      "#EXT-X-TARGETDURATION:9\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-I-FRAMES-ONLY\n"
       "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
