@@ -32,7 +32,9 @@ class WebVttFileBuffer {
   size_t sample_count() const { return sample_count_; }
 
  private:
-  // TODO(vaage): Add missing deleted copy and assign constructors.
+  WebVttFileBuffer(const WebVttFileBuffer&) = delete;
+  WebVttFileBuffer& operator=(const WebVttFileBuffer&) = delete;
+
   std::string buffer_;
   size_t sample_count_ = 0;
 };
