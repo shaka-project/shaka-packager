@@ -24,11 +24,11 @@ cd docs
 make html
 
 cd ../out
-rm -rf gh-pages
 
 # If SITE_DIRECTORY is specified, it is assumed to be local evaluation, so we
 # will not try to update Git repository.
 if [[ -z ${SITE_DIRECTORY} ]] ; then
+  rm -rf gh-pages
   git clone --depth 1 https://github.com/google/shaka-packager -b gh-pages gh-pages
   cd gh-pages
   git rm -rf *
