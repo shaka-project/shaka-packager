@@ -83,9 +83,7 @@ struct SampleEncryptionEntry {
   ///        constains subsamples.
   /// @param buffer points to the box buffer for reading or writing.
   /// @return true on success, false otherwise.
-  bool ReadWrite(uint8_t iv_size,
-                 bool has_subsamples,
-                 BoxBuffer* buffer);
+  bool ReadWrite(uint8_t iv_size, bool has_subsamples, BoxBuffer* buffer);
   /// Parse SampleEncryptionEntry from buffer.
   /// @param iv_size specifies the size of initialization vector.
   /// @param has_subsamples indicates whether this sample encryption entry
@@ -185,8 +183,8 @@ struct MovieHeader : FullBox {
 
 struct TrackHeader : FullBox {
   enum TrackHeaderFlags {
-    kTrackEnabled   = 0x000001,
-    kTrackInMovie   = 0x000002,
+    kTrackEnabled = 0x000001,
+    kTrackInMovie = 0x000002,
     kTrackInPreview = 0x000004,
   };
 
@@ -258,7 +256,7 @@ struct Metadata : FullBox {
 // box inherits from FullBox instead of Box, according to VP Codec ISO Media
 // File Format Binding specification. It will be handled properly in the
 // implementation.
-struct CodecConfiguration: Box {
+struct CodecConfiguration : Box {
   DECLARE_BOX_METHODS(CodecConfiguration);
 
   FourCC box_type;
@@ -675,22 +673,22 @@ struct MovieFragmentHeader : FullBox {
 
 struct TrackFragmentHeader : FullBox {
   enum TrackFragmentFlagsMasks {
-    kBaseDataOffsetPresentMask          = 0x000001,
-    kSampleDescriptionIndexPresentMask  = 0x000002,
-    kDefaultSampleDurationPresentMask   = 0x000008,
-    kDefaultSampleSizePresentMask       = 0x000010,
-    kDefaultSampleFlagsPresentMask      = 0x000020,
-    kDurationIsEmptyMask                = 0x010000,
-    kDefaultBaseIsMoofMask              = 0x020000,
+    kBaseDataOffsetPresentMask = 0x000001,
+    kSampleDescriptionIndexPresentMask = 0x000002,
+    kDefaultSampleDurationPresentMask = 0x000008,
+    kDefaultSampleSizePresentMask = 0x000010,
+    kDefaultSampleFlagsPresentMask = 0x000020,
+    kDurationIsEmptyMask = 0x010000,
+    kDefaultBaseIsMoofMask = 0x020000,
   };
 
   enum SampleFlagsMasks {
-    kReservedMask                  = 0xFC000000,
-    kSampleDependsOnMask           = 0x03000000,
-    kSampleIsDependedOnMask        = 0x00C00000,
-    kSampleHasRedundancyMask       = 0x00300000,
-    kSamplePaddingValueMask        = 0x000E0000,
-    kNonKeySampleMask              = 0x00010000,
+    kReservedMask = 0xFC000000,
+    kSampleDependsOnMask = 0x03000000,
+    kSampleIsDependedOnMask = 0x00C00000,
+    kSampleHasRedundancyMask = 0x00300000,
+    kSamplePaddingValueMask = 0x000E0000,
+    kNonKeySampleMask = 0x00010000,
     kSampleDegradationPriorityMask = 0x0000FFFF,
   };
 
@@ -705,12 +703,12 @@ struct TrackFragmentHeader : FullBox {
 
 struct TrackFragmentRun : FullBox {
   enum TrackFragmentFlagsMasks {
-    kDataOffsetPresentMask              = 0x000001,
-    kFirstSampleFlagsPresentMask        = 0x000004,
-    kSampleDurationPresentMask          = 0x000100,
-    kSampleSizePresentMask              = 0x000200,
-    kSampleFlagsPresentMask             = 0x000400,
-    kSampleCompTimeOffsetsPresentMask   = 0x000800,
+    kDataOffsetPresentMask = 0x000001,
+    kFirstSampleFlagsPresentMask = 0x000004,
+    kSampleDurationPresentMask = 0x000100,
+    kSampleSizePresentMask = 0x000200,
+    kSampleFlagsPresentMask = 0x000400,
+    kSampleCompTimeOffsetsPresentMask = 0x000800,
   };
 
   DECLARE_BOX_METHODS(TrackFragmentRun);
