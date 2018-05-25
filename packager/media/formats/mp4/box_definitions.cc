@@ -1895,7 +1895,10 @@ size_t WebVTTSourceLabelBox::ComputeSizeInternal() {
   return HeaderSize() + source_label.size();
 }
 
-TextSampleEntry::TextSampleEntry() : format(FOURCC_NULL) {}
+// data_reference_index is 1-based and "dref" box is mandatory so it is
+// always present.
+TextSampleEntry::TextSampleEntry()
+    : format(FOURCC_NULL), data_reference_index(1u) {}
 TextSampleEntry::~TextSampleEntry() {}
 
 FourCC TextSampleEntry::BoxType() const {

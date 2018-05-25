@@ -377,6 +377,7 @@ struct TextSampleEntry : Box {
   // set to 'wvtt' to write WVTTSampleEntry; On read, it is recovered from box
   // header.
   FourCC format;
+
   uint16_t data_reference_index;
 
   // Sub boxes for wvtt text sample entry.
