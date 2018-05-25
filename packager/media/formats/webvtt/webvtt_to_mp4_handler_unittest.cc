@@ -11,6 +11,7 @@
 #include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
 #include "packager/status_test_util.h"
 
+using testing::_;
 using testing::AllOf;
 using testing::Not;
 
@@ -122,7 +123,7 @@ TEST_F(WebVttToMp4HandlerTest, IngoresEmptyPayloadSamples) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Gap - The gap and sample should be combines into a new gap that spans
     // the while segment.
@@ -170,7 +171,7 @@ TEST_F(WebVttToMp4HandlerTest, NonZeroStartTime) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Gap
     EXPECT_CALL(*Out(),
@@ -227,7 +228,7 @@ TEST_F(WebVttToMp4HandlerTest, NoOverlap) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Sample 1
     EXPECT_CALL(*Out(),
@@ -300,7 +301,7 @@ TEST_F(WebVttToMp4HandlerTest, Overlap) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Sample 1
     EXPECT_CALL(*Out(), OnProcess(AllOf(
@@ -375,7 +376,7 @@ TEST_F(WebVttToMp4HandlerTest, Contains) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Sample 1
     EXPECT_CALL(*Out(), OnProcess(AllOf(
@@ -434,7 +435,7 @@ TEST_F(WebVttToMp4HandlerTest, ExactOverlap) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Both Samples
     EXPECT_CALL(*Out(),
@@ -496,7 +497,7 @@ TEST_F(WebVttToMp4HandlerTest, OverlapStartWithStaggerEnd) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Three Samples
     EXPECT_CALL(*Out(),
@@ -576,7 +577,7 @@ TEST_F(WebVttToMp4HandlerTest, StaggerStartWithOverlapEnd) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // One Sample
     EXPECT_CALL(*Out(),
@@ -652,7 +653,7 @@ TEST_F(WebVttToMp4HandlerTest, CrossSegmentSamples) {
   {
     testing::InSequence s;
 
-    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex, _, _, _)));
 
     // Gap, Sample, Segment
     EXPECT_CALL(*Out(),

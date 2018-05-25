@@ -12,6 +12,7 @@
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/status_test_util.h"
 
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
@@ -58,7 +59,7 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
       kStreamIndex, GetAudioStreamInfo(kTimeScale0))));
   EXPECT_THAT(
       GetOutputStreamDataVector(),
-      ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale0, !kEncrypted)));
+      ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale0, !kEncrypted, _)));
 
   for (int i = 0; i < 5; ++i) {
     ClearOutputStreamDataVector();
@@ -101,7 +102,7 @@ TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
-          IsStreamInfo(kStreamIndex, kTimeScale0, !kEncrypted),
+          IsStreamInfo(kStreamIndex, kTimeScale0, !kEncrypted, _),
           IsMediaSample(kStreamIndex, 0, kDuration, !kEncrypted),
           IsMediaSample(kStreamIndex, kDuration, kDuration, !kEncrypted),
           IsSegmentInfo(kStreamIndex, 0, kDuration * 2, kIsSubsegment,
@@ -132,7 +133,7 @@ TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
   EXPECT_THAT(
       GetOutputStreamDataVector(),
       ElementsAre(
-          IsStreamInfo(kStreamIndex, kTimeScale1, !kEncrypted),
+          IsStreamInfo(kStreamIndex, kTimeScale1, !kEncrypted, _),
           // The first samples @ kStartTimestamp is discarded - not key frame.
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration,
                         kDuration, !kEncrypted),

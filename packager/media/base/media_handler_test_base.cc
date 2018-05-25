@@ -66,6 +66,49 @@ std::string BoolToString(bool value) {
   return value ? "true" : "false";
 }
 
+bool TryMatchStreamDataType(const StreamDataType& actual,
+                            const StreamDataType& expected,
+                            ::testing::MatchResultListener* listener) {
+  if (actual != expected) {
+    std::string expected_as_string = StreamDataTypeToString(expected);
+    std::string actual_as_string = StreamDataTypeToString(actual);
+
+    *listener << "which is " << actual_as_string << " (expected "
+              << expected_as_string << ")";
+    return false;
+  }
+
+  return true;
+}
+
+std::string ToPrettyString(const std::string& str) {
+  std::string out;
+
+  // Opening quotation.
+  out.push_back('"');
+
+  for (char c : str) {
+    if (isspace(c)) {
+      // Make all white space characters spaces to avoid print issues in
+      // the terminal.
+      out.push_back(' ');
+    } else if (isalnum(c)) {
+      // If the character is alpha-numeric, then print it as is. Just using
+      // these characters, it should be enough to understand the string.
+      out.push_back(c);
+    } else {
+      // Replace all other characters with '.'. This is to avoid print issues
+      // (e.g. \n) or readability issues (e.g. ").
+      out.push_back('.');
+    }
+  }
+
+  // Closing quotation.
+  out.push_back('"');
+
+  return out;
+}
+
 bool FakeInputMediaHandler::ValidateOutputStreamIndex(size_t index) const {
   return true;
 }

@@ -17,42 +17,49 @@ namespace shaka {
 namespace media {
 
 std::string BoolToString(bool value);
+std::string ToPrettyString(const std::string& str);
 
-MATCHER_P(IsStreamInfo, stream_index, "") {
-  return arg->stream_index == stream_index &&
-         arg->stream_data_type == StreamDataType::kStreamInfo;
-}
+bool TryMatchStreamDataType(const StreamDataType& actual,
+                            const StreamDataType& expected,
+                            ::testing::MatchResultListener* listener);
 
-MATCHER_P3(IsStreamInfo, stream_index, time_scale, encrypted, "") {
-  if (arg->stream_data_type != StreamDataType::kStreamInfo) {
-    *result_listener << "which is "
-                     << StreamDataTypeToString(arg->stream_data_type);
+template <typename T, typename M>
+bool TryMatch(const T& value,
+              const M& matcher,
+              ::testing::MatchResultListener* listener,
+              const char* value_name) {
+  if (!ExplainMatchResult(matcher, value, listener)) {
+    // Need a space at the start of the string in the case that
+    // it gets combined with another string.
+    *listener << " Mismatch on " << value_name;
     return false;
   }
 
-  *result_listener << "which is (" << arg->stream_index << ","
-                   << arg->stream_info->time_scale() << ","
-                   << BoolToString(arg->stream_info->is_encrypted()) << ")";
-  return arg->stream_index == stream_index &&
-         arg->stream_info->time_scale() == time_scale &&
-         arg->stream_info->is_encrypted() == encrypted;
+  return true;
 }
 
 MATCHER_P4(IsStreamInfo, stream_index, time_scale, encrypted, language, "") {
-  if (arg->stream_data_type != StreamDataType::kStreamInfo) {
-    *result_listener << "which is "
-                     << StreamDataTypeToString(arg->stream_data_type);
+  if (!TryMatchStreamDataType(arg->stream_data_type,
+                              StreamDataType::kStreamInfo, result_listener)) {
     return false;
   }
 
-  *result_listener << "which is (" << arg->stream_index << ","
-                   << arg->stream_info->time_scale() << ","
-                   << BoolToString(arg->stream_info->is_encrypted()) << ","
+  const std::string is_encrypted_string =
+      BoolToString(arg->stream_info->is_encrypted());
+
+  *result_listener << "which is (" << arg->stream_index << ", "
+                   << arg->stream_info->time_scale() << ", "
+                   << is_encrypted_string << ", "
                    << arg->stream_info->language() << ")";
-  return arg->stream_index == stream_index &&
-         arg->stream_info->time_scale() == time_scale &&
-         arg->stream_info->is_encrypted() == encrypted &&
-         arg->stream_info->language() == language;
+
+  return TryMatch(arg->stream_index, stream_index, result_listener,
+                  "stream_index") &&
+         TryMatch(arg->stream_info->time_scale(), time_scale, result_listener,
+                  "time_scale") &&
+         TryMatch(arg->stream_info->is_encrypted(), encrypted, result_listener,
+                  "is_encrypted") &&
+         TryMatch(arg->stream_info->language(), language, result_listener,
+                  "language");
 }
 
 MATCHER_P5(IsSegmentInfo,
@@ -62,22 +69,32 @@ MATCHER_P5(IsSegmentInfo,
            subsegment,
            encrypted,
            "") {
-  if (arg->stream_data_type != StreamDataType::kSegmentInfo) {
-    *result_listener << "which is "
-                     << StreamDataTypeToString(arg->stream_data_type);
+  if (!TryMatchStreamDataType(arg->stream_data_type,
+                              StreamDataType::kSegmentInfo, result_listener)) {
     return false;
   }
 
-  *result_listener << "which is (" << arg->stream_index << ","
-                   << arg->segment_info->start_timestamp << ","
-                   << arg->segment_info->duration << ","
-                   << BoolToString(arg->segment_info->is_subsegment) << ","
-                   << BoolToString(arg->segment_info->is_encrypted) << ")";
-  return arg->stream_index == stream_index &&
-         arg->segment_info->start_timestamp == start_timestamp &&
-         arg->segment_info->duration == duration &&
-         arg->segment_info->is_subsegment == subsegment &&
-         arg->segment_info->is_encrypted == encrypted;
+  const std::string is_subsegment_string =
+      BoolToString(arg->segment_info->is_subsegment);
+  const std::string is_encrypted_string =
+      BoolToString(arg->segment_info->is_encrypted);
+
+  *result_listener << "which is (" << arg->stream_index << ", "
+                   << arg->segment_info->start_timestamp << ", "
+                   << arg->segment_info->duration << ", "
+                   << is_subsegment_string << ", " << is_encrypted_string
+                   << ")";
+
+  return TryMatch(arg->stream_index, stream_index, result_listener,
+                  "stream_index") &&
+         TryMatch(arg->segment_info->start_timestamp, start_timestamp,
+                  result_listener, "start_timestamp") &&
+         TryMatch(arg->segment_info->duration, duration, result_listener,
+                  "duration") &&
+         TryMatch(arg->segment_info->is_subsegment, subsegment, result_listener,
+                  "is_subsegment") &&
+         TryMatch(arg->segment_info->is_encrypted, encrypted, result_listener,
+                  "is_encrypted");
 }
 
 MATCHER_P6(MatchEncryptionConfig,
@@ -88,66 +105,105 @@ MATCHER_P6(MatchEncryptionConfig,
            constant_iv,
            key_id,
            "") {
-  *result_listener << "which is (" << FourCCToString(arg.protection_scheme)
-                   << "," << static_cast<int>(arg.crypt_byte_block) << ","
-                   << static_cast<int>(arg.skip_byte_block) << ","
-                   << static_cast<int>(arg.per_sample_iv_size) << ","
-                   << base::HexEncode(arg.constant_iv.data(),
-                                      arg.constant_iv.size())
-                   << ","
-                   << base::HexEncode(arg.key_id.data(), arg.key_id.size())
-                   << ")";
-  return arg.protection_scheme == protection_scheme &&
-         arg.crypt_byte_block == crypt_byte_block &&
-         arg.skip_byte_block == skip_byte_block &&
-         arg.per_sample_iv_size == per_sample_iv_size &&
-         arg.constant_iv == constant_iv && arg.key_id == key_id;
+  const std::string constant_iv_hex =
+      base::HexEncode(arg.constant_iv.data(), arg.constant_iv.size());
+  const std::string key_id_hex =
+      base::HexEncode(arg.key_id.data(), arg.key_id.size());
+  const std::string protection_scheme_as_string =
+      FourCCToString(arg.protection_scheme);
+  // Convert to integers so that they will print as a number and not a uint8_t
+  // (char).
+  const int crypt_byte_as_int = static_cast<int>(arg.crypt_byte_block);
+  const int skip_byte_as_int = static_cast<int>(arg.skip_byte_block);
+
+  *result_listener << "which is (" << protection_scheme_as_string << ", "
+                   << crypt_byte_as_int << ", " << skip_byte_as_int << ", "
+                   << arg.per_sample_iv_size << ", " << constant_iv_hex << ", "
+                   << key_id_hex << ")";
+
+  return TryMatch(arg.protection_scheme, protection_scheme, result_listener,
+                  "protection_scheme") &&
+         TryMatch(arg.crypt_byte_block, crypt_byte_block, result_listener,
+                  "crypt_byte_block") &&
+         TryMatch(arg.skip_byte_block, skip_byte_block, result_listener,
+                  "skip_byte_block") &&
+         TryMatch(arg.per_sample_iv_size, per_sample_iv_size, result_listener,
+                  "per_sample_iv_size") &&
+         TryMatch(arg.constant_iv, constant_iv, result_listener,
+                  "constant_iv") &&
+         TryMatch(arg.key_id, key_id, result_listener, "key_id");
 }
 
 MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
-  if (arg->stream_data_type != StreamDataType::kMediaSample) {
-    *result_listener << "which is "
-                     << StreamDataTypeToString(arg->stream_data_type);
+  if (!TryMatchStreamDataType(arg->stream_data_type,
+                              StreamDataType::kMediaSample, result_listener)) {
     return false;
   }
-  *result_listener << "which is (" << arg->stream_index << ","
-                   << arg->media_sample->dts() << ","
-                   << arg->media_sample->duration() << ","
-                   << BoolToString(arg->media_sample->is_encrypted()) << ")";
-  return arg->stream_index == stream_index &&
-         arg->media_sample->dts() == static_cast<int64_t>(timestamp) &&
-         arg->media_sample->duration() == static_cast<int64_t>(duration) &&
-         arg->media_sample->is_encrypted() == encrypted;
+
+  const std::string is_encrypted_string =
+      BoolToString(arg->media_sample->is_encrypted());
+
+  *result_listener << "which is (" << arg->stream_index << ", "
+                   << arg->media_sample->dts() << ", "
+                   << arg->media_sample->duration() << ", "
+                   << is_encrypted_string << ")";
+
+  return TryMatch(arg->stream_index, stream_index, result_listener,
+                  "stream_index") &&
+         TryMatch(arg->media_sample->dts(), timestamp, result_listener,
+                  "dts") &&
+         TryMatch(arg->media_sample->duration(), duration, result_listener,
+                  "duration") &&
+         TryMatch(arg->media_sample->is_encrypted(), encrypted, result_listener,
+                  "is_encrypted");
 }
 
-MATCHER_P5(IsTextSample, id, start_time, end_time, settings, payload, "") {
-  if (arg->stream_data_type != StreamDataType::kTextSample) {
-    *result_listener << "which is "
-                     << StreamDataTypeToString(arg->stream_data_type);
+MATCHER_P6(IsTextSample,
+           stream_index,
+           id,
+           start_time,
+           end_time,
+           settings,
+           payload,
+           "") {
+  if (!TryMatchStreamDataType(arg->stream_data_type,
+                              StreamDataType::kTextSample, result_listener)) {
     return false;
   }
-  *result_listener << "which is (" << arg->text_sample->id() << ","
-                   << arg->text_sample->start_time() << ","
-                   << arg->text_sample->EndTime() << ","
-                   << arg->text_sample->settings() << ","
-                   << arg->text_sample->payload() << ")";
-  return arg->text_sample->id() == id &&
-         arg->text_sample->start_time() == start_time &&
-         arg->text_sample->EndTime() == end_time &&
-         arg->text_sample->settings() == settings &&
-         arg->text_sample->payload() == payload;
+
+  *result_listener << "which is (" << arg->stream_index << ", "
+                   << ToPrettyString(arg->text_sample->id()) << ", "
+                   << arg->text_sample->start_time() << ", "
+                   << arg->text_sample->EndTime() << ", "
+                   << ToPrettyString(arg->text_sample->settings()) << ", "
+                   << ToPrettyString(arg->text_sample->payload()) << ")";
+
+  return TryMatch(arg->stream_index, stream_index, result_listener,
+                  "stream_index") &&
+         TryMatch(arg->text_sample->id(), id, result_listener, "id") &&
+         TryMatch(arg->text_sample->start_time(), start_time, result_listener,
+                  "start_time") &&
+         TryMatch(arg->text_sample->EndTime(), end_time, result_listener,
+                  "EndTime") &&
+         TryMatch(arg->text_sample->settings(), settings, result_listener,
+                  "settings") &&
+         TryMatch(arg->text_sample->payload(), payload, result_listener,
+                  "payload");
 }
 
 MATCHER_P2(IsCueEvent, stream_index, time_in_seconds, "") {
-  if (arg->stream_data_type != StreamDataType::kCueEvent) {
-    *result_listener << "which is "
-                     << StreamDataTypeToString(arg->stream_data_type);
+  if (!TryMatchStreamDataType(arg->stream_data_type, StreamDataType::kCueEvent,
+                              result_listener)) {
     return false;
   }
-  *result_listener << "which is (" << arg->stream_index << ","
+
+  *result_listener << "which is (" << arg->stream_index << ", "
                    << arg->cue_event->time_in_seconds << ")";
-  return arg->stream_index == stream_index &&
-         arg->cue_event->time_in_seconds == time_in_seconds;
+
+  return TryMatch(arg->stream_index, stream_index, result_listener,
+                  "stream_index") &&
+         TryMatch(arg->cue_event->time_in_seconds, time_in_seconds,
+                  result_listener, "time_in_seconds");
 }
 
 class FakeInputMediaHandler : public MediaHandler {

@@ -13,6 +13,8 @@
 #include "packager/media/formats/webvtt/webvtt_parser.h"
 #include "packager/status_test_util.h"
 
+using ::testing::_;
+
 namespace shaka {
 namespace media {
 namespace {
@@ -21,8 +23,7 @@ const size_t kInputCount = 0;
 const size_t kOutputCount = 1;
 const size_t kOutputIndex = 0;
 
-const size_t kStreamIndex = 0;
-const size_t kTimeScale = 1000;
+const uint32_t kTimeScale = 1000;
 const bool kEncrypted = true;
 
 const char* kNoId = "";
@@ -71,9 +72,8 @@ TEST_F(WebVttParserTest, ParseOnlyHeader) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted,
-                                       kLanguage)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, kLanguage)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -89,8 +89,8 @@ TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -142,8 +142,8 @@ TEST_F(WebVttParserTest, ParserDoesNotDieOnRegionBlock) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -166,8 +166,8 @@ TEST_F(WebVttParserTest, ParserDoesNotDieOnStyleBlock) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -185,8 +185,8 @@ TEST_F(WebVttParserTest, IngoresZeroDurationCues) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -204,11 +204,11 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 60000u, 3600000u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 60000u, 3600000u, kNoSettings,
                                        "subtitle")));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -240,11 +240,11 @@ TEST_F(WebVttParserTest, ParseOneCueWithId) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample("id", 60000u, 3600000u, kNoSettings,
+                OnProcess(IsTextSample(_, "id", 60000u, 3600000u, kNoSettings,
                                        "subtitle")));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -262,11 +262,11 @@ TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 60000u, 3600000u, "size:50%",
+                OnProcess(IsTextSample(_, kNoId, 60000u, 3600000u, "size:50%",
                                        "subtitle")));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -291,17 +291,17 @@ TEST_F(WebVttParserTest, ParseMultipleCues) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 1000u, 5200u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 1000u, 5200u, kNoSettings,
                                        "subtitle A")));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 2321u, 7000u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 2321u, 7000u, kNoSettings,
                                        "subtitle B")));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 5800u, 8000u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 5800u, 8000u, kNoSettings,
                                        "subtitle C")));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
@@ -337,17 +337,17 @@ TEST_F(WebVttParserTest, ParseWithComments) {
   {
     testing::InSequence s;
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(kStreamIndex, kTimeScale, !kEncrypted)));
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 1000u, 5200u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 1000u, 5200u, kNoSettings,
                                        "subtitle A")));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 2321u, 7000u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 2321u, 7000u, kNoSettings,
                                        "subtitle B")));
     EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsTextSample(kNoId, 5800u, 8000u, kNoSettings,
+                OnProcess(IsTextSample(_, kNoId, 5800u, 8000u, kNoSettings,
                                        "subtitle C")));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(kStreamIndex));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
   ASSERT_OK(parser_->Run());
