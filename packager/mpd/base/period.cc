@@ -46,6 +46,11 @@ Period::Period(uint32_t period_id,
 AdaptationSet* Period::GetOrCreateAdaptationSet(
     const MediaInfo& media_info,
     bool content_protection_in_adaptation_set) {
+  // Set duration if it is not set. It may be updated later from duration
+  // calculated from segments.
+  if (duration_seconds_ == 0)
+    duration_seconds_ = media_info.media_duration_seconds();
+
   // AdaptationSets with the same key should only differ in ContentProtection,
   // which also means that if |content_protection_in_adaptation_set| is false,
   // there should be at most one entry in |adaptation_sets|.
