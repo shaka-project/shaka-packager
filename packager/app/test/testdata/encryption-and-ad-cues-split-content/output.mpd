@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.8695333003997803S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.802799940109253S">
   <Period id="0" duration="PT2.0687333333333333S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
       <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
@@ -28,15 +28,15 @@
       </Representation>
     </AdaptationSet>
   </Period>
-  <Period id="1" duration="PT.8008000000000002S">
+  <Period id="1" duration="PT.7340666666666666S">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
       <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="799871" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+      <Representation id="0" bandwidth="872586" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video2.mp4</BaseURL>
-        <SegmentBase indexRange="1091-1134" timescale="30000" presentationTimeOffset="60059">
+        <SegmentBase indexRange="1091-1134" timescale="30000" presentationTimeOffset="62062">
           <Initialization range="0-1090"/>
         </SegmentBase>
       </Representation>
@@ -49,7 +49,7 @@
       <Representation id="1" bandwidth="108126" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio2.mp4</BaseURL>
-        <SegmentBase indexRange="967-1010" timescale="44100" presentationTimeOffset="88288">
+        <SegmentBase indexRange="967-1010" timescale="44100" presentationTimeOffset="91231">
           <Initialization range="0-966"/>
         </SegmentBase>
       </Representation>

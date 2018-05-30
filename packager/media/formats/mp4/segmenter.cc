@@ -75,6 +75,11 @@ Status Segmenter::Initialize(
     for (uint32_t i = 0; i < streams.size(); ++i)
       fragmenters_[i]->set_use_decoding_timestamp_in_timeline(true);
   }
+  // Only allow |EPT| to be adjusted for the first file.
+  if (options_.output_file_index == 0) {
+    for (uint32_t i = 0; i < streams.size(); ++i)
+      fragmenters_[i]->set_allow_adjust_earliest_presentation_time(true);
+  }
 
   // Choose the first stream if there is no VIDEO.
   if (sidx_->reference_id == 0)

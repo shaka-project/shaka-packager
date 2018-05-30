@@ -75,11 +75,9 @@ class Muxer : public MediaHandler {
   Muxer(const Muxer&) = delete;
   Muxer& operator=(const Muxer&) = delete;
 
-  // Re-initialize Muxer. Could be called on StreamInfo or CueEvent.
-  // |timestamp| may be used to set the output file name.
-  Status ReinitializeMuxer(int64_t timestamp);
-
-  // Initialize the muxer.
+  // Initialize the muxer. InitializeMuxer may be called multiple times with
+  // |options()| updated between calls, which is used to support separate file
+  // per Representation per Period for Ad Insertion.
   virtual Status InitializeMuxer() = 0;
 
   // Final clean up.
@@ -94,6 +92,10 @@ class Muxer : public MediaHandler {
   virtual Status FinalizeSegment(
       size_t stream_id,
       const SegmentInfo& segment_info) = 0;
+
+  // Re-initialize Muxer. Could be called on StreamInfo or CueEvent.
+  // |timestamp| may be used to set the output file name.
+  Status ReinitializeMuxer(int64_t timestamp);
 
   MuxerOptions options_;
   std::vector<std::shared_ptr<const StreamInfo>> streams_;

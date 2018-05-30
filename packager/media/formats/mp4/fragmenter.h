@@ -76,6 +76,15 @@ class Fragmenter {
     use_decoding_timestamp_in_timeline_ = use_decoding_timestamp_in_timeline;
   }
 
+  /// Set the flag allow_use_adjust_earliest_presentation_time, which if set to
+  /// true, earlist_presentation_time (EPT) may be adjusted not to be smaller
+  /// than the decoding timestamp (dts) for the first fragment.
+  void set_allow_adjust_earliest_presentation_time(
+      bool allow_adjust_earliest_presentation_time) {
+    allow_adjust_earliest_presentation_time_ =
+        allow_adjust_earliest_presentation_time;
+  }
+
  protected:
   TrackFragment* traf() { return traf_; }
 
@@ -99,6 +108,7 @@ class Fragmenter {
   uint64_t fragment_duration_;
   int64_t earliest_presentation_time_;
   bool first_fragment_ = true;
+  bool allow_adjust_earliest_presentation_time_ = false;
   int64_t first_sap_time_;
   std::unique_ptr<BufferWriter> data_;
   // Saves key frames information, for Video.

@@ -152,19 +152,21 @@ Status Fragmenter::FinalizeFragment() {
   }
 
   if (first_fragment_) {
-    // Chrome (as of v66 https://crbug.com/398141) does not like negative values
-    // for adjusted dts = dts + Period@start (0 for first Period)
-    //                    - presentationTimeOffset
-    // Since |earliest_presentation_time| of the first fragment will be used to
-    // set presentationTimeOffset, the adjusted dts can become negative for the
-    // frames in the first segment in the first Period. To avoid seeing that,
-    // |earliest_presentation_time| is adjusted so it is not larger than the
-    // dts.
-    const int64_t dts = traf_->decode_time.decode_time;
-    if (earliest_presentation_time_ > dts) {
-      const uint64_t delta = earliest_presentation_time_ - dts;
-      earliest_presentation_time_ = dts;
-      fragment_duration_ += delta;
+    if (allow_adjust_earliest_presentation_time_) {
+      // Chrome (as of v66 https://crbug.com/398141) does not like negative
+      // values for adjusted dts = dts + Period@start (0 for first Period)
+      //                           - presentationTimeOffset
+      // Since |earliest_presentation_time| of the first fragment will be used
+      // to set presentationTimeOffset, the adjusted dts can become negative for
+      // the frames in the first segment in the first Period. To avoid seeing
+      // that, |earliest_presentation_time| is adjusted so it is not larger than
+      // the dts.
+      const int64_t dts = traf_->decode_time.decode_time;
+      if (earliest_presentation_time_ > dts) {
+        const uint64_t delta = earliest_presentation_time_ - dts;
+        earliest_presentation_time_ = dts;
+        fragment_duration_ += delta;
+      }
     }
     first_fragment_ = false;
   }
