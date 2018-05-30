@@ -44,15 +44,9 @@ DEFINE_bool(use_fake_clock_for_muxer,
             "Set to true to use a fake clock for muxer. With this flag set, "
             "creation time and modification time in outputs are set to 0. "
             "Should only be used for testing.");
-DEFINE_bool(override_version,
-            false,
-            "Override packager version in the generated outputs with "
-            "--test_version if it is set to true. Should be used for "
-            "testing only.");
-DEFINE_string(test_version,
+DEFINE_string(test_packager_version,
               "",
-              "Packager version for testing. Ignored if --override_version is "
-              "false. Should be used for testing only.");
+              "Packager version for testing. Should be used for testing only.");
 
 namespace shaka {
 namespace {
@@ -441,8 +435,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = FLAGS_dump_stream_info;
   test_params.inject_fake_clock = FLAGS_use_fake_clock_for_muxer;
-  if (FLAGS_override_version)
-    test_params.injected_library_version = FLAGS_test_version;
+  if (!FLAGS_test_packager_version.empty())
+    test_params.injected_library_version = FLAGS_test_packager_version;
 
   return packaging_params;
 }

@@ -378,7 +378,7 @@ class PackagerAppTest(unittest.TestCase):
       flags.append('--use_fake_clock_for_muxer')
 
     # Override packager version string for testing.
-    flags += ['--override_version', '--test_version', '<tag>-<hash>-<test>']
+    flags += ['--test_packager_version', '<tag>-<hash>-<test>']
     return flags
 
   def _CompareWithGold(self, test_output, golden_file_name):
@@ -518,6 +518,14 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def assertPackageSuccess(self, streams, flags=None):
     self.assertEqual(self.packager.Package(streams, flags), 0)
+
+  def assertMpdGeneratorSuccess(self):
+    media_infos = glob.glob(os.path.join(self.tmp_dir, '*.media_info'))
+    self.assertTrue(media_infos)
+
+    flags = ['--input', ','.join(media_infos), '--output', self.mpd_output]
+    flags += ['--test_packager_version', '<tag>-<hash>-<test>']
+    self.assertEqual(self.packager.MpdGenerator(flags), 0)
 
   def testVersion(self):
     self.assertRegexpMatches(
@@ -1277,6 +1285,16 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_media_info=True))
     self._CheckTestResults('encryption-and-output-media-info')
+
+  def testEncryptionAndOutputMediaInfoAndMpdFromMediaInfo(self):
+    self.assertPackageSuccess(
+        # The order is not determinstic if there are more than one
+        # AdaptationSets, so only one is included here.
+        self._GetStreams(['video']),
+        self._GetFlags(encryption=True, output_media_info=True))
+    self.assertMpdGeneratorSuccess()
+    self._CheckTestResults(
+        'encryption-and-output-media-info-and-mpd-from-media-info')
 
   def testHlsSingleSegmentMp4Encrypted(self):
     self.assertPackageSuccess(

@@ -24,6 +24,9 @@
 #endif  // defined(OS_WIN)
 
 DEFINE_bool(licenses, false, "Dump licenses.");
+DEFINE_string(test_packager_version,
+              "",
+              "Packager version for testing. Should be used for testing only.");
 
 namespace shaka {
 namespace {
@@ -116,6 +119,9 @@ int MpdMain(int argc, char** argv) {
     google::ShowUsageWithFlags("Usage");
     return status;
   }
+
+  if (!FLAGS_test_packager_version.empty())
+    SetPackagerVersionForTesting(FLAGS_test_packager_version);
 
   return RunMpdGenerator();
 }
