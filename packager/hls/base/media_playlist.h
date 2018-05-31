@@ -13,6 +13,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/hls/public/hls_params.h"
+#include "packager/mpd/base/bandwidth_estimator.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
@@ -214,7 +215,7 @@ class MediaPlaylist {
   double longest_segment_duration_ = 0.0;
   uint32_t time_scale_ = 0;
 
-  uint64_t max_bitrate_ = 0;
+  BandwidthEstimator bandwidth_estimator_;
 
   // Cache the previous calls AddSegment() end offset. This is used to construct
   // SegmentInfoEntry.

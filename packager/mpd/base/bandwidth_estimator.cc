@@ -17,9 +17,11 @@ BandwidthEstimator::BandwidthEstimator(size_t num_blocks)
 BandwidthEstimator::~BandwidthEstimator() {}
 
 void BandwidthEstimator::AddBlock(uint64_t size, double duration) {
-  DCHECK_GT(duration, 0.0);
-  DCHECK_GT(size, 0u);
-
+  if (size == 0 || duration == 0) {
+    LOG(WARNING) << "Ignore block with size=" << size
+                 << ", duration=" << duration;
+    return;
+  }
   const int kBitsInByte = 8;
   const double bits_per_second_reciprocal = duration / (kBitsInByte * size);
   sliding_queue_.Add(bits_per_second_reciprocal);

@@ -24,13 +24,24 @@
       'includes': ['../protoc.gypi'],
     },
     {
+      # Used by both MPD and HLS. It should really be moved to a common
+      # directory shared by MPD and HLS.
+      'target_name': 'manifest_base',
+      'type': 'static_library',
+      'sources': [
+        'base/bandwidth_estimator.cc',
+        'base/bandwidth_estimator.h',
+      ],
+      'dependencies': [
+        '../base/base.gyp:base',
+      ],
+    },
+    {
       'target_name': 'mpd_builder',
       'type': 'static_library',
       'sources': [
         'base/adaptation_set.cc',
         'base/adaptation_set.h',
-        'base/bandwidth_estimator.cc',
-        'base/bandwidth_estimator.h',
         'base/content_protection_element.cc',
         'base/content_protection_element.h',
         'base/mpd_builder.cc',
@@ -60,6 +71,7 @@
         '../third_party/gflags/gflags.gyp:gflags',
         '../third_party/libxml/libxml.gyp:libxml',
         '../version/version.gyp:version',
+        'manifest_base',
         'media_info_proto',
       ],
       'export_dependent_settings': [

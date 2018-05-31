@@ -330,7 +330,8 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
     : hls_params_(hls_params),
       file_name_(file_name),
       name_(name),
-      group_id_(group_id) {}
+      group_id_(group_id),
+      bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -462,7 +463,7 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
 uint64_t MediaPlaylist::Bitrate() const {
   if (media_info_.has_bandwidth())
     return media_info_.bandwidth();
-  return max_bitrate_;
+  return bandwidth_estimator_.Max();
 }
 
 double MediaPlaylist::GetLongestSegmentDuration() const {
@@ -523,10 +524,8 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
       static_cast<double>(duration) / time_scale_;
   longest_segment_duration_ =
       std::max(longest_segment_duration_, segment_duration_seconds);
+  bandwidth_estimator_.AddBlock(size, segment_duration_seconds);
 
-  const int kBitsInByte = 8;
-  const uint64_t bitrate = kBitsInByte * size / segment_duration_seconds;
-  max_bitrate_ = std::max(max_bitrate_, bitrate);
   entries_.emplace_back(new SegmentInfoEntry(
       segment_file_name, start_time_seconds, segment_duration_seconds,
       use_byte_range_, start_byte_offset, size, previous_segment_end_offset_));
