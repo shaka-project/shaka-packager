@@ -11,6 +11,9 @@
 #include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
 #include "packager/status_test_util.h"
 
+using testing::AllOf;
+using testing::Not;
+
 namespace shaka {
 namespace media {
 namespace {
@@ -22,6 +25,26 @@ const char* kId1 = "sample-id-1";
 const char* kId2 = "sample-id-2";
 const char* kId3 = "sample-id-3";
 }  // namespace
+
+MATCHER_P(MediaSampleContainsId, id, "") {
+  auto& sample = arg->media_sample;
+
+  if (!sample) {
+    return false;
+  }
+
+  // Convert the sample to a string so that we can look for the id but also
+  // so we can print the data if we need to look at it. Replace the
+  // non-displayable characters with "." as they can cause problems.
+  std::string s;
+  for (size_t i = 0; i < sample->data_size(); i++) {
+    char c = static_cast<char>(sample->data()[i]);
+    s.push_back(isprint(c) ? c : '.');
+  }
+
+  *result_listener << s << " does not contain " << id;
+  return s.find(id) != std::string::npos;
+}
 
 class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
  protected:
@@ -101,11 +124,17 @@ TEST_F(WebVttToMp4HandlerTest, NonZeroStartTime) {
     EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
     // Gap
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGapStart,
-                                                kGapDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(),
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kGapStart,
+                                              kGapDuration, !kEncrypted),
+                                Not(MediaSampleContainsId(kId1)))));
+
     // Sample
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kSampleStart,
-                                                kSampleDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(),
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kSampleStart,
+                                              kSampleDuration, !kEncrypted),
+                                MediaSampleContainsId(kId1))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -153,15 +182,25 @@ TEST_F(WebVttToMp4HandlerTest, NoOverlap) {
 
     // Sample 1
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kSample1Start,
-                                        kSample1Duration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kSample1Start,
+                                              kSample1Duration, !kEncrypted),
+                                MediaSampleContainsId(kId1),
+                                Not(MediaSampleContainsId(kId2)))));
+
     // Gap
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGapStart,
-                                                kGapDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(),
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kGapStart,
+                                              kGapDuration, !kEncrypted),
+                                Not(MediaSampleContainsId(kId1)),
+                                Not(MediaSampleContainsId(kId2)))));
+
     // Sample 2
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kSample2Start,
-                                        kSample2Duration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kSample2Start,
+                                              kSample2Duration, !kEncrypted),
+                                Not(MediaSampleContainsId(kId1)),
+                                MediaSampleContainsId(kId2))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -215,17 +254,26 @@ TEST_F(WebVttToMp4HandlerTest, Overlap) {
     EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
     // Sample 1
-    EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kOnlySample1Start,
-                                        kOnlySample1Duration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(AllOf(
+                            IsMediaSample(kStreamIndex, kOnlySample1Start,
+                                          kOnlySample1Duration, !kEncrypted),
+                            MediaSampleContainsId(kId1),
+                            Not(MediaSampleContainsId(kId2)))));
+
     // Sample 1 and Sample 2
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(
-                            kStreamIndex, kSample1AndSample2Start,
-                            kSample1AndSample2Duration, !kEncrypted)));
-    // Sample 2
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kOnlySample2Start,
-                                        kOnlySample2Duration, !kEncrypted)));
+                OnProcess(AllOf(
+                    IsMediaSample(kStreamIndex, kSample1AndSample2Start,
+                                  kSample1AndSample2Duration, !kEncrypted),
+                    MediaSampleContainsId(kId1), MediaSampleContainsId(kId2))));
+
+    // Sample 2
+    EXPECT_CALL(*Out(), OnProcess(AllOf(
+                            IsMediaSample(kStreamIndex, kOnlySample2Start,
+                                          kOnlySample2Duration, !kEncrypted),
+                            Not(MediaSampleContainsId(kId1)),
+                            MediaSampleContainsId(kId2))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -281,17 +329,26 @@ TEST_F(WebVttToMp4HandlerTest, Contains) {
     EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
     // Sample 1
-    EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kBeforeSample2Start,
-                                        kBeforeSample2Duration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(AllOf(
+                            IsMediaSample(kStreamIndex, kBeforeSample2Start,
+                                          kBeforeSample2Duration, !kEncrypted),
+                            MediaSampleContainsId(kId1),
+                            Not(MediaSampleContainsId(kId2)))));
+
     // Sample 1 and Sample 2
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kDuringSample2Start,
-                                        kDuringSample2Duration, !kEncrypted)));
+                OnProcess(AllOf(
+                    IsMediaSample(kStreamIndex, kDuringSample2Start,
+                                  kDuringSample2Duration, !kEncrypted),
+                    MediaSampleContainsId(kId1), MediaSampleContainsId(kId2))));
+
     // Sample 1 Again
-    EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kAfterSample2Start,
-                                        kAfterSample2Duration, !kEncrypted)));
+    EXPECT_CALL(*Out(), OnProcess(AllOf(
+                            IsMediaSample(kStreamIndex, kAfterSample2Start,
+                                          kAfterSample2Duration, !kEncrypted),
+                            MediaSampleContainsId(kId1),
+                            Not(MediaSampleContainsId(kId2)))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -331,8 +388,12 @@ TEST_F(WebVttToMp4HandlerTest, ExactOverlap) {
     EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
     // Both Samples
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kSampleStart,
-                                                kSampleDuration, !kEncrypted)));
+    EXPECT_CALL(*Out(),
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kSampleStart,
+                                              kSampleDuration, !kEncrypted),
+                                MediaSampleContainsId(kId1),
+                                MediaSampleContainsId(kId2))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -390,16 +451,28 @@ TEST_F(WebVttToMp4HandlerTest, OverlapStartWithStaggerEnd) {
 
     // Three Samples
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kThreeSamplesStart,
-                                        kThreeSamplesDuration, !kEncrypted)));
+                OnProcess(AllOf(
+                    IsMediaSample(kStreamIndex, kThreeSamplesStart,
+                                  kThreeSamplesDuration, !kEncrypted),
+                    MediaSampleContainsId(kId1), MediaSampleContainsId(kId2),
+                    MediaSampleContainsId(kId3))));
+
     // Two Samples
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kTwoSamplesStart,
-                                        kTwoSamplesDuration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kTwoSamplesStart,
+                                              kTwoSamplesDuration, !kEncrypted),
+                                MediaSampleContainsId(kId1),
+                                MediaSampleContainsId(kId2),
+                                Not(MediaSampleContainsId(kId3)))));
+
     // One Sample
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kOneSampleStart,
-                                        kOneSampleDuration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kOneSampleStart,
+                                              kOneSampleDuration, !kEncrypted),
+                                MediaSampleContainsId(kId1),
+                                Not(MediaSampleContainsId(kId2)),
+                                Not(MediaSampleContainsId(kId3)))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -458,16 +531,28 @@ TEST_F(WebVttToMp4HandlerTest, StaggerStartWithOverlapEnd) {
 
     // One Sample
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kOneSampleStart,
-                                        kOneSampleDuration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kOneSampleStart,
+                                              kOneSampleDuration, !kEncrypted),
+                                MediaSampleContainsId(kId1),
+                                Not(MediaSampleContainsId(kId2)),
+                                Not(MediaSampleContainsId(kId3)))));
+
     // Two Samples
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kTwoSamplesStart,
-                                        kTwoSamplesDuration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kTwoSamplesStart,
+                                              kTwoSamplesDuration, !kEncrypted),
+                                MediaSampleContainsId(kId1),
+                                MediaSampleContainsId(kId2),
+                                Not(MediaSampleContainsId(kId3)))));
+
     // Three Samples
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kThreeSamplesStart,
-                                        kThreeSamplesDuration, !kEncrypted)));
+                OnProcess(AllOf(
+                    IsMediaSample(kStreamIndex, kThreeSamplesStart,
+                                  kThreeSamplesDuration, !kEncrypted),
+                    MediaSampleContainsId(kId1), MediaSampleContainsId(kId2),
+                    MediaSampleContainsId(kId3))));
+
     // Segment
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
                                                 kSegmentDuration, !kSubSegment,
@@ -521,21 +606,31 @@ TEST_F(WebVttToMp4HandlerTest, CrossSegmentSamples) {
     EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
 
     // Gap, Sample, Segment
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGap1Start,
-                                                kGapDuration, !kEncrypted)));
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kSamplePart1Start,
-                                        kSamplePart1Duration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kGap1Start,
+                                              kGapDuration, !kEncrypted),
+                                Not(MediaSampleContainsId(kId1)))));
+
+    EXPECT_CALL(*Out(), OnProcess(AllOf(
+                            IsMediaSample(kStreamIndex, kSamplePart1Start,
+                                          kSamplePart1Duration, !kEncrypted),
+                            MediaSampleContainsId(kId1))));
+
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
                                                 kSegmentDuration, !kSubSegment,
                                                 !kEncrypted)));
 
     // Sample, Gap, Segment
+    EXPECT_CALL(*Out(), OnProcess(AllOf(
+                            IsMediaSample(kStreamIndex, kSamplePart2Start,
+                                          kSamplePart2Duration, !kEncrypted),
+                            MediaSampleContainsId(kId1))));
+
     EXPECT_CALL(*Out(),
-                OnProcess(IsMediaSample(kStreamIndex, kSamplePart2Start,
-                                        kSamplePart2Duration, !kEncrypted)));
-    EXPECT_CALL(*Out(), OnProcess(IsMediaSample(kStreamIndex, kGap2Start,
-                                                kGapDuration, !kEncrypted)));
+                OnProcess(AllOf(IsMediaSample(kStreamIndex, kGap2Start,
+                                              kGapDuration, !kEncrypted),
+                                Not(MediaSampleContainsId(kId1)))));
+
     EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
                                                 kSegmentDuration, !kSubSegment,
                                                 !kEncrypted)));
