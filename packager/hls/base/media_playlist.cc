@@ -460,10 +460,14 @@ bool MediaPlaylist::WriteToFile(const std::string& file_path) {
   return true;
 }
 
-uint64_t MediaPlaylist::Bitrate() const {
+uint64_t MediaPlaylist::MaxBitrate() const {
   if (media_info_.has_bandwidth())
     return media_info_.bandwidth();
   return bandwidth_estimator_.Max();
+}
+
+uint64_t MediaPlaylist::AvgBitrate() const {
+  return bandwidth_estimator_.Estimate();
 }
 
 double MediaPlaylist::GetLongestSegmentDuration() const {

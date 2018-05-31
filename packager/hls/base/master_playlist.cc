@@ -34,18 +34,36 @@ void AppendVersionString(std::string* content) {
                       GetPackagerProjectUrl().c_str(), version.c_str());
 }
 
+// This structure roughly maps to the Variant stream in HLS specification.
+// Each variant specifies zero or one audio group and zero or one text group.
 struct Variant {
   std::set<std::string> audio_codecs;
   std::set<std::string> text_codecs;
   const std::string* audio_group_id = nullptr;
   const std::string* text_group_id = nullptr;
-  uint64_t audio_bitrate = 0;
+  // The bitrates should be the sum of audio bitrate and text bitrate.
+  // However, given the contraints and assumptions, it makes sense to exclude
+  // text bitrate out of the calculation:
+  // - Text streams usually have a very small negligible bitrate.
+  // - Text does not have constant bitrates. To avoid fluctuation, an arbitrary
+  //   value is assigned to the text bitrates in the parser. It does not make
+  //   sense to take that text bitrate into account here.
+  uint64_t max_audio_bitrate = 0;
+  uint64_t avg_audio_bitrate = 0;
 };
 
-uint64_t MaxBitrate(const std::list<const MediaPlaylist*> playlists) {
+uint64_t GetMaximumMaxBitrate(const std::list<const MediaPlaylist*> playlists) {
   uint64_t max = 0;
   for (const auto& playlist : playlists) {
-    max = std::max(max, playlist->Bitrate());
+    max = std::max(max, playlist->MaxBitrate());
+  }
+  return max;
+}
+
+uint64_t GetMaximumAvgBitrate(const std::list<const MediaPlaylist*> playlists) {
+  uint64_t max = 0;
+  for (const auto& playlist : playlists) {
+    max = std::max(max, playlist->AvgBitrate());
   }
   return max;
 }
@@ -78,7 +96,8 @@ std::list<Variant> AudioGroupsToVariants(
   for (const auto& group : groups) {
     Variant variant;
     variant.audio_group_id = &group.first;
-    variant.audio_bitrate = MaxBitrate(group.second);
+    variant.max_audio_bitrate = GetMaximumMaxBitrate(group.second);
+    variant.avg_audio_bitrate = GetMaximumAvgBitrate(group.second);
     variant.audio_codecs = GetGroupCodecString(group.second);
 
     variants.push_back(variant);
@@ -153,7 +172,8 @@ std::list<Variant> BuildVariants(
       variant.text_codecs = subtitle_variant.text_codecs;
       variant.audio_group_id = audio_variant.audio_group_id;
       variant.text_group_id = subtitle_variant.text_group_id;
-      variant.audio_bitrate = audio_variant.audio_bitrate;
+      variant.max_audio_bitrate = audio_variant.max_audio_bitrate;
+      variant.avg_audio_bitrate = audio_variant.avg_audio_bitrate;
 
       merged.push_back(variant);
     }
@@ -185,8 +205,9 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
   }
   Tag tag(tag_name, out);
 
-  const uint64_t bitrate = playlist.Bitrate() + variant.audio_bitrate;
-  tag.AddNumber("BANDWIDTH", bitrate);
+  tag.AddNumber("BANDWIDTH", playlist.MaxBitrate() + variant.max_audio_bitrate);
+  tag.AddNumber("AVERAGE-BANDWIDTH",
+                playlist.AvgBitrate() + variant.avg_audio_bitrate);
 
   std::vector<std::string> all_codecs;
   all_codecs.push_back(playlist.codec());

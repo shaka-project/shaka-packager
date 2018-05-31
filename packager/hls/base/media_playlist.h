@@ -152,8 +152,13 @@ class MediaPlaylist {
 
   /// If bitrate is specified in MediaInfo then it will use that value.
   /// Otherwise, returns the max bitrate.
-  /// @return the bitrate (in bits per second) of this MediaPlaylist.
-  virtual uint64_t Bitrate() const;
+  /// @return the max bitrate (in bits per second) of this MediaPlaylist.
+  virtual uint64_t MaxBitrate() const;
+
+  /// Unlike @a MaxBitrate, AvgBitrate is always computed from the segment size
+  /// and duration.
+  /// @return The average bitrate (in bits per second) of this MediaPlaylist.
+  virtual uint64_t AvgBitrate() const;
 
   /// @return the longest segment’s duration. This will return 0 if no
   ///         segments have been added.

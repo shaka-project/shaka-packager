@@ -67,7 +67,7 @@ const char kUsage[] =
     "    split into multiple files. Its presence should be consistent across\n"
     "    streams.\n"
     "  - bandwidth (bw): Optional value which contains a user-specified\n"
-    "    content bit rate for the stream, in bits/sec. If specified, this\n"
+    "    maximum bit rate for the stream, in bits/sec. If specified, this\n"
     "    value is propagated to (HLS) EXT-X-STREAM-INF:BANDWIDTH or (DASH)\n"
     "    Representation@bandwidth and the $Bandwidth$ template parameter for\n"
     "    segment names. If not specified, the bandwidth value is estimated\n"

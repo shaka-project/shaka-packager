@@ -248,7 +248,7 @@ TEST_F(MediaPlaylistMultiSegmentTest, WriteToFile) {
 TEST_F(MediaPlaylistMultiSegmentTest, UseBitrateInMediaInfo) {
   valid_video_media_info_.set_bandwidth(8191);
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
-  EXPECT_EQ(8191u, media_playlist_->Bitrate());
+  EXPECT_EQ(8191u, media_playlist_->MaxBitrate());
 }
 
 // If bitrate (bandwidth) is not set in the MediaInfo, then calculate from the
@@ -263,7 +263,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetBitrateFromSegments) {
                               kZeroByteOffset, 5 * kMBytes);
 
   // Max bitrate is 2000Kb/s.
-  EXPECT_EQ(2000000u, media_playlist_->Bitrate());
+  EXPECT_EQ(2000000u, media_playlist_->MaxBitrate());
+  EXPECT_EQ(1142858u, media_playlist_->AvgBitrate());
 }
 
 TEST_F(MediaPlaylistMultiSegmentTest, GetLongestSegmentDuration) {

@@ -35,7 +35,8 @@ const uint32_t kHeight = 600;
 std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
     const std::string& filename,
     const std::string& codec,
-    uint64_t bitrate) {
+    uint64_t max_bitrate,
+    uint64_t avg_bitrate) {
   const char kNoName[] = "";
   const char kNoGroup[] = "";
 
@@ -46,9 +47,12 @@ std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
       MediaPlaylist::MediaPlaylistStreamType::kVideo);
   playlist->SetCodecForTesting(codec);
 
-  EXPECT_CALL(*playlist, Bitrate())
+  EXPECT_CALL(*playlist, MaxBitrate())
       .Times(AtLeast(1))
-      .WillRepeatedly(Return(bitrate));
+      .WillRepeatedly(Return(max_bitrate));
+  EXPECT_CALL(*playlist, AvgBitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(avg_bitrate));
   EXPECT_CALL(*playlist, GetDisplayResolution(NotNull(), NotNull()))
       .WillRepeatedly(DoAll(SetArgPointee<0>(kWidth), SetArgPointee<1>(kHeight),
                             Return(true)));
@@ -59,8 +63,10 @@ std::unique_ptr<MockMediaPlaylist> CreateVideoPlaylist(
 std::unique_ptr<MockMediaPlaylist> CreateIframePlaylist(
     const std::string& filename,
     const std::string& codec,
-    uint64_t bitrate) {
-  auto playlist = CreateVideoPlaylist(filename, codec, bitrate);
+    uint64_t max_bitrate,
+    uint64_t avg_bitrate) {
+  auto playlist =
+      CreateVideoPlaylist(filename, codec, max_bitrate, avg_bitrate);
   playlist->SetStreamTypeForTesting(
       MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly);
   return playlist;
@@ -73,7 +79,8 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
     const std::string& codec,
     const std::string& language,
     uint64_t channels,
-    uint64_t bitrate) {
+    uint64_t max_bitrate,
+    uint64_t avg_bitrate) {
   std::unique_ptr<MockMediaPlaylist> playlist(
       new MockMediaPlaylist(filename, name, group));
 
@@ -84,9 +91,12 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
   playlist->SetCodecForTesting(codec);
   playlist->SetLanguageForTesting(language);
 
-  EXPECT_CALL(*playlist, Bitrate())
+  EXPECT_CALL(*playlist, MaxBitrate())
       .Times(AtLeast(1))
-      .WillRepeatedly(Return(bitrate));
+      .WillRepeatedly(Return(max_bitrate));
+  EXPECT_CALL(*playlist, AvgBitrate())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(avg_bitrate));
   EXPECT_CALL(*playlist, GetDisplayResolution(NotNull(), NotNull())).Times(0);
 
   return playlist;
@@ -128,10 +138,11 @@ class MasterPlaylistTest : public ::testing::Test {
 };
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
-  const uint64_t kBitRate = 435889;
+  const uint64_t kMaxBitrate = 435889;
+  const uint64_t kAvgBitrate = 235889;
 
   std::unique_ptr<MockMediaPlaylist> mock_playlist =
-      CreateVideoPlaylist("media1.m3u8", "avc1", kBitRate);
+      CreateVideoPlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
@@ -145,17 +156,19 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=435889,CODECS=\"avc1\",RESOLUTION=800x600\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
+      "CODECS=\"avc1\",RESOLUTION=800x600\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
-  const uint64_t kBitRate = 435889;
+  const uint64_t kMaxBitrate = 435889;
+  const uint64_t kAvgBitrate = 235889;
 
   std::unique_ptr<MockMediaPlaylist> mock_playlist =
-      CreateIframePlaylist("media1.m3u8", "avc1", kBitRate);
+      CreateIframePlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
@@ -169,39 +182,44 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
       "\n"
-      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=435889,CODECS=\"avc1\",RESOLUTION="
-      "800x600,URI=\"http://myplaylistdomain.com/media1.m3u8\"\n";
+      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
+      "CODECS=\"avc1\",RESOLUTION=800x600,"
+      "URI=\"http://myplaylistdomain.com/media1.m3u8\"\n";
 
   ASSERT_EQ(expected, actual);
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
-  const uint64_t kVideo1BitRate = 300000;
-  const uint64_t kVideo2BitRate = 700000;
+  const uint64_t kVideo1MaxBitrate = 300000;
+  const uint64_t kVideo1AvgBitrate = 200000;
+  const uint64_t kVideo2MaxBitrate = 700000;
+  const uint64_t kVideo2AvgBitrate = 400000;
 
-  const uint64_t kAudio1BitRate = 50000;
-  const uint64_t kAudio2BitRate = 60000;
+  const uint64_t kAudio1MaxBitrate = 50000;
+  const uint64_t kAudio1AvgBitrate = 40000;
+  const uint64_t kAudio2MaxBitrate = 60000;
+  const uint64_t kAudio2AvgBitrate = 30000;
 
   const uint64_t kAudio1Channels = 2;
   const uint64_t kAudio2Channels = 5;
 
   // First video, sd.m3u8.
-  std::unique_ptr<MockMediaPlaylist> sd_video_playlist =
-      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", kVideo1BitRate);
+  std::unique_ptr<MockMediaPlaylist> sd_video_playlist = CreateVideoPlaylist(
+      "sd.m3u8", "sdvideocodec", kVideo1MaxBitrate, kVideo1AvgBitrate);
 
   // Second video, hd.m3u8.
-  std::unique_ptr<MockMediaPlaylist> hd_video_playlist =
-      CreateVideoPlaylist("hd.m3u8", "hdvideocodec", kVideo2BitRate);
+  std::unique_ptr<MockMediaPlaylist> hd_video_playlist = CreateVideoPlaylist(
+      "hd.m3u8", "hdvideocodec", kVideo2MaxBitrate, kVideo2AvgBitrate);
 
   // First audio, english.m3u8.
-  std::unique_ptr<MockMediaPlaylist> english_playlist =
-      CreateAudioPlaylist("eng.m3u8", "english", "audiogroup", "audiocodec",
-                          "en", kAudio1Channels, kAudio1BitRate);
+  std::unique_ptr<MockMediaPlaylist> english_playlist = CreateAudioPlaylist(
+      "eng.m3u8", "english", "audiogroup", "audiocodec", "en", kAudio1Channels,
+      kAudio1MaxBitrate, kAudio1AvgBitrate);
 
   // Second audio, spanish.m3u8.
-  std::unique_ptr<MockMediaPlaylist> spanish_playlist =
-      CreateAudioPlaylist("spa.m3u8", "espanol", "audiogroup", "audiocodec",
-                          "es", kAudio2Channels, kAudio2BitRate);
+  std::unique_ptr<MockMediaPlaylist> spanish_playlist = CreateAudioPlaylist(
+      "spa.m3u8", "espanol", "audiogroup", "audiocodec", "es", kAudio2Channels,
+      kAudio2MaxBitrate, kAudio2AvgBitrate);
 
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
@@ -224,10 +242,12 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "GROUP-ID=\"audiogroup\",LANGUAGE=\"es\",NAME=\"espanol\","
       "AUTOSELECT=YES,CHANNELS=\"5\"\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=360000,CODECS=\"sdvideocodec,audiocodec\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=360000,AVERAGE-BANDWIDTH=240000,"
+      "CODECS=\"sdvideocodec,audiocodec\","
       "RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
       "http://playlists.org/sd.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=760000,CODECS=\"hdvideocodec,audiocodec\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=760000,AVERAGE-BANDWIDTH=440000,"
+      "CODECS=\"hdvideocodec,audiocodec\","
       "RESOLUTION=800x600,AUDIO=\"audiogroup\"\n"
       "http://playlists.org/hd.m3u8\n";
 
@@ -235,27 +255,30 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
 }
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
-  const uint64_t kVideoBitRate = 300000;
+  const uint64_t kVideoMaxBitrate = 300000;
+  const uint64_t kVideoAvgBitrate = 200000;
 
-  const uint64_t kAudio1BitRate = 50000;
-  const uint64_t kAudio2BitRate = 100000;
+  const uint64_t kAudio1MaxBitrate = 50000;
+  const uint64_t kAudio1AvgBitrate = 40000;
+  const uint64_t kAudio2MaxBitrate = 100000;
+  const uint64_t kAudio2AvgBitrate = 70000;
 
   const uint64_t kAudio1Channels = 1;
   const uint64_t kAudio2Channels = 8;
 
   // First video, sd.m3u8.
-  std::unique_ptr<MockMediaPlaylist> video_playlist =
-      CreateVideoPlaylist("video.m3u8", "videocodec", kVideoBitRate);
+  std::unique_ptr<MockMediaPlaylist> video_playlist = CreateVideoPlaylist(
+      "video.m3u8", "videocodec", kVideoMaxBitrate, kVideoAvgBitrate);
 
   // First audio, eng_lo.m3u8.
   std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
       "eng_lo.m3u8", "english_lo", "audio_lo", "audiocodec_lo", "en",
-      kAudio1Channels, kAudio1BitRate);
+      kAudio1Channels, kAudio1MaxBitrate, kAudio1AvgBitrate);
 
   // Second audio, eng_hi.m3u8.
   std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
       "eng_hi.m3u8", "english_hi", "audio_hi", "audiocodec_hi", "en",
-      kAudio2Channels, kAudio2BitRate);
+      kAudio2Channels, kAudio2MaxBitrate, kAudio2AvgBitrate);
 
   const char kBaseUrl[] = "http://anydomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
@@ -277,11 +300,13 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       "GROUP-ID=\"audio_lo\",LANGUAGE=\"en\",NAME=\"english_lo\","
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"1\"\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=400000,CODECS=\"videocodec,audiocodec_hi\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=270000,"
+      "CODECS=\"videocodec,audiocodec_hi\","
       "RESOLUTION=800x600,AUDIO=\"audio_hi\"\n"
       "http://anydomain.com/video.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"videocodec,audiocodec_lo\","
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=240000,"
+      "CODECS=\"videocodec,audiocodec_lo\","
       "RESOLUTION=800x600,AUDIO=\"audio_lo\"\n"
       "http://anydomain.com/video.m3u8\n";
 
@@ -291,14 +316,14 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
   // First video, video.m3u8.
   std::unique_ptr<MockMediaPlaylist> video_playlist =
-      CreateVideoPlaylist("video.m3u8", "videocodec", 300000);
+      CreateVideoPlaylist("video.m3u8", "videocodec", 300000, 200000);
 
   // First audio, eng_lo.m3u8.
   std::unique_ptr<MockMediaPlaylist> eng_lo_playlist = CreateAudioPlaylist(
-      "eng_lo.m3u8", "english", "audio", "audiocodec", "en", 1, 50000);
+      "eng_lo.m3u8", "english", "audio", "audiocodec", "en", 1, 50000, 40000);
 
   std::unique_ptr<MockMediaPlaylist> eng_hi_playlist = CreateAudioPlaylist(
-      "eng_hi.m3u8", "english", "audio", "audiocodec", "en", 8, 100000);
+      "eng_hi.m3u8", "english", "audio", "audiocodec", "en", 8, 100000, 80000);
 
   const char kBaseUrl[] = "http://anydomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
@@ -319,8 +344,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://anydomain.com/eng_hi.m3u8\","
       "GROUP-ID=\"audio\",LANGUAGE=\"en\",NAME=\"english\",CHANNELS=\"8\"\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=400000,CODECS=\"videocodec,audiocodec\","
-      "RESOLUTION=800x600,AUDIO=\"audio\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=280000,"
+      "CODECS=\"videocodec,audiocodec\",RESOLUTION=800x600,AUDIO=\"audio\"\n"
       "http://anydomain.com/video.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -329,11 +354,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video1 =
-      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
 
   // Video, hd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video2 =
-      CreateVideoPlaylist("hd.m3u8", "sdvideocodec", 600000);
+      CreateVideoPlaylist("hd.m3u8", "sdvideocodec", 600000, 500000);
 
   // Text, eng.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_eng =
@@ -362,11 +387,13 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
       "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\",AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec,textcodec\","
-      "RESOLUTION=800x600,SUBTITLES=\"textgroup\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\"\n"
       "http://playlists.org/sd.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=600000,CODECS=\"sdvideocodec,textcodec\","
-      "RESOLUTION=800x600,SUBTITLES=\"textgroup\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=600000,AVERAGE-BANDWIDTH=500000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\"\n"
       "http://playlists.org/hd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -375,7 +402,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video =
-      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
 
   // Text, eng.m3u8.
   std::unique_ptr<MockMediaPlaylist> text_eng = CreateTextPlaylist(
@@ -405,12 +432,14 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       "GROUP-ID=\"fr-text-group\",LANGUAGE=\"fr\",NAME=\"french\","
       "AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec,textcodec\","
-      "RESOLUTION=800x600,SUBTITLES=\"en-text-group\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"en-text-group\"\n"
       "http://playlists.org/sd.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=300000,CODECS=\"sdvideocodec,textcodec\","
-      "RESOLUTION=800x600,SUBTITLES=\"fr-text-group\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"fr-text-group\"\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -419,11 +448,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video =
-      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000);
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
 
   // Audio, english.m3u8.
   std::unique_ptr<MockMediaPlaylist> audio = CreateAudioPlaylist(
-      "eng.m3u8", "english", "audiogroup", "audiocodec", "en", 2, 50000);
+      "eng.m3u8", "english", "audiogroup", "audiocodec", "en", 2, 50000, 30000);
 
   // Text, english.m3u8.
   std::unique_ptr<MockMediaPlaylist> text =
@@ -449,9 +478,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
       "AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audiogroup\",SUBTITLES="
-      "\"textgroup\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audiogroup\",SUBTITLES=\"textgroup\"\n"
       "http://playlists.org/sd.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -459,16 +488,21 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
 
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
   const uint64_t kAudioChannels = 2;
-  const uint64_t kAudioBitRate = 50000;
-  const uint64_t kVideoBitRate = 300000;
-  const uint64_t kIframeBitRate = 100000;
+  const uint64_t kAudioMaxBitrate = 50000;
+  const uint64_t kAudioAvgBitrate = 30000;
+  const uint64_t kVideoMaxBitrate = 300000;
+  const uint64_t kVideoAvgBitrate = 100000;
+  const uint64_t kIframeMaxBitrate = 100000;
+  const uint64_t kIframeAvgBitrate = 80000;
 
   std::unique_ptr<MockMediaPlaylist> media_playlists[] = {
       // AUDIO
       CreateAudioPlaylist("audio-1.m3u8", "audio 1", "audio-group-1",
-                          "audiocodec", "en", kAudioChannels, kAudioBitRate),
+                          "audiocodec", "en", kAudioChannels, kAudioMaxBitrate,
+                          kAudioAvgBitrate),
       CreateAudioPlaylist("audio-2.m3u8", "audio 2", "audio-group-2",
-                          "audiocodec", "en", kAudioChannels, kAudioBitRate),
+                          "audiocodec", "en", kAudioChannels, kAudioMaxBitrate,
+                          kAudioAvgBitrate),
 
       // SUBTITLES
       CreateTextPlaylist("text-1.m3u8", "text 1", "text-group-1", "textcodec",
@@ -477,12 +511,16 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
                          "en"),
 
       // VIDEO
-      CreateVideoPlaylist("video-1.m3u8", "sdvideocodec", kVideoBitRate),
-      CreateVideoPlaylist("video-2.m3u8", "sdvideocodec", kVideoBitRate),
+      CreateVideoPlaylist("video-1.m3u8", "sdvideocodec", kVideoMaxBitrate,
+                          kVideoAvgBitrate),
+      CreateVideoPlaylist("video-2.m3u8", "sdvideocodec", kVideoMaxBitrate,
+                          kVideoAvgBitrate),
 
       // I-Frame
-      CreateIframePlaylist("iframe-1.m3u8", "sdvideocodec", kIframeBitRate),
-      CreateIframePlaylist("iframe-2.m3u8", "sdvideocodec", kIframeBitRate),
+      CreateIframePlaylist("iframe-1.m3u8", "sdvideocodec", kIframeMaxBitrate,
+                           kIframeAvgBitrate),
+      CreateIframePlaylist("iframe-2.m3u8", "sdvideocodec", kIframeMaxBitrate,
+                           kIframeAvgBitrate),
   };
 
   // Add all the media playlists to the master playlist.
@@ -517,46 +555,48 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
       "GROUP-ID=\"text-group-2\",LANGUAGE=\"en\",NAME=\"text 2\","
       "DEFAULT=YES,AUTOSELECT=YES\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
-      "group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
-      "group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-1\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
-      "group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-1\",SUBTITLES=\"text-"
-      "group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-1\",SUBTITLES=\"text-group-2\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
-      "group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
-      "group-1\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-1\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
-      "group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
       "http://playlists.org/video-1.m3u8\n"
-      "#EXT-X-STREAM-INF:BANDWIDTH=350000,CODECS=\"sdvideocodec,audiocodec,"
-      "textcodec\",RESOLUTION=800x600,AUDIO=\"audio-group-2\",SUBTITLES=\"text-"
-      "group-2\"\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"
+      "CODECS=\"sdvideocodec,audiocodec,textcodec\",RESOLUTION=800x600,"
+      "AUDIO=\"audio-group-2\",SUBTITLES=\"text-group-2\"\n"
       "http://playlists.org/video-2.m3u8\n"
       "\n"
-      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,CODECS=\"sdvideocodec\","
-      "RESOLUTION=800x600,URI=\"http://playlists.org/iframe-1.m3u8\"\n"
-      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,CODECS=\"sdvideocodec\","
-      "RESOLUTION=800x600,URI=\"http://playlists.org/iframe-2.m3u8\"\n";
+      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,AVERAGE-BANDWIDTH=80000,"
+      "CODECS=\"sdvideocodec\",RESOLUTION=800x600,"
+      "URI=\"http://playlists.org/iframe-1.m3u8\"\n"
+      "#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=100000,AVERAGE-BANDWIDTH=80000,"
+      "CODECS=\"sdvideocodec\",RESOLUTION=800x600,"
+      "URI=\"http://playlists.org/iframe-2.m3u8\"\n";
 
   ASSERT_EQ(expected, actual);
 }
