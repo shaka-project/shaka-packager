@@ -26,6 +26,7 @@ const char* kId2 = "sample-id-2";
 const char* kId3 = "sample-id-3";
 
 const char* kSimplePayload = "simple-payload-that-has-some-text";
+const char* kEmptyPayload = "";
 }  // namespace
 
 MATCHER_P(MediaSampleContainsId, id, "") {
@@ -96,6 +97,51 @@ class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
 
   Status Flush() { return In()->FlushAllDownstreams(); }
 };
+
+// Verify that samples with no payload are ignored and act as gaps.
+//
+// |[-- SEGMENT ------------------]|
+// |         [--- EMPTY SAMPLE ---]|
+// |[- GAP -]                      |
+//
+TEST_F(WebVttToMp4HandlerTest, IngoresEmptyPayloadSamples) {
+  const int64_t kSegmentStart = 0;
+  const int64_t kSegmentEnd = 10000;
+  const int64_t kSegmentDuration = kSegmentEnd - kSegmentStart;
+
+  const int64_t kGapStart = kSegmentStart;
+  const int64_t kGapEnd = kGapStart + 200;
+
+  const int64_t kSampleStart = kGapEnd;
+  const int64_t kSampleEnd = kSegmentEnd;
+
+  ASSERT_OK(SetUpTestGraph());
+
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(*Out(), OnProcess(IsStreamInfo(kStreamIndex)));
+
+    // Gap - The gap and sample should be combines into a new gap that spans
+    // the while segment.
+    EXPECT_CALL(*Out(),
+                OnProcess(IsMediaSample(kStreamIndex, kSegmentStart,
+                                        kSegmentDuration, !kEncrypted)));
+    // Segment
+    EXPECT_CALL(*Out(), OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart,
+                                                kSegmentDuration, !kSubSegment,
+                                                !kEncrypted)));
+
+    EXPECT_CALL(*Out(), OnFlush(kStreamIndex));
+  }
+
+  ASSERT_OK(DispatchStream());
+  // Even if the sample has an id, it should still get ignored if it has no
+  // payload.
+  ASSERT_OK(DispatchText(kId1, kEmptyPayload, kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
+  ASSERT_OK(Flush());
+}
 
 // Verify that when the stream starts at a non-zero value, the gap at the
 // start will be filled.
