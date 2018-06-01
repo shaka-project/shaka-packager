@@ -24,6 +24,8 @@ const bool kEncrypted = true;
 const char* kId1 = "sample-id-1";
 const char* kId2 = "sample-id-2";
 const char* kId3 = "sample-id-3";
+
+const char* kSimplePayload = "simple-payload-that-has-some-text";
 }  // namespace
 
 MATCHER_P(MediaSampleContainsId, id, "") {
@@ -73,11 +75,10 @@ class WebVttToMp4HandlerTest : public MediaHandlerTestBase {
   }
 
   Status DispatchText(const std::string& id,
+                      const std::string& payload,
                       int64_t start_time,
                       int64_t end_time) {
-    const std::string kPayload = "payload";
-
-    auto sample = GetTextSample(id, start_time, end_time, kPayload);
+    auto sample = GetTextSample(id, start_time, end_time, payload);
     return In()->Dispatch(
         StreamData::FromTextSample(kStreamIndex, std::move(sample)));
   }
@@ -144,7 +145,7 @@ TEST_F(WebVttToMp4HandlerTest, NonZeroStartTime) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSampleStart, kSampleEnd));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -210,8 +211,8 @@ TEST_F(WebVttToMp4HandlerTest, NoOverlap) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSample1Start, kSample1End));
-  ASSERT_OK(DispatchText(kId2, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kId2, kSimplePayload, kSample2Start, kSample2End));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -283,8 +284,8 @@ TEST_F(WebVttToMp4HandlerTest, Overlap) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSample1Start, kSample1End));
-  ASSERT_OK(DispatchText(kId2, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kId2, kSimplePayload, kSample2Start, kSample2End));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -358,8 +359,8 @@ TEST_F(WebVttToMp4HandlerTest, Contains) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSample1Start, kSample1End));
-  ASSERT_OK(DispatchText(kId2, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kId2, kSimplePayload, kSample2Start, kSample2End));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -403,8 +404,8 @@ TEST_F(WebVttToMp4HandlerTest, ExactOverlap) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSampleStart, kSampleEnd));
-  ASSERT_OK(DispatchText(kId2, kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchText(kId2, kSimplePayload, kSampleStart, kSampleEnd));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -482,9 +483,9 @@ TEST_F(WebVttToMp4HandlerTest, OverlapStartWithStaggerEnd) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSample1Start, kSample1End));
-  ASSERT_OK(DispatchText(kId2, kSample2Start, kSample2End));
-  ASSERT_OK(DispatchText(kId3, kSample3Start, kSample3End));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kId2, kSimplePayload, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kId3, kSimplePayload, kSample3Start, kSample3End));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -562,9 +563,9 @@ TEST_F(WebVttToMp4HandlerTest, StaggerStartWithOverlapEnd) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSample1Start, kSample1End));
-  ASSERT_OK(DispatchText(kId2, kSample2Start, kSample2End));
-  ASSERT_OK(DispatchText(kId3, kSample3Start, kSample3End));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchText(kId2, kSimplePayload, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchText(kId3, kSimplePayload, kSample3Start, kSample3End));
   ASSERT_OK(DispatchSegment(kSegmentStart, kSegmentEnd));
   ASSERT_OK(Flush());
 }
@@ -639,9 +640,9 @@ TEST_F(WebVttToMp4HandlerTest, CrossSegmentSamples) {
   }
 
   ASSERT_OK(DispatchStream());
-  ASSERT_OK(DispatchText(kId1, kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSampleStart, kSampleEnd));
   ASSERT_OK(DispatchSegment(kSegment1Start, kSegment1End));
-  ASSERT_OK(DispatchText(kId1, kSampleStart, kSampleEnd));
+  ASSERT_OK(DispatchText(kId1, kSimplePayload, kSampleStart, kSampleEnd));
   ASSERT_OK(DispatchSegment(kSegment2Start, kSegment2End));
   ASSERT_OK(Flush());
 }
