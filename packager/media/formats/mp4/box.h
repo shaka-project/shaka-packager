@@ -87,8 +87,8 @@ struct FullBox : Box {
 
   uint32_t HeaderSize() const final;
 
-  uint8_t version;
-  uint32_t flags;
+  uint8_t version = 0;
+  uint32_t flags = 0;
 
  protected:
   bool ReadWriteHeaderInternal(BoxBuffer* buffer) final;

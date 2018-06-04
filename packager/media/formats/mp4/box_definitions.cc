@@ -38,11 +38,6 @@ const char kAvcCompressorName[] = "\012AVC Coding";
 const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
 
-// Using negative value as "not set". It is very unlikely that 2^31 cues happen
-// at once.
-const int kCueSourceIdNotSet = -1;
-
-const size_t kInvalidIvSize = 1;
 // According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either
 // 64-bit (8-byte) or 128-bit (16-byte).
 // |per_sample_iv_size| of 0 means constant_iv is used.
@@ -128,8 +123,9 @@ bool IsProtectionSchemeSupported(FourCC scheme) {
 
 }  // namespace
 
-FileType::FileType() : major_brand(FOURCC_NULL), minor_version(0) {}
-FileType::~FileType() {}
+FileType::FileType() = default;
+FileType::~FileType() = default;
+
 FourCC FileType::BoxType() const {
   return FOURCC_ftyp;
 }
@@ -160,8 +156,9 @@ FourCC SegmentType::BoxType() const {
   return FOURCC_styp;
 }
 
-ProtectionSystemSpecificHeader::ProtectionSystemSpecificHeader() {}
-ProtectionSystemSpecificHeader::~ProtectionSystemSpecificHeader() {}
+ProtectionSystemSpecificHeader::ProtectionSystemSpecificHeader() = default;
+ProtectionSystemSpecificHeader::~ProtectionSystemSpecificHeader() = default;
+
 FourCC ProtectionSystemSpecificHeader::BoxType() const {
   return FOURCC_pssh;
 }
@@ -183,8 +180,9 @@ size_t ProtectionSystemSpecificHeader::ComputeSizeInternal() {
   return raw_box.size();
 }
 
-SampleAuxiliaryInformationOffset::SampleAuxiliaryInformationOffset() {}
-SampleAuxiliaryInformationOffset::~SampleAuxiliaryInformationOffset() {}
+SampleAuxiliaryInformationOffset::SampleAuxiliaryInformationOffset() = default;
+SampleAuxiliaryInformationOffset::~SampleAuxiliaryInformationOffset() = default;
+
 FourCC SampleAuxiliaryInformationOffset::BoxType() const {
   return FOURCC_saio;
 }
@@ -212,9 +210,9 @@ size_t SampleAuxiliaryInformationOffset::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) + num_bytes * offsets.size();
 }
 
-SampleAuxiliaryInformationSize::SampleAuxiliaryInformationSize()
-    : default_sample_info_size(0), sample_count(0) {}
-SampleAuxiliaryInformationSize::~SampleAuxiliaryInformationSize() {}
+SampleAuxiliaryInformationSize::SampleAuxiliaryInformationSize() = default;
+SampleAuxiliaryInformationSize::~SampleAuxiliaryInformationSize() = default;
+
 FourCC SampleAuxiliaryInformationSize::BoxType() const {
   return FOURCC_saiz;
 }
@@ -239,9 +237,6 @@ size_t SampleAuxiliaryInformationSize::ComputeSizeInternal() {
          sizeof(sample_count) +
          (default_sample_info_size == 0 ? sample_info_sizes.size() : 0);
 }
-
-SampleEncryptionEntry::SampleEncryptionEntry() {}
-SampleEncryptionEntry::~SampleEncryptionEntry() {}
 
 bool SampleEncryptionEntry::ReadWrite(uint8_t iv_size,
                                       bool has_subsamples,
@@ -309,8 +304,9 @@ uint32_t SampleEncryptionEntry::GetTotalSizeOfSubsamples() const {
   return size;
 }
 
-SampleEncryption::SampleEncryption() : iv_size(kInvalidIvSize) {}
-SampleEncryption::~SampleEncryption() {}
+SampleEncryption::SampleEncryption() = default;
+SampleEncryption::~SampleEncryption() = default;
+
 FourCC SampleEncryption::BoxType() const {
   return FOURCC_senc;
 }
@@ -320,7 +316,7 @@ bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
 
   // If we don't know |iv_size|, store sample encryption data to parse later
   // after we know iv_size.
-  if (buffer->Reading() && iv_size == kInvalidIvSize) {
+  if (buffer->Reading() && iv_size == SampleEncryption::kInvalidIvSize) {
     RCHECK(
         buffer->ReadWriteVector(&sample_encryption_data, buffer->BytesLeft()));
     return true;
@@ -384,8 +380,9 @@ bool SampleEncryption::ParseFromSampleEncryptionData(
   return true;
 }
 
-OriginalFormat::OriginalFormat() : format(FOURCC_NULL) {}
-OriginalFormat::~OriginalFormat() {}
+OriginalFormat::OriginalFormat() = default;
+OriginalFormat::~OriginalFormat() = default;
+
 FourCC OriginalFormat::BoxType() const {
   return FOURCC_frma;
 }
@@ -398,8 +395,9 @@ size_t OriginalFormat::ComputeSizeInternal() {
   return HeaderSize() + kFourCCSize;
 }
 
-SchemeType::SchemeType() : type(FOURCC_NULL), version(0) {}
-SchemeType::~SchemeType() {}
+SchemeType::SchemeType() = default;
+SchemeType::~SchemeType() = default;
+
 FourCC SchemeType::BoxType() const {
   return FOURCC_schm;
 }
@@ -414,13 +412,9 @@ size_t SchemeType::ComputeSizeInternal() {
   return HeaderSize() + kFourCCSize + sizeof(version);
 }
 
-TrackEncryption::TrackEncryption()
-    : default_is_protected(0),
-      default_per_sample_iv_size(0),
-      default_kid(16, 0),
-      default_crypt_byte_block(0),
-      default_skip_byte_block(0) {}
-TrackEncryption::~TrackEncryption() {}
+TrackEncryption::TrackEncryption() = default;
+TrackEncryption::~TrackEncryption() = default;
+
 FourCC TrackEncryption::BoxType() const {
   return FOURCC_tenc;
 }
@@ -482,8 +476,9 @@ size_t TrackEncryption::ComputeSizeInternal() {
               : (sizeof(uint8_t) + default_constant_iv.size()));
 }
 
-SchemeInfo::SchemeInfo() {}
-SchemeInfo::~SchemeInfo() {}
+SchemeInfo::SchemeInfo() = default;
+SchemeInfo::~SchemeInfo() = default;
+
 FourCC SchemeInfo::BoxType() const {
   return FOURCC_schi;
 }
@@ -498,8 +493,9 @@ size_t SchemeInfo::ComputeSizeInternal() {
   return HeaderSize() + track_encryption.ComputeSize();
 }
 
-ProtectionSchemeInfo::ProtectionSchemeInfo() {}
-ProtectionSchemeInfo::~ProtectionSchemeInfo() {}
+ProtectionSchemeInfo::ProtectionSchemeInfo() = default;
+ProtectionSchemeInfo::~ProtectionSchemeInfo() = default;
+
 FourCC ProtectionSchemeInfo::BoxType() const {
   return FOURCC_sinf;
 }
@@ -528,15 +524,9 @@ size_t ProtectionSchemeInfo::ComputeSizeInternal() {
          info.ComputeSize();
 }
 
-MovieHeader::MovieHeader()
-    : creation_time(0),
-      modification_time(0),
-      timescale(0),
-      duration(0),
-      rate(1 << 16),
-      volume(1 << 8),
-      next_track_id(0) {}
-MovieHeader::~MovieHeader() {}
+MovieHeader::MovieHeader() = default;
+MovieHeader::~MovieHeader() = default;
+
 FourCC MovieHeader::BoxType() const {
   return FOURCC_mvhd;
 }
@@ -568,19 +558,12 @@ size_t MovieHeader::ComputeSizeInternal() {
          24;  // 10 bytes reserved, 24 bytes predefined.
 }
 
-TrackHeader::TrackHeader()
-    : creation_time(0),
-      modification_time(0),
-      track_id(0),
-      duration(0),
-      layer(0),
-      alternate_group(0),
-      volume(-1),
-      width(0),
-      height(0) {
+TrackHeader::TrackHeader() {
   flags = kTrackEnabled | kTrackInMovie | kTrackInPreview;
 }
-TrackHeader::~TrackHeader() {}
+
+TrackHeader::~TrackHeader() = default;
+
 FourCC TrackHeader::BoxType() const {
   return FOURCC_tkhd;
 }
@@ -620,8 +603,9 @@ size_t TrackHeader::ComputeSizeInternal() {
          sizeof(height) + sizeof(kUnityMatrix) + 14;  // 14 bytes reserved.
 }
 
-SampleDescription::SampleDescription() : type(kInvalid) {}
-SampleDescription::~SampleDescription() {}
+SampleDescription::SampleDescription() = default;
+SampleDescription::~SampleDescription() = default;
+
 FourCC SampleDescription::BoxType() const {
   return FOURCC_stsd;
 }
@@ -694,8 +678,9 @@ size_t SampleDescription::ComputeSizeInternal() {
   return box_size;
 }
 
-DecodingTimeToSample::DecodingTimeToSample() {}
-DecodingTimeToSample::~DecodingTimeToSample() {}
+DecodingTimeToSample::DecodingTimeToSample() = default;
+DecodingTimeToSample::~DecodingTimeToSample() = default;
+
 FourCC DecodingTimeToSample::BoxType() const {
   return FOURCC_stts;
 }
@@ -717,8 +702,9 @@ size_t DecodingTimeToSample::ComputeSizeInternal() {
          sizeof(DecodingTime) * decoding_time.size();
 }
 
-CompositionTimeToSample::CompositionTimeToSample() {}
-CompositionTimeToSample::~CompositionTimeToSample() {}
+CompositionTimeToSample::CompositionTimeToSample() = default;
+CompositionTimeToSample::~CompositionTimeToSample() = default;
+
 FourCC CompositionTimeToSample::BoxType() const {
   return FOURCC_ctts;
 }
@@ -769,8 +755,9 @@ size_t CompositionTimeToSample::ComputeSizeInternal() {
          kCompositionOffsetSize * composition_offset.size();
 }
 
-SampleToChunk::SampleToChunk() {}
-SampleToChunk::~SampleToChunk() {}
+SampleToChunk::SampleToChunk() = default;
+SampleToChunk::~SampleToChunk() = default;
+
 FourCC SampleToChunk::BoxType() const {
   return FOURCC_stsc;
 }
@@ -796,8 +783,9 @@ size_t SampleToChunk::ComputeSizeInternal() {
          sizeof(ChunkInfo) * chunk_info.size();
 }
 
-SampleSize::SampleSize() : sample_size(0), sample_count(0) {}
-SampleSize::~SampleSize() {}
+SampleSize::SampleSize() = default;
+SampleSize::~SampleSize() = default;
+
 FourCC SampleSize::BoxType() const {
   return FOURCC_stsz;
 }
@@ -823,8 +811,9 @@ size_t SampleSize::ComputeSizeInternal() {
          (sample_size == 0 ? sizeof(uint32_t) * sizes.size() : 0);
 }
 
-CompactSampleSize::CompactSampleSize() : field_size(0) {}
-CompactSampleSize::~CompactSampleSize() {}
+CompactSampleSize::CompactSampleSize() = default;
+CompactSampleSize::~CompactSampleSize() = default;
+
 FourCC CompactSampleSize::BoxType() const {
   return FOURCC_stz2;
 }
@@ -879,8 +868,9 @@ size_t CompactSampleSize::ComputeSizeInternal() {
          (field_size * sizes.size() + 7) / 8;
 }
 
-ChunkOffset::ChunkOffset() {}
-ChunkOffset::~ChunkOffset() {}
+ChunkOffset::ChunkOffset() = default;
+ChunkOffset::~ChunkOffset() = default;
+
 FourCC ChunkOffset::BoxType() const {
   return FOURCC_stco;
 }
@@ -899,8 +889,9 @@ size_t ChunkOffset::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) + sizeof(uint32_t) * offsets.size();
 }
 
-ChunkLargeOffset::ChunkLargeOffset() {}
-ChunkLargeOffset::~ChunkLargeOffset() {}
+ChunkLargeOffset::ChunkLargeOffset() = default;
+ChunkLargeOffset::~ChunkLargeOffset() = default;
+
 FourCC ChunkLargeOffset::BoxType() const {
   return FOURCC_co64;
 }
@@ -936,8 +927,9 @@ size_t ChunkLargeOffset::ComputeSizeInternal() {
          sizeof(uint32_t) * (1 + use_large_offset) * offsets.size();
 }
 
-SyncSample::SyncSample() {}
-SyncSample::~SyncSample() {}
+SyncSample::SyncSample() = default;
+SyncSample::~SyncSample() = default;
+
 FourCC SyncSample::BoxType() const {
   return FOURCC_stss;
 }
@@ -959,13 +951,6 @@ size_t SyncSample::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) +
          sizeof(uint32_t) * sample_number.size();
 }
-
-CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
-    : is_protected(0),
-      per_sample_iv_size(0),
-      crypt_byte_block(0),
-      skip_byte_block(0) {}
-CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry(){};
 
 bool CencSampleEncryptionInfoEntry::ReadWrite(BoxBuffer* buffer) {
   if (!buffer->Reading()) {
@@ -1014,9 +999,6 @@ uint32_t CencSampleEncryptionInfoEntry::ComputeSize() const {
       (constant_iv.empty() ? 0 : (sizeof(uint8_t) + constant_iv.size())));
 }
 
-AudioRollRecoveryEntry::AudioRollRecoveryEntry() : roll_distance(0) {}
-AudioRollRecoveryEntry::~AudioRollRecoveryEntry() {}
-
 bool AudioRollRecoveryEntry::ReadWrite(BoxBuffer* buffer) {
   RCHECK(buffer->ReadWriteInt16(&roll_distance));
   return true;
@@ -1026,8 +1008,9 @@ uint32_t AudioRollRecoveryEntry::ComputeSize() const {
   return sizeof(roll_distance);
 }
 
-SampleGroupDescription::SampleGroupDescription() : grouping_type(0) {}
-SampleGroupDescription::~SampleGroupDescription() {}
+SampleGroupDescription::SampleGroupDescription() = default;
+SampleGroupDescription::~SampleGroupDescription() = default;
+
 FourCC SampleGroupDescription::BoxType() const {
   return FOURCC_sgpd;
 }
@@ -1107,8 +1090,9 @@ size_t SampleGroupDescription::ComputeSizeInternal() {
          entries_size;
 }
 
-SampleToGroup::SampleToGroup() : grouping_type(0), grouping_type_parameter(0) {}
-SampleToGroup::~SampleToGroup() {}
+SampleToGroup::SampleToGroup() = default;
+SampleToGroup::~SampleToGroup() = default;
+
 FourCC SampleToGroup::BoxType() const {
   return FOURCC_sbgp;
 }
@@ -1145,8 +1129,9 @@ size_t SampleToGroup::ComputeSizeInternal() {
          sizeof(uint32_t) + entries.size() * sizeof(entries[0]);
 }
 
-SampleTable::SampleTable() {}
-SampleTable::~SampleTable() {}
+SampleTable::SampleTable() = default;
+SampleTable::~SampleTable() = default;
+
 FourCC SampleTable::BoxType() const {
   return FOURCC_stbl;
 }
@@ -1213,8 +1198,9 @@ size_t SampleTable::ComputeSizeInternal() {
   return box_size;
 }
 
-EditList::EditList() {}
-EditList::~EditList() {}
+EditList::EditList() = default;
+EditList::~EditList() = default;
+
 FourCC EditList::BoxType() const {
   return FOURCC_elst;
 }
@@ -1252,8 +1238,9 @@ size_t EditList::ComputeSizeInternal() {
              edits.size();
 }
 
-Edit::Edit() {}
-Edit::~Edit() {}
+Edit::Edit() = default;
+Edit::~Edit() = default;
+
 FourCC Edit::BoxType() const {
   return FOURCC_edts;
 }
@@ -1270,8 +1257,9 @@ size_t Edit::ComputeSizeInternal() {
   return HeaderSize() + list.ComputeSize();
 }
 
-HandlerReference::HandlerReference() : handler_type(FOURCC_NULL) {}
-HandlerReference::~HandlerReference() {}
+HandlerReference::HandlerReference() = default;
+HandlerReference::~HandlerReference() = default;
+
 FourCC HandlerReference::BoxType() const {
   return FOURCC_hdlr;
 }
@@ -1365,8 +1353,8 @@ uint32_t Language::ComputeSize() const {
   return 2;
 }
 
-ID3v2::ID3v2() {}
-ID3v2::~ID3v2() {}
+ID3v2::ID3v2() = default;
+ID3v2::~ID3v2() = default;
 
 FourCC ID3v2::BoxType() const {
   return FOURCC_ID32;
@@ -1387,8 +1375,8 @@ size_t ID3v2::ComputeSizeInternal() {
              : HeaderSize() + language.ComputeSize() + id3v2_data.size();
 }
 
-Metadata::Metadata() {}
-Metadata::~Metadata() {}
+Metadata::Metadata() = default;
+Metadata::~Metadata() = default;
 
 FourCC Metadata::BoxType() const {
   return FOURCC_meta;
@@ -1407,8 +1395,8 @@ size_t Metadata::ComputeSizeInternal() {
                          : HeaderSize() + handler.ComputeSize() + id3v2_size;
 }
 
-CodecConfiguration::CodecConfiguration() : box_type(FOURCC_NULL) {}
-CodecConfiguration::~CodecConfiguration() {}
+CodecConfiguration::CodecConfiguration() = default;
+CodecConfiguration::~CodecConfiguration() = default;
 
 FourCC CodecConfiguration::BoxType() const {
   // CodecConfiguration box should be parsed according to format recovered in
@@ -1446,8 +1434,9 @@ size_t CodecConfiguration::ComputeSizeInternal() {
   return HeaderSize() + (box_type == FOURCC_vpcC ? 4 : 0) + data.size();
 }
 
-PixelAspectRatio::PixelAspectRatio() : h_spacing(0), v_spacing(0) {}
-PixelAspectRatio::~PixelAspectRatio() {}
+PixelAspectRatio::PixelAspectRatio() = default;
+PixelAspectRatio::~PixelAspectRatio() = default;
+
 FourCC PixelAspectRatio::BoxType() const {
   return FOURCC_pasp;
 }
@@ -1468,10 +1457,9 @@ size_t PixelAspectRatio::ComputeSizeInternal() {
   return HeaderSize() + sizeof(h_spacing) + sizeof(v_spacing);
 }
 
-VideoSampleEntry::VideoSampleEntry()
-    : format(FOURCC_NULL), data_reference_index(1), width(0), height(0) {}
+VideoSampleEntry::VideoSampleEntry() = default;
+VideoSampleEntry::~VideoSampleEntry() = default;
 
-VideoSampleEntry::~VideoSampleEntry() {}
 FourCC VideoSampleEntry::BoxType() const {
   if (format == FOURCC_NULL) {
     LOG(ERROR) << "VideoSampleEntry should be parsed according to the "
@@ -1599,8 +1587,9 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
   }
 }
 
-ElementaryStreamDescriptor::ElementaryStreamDescriptor() {}
-ElementaryStreamDescriptor::~ElementaryStreamDescriptor() {}
+ElementaryStreamDescriptor::ElementaryStreamDescriptor() = default;
+ElementaryStreamDescriptor::~ElementaryStreamDescriptor() = default;
+
 FourCC ElementaryStreamDescriptor::BoxType() const {
   return FOURCC_esds;
 }
@@ -1629,12 +1618,10 @@ size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 
-DTSSpecific::DTSSpecific()
-    : sampling_frequency(0),
-      max_bitrate(0),
-      avg_bitrate(0),
-      pcm_sample_depth(0) {}
-DTSSpecific::~DTSSpecific() {}
+DTSSpecific::DTSSpecific() = default;
+DTSSpecific::~DTSSpecific() = default;
+;
+
 FourCC DTSSpecific::BoxType() const {
   return FOURCC_ddts;
 }
@@ -1667,8 +1654,8 @@ size_t DTSSpecific::ComputeSizeInternal() {
          sizeof(kDdtsExtraData);
 }
 
-AC3Specific::AC3Specific() {}
-AC3Specific::~AC3Specific() {}
+AC3Specific::AC3Specific() = default;
+AC3Specific::~AC3Specific() = default;
 
 FourCC AC3Specific::BoxType() const {
   return FOURCC_dac3;
@@ -1688,8 +1675,8 @@ size_t AC3Specific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
-EC3Specific::EC3Specific() {}
-EC3Specific::~EC3Specific() {}
+EC3Specific::EC3Specific() = default;
+EC3Specific::~EC3Specific() = default;
 
 FourCC EC3Specific::BoxType() const {
   return FOURCC_dec3;
@@ -1709,8 +1696,8 @@ size_t EC3Specific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
-OpusSpecific::OpusSpecific() : preskip(0) {}
-OpusSpecific::~OpusSpecific() {}
+OpusSpecific::OpusSpecific() = default;
+OpusSpecific::~OpusSpecific() = default;
 
 FourCC OpusSpecific::BoxType() const {
   return FOURCC_dOps;
@@ -1762,8 +1749,8 @@ size_t OpusSpecific::ComputeSizeInternal() {
          kOpusMagicSignatureSize;
 }
 
-FlacSpecific::FlacSpecific() {}
-FlacSpecific::~FlacSpecific() {}
+FlacSpecific::FlacSpecific() = default;
+FlacSpecific::~FlacSpecific() = default;
 
 FourCC FlacSpecific::BoxType() const {
   return FOURCC_dfLa;
@@ -1783,14 +1770,8 @@ size_t FlacSpecific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
-AudioSampleEntry::AudioSampleEntry()
-    : format(FOURCC_NULL),
-      data_reference_index(1),
-      channelcount(2),
-      samplesize(16),
-      samplerate(0) {}
-
-AudioSampleEntry::~AudioSampleEntry() {}
+AudioSampleEntry::AudioSampleEntry() = default;
+AudioSampleEntry::~AudioSampleEntry() = default;
 
 FourCC AudioSampleEntry::BoxType() const {
   if (format == FOURCC_NULL) {
@@ -1858,8 +1839,8 @@ size_t AudioSampleEntry::ComputeSizeInternal() {
          4;       // 4 bytes predefined.
 }
 
-WebVTTConfigurationBox::WebVTTConfigurationBox() {}
-WebVTTConfigurationBox::~WebVTTConfigurationBox() {}
+WebVTTConfigurationBox::WebVTTConfigurationBox() = default;
+WebVTTConfigurationBox::~WebVTTConfigurationBox() = default;
 
 FourCC WebVTTConfigurationBox::BoxType() const {
   return FOURCC_vttC;
@@ -1875,8 +1856,8 @@ size_t WebVTTConfigurationBox::ComputeSizeInternal() {
   return HeaderSize() + config.size();
 }
 
-WebVTTSourceLabelBox::WebVTTSourceLabelBox() {}
-WebVTTSourceLabelBox::~WebVTTSourceLabelBox() {}
+WebVTTSourceLabelBox::WebVTTSourceLabelBox() = default;
+WebVTTSourceLabelBox::~WebVTTSourceLabelBox() = default;
 
 FourCC WebVTTSourceLabelBox::BoxType() const {
   return FOURCC_vlab;
@@ -1895,11 +1876,8 @@ size_t WebVTTSourceLabelBox::ComputeSizeInternal() {
   return HeaderSize() + source_label.size();
 }
 
-// data_reference_index is 1-based and "dref" box is mandatory so it is
-// always present.
-TextSampleEntry::TextSampleEntry()
-    : format(FOURCC_NULL), data_reference_index(1u) {}
-TextSampleEntry::~TextSampleEntry() {}
+TextSampleEntry::TextSampleEntry() = default;
+TextSampleEntry::~TextSampleEntry() = default;
 
 FourCC TextSampleEntry::BoxType() const {
   if (format == FOURCC_NULL) {
@@ -1933,9 +1911,9 @@ size_t TextSampleEntry::ComputeSizeInternal() {
          config.ComputeSize() + label.ComputeSize();
 }
 
-MediaHeader::MediaHeader()
-    : creation_time(0), modification_time(0), timescale(0), duration(0) {}
-MediaHeader::~MediaHeader() {}
+MediaHeader::MediaHeader() = default;
+MediaHeader::~MediaHeader() = default;
+
 FourCC MediaHeader::BoxType() const {
   return FOURCC_mdhd;
 }
@@ -1961,12 +1939,13 @@ size_t MediaHeader::ComputeSizeInternal() {
          2;  // 2 bytes predefined.
 }
 
-VideoMediaHeader::VideoMediaHeader()
-    : graphicsmode(0), opcolor_red(0), opcolor_green(0), opcolor_blue(0) {
+VideoMediaHeader::VideoMediaHeader() {
   const uint32_t kVideoMediaHeaderFlags = 1;
   flags = kVideoMediaHeaderFlags;
 }
-VideoMediaHeader::~VideoMediaHeader() {}
+
+VideoMediaHeader::~VideoMediaHeader() = default;
+
 FourCC VideoMediaHeader::BoxType() const {
   return FOURCC_vmhd;
 }
@@ -1984,11 +1963,13 @@ size_t VideoMediaHeader::ComputeSizeInternal() {
          sizeof(opcolor_green) + sizeof(opcolor_blue);
 }
 
-SoundMediaHeader::SoundMediaHeader() : balance(0) {}
-SoundMediaHeader::~SoundMediaHeader() {}
+SoundMediaHeader::SoundMediaHeader() = default;
+SoundMediaHeader::~SoundMediaHeader() = default;
+
 FourCC SoundMediaHeader::BoxType() const {
   return FOURCC_smhd;
 }
+
 bool SoundMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt16(&balance) &&
          buffer->IgnoreBytes(2));  // reserved.
@@ -1999,8 +1980,8 @@ size_t SoundMediaHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(balance) + sizeof(uint16_t);
 }
 
-SubtitleMediaHeader::SubtitleMediaHeader() {}
-SubtitleMediaHeader::~SubtitleMediaHeader() {}
+SubtitleMediaHeader::SubtitleMediaHeader() = default;
+SubtitleMediaHeader::~SubtitleMediaHeader() = default;
 
 FourCC SubtitleMediaHeader::BoxType() const {
   return FOURCC_sthd;
@@ -2018,7 +1999,9 @@ DataEntryUrl::DataEntryUrl() {
   const uint32_t kDataEntryUrlFlags = 1;
   flags = kDataEntryUrlFlags;
 }
-DataEntryUrl::~DataEntryUrl() {}
+
+DataEntryUrl::~DataEntryUrl() = default;
+
 FourCC DataEntryUrl::BoxType() const {
   return FOURCC_url;
 }
@@ -2036,11 +2019,9 @@ size_t DataEntryUrl::ComputeSizeInternal() {
   return HeaderSize() + location.size();
 }
 
-DataReference::DataReference() {
-  // Default 1 entry.
-  data_entry.resize(1);
-}
-DataReference::~DataReference() {}
+DataReference::DataReference() = default;
+DataReference::~DataReference() = default;
+
 FourCC DataReference::BoxType() const {
   return FOURCC_dref;
 }
@@ -2063,8 +2044,9 @@ size_t DataReference::ComputeSizeInternal() {
   return box_size;
 }
 
-DataInformation::DataInformation() {}
-DataInformation::~DataInformation() {}
+DataInformation::DataInformation() = default;
+DataInformation::~DataInformation() = default;
+
 FourCC DataInformation::BoxType() const {
   return FOURCC_dinf;
 }
@@ -2078,8 +2060,9 @@ size_t DataInformation::ComputeSizeInternal() {
   return HeaderSize() + dref.ComputeSize();
 }
 
-MediaInformation::MediaInformation() {}
-MediaInformation::~MediaInformation() {}
+MediaInformation::MediaInformation() = default;
+MediaInformation::~MediaInformation() = default;
+
 FourCC MediaInformation::BoxType() const {
   return FOURCC_minf;
 }
@@ -2124,8 +2107,9 @@ size_t MediaInformation::ComputeSizeInternal() {
   return box_size;
 }
 
-Media::Media() {}
-Media::~Media() {}
+Media::Media() = default;
+Media::~Media() = default;
+
 FourCC Media::BoxType() const {
   return FOURCC_mdia;
 }
@@ -2160,8 +2144,9 @@ size_t Media::ComputeSizeInternal() {
          information.ComputeSize();
 }
 
-Track::Track() {}
-Track::~Track() {}
+Track::Track() = default;
+Track::~Track() = default;
+
 FourCC Track::BoxType() const {
   return FOURCC_trak;
 }
@@ -2179,8 +2164,9 @@ size_t Track::ComputeSizeInternal() {
          edit.ComputeSize();
 }
 
-MovieExtendsHeader::MovieExtendsHeader() : fragment_duration(0) {}
-MovieExtendsHeader::~MovieExtendsHeader() {}
+MovieExtendsHeader::MovieExtendsHeader() = default;
+MovieExtendsHeader::~MovieExtendsHeader() = default;
+
 FourCC MovieExtendsHeader::BoxType() const {
   return FOURCC_mehd;
 }
@@ -2200,13 +2186,9 @@ size_t MovieExtendsHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) * (1 + version);
 }
 
-TrackExtends::TrackExtends()
-    : track_id(0),
-      default_sample_description_index(0),
-      default_sample_duration(0),
-      default_sample_size(0),
-      default_sample_flags(0) {}
-TrackExtends::~TrackExtends() {}
+TrackExtends::TrackExtends() = default;
+TrackExtends::~TrackExtends() = default;
+
 FourCC TrackExtends::BoxType() const {
   return FOURCC_trex;
 }
@@ -2228,8 +2210,9 @@ size_t TrackExtends::ComputeSizeInternal() {
          sizeof(default_sample_flags);
 }
 
-MovieExtends::MovieExtends() {}
-MovieExtends::~MovieExtends() {}
+MovieExtends::MovieExtends() = default;
+MovieExtends::~MovieExtends() = default;
+
 FourCC MovieExtends::BoxType() const {
   return FOURCC_mvex;
 }
@@ -2257,8 +2240,9 @@ size_t MovieExtends::ComputeSizeInternal() {
   return box_size;
 }
 
-Movie::Movie() {}
-Movie::~Movie() {}
+Movie::Movie() = default;
+Movie::~Movie() = default;
+
 FourCC Movie::BoxType() const {
   return FOURCC_moov;
 }
@@ -2298,8 +2282,9 @@ size_t Movie::ComputeSizeInternal() {
   return box_size;
 }
 
-TrackFragmentDecodeTime::TrackFragmentDecodeTime() : decode_time(0) {}
-TrackFragmentDecodeTime::~TrackFragmentDecodeTime() {}
+TrackFragmentDecodeTime::TrackFragmentDecodeTime() = default;
+TrackFragmentDecodeTime::~TrackFragmentDecodeTime() = default;
+
 FourCC TrackFragmentDecodeTime::BoxType() const {
   return FOURCC_tfdt;
 }
@@ -2316,8 +2301,9 @@ size_t TrackFragmentDecodeTime::ComputeSizeInternal() {
   return HeaderSize() + sizeof(uint32_t) * (1 + version);
 }
 
-MovieFragmentHeader::MovieFragmentHeader() : sequence_number(0) {}
-MovieFragmentHeader::~MovieFragmentHeader() {}
+MovieFragmentHeader::MovieFragmentHeader() = default;
+MovieFragmentHeader::~MovieFragmentHeader() = default;
+
 FourCC MovieFragmentHeader::BoxType() const {
   return FOURCC_mfhd;
 }
@@ -2331,14 +2317,9 @@ size_t MovieFragmentHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(sequence_number);
 }
 
-TrackFragmentHeader::TrackFragmentHeader()
-    : track_id(0),
-      sample_description_index(0),
-      default_sample_duration(0),
-      default_sample_size(0),
-      default_sample_flags(0) {}
+TrackFragmentHeader::TrackFragmentHeader() = default;
+TrackFragmentHeader::~TrackFragmentHeader() = default;
 
-TrackFragmentHeader::~TrackFragmentHeader() {}
 FourCC TrackFragmentHeader::BoxType() const {
   return FOURCC_tfhd;
 }
@@ -2393,8 +2374,9 @@ size_t TrackFragmentHeader::ComputeSizeInternal() {
   return box_size;
 }
 
-TrackFragmentRun::TrackFragmentRun() : sample_count(0), data_offset(0) {}
-TrackFragmentRun::~TrackFragmentRun() {}
+TrackFragmentRun::TrackFragmentRun() = default;
+TrackFragmentRun::~TrackFragmentRun() = default;
+
 FourCC TrackFragmentRun::BoxType() const {
   return FOURCC_trun;
 }
@@ -2516,8 +2498,9 @@ size_t TrackFragmentRun::ComputeSizeInternal() {
   return box_size;
 }
 
-TrackFragment::TrackFragment() : decode_time_absent(false) {}
-TrackFragment::~TrackFragment() {}
+TrackFragment::TrackFragment() = default;
+TrackFragment::~TrackFragment() = default;
+
 FourCC TrackFragment::BoxType() const {
   return FOURCC_traf;
 }
@@ -2562,8 +2545,9 @@ size_t TrackFragment::ComputeSizeInternal() {
   return box_size;
 }
 
-MovieFragment::MovieFragment() {}
-MovieFragment::~MovieFragment() {}
+MovieFragment::MovieFragment() = default;
+MovieFragment::~MovieFragment() = default;
+
 FourCC MovieFragment::BoxType() const {
   return FOURCC_moof;
 }
@@ -2593,12 +2577,9 @@ size_t MovieFragment::ComputeSizeInternal() {
   return box_size;
 }
 
-SegmentIndex::SegmentIndex()
-    : reference_id(0),
-      timescale(0),
-      earliest_presentation_time(0),
-      first_offset(0) {}
-SegmentIndex::~SegmentIndex() {}
+SegmentIndex::SegmentIndex() = default;
+SegmentIndex::~SegmentIndex() = default;
+
 FourCC SegmentIndex::BoxType() const {
   return FOURCC_sidx;
 }
@@ -2651,8 +2632,9 @@ size_t SegmentIndex::ComputeSizeInternal() {
          3 * sizeof(uint32_t) * references.size();
 }
 
-MediaData::MediaData() : data_size(0) {}
-MediaData::~MediaData() {}
+MediaData::MediaData() = default;
+MediaData::~MediaData() = default;
+
 FourCC MediaData::BoxType() const {
   return FOURCC_mdat;
 }
@@ -2666,8 +2648,8 @@ size_t MediaData::ComputeSizeInternal() {
   return HeaderSize() + data_size;
 }
 
-CueSourceIDBox::CueSourceIDBox() : source_id(kCueSourceIdNotSet) {}
-CueSourceIDBox::~CueSourceIDBox() {}
+CueSourceIDBox::CueSourceIDBox() = default;
+CueSourceIDBox::~CueSourceIDBox() = default;
 
 FourCC CueSourceIDBox::BoxType() const {
   return FOURCC_vsid;
@@ -2684,8 +2666,8 @@ size_t CueSourceIDBox::ComputeSizeInternal() {
   return HeaderSize() + sizeof(source_id);
 }
 
-CueTimeBox::CueTimeBox() {}
-CueTimeBox::~CueTimeBox() {}
+CueTimeBox::CueTimeBox() = default;
+CueTimeBox::~CueTimeBox() = default;
 
 FourCC CueTimeBox::BoxType() const {
   return FOURCC_ctim;
@@ -2704,8 +2686,8 @@ size_t CueTimeBox::ComputeSizeInternal() {
   return HeaderSize() + cue_current_time.size();
 }
 
-CueIDBox::CueIDBox() {}
-CueIDBox::~CueIDBox() {}
+CueIDBox::CueIDBox() = default;
+CueIDBox::~CueIDBox() = default;
 
 FourCC CueIDBox::BoxType() const {
   return FOURCC_iden;
@@ -2723,8 +2705,8 @@ size_t CueIDBox::ComputeSizeInternal() {
   return HeaderSize() + cue_id.size();
 }
 
-CueSettingsBox::CueSettingsBox() {}
-CueSettingsBox::~CueSettingsBox() {}
+CueSettingsBox::CueSettingsBox() = default;
+CueSettingsBox::~CueSettingsBox() = default;
 
 FourCC CueSettingsBox::BoxType() const {
   return FOURCC_sttg;
@@ -2742,8 +2724,8 @@ size_t CueSettingsBox::ComputeSizeInternal() {
   return HeaderSize() + settings.size();
 }
 
-CuePayloadBox::CuePayloadBox() {}
-CuePayloadBox::~CuePayloadBox() {}
+CuePayloadBox::CuePayloadBox() = default;
+CuePayloadBox::~CuePayloadBox() = default;
 
 FourCC CuePayloadBox::BoxType() const {
   return FOURCC_payl;
@@ -2759,8 +2741,8 @@ size_t CuePayloadBox::ComputeSizeInternal() {
   return HeaderSize() + cue_text.size();
 }
 
-VTTEmptyCueBox::VTTEmptyCueBox() {}
-VTTEmptyCueBox::~VTTEmptyCueBox() {}
+VTTEmptyCueBox::VTTEmptyCueBox() = default;
+VTTEmptyCueBox::~VTTEmptyCueBox() = default;
 
 FourCC VTTEmptyCueBox::BoxType() const {
   return FOURCC_vtte;
@@ -2774,8 +2756,8 @@ size_t VTTEmptyCueBox::ComputeSizeInternal() {
   return HeaderSize();
 }
 
-VTTAdditionalTextBox::VTTAdditionalTextBox() {}
-VTTAdditionalTextBox::~VTTAdditionalTextBox() {}
+VTTAdditionalTextBox::VTTAdditionalTextBox() = default;
+VTTAdditionalTextBox::~VTTAdditionalTextBox() = default;
 
 FourCC VTTAdditionalTextBox::BoxType() const {
   return FOURCC_vtta;
@@ -2792,8 +2774,8 @@ size_t VTTAdditionalTextBox::ComputeSizeInternal() {
   return HeaderSize() + cue_additional_text.size();
 }
 
-VTTCueBox::VTTCueBox() {}
-VTTCueBox::~VTTCueBox() {}
+VTTCueBox::VTTCueBox() = default;
+VTTCueBox::~VTTCueBox() = default;
 
 FourCC VTTCueBox::BoxType() const {
   return FOURCC_vttc;
