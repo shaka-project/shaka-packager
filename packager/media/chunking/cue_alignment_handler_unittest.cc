@@ -192,7 +192,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
   }
 
-  auto stream_info = GetTextStreamInfo();
+  auto stream_info = GetTextStreamInfo(kMsTimeScale);
   auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
   auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
   auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
@@ -277,7 +277,7 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
   }
 
   // Text samples
-  auto text_stream_info = GetTextStreamInfo();
+  auto text_stream_info = GetTextStreamInfo(kMsTimeScale);
   auto text_sample_0 =
       GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
   auto text_sample_1 =
@@ -480,7 +480,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
   }
 
-  auto stream_info = GetTextStreamInfo();
+  auto stream_info = GetTextStreamInfo(kMsTimeScale);
   auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
   auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
   auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
@@ -539,7 +539,7 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
   }
 
-  auto stream_info = GetTextStreamInfo();
+  auto stream_info = GetTextStreamInfo(kMsTimeScale);
   auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
   auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
   auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
@@ -639,7 +639,7 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
   }
 
   // Text samples
-  auto text_stream_info = GetTextStreamInfo();
+  auto text_stream_info = GetTextStreamInfo(kMsTimeScale);
   auto text_sample_0 =
       GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
   auto text_sample_1 =

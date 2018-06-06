@@ -28,6 +28,8 @@ const size_t kStreamIndex = 0;
 const bool kEncrypted = true;
 const char* kNoId = "";
 
+const uint64_t kMsTimeScale = 1000u;
+
 const char* kSegmentedFileTemplate = "memory://output/template-$Number$.vtt";
 const char* kSegmentedFileOutput1 = "memory://output/template-1.vtt";
 const char* kSegmentedFileOutput2 = "memory://output/template-2.vtt";
@@ -72,8 +74,8 @@ TEST_F(WebVttSegmentedOutputTest, WithNoSegmentAndWithNoSamples) {
   }
 
   ASSERT_OK(Input(kInputIndex)
-                ->Dispatch(StreamData::FromStreamInfo(kStreamIndex,
-                                                      GetTextStreamInfo())));
+                ->Dispatch(StreamData::FromStreamInfo(
+                    kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
@@ -100,8 +102,8 @@ TEST_F(WebVttSegmentedOutputTest, WithOneSegmentAndWithOneSample) {
   }
 
   ASSERT_OK(Input(kInputIndex)
-                ->Dispatch(StreamData::FromStreamInfo(kStreamIndex,
-                                                      GetTextStreamInfo())));
+                ->Dispatch(StreamData::FromStreamInfo(
+                    kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(
       Input(kInputIndex)
           ->Dispatch(StreamData::FromTextSample(
@@ -150,7 +152,8 @@ TEST_F(WebVttSegmentedOutputTest, WithTwoSegmentAndWithOneSample) {
   }
 
   ASSERT_OK(Input(kInputIndex)
-                ->Dispatch(StreamData::FromStreamInfo(0, GetTextStreamInfo())));
+                ->Dispatch(StreamData::FromStreamInfo(
+                    0, GetTextStreamInfo(kMsTimeScale))));
 
   // Segment One
   ASSERT_OK(
@@ -209,7 +212,8 @@ TEST_F(WebVttSegmentedOutputTest, WithAnEmptySegment) {
   }
 
   ASSERT_OK(Input(kInputIndex)
-                ->Dispatch(StreamData::FromStreamInfo(0, GetTextStreamInfo())));
+                ->Dispatch(StreamData::FromStreamInfo(
+                    0, GetTextStreamInfo(kMsTimeScale))));
   // Segment One
   ASSERT_OK(
       Input(kInputIndex)

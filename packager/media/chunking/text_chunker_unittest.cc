@@ -16,6 +16,7 @@ namespace media {
 
 namespace {
 const uint64_t kStreamIndex = 0;
+const uint64_t kMsTimeScale = 1000u;
 
 const size_t kInputs = 1;
 const size_t kOutputs = 1;
@@ -70,8 +71,8 @@ TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleStart, kSampleEnd, kNoPayload))));
@@ -124,8 +125,8 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
@@ -188,8 +189,8 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
@@ -240,8 +241,8 @@ TEST_F(TextChunkerTest, SampleCrossesSegments) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleStart, kSampleEnd, kNoPayload))));
@@ -326,8 +327,8 @@ TEST_F(TextChunkerTest, PreservesOrder) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kSample0Id, kSample0Start, kSample0End, kNoPayload))));
@@ -426,8 +427,8 @@ TEST_F(TextChunkerTest, NestedSamples) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
@@ -493,8 +494,8 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
@@ -569,8 +570,8 @@ TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
                                 !kSubSegment, !kEncrypted)));
   }
 
-  ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromStreamInfo(kStreamIndex, GetTextStreamInfo())));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
       GetTextSample(kNoId, kSampleStart, kSampleEnd, kNoPayload))));
