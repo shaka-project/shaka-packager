@@ -27,7 +27,7 @@ const size_t kOutput = 0;
 const bool kEncrypted = true;
 const bool kSubSegment = true;
 
-const int64_t kTick = 50;
+const uint64_t kTimescaleMs = 1000;
 
 const char* kNoId = "";
 const char* kNoSettings = "";
@@ -36,25 +36,33 @@ const char* kNoPayload = "";
 
 class TextChunkerTest : public MediaHandlerTestBase {
  protected:
-  void Init(int64_t segment_duration) {
+  void Init(double segment_duration) {
     ASSERT_OK(SetUpAndInitializeGraph(
         std::make_shared<TextChunker>(segment_duration), kInputs, kOutputs));
   }
 };
 
-// S0        S1
-// |         |
-// |[---A---]|
-// |         |
+// Verify that when a sample elapses a full segment, that it only appears
+// in the one segment.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1
+//                 0     0
+//                       0
+// SAMPLES  :[-----A-----]
+// SEGMENTS :            ^
+//
 TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
-  const int64_t kSegmentStart = 0;
-  const int64_t kSegmentDuration = kTick;
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
 
-  const int64_t kSampleStart = 0;
-  const int64_t kSampleDuration = kTick;
-  const int64_t kSampleEnd = kSampleStart + kSampleDuration;
+  const int64_t kSegment0Start = 0;
 
-  Init(kSegmentDuration);
+  const int64_t kSampleAStart = 0;
+  const int64_t kSampleAEnd = 100;
+
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -62,12 +70,12 @@ TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
     EXPECT_CALL(*Output(kOutput), OnProcess(IsStreamInfo(kStreamIndex)));
 
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSampleStart, kSampleEnd,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegmentStart, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
@@ -75,29 +83,36 @@ TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
       kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSampleStart, kSampleEnd, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0         S1        S2
-// |          |         |
-// |[-A-]     |         |
-// |          |[-B-]    |
-// |          |         |
+// Verify that samples only appear in the correct segments when they only exist
+// in one segment.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1     1     2
+//                 0     0     5     0
+//                       0     0     0
+// SAMPLES  :   [--A--]
+//                          [--B--]
+// SEGMENTS :            ^           ^
+//
 TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
-  const int64_t kSegmentDuration = 2 * kTick;
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
+
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment1Start = kSegment0Start + kSegmentDuration;
+  const int64_t kSegment1Start = 100;
 
-  const int64_t kSample0Start = 0;
-  const int64_t kSample0Duration = kTick;
-  const int64_t kSample0End = kSample0Start + kSample0Duration;
+  const int64_t kSampleAStart = 25;
+  const int64_t kSampleAEnd = 75;
 
-  const int64_t kSample1Start = 3 * kTick;
-  const int64_t kSample1Duration = kTick;
-  const int64_t kSample1End = kSample1Start + kSample1Duration;
+  const int64_t kSampleBStart = 125;
+  const int64_t kSampleBEnd = 175;
 
-  Init(kSegmentDuration);
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -106,21 +121,21 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kNoId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
@@ -129,33 +144,40 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
       kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload))));
+      GetTextSample(kNoId, kSampleBStart, kSampleBEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0         S1         S2        S3
-// |          |          |         |
-// |[-A-]     |          |         |
-// |          |          |[-B-]    |
-// |          |          |         |
+// Verify that a segment will get outputted even if there are no samples
+// overlapping with it.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1     1     2     2     3
+//                 0     0     5     0     5     0
+//                       0     0     0     0     0
+// SAMPLES  :   [--A--]
+//                                      [--B--]
+// SEGMENTS :            ^           ^           ^
+//
 TEST_F(TextChunkerTest, OutputsEmptySegments) {
-  const int64_t kSegmentDuration = 2 * kTick;
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
+
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment1Start = kSegment0Start + kSegmentDuration;
-  const int64_t kSegment2Start = kSegment1Start + kSegmentDuration;
+  const int64_t kSegment1Start = 100;
+  const int64_t kSegment2Start = 200;
 
-  const int64_t kSample0Start = 0;
-  const int64_t kSample0Duration = kTick;
-  const int64_t kSample0End = kSample0Start + kSample0Duration;
+  const int64_t kSampleAStart = 25;
+  const int64_t kSampleAEnd = 75;
 
-  const int64_t kSample1Start = 4 * kTick;
-  const int64_t kSample1Duration = kTick;
-  const int64_t kSample1End = kSample1Start + kSample1Duration;
+  const int64_t kSampleBStart = 225;
+  const int64_t kSampleBEnd = 275;
 
-  Init(kSegmentDuration);
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -164,27 +186,27 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Two (empty segment)
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Three
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kNoId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
@@ -193,27 +215,35 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
       kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload))));
+      GetTextSample(kNoId, kSampleBStart, kSampleBEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0        S1        S2
-// |         |         |
-// |     [---A---]     |
-// |         |         |
+// Verify that samples that overlap multiple samples get dispatch in all
+// segments.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1     1
+//                 0     0     5
+//                       0     0
+// SAMPLES  :      [-----A-----]
+// SEGMENTS :            ^
+//
 TEST_F(TextChunkerTest, SampleCrossesSegments) {
-  const int64_t kSegmentDuration = 2 * kTick;
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
+
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment1Start = kSegment0Start + kSegmentDuration;
+  const int64_t kSegment1Start = 100;
 
-  const int64_t kSampleStart = kTick;
-  const int64_t kSampleDuration = 2 * kTick;
-  const int64_t kSampleEnd = kSampleStart + kSampleDuration;
+  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAEnd = 150;
 
-  Init(kSegmentDuration);
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -222,63 +252,68 @@ TEST_F(TextChunkerTest, SampleCrossesSegments) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSampleStart, kSampleEnd,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSampleStart, kSampleEnd,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSampleStart, kSampleEnd, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0         S1         S2         S3
-// |          |          |          |
-// |   [-A----|----]     |          |
-// |   [-B----|----]     |          |
-// |   [-C----|----------|----]     |
-// |          |          |          |
+// Verify that samples that overlap multiple samples get dispatch in all
+// segments, even if different samples elapse different number of segments.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1     1     2     2     3
+//                 0     0     5     0     5     0
+//                       0     0     0     0     0
+// SAMPLES  :      [-----A-----]
+//                 [-----B-----]
+//                 [-----------C-----------]
+// SEGMENTS :            ^           ^           ^
+//
 TEST_F(TextChunkerTest, PreservesOrder) {
-  const int64_t kSegmentDuration = 2 * kTick;
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
 
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment1Start = kSegment0Start + kSegmentDuration;
-  const int64_t kSegment2Start = kSegment1Start + kSegmentDuration;
+  const int64_t kSegment1Start = 100;
+  const int64_t kSegment2Start = 200;
 
-  const int64_t kSample0Start = kTick;
-  const int64_t kSample0Duration = 2 * kTick;
-  const int64_t kSample0End = kSample0Start + kSample0Duration;
+  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAEnd = 150;
 
-  const int64_t kSample1Start = kTick;
-  const int64_t kSample1Duration = 2 * kTick;
-  const int64_t kSample1End = kSample1Start + kSample1Duration;
+  const int64_t kSampleBStart = 50;
+  const int64_t kSampleBEnd = 150;
 
-  const int64_t kSample2Start = kTick;
-  const int64_t kSample2Duration = 4 * kTick;
-  const int64_t kSample2End = kSample2Start + kSample2Duration;
+  const int64_t kSampleCStart = 50;
+  const int64_t kSampleCEnd = 250;
 
-  const char* kSample0Id = "sample 0";
-  const char* kSample1Id = "sample 1";
-  const char* kSample2Id = "sample 2";
+  const char* kSampleAId = "sample 0";
+  const char* kSampleBId = "sample 1";
+  const char* kSampleCId = "sample 2";
 
-  Init(kSegmentDuration);
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -287,42 +322,42 @@ TEST_F(TextChunkerTest, PreservesOrder) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample0Id, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kSampleAId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample1Id, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kSampleBId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample2Id, kSample2Start, kSample2End,
+                OnProcess(IsTextSample(kSampleCId, kSampleCStart, kSampleCEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample0Id, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kSampleAId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample1Id, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kSampleBId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample2Id, kSample2Start, kSample2End,
+                OnProcess(IsTextSample(kSampleCId, kSampleCStart, kSampleCEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kSample2Id, kSample2Start, kSample2End,
+                OnProcess(IsTextSample(kSampleCId, kSampleCStart, kSampleCEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
@@ -331,39 +366,45 @@ TEST_F(TextChunkerTest, PreservesOrder) {
       kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kSample0Id, kSample0Start, kSample0End, kNoPayload))));
+      GetTextSample(kSampleAId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kSample1Id, kSample1Start, kSample1End, kNoPayload))));
+      GetTextSample(kSampleBId, kSampleBStart, kSampleBEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kSample2Id, kSample2Start, kSample2End, kNoPayload))));
+      GetTextSample(kSampleCId, kSampleCStart, kSampleCEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0    S1    S2    S3    S4    S5
-// |     |     |     |     |     |
-// |  [--|-----|--A--|-----|--]  |
-// |     |  [--|--B--|--]  |     |
-// |     |     |     |     |     |
+// Check that when samples overlap/contain other samples, that they still
+// get outputted in the correct segments.
+//
+// Segment Duration = 50 MS
+//
+// TIME (ms):0     5     1     1     2     2
+//                 0     0     5     0     5
+//                       0     0     0     0
+// SAMPLES  :   [-----------A-----------]
+//                    [-----B------]
+// SEGMENTS :      ^     ^     ^     ^     ^
+//
 TEST_F(TextChunkerTest, NestedSamples) {
-  const int64_t kSegmentDuration = 2 * kTick;
+  const double kSegmentDurationSec = 0.05;
+  const int64_t kSegmentDurationMs = 50;
 
-  const int64_t kSample0Start = 1 * kTick;
-  const int64_t kSample0Duration = 8 * kTick;
-  const int64_t kSample0End = kSample0Start + kSample0Duration;
+  const int64_t kSampleAStart = 25;
+  const int64_t kSampleAEnd = 225;
 
-  const int64_t kSample1Start = 3 * kTick;
-  const int64_t kSample1Duration = 4 * kTick;
-  const int64_t kSample1End = kSample1Start + kSample1Duration;
+  const int64_t kSampleBStart = 75;
+  const int64_t kSampleBEnd = 175;
 
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment1Start = kSegment0Start + kSegmentDuration;
-  const int64_t kSegment2Start = kSegment1Start + kSegmentDuration;
-  const int64_t kSegment3Start = kSegment2Start + kSegmentDuration;
-  const int64_t kSegment4Start = kSegment3Start + kSegmentDuration;
+  const int64_t kSegment1Start = 50;
+  const int64_t kSegment2Start = 100;
+  const int64_t kSegment3Start = 150;
+  const int64_t kSegment4Start = 200;
 
-  Init(kSegmentDuration);
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -372,57 +413,57 @@ TEST_F(TextChunkerTest, NestedSamples) {
 
     // Segment 0
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment 1
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kNoId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment 2
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kNoId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment 3
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kNoId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment3Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment3Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment 4
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment4Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment4Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
@@ -431,33 +472,40 @@ TEST_F(TextChunkerTest, NestedSamples) {
       kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload))));
+      GetTextSample(kNoId, kSampleBStart, kSampleBEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0         S1        S2         S3
-// |          |         |          |
-// |   [------A--------]|          |
-// |          |         |[--B--]   |
-// |          |         |          |
+// Make sure that a sample that extends multiple segments is dropped when
+// it no longer overlaps with a later segment.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1     1     2     2     3
+//                 0     0     5     0     5     0
+//                       0     0     0     0     0
+// SAMPLES  :      [--------A--------]
+//                                   [--B--]
+// SEGMENTS :            ^           ^           ^
+//
 TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
-  const int64_t kSegmentDuration = 2 * kTick;
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
+
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment1Start = kSegment0Start + kSegmentDuration;
-  const int64_t kSegment2Start = kSegment1Start + kSegmentDuration;
+  const int64_t kSegment1Start = 100;
+  const int64_t kSegment2Start = 200;
 
-  const int64_t kSample0Start = kTick;
-  const int64_t kSample0Duration = 3 * kTick;
-  const int64_t kSample0End = kSample0Start + kSample0Duration;
+  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAEnd = 200;
 
-  const int64_t kSample1Start = 4 * kTick;
-  const int64_t kSample1Duration = kTick;
-  const int64_t kSample1End = kSample1Start + kSample1Duration;
+  const int64_t kSampleBStart = 200;
+  const int64_t kSampleBEnd = 250;
 
-  Init(kSegmentDuration);
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -466,72 +514,77 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
 
     // Segment One
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Two
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample0Start, kSample0End,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     // Segment Three
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSample1Start, kSample1End,
+                OnProcess(IsTextSample(kNoId, kSampleBStart, kSampleBEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start, kSegmentDuration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
 
     EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload))));
+      GetTextSample(kNoId, kSampleBStart, kSampleBEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 
-// S0        C0         C1         S1          *          *
-// s0        s1         s2         *           *          s3
-// |         |          |                                 |
-// |     [---|-----A----|---]                             |
-// |         |          |                                 |
-// The segment duration is 8 ticks, but with the cues being injected, c0 will
-// become s1, c1 will become s3, and S1 will become s3.
+// Check that segments will be injected when a cue event comes down the
+// pipeline and that the segment duration will get reset after the cues
+// are dispatched.
+//
+// Segment Duration = 300 MS
+//
+// TIME (ms):0     5     1     1     2     2     3     3     4     5
+//                 0     0     5     0     5     0     5     5     0
+//                       0     0     0     0     0     0     0     0
+// SAMPLES  :      [-----------A-----------]
+// CUES     :            ^           ^
+// SEGMENTS :            ^           ^                             ^
+//
 TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
-  const int64_t kSegmentDuration = 8 * kTick;
+  const double kSegmentDurationSec = 0.3;
+  const int64_t kSegmentDurationMs = 300;
 
-  const int64_t kSampleStart = kTick;
-  const int64_t kSampleDuration = 4 * kTick;
-  const int64_t kSampleEnd = kSampleStart + kSampleDuration;
+  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAEnd = 250;
 
-  const int64_t kCue0Time = 2 * kTick;
-  const double kCue0TimeInSeconds = kCue0Time / 1000.0;
-  const int64_t kCue1Time = 4 * kTick;
-  const double kCue1TimeInSeconds = kCue1Time / 1000.0;
+  const double kC0 = 0.1;
+  const double kC1 = 0.2;
 
   const int64_t kSegment0Start = 0;
-  const int64_t kSegment0Duration = 2 * kTick;
-  const int64_t kSegment1Start = kSegment0Start + kSegment0Duration;
-  const int64_t kSegment1Duration = 2 * kTick;
-  const int64_t kSegment2Start = kSegment1Start + kSegment1Duration;
-  const int64_t kSegment2Duration = 8 * kTick;
+  const int64_t kSegment1Start = 100;
+  const int64_t kSegment2Start = 200;
+  ;
 
-  Init(kSegmentDuration);
+  const double kSegment0StartLength = 100;
+  const double kSegment1StartLength = 100;
+
+  Init(kSegmentDurationSec);
 
   {
     testing::InSequence s;
@@ -540,45 +593,43 @@ TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
 
     // Segment 0 and Cue 0
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSampleStart, kSampleEnd,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start, kSegment0Duration,
-                                !kSubSegment, !kEncrypted)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsCueEvent(kStreamIndex, kCue0TimeInSeconds)));
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment0Start,
+                                        kSegment0StartLength, !kSubSegment,
+                                        !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsCueEvent(kStreamIndex, kC0)));
 
     // Segment 1 and Cue 1
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSampleStart, kSampleEnd,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start, kSegment1Duration,
-                                !kSubSegment, !kEncrypted)));
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsCueEvent(kStreamIndex, kCue1TimeInSeconds)));
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment1Start,
+                                        kSegment1StartLength, !kSubSegment,
+                                        !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsCueEvent(kStreamIndex, kC1)));
 
     // Segment 2
     EXPECT_CALL(*Output(kOutput),
-                OnProcess(IsTextSample(kNoId, kSampleStart, kSampleEnd,
+                OnProcess(IsTextSample(kNoId, kSampleAStart, kSampleAEnd,
                                        kNoSettings, kNoPayload)));
-    EXPECT_CALL(
-        *Output(kOutput),
-        OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start, kSegment2Duration,
-                                !kSubSegment, !kEncrypted)));
+    EXPECT_CALL(*Output(kOutput),
+                OnProcess(IsSegmentInfo(kStreamIndex, kSegment2Start,
+                                        kSegmentDurationMs, !kSubSegment,
+                                        !kEncrypted)));
   }
 
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
-      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+      kStreamIndex, GetTextStreamInfo(kTimescaleMs))));
   ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
       kStreamIndex,
-      GetTextSample(kNoId, kSampleStart, kSampleEnd, kNoPayload))));
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
   ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromCueEvent(kStreamIndex, GetCueEvent(kCue0TimeInSeconds))));
+      StreamData::FromCueEvent(kStreamIndex, GetCueEvent(kC0))));
   ASSERT_OK(Input(kInput)->Dispatch(
-      StreamData::FromCueEvent(kStreamIndex, GetCueEvent(kCue1TimeInSeconds))));
+      StreamData::FromCueEvent(kStreamIndex, GetCueEvent(kC1))));
   ASSERT_OK(Input(kInput)->FlushAllDownstreams());
 }
 

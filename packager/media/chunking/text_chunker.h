@@ -14,15 +14,19 @@
 namespace shaka {
 namespace media {
 
+// Media handler for taking a single stream of text samples and inserting
+// segment info based on a fixed segment duration and on cue events. The
+// only time a segment's duration will not match the fixed segment duration
+// is when a cue event is seen.
 class TextChunker : public MediaHandler {
  public:
-  explicit TextChunker(int64_t segment_duration_ms);
+  explicit TextChunker(double segment_duration_in_seconds);
 
  private:
   TextChunker(const TextChunker&) = delete;
   TextChunker& operator=(const TextChunker&) = delete;
 
-  Status InitializeInternal() override;
+  Status InitializeInternal() override { return Status::OK; }
 
   Status Process(std::unique_ptr<StreamData> stream_data) override;
   Status OnFlushRequest(size_t input_stream_index) override;
@@ -31,17 +35,27 @@ class TextChunker : public MediaHandler {
   Status OnCueEvent(std::shared_ptr<const CueEvent> cue);
   Status OnTextSample(std::shared_ptr<const TextSample> sample);
 
-  Status EndSegment(int64_t segment_actual_end_ms);
-  void StartNewSegment(int64_t start_ms);
+  // This does two things that should always happen together:
+  //    1. Dispatch all the samples and a segment info for the time range
+  //       segment_start_ to segment_start_ + duration
+  //    2. Set the next segment to start at segment_start_ + duration and
+  //       remove all samples that don't last into that segment.
+  Status DispatchSegment(int64_t duration);
 
-  int64_t segment_duration_ms_;
+  int64_t ScaleTime(double seconds) const;
 
-  // The segment that we are currently outputting samples for. The segment
-  // will end once a new sample with start time greater or equal to the
-  // segment's end time arrives.
-  int64_t segment_start_ms_;
-  int64_t segment_expected_end_ms_;
-  std::list<std::shared_ptr<const TextSample>> segment_samples_;
+  double segment_duration_in_seconds_;
+
+  int64_t time_scale_ = -1;  // Set in OnStreamInfo
+
+  // Time values are in scaled units.
+  int64_t segment_start_ = 0;
+  int64_t segment_duration_ = -1;  // Set in OnStreamInfo
+
+  // All samples that make up the current segment. We must store the samples
+  // until the segment ends because a cue event may end the segment sooner
+  // than we expected.
+  std::list<std::shared_ptr<const TextSample>> samples_in_current_segment_;
 };
 
 }  // namespace media

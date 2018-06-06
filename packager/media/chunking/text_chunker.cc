@@ -12,27 +12,10 @@ namespace shaka {
 namespace media {
 namespace {
 const size_t kStreamIndex = 0;
-
-std::shared_ptr<const SegmentInfo> MakeSegmentInfo(int64_t start_ms,
-                                                   int64_t end_ms) {
-  DCHECK_LT(start_ms, end_ms);
-
-  std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
-  info->start_timestamp = start_ms;
-  info->duration = end_ms - start_ms;
-
-  return info;
-}
 }  // namespace
 
-TextChunker::TextChunker(int64_t segment_duration_ms)
-    : segment_duration_ms_(segment_duration_ms),
-      segment_start_ms_(0),
-      segment_expected_end_ms_(segment_duration_ms) {}
-
-Status TextChunker::InitializeInternal() {
-  return Status::OK;
-}
+TextChunker::TextChunker(double segment_duration_in_seconds)
+    : segment_duration_in_seconds_(segment_duration_in_seconds){};
 
 Status TextChunker::Process(std::unique_ptr<StreamData> data) {
   switch (data->stream_data_type) {
@@ -49,75 +32,89 @@ Status TextChunker::Process(std::unique_ptr<StreamData> data) {
 }
 
 Status TextChunker::OnFlushRequest(size_t input_stream_index) {
-  // Keep outputting segments until all the samples leave the system.
-  while (segment_samples_.size()) {
-    RETURN_IF_ERROR(EndSegment(segment_expected_end_ms_));
+  // Keep outputting segments until all the samples leave the system. Calling
+  // |DispatchSegment| will remove samples over time.
+  while (samples_in_current_segment_.size()) {
+    RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
   return FlushAllDownstreams();
 }
 
 Status TextChunker::OnStreamInfo(std::shared_ptr<const StreamInfo> info) {
-  // There is no information we need from the stream info, so just pass it
-  // downstream.
+  time_scale_ = info->time_scale();
+  segment_duration_ = ScaleTime(segment_duration_in_seconds_);
+
   return DispatchStreamInfo(kStreamIndex, std::move(info));
 }
 
 Status TextChunker::OnCueEvent(std::shared_ptr<const CueEvent> event) {
-  // We are going to cut the current segment into two using the event's time as
-  // the division.
-  const int64_t cue_time_in_ms = event->time_in_seconds * 1000;
+  // We are going to end the current segment prematurely using the cue event's
+  // time as the new segment end.
 
-  // In the case that there is a gap with no samples between the last sample
-  // and the cue event, output all the segments until we get to the segment that
-  // the cue event interrupts.
-  while (segment_expected_end_ms_ < cue_time_in_ms) {
-    RETURN_IF_ERROR(EndSegment(segment_expected_end_ms_));
+  // Because the cue should have been inserted into the stream such that no
+  // later sample could start before it does, we know that there should
+  // be no later samples starting before the cue event.
+
+  // Convert the event's time to be scaled to the time of each sample.
+  const int64_t event_time = ScaleTime(event->time_in_seconds);
+
+  // Output all full segments before the segment that the cue event interupts.
+  while (segment_start_ + segment_duration_ < event_time) {
+    RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
-  RETURN_IF_ERROR(EndSegment(cue_time_in_ms));
-  RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
+  const int64_t shorten_duration = event_time - segment_start_;
 
-  return Status::OK;
+  RETURN_IF_ERROR(DispatchSegment(shorten_duration));
+  return DispatchCueEvent(kStreamIndex, std::move(event));
 }
 
 Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   // Output all segments that come before our new sample.
-  while (segment_expected_end_ms_ <= sample->start_time()) {
-    RETURN_IF_ERROR(EndSegment(segment_expected_end_ms_));
+  const int64_t sample_start = sample->start_time();
+  while (sample_start >= segment_start_ + segment_duration_) {
+    RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
-  segment_samples_.push_back(std::move(sample));
+  samples_in_current_segment_.push_back(std::move(sample));
 
   return Status::OK;
 }
 
-Status TextChunker::EndSegment(int64_t segment_actual_end_ms) {
+Status TextChunker::DispatchSegment(int64_t duration) {
+  DCHECK_GT(duration, 0) << "Segment duration should always be positive";
+
   // Output all the samples that are part of the segment.
-  for (const auto& sample : segment_samples_) {
+  for (const auto& sample : samples_in_current_segment_) {
     RETURN_IF_ERROR(DispatchTextSample(kStreamIndex, sample));
   }
 
-  RETURN_IF_ERROR(DispatchSegmentInfo(
-      kStreamIndex, MakeSegmentInfo(segment_start_ms_, segment_actual_end_ms)));
+  // Output the segment info.
+  std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
+  info->start_timestamp = segment_start_;
+  info->duration = duration;
+  RETURN_IF_ERROR(DispatchSegmentInfo(kStreamIndex, std::move(info)));
 
-  // Create a new segment that comes right after the old segment and remove all
-  // samples that don't cross over into the new segment.
-  StartNewSegment(segment_actual_end_ms);
+  // Move onto the next segment.
+  const int64_t new_segment_start = segment_start_ + duration;
+  segment_start_ = new_segment_start;
+
+  // Remove all samples that end before the (new) current segment started.
+  samples_in_current_segment_.remove_if(
+      [new_segment_start](const std::shared_ptr<const TextSample>& sample) {
+        // For the sample to even be in this list, it should have started
+        // before the (new) current segment.
+        DCHECK_LT(sample->start_time(), new_segment_start);
+        return sample->EndTime() <= new_segment_start;
+      });
 
   return Status::OK;
 }
 
-void TextChunker::StartNewSegment(int64_t start_ms) {
-  segment_start_ms_ = start_ms;
-  segment_expected_end_ms_ = start_ms + segment_duration_ms_;
-
-  // Remove all samples that no longer overlap with the new segment.
-  segment_samples_.remove_if(
-      [start_ms](const std::shared_ptr<const TextSample>& sample) {
-        return sample->EndTime() <= start_ms;
-      });
+int64_t TextChunker::ScaleTime(double seconds) const {
+  DCHECK_GT(time_scale_, 0) << "Need positive time scale to scale time.";
+  return static_cast<int64_t>(seconds * time_scale_);
 }
-
 }  // namespace media
 }  // namespace shaka

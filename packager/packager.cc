@@ -456,10 +456,8 @@ std::unique_ptr<TextChunker> CreateTextChunker(
     const ChunkingParams& chunking_params) {
   const float segment_length_in_seconds =
       chunking_params.segment_duration_in_seconds;
-  const uint64_t segment_length_in_ms =
-      static_cast<uint64_t>(segment_length_in_seconds * 1000);
-
-  return std::unique_ptr<TextChunker>(new TextChunker(segment_length_in_ms));
+  return std::unique_ptr<TextChunker>(
+      new TextChunker(segment_length_in_seconds));
 }
 
 Status CreateHlsTextJob(const StreamDescriptor& stream,
