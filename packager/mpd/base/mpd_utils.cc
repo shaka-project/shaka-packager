@@ -6,6 +6,7 @@
 
 #include "packager/mpd/base/mpd_utils.h"
 
+#include <gflags/gflags.h>
 #include <libxml/tree.h>
 
 #include "packager/base/base64.h"
@@ -17,6 +18,14 @@
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
+
+DEFINE_bool(
+    use_legacy_vp9_codec_string,
+    false,
+    "Use legacy vp9 codec string 'vp9' if set to true; otherwise new style "
+    "vp09.xx.xx.xx... codec string will be used. Default to false as indicated "
+    "in https://github.com/google/shaka-packager/issues/406, all major "
+    "browsers and platforms already support the new 'vp09' codec string.");
 
 namespace shaka {
 namespace {
@@ -97,8 +106,10 @@ std::string GetCodecs(const MediaInfo& media_info) {
       // new codec strings.
       if (codec == "vp08")
         return "vp8";
-      if (codec == "vp09")
-        return "vp9";
+      if (FLAGS_use_legacy_vp9_codec_string) {
+        if (codec == "vp09")
+          return "vp9";
+      }
     }
     return media_info.video_info().codec();
   }

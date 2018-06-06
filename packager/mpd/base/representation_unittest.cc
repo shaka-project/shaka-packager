@@ -6,6 +6,7 @@
 
 #include "packager/mpd/base/representation.h"
 
+#include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <inttypes.h>
@@ -21,6 +22,8 @@ using ::testing::Bool;
 using ::testing::Not;
 using ::testing::Values;
 using ::testing::WithParamInterface;
+
+DECLARE_bool(use_legacy_vp9_codec_string);
 
 namespace shaka {
 namespace {
@@ -210,9 +213,29 @@ TEST_F(RepresentationTest, CheckVideoInfoVp8CodecInWebm) {
   EXPECT_THAT(representation->GetXml().get(), AttributeEqual("codecs", "vp8"));
 }
 
-// Check that vp9 codec string will be updated for backward compatibility
-// support in webm.
 TEST_F(RepresentationTest, CheckVideoInfoVp9CodecInWebm) {
+  const char kTestMediaInfoCodecVp9[] =
+      "video_info {\n"
+      "  codec: 'vp09.00.00.08.01.01.00.00'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 3\n";
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp9),
+                           kAnyRepresentationId, NoListener());
+  ASSERT_TRUE(representation->Init());
+  EXPECT_THAT(representation->GetXml().get(),
+              AttributeEqual("codecs", "vp09.00.00.08.01.01.00.00"));
+}
+
+TEST_F(RepresentationTest, CheckVideoInfoLegacyVp9CodecInWebm) {
+  FLAGS_use_legacy_vp9_codec_string = true;
+
   const char kTestMediaInfoCodecVp9[] =
       "video_info {\n"
       "  codec: 'vp09.00.00.08.01.01.00.00'\n"
