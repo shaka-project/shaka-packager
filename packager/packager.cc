@@ -444,37 +444,6 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   return std::make_shared<EncryptionHandler>(encryption_params, key_source);
 }
 
-Status CreateMp4ToMp4TextJob(const StreamDescriptor& stream,
-                             const PackagingParams& packaging_params,
-                             std::unique_ptr<MuxerListener> muxer_listener,
-                             SyncPointQueue* sync_points,
-                             MuxerFactory* muxer_factory,
-                             std::shared_ptr<OriginHandler>* root) {
-  // TODO(kqyang): This need to be integrated back to media pipeline since we
-  // may want to get not only text streams from the demuxer, in which case, the
-  // same demuxer should be used to get all streams instead of having a demuxer
-  // specifically for text.
-  // TODO(kqyang): Support Cue Alignment if |sync_points| is not null.
-
-  std::shared_ptr<Demuxer> demuxer;
-  RETURN_IF_ERROR(CreateDemuxer(stream, packaging_params, &demuxer));
-  if (!stream.language.empty()) {
-    demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
-  }
-
-  auto chunker =
-      std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
-  std::shared_ptr<Muxer> muxer =
-      muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
-  muxer->SetMuxerListener(std::move(muxer_listener));
-
-  RETURN_IF_ERROR(chunker->AddHandler(std::move(muxer)));
-  RETURN_IF_ERROR(
-      demuxer->SetHandler(stream.stream_selector, std::move(chunker)));
-
-  return Status::OK;
-}
-
 std::unique_ptr<TextChunker> CreateTextChunker(
     const ChunkingParams& chunking_params) {
   const float segment_length_in_seconds =
@@ -572,36 +541,27 @@ Status CreateTextJobs(
   DCHECK(muxer_listener_factory);
   DCHECK(job_manager);
   for (const StreamDescriptor& stream : streams) {
-    if (GetOutputFormat(stream) == CONTAINER_MOV) {
+    // There are currently four options:
+    //    TEXT WEBVTT --> TEXT WEBVTT [ supported ]
+    //    TEXT WEBVTT --> MP4 WEBVTT  [ supported ]
+    //    MP4 WEBVTT  --> MP4 WEBVTT  [ unsupported ]
+    //    MP4 WEBVTT  --> TEXT WEBVTT [ unsupported ]
+    const auto input_container = DetermineContainerFromFileName(stream.input);
+    const auto output_container = GetOutputFormat(stream);
+
+    if (input_container != CONTAINER_WEBVTT) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Text output format is not support for " + stream.input);
+    }
+
+    if (output_container == CONTAINER_MOV) {
       std::unique_ptr<MuxerListener> muxer_listener =
           muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
 
       std::shared_ptr<OriginHandler> root;
-      Status status;
-
-      switch (DetermineContainerFromFileName(stream.input)) {
-        case CONTAINER_WEBVTT:
-          status.Update(CreateWebVttToMp4TextJob(
-              stream, packaging_params, std::move(muxer_listener), sync_points,
-              muxer_factory, &root));
-          break;
-
-        case CONTAINER_MOV:
-          status.Update(CreateMp4ToMp4TextJob(
-              stream, packaging_params, std::move(muxer_listener), sync_points,
-              muxer_factory, &root));
-          break;
-
-        default:
-          status.Update(
-              Status(error::INVALID_ARGUMENT,
-                     "Text output format is not support for " + stream.input));
-          break;
-      }
-
-      if (!status.ok()) {
-        return status;
-      }
+      RETURN_IF_ERROR(CreateWebVttToMp4TextJob(
+          stream, packaging_params, std::move(muxer_listener), sync_points,
+          muxer_factory, &root));
 
       job_manager->Add("MP4 text job", std::move(root));
     } else {
@@ -626,12 +586,9 @@ Status CreateTextJobs(
       // If we are outputting to HLS, then create the HLS test pipeline that
       // will create segmented text output.
       if (hls_listener) {
-        Status status =
-            CreateHlsTextJob(stream, packaging_params, std::move(hls_listener),
-                             sync_points, job_manager);
-        if (!status.ok()) {
-          return status;
-        }
+        RETURN_IF_ERROR(CreateHlsTextJob(stream, packaging_params,
+                                         std::move(hls_listener), sync_points,
+                                         job_manager));
       }
 
       if (!stream.output.empty()) {
