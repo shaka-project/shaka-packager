@@ -1,4 +1,14 @@
-![Shaka Packager](docs/shaka-packager.png)
+<!--
+  While not ideal, absolute URLs are used here as it is the simplest way to make
+  the links work on GitHub and Docker Hub. These links in cloned repositories
+  will point back to the main repository and if it is an issue, we suggest
+  updating the links in the cloned repository.
+
+  See https://github.com/google/shaka-packager/issues/408 for the full
+  background.
+-->
+
+![Shaka Packager](https://raw.githubusercontent.com/google/shaka-packager/master/docs/shaka-packager.png)
 
 [![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
 [![Build status](https://ci.appveyor.com/api/projects/status/3t8iu603rp25sa74?svg=true)](https://ci.appveyor.com/project/shaka/shaka-packager)
@@ -56,10 +66,12 @@ Shaka Packager supports:
 There are several ways you can get Shaka Packager.
 
 - Using [Docker](https://www.docker.com/whatisdocker).
-  Instructions are available [here](docs/source/docker_instructions.md).
+  Instructions are available
+  [here](https://github.com/google/shaka-packager/blob/master/docs/source/docker_instructions.md).
 - Get prebuilt binaries from
   [release](https://github.com/google/shaka-packager/releases).
-- Built from source, see [Build Instructions](docs/source/build_instructions.md)
+- Built from source, see
+  [Build Instructions](https://github.com/google/shaka-packager/blob/master/docs/source/build_instructions.md)
   for details.
 
 # Useful Links
