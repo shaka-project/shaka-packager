@@ -213,10 +213,7 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
 
   // If a segment template is provided, it must be valid.
   if (stream.segment_template.length()) {
-    Status template_check = ValidateSegmentTemplate(stream.segment_template);
-    if (!template_check.ok()) {
-      return template_check;
-    }
+    RETURN_IF_ERROR(ValidateSegmentTemplate(stream.segment_template));
   }
 
   if (stream.output.find('$') != std::string::npos) {
@@ -299,11 +296,22 @@ Status ValidateParams(const PackagingParams& packaging_params,
                     "stream descriptors.");
     }
 
-    Status stream_check = ValidateStreamDescriptor(
-        packaging_params.test_params.dump_stream_info, descriptor);
+    RETURN_IF_ERROR(ValidateStreamDescriptor(
+        packaging_params.test_params.dump_stream_info, descriptor));
 
-    if (!stream_check.ok()) {
-      return stream_check;
+    if (base::StartsWith(descriptor.input, "udp://",
+                         base::CompareCase::SENSITIVE)) {
+      const HlsParams& hls_params = packaging_params.hls_params;
+      if (!hls_params.master_playlist_output.empty() &&
+          hls_params.playlist_type == HlsPlaylistType::kVod) {
+        LOG(WARNING)
+            << "Seeing UDP input with HLS Playlist Type set to VOD. The "
+               "playlists will only be generated when UDP socket is closed. "
+               "If you want to do live packaging, --hls_playlist_type needs to "
+               "be set to LIVE.";
+      }
+      // Skip the check for DASH as DASH defaults to 'dynamic' MPD when segment
+      // template is provided.
     }
   }
 
@@ -808,11 +816,7 @@ Status Packager::Initialize(
   if (internal_)
     return Status(error::INVALID_ARGUMENT, "Already initialized.");
 
-  Status param_check =
-      media::ValidateParams(packaging_params, stream_descriptors);
-  if (!param_check.ok()) {
-    return param_check;
-  }
+  RETURN_IF_ERROR(media::ValidateParams(packaging_params, stream_descriptors));
 
   if (!packaging_params.test_params.injected_library_version.empty()) {
     SetPackagerVersionForTesting(
@@ -917,15 +921,11 @@ Status Packager::Initialize(
       packaging_params.output_media_info, internal->mpd_notifier.get(),
       internal->hls_notifier.get());
 
-  Status status = media::CreateAllJobs(
+  RETURN_IF_ERROR(media::CreateAllJobs(
       streams_for_jobs, packaging_params, internal->mpd_notifier.get(),
       internal->encryption_key_source.get(),
       internal->job_manager->sync_points(), &muxer_listener_factory,
-      &muxer_factory, internal->job_manager.get());
-
-  if (!status.ok()) {
-    return status;
-  }
+      &muxer_factory, internal->job_manager.get()));
 
   internal_ = std::move(internal);
   return Status::OK;
@@ -935,9 +935,7 @@ Status Packager::Run() {
   if (!internal_)
     return Status(error::INVALID_ARGUMENT, "Not yet initialized.");
 
-  Status status = internal_->job_manager->RunJobs();
-  if (!status.ok())
-    return status;
+  RETURN_IF_ERROR(internal_->job_manager->RunJobs());
 
   if (internal_->hls_notifier) {
     if (!internal_->hls_notifier->Flush())
