@@ -16,37 +16,35 @@ namespace {
 // configured. This is about 20 seconds of buffer for audio with 48kHz.
 const size_t kMaxBufferSize = 1000;
 
-double TimeInSeconds(const StreamInfo& info, const StreamData& data) {
-  int64_t time_scale;
-  int64_t scaled_time;
-  switch (data.stream_data_type) {
-    case StreamDataType::kMediaSample:
-      time_scale = info.time_scale();
-      if (info.stream_type() == kStreamAudio) {
-        // Return the start time for video and mid-point for audio, so that for
-        // an audio sample, if the portion of the sample after the cue point is
-        // bigger than the portion of the sample before the cue point, the
-        // sample is placed after the cue.
-        // It does not matter for text samples as text samples will be cut at
-        // cue point.
-        scaled_time =
-            data.media_sample->pts() + data.media_sample->duration() / 2;
-      } else {
-        scaled_time = data.media_sample->pts();
-      }
-      break;
-    case StreamDataType::kTextSample:
-      // Text is always in MS but the stream info time scale is 0.
-      time_scale = 1000;
-      scaled_time = data.text_sample->start_time();
-      break;
-    default:
-      time_scale = 0;
-      scaled_time = 0;
-      NOTREACHED() << "TimeInSeconds should only be called on media samples "
-                      "and text samples.";
-      break;
+int64_t GetScaledTime(const StreamInfo& info, const StreamData& data) {
+  DCHECK(data.text_sample || data.media_sample);
+
+  if (data.text_sample) {
+    return data.text_sample->start_time();
   }
+
+  if (info.stream_type() == kStreamText) {
+    // This class does not support splitting MediaSample at cue points, which is
+    // required for text stream. This class expects MediaSample to be converted
+    // to TextSample before passing to this class.
+    NOTREACHED()
+        << "A text streams should use text samples, not media samples.";
+  }
+
+  if (info.stream_type() == kStreamAudio) {
+    // Return the mid-point for audio because if the portion of the sample
+    // after the cue point is bigger than the portion of the sample before
+    // the cue point, the sample is placed after the cue.
+    return data.media_sample->pts() + data.media_sample->duration() / 2;
+  }
+
+  DCHECK_EQ(info.stream_type(), kStreamVideo);
+  return data.media_sample->pts();
+}
+
+double TimeInSeconds(const StreamInfo& info, const StreamData& data) {
+  const int64_t scaled_time = GetScaledTime(info, data);
+  const uint32_t time_scale = info.time_scale();
 
   return static_cast<double>(scaled_time) / time_scale;
 }
