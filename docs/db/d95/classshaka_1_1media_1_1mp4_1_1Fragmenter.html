@@ -115,6 +115,8 @@ const std::vector&lt; <a class="el" href="../../d6/de2/structshaka_1_1media_1_1m
 <tr class="separator:a467c36405e96c7023961fc9061ea016a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f9d467d7188160ee445b74b6f0905f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a6f9d467d7188160ee445b74b6f0905f4">set_use_decoding_timestamp_in_timeline</a> (bool use_decoding_timestamp_in_timeline)</td></tr>
 <tr class="separator:a6f9d467d7188160ee445b74b6f0905f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4274081cba791a24187e0512764a4b0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a4274081cba791a24187e0512764a4b0e">set_allow_adjust_earliest_presentation_time</a> (bool allow_adjust_earliest_presentation_time)</td></tr>
+<tr class="separator:a4274081cba791a24187e0512764a4b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -259,7 +261,36 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Optimize sample entries table. If all values in <em>entries</em> are identical, then <em>entries</em> is cleared and the value is assigned to <em>default_value</em>; otherwise it is a NOP. Return true if the table is optimized. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00111">111</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00121">121</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+
+</div>
+</div>
+<a id="a4274081cba791a24187e0512764a4b0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4274081cba791a24187e0512764a4b0e">&#9670;&nbsp;</a></span>set_allow_adjust_earliest_presentation_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::mp4::Fragmenter::set_allow_adjust_earliest_presentation_time </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allow_adjust_earliest_presentation_time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the flag allow_use_adjust_earliest_presentation_time, which if set to true, earlist_presentation_time (EPT) may be adjusted not to be smaller than the decoding timestamp (dts) for the first fragment. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00082">82</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
 
 </div>
 </div>
@@ -299,7 +330,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 23 2018 16:11:15 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 7 2018 16:04:16 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

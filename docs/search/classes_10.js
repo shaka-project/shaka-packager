@@ -28,7 +28,7 @@ var searchData=
   ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html',1,'shaka::media::webm::SingleSegmentSegmenter'],['../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html',1,'shaka::media::mp4::SingleSegmentSegmenter']]],
   ['soundmediaheader',['SoundMediaHeader',['../d7/d07/structshaka_1_1media_1_1mp4_1_1SoundMediaHeader.html',1,'shaka::media::mp4']]],
   ['status',['Status',['../d2/d20/classshaka_1_1Status.html',1,'shaka']]],
-  ['streamdata',['StreamData',['../d0/d4c/structshaka_1_1media_1_1StreamData.html',1,'shaka::media::StreamData'],['../de/db5/structshaka_1_1media_1_1MuxerListenerFactory_1_1StreamData.html',1,'shaka::media::MuxerListenerFactory::StreamData']]],
+  ['streamdata',['StreamData',['../de/db5/structshaka_1_1media_1_1MuxerListenerFactory_1_1StreamData.html',1,'shaka::media::MuxerListenerFactory::StreamData'],['../d0/d4c/structshaka_1_1media_1_1StreamData.html',1,'shaka::media::StreamData']]],
   ['streamdescriptor',['StreamDescriptor',['../d2/d7b/structshaka_1_1StreamDescriptor.html',1,'shaka']]],
   ['streaminfo',['StreamInfo',['../d5/db1/classshaka_1_1media_1_1StreamInfo.html',1,'shaka::media']]],
   ['subsampleentry',['SubsampleEntry',['../d1/d34/structshaka_1_1media_1_1SubsampleEntry.html',1,'shaka::media']]],

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Shaka Packager SDK: shaka::media::DisplayActionCompare Class Reference</title>
+<title>Shaka Packager SDK: shaka::media::WebVttFileBuffer Class Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -58,35 +58,44 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../d8/daf/namespaceshaka.html">shaka</a></li><li class="navelem"><b>media</b></li><li class="navelem"><a class="el" href="../../da/d17/classshaka_1_1media_1_1DisplayActionCompare.html">DisplayActionCompare</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../d8/daf/namespaceshaka.html">shaka</a></li><li class="navelem"><b>media</b></li><li class="navelem"><a class="el" href="../../d6/dda/classshaka_1_1media_1_1WebVttFileBuffer.html">WebVttFileBuffer</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="../../d1/dac/classshaka_1_1media_1_1DisplayActionCompare-members.html">List of all members</a>  </div>
+<a href="../../d8/dd2/classshaka_1_1media_1_1WebVttFileBuffer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">shaka::media::DisplayActionCompare Class Reference</div>  </div>
+<div class="title">shaka::media::WebVttFileBuffer Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a560c3ded00866f4962e35eecaca3c942"><td class="memItemLeft" align="right" valign="top"><a id="a560c3ded00866f4962e35eecaca3c942"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const std::shared_ptr&lt; DisplayAction &gt; &amp;left, const std::shared_ptr&lt; DisplayAction &gt; &amp;right) const</td></tr>
-<tr class="separator:a560c3ded00866f4962e35eecaca3c942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a230a349b581da94c993de8d07b90039a"><td class="memItemLeft" align="right" valign="top"><a id="a230a349b581da94c993de8d07b90039a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> ()</td></tr>
+<tr class="separator:a230a349b581da94c993de8d07b90039a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ddd58bafe14c5e5aeffc72a13ec01c7"><td class="memItemLeft" align="right" valign="top"><a id="a2ddd58bafe14c5e5aeffc72a13ec01c7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Append</b> (const <a class="el" href="../../db/d1f/classshaka_1_1media_1_1TextSample.html">TextSample</a> &amp;sample)</td></tr>
+<tr class="separator:a2ddd58bafe14c5e5aeffc72a13ec01c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6626f9ab2063b0201bed0e1bc06d611e"><td class="memItemLeft" align="right" valign="top"><a id="a6626f9ab2063b0201bed0e1bc06d611e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>WriteTo</b> (<a class="el" href="../../d3/d73/classshaka_1_1File.html">File</a> *file)</td></tr>
+<tr class="separator:a6626f9ab2063b0201bed0e1bc06d611e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3df2fa078eae58cdb59b18fbdb674185"><td class="memItemLeft" align="right" valign="top"><a id="a3df2fa078eae58cdb59b18fbdb674185"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>sample_count</b> () const</td></tr>
+<tr class="separator:a3df2fa078eae58cdb59b18fbdb674185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../d2/d42/webvtt__to__mp4__handler_8h_source.html#l00023">23</a> of file <a class="el" href="../../d2/d42/webvtt__to__mp4__handler_8h_source.html">webvtt_to_mp4_handler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/dff/webvtt__file__buffer_8h_source.html#l00021">21</a> of file <a class="el" href="../../db/dff/webvtt__file__buffer_8h_source.html">webvtt_file_buffer.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>packager/media/formats/webvtt/<a class="el" href="../../d2/d42/webvtt__to__mp4__handler_8h_source.html">webvtt_to_mp4_handler.h</a></li>
-<li>packager/media/formats/webvtt/<a class="el" href="../../d6/d9f/webvtt__to__mp4__handler_8cc_source.html">webvtt_to_mp4_handler.cc</a></li>
+<li>packager/media/formats/webvtt/<a class="el" href="../../db/dff/webvtt__file__buffer_8h_source.html">webvtt_file_buffer.h</a></li>
+<li>packager/media/formats/webvtt/<a class="el" href="../../da/db3/webvtt__file__buffer_8cc_source.html">webvtt_file_buffer.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 23 2018 16:10:56 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 7 2018 16:04:07 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

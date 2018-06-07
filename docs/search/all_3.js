@@ -28,7 +28,6 @@ var searchData=
   ['dispatchsegmentinfo',['DispatchSegmentInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a2acc1c84a61aee93229d493aa93308d5',1,'shaka::media::MediaHandler']]],
   ['dispatchstreaminfo',['DispatchStreamInfo',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#ad165375cd0a2074c5a740b42f847c499',1,'shaka::media::MediaHandler']]],
   ['dispatchtextsample',['DispatchTextSample',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html#a9c44df529fead65c007ee27b84ebd32a',1,'shaka::media::MediaHandler']]],
-  ['displayactioncompare',['DisplayActionCompare',['../da/d17/classshaka_1_1media_1_1DisplayActionCompare.html',1,'shaka::media']]],
   ['drm_5flabel',['drm_label',['../d2/d7b/structshaka_1_1StreamDescriptor.html#a8f2a517450433cf69bbc87cef17d05cf',1,'shaka::StreamDescriptor']]],
   ['dts',['dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a02537ce70272a3e22426c46e4540ac64',1,'shaka::media::mp2t::PesPacket']]],
   ['dtsspecific',['DTSSpecific',['../dc/da0/structshaka_1_1media_1_1mp4_1_1DTSSpecific.html',1,'shaka::media::mp4']]],

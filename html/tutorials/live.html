@@ -119,7 +119,8 @@ See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FF
   &#39;in=udp://225.1.1.8:8002?interface=172.29.46.122,stream=video,init_segment=h264_480p_init.mp4,segment_template=h264_480p_$Number$.m4s,playlist_name=h264_480p.m3u8&#39; \
   &#39;in=udp://225.1.1.8:8003?interface=172.29.46.122,stream=video,init_segment=h264_720p_init.mp4,segment_template=h264_720p_$Number$.m4s,playlist_name=h264_720p.m3u8&#39; \
   &#39;in=udp://225.1.1.8:8004?interface=172.29.46.122,stream=video,init_segment=h264_1080p_init.mp4,segment_template=h264_1080p_$Number$.m4s,playlist_name=h264_1080p.m3u8&#39; \
-  --hls_master_playlist_output h264_master.m3u8
+  --hls_master_playlist_output h264_master.m3u8 \
+  --hls_playlist_type LIVE
 </pre></div>
 </div>
 </li>

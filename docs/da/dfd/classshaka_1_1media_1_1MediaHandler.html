@@ -91,7 +91,7 @@ Inheritance diagram for shaka::media::MediaHandler:</div>
 <area href="../../d5/d3e/classshaka_1_1media_1_1TextChunker.html" alt="shaka::media::TextChunker" shape="rect" coords="248,616,486,640"/>
 <area href="../../d8/df8/classshaka_1_1media_1_1TextPadder.html" alt="shaka::media::TextPadder" shape="rect" coords="248,672,486,696"/>
 <area href="../../db/dea/classshaka_1_1media_1_1TrickPlayHandler.html" alt="shaka::media::TrickPlayHandler" shape="rect" coords="248,728,486,752"/>
-<area href="../../d6/d3f/classshaka_1_1media_1_1WebVttOutputHandler.html" alt="shaka::media::WebVttOutputHandler" shape="rect" coords="248,784,486,808"/>
+<area href="../../d6/d2a/classshaka_1_1media_1_1WebVttTextOutputHandler.html" alt="shaka::media::WebVttTextOutputHandler" shape="rect" coords="248,784,486,808"/>
 <area href="../../d7/d53/classshaka_1_1media_1_1WebVttToMp4Handler.html" alt="shaka::media::WebVttToMp4Handler" shape="rect" coords="248,840,486,864"/>
 </map>
  </div></div>
@@ -177,7 +177,7 @@ const std::map&lt; size_t, std::pair&lt; std::shared_ptr&lt; <a class="el" href=
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../da/dfd/classshaka_1_1media_1_1MediaHandler.html">MediaHandler</a> is the base media processing unit. Media handlers transform the input streams and propagate the outputs to downstream media handlers. There are three different types of media handlers: 1) Single input single output This is the most basic handler. It only supports one input and one output with both index as 0. 2) Multiple inputs multiple outputs The number of outputs must be equal to the number of inputs. The output stream at a specific index comes from the input stream at the same index. Different streams usually share a common resource, although they may be independent. One example of this is encryption handler. 3) Single input multiple outputs The input stream is split into multiple output streams. One example of this is trick play handler. Other types of media handlers are disallowed and not supported. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d93/media__handler_8h_source.html#l00148">148</a> of file <a class="el" href="../../d3/d93/media__handler_8h_source.html">media_handler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d93/media__handler_8h_source.html#l00150">150</a> of file <a class="el" href="../../d3/d93/media__handler_8h_source.html">media_handler.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="afe98a4fd19eabe0fc78afc91959c34a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afe98a4fd19eabe0fc78afc91959c34a6">&#9670;&nbsp;</a></span>Dispatch()</h2>
@@ -204,7 +204,7 @@ const std::map&lt; size_t, std::pair&lt; std::shared_ptr&lt; <a class="el" href=
 </div><div class="memdoc">
 <p>Dispatch the stream data to downstream handlers. Note that stream_data.stream_index should be the output stream index. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/de9/media__handler_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d2/de9/media__handler_8cc_source.html">media_handler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/de9/media__handler_8cc_source.html#l00072">72</a> of file <a class="el" href="../../d2/de9/media__handler_8cc_source.html">media_handler.cc</a>.</p>
 
 </div>
 </div>
@@ -224,7 +224,7 @@ const std::map&lt; size_t, std::pair&lt; std::shared_ptr&lt; <a class="el" href=
 </div><div class="memdoc">
 <p>Initialize the handler and downstream handlers. Note that it should be called after setting up the graph before running the graph. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/de9/media__handler_8cc_source.html#l00024">24</a> of file <a class="el" href="../../d2/de9/media__handler_8cc_source.html">media_handler.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/de9/media__handler_8cc_source.html#l00044">44</a> of file <a class="el" href="../../d2/de9/media__handler_8cc_source.html">media_handler.cc</a>.</p>
 
 </div>
 </div>
@@ -281,7 +281,7 @@ const std::map&lt; size_t, std::pair&lt; std::shared_ptr&lt; <a class="el" href=
 </div><div class="memdoc">
 <p>Process the incoming stream data. Note that (1) stream_data.stream_index should be the input stream index; (2) The implementation needs to call DispatchXxx to dispatch the processed stream data to the downstream handlers after finishing processing if needed. </p>
 
-<p>Implemented in <a class="el" href="../../d1/d36/classshaka_1_1media_1_1FakeMediaHandler.html#af9fa42669591a52b8fa1a62d27ed93d6">shaka::media::FakeMediaHandler</a>, <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">shaka::media::Demuxer</a>, <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#aec730b070245231a0887787005c06eee">shaka::media::Muxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, <a class="el" href="../../d7/d53/classshaka_1_1media_1_1WebVttToMp4Handler.html#a7e589ef1f6d4d29eb5fe4daacf65606f">shaka::media::WebVttToMp4Handler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
+<p>Implemented in <a class="el" href="../../d1/d36/classshaka_1_1media_1_1FakeMediaHandler.html#af9fa42669591a52b8fa1a62d27ed93d6">shaka::media::FakeMediaHandler</a>, <a class="el" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a869b21d13f02d4d5c0519f9eb35117cd">shaka::media::Demuxer</a>, <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#aec730b070245231a0887787005c06eee">shaka::media::Muxer</a>, <a class="el" href="../../d4/d43/classshaka_1_1media_1_1ChunkingHandler.html#a44c30ffd7c283be2ba4347bda7848633">shaka::media::ChunkingHandler</a>, and <a class="el" href="../../d6/d4c/classshaka_1_1media_1_1EncryptionHandler.html#a7887e6060eb572036674ecb9a7e045c4">shaka::media::EncryptionHandler</a>.</p>
 
 </div>
 </div>
@@ -292,7 +292,7 @@ const std::map&lt; size_t, std::pair&lt; std::shared_ptr&lt; <a class="el" href=
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 23 2018 16:10:58 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 7 2018 16:04:00 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

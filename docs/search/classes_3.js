@@ -12,6 +12,5 @@ var searchData=
   ['decryptorsource',['DecryptorSource',['../d7/d59/classshaka_1_1media_1_1DecryptorSource.html',1,'shaka::media']]],
   ['demuxer',['Demuxer',['../dd/d17/classshaka_1_1media_1_1Demuxer.html',1,'shaka::media']]],
   ['demuxstreamidmediasample',['DemuxStreamIdMediaSample',['../d1/da1/structshaka_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample.html',1,'shaka::media::wvm']]],
-  ['displayactioncompare',['DisplayActionCompare',['../da/d17/classshaka_1_1media_1_1DisplayActionCompare.html',1,'shaka::media']]],
   ['dtsspecific',['DTSSpecific',['../dc/da0/structshaka_1_1media_1_1mp4_1_1DTSSpecific.html',1,'shaka::media::mp4']]]
 ];

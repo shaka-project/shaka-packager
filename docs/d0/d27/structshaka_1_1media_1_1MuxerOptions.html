@@ -83,6 +83,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:aa616f5958ea9df2d70f3fe42ff47ff43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5397ee8759a663aea68261600e528d82"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">output_file_name</a></td></tr>
 <tr class="separator:a5397ee8759a663aea68261600e528d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6f2196d3bc69a25bd9a7ce73ec4db69"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ae6f2196d3bc69a25bd9a7ce73ec4db69">output_file_index</a> = 0</td></tr>
+<tr class="separator:ae6f2196d3bc69a25bd9a7ce73ec4db69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab98cfd28046fc5c52ab2a45dba1a339a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ab98cfd28046fc5c52ab2a45dba1a339a">segment_template</a></td></tr>
 <tr class="separator:ab98cfd28046fc5c52ab2a45dba1a339a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a872d1150a71d9f0fb5db0ab81334d614"><td class="memItemLeft" align="right" valign="top"><a id="a872d1150a71d9f0fb5db0ab81334d614"></a>
@@ -110,7 +112,24 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>User-specified bit rate for the media stream. If zero, the muxer will attempt to estimate. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00043">43</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00050">50</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+
+</div>
+</div>
+<a id="ae6f2196d3bc69a25bd9a7ce73ec4db69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6f2196d3bc69a25bd9a7ce73ec4db69">&#9670;&nbsp;</a></span>output_file_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::MuxerOptions::output_file_index = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Output file index. With one file per <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> per <a class="el" href="../../d8/de1/classshaka_1_1Period.html">Period</a>, there could be more than one file generated with Ad Cues present. This is the 0-based index of the output file. TODO(kqyang): Remove when the EPT adjustment logic in Fragmenter::FinalizeFragment is removed. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00037">37</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -144,7 +163,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Specify output segment name pattern for generated segments. It can furthermore be configured by using a subset of the SegmentTemplate identifiers: $RepresentationID$, $Number$, $Bandwidth$ and $Time. Optional. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00036">36</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00043">43</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -155,7 +174,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 23 2018 16:11:00 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 7 2018 16:04:01 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
