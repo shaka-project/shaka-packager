@@ -117,4 +117,9 @@ TEST_F(UdpOptionsTest, InvalidTimeout) {
       "224.1.2.30:88?interface=10.11.12.13&timeout=1a9"));
 }
 
+TEST_F(UdpOptionsTest, BufferSize) {
+  auto options = UdpOptions::ParseFromString("224.1.2.30:88?buffer_size=1234");
+  EXPECT_EQ(1234, options->buffer_size());
+}
+
 }  // namespace shaka

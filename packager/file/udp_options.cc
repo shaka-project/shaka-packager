@@ -22,9 +22,10 @@ namespace {
 
 enum FieldType {
   kUnknownField = 0,
-  kReuseField,
+  kBufferSizeField,
   kInterfaceAddressField,
   kMulticastSourceField,
+  kReuseField,
   kTimeoutField,
 };
 
@@ -34,8 +35,9 @@ struct FieldNameToTypeMapping {
 };
 
 const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
-    {"reuse", kReuseField},
+    {"buffer_size", kBufferSizeField},
     {"interface", kInterfaceAddressField},
+    {"reuse", kReuseField},
     {"source", kMulticastSourceField},
     {"timeout", kTimeoutField},
 };
@@ -87,6 +89,20 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
     }
     for (const auto& pair : pairs) {
       switch (GetFieldType(pair.first)) {
+        case kBufferSizeField:
+          if (!base::StringToInt(pair.second, &options->buffer_size_)) {
+            LOG(ERROR) << "Invalid udp option for buffer_size field "
+                       << pair.second;
+            return nullptr;
+          }
+          break;
+        case kInterfaceAddressField:
+          options->interface_address_ = pair.second;
+          break;
+        case kMulticastSourceField:
+          options->source_address_ = pair.second;
+          options->is_source_specific_multicast_ = true;
+          break;
         case kReuseField: {
           int reuse_value = 0;
           if (!base::StringToInt(pair.second, &reuse_value)) {
@@ -96,19 +112,12 @@ std::unique_ptr<UdpOptions> UdpOptions::ParseFromString(
           options->reuse_ = reuse_value > 0;
           break;
         }
-        case kInterfaceAddressField:
-          options->interface_address_ = pair.second;
-          break;
         case kTimeoutField:
           if (!base::StringToUint(pair.second, &options->timeout_us_)) {
             LOG(ERROR) << "Invalid udp option for timeout field "
                        << pair.second;
             return nullptr;
           }
-          break;
-        case kMulticastSourceField:
-          options->source_address_ = pair.second;
-          options->is_source_specific_multicast_ = true;
           break;
         default:
           LOG(ERROR) << "Unknown field in udp options (\"" << pair.first

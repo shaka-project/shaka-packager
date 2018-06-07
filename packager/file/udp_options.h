@@ -30,22 +30,28 @@ class UdpOptions {
   bool is_source_specific_multicast() const {
     return is_source_specific_multicast_;
   }
+  int buffer_size() const { return buffer_size_; }
 
  private:
   UdpOptions() = default;
 
-  /// IP Address.
+  // IP Address.
   std::string address_ = "0.0.0.0";
   uint16_t port_ = 0;
-  /// Allow or disallow reusing UDP sockets.
+  // Allow or disallow reusing UDP sockets.
   bool reuse_ = false;
   // Address of the interface over which to receive UDP multicast streams.
   std::string interface_address_ = "0.0.0.0";
-  /// Timeout in microseconds. 0 to indicate unlimited timeout.
+  // Timeout in microseconds. 0 to indicate unlimited timeout.
   unsigned timeout_us_ = 0;
   // Source specific multicast source address
   std::string source_address_ = "0.0.0.0";
   bool is_source_specific_multicast_ = false;
+  // Maximum receive buffer size in bytes.
+  // Note that the actual buffer size is capped by the maximum buffer size set
+  // by the underlying operating system ('sysctl net.core.rmem_max' on Linux
+  // returns the maximum receive memory size).
+  int buffer_size_ = 0;
 };
 
 }  // namespace shaka

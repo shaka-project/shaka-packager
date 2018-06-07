@@ -273,8 +273,19 @@ bool UdpFile::Open() {
     tv.tv_sec = options->timeout_us() / 1000000;
     tv.tv_usec = options->timeout_us() % 1000000;
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVTIMEO,
-                   reinterpret_cast<char*>(&tv), sizeof(tv)) < 0) {
+                   reinterpret_cast<const char*>(&tv), sizeof(tv)) < 0) {
       LOG(ERROR) << "Failed to set socket timeout.";
+      return false;
+    }
+  }
+
+  if (options->buffer_size() > 0) {
+    const int receive_buffer_size = options->buffer_size();
+    if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVBUF,
+                   reinterpret_cast<const char*>(&receive_buffer_size),
+                   sizeof(receive_buffer_size)) < 0) {
+      LOG(ERROR) << "Failed to set the maximum receive buffer size: "
+                 << strerror(errno);
       return false;
     }
   }

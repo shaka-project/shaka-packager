@@ -13,7 +13,7 @@ There are two options to pipe data to packager.
 - UDP socket
 
     *FFmpeg* supports writing to a UDP socket and *packager* supports reading
-    from UDP sockets::
+    from UDP sockets (See :doc:`/options/udp_file_options`)::
 
         $ packager 'input=udp://127.0.0.1:40000,...' ...
         $ ffmpeg ... -f mpegts udp://127.0.0.1:40000
