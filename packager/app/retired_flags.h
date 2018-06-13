@@ -12,3 +12,4 @@ DECLARE_bool(webm_subsample_encryption);
 DECLARE_double(availability_time_offset);
 DECLARE_string(playready_key_id);
 DECLARE_string(playready_key);
+DECLARE_bool(mp4_use_decoding_timestamp_in_timeline);

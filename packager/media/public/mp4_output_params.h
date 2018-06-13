@@ -24,11 +24,6 @@ struct Mp4OutputParams {
   static constexpr int kNoSidxBoxInSegment = -1;
   static constexpr int kSingleSidxPerSegment = 0;
   int num_subsegments_per_sidx = kSingleSidxPerSegment;
-  /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
-  /// decoding timestamp instead of presentation timestamp in media timeline,
-  /// which is needed to workaround a Chromium bug that decoding timestamp is
-  /// used in buffered range, https://crbug.com/398130.
-  bool use_decoding_timestamp_in_timeline = false;
 };
 
 }  // namespace shaka

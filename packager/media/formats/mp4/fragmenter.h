@@ -67,15 +67,6 @@ class Fragmenter {
     return key_frame_infos_;
   }
 
-  /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
-  /// decoding timestamp instead of presentation timestamp in media timeline,
-  /// which is needed to workaround a Chromium bug that decoding timestamp is
-  /// used in buffered range, https://crbug.com/398130.
-  void set_use_decoding_timestamp_in_timeline(
-      bool use_decoding_timestamp_in_timeline) {
-    use_decoding_timestamp_in_timeline_ = use_decoding_timestamp_in_timeline;
-  }
-
   /// Set the flag allow_use_adjust_earliest_presentation_time, which if set to
   /// true, earlist_presentation_time (EPT) may be adjusted not to be smaller
   /// than the decoding timestamp (dts) for the first fragment.
@@ -100,7 +91,6 @@ class Fragmenter {
   bool StartsWithSAP() const;
 
   std::shared_ptr<const StreamInfo> stream_info_;
-  bool use_decoding_timestamp_in_timeline_;
   TrackFragment* traf_;
   uint64_t seek_preroll_;
   bool fragment_initialized_;

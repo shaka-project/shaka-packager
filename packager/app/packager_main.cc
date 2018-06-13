@@ -378,14 +378,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
 
   Mp4OutputParams& mp4_params = packaging_params.mp4_output_params;
   mp4_params.num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
-  if (FLAGS_mp4_use_decoding_timestamp_in_timeline) {
-    LOG(WARNING) << "Flag --mp4_use_decoding_timestamp_in_timeline is set. "
-                    "Note that it is a temporary hack to workaround Chromium "
-                    "bug https://crbug.com/398130. The flag may be removed "
-                    "when the Chromium bug is fixed.";
-  }
-  mp4_params.use_decoding_timestamp_in_timeline =
-      FLAGS_mp4_use_decoding_timestamp_in_timeline;
   mp4_params.include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
 
   packaging_params.output_media_info = FLAGS_output_media_info;

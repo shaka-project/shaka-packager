@@ -49,7 +49,6 @@ void NewSampleEncryptionEntry(const DecryptConfig& decrypt_config,
 Fragmenter::Fragmenter(std::shared_ptr<const StreamInfo> stream_info,
                        TrackFragment* traf)
     : stream_info_(std::move(stream_info)),
-      use_decoding_timestamp_in_timeline_(false),
       traf_(traf),
       seek_preroll_(GetSeekPreroll(*stream_info_)),
       fragment_initialized_(false),
@@ -103,7 +102,7 @@ Status Fragmenter::AddSample(const MediaSample& sample) {
   const int64_t pts = sample.pts();
   const int64_t dts = sample.dts();
 
-  const int64_t timestamp = use_decoding_timestamp_in_timeline_ ? dts : pts;
+  const int64_t timestamp = pts;
   // Set |earliest_presentation_time_| to |timestamp| if |timestamp| is smaller
   // or if it is not yet initialized (kInvalidTime > timestamp is always true).
   if (earliest_presentation_time_ > timestamp)

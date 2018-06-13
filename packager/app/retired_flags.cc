@@ -28,6 +28,9 @@ DEFINE_string(playready_key,
               "",
               "This flag is deprecated. Use --enable_raw_key_encryption with "
               "--generate_playready_pssh to generate PlayReady PSSH.");
+DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
+            false,
+            "This flag is deprecated. Do not use.");
 
 // The current gflags library does not provide a way to check whether a flag is
 // set in command line. If a flag has a different value to its default value,
@@ -45,6 +48,12 @@ bool InformRetiredDefaultTrueFlag(const char* flagname, bool value) {
   return true;
 }
 
+bool InformRetiredDefaultFalseFlag(const char* flagname, bool value) {
+  if (value)
+    fprintf(stderr, "WARNING: %s is deprecated and ignored.\n", flagname);
+  return true;
+}
+
 bool InformRetiredDefaultDoubleFlag(const char* flagname, double value) {
   if (value != 0)
     fprintf(stderr, "WARNING: %s is deprecated and ignored.\n", flagname);
@@ -57,3 +66,5 @@ DEFINE_validator(webm_subsample_encryption, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(availability_time_offset, &InformRetiredDefaultDoubleFlag);
 DEFINE_validator(playready_key_id, &InformRetiredStringFlag);
 DEFINE_validator(playready_key, &InformRetiredStringFlag);
+DEFINE_validator(mp4_use_decoding_timestamp_in_timeline,
+                 &InformRetiredDefaultFalseFlag);

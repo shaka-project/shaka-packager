@@ -7,10 +7,7 @@ MP4 output options
 
 --mp4_use_decoding_timestamp_in_timeline
 
-    If set, decoding timestamp instead of presentation timestamp will be used
-    when generating media timeline, e.g. timestamps in sidx and mpd. This is
-    to workaround a Chromium bug that decoding timestamp is used in buffered
-    range, https://crbug.com/398130. Default false.
+    Deprecated. Do not use.
 
 --num_subsegments_per_sidx <number>
 
