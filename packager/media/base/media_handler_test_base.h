@@ -134,7 +134,13 @@ MATCHER_P6(MatchEncryptionConfig,
          TryMatch(arg.key_id, key_id, result_listener, "key_id");
 }
 
-MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
+MATCHER_P5(IsMediaSample,
+           stream_index,
+           timestamp,
+           duration,
+           encrypted,
+           keyframe,
+           "") {
   if (!TryMatchStreamDataType(arg->stream_data_type,
                               StreamDataType::kMediaSample, result_listener)) {
     return false;
@@ -142,11 +148,13 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
 
   const std::string is_encrypted_string =
       BoolToString(arg->media_sample->is_encrypted());
+  const std::string is_key_frame_string =
+      BoolToString(arg->media_sample->is_key_frame());
 
   *result_listener << "which is (" << arg->stream_index << ", "
                    << arg->media_sample->dts() << ", "
                    << arg->media_sample->duration() << ", "
-                   << is_encrypted_string << ")";
+                   << is_encrypted_string << ", " << is_key_frame_string << ")";
 
   return TryMatch(arg->stream_index, stream_index, result_listener,
                   "stream_index") &&
@@ -155,7 +163,9 @@ MATCHER_P4(IsMediaSample, stream_index, timestamp, duration, encrypted, "") {
          TryMatch(arg->media_sample->duration(), duration, result_listener,
                   "duration") &&
          TryMatch(arg->media_sample->is_encrypted(), encrypted, result_listener,
-                  "is_encrypted");
+                  "is_encrypted") &&
+         TryMatch(arg->media_sample->is_key_frame(), keyframe, result_listener,
+                  "is_key_frame");
 }
 
 MATCHER_P6(IsTextSample,

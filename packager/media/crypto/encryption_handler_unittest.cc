@@ -510,7 +510,7 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
     const auto& output_stream_data = GetOutputStreamDataVector();
     EXPECT_THAT(output_stream_data,
                 ElementsAre(IsMediaSample(kStreamIndex, i * kSegmentDuration,
-                                          kSegmentDuration, is_encrypted),
+                                          kSegmentDuration, is_encrypted, _),
                             IsSegmentInfo(kStreamIndex, i * kSegmentDuration,
                                           kSegmentDuration, !kIsSubsegment,
                                           is_encrypted)));
@@ -578,7 +578,7 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
     const auto& output_stream_data = GetOutputStreamDataVector();
     EXPECT_THAT(output_stream_data,
                 ElementsAre(IsMediaSample(kStreamIndex, i * kSegmentDuration,
-                                          kSegmentDuration, is_encrypted),
+                                          kSegmentDuration, is_encrypted, _),
                             IsSegmentInfo(kStreamIndex, i * kSegmentDuration,
                                           kSegmentDuration, !kIsSubsegment,
                                           is_encrypted)));

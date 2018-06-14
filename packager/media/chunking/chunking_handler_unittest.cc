@@ -71,11 +71,11 @@ TEST_F(ChunkingHandlerTest, AudioNoSubsegmentsThenFlush) {
                   ElementsAre(IsSegmentInfo(kStreamIndex, 0, kDuration * 3,
                                             !kIsSubsegment, !kEncrypted),
                               IsMediaSample(kStreamIndex, i * kDuration,
-                                            kDuration, !kEncrypted)));
+                                            kDuration, !kEncrypted, _)));
     } else {
       EXPECT_THAT(GetOutputStreamDataVector(),
                   ElementsAre(IsMediaSample(kStreamIndex, i * kDuration,
-                                            kDuration, !kEncrypted)));
+                                            kDuration, !kEncrypted, _)));
     }
   }
 
@@ -103,15 +103,16 @@ TEST_F(ChunkingHandlerTest, AudioWithSubsegments) {
       GetOutputStreamDataVector(),
       ElementsAre(
           IsStreamInfo(kStreamIndex, kTimeScale0, !kEncrypted, _),
-          IsMediaSample(kStreamIndex, 0, kDuration, !kEncrypted),
-          IsMediaSample(kStreamIndex, kDuration, kDuration, !kEncrypted),
+          IsMediaSample(kStreamIndex, 0, kDuration, !kEncrypted, _),
+          IsMediaSample(kStreamIndex, kDuration, kDuration, !kEncrypted, _),
           IsSegmentInfo(kStreamIndex, 0, kDuration * 2, kIsSubsegment,
                         !kEncrypted),
-          IsMediaSample(kStreamIndex, 2 * kDuration, kDuration, !kEncrypted),
+          IsMediaSample(kStreamIndex, 2 * kDuration, kDuration, !kEncrypted, _),
           IsSegmentInfo(kStreamIndex, 0, kDuration * 3, !kIsSubsegment,
                         !kEncrypted),
-          IsMediaSample(kStreamIndex, 3 * kDuration, kDuration, !kEncrypted),
-          IsMediaSample(kStreamIndex, 4 * kDuration, kDuration, !kEncrypted)));
+          IsMediaSample(kStreamIndex, 3 * kDuration, kDuration, !kEncrypted, _),
+          IsMediaSample(kStreamIndex, 4 * kDuration, kDuration, !kEncrypted,
+                        _)));
 }
 
 TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
@@ -136,22 +137,22 @@ TEST_F(ChunkingHandlerTest, VideoAndSubsegmentAndNonzeroStart) {
           IsStreamInfo(kStreamIndex, kTimeScale1, !kEncrypted, _),
           // The first samples @ kStartTimestamp is discarded - not key frame.
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 2,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           // The next segment boundary 13245 / 1000 != 12645 / 1000.
           IsSegmentInfo(kStreamIndex, kVideoStartTimestamp + kDuration,
                         kDuration * 2, !kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 3,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 4,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           // The subsegment has duration kDuration * 2 since it can only
           // terminate before key frame.
           IsSegmentInfo(kStreamIndex, kVideoStartTimestamp + kDuration * 3,
                         kDuration * 2, kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 5,
-                        kDuration, !kEncrypted)));
+                        kDuration, !kEncrypted, _)));
 }
 
 TEST_F(ChunkingHandlerTest, CueEvent) {
@@ -185,25 +186,25 @@ TEST_F(ChunkingHandlerTest, CueEvent) {
       GetOutputStreamDataVector(),
       ElementsAre(
           IsMediaSample(kStreamIndex, kVideoStartTimestamp, kDuration,
-                        !kEncrypted),
+                        !kEncrypted, _),
           // A new segment is created due to the existance of Cue.
           IsSegmentInfo(kStreamIndex, kVideoStartTimestamp, kDuration,
                         !kIsSubsegment, !kEncrypted),
           IsCueEvent(kStreamIndex, kCueTimeInSeconds),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 1,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 2,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           IsSegmentInfo(kStreamIndex, kVideoStartTimestamp + kDuration,
                         kDuration * 2, kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 3,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 4,
-                        kDuration, !kEncrypted),
+                        kDuration, !kEncrypted, _),
           IsSegmentInfo(kStreamIndex, kVideoStartTimestamp + kDuration,
                         kDuration * 4, !kIsSubsegment, !kEncrypted),
           IsMediaSample(kStreamIndex, kVideoStartTimestamp + kDuration * 5,
-                        kDuration, !kEncrypted)));
+                        kDuration, !kEncrypted, _)));
 }
 
 }  // namespace media
