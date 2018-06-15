@@ -68,63 +68,6 @@ Status MultiSegmentSegmenter::DoFinalize() {
 }
 
 Status MultiSegmentSegmenter::DoFinalizeSegment() {
-  DCHECK(sidx());
-  // earliest_presentation_time is the earliest presentation time of any
-  // access unit in the reference stream in the first subsegment.
-  // It will be re-calculated later when subsegments are finalized.
-  sidx()->earliest_presentation_time =
-      sidx()->references[0].earliest_presentation_time;
-
-  if (options().mp4_params.num_subsegments_per_sidx <= 0)
-    return WriteSegment();
-
-  // sidx() contains pre-generated segment references with one reference per
-  // fragment. Calculate |num_fragments_per_subsegment| and combine
-  // pre-generated references into final subsegment references.
-  size_t num_fragments = sidx()->references.size();
-  size_t num_fragments_per_subsegment =
-      (num_fragments - 1) / options().mp4_params.num_subsegments_per_sidx + 1;
-  if (num_fragments_per_subsegment <= 1)
-    return WriteSegment();
-
-  size_t frag_index = 0;
-  size_t subseg_index = 0;
-  std::vector<SegmentReference>& refs = sidx()->references;
-  uint64_t first_sap_time =
-      refs[0].sap_delta_time + refs[0].earliest_presentation_time;
-  for (size_t i = 1; i < num_fragments; ++i) {
-    refs[subseg_index].referenced_size += refs[i].referenced_size;
-    refs[subseg_index].subsegment_duration += refs[i].subsegment_duration;
-    refs[subseg_index].earliest_presentation_time =
-        std::min(refs[subseg_index].earliest_presentation_time,
-                 refs[i].earliest_presentation_time);
-    if (refs[subseg_index].sap_type == SegmentReference::TypeUnknown &&
-        refs[i].sap_type != SegmentReference::TypeUnknown) {
-      refs[subseg_index].sap_type = refs[i].sap_type;
-      first_sap_time =
-          refs[i].sap_delta_time + refs[i].earliest_presentation_time;
-    }
-    if (++frag_index >= num_fragments_per_subsegment) {
-      // Calculate sap delta time w.r.t. sidx_->earliest_presentation_time.
-      if (refs[subseg_index].sap_type != SegmentReference::TypeUnknown) {
-        refs[subseg_index].sap_delta_time =
-            first_sap_time - refs[subseg_index].earliest_presentation_time;
-      }
-      if (++i >= num_fragments)
-        break;
-      refs[++subseg_index] = refs[i];
-      first_sap_time =
-          refs[i].sap_delta_time + refs[i].earliest_presentation_time;
-      frag_index = 1;
-    }
-  }
-
-  refs.resize(options().mp4_params.num_subsegments_per_sidx);
-
-  // earliest_presentation_time is the earliest presentation time of any
-  // access unit in the reference stream in the first subsegment.
-  sidx()->earliest_presentation_time = refs[0].earliest_presentation_time;
-
   return WriteSegment();
 }
 
@@ -172,9 +115,15 @@ Status MultiSegmentSegmenter::WriteSegment() {
     styp_->Write(buffer.get());
   }
 
-  // If num_subsegments_per_sidx is negative, no SIDX box is generated.
-  if (options().mp4_params.num_subsegments_per_sidx >= 0)
+  if (options().mp4_params.generate_sidx_in_media_segments) {
+    DCHECK(sidx());
+    DCHECK(!sidx()->references.empty());
+    // earliest_presentation_time is the earliest presentation time of any
+    // access unit in the reference stream in the first subsegment.
+    sidx()->earliest_presentation_time =
+        sidx()->references[0].earliest_presentation_time;
     sidx()->Write(buffer.get());
+  }
 
   const size_t segment_header_size = buffer->Size();
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();

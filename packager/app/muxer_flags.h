@@ -16,7 +16,7 @@ DECLARE_double(segment_duration);
 DECLARE_bool(segment_sap_aligned);
 DECLARE_double(fragment_duration);
 DECLARE_bool(fragment_sap_aligned);
-DECLARE_int32(num_subsegments_per_sidx);
+DECLARE_bool(generate_sidx_in_media_segments);
 DECLARE_string(temp_dir);
 DECLARE_bool(mp4_include_pssh_in_stream);
 

@@ -87,7 +87,6 @@ OnMediaEndParameters GetDefaultOnMediaEndParams() {
 }
 
 void SetDefaultMuxerOptions(MuxerOptions* muxer_options) {
-  muxer_options->mp4_params.num_subsegments_per_sidx = 0;
   muxer_options->output_file_name = "test_output_file_name.mp4";
   muxer_options->segment_template.clear();
   muxer_options->temp_dir.clear();

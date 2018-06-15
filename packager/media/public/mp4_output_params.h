@@ -11,19 +11,15 @@ namespace shaka {
 
 /// MP4 (ISO-BMFF) output related parameters.
 struct Mp4OutputParams {
-  // Include pssh in the encrypted stream. CMAF and DASH-IF recommends carrying
-  // license acquisition information in the manifest and not duplicate the
-  // information in the stream. (This is not a hard requirement so we are still
-  // CMAF compatible even if pssh is included in the stream.)
+  /// Include pssh in the encrypted stream. CMAF and DASH-IF recommends carrying
+  /// license acquisition information in the manifest and not duplicate the
+  /// information in the stream. (This is not a hard requirement so we are still
+  /// CMAF compatible even if pssh is included in the stream.)
   bool include_pssh_in_stream = true;
-  /// Set the number of subsegments in each SIDX box. If 0, a single SIDX box
-  /// is used per segment. If -1, no SIDX box is used. Otherwise, the Muxer
-  /// will pack N subsegments in the root SIDX of the segment, with
-  /// segment_duration/N/subsegment_duration fragments per subsegment.
-  /// This flag is ingored for DASH MPD with on-demand profile.
-  static constexpr int kNoSidxBoxInSegment = -1;
-  static constexpr int kSingleSidxPerSegment = 0;
-  int num_subsegments_per_sidx = kSingleSidxPerSegment;
+  /// Indicates whether a 'sidx' box should be generated in the media segments.
+  /// Note that it is required by spec if segment_template contains $Times$
+  /// specifier.
+  bool generate_sidx_in_media_segments = true;
 };
 
 }  // namespace shaka

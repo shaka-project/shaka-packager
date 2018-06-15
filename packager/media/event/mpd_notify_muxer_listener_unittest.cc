@@ -46,7 +46,6 @@ MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
 }
 
 void SetDefaultLiveMuxerOptions(media::MuxerOptions* muxer_options) {
-  muxer_options->mp4_params.num_subsegments_per_sidx = 0;
   muxer_options->output_file_name = "liveinit.mp4";
   muxer_options->segment_template = "live-$NUMBER$.mp4";
   muxer_options->temp_dir.clear();

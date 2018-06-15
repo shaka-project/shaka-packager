@@ -377,7 +377,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
   }
 
   Mp4OutputParams& mp4_params = packaging_params.mp4_output_params;
-  mp4_params.num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
+  mp4_params.generate_sidx_in_media_segments =
+      FLAGS_generate_sidx_in_media_segments;
   mp4_params.include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
 
   packaging_params.output_media_info = FLAGS_output_media_info;

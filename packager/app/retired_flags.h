@@ -13,3 +13,4 @@ DECLARE_double(availability_time_offset);
 DECLARE_string(playready_key_id);
 DECLARE_string(playready_key);
 DECLARE_bool(mp4_use_decoding_timestamp_in_timeline);
+DECLARE_int32(num_subsegments_per_sidx);

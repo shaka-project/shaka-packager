@@ -31,6 +31,10 @@ DEFINE_string(playready_key,
 DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
             false,
             "This flag is deprecated. Do not use.");
+DEFINE_int32(
+    num_subsegments_per_sidx,
+    0,
+    "This flag is deprecated. Use --generate_sidx_in_media_segments instead.");
 
 // The current gflags library does not provide a way to check whether a flag is
 // set in command line. If a flag has a different value to its default value,
@@ -60,6 +64,12 @@ bool InformRetiredDefaultDoubleFlag(const char* flagname, double value) {
   return true;
 }
 
+bool InformRetiredDefaultInt32Flag(const char* flagname, int32_t value) {
+  if (value != 0)
+    fprintf(stderr, "WARNING: %s is deprecated and ignored.\n", flagname);
+  return true;
+}
+
 DEFINE_validator(profile, &InformRetiredStringFlag);
 DEFINE_validator(single_segment, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(webm_subsample_encryption, &InformRetiredDefaultTrueFlag);
@@ -68,3 +78,4 @@ DEFINE_validator(playready_key_id, &InformRetiredStringFlag);
 DEFINE_validator(playready_key, &InformRetiredStringFlag);
 DEFINE_validator(mp4_use_decoding_timestamp_in_timeline,
                  &InformRetiredDefaultFalseFlag);
+DEFINE_validator(num_subsegments_per_sidx, &InformRetiredDefaultInt32Flag);

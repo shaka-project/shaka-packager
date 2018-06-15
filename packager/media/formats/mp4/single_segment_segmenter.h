@@ -25,7 +25,7 @@ namespace mp4 {
 /// is, the Segmenter tries to end subsegment/fragment at the first sample with
 /// overall subsegment/fragment duration not smaller than defined duration and
 /// yet meet SAP requirements. SingleSegmentSegmenter ignores @b
-/// MuxerOptions.num_subsegments_per_sidx.
+/// MuxerOptions.mp4_params.generate_sidx_in_media_segments.
 class SingleSegmentSegmenter : public Segmenter {
  public:
   SingleSegmentSegmenter(const MuxerOptions& options,
