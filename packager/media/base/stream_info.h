@@ -60,10 +60,16 @@ class StreamInfo {
  public:
   StreamInfo() = default;
 
-  StreamInfo(StreamType stream_type, int track_id, uint32_t time_scale,
-             uint64_t duration, Codec codec, const std::string& codec_string,
-             const uint8_t* codec_config, size_t codec_config_size,
-             const std::string& language, bool is_encrypted);
+  StreamInfo(StreamType stream_type,
+             int track_id,
+             uint32_t time_scale,
+             uint64_t duration,
+             Codec codec,
+             const std::string& codec_string,
+             const uint8_t* codec_config,
+             size_t codec_config_size,
+             const std::string& language,
+             bool is_encrypted);
 
   virtual ~StreamInfo();
 
@@ -95,7 +101,9 @@ class StreamInfo {
 
   void set_duration(uint64_t duration) { duration_ = duration; }
   void set_codec(Codec codec) { codec_ = codec; }
-  void set_codec_config(const std::vector<uint8_t>& data) { codec_config_ = data; }
+  void set_codec_config(const std::vector<uint8_t>& data) {
+    codec_config_ = data;
+  }
   void set_codec_string(const std::string& codec_string) {
     codec_string_ = codec_string;
   }
