@@ -14,6 +14,22 @@
 namespace shaka {
 namespace media {
 
+std::string StreamTypeToString(StreamType type) {
+  switch (type) {
+    case kStreamUnknown:
+      return "Unknown";
+    case kStreamVideo:
+      return "Video";
+    case kStreamAudio:
+      return "Audio";
+    case kStreamText:
+      return "Text";
+  }
+
+  NOTREACHED() << "Unhandled StreamType with value " << static_cast<int>(type);
+  return "";
+}
+
 StreamInfo::StreamInfo(StreamType stream_type,
                        int track_id,
                        uint32_t time_scale,

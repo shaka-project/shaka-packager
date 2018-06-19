@@ -23,6 +23,8 @@ enum StreamType {
   kStreamText,
 };
 
+std::string StreamTypeToString(StreamType type);
+
 enum Codec {
   kUnknownCodec = 0,
 
