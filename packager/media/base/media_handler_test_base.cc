@@ -81,6 +81,21 @@ bool TryMatchStreamDataType(const StreamDataType& actual,
   return true;
 }
 
+bool TryMatchStreamType(const StreamType& actual,
+                        const StreamType& expected,
+                        ::testing::MatchResultListener* listener) {
+  if (actual != expected) {
+    std::string expected_as_string = StreamTypeToString(expected);
+    std::string actual_as_string = StreamTypeToString(actual);
+
+    *listener << "which is " << actual_as_string << " (expected "
+              << expected_as_string << ")";
+    return false;
+  }
+
+  return true;
+}
+
 std::string ToPrettyString(const std::string& str) {
   std::string out;
 

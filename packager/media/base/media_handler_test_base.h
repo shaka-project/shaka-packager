@@ -12,6 +12,7 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/media_handler.h"
+#include "packager/media/base/video_stream_info.h"
 
 namespace shaka {
 namespace media {
@@ -22,6 +23,10 @@ std::string ToPrettyString(const std::string& str);
 bool TryMatchStreamDataType(const StreamDataType& actual,
                             const StreamDataType& expected,
                             ::testing::MatchResultListener* listener);
+
+bool TryMatchStreamType(const StreamType& actual,
+                        const StreamType& expected,
+                        ::testing::MatchResultListener* listener);
 
 template <typename T, typename M>
 bool TryMatch(const T& value,
@@ -60,6 +65,32 @@ MATCHER_P4(IsStreamInfo, stream_index, time_scale, encrypted, language, "") {
                   "is_encrypted") &&
          TryMatch(arg->stream_info->language(), language, result_listener,
                   "language");
+}
+
+MATCHER_P3(IsVideoStream, stream_index, trick_play_factor, playback_rate, "") {
+  if (!TryMatchStreamDataType(arg->stream_data_type,
+                              StreamDataType::kStreamInfo, result_listener)) {
+    return false;
+  }
+
+  if (!TryMatchStreamType(arg->stream_info->stream_type(), kStreamVideo,
+                          result_listener)) {
+    return false;
+  }
+
+  const VideoStreamInfo* info =
+      static_cast<const VideoStreamInfo*>(arg->stream_info.get());
+
+  *result_listener << "which is (" << arg->stream_index << ", "
+                   << info->trick_play_factor() << ", " << info->playback_rate()
+                   << ")";
+
+  return TryMatch(arg->stream_index, stream_index, result_listener,
+                  "stream_index") &&
+         TryMatch(info->trick_play_factor(), trick_play_factor, result_listener,
+                  "trick_play_factor") &&
+         TryMatch(info->playback_rate(), playback_rate, result_listener,
+                  "playback_rate");
 }
 
 MATCHER_P5(IsSegmentInfo,
