@@ -58,6 +58,16 @@ std::set<std::string> GetGroupCodecString(
     codecs.insert(playlist->codec());
   }
 
+  // To support some older players, we cannot include "wvtt" in the codec
+  // string. As per HLS guidelines, "wvtt" is optional. When it is included, it
+  // can cause playback errors on some Apple produces. Excluding it allows
+  // playback on all Apple products. See
+  // https://github.com/google/shaka-packager/issues/402 for all details.
+  auto wvtt = codecs.find("wvtt");
+  if (wvtt != codecs.end()) {
+    codecs.erase(wvtt);
+  }
+
   return codecs;
 }
 
