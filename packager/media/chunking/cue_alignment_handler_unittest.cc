@@ -28,17 +28,14 @@ const size_t kOneOutput = 1;
 const size_t kThreeInput = 3;
 const size_t kThreeOutput = 3;
 
-const bool kEncrypted = true;
 const bool kKeyFrame = true;
 
 const uint32_t kMsTimeScale = 1000;
 
 const char* kNoId = "";
-const char* kNoSettings = "";
 const char* kNoPayload = "";
 
 const size_t kChild = 0;
-const size_t kParent = 0;
 }  // namespace
 
 class CueAlignmentHandlerTest : public MediaHandlerTestBase {
@@ -88,17 +85,17 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithNoCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
   auto stream_info = GetVideoStreamInfo(kMsTimeScale);
@@ -132,17 +129,17 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithNoCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream), OnFlush(kParent));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kAudioStream), OnFlush(_));
   }
 
   auto stream_info = GetAudioStreamInfo(kMsTimeScale);
@@ -180,17 +177,17 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample0Start, kSample0End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample1Start, kSample1End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample2Start, kSample2End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
   auto stream_info = GetTextStreamInfo(kMsTimeScale);
@@ -230,51 +227,51 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample0Start, kSample0End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample1Start, kSample1End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample2Start, kSample2End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
   {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream), OnFlush(kParent));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kAudioStream), OnFlush(_));
   }
 
   {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
   // Text samples
@@ -354,19 +351,19 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
     EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsCueEvent(kParent, kSample2StartInSeconds)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kSample2StartInSeconds)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
   auto stream_info = GetVideoStreamInfo(kMsTimeScale);
@@ -408,19 +405,19 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
     EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsCueEvent(kParent, kSample1StartInSeconds)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kSample1StartInSeconds)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kAudioStream), OnFlush(_));
   }
 
   auto stream_info = GetAudioStreamInfo(kMsTimeScale);
@@ -466,19 +463,19 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample0Start, kSample0End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsCueEvent(kParent, kSample1StartInSeconds)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample1Start, kSample1End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample2Start, kSample2End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kSample1StartInSeconds)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
   auto stream_info = GetTextStreamInfo(kMsTimeScale);
@@ -525,19 +522,19 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample0Start, kSample0End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample1Start, kSample1End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample2Start, kSample2End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsCueEvent(kParent, kCueTimeInSeconds)));
-    EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kCueTimeInSeconds)));
+    EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
   auto stream_info = GetTextStreamInfo(kMsTimeScale);
@@ -586,57 +583,57 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample0Start, kSample0End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample1Start, kSample1End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsCueEvent(kParent, kSample2StartInSeconds)));
-    EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsTextSample(_, kNoId, kSample2Start, kSample2End,
-                                       kNoSettings, kNoPayload)));
-    EXPECT_CALL(*Output(kTextStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kSample2StartInSeconds)));
+    EXPECT_CALL(
+        *Output(kTextStream),
+        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
   {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
     EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsCueEvent(kParent, kSample2StartInSeconds)));
-    EXPECT_CALL(*Output(kAudioStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kAudioStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kSample2StartInSeconds)));
+    EXPECT_CALL(
+        *Output(kAudioStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kAudioStream), OnFlush(_));
   }
 
   {
     testing::InSequence s;
 
     EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsStreamInfo(kParent, kMsTimeScale, !kEncrypted, _)));
+                OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample0Start, kSampleDuration, _, _)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample1Start, kSampleDuration, _, _)));
     EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample0Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample1Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsCueEvent(kParent, kSample2StartInSeconds)));
-    EXPECT_CALL(*Output(kVideoStream),
-                OnProcess(IsMediaSample(kParent, kSample2Start, kSampleDuration,
-                                        !kEncrypted, _)));
-    EXPECT_CALL(*Output(kVideoStream), OnFlush(kParent));
+                OnProcess(IsCueEvent(_, kSample2StartInSeconds)));
+    EXPECT_CALL(
+        *Output(kVideoStream),
+        OnProcess(IsMediaSample(_, kSample2Start, kSampleDuration, _, _)));
+    EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
   // Text samples
