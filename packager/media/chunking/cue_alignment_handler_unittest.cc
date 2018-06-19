@@ -25,37 +25,73 @@ namespace {
 const size_t kOneInput = 1;
 const size_t kOneOutput = 1;
 
-const size_t kThreeInput = 3;
-const size_t kThreeOutput = 3;
+const size_t kThreeInputs = 3;
+const size_t kThreeOutputs = 3;
 
 const bool kKeyFrame = true;
 
 const uint32_t kMsTimeScale = 1000;
 
-const char* kNoId = "";
-const char* kNoPayload = "";
-
-const size_t kChild = 0;
+const size_t kStreamIndex = 0;
 }  // namespace
 
 class CueAlignmentHandlerTest : public MediaHandlerTestBase {
  protected:
-  Status DispatchStreamInfo(size_t stream,
-                            std::shared_ptr<const StreamInfo> info) {
-    return Input(stream)->Dispatch(
-        StreamData::FromStreamInfo(kChild, std::move(info)));
+  std::unique_ptr<SyncPointQueue> CreateSyncPoints(
+      std::initializer_list<double> cues) {
+    AdCueGeneratorParams params;
+
+    for (double cue_time : cues) {
+      Cuepoint cue;
+      cue.start_time_in_seconds = cue_time;
+
+      params.cue_points.push_back(cue);
+    }
+
+    return std::unique_ptr<SyncPointQueue>(new SyncPointQueue(params));
   }
 
-  Status DispatchMediaSample(size_t stream,
-                             std::shared_ptr<const MediaSample> sample) {
-    return Input(stream)->Dispatch(
-        StreamData::FromMediaSample(kChild, std::move(sample)));
+  Status DispatchAudioInfo(size_t input_index) {
+    auto info = GetAudioStreamInfo(kMsTimeScale);
+    auto data = StreamData::FromStreamInfo(kStreamIndex, std::move(info));
+
+    return Input(input_index)->Dispatch(std::move(data));
   }
 
-  Status DispatchTextSample(size_t stream,
-                            std::shared_ptr<const TextSample> sample) {
-    return Input(stream)->Dispatch(
-        StreamData::FromTextSample(kChild, std::move(sample)));
+  Status DispatchTextInfo(size_t input_index) {
+    auto info = GetTextStreamInfo(kMsTimeScale);
+    auto data = StreamData::FromStreamInfo(kStreamIndex, std::move(info));
+
+    return Input(input_index)->Dispatch(std::move(data));
+  }
+
+  Status DispatchVideoInfo(size_t input_index) {
+    auto info = GetVideoStreamInfo(kMsTimeScale);
+    auto data = StreamData::FromStreamInfo(kStreamIndex, std::move(info));
+
+    return Input(input_index)->Dispatch(std::move(data));
+  }
+
+  Status DispatchMediaSample(size_t input_index,
+                             int64_t start_time,
+                             int64_t duration,
+                             bool keyframe) {
+    auto sample = GetMediaSample(start_time, duration, keyframe);
+    auto data = StreamData::FromMediaSample(kStreamIndex, std::move(sample));
+
+    return Input(input_index)->Dispatch(std::move(data));
+  }
+
+  Status DispatchTextSample(size_t input_index,
+                            int64_t start_time,
+                            int64_t end_time) {
+    const char* kNoId = "";
+    const char* kNoPayload = "";
+
+    auto sample = GetTextSample(kNoId, start_time, end_time, kNoPayload);
+    auto data = StreamData::FromTextSample(kStreamIndex, std::move(sample));
+
+    return Input(input_index)->Dispatch(std::move(data));
   }
 
   Status FlushAll(std::initializer_list<size_t> inputs) {
@@ -75,10 +111,8 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithNoCues) {
   const int64_t kSample1Start = kSample0Start + kSampleDuration;
   const int64_t kSample2Start = kSample1Start + kSampleDuration;
 
-  AdCueGeneratorParams params;
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points = CreateSyncPoints({});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -98,15 +132,13 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithNoCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
-  auto stream_info = GetVideoStreamInfo(kMsTimeScale);
-  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
-  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
-  DispatchStreamInfo(kVideoStream, std::move(stream_info));
-  DispatchMediaSample(kVideoStream, std::move(sample_0));
-  DispatchMediaSample(kVideoStream, std::move(sample_1));
-  DispatchMediaSample(kVideoStream, std::move(sample_2));
+  ASSERT_OK(DispatchVideoInfo(kVideoStream));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample1Start, kSampleDuration,
+                                !kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
 
   ASSERT_OK(FlushAll({kVideoStream}));
 }
@@ -119,10 +151,8 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithNoCues) {
   const int64_t kSample1Start = kSample0Start + kSampleDuration;
   const int64_t kSample2Start = kSample1Start + kSampleDuration;
 
-  AdCueGeneratorParams params;
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points = CreateSyncPoints({});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -142,15 +172,13 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithNoCues) {
     EXPECT_CALL(*Output(kAudioStream), OnFlush(_));
   }
 
-  auto stream_info = GetAudioStreamInfo(kMsTimeScale);
-  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
-  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
-  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(stream_info)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_0)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_1)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_2)));
+  ASSERT_OK(DispatchAudioInfo(kAudioStream));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample1Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
 
   ASSERT_OK(FlushAll({kAudioStream}));
 }
@@ -167,10 +195,8 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
   const int64_t kSample2Start = kSample1End;
   const int64_t kSample2End = kSample2Start + kSampleDuration;
 
-  AdCueGeneratorParams params;
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points = CreateSyncPoints({});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -190,15 +216,10 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
-  auto stream_info = GetTextStreamInfo(kMsTimeScale);
-  auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
-  auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
-  auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
-
-  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(stream_info)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_0)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_1)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_2)));
+  ASSERT_OK(DispatchTextInfo(kTextStream));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample0Start, kSample0End));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample2Start, kSample2End));
 
   ASSERT_OK(FlushAll({kTextStream}));
 }
@@ -217,11 +238,9 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
   const int64_t kSample2Start = kSample1Start + kSampleDuration;
   const int64_t kSample2End = kSample2Start + kSampleDuration;
 
-  AdCueGeneratorParams params;
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
-  ASSERT_OK(SetUpAndInitializeGraph(handler, kThreeInput, kThreeOutput));
+  auto sync_points = CreateSyncPoints({});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kThreeInputs, kThreeOutputs));
 
   {
     testing::InSequence s;
@@ -274,52 +293,31 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
-  // Text samples
-  auto text_stream_info = GetTextStreamInfo(kMsTimeScale);
-  auto text_sample_0 =
-      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
-  auto text_sample_1 =
-      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
-  auto text_sample_2 =
-      GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
-
-  // Audio samples
-  auto audio_stream_info = GetAudioStreamInfo(kMsTimeScale);
-  auto audio_sample_0 =
-      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto audio_sample_1 =
-      GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
-  auto audio_sample_2 =
-      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
-  // Video samples
-  auto video_stream_info = GetVideoStreamInfo(kMsTimeScale);
-  auto video_sample_0 =
-      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto video_sample_1 =
-      GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
-  auto video_sample_2 =
-      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
   // Dispatch Stream Info
-  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(text_stream_info)));
-  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(audio_stream_info)));
-  ASSERT_OK(DispatchStreamInfo(kVideoStream, std::move(video_stream_info)));
+  ASSERT_OK(DispatchTextInfo(kTextStream));
+  ASSERT_OK(DispatchAudioInfo(kAudioStream));
+  ASSERT_OK(DispatchVideoInfo(kVideoStream));
 
   // Dispatch Sample 0
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_0)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_0)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_0)));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample0Start, kSample0End));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
 
   // Dispatch Sample 1
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_1)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_1)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_1)));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample1Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample1Start, kSampleDuration,
+                                !kKeyFrame));
 
   // Dispatch Sample 2
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_2)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_2)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_2)));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
 
   ASSERT_OK(FlushAll({kTextStream, kAudioStream, kVideoStream}));
 }
@@ -336,15 +334,9 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithCues) {
       static_cast<double>(kSample2Start) / kMsTimeScale;
 
   // Put the cue between two key frames.
-  Cuepoint cue;
-  cue.start_time_in_seconds = static_cast<double>(kSample1Start) / kMsTimeScale;
-
-  AdCueGeneratorParams params;
-  params.cue_points.push_back(cue);
-
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points =
+      CreateSyncPoints({static_cast<double>(kSample1Start) / kMsTimeScale});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -366,15 +358,13 @@ TEST_F(CueAlignmentHandlerTest, VideoInputWithCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
-  auto stream_info = GetVideoStreamInfo(kMsTimeScale);
-  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
-  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
-  ASSERT_OK(DispatchStreamInfo(kVideoStream, std::move(stream_info)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(sample_0)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(sample_1)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(sample_2)));
+  ASSERT_OK(DispatchVideoInfo(kVideoStream));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample1Start, kSampleDuration,
+                                !kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
 
   ASSERT_OK(FlushAll({kVideoStream}));
 }
@@ -390,15 +380,9 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithCues) {
   const double kSample1StartInSeconds =
       static_cast<double>(kSample1Start) / kMsTimeScale;
 
-  Cuepoint cue;
-  cue.start_time_in_seconds = static_cast<double>(kSample1Start) / kMsTimeScale;
-
-  AdCueGeneratorParams params;
-  params.cue_points.push_back(cue);
-
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points =
+      CreateSyncPoints({static_cast<double>(kSample1Start) / kMsTimeScale});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -420,15 +404,13 @@ TEST_F(CueAlignmentHandlerTest, AudioInputWithCues) {
     EXPECT_CALL(*Output(kAudioStream), OnFlush(_));
   }
 
-  auto stream_info = GetAudioStreamInfo(kMsTimeScale);
-  auto sample_0 = GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto sample_1 = GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
-  auto sample_2 = GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
-  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(stream_info)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_0)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_1)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(sample_2)));
+  ASSERT_OK(DispatchAudioInfo(kAudioStream));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample1Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
 
   ASSERT_OK(FlushAll({kAudioStream}));
 }
@@ -448,15 +430,9 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
   const double kSample1StartInSeconds =
       static_cast<double>(kSample1Start) / kMsTimeScale;
 
-  Cuepoint cue;
-  cue.start_time_in_seconds = static_cast<double>(kSample1Start) / kMsTimeScale;
-
-  AdCueGeneratorParams params;
-  params.cue_points.push_back(cue);
-
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points =
+      CreateSyncPoints({static_cast<double>(kSample1Start) / kMsTimeScale});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -478,15 +454,10 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
-  auto stream_info = GetTextStreamInfo(kMsTimeScale);
-  auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
-  auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
-  auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
-
-  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(stream_info)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_0)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_1)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_2)));
+  ASSERT_OK(DispatchTextInfo(kTextStream));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample0Start, kSample0End));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample2Start, kSample2End));
 
   ASSERT_OK(FlushAll({kTextStream}));
 }
@@ -503,19 +474,12 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
   const int64_t kSample2Start = kSample1End;
   const int64_t kSample2End = kSample2Start + kSampleDuration;
 
+  // Put the cue between the start and end of the last sample.
   const double kCueTimeInSeconds =
       static_cast<double>(kSample2Start + kSample2End) / kMsTimeScale;
 
-  // Put the cue between the start and end of the last sample.
-  Cuepoint cue;
-  cue.start_time_in_seconds = kCueTimeInSeconds;
-
-  AdCueGeneratorParams params;
-  params.cue_points.push_back(cue);
-
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
+  auto sync_points = CreateSyncPoints({kCueTimeInSeconds});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
   {
@@ -537,15 +501,10 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
-  auto stream_info = GetTextStreamInfo(kMsTimeScale);
-  auto sample_0 = GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
-  auto sample_1 = GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
-  auto sample_2 = GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
-
-  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(stream_info)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_0)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_1)));
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(sample_2)));
+  ASSERT_OK(DispatchTextInfo(kTextStream));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample0Start, kSample0End));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample2Start, kSample2End));
 
   ASSERT_OK(FlushAll({kTextStream}));
 }
@@ -568,16 +527,10 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
       static_cast<double>(kSample2Start) / kMsTimeScale;
 
   // Put the cue between two key frames.
-  Cuepoint cue;
-  cue.start_time_in_seconds = static_cast<double>(kSample1Start) / kMsTimeScale;
-
-  AdCueGeneratorParams params;
-  params.cue_points.push_back(cue);
-
-  SyncPointQueue sync_points(params);
-  std::shared_ptr<MediaHandler> handler =
-      std::make_shared<CueAlignmentHandler>(&sync_points);
-  ASSERT_OK(SetUpAndInitializeGraph(handler, kThreeInput, kThreeOutput));
+  auto sync_points =
+      CreateSyncPoints({static_cast<double>(kSample1Start) / kMsTimeScale});
+  auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
+  ASSERT_OK(SetUpAndInitializeGraph(handler, kThreeInputs, kThreeOutputs));
 
   {
     testing::InSequence s;
@@ -636,52 +589,31 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
     EXPECT_CALL(*Output(kVideoStream), OnFlush(_));
   }
 
-  // Text samples
-  auto text_stream_info = GetTextStreamInfo(kMsTimeScale);
-  auto text_sample_0 =
-      GetTextSample(kNoId, kSample0Start, kSample0End, kNoPayload);
-  auto text_sample_1 =
-      GetTextSample(kNoId, kSample1Start, kSample1End, kNoPayload);
-  auto text_sample_2 =
-      GetTextSample(kNoId, kSample2Start, kSample2End, kNoPayload);
-
-  // Audio samples
-  auto audio_stream_info = GetAudioStreamInfo(kMsTimeScale);
-  auto audio_sample_0 =
-      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto audio_sample_1 =
-      GetMediaSample(kSample1Start, kSampleDuration, kKeyFrame);
-  auto audio_sample_2 =
-      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
-  // Video samples
-  auto video_stream_info = GetVideoStreamInfo(kMsTimeScale);
-  auto video_sample_0 =
-      GetMediaSample(kSample0Start, kSampleDuration, kKeyFrame);
-  auto video_sample_1 =
-      GetMediaSample(kSample1Start, kSampleDuration, !kKeyFrame);
-  auto video_sample_2 =
-      GetMediaSample(kSample2Start, kSampleDuration, kKeyFrame);
-
   // Dispatch Stream Info
-  ASSERT_OK(DispatchStreamInfo(kTextStream, std::move(text_stream_info)));
-  ASSERT_OK(DispatchStreamInfo(kAudioStream, std::move(audio_stream_info)));
-  ASSERT_OK(DispatchStreamInfo(kVideoStream, std::move(video_stream_info)));
+  ASSERT_OK(DispatchTextInfo(kTextStream));
+  ASSERT_OK(DispatchAudioInfo(kAudioStream));
+  ASSERT_OK(DispatchVideoInfo(kVideoStream));
 
   // Dispatch Sample 0
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_0)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_0)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_0)));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample0Start, kSample0End));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample0Start, kSampleDuration,
+                                kKeyFrame));
 
   // Dispatch Sample 1
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_1)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_1)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_1)));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample1Start, kSample1End));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample1Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample1Start, kSampleDuration,
+                                !kKeyFrame));
 
   // Dispatch Sample 2
-  ASSERT_OK(DispatchTextSample(kTextStream, std::move(text_sample_2)));
-  ASSERT_OK(DispatchMediaSample(kAudioStream, std::move(audio_sample_2)));
-  ASSERT_OK(DispatchMediaSample(kVideoStream, std::move(video_sample_2)));
+  ASSERT_OK(DispatchTextSample(kTextStream, kSample2Start, kSample2End));
+  ASSERT_OK(DispatchMediaSample(kAudioStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
+  ASSERT_OK(DispatchMediaSample(kVideoStream, kSample2Start, kSampleDuration,
+                                kKeyFrame));
 
   ASSERT_OK(FlushAll({kTextStream, kAudioStream, kVideoStream}));
 }
