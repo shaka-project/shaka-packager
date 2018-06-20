@@ -67,26 +67,6 @@ namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
 
-Status ChainHandlers(
-    std::initializer_list<std::shared_ptr<MediaHandler>> list) {
-  std::shared_ptr<MediaHandler> previous;
-
-  for (auto& next : list) {
-    // Skip null entries.
-    if (!next) {
-      continue;
-    }
-
-    if (previous) {
-      RETURN_IF_ERROR(previous->AddHandler(next));
-    }
-
-    previous = std::move(next);
-  }
-
-  return Status::OK;
-}
-
 MuxerOptions CreateMuxerOptions(const StreamDescriptor& stream,
                                 const PackagingParams& params) {
   MuxerOptions options;
@@ -497,9 +477,9 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
 
   job_manager->Add("Segmented Text Job", parser);
 
-  return ChainHandlers({std::move(parser), std::move(padder),
-                        std::move(cue_aligner), std::move(chunker),
-                        std::move(output)});
+  return MediaHandler::Chain({std::move(parser), std::move(padder),
+                              std::move(cue_aligner), std::move(chunker),
+                              std::move(output)});
 }
 
 Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
@@ -531,9 +511,9 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
 
   *root = parser;
 
-  return ChainHandlers({std::move(parser), std::move(padder),
-                        std::move(cue_aligner), std::move(chunker),
-                        std::move(text_to_mp4), std::move(muxer)});
+  return MediaHandler::Chain({std::move(parser), std::move(padder),
+                              std::move(cue_aligner), std::move(chunker),
+                              std::move(text_to_mp4), std::move(muxer)});
 }
 
 Status CreateTextJobs(
@@ -710,11 +690,11 @@ Status CreateAudioVideoJobs(
       // TODO(vaage) : Create a nicer way to connect handlers to demuxers.
       if (sync_points) {
         RETURN_IF_ERROR(
-            ChainHandlers({cue_aligner, chunker, encryptor, replicator}));
+            MediaHandler::Chain({cue_aligner, chunker, encryptor, replicator}));
         RETURN_IF_ERROR(
             demuxer->SetHandler(stream.stream_selector, cue_aligner));
       } else {
-        RETURN_IF_ERROR(ChainHandlers({chunker, encryptor, replicator}));
+        RETURN_IF_ERROR(MediaHandler::Chain({chunker, encryptor, replicator}));
         RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, chunker));
       }
     }
@@ -738,7 +718,7 @@ Status CreateAudioVideoJobs(
             ? std::make_shared<TrickPlayHandler>(stream.trick_play_factor)
             : nullptr;
 
-    RETURN_IF_ERROR(ChainHandlers({replicator, trick_play, muxer}));
+    RETURN_IF_ERROR(MediaHandler::Chain({replicator, trick_play, muxer}));
   }
 
   return Status::OK;

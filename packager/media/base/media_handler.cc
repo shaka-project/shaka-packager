@@ -6,6 +6,8 @@
 
 #include "packager/media/base/media_handler.h"
 
+#include "packager/status_macros.h"
+
 namespace shaka {
 namespace media {
 
@@ -58,6 +60,26 @@ Status MediaHandler::Initialize() {
   return Status::OK;
 }
 
+Status MediaHandler::Chain(
+    std::initializer_list<std::shared_ptr<MediaHandler>> list) {
+  std::shared_ptr<MediaHandler> previous;
+
+  for (auto& next : list) {
+    // Skip null entries.
+    if (!next) {
+      continue;
+    }
+
+    if (previous) {
+      RETURN_IF_ERROR(previous->AddHandler(next));
+    }
+
+    previous = std::move(next);
+  }
+
+  return Status::OK;
+}
+
 Status MediaHandler::OnFlushRequest(size_t input_stream_index) {
   // The default implementation treats the output stream index to be identical
   // to the input stream index, which is true for most handlers.
@@ -98,6 +120,5 @@ Status MediaHandler::FlushAllDownstreams() {
   }
   return Status::OK;
 }
-
 }  // namespace media
 }  // namespace shaka

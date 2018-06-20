@@ -172,6 +172,9 @@ class MediaHandler {
   /// Validate if the handler is connected to its upstream handler.
   bool IsConnected() { return num_input_streams_ > 0; }
 
+  static Status Chain(
+      std::initializer_list<std::shared_ptr<MediaHandler>> list);
+
  protected:
   /// Internal implementation of initialize. Note that it should only initialize
   /// the MediaHandler itself. Downstream handlers are handled in Initialize().
