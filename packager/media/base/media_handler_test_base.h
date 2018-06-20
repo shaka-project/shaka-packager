@@ -270,16 +270,17 @@ class MockOutputMediaHandler : public MediaHandler {
   Status OnFlushRequest(size_t index) override;
 };
 
-// TODO(vaage) : Remove this test handler and convert other tests to use
-//               FakeInputMediaHandler and MockOutputMediaHandler.
-class FakeMediaHandler : public MediaHandler {
+class CachingMediaHandler : public MediaHandler {
  public:
-  const std::vector<std::unique_ptr<StreamData>>& stream_data_vector() const {
+  const std::vector<std::unique_ptr<StreamData>>& Cache() const {
     return stream_data_vector_;
   }
-  void clear_stream_data_vector() { stream_data_vector_.clear(); }
 
- protected:
+  // TODO(vaage) : Remove the use of clear in our tests as it can make flow
+  //               of the test harder to understand.
+  void Clear() { stream_data_vector_.clear(); }
+
+ private:
   Status InitializeInternal() override;
   Status Process(std::unique_ptr<StreamData> stream_data) override;
   Status OnFlushRequest(size_t input_stream_index) override;
@@ -381,7 +382,7 @@ class MediaHandlerGraphTestBase : public MediaHandlerTestBase {
   std::shared_ptr<MediaHandler> some_handler() { return some_handler_; }
 
   /// @return some a downstream handler that can be used for connecting.
-  std::shared_ptr<FakeMediaHandler> next_handler() { return next_handler_; }
+  std::shared_ptr<CachingMediaHandler> next_handler() { return next_handler_; }
 
  private:
   MediaHandlerGraphTestBase(const MediaHandlerGraphTestBase&) = delete;
@@ -389,7 +390,7 @@ class MediaHandlerGraphTestBase : public MediaHandlerTestBase {
       delete;
 
   // Downstream handler used in testing graph.
-  std::shared_ptr<FakeMediaHandler> next_handler_;
+  std::shared_ptr<CachingMediaHandler> next_handler_;
   // Some random handler which can be used for testing.
   std::shared_ptr<MediaHandler> some_handler_;
 };

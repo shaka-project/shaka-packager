@@ -152,20 +152,20 @@ Status MockOutputMediaHandler::OnFlushRequest(size_t index) {
   return Status::OK;
 }
 
-Status FakeMediaHandler::InitializeInternal() {
+Status CachingMediaHandler::InitializeInternal() {
   return Status::OK;
 }
 
-Status FakeMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
+Status CachingMediaHandler::Process(std::unique_ptr<StreamData> stream_data) {
   stream_data_vector_.push_back(std::move(stream_data));
   return Status::OK;
 }
 
-Status FakeMediaHandler::OnFlushRequest(size_t input_stream_index) {
+Status CachingMediaHandler::OnFlushRequest(size_t input_stream_index) {
   return Status::OK;
 }
 
-bool FakeMediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
+bool CachingMediaHandler::ValidateOutputStreamIndex(size_t stream_index) const {
   return true;
 }
 
@@ -346,16 +346,16 @@ MockOutputMediaHandler* MediaHandlerTestBase::Output(size_t index) {
 }
 
 MediaHandlerGraphTestBase::MediaHandlerGraphTestBase()
-    : next_handler_(new FakeMediaHandler),
-      some_handler_(new FakeMediaHandler) {}
+    : next_handler_(new CachingMediaHandler),
+      some_handler_(new CachingMediaHandler) {}
 
 void MediaHandlerGraphTestBase::SetUpGraph(
     size_t num_inputs,
     size_t num_outputs,
     std::shared_ptr<MediaHandler> handler) {
-  // Input handler is not really used anywhere but just to satisfy one input
-  // one output restriction for the encryption handler.
-  auto input_handler = std::make_shared<FakeMediaHandler>();
+  // Input handler is not really used anywhere else except to validate number of
+  // allowed inputs for the handler to be tested.
+  auto input_handler = std::make_shared<CachingMediaHandler>();
   for (size_t i = 0; i < num_inputs; ++i)
     ASSERT_OK(input_handler->SetHandler(i, handler));
   // All outputs are routed to |next_handler_|.
@@ -365,11 +365,11 @@ void MediaHandlerGraphTestBase::SetUpGraph(
 
 const std::vector<std::unique_ptr<StreamData>>&
 MediaHandlerGraphTestBase::GetOutputStreamDataVector() const {
-  return next_handler_->stream_data_vector();
+  return next_handler_->Cache();
 }
 
 void MediaHandlerGraphTestBase::ClearOutputStreamDataVector() {
-  next_handler_->clear_stream_data_vector();
+  next_handler_->Clear();
 }
 
 }  // namespace media
