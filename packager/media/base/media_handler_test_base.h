@@ -384,8 +384,9 @@ class MediaHandlerGraphTestBase : public MediaHandlerTestBase {
   std::shared_ptr<FakeMediaHandler> next_handler() { return next_handler_; }
 
  private:
-  MediaHandlerGraphTestBase(const MediaHandlerTestBase&) = delete;
-  MediaHandlerGraphTestBase& operator=(const MediaHandlerTestBase&) = delete;
+  MediaHandlerGraphTestBase(const MediaHandlerGraphTestBase&) = delete;
+  MediaHandlerGraphTestBase& operator=(const MediaHandlerGraphTestBase&) =
+      delete;
 
   // Downstream handler used in testing graph.
   std::shared_ptr<FakeMediaHandler> next_handler_;
