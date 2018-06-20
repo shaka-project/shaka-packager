@@ -76,7 +76,8 @@ struct StreamData {
   std::shared_ptr<const CueEvent> cue_event;
 
   static std::unique_ptr<StreamData> FromStreamInfo(
-      size_t stream_index, std::shared_ptr<const StreamInfo> stream_info) {
+      size_t stream_index,
+      std::shared_ptr<const StreamInfo> stream_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kStreamInfo;
@@ -85,7 +86,8 @@ struct StreamData {
   }
 
   static std::unique_ptr<StreamData> FromMediaSample(
-      size_t stream_index, std::shared_ptr<const MediaSample> media_sample) {
+      size_t stream_index,
+      std::shared_ptr<const MediaSample> media_sample) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kMediaSample;
@@ -94,7 +96,8 @@ struct StreamData {
   }
 
   static std::unique_ptr<StreamData> FromTextSample(
-      size_t stream_index, std::shared_ptr<const TextSample> text_sample) {
+      size_t stream_index,
+      std::shared_ptr<const TextSample> text_sample) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kTextSample;
@@ -103,7 +106,8 @@ struct StreamData {
   }
 
   static std::unique_ptr<StreamData> FromSegmentInfo(
-      size_t stream_index, std::shared_ptr<const SegmentInfo> segment_info) {
+      size_t stream_index,
+      std::shared_ptr<const SegmentInfo> segment_info) {
     std::unique_ptr<StreamData> stream_data(new StreamData);
     stream_data->stream_index = stream_index;
     stream_data->stream_data_type = StreamDataType::kSegmentInfo;
