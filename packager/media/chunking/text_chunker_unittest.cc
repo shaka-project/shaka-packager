@@ -38,11 +38,58 @@ const char* kNoPayload = "";
 
 class TextChunkerTest : public MediaHandlerTestBase {
  protected:
-  void Init(double segment_duration) {
-    ASSERT_OK(SetUpAndInitializeGraph(
-        std::make_shared<TextChunker>(segment_duration), kInputs, kOutputs));
+  Status Init(double segment_duration) {
+    return SetUpAndInitializeGraph(
+        std::make_shared<TextChunker>(segment_duration), kInputs, kOutputs);
   }
 };
+
+// Verify that the chunker will use the first sample's start time as the start
+// time for the first segment.
+//
+// Segment Duration = 100 MS
+//
+// TIME (ms):0     5     1     1     2     2     3
+//                 0     0     5     0     5     0
+//                       0     0     0     0     0
+// SAMPLES  :               [-----A-----]
+// SEGMENTS :            ^           ^           ^
+//
+TEST_F(TextChunkerTest, SegmentsStartAtFirstSample) {
+  const double kSegmentDurationSec = 0.1;
+  const int64_t kSegmentDurationMs = 100;
+  const int64_t kSegment0Start = 100;
+  const int64_t kSegment1Start = 200;
+
+  const int64_t kSampleAStart = 120;
+  const int64_t kSampleAEnd = 220;
+
+  ASSERT_OK(Init(kSegmentDurationSec));
+
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsStreamInfo(_, _, _, _)));
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsTextSample(_, _, kSampleAStart,
+                                                         kSampleAEnd, _, _)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsSegmentInfo(_, kSegment0Start, kSegmentDurationMs, _, _)));
+    EXPECT_CALL(*Output(kOutput), OnProcess(IsTextSample(_, _, kSampleAStart,
+                                                         kSampleAEnd, _, _)));
+    EXPECT_CALL(
+        *Output(kOutput),
+        OnProcess(IsSegmentInfo(_, kSegment1Start, kSegmentDurationMs, _, _)));
+    EXPECT_CALL(*Output(kOutput), OnFlush(kStreamIndex));
+  }
+
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromStreamInfo(
+      kStreamIndex, GetTextStreamInfo(kMsTimeScale))));
+  ASSERT_OK(Input(kInput)->Dispatch(StreamData::FromTextSample(
+      kStreamIndex,
+      GetTextSample(kNoId, kSampleAStart, kSampleAEnd, kNoPayload))));
+  ASSERT_OK(Input(kInput)->FlushAllDownstreams());
+}
 
 // Verify that when a sample elapses a full segment, that it only appears
 // in the one segment.
@@ -98,8 +145,8 @@ TEST_F(TextChunkerTest, SampleEndingOnSegmentStart) {
 // TIME (ms):0     5     1     1     2
 //                 0     0     5     0
 //                       0     0     0
-// SAMPLES  :   [--A--]
-//                          [--B--]
+// SAMPLES  :[--A--]
+//                       [--B--]
 // SEGMENTS :            ^           ^
 //
 TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
@@ -109,11 +156,11 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
   const int64_t kSegment0Start = 0;
   const int64_t kSegment1Start = 100;
 
-  const int64_t kSampleAStart = 25;
-  const int64_t kSampleAEnd = 75;
+  const int64_t kSampleAStart = 0;
+  const int64_t kSampleAEnd = 50;
 
-  const int64_t kSampleBStart = 125;
-  const int64_t kSampleBEnd = 175;
+  const int64_t kSampleBStart = 100;
+  const int64_t kSampleBEnd = 150;
 
   Init(kSegmentDurationSec);
 
@@ -163,8 +210,8 @@ TEST_F(TextChunkerTest, CreatesSegmentsForSamples) {
 // TIME (ms):0     5     1     1     2     2     3
 //                 0     0     5     0     5     0
 //                       0     0     0     0     0
-// SAMPLES  :   [--A--]
-//                                      [--B--]
+// SAMPLES  :[--A--]
+//                                   [--B--]
 // SEGMENTS :            ^           ^           ^
 //
 TEST_F(TextChunkerTest, OutputsEmptySegments) {
@@ -175,11 +222,11 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
   const int64_t kSegment1Start = 100;
   const int64_t kSegment2Start = 200;
 
-  const int64_t kSampleAStart = 25;
-  const int64_t kSampleAEnd = 75;
+  const int64_t kSampleAStart = 0;
+  const int64_t kSampleAEnd = 50;
 
-  const int64_t kSampleBStart = 225;
-  const int64_t kSampleBEnd = 275;
+  const int64_t kSampleBStart = 200;
+  const int64_t kSampleBEnd = 250;
 
   Init(kSegmentDurationSec);
 
@@ -235,7 +282,7 @@ TEST_F(TextChunkerTest, OutputsEmptySegments) {
 // TIME (ms):0     5     1     1
 //                 0     0     5
 //                       0     0
-// SAMPLES  :      [-----A-----]
+// SAMPLES  :[--------A--------]
 // SEGMENTS :            ^
 //
 TEST_F(TextChunkerTest, SampleCrossesSegments) {
@@ -245,7 +292,7 @@ TEST_F(TextChunkerTest, SampleCrossesSegments) {
   const int64_t kSegment0Start = 0;
   const int64_t kSegment1Start = 100;
 
-  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAStart = 0;
   const int64_t kSampleAEnd = 150;
 
   Init(kSegmentDurationSec);
@@ -293,9 +340,9 @@ TEST_F(TextChunkerTest, SampleCrossesSegments) {
 // TIME (ms):0     5     1     1     2     2     3
 //                 0     0     5     0     5     0
 //                       0     0     0     0     0
-// SAMPLES  :      [-----A-----]
-//                 [-----B-----]
-//                 [-----------C-----------]
+// SAMPLES  :[--------A--------]
+//           [--------B--------]
+//           [-----------------C-----------]
 // SEGMENTS :            ^           ^           ^
 //
 TEST_F(TextChunkerTest, PreservesOrder) {
@@ -306,13 +353,13 @@ TEST_F(TextChunkerTest, PreservesOrder) {
   const int64_t kSegment1Start = 100;
   const int64_t kSegment2Start = 200;
 
-  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAStart = 0;
   const int64_t kSampleAEnd = 150;
 
-  const int64_t kSampleBStart = 50;
+  const int64_t kSampleBStart = 0;
   const int64_t kSampleBEnd = 150;
 
-  const int64_t kSampleCStart = 50;
+  const int64_t kSampleCStart = 0;
   const int64_t kSampleCEnd = 250;
 
   const char* kSampleAId = "sample 0";
@@ -391,7 +438,7 @@ TEST_F(TextChunkerTest, PreservesOrder) {
 // TIME (ms):0     5     1     1     2     2
 //                 0     0     5     0     5
 //                       0     0     0     0
-// SAMPLES  :   [-----------A-----------]
+// SAMPLES  :[--------------A--------------]
 //                    [-----B------]
 // SEGMENTS :      ^     ^     ^     ^     ^
 //
@@ -399,8 +446,8 @@ TEST_F(TextChunkerTest, NestedSamples) {
   const double kSegmentDurationSec = 0.05;
   const int64_t kSegmentDurationMs = 50;
 
-  const int64_t kSampleAStart = 25;
-  const int64_t kSampleAEnd = 225;
+  const int64_t kSampleAStart = 0;
+  const int64_t kSampleAEnd = 250;
 
   const int64_t kSampleBStart = 75;
   const int64_t kSampleBEnd = 175;
@@ -495,7 +542,7 @@ TEST_F(TextChunkerTest, NestedSamples) {
 // TIME (ms):0     5     1     1     2     2     3
 //                 0     0     5     0     5     0
 //                       0     0     0     0     0
-// SAMPLES  :      [--------A--------]
+// SAMPLES  :[-----------A-----------]
 //                                   [--B--]
 // SEGMENTS :            ^           ^           ^
 //
@@ -507,7 +554,7 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
   const int64_t kSegment1Start = 100;
   const int64_t kSegment2Start = 200;
 
-  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAStart = 0;
   const int64_t kSampleAEnd = 200;
 
   const int64_t kSampleBStart = 200;
@@ -571,7 +618,7 @@ TEST_F(TextChunkerTest, SecondSampleStartsAfterMultiSegmentSampleEnds) {
 // TIME (ms):0     5     1     1     2     2     3     3     4     5
 //                 0     0     5     0     5     0     5     5     0
 //                       0     0     0     0     0     0     0     0
-// SAMPLES  :      [-----------A-----------]
+// SAMPLES  :[--------------A--------------]
 // CUES     :            ^           ^
 // SEGMENTS :            ^           ^                             ^
 //
@@ -579,7 +626,7 @@ TEST_F(TextChunkerTest, SampleSpanningMultipleCues) {
   const double kSegmentDurationSec = 0.3;
   const int64_t kSegmentDurationMs = 300;
 
-  const int64_t kSampleAStart = 50;
+  const int64_t kSampleAStart = 0;
   const int64_t kSampleAEnd = 250;
 
   const double kC0 = 0.1;

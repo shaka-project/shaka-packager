@@ -73,7 +73,20 @@ Status TextChunker::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 Status TextChunker::OnTextSample(std::shared_ptr<const TextSample> sample) {
   // Output all segments that come before our new sample.
   const int64_t sample_start = sample->start_time();
+
+  // If we have not seen a sample yet, base all segments off the first sample's
+  // start time.
+  if (segment_start_ < 0) {
+    // Force the first segment to start at the segment that would have started
+    // before the sample. This should allow segments from different streams to
+    // align.
+    segment_start_ = (sample_start / segment_duration_) * segment_duration_;
+  }
+
+  // We need to write all the segments that would have ended before the new
+  // sample started.
   while (sample_start >= segment_start_ + segment_duration_) {
+    // |DispatchSegment| will advance |segment_start_|.
     RETURN_IF_ERROR(DispatchSegment(segment_duration_));
   }
 
