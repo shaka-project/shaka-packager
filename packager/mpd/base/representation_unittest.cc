@@ -856,8 +856,8 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations2) {
   std::string expected_s_elements;
   if (allow_approximate_segment_timeline_) {
     expected_s_elements =
-        "<S t=\"0\" d=\"10\"/>"
-        "<S t=\"10\" d=\"12\" r=\"1\"/>";
+        "<S t=\"0\" d=\"10\" r=\"1\"/>"
+        "<S t=\"20\" d=\"13\"/>";
   } else {
     uint64_t kNumSegments = 3;
     expected_s_elements = base::StringPrintf(kSElementTemplate, kStartTime,
@@ -913,6 +913,42 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
   }
   EXPECT_THAT(representation_->GetXml().get(),
               XmlNodeEqual(ExpectedXml(expected_s_elements)));
+}
+
+// Check the segments are grouped correctly when sample duration is not
+// available, which happens for text streams.
+// See https://github.com/google/shaka-packager/issues/417 for the background.
+TEST_P(ApproximateSegmentTimelineTest, NoSampleDuration) {
+  const char kMediaInfo[] =
+      "text_info {\n"
+      "  codec: 'wvtt'\n"
+      "}\n"
+      "reference_time_scale: 1000\n"
+      "container_type: 1\n"
+      "init_segment_url: 'init.mp4'\n"
+      "segment_template_url: '$Number$.mp4'\n";
+  representation_ = CreateRepresentation(ConvertToMediaInfo(kMediaInfo),
+                                         kAnyRepresentationId, NoListener());
+  ASSERT_TRUE(representation_->Init());
+
+  const uint64_t kStartTime = 0;
+  const uint64_t kDuration = kScaledTargetSegmentDuration;
+  const uint64_t kSize = 128;
+  AddSegments(kStartTime, kDuration, kSize, 0);
+  AddSegments(kStartTime + kDuration, kDuration, kSize, 0);
+  AddSegments(kStartTime + 2 * kDuration, kDuration, kSize, 0);
+
+  const char kExpectedXml[] =
+      "<Representation id=\"1\" bandwidth=\"102400\" codecs=\"wvtt\""
+      " mimeType=\"application/mp4\">\n"
+      "  <SegmentTemplate timescale=\"1000\" initialization=\"init.mp4\" "
+      "   media=\"$Number$.mp4\" startNumber=\"1\">\n"
+      "    <SegmentTimeline>\n"
+      "      <S t=\"0\" d=\"10\" r=\"2\"/>\n"
+      "     </SegmentTimeline>\n"
+      "  </SegmentTemplate>\n"
+      "</Representation>\n";
+  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(kExpectedXml));
 }
 
 INSTANTIATE_TEST_CASE_P(ApproximateSegmentTimelineTest,
