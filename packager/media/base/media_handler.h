@@ -149,7 +149,7 @@ struct StreamData {
 ///      they may be independent. One example of this is encryption handler.
 ///   3) Single input multiple outputs
 ///      The input stream is split into multiple output streams. One example
-///      of this is trick play handler.
+///      of this is the replicator media handler.
 /// Other types of media handlers are disallowed and not supported.
 class MediaHandler {
  public:
