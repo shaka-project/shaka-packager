@@ -13,13 +13,18 @@ namespace shaka {
 namespace media {
 
 /// A media handler that will inject empty text samples to fill any gaps
-/// that may appear in the text stream. A min duration can be given to
-/// ensure that the stream will have samples up to the given duration.
+/// that may appear in the text stream.
 class TextPadder : public MediaHandler {
  public:
-  /// Create a new text padder that will ensure the stream's duration is
-  // at least |duration_ms| long.
-  explicit TextPadder(int64_t duration_ms);
+  /// Create a new text padder.
+  ///
+  /// |zero_start_bias_ms| is the threshold used to determine if we should
+  /// assume that the stream actually starts at time zero. If the first sample
+  /// comes before the |zero_start_bias_ms|, then the start will be padded as
+  /// the stream is assumed to start at zero. If the first sample comes after
+  /// |zero_start_bias_ms| then the start of the stream will not be padded as
+  /// we cannot assume the start time of the stream.
+  explicit TextPadder(int64_t zero_start_bias_ms);
   ~TextPadder() override = default;
 
  private:
@@ -29,11 +34,12 @@ class TextPadder : public MediaHandler {
   Status InitializeInternal() override;
 
   Status Process(std::unique_ptr<StreamData> data) override;
-  Status OnFlushRequest(size_t index) override;
   Status OnTextSample(std::unique_ptr<StreamData> data);
 
-  int64_t duration_ms_;
-  int64_t max_end_time_ms_ = 0;
+  const int64_t zero_start_bias_ms_;
+  // Will be set once we see our first sample. Using -1 to signal that we have
+  // not seen the first sample yet.
+  int64_t max_end_time_ms_ = -1;
 };
 
 }  // namespace media

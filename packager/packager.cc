@@ -66,6 +66,8 @@ namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
 
+const int64_t kDefaultTextZeroBiasMs = 10 * 60 * 1000;  // 10 minutes
+
 MuxerOptions CreateMuxerOptions(const StreamDescriptor& stream,
                                 const PackagingParams& params) {
   MuxerOptions options;
@@ -465,10 +467,9 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   std::unique_ptr<FileReader> reader;
   RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
 
-  const int64_t kNoDuration = 0;
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
-  auto padder = std::make_shared<TextPadder>(kNoDuration);
+  auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
   auto cue_aligner = sync_points
                          ? std::make_shared<CueAlignmentHandler>(sync_points)
                          : nullptr;
@@ -490,10 +491,9 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
   std::unique_ptr<FileReader> reader;
   RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
 
-  const int64_t kNoDuration = 0;
   auto parser =
       std::make_shared<WebVttParser>(std::move(reader), stream.language);
-  auto padder = std::make_shared<TextPadder>(kNoDuration);
+  auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
 
   auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
   auto muxer = muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);

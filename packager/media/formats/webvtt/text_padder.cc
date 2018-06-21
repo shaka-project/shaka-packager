@@ -16,7 +16,8 @@ namespace {
 const uint64_t kStreamIndex = 0;
 }  // namespace
 
-TextPadder::TextPadder(int64_t duration_ms) : duration_ms_(duration_ms) {}
+TextPadder::TextPadder(int64_t zero_start_bias_ms)
+    : zero_start_bias_ms_(zero_start_bias_ms) {}
 
 Status TextPadder::InitializeInternal() {
   return Status::OK;
@@ -30,19 +31,15 @@ Status TextPadder::Process(std::unique_ptr<StreamData> data) {
                         : Dispatch(std::move(data));
 }
 
-Status TextPadder::OnFlushRequest(size_t index) {
-  if (duration_ms_ > max_end_time_ms_) {
-    std::shared_ptr<TextSample> filler = std::make_shared<TextSample>();
-    filler->SetTime(max_end_time_ms_, duration_ms_);
-    RETURN_IF_ERROR(
-        MediaHandler::DispatchTextSample(kStreamIndex, std::move(filler)));
-  }
-
-  return FlushDownstream(index);
-}
-
 Status TextPadder::OnTextSample(std::unique_ptr<StreamData> data) {
   const TextSample& sample = *data->text_sample;
+
+  // If this is the first sample we have seen, we need to check if we should
+  // start at time zero.
+  if (max_end_time_ms_ < 0) {
+    max_end_time_ms_ =
+        sample.start_time() > zero_start_bias_ms_ ? sample.start_time() : 0;
+  }
 
   // Check if there will be a gap between samples if we just dispatch this
   // sample right away. If there will be one, create an empty sample that will
