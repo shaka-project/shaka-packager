@@ -28,7 +28,6 @@
       'dependencies': [
         'file/file.gyp:file',
         'hls/hls.gyp:hls_builder',
-        'media/ad_cue_generator/ad_cue_generator.gyp:ad_cue_generator',
         'media/chunking/chunking.gyp:chunking',
         'media/codecs/codecs.gyp:codecs',
         'media/crypto/crypto.gyp:crypto',
