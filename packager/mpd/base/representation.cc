@@ -420,7 +420,7 @@ bool Representation::ApproximiatelyEqual(int64_t time1, int64_t time2) const {
       std::min(frame_duration_,
                static_cast<uint32_t>(kErrorThresholdSeconds *
                                      media_info_.reference_time_scale()));
-  return time1 <= time2 + error_threshold && time2 <= time1 + error_threshold;
+  return std::abs(time1 - time2) <= error_threshold;
 }
 
 int64_t Representation::AdjustDuration(int64_t duration) const {
