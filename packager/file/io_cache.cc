@@ -72,6 +72,9 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
     AutoLock lock(lock_);
     while (!closed_ && (BytesFreeInternal() == 0)) {
       AutoUnlock unlock(lock_);
+      VLOG(1) << "Circular buffer is full, which can happen if data arrives "
+                 "faster than being consumed by packager. Ignore if it is not "
+                 "live packaging. Otherwise, try increasing --io_cache_size.";
       read_event_.Wait();
     }
     if (closed_)
