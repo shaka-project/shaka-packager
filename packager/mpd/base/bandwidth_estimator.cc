@@ -6,71 +6,41 @@
 
 #include "packager/mpd/base/bandwidth_estimator.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "packager/base/logging.h"
 
 namespace shaka {
 
-BandwidthEstimator::BandwidthEstimator(size_t num_blocks)
-    : sliding_queue_(num_blocks) {}
-BandwidthEstimator::~BandwidthEstimator() {}
+BandwidthEstimator::BandwidthEstimator() = default;
+BandwidthEstimator::~BandwidthEstimator() = default;
 
-void BandwidthEstimator::AddBlock(uint64_t size, double duration) {
-  if (size == 0 || duration == 0) {
-    LOG(WARNING) << "Ignore block with size=" << size
+void BandwidthEstimator::AddBlock(uint64_t size_in_bytes, double duration) {
+  if (size_in_bytes == 0 || duration == 0) {
+    LOG(WARNING) << "Ignore block with size=" << size_in_bytes
                  << ", duration=" << duration;
     return;
   }
+
   const int kBitsInByte = 8;
-  const double bits_per_second_reciprocal = duration / (kBitsInByte * size);
-  sliding_queue_.Add(bits_per_second_reciprocal);
+  const uint64_t size_in_bits = size_in_bytes * kBitsInByte;
+  total_size_in_bits_ += size_in_bits;
+
+  total_duration_ += duration;
+
+  const uint64_t bitrate = static_cast<uint64_t>(ceil(size_in_bits / duration));
+  max_bitrate_ = std::max(bitrate, max_bitrate_);
 }
 
 uint64_t BandwidthEstimator::Estimate() const {
-  return sliding_queue_.size() == 0
-             ? 0
-             : static_cast<uint64_t>(
-                   ceil(sliding_queue_.size() / sliding_queue_.sum()));
+  if (total_duration_ == 0)
+    return 0;
+  return static_cast<uint64_t>(ceil(total_size_in_bits_ / total_duration_));
 }
 
 uint64_t BandwidthEstimator::Max() const {
-  // The first element has minimum "bits per second reciprocal", thus the
-  // reverse is maximum "bits per second".
-  return sliding_queue_.size() == 0
-             ? 0
-             : static_cast<uint64_t>(ceil(1 / sliding_queue_.min()));
-}
-
-BandwidthEstimator::SlidingQueue::SlidingQueue(size_t window_size)
-    : window_size_(window_size) {}
-
-void BandwidthEstimator::SlidingQueue::Add(double value) {
-  // Remove elements if needed to form a monotonic non-decreasing sequence.
-  while (!min_.empty() && min_.back() > value)
-    min_.pop_back();
-  min_.push_back(value);
-
-  if (window_size_ == kUseAllBlocks) {
-    size_++;
-    sum_ += value;
-    min_.resize(1);  // Keep only the minimum one.
-    return;
-  }
-
-  window_.push_back(value);
-  sum_ += value;
-
-  if (window_.size() <= window_size_) {
-    size_++;
-    return;
-  }
-
-  if (min_.front() == window_.front())
-    min_.pop_front();
-
-  sum_ -= window_.front();
-  window_.pop_front();
+  return max_bitrate_;
 }
 
 }  // namespace shaka

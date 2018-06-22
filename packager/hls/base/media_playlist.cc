@@ -330,8 +330,7 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
     : hls_params_(hls_params),
       file_name_(file_name),
       name_(name),
-      group_id_(group_id),
-      bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
+      group_id_(group_id) {}
 
 MediaPlaylist::~MediaPlaylist() {}
 

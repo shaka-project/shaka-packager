@@ -262,9 +262,8 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetBitrateFromSegments) {
   media_playlist_->AddSegment("file2.ts", 10 * kTimeScale, 20 * kTimeScale,
                               kZeroByteOffset, 5 * kMBytes);
 
-  // Max bitrate is 2000Kb/s.
   EXPECT_EQ(2000000u, media_playlist_->MaxBitrate());
-  EXPECT_EQ(1142858u, media_playlist_->AvgBitrate());
+  EXPECT_EQ(1600000u, media_playlist_->AvgBitrate());
 }
 
 TEST_F(MediaPlaylistMultiSegmentTest, GetLongestSegmentDuration) {

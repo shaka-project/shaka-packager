@@ -441,10 +441,6 @@ std::string GetDefaultMediaInfo() {
 
 class SegmentTemplateTest : public RepresentationTest {
  public:
-  SegmentTemplateTest()
-      : bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
-  ~SegmentTemplateTest() override {}
-
   void SetUp() override {
     mpd_options_.mpd_type = MpdType::kDynamic;
     representation_ =

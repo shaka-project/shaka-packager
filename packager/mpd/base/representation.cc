@@ -115,7 +115,6 @@ Representation::Representation(
     std::unique_ptr<RepresentationStateChangeListener> state_change_listener)
     : media_info_(media_info),
       id_(id),
-      bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
       mpd_options_(mpd_options),
       state_change_listener_(std::move(state_change_listener)),
       allow_approximate_segment_timeline_(
