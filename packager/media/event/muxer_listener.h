@@ -125,8 +125,8 @@ class MuxerListener {
   ///        specified by MediaInfo passed to OnMediaStart().
   /// @param segment_file_size is the segment size in bytes.
   virtual void OnNewSegment(const std::string& segment_name,
-                            uint64_t start_time,
-                            uint64_t duration,
+                            int64_t start_time,
+                            int64_t duration,
                             uint64_t segment_file_size) = 0;
 
   /// Called when there is a new key frame. For Video only. Note that it should
@@ -134,14 +134,14 @@ class MuxerListener {
   /// @param timestamp is in terms of the timescale of the media.
   /// @param start_byte_offset is the offset of where the key frame starts.
   /// @param size is size in bytes.
-  virtual void OnKeyFrame(uint64_t timestamp,
+  virtual void OnKeyFrame(int64_t timestamp,
                           uint64_t start_byte_offset,
                           uint64_t size) = 0;
 
   /// Called when there is a new Ad Cue, which should align with (sub)segments.
   /// @param timestamp indicate the cue timestamp.
   /// @param cue_data is the data of the cue.
-  virtual void OnCueEvent(uint64_t timestamp, const std::string& cue_data) = 0;
+  virtual void OnCueEvent(int64_t timestamp, const std::string& cue_data) = 0;
 
  protected:
   MuxerListener() = default;

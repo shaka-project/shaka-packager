@@ -88,8 +88,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 }
 
 void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
-                                                 uint64_t start_time,
-                                                 uint64_t duration,
+                                                 int64_t start_time,
+                                                 int64_t duration,
                                                  uint64_t segment_file_size) {
   const double segment_duration_seconds =
       static_cast<double>(duration) / media_info_->reference_time_scale();
@@ -100,11 +100,11 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
   max_bitrate_ = std::max(max_bitrate_, bitrate);
 }
 
-void VodMediaInfoDumpMuxerListener::OnKeyFrame(uint64_t timestamp,
+void VodMediaInfoDumpMuxerListener::OnKeyFrame(int64_t timestamp,
                                                uint64_t start_byte_offset,
                                                uint64_t size) {}
 
-void VodMediaInfoDumpMuxerListener::OnCueEvent(uint64_t timestamp,
+void VodMediaInfoDumpMuxerListener::OnCueEvent(int64_t timestamp,
                                                const std::string& cue_data) {
   NOTIMPLEMENTED();
 }

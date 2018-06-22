@@ -145,8 +145,8 @@ class RepresentationStateChangeListenerImpl
   ~RepresentationStateChangeListenerImpl() override {}
 
   // RepresentationStateChangeListener implementation.
-  void OnNewSegmentForRepresentation(uint64_t start_time,
-                                     uint64_t duration) override {
+  void OnNewSegmentForRepresentation(int64_t start_time,
+                                     int64_t duration) override {
     adaptation_set_->OnNewSegmentForRepresentation(representation_id_,
                                                    start_time, duration);
   }

@@ -60,7 +60,7 @@ bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
   if (last_segment.repeat != 0)
     return false;
 
-  const uint64_t expected_last_segment_start_time =
+  const int64_t expected_last_segment_start_time =
       first_segment.start_time +
       first_segment.duration * (first_segment.repeat + 1);
   return expected_last_segment_start_time == last_segment.start_time;

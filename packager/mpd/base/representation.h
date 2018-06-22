@@ -38,8 +38,8 @@ class RepresentationStateChangeListener {
   /// the Representation.
   /// @param start_time is the start time of the new segment.
   /// @param duration is the duration of the new segment.
-  virtual void OnNewSegmentForRepresentation(uint64_t start_time,
-                                             uint64_t duration) = 0;
+  virtual void OnNewSegmentForRepresentation(int64_t start_time,
+                                             int64_t duration) = 0;
 
   /// Notifies the instance that the frame rate was set for the
   /// Representation.
@@ -101,8 +101,8 @@ class Representation {
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale.
   /// @param size of the segment in bytes.
-  virtual void AddNewSegment(uint64_t start_time,
-                             uint64_t duration,
+  virtual void AddNewSegment(int64_t start_time,
+                             int64_t duration,
                              uint64_t size);
 
   /// Set the sample duration of this Representation.
@@ -182,24 +182,24 @@ class Representation {
 
   // Add a SegmentInfo. This function may insert an adjusted SegmentInfo if
   // |allow_approximate_segment_timeline_| is set.
-  void AddSegmentInfo(uint64_t start_time, uint64_t duration);
+  void AddSegmentInfo(int64_t start_time, int64_t duration);
 
   // Check if two timestamps are approximately equal if
   // |allow_approximate_segment_timeline_| is set; Otherwise check whether the
   // two times match.
-  bool ApproximiatelyEqual(uint64_t time1, uint64_t time2) const;
+  bool ApproximiatelyEqual(int64_t time1, int64_t time2) const;
 
   // Return adjusted duration if |allow_aproximate_segment_timeline_or_duration|
   // is set; otherwise duration is returned without adjustment.
-  uint64_t AdjustDuration(uint64_t duration) const;
+  int64_t AdjustDuration(int64_t duration) const;
 
   // Remove elements from |segment_infos_| for dynamic live profile. Increments
   // |start_number_| by the number of segments removed.
   void SlideWindow();
 
   // Remove |num_segments| starting from |start_time| with |duration|.
-  void RemoveSegments(uint64_t start_time,
-                      uint64_t duration,
+  void RemoveSegments(int64_t start_time,
+                      int64_t duration,
                       uint64_t num_segments);
 
   // Note: Because 'mimeType' is a required field for a valid MPD, these return

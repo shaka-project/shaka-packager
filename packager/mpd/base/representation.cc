@@ -79,17 +79,17 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 1;
 }
 
-uint64_t LastSegmentStartTime(const SegmentInfo& segment_info) {
+int64_t LastSegmentStartTime(const SegmentInfo& segment_info) {
   return segment_info.start_time + segment_info.duration * segment_info.repeat;
 }
 
 // This is equal to |segment_info| end time
-uint64_t LastSegmentEndTime(const SegmentInfo& segment_info) {
+int64_t LastSegmentEndTime(const SegmentInfo& segment_info) {
   return segment_info.start_time +
          segment_info.duration * (segment_info.repeat + 1);
 }
 
-uint64_t LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
+int64_t LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
   DCHECK(!segments.empty());
   const SegmentInfo& latest_segment = segments.back();
   return LastSegmentStartTime(latest_segment);
@@ -97,7 +97,7 @@ uint64_t LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
 
 // Given |timeshift_limit|, finds out the number of segments that are no longer
 // valid and should be removed from |segment_info|.
-uint64_t SearchTimedOutRepeatIndex(uint64_t timeshift_limit,
+uint64_t SearchTimedOutRepeatIndex(int64_t timeshift_limit,
                                    const SegmentInfo& segment_info) {
   DCHECK_LE(timeshift_limit, LastSegmentEndTime(segment_info));
   if (timeshift_limit < segment_info.start_time)
@@ -195,8 +195,8 @@ void Representation::UpdateContentProtectionPssh(const std::string& drm_uuid,
                                     &content_protection_elements_);
 }
 
-void Representation::AddNewSegment(uint64_t start_time,
-                                   uint64_t duration,
+void Representation::AddNewSegment(int64_t start_time,
+                                   int64_t duration,
                                    uint64_t size) {
   if (start_time == 0 && duration == 0) {
     LOG(WARNING) << "Got segment with start_time and duration == 0. Ignoring.";
@@ -309,7 +309,7 @@ void Representation::SuppressOnce(SuppressFlag flag) {
 
 void Representation::SetPresentationTimeOffset(
     double presentation_time_offset) {
-  uint64_t pto = presentation_time_offset * media_info_.reference_time_scale();
+  int64_t pto = presentation_time_offset * media_info_.reference_time_scale();
   if (pto <= 0)
     return;
   media_info_.set_presentation_time_offset(pto);
@@ -350,21 +350,21 @@ bool Representation::HasRequiredMediaInfoFields() const {
   return true;
 }
 
-void Representation::AddSegmentInfo(uint64_t start_time, uint64_t duration) {
+void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
   const uint64_t kNoRepeat = 0;
-  const uint64_t adjusted_duration = AdjustDuration(duration);
+  const int64_t adjusted_duration = AdjustDuration(duration);
 
   if (!segment_infos_.empty()) {
     // Contiguous segment.
     const SegmentInfo& previous = segment_infos_.back();
-    const uint64_t previous_segment_end_time =
+    const int64_t previous_segment_end_time =
         previous.start_time + previous.duration * (previous.repeat + 1);
     // Make it continuous if the segment start time is close to previous segment
     // end time.
     if (ApproximiatelyEqual(previous_segment_end_time, start_time)) {
-      const uint64_t segment_end_time_for_same_duration =
+      const int64_t segment_end_time_for_same_duration =
           previous_segment_end_time + previous.duration;
-      const uint64_t actual_segment_end_time = start_time + duration;
+      const int64_t actual_segment_end_time = start_time + duration;
       // Consider the segments having identical duration if the segment end time
       // is close to calculated segment end time by assuming identical duration.
       if (ApproximiatelyEqual(segment_end_time_for_same_duration,
@@ -379,7 +379,7 @@ void Representation::AddSegmentInfo(uint64_t start_time, uint64_t duration) {
     }
 
     // A gap since previous.
-    const uint64_t kRoundingErrorGrace = 5;
+    const int64_t kRoundingErrorGrace = 5;
     if (previous_segment_end_time + kRoundingErrorGrace < start_time) {
       LOG(WARNING) << "Found a gap of size "
                    << (start_time - previous_segment_end_time)
@@ -401,7 +401,7 @@ void Representation::AddSegmentInfo(uint64_t start_time, uint64_t duration) {
   segment_infos_.push_back({start_time, adjusted_duration, kNoRepeat});
 }
 
-bool Representation::ApproximiatelyEqual(uint64_t time1, uint64_t time2) const {
+bool Representation::ApproximiatelyEqual(int64_t time1, int64_t time2) const {
   if (!allow_approximate_segment_timeline_)
     return time1 == time2;
 
@@ -423,10 +423,10 @@ bool Representation::ApproximiatelyEqual(uint64_t time1, uint64_t time2) const {
   return time1 <= time2 + error_threshold && time2 <= time1 + error_threshold;
 }
 
-uint64_t Representation::AdjustDuration(uint64_t duration) const {
+int64_t Representation::AdjustDuration(int64_t duration) const {
   if (!allow_approximate_segment_timeline_)
     return duration;
-  const uint64_t scaled_target_duration =
+  const int64_t scaled_target_duration =
       mpd_options_.target_segment_duration * media_info_.reference_time_scale();
   return ApproximiatelyEqual(scaled_target_duration, duration)
              ? scaled_target_duration
@@ -442,23 +442,23 @@ void Representation::SlideWindow() {
   const uint32_t time_scale = GetTimeScale(media_info_);
   DCHECK_GT(time_scale, 0u);
 
-  uint64_t time_shift_buffer_depth = static_cast<uint64_t>(
+  int64_t time_shift_buffer_depth = static_cast<int64_t>(
       mpd_options_.mpd_params.time_shift_buffer_depth * time_scale);
 
   // The start time of the latest segment is considered the current_play_time,
   // and this should guarantee that the latest segment will stay in the list.
-  const uint64_t current_play_time = LatestSegmentStartTime(segment_infos_);
+  const int64_t current_play_time = LatestSegmentStartTime(segment_infos_);
   if (current_play_time <= time_shift_buffer_depth)
     return;
 
-  const uint64_t timeshift_limit = current_play_time - time_shift_buffer_depth;
+  const int64_t timeshift_limit = current_play_time - time_shift_buffer_depth;
 
   // First remove all the SegmentInfos that are completely out of range, by
   // looking at the very last segment's end time.
   std::list<SegmentInfo>::iterator first = segment_infos_.begin();
   std::list<SegmentInfo>::iterator last = first;
   for (; last != segment_infos_.end(); ++last) {
-    const uint64_t last_segment_end_time = LastSegmentEndTime(*last);
+    const int64_t last_segment_end_time = LastSegmentEndTime(*last);
     if (timeshift_limit < last_segment_end_time)
       break;
     RemoveSegments(last->start_time, last->duration, last->repeat + 1);
@@ -485,8 +485,8 @@ void Representation::SlideWindow() {
   start_number_ += repeat_index;
 }
 
-void Representation::RemoveSegments(uint64_t start_time,
-                                    uint64_t duration,
+void Representation::RemoveSegments(int64_t start_time,
+                                    int64_t duration,
                                     uint64_t num_segments) {
   if (mpd_options_.mpd_params.preserved_segments_outside_live_window == 0)
     return;

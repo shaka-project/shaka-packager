@@ -37,7 +37,7 @@ class MockRepresentationStateChangeListener
   ~MockRepresentationStateChangeListener() {}
 
   MOCK_METHOD2(OnNewSegmentForRepresentation,
-               void(uint64_t start_time, uint64_t duration));
+               void(int64_t start_time, int64_t duration));
 
   MOCK_METHOD2(OnSetFrameRateForRepresentation,
                void(uint32_t frame_duration, uint32_t timescale));
@@ -270,8 +270,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const uint64_t kStartTime = 199238u;
-  const uint64_t kDuration = 98u;
+  const int64_t kStartTime = 199238u;
+  const int64_t kDuration = 98u;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener, OnNewSegmentForRepresentation(kStartTime, kDuration));
@@ -300,8 +300,8 @@ TEST_F(RepresentationTest,
       "}\n"
       "container_type: 1\n";
 
-  const uint64_t kTimeScale = 1000u;
-  const uint64_t kFrameDuration = 33u;
+  const uint32_t kTimeScale = 1000u;
+  const int64_t kFrameDuration = 33u;
   std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
@@ -415,7 +415,7 @@ const char kSElementTemplateWithoutR[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
 const uint32_t kDefaultTimeScale = 1000u;
-const uint64_t kScaledTargetSegmentDuration = 10;
+const int64_t kScaledTargetSegmentDuration = 10;
 const uint32_t kSampleDuration = 2;
 
 std::string GetDefaultMediaInfo() {
@@ -453,8 +453,8 @@ class SegmentTemplateTest : public RepresentationTest {
     ASSERT_TRUE(representation_->Init());
   }
 
-  void AddSegments(uint64_t start_time,
-                   uint64_t duration,
+  void AddSegments(int64_t start_time,
+                   int64_t duration,
                    uint64_t size,
                    uint64_t repeat) {
     DCHECK(representation_);
@@ -504,8 +504,8 @@ class SegmentTemplateTest : public RepresentationTest {
 
 // Estimate the bandwidth given the info from AddNewSegment().
 TEST_F(SegmentTemplateTest, OneSegmentNormal) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 10;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 10;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
 
@@ -520,8 +520,8 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
       CreateRepresentation(media_info, kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation_->Init());
 
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 10;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 10;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
 
@@ -540,8 +540,8 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
 }
 
 TEST_F(SegmentTemplateTest, PresentationTimeOffset) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = 10;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = 10;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
 
@@ -569,8 +569,8 @@ TEST_F(SegmentTemplateTest, GetStartAndEndTimestamps) {
   EXPECT_FALSE(representation_->GetStartAndEndTimestamps(&start_timestamp,
                                                          &end_timestamp));
 
-  const uint64_t kStartTime = 88;
-  const uint64_t kDuration = 10;
+  const int64_t kStartTime = 88;
+  const int64_t kDuration = 10;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
   AddSegments(kStartTime + kDuration, kDuration, kSize, 2);
@@ -584,8 +584,8 @@ TEST_F(SegmentTemplateTest, GetStartAndEndTimestamps) {
 
 TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {
   const uint64_t kSize = 256;
-  uint64_t start_time = 0;
-  uint64_t duration = 40000;
+  int64_t start_time = 0;
+  int64_t duration = 40000;
   uint64_t repeat = 2;
   AddSegments(start_time, duration, kSize, repeat);
 
@@ -604,8 +604,8 @@ TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {
 
 TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
   const uint64_t kSize = 100000;
-  uint64_t start_time = 0;
-  uint64_t duration = 100000;
+  int64_t start_time = 0;
+  int64_t duration = 100000;
   uint64_t repeat = 2;
   AddSegments(start_time, duration, kSize, repeat);
 
@@ -625,8 +625,8 @@ TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
 // Segments not starting from 0.
 // Start time is 10. Make sure r gets set correctly.
 TEST_F(SegmentTemplateTest, NonZeroStartTime) {
-  const uint64_t kStartTime = 10;
-  const uint64_t kDuration = 22000;
+  const int64_t kStartTime = 10;
+  const int64_t kDuration = 22000;
   const uint64_t kSize = 123456;
   const uint64_t kRepeat = 1;
   AddSegments(kStartTime, kDuration, kSize, kRepeat);
@@ -636,13 +636,13 @@ TEST_F(SegmentTemplateTest, NonZeroStartTime) {
 
 // There is a gap in the segments, but still valid.
 TEST_F(SegmentTemplateTest, NonContiguousLiveInfo) {
-  const uint64_t kStartTime = 10;
-  const uint64_t kDuration = 22000;
+  const int64_t kStartTime = 10;
+  const int64_t kDuration = 22000;
   const uint64_t kSize = 123456;
   const uint64_t kRepeat = 0;
   AddSegments(kStartTime, kDuration, kSize, kRepeat);
 
-  const uint64_t kStartTimeOffset = 100;
+  const int64_t kStartTimeOffset = 100;
   AddSegments(kDuration + kStartTimeOffset, kDuration, kSize, kRepeat);
 
   EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
@@ -651,9 +651,9 @@ TEST_F(SegmentTemplateTest, NonContiguousLiveInfo) {
 // Add segments out of order. Segments that start before the previous segment
 // cannot be added.
 TEST_F(SegmentTemplateTest, OutOfOrder) {
-  const uint64_t kEarlierStartTime = 0;
-  const uint64_t kLaterStartTime = 1000;
-  const uint64_t kDuration = 1000;
+  const int64_t kEarlierStartTime = 0;
+  const int64_t kLaterStartTime = 1000;
+  const int64_t kDuration = 1000;
   const uint64_t kSize = 123456;
   const uint64_t kRepeat = 0;
 
@@ -665,12 +665,12 @@ TEST_F(SegmentTemplateTest, OutOfOrder) {
 
 // No segments should be overlapping.
 TEST_F(SegmentTemplateTest, OverlappingSegments) {
-  const uint64_t kEarlierStartTime = 0;
-  const uint64_t kDuration = 1000;
+  const int64_t kEarlierStartTime = 0;
+  const int64_t kDuration = 1000;
   const uint64_t kSize = 123456;
   const uint64_t kRepeat = 0;
 
-  const uint64_t kOverlappingSegmentStartTime = kDuration / 2;
+  const int64_t kOverlappingSegmentStartTime = kDuration / 2;
   CHECK_GT(kDuration, kOverlappingSegmentStartTime);
 
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
@@ -683,12 +683,12 @@ TEST_F(SegmentTemplateTest, OverlappingSegments) {
 // in the range of rounding error defined inside MpdBuilder, the segment gets
 // accepted.
 TEST_F(SegmentTemplateTest, OverlappingSegmentsWithinErrorRange) {
-  const uint64_t kEarlierStartTime = 0;
-  const uint64_t kDuration = 1000;
+  const int64_t kEarlierStartTime = 0;
+  const int64_t kDuration = 1000;
   const uint64_t kSize = 123456;
   const uint64_t kRepeat = 0;
 
-  const uint64_t kOverlappingSegmentStartTime = kDuration - 1;
+  const int64_t kOverlappingSegmentStartTime = kDuration - 1;
   CHECK_GT(kDuration, kOverlappingSegmentStartTime);
 
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
@@ -770,8 +770,8 @@ class ApproximateSegmentTimelineTest : public SegmentTimelineTestBase,
 };
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentDurationAdjusted) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDurationSmaller =
+  const int64_t kStartTime = 0;
+  const int64_t kDurationSmaller =
       kScaledTargetSegmentDuration - kSampleDuration / 2;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDurationSmaller, kSize, 0);
@@ -790,8 +790,8 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentDurationAdjusted) {
 
 TEST_P(ApproximateSegmentTimelineTest,
        SegmentDurationAdjustedWithNonZeroStartTime) {
-  const uint64_t kStartTime = 12345;
-  const uint64_t kDurationSmaller =
+  const int64_t kStartTime = 12345;
+  const int64_t kDurationSmaller =
       kScaledTargetSegmentDuration - kSampleDuration / 2;
   const uint64_t kSize = 128;
 
@@ -810,10 +810,10 @@ TEST_P(ApproximateSegmentTimelineTest,
 }
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDurationSmaller =
+  const int64_t kStartTime = 0;
+  const int64_t kDurationSmaller =
       kScaledTargetSegmentDuration - kSampleDuration / 2;
-  const uint64_t kDurationLarger =
+  const int64_t kDurationLarger =
       kScaledTargetSegmentDuration + kSampleDuration / 2;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDurationSmaller, kSize, 0);
@@ -845,8 +845,8 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
 // duration; if it is not the case (which should not happen with our demuxer),
 // this is how the output would look like.
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations2) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDurationLarger =
+  const int64_t kStartTime = 0;
+  const int64_t kDurationLarger =
       kScaledTargetSegmentDuration + kSampleDuration / 2;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDurationLarger, kSize, 0);
@@ -868,9 +868,9 @@ TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations2) {
 }
 
 TEST_P(ApproximateSegmentTimelineTest, FillSmallGap) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = kScaledTargetSegmentDuration;
-  const uint64_t kGap = kSampleDuration / 2;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = kScaledTargetSegmentDuration;
+  const int64_t kGap = kSampleDuration / 2;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
   AddSegments(kStartTime + kDuration + kGap, kDuration, kSize, 0);
@@ -892,9 +892,9 @@ TEST_P(ApproximateSegmentTimelineTest, FillSmallGap) {
 }
 
 TEST_P(ApproximateSegmentTimelineTest, FillSmallOverlap) {
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = kScaledTargetSegmentDuration;
-  const uint64_t kOverlap = kSampleDuration / 2;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = kScaledTargetSegmentDuration;
+  const int64_t kOverlap = kSampleDuration / 2;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
   AddSegments(kStartTime + kDuration - kOverlap, kDuration, kSize, 0);
@@ -931,8 +931,8 @@ TEST_P(ApproximateSegmentTimelineTest, NoSampleDuration) {
                                          kAnyRepresentationId, NoListener());
   ASSERT_TRUE(representation_->Init());
 
-  const uint64_t kStartTime = 0;
-  const uint64_t kDuration = kScaledTargetSegmentDuration;
+  const int64_t kStartTime = 0;
+  const int64_t kDuration = kScaledTargetSegmentDuration;
   const uint64_t kSize = 128;
   AddSegments(kStartTime, kDuration, kSize, 0);
   AddSegments(kStartTime + kDuration, kDuration, kSize, 0);
@@ -956,7 +956,7 @@ INSTANTIATE_TEST_CASE_P(ApproximateSegmentTimelineTest,
                         Bool());
 
 class TimeShiftBufferDepthTest : public SegmentTimelineTestBase,
-                                 public WithParamInterface<uint64_t> {
+                                 public WithParamInterface<int64_t> {
  public:
   void SetUp() override {
     initial_start_time_ = GetParam();
@@ -966,7 +966,7 @@ class TimeShiftBufferDepthTest : public SegmentTimelineTestBase,
   MpdOptions* mutable_mpd_options() { return &mpd_options_; }
 
  protected:
-  uint64_t initial_start_time_;
+  int64_t initial_start_time_;
 };
 
 // All segments have the same duration and size.
@@ -976,7 +976,7 @@ TEST_P(TimeShiftBufferDepthTest, Normal) {
       kTimeShiftBufferDepth;
 
   // Trick to make every segment 1 second long.
-  const uint64_t kDuration = kDefaultTimeScale;
+  const int64_t kDuration = kDefaultTimeScale;
   const uint64_t kSize = 10000;
   const uint64_t kRepeat = 1234;
   const uint64_t kLength = kRepeat;
@@ -1013,7 +1013,7 @@ TEST_P(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
       kTimeShiftBufferDepth;
 
   // Each duration is a second longer than timeShiftBufferDepth.
-  const uint64_t kDuration = kDefaultTimeScale * (kTimeShiftBufferDepth + 1);
+  const int64_t kDuration = kDefaultTimeScale * (kTimeShiftBufferDepth + 1);
   const uint64_t kSize = 10000;
   const uint64_t kRepeat = 1;
 
@@ -1032,18 +1032,18 @@ TEST_P(TimeShiftBufferDepthTest, Generic) {
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
-  const uint64_t kDuration = kDefaultTimeScale;
+  const int64_t kDuration = kDefaultTimeScale;
   const uint64_t kSize = 10000;
   const uint64_t kRepeat = 1000;
 
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
-  const uint64_t first_s_element_end_time =
+  const int64_t first_s_element_end_time =
       initial_start_time_ + kDuration * (kRepeat + 1);
 
   // Now add 2 kTimeShiftBufferDepth long segments.
   const int kNumMoreSegments = 2;
   const int kMoreSegmentsRepeat = kNumMoreSegments - 1;
-  const uint64_t kTimeShiftBufferDepthDuration =
+  const int64_t kTimeShiftBufferDepthDuration =
       kDefaultTimeScale * kTimeShiftBufferDepth;
   AddSegments(first_s_element_end_time, kTimeShiftBufferDepthDuration, kSize,
               kMoreSegmentsRepeat);
@@ -1073,14 +1073,14 @@ TEST_P(TimeShiftBufferDepthTest, MoreThanOneS) {
 
   const uint64_t kSize = 20000;
 
-  const uint64_t kOneSecondDuration = kDefaultTimeScale;
+  const int64_t kOneSecondDuration = kDefaultTimeScale;
   const uint64_t kOneSecondSegmentRepeat = 99;
   AddSegments(initial_start_time_, kOneSecondDuration, kSize,
               kOneSecondSegmentRepeat);
-  const uint64_t first_s_element_end_time =
+  const int64_t first_s_element_end_time =
       initial_start_time_ + kOneSecondDuration * (kOneSecondSegmentRepeat + 1);
 
-  const uint64_t kTwoSecondDuration = 2 * kDefaultTimeScale;
+  const int64_t kTwoSecondDuration = 2 * kDefaultTimeScale;
   const uint64_t kTwoSecondSegmentRepeat = 20;
   AddSegments(first_s_element_end_time, kTwoSecondDuration, kSize,
               kTwoSecondSegmentRepeat);
@@ -1116,16 +1116,16 @@ TEST_P(TimeShiftBufferDepthTest, UseLastSegmentInS) {
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
-  const uint64_t kDuration1 = static_cast<uint64_t>(kDefaultTimeScale * 1.5);
+  const int64_t kDuration1 = static_cast<int64_t>(kDefaultTimeScale * 1.5);
   const uint64_t kSize = 20000;
   const uint64_t kRepeat1 = 1;
 
   AddSegments(initial_start_time_, kDuration1, kSize, kRepeat1);
 
-  const uint64_t first_s_element_end_time =
+  const int64_t first_s_element_end_time =
       initial_start_time_ + kDuration1 * (kRepeat1 + 1);
 
-  const uint64_t kTwoSecondDuration = 2 * kDefaultTimeScale;
+  const int64_t kTwoSecondDuration = 2 * kDefaultTimeScale;
   const uint64_t kTwoSecondSegmentRepeat = 4;
 
   AddSegments(first_s_element_end_time, kTwoSecondDuration, kSize,
@@ -1149,7 +1149,7 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
-  const uint64_t kDuration = kDefaultTimeScale;
+  const int64_t kDuration = kDefaultTimeScale;
   const uint64_t kSize = 20000;
   const uint64_t kRepeat = 6;
   // CHECK here so that the when next S element is added with 1 segment, this S
@@ -1159,10 +1159,10 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
 
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
 
-  const uint64_t first_s_element_end_time =
+  const int64_t first_s_element_end_time =
       initial_start_time_ + kDuration * (kRepeat + 1);
 
-  const uint64_t gap_s_element_start_time = first_s_element_end_time + 1;
+  const int64_t gap_s_element_start_time = first_s_element_end_time + 1;
   AddSegments(gap_s_element_start_time, kDuration, kSize, /* no repeat */ 0);
 
   std::string expected_s_element = base::StringPrintf(
@@ -1181,21 +1181,21 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
-  const uint64_t kDuration = kDefaultTimeScale;
+  const int64_t kDuration = kDefaultTimeScale;
   const uint64_t kSize = 20000;
   const uint64_t kRepeat = 6;
   AddSegments(initial_start_time_, kDuration, kSize, kRepeat);
 
-  const uint64_t first_s_element_end_time =
+  const int64_t first_s_element_end_time =
       initial_start_time_ + kDuration * (kRepeat + 1);
 
   // Big enough gap so first S element should not be there.
-  const uint64_t gap_s_element_start_time =
+  const int64_t gap_s_element_start_time =
       first_s_element_end_time +
       (kTimeShiftBufferDepth + 1) * kDefaultTimeScale;
   const uint64_t kSecondSElementRepeat = 9;
   static_assert(
-      kSecondSElementRepeat < static_cast<uint64_t>(kTimeShiftBufferDepth),
+      kSecondSElementRepeat < static_cast<int64_t>(kTimeShiftBufferDepth),
       "second_s_element_repeat_must_be_less_than_time_shift_buffer_depth");
   AddSegments(gap_s_element_start_time, kDuration, kSize,
               kSecondSElementRepeat);
@@ -1216,7 +1216,7 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
   mutable_mpd_options()->mpd_params.time_shift_buffer_depth =
       kTimeShiftBufferDepth;
 
-  const uint64_t kDuration = kDefaultTimeScale;
+  const int64_t kDuration = kDefaultTimeScale;
   const uint64_t kSize = 20000;
   const uint64_t kRepeat = 10000;
   const uint64_t kTotalNumSegments = kRepeat + 1;
@@ -1252,8 +1252,8 @@ const char kSegmentTemplate[] = "memory://$Number$.mp4";
 const char kSegmentTemplateUrl[] = "video/$Number$.mp4";
 const char kStringPrintTemplate[] = "memory://%d.mp4";
 
-const uint64_t kInitialStartTime = 0;
-const uint64_t kDuration = kDefaultTimeScale;
+const int64_t kInitialStartTime = 0;
+const int64_t kDuration = kDefaultTimeScale;
 const uint64_t kSize = 10;
 const uint64_t kNoRepeat = 0;
 }  // namespace

@@ -16,14 +16,14 @@ namespace media {
 
 // This stores data passed into OnNewSegment() for VOD.
 struct SegmentEventInfo {
-  uint64_t start_time;
+  int64_t start_time;
   // The below two fields are only useful for Segment.
-  uint64_t duration;
+  int64_t duration;
   uint64_t segment_file_size;
 };
 
 struct KeyFrameEvent {
-  uint64_t timestamp;
+  int64_t timestamp;
   // In segment for multi-segment, in subsegment for single-segment.
   uint64_t start_offset_in_segment;
   uint64_t size;
@@ -31,7 +31,7 @@ struct KeyFrameEvent {
 
 // This stores data passed into OnCueEvent() for VOD.
 struct CueEventInfo {
-  uint64_t timestamp;
+  int64_t timestamp;
 };
 
 enum class EventInfoType {

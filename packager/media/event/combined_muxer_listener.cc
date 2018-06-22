@@ -57,15 +57,15 @@ void CombinedMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 }
 
 void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
-                                         uint64_t start_time,
-                                         uint64_t duration,
+                                         int64_t start_time,
+                                         int64_t duration,
                                          uint64_t segment_file_size) {
   for (auto& listener : muxer_listeners_) {
     listener->OnNewSegment(file_name, start_time, duration, segment_file_size);
   }
 }
 
-void CombinedMuxerListener::OnKeyFrame(uint64_t timestamp,
+void CombinedMuxerListener::OnKeyFrame(int64_t timestamp,
                                        uint64_t start_byte_offset,
                                        uint64_t size) {
   for (auto& listener : muxer_listeners_) {
@@ -73,7 +73,7 @@ void CombinedMuxerListener::OnKeyFrame(uint64_t timestamp,
   }
 }
 
-void CombinedMuxerListener::OnCueEvent(uint64_t timestamp,
+void CombinedMuxerListener::OnCueEvent(int64_t timestamp,
                                        const std::string& cue_data) {
   for (auto& listener : muxer_listeners_) {
     listener->OnCueEvent(timestamp, cue_data);

@@ -171,8 +171,8 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 }
 
 void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
-                                          uint64_t start_time,
-                                          uint64_t duration,
+                                          int64_t start_time,
+                                          int64_t duration,
                                           uint64_t segment_file_size) {
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {
     mpd_notifier_->NotifyNewSegment(notification_id_.value(), start_time,
@@ -187,13 +187,13 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
   }
 }
 
-void MpdNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
+void MpdNotifyMuxerListener::OnKeyFrame(int64_t timestamp,
                                         uint64_t start_byte_offset,
                                         uint64_t size) {
   // NO-OP for DASH.
 }
 
-void MpdNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
+void MpdNotifyMuxerListener::OnCueEvent(int64_t timestamp,
                                         const std::string& cue_data) {
   // Not using |cue_data| at this moment.
   if (mpd_notifier_->dash_profile() == DashProfile::kLive) {

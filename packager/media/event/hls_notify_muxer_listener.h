@@ -60,13 +60,11 @@ class HlsNotifyMuxerListener : public MuxerListener {
   void OnMediaEnd(const MediaRanges& media_ranges,
                   float duration_seconds) override;
   void OnNewSegment(const std::string& file_name,
-                    uint64_t start_time,
-                    uint64_t duration,
+                    int64_t start_time,
+                    int64_t duration,
                     uint64_t segment_file_size) override;
-  void OnKeyFrame(uint64_t timestamp,
-                  uint64_t start_byte_offset,
-                  uint64_t size);
-  void OnCueEvent(uint64_t timestamp, const std::string& cue_data) override;
+  void OnKeyFrame(int64_t timestamp, uint64_t start_byte_offset, uint64_t size);
+  void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 
  private:

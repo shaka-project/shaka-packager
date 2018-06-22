@@ -202,8 +202,8 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 }
 
 void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
-                                          uint64_t start_time,
-                                          uint64_t duration,
+                                          int64_t start_time,
+                                          int64_t duration,
                                           uint64_t segment_file_size) {
   if (!media_info_->has_segment_template()) {
     EventInfo event_info;
@@ -220,7 +220,7 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
   }
 }
 
-void HlsNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
+void HlsNotifyMuxerListener::OnKeyFrame(int64_t timestamp,
                                         uint64_t start_byte_offset,
                                         uint64_t size) {
   if (!iframes_only_)
@@ -237,7 +237,7 @@ void HlsNotifyMuxerListener::OnKeyFrame(uint64_t timestamp,
   }
 }
 
-void HlsNotifyMuxerListener::OnCueEvent(uint64_t timestamp,
+void HlsNotifyMuxerListener::OnCueEvent(int64_t timestamp,
                                         const std::string& cue_data) {
   // Not using |cue_data| at this moment.
   if (!media_info_->has_segment_template()) {

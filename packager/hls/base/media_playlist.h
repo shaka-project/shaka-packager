@@ -101,8 +101,8 @@ class MediaPlaylist {
   ///        This must be 0 if the whole segment is a subsegment.
   /// @param size is size in bytes.
   virtual void AddSegment(const std::string& file_name,
-                          uint64_t start_time,
-                          uint64_t duration,
+                          int64_t start_time,
+                          int64_t duration,
                           uint64_t start_byte_offset,
                           uint64_t size);
 
@@ -112,7 +112,7 @@ class MediaPlaylist {
   ///        media.
   /// @param start_byte_offset is the offset of where the key frame starts.
   /// @param size is size in bytes.
-  virtual void AddKeyFrame(uint64_t timestamp,
+  virtual void AddKeyFrame(int64_t timestamp,
                            uint64_t start_byte_offset,
                            uint64_t size);
 
@@ -182,20 +182,20 @@ class MediaPlaylist {
  private:
   // Add a SegmentInfoEntry (#EXTINF).
   void AddSegmentInfoEntry(const std::string& segment_file_name,
-                           uint64_t start_time,
-                           uint64_t duration,
+                           int64_t start_time,
+                           int64_t duration,
                            uint64_t start_byte_offset,
                            uint64_t size);
   // Adjust the duration of the last SegmentInfoEntry to end on
   // |next_timestamp|.
-  void AdjustLastSegmentInfoEntryDuration(uint64_t next_timestamp);
+  void AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp);
   // Remove elements from |entries_| for live profile. Increments
   // |sequence_number_| by the number of segments removed.
   void SlideWindow();
   // Remove the segment specified by |start_time|. The actual deletion can
   // happen at a later time depending on the value of
   // |preserved_segment_outside_live_window| in |hls_params_|.
-  void RemoveOldSegment(uint64_t start_time);
+  void RemoveOldSegment(int64_t start_time);
 
   const HlsParams& hls_params_;
   // Mainly for MasterPlaylist to use these values.
@@ -232,7 +232,7 @@ class MediaPlaylist {
 
   // Used by kVideoIFrameOnly playlists to track the i-frames (key frames).
   struct KeyFrameInfo {
-    uint64_t timestamp;
+    int64_t timestamp;
     uint64_t start_byte_offset;
     uint64_t size;
     std::string segment_file_name;

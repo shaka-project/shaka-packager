@@ -374,8 +374,8 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 }
 
 void MediaPlaylist::AddSegment(const std::string& file_name,
-                               uint64_t start_time,
-                               uint64_t duration,
+                               int64_t start_time,
+                               int64_t duration,
                                uint64_t start_byte_offset,
                                uint64_t size) {
   if (stream_type_ == MediaPlaylistStreamType::kVideoIFramesOnly) {
@@ -387,9 +387,9 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
     for (auto iter = key_frames_.begin(); iter != key_frames_.end(); ++iter) {
       // Last entry duration may be adjusted later when the next iframe becomes
       // available.
-      const uint64_t next_timestamp = std::next(iter) == key_frames_.end()
-                                          ? (start_time + duration)
-                                          : std::next(iter)->timestamp;
+      const int64_t next_timestamp = std::next(iter) == key_frames_.end()
+                                         ? (start_time + duration)
+                                         : std::next(iter)->timestamp;
       AddSegmentInfoEntry(file_name, iter->timestamp,
                           next_timestamp - iter->timestamp,
                           iter->start_byte_offset, iter->size);
@@ -401,7 +401,7 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
                              size);
 }
 
-void MediaPlaylist::AddKeyFrame(uint64_t timestamp,
+void MediaPlaylist::AddKeyFrame(int64_t timestamp,
                                 uint64_t start_byte_offset,
                                 uint64_t size) {
   if (stream_type_ != MediaPlaylistStreamType::kVideoIFramesOnly) {
@@ -504,8 +504,8 @@ bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
 }
 
 void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
-                                        uint64_t start_time,
-                                        uint64_t duration,
+                                        int64_t start_time,
+                                        int64_t duration,
                                         uint64_t start_byte_offset,
                                         uint64_t size) {
   if (time_scale_ == 0) {
@@ -533,8 +533,7 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
   SlideWindow();
 }
 
-void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(
-    uint64_t next_timestamp) {
+void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp) {
   if (time_scale_ == 0)
     return;
 
@@ -613,7 +612,7 @@ void MediaPlaylist::SlideWindow() {
                   std::make_move_iterator(ext_x_keys.end()));
 }
 
-void MediaPlaylist::RemoveOldSegment(uint64_t start_time) {
+void MediaPlaylist::RemoveOldSegment(int64_t start_time) {
   if (hls_params_.preserved_segments_outside_live_window == 0)
     return;
   if (stream_type_ == MediaPlaylistStreamType::kVideoIFramesOnly)
