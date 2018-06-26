@@ -42,6 +42,22 @@ TEST(H26xBitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
   EXPECT_FALSE(reader.HasMoreRBSPData());
 }
 
+TEST(H26xBitReaderTest, ReadPpsWithTrailingZeroByte) {
+  H26xBitReader reader;
+
+  // Data copied from https://github.com/google/shaka-packager/issues/418.
+  const unsigned char pps_rbsp[] = {0xee, 0x3c, 0x80, 0x00};
+  EXPECT_TRUE(reader.Initialize(pps_rbsp, sizeof(pps_rbsp)));
+
+  // Skips all the fields in PPS (kind of simulates ParsePps).
+  EXPECT_TRUE(reader.SkipBits(16));
+
+  EXPECT_EQ(reader.NumBitsLeft(), 16);
+  // The remaining data is '80 00'. The trailing null byte is ignored. There
+  // are no bits before the stop bit, so there is no more RBSP data.
+  EXPECT_FALSE(reader.HasMoreRBSPData());
+}
+
 TEST(H26xBitReaderTest, SingleByteStream) {
   H26xBitReader reader;
   const unsigned char rbsp[] = {0x18};
