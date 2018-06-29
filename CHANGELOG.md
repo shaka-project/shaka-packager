@@ -1,3 +1,19 @@
+## [2.1.1] - 2018-07-03
+### Changed
+- Warn if HLS type is not set set to LIVE for UDP inputs (#347).
+- Use new vp09 codec string for WebM by default (#406). Set command line flag:
+  `--use_legacy_vp9_codec_string` if the old behavior is needed.
+- Allow trailing null bytes in NAL units, to allow contents with the H264 spec
+  violation to be processed instead of erroring out (#418).
+
+### Fixed
+- Fix MPD@duration not set with MPDGenerator (#401). This is a regression
+  introduced in v2.0.1.
+- Remove 'wvtt' in HLS master playlist codec string as it breaks some old Apple
+  products, e.g. AppleTV3 (#402).
+- Fix potential text Segment Timeline not being grouped together in DASH mpd
+  (#417), which happens when `--allow_approximate_segment_timeline` is set.
+
 ## [2.1.0] - 2018-05-22
 ### Added
 - Support Widevine and Playready PSSH generation internally in packager (#245).
@@ -348,6 +364,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.1.1]: https://github.com/google/shaka-packager/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/google/shaka-packager/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/google/shaka-packager/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/google/shaka-packager/compare/v2.0.1...v2.0.2
