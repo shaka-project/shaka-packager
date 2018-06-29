@@ -126,9 +126,9 @@ std::shared_ptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1Medi
 <tr class="memitem:a4100fc5355b6d3f96b5cb82505bc68ed inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memItemLeft" align="right" valign="top"><a id="a4100fc5355b6d3f96b5cb82505bc68ed"></a>
 std::unique_ptr&lt; <a class="el" href="../../d0/dc0/structshaka_1_1media_1_1SegmentInfo.html">SegmentInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetSegmentInfo</b> (int64_t start_timestamp, int64_t duration, bool is_subsegment) const</td></tr>
 <tr class="separator:a4100fc5355b6d3f96b5cb82505bc68ed inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fd2ea3faca0260e090dff052c3f0b06 inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memItemLeft" align="right" valign="top"><a id="a1fd2ea3faca0260e090dff052c3f0b06"></a>
-std::unique_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetTextStreamInfo</b> () const</td></tr>
-<tr class="separator:a1fd2ea3faca0260e090dff052c3f0b06 inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a655ba52cb958e192d47aa9953aaca297 inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memItemLeft" align="right" valign="top"><a id="a655ba52cb958e192d47aa9953aaca297"></a>
+std::unique_ptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetTextStreamInfo</b> (uint32_t timescale) const</td></tr>
+<tr class="separator:a655ba52cb958e192d47aa9953aaca297 inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a653d1182888a38e1d2ef577cd4f0ba5d inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memItemLeft" align="right" valign="top"><a id="a653d1182888a38e1d2ef577cd4f0ba5d"></a>
 std::unique_ptr&lt; <a class="el" href="../../db/d1f/classshaka_1_1media_1_1TextSample.html">TextSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetTextSample</b> (const std::string &amp;id, int64_t start, int64_t end, const std::string &amp;payload) const</td></tr>
 <tr class="separator:a653d1182888a38e1d2ef577cd4f0ba5d inherit pro_methods_classshaka_1_1media_1_1MediaHandlerTestBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,7 +147,7 @@ std::unique_ptr&lt; <a class="el" href="../../da/d93/structshaka_1_1media_1_1Cue
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html#l00266">266</a> of file <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html">media_handler_test_base.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html#l00363">363</a> of file <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html">media_handler_test_base.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a23d9219606019b25119b2b56adba422e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a23d9219606019b25119b2b56adba422e">&#9670;&nbsp;</a></span>GetOutputStreamDataVector()</h2>
@@ -173,7 +173,7 @@ std::unique_ptr&lt; <a class="el" href="../../da/d93/structshaka_1_1media_1_1Cue
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>the output stream data vector from handler. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dc7/media__handler__test__base_8cc_source.html#l00311">311</a> of file <a class="el" href="../../d2/dc7/media__handler__test__base_8cc_source.html">media_handler_test_base.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dc7/media__handler__test__base_8cc_source.html#l00367">367</a> of file <a class="el" href="../../d2/dc7/media__handler__test__base_8cc_source.html">media_handler_test_base.cc</a>.</p>
 
 </div>
 </div>
@@ -201,7 +201,7 @@ std::unique_ptr&lt; <a class="el" href="../../da/d93/structshaka_1_1media_1_1Cue
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>some a downstream handler that can be used for connecting. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html#l00287">287</a> of file <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html">media_handler_test_base.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html#l00384">384</a> of file <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html">media_handler_test_base.h</a>.</p>
 
 </div>
 </div>
@@ -229,7 +229,7 @@ std::unique_ptr&lt; <a class="el" href="../../da/d93/structshaka_1_1media_1_1Cue
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>some random handler that can be used for testing. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html#l00284">284</a> of file <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html">media_handler_test_base.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html#l00381">381</a> of file <a class="el" href="../../db/d59/media__handler__test__base_8h_source.html">media_handler_test_base.h</a>.</p>
 
 </div>
 </div>
@@ -240,7 +240,7 @@ std::unique_ptr&lt; <a class="el" href="../../da/d93/structshaka_1_1media_1_1Cue
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 7 2018 16:04:00 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 28 2018 17:33:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

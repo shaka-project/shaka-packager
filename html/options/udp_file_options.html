@@ -74,23 +74,47 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
+<tr class="field-odd field"><th class="field-name" colspan="2">buffer_size=&lt;size_in_bytes&gt;:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP maximum receive buffer size in bytes. Note that although it can be set
+to any value, the actual value is capped by maximum allowed size defined by
+the underlying operating system. On linux, the maximum size allowed can be
+retrieved using <cite>sysctl net.core.rmem_max</cite> and configured using
+<cite>sysctl -w net.core.rmem_max=&lt;size_in_bytes&gt;</cite>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address are
 received. Default to “0.0.0.0” if not specified.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">source=&lt;addr&gt;:</th><td class="field-body">Multicast source ip address. Only the packets sent from this source address
+<tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">source=&lt;addr&gt;:</th><td class="field-body">Multicast source ip address. Only the packets sent from this source address
 are received. Enables Source Specific Multicast (SSM) if set.</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
+<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
 </tr>
 </tbody>
 </table>
 <p>Example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>udp://224.1.2.30:88?interface=10.11.12.13&amp;reuse=1
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>UDP is by definition unreliable. There could be packets dropped.</p>
+<p>UDP packets do not get lost magically. There are things you can do to
+minimize the packet loss. A common cause of packet loss is buffer overrun,
+either in send buffer or receive buffer.</p>
+<p>On Linux, you can check UDP errors by monitoring the output from
+<cite>netstat -suna</cite> command.</p>
+<p>If there is an increase in <cite>send buffer errors</cite> from the <cite>netstat</cite> output,
+then try increasing <cite>buffer_size</cite> in
+[FFmpeg](<a class="reference external" href="https://ffmpeg.org/ffmpeg-protocols.html#udp">https://ffmpeg.org/ffmpeg-protocols.html#udp</a>).</p>
+<p class="last">If there is an increase in <cite>receive buffer errors</cite>, then try increasing
+<cite>buffer_size</cite> in UDP options (See above) or increasing <cite>–io_cache_size</cite>.
+<cite>buffer_size</cite> in UDP options defines the UDP buffer size of the underlying
+system while <cite>io_cache_size</cite> defines the size of the internal circular
+buffer managed by <cite>Shaka Packager</cite>.</p>
 </div>
 </div>
 

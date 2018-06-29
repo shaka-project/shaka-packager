@@ -6,7 +6,6 @@ var searchData=
   ['ad_5fcue_5fgenerator_5fparams',['ad_cue_generator_params',['../d5/de3/structshaka_1_1PackagingParams.html#aa52d546c86b3b36234bcfc0cd50ef083',1,'shaka::PackagingParams']]],
   ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html',1,'shaka::AdaptationSet'],['../d8/d8e/classshaka_1_1AdaptationSet.html#ac4e96321642dc738e5c21511746fcb1f',1,'shaka::AdaptationSet::AdaptationSet()']]],
   ['adaptationsetxmlnode',['AdaptationSetXmlNode',['../d1/de7/classshaka_1_1xml_1_1AdaptationSetXmlNode.html',1,'shaka::xml']]],
-  ['adcuegenerator',['AdCueGenerator',['../de/de4/classshaka_1_1media_1_1AdCueGenerator.html',1,'shaka::media']]],
   ['adcuegeneratorparams',['AdCueGeneratorParams',['../dd/dfd/structshaka_1_1AdCueGeneratorParams.html',1,'shaka']]],
   ['addadaptationsetswitching',['AddAdaptationSetSwitching',['../d8/d8e/classshaka_1_1AdaptationSet.html#a979cef296d0e67c271641a0c3146e8f3',1,'shaka::AdaptationSet']]],
   ['addaudioinfo',['AddAudioInfo',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html#a49050cf0e7883bfa6e8e2fb0174b2a7a',1,'shaka::xml::RepresentationXmlNode']]],
