@@ -43,6 +43,9 @@ class MP4Muxer : public Muxer {
   Status FinalizeSegment(size_t stream_id,
                          const SegmentInfo& segment_info) override;
 
+  Status DelayInitializeMuxer();
+  Status UpdateEditListOffsetFromSample(const MediaSample& sample);
+
   // Generate Audio/Video Track box.
   void InitializeTrak(const StreamInfo* info, Track* trak);
   bool GenerateAudioTrak(const AudioStreamInfo* audio_info,
@@ -69,6 +72,10 @@ class MP4Muxer : public Muxer {
 
   // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
   uint64_t IsoTimeNow();
+
+  // Assumes single stream (multiplexed a/v not supported yet).
+  bool to_be_initialized_ = true;
+  base::Optional<int64_t> edit_list_offset_;
 
   std::unique_ptr<Segmenter> segmenter_;
 

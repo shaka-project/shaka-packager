@@ -110,9 +110,8 @@ Status Muxer::ReinitializeMuxer(int64_t timestamp) {
     current_key_id_ = encryption_config.key_id;
   }
   if (!output_file_template_.empty()) {
-    // Update |output_file_index| and |output_file_name| with an actual file
-    // name, which will be used by the subclasses.
-    options_.output_file_index = output_file_index_;
+    // Update |output_file_name| with an actual file name, which will be used by
+    // the subclasses.
     options_.output_file_name =
         GetSegmentName(output_file_template_, timestamp, output_file_index_++,
                        options_.bandwidth);

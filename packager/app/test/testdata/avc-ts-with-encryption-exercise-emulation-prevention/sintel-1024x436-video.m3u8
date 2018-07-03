@@ -9,9 +9,9 @@ sintel-1024x436-video-1.ts
 #EXT-X-KEY:METHOD=SAMPLE-AES,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",IV=0x3334353637383930,KEYFORMAT="identity"
 #EXTINF:1.000,
 sintel-1024x436-video-2.ts
-#EXTINF:0.917,
-sintel-1024x436-video-3.ts
 #EXTINF:1.875,
+sintel-1024x436-video-3.ts
+#EXTINF:0.917,
 sintel-1024x436-video-4.ts
 #EXTINF:1.000,
 sintel-1024x436-video-5.ts

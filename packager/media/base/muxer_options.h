@@ -29,13 +29,6 @@ struct MuxerOptions {
   /// Otherwise, it specifies the init segment name.
   std::string output_file_name;
 
-  /// Output file index. With one file per Representation per Period, there
-  /// could be more than one file generated with Ad Cues present. This is the
-  /// 0-based index of the output file.
-  /// TODO(kqyang): Remove when the EPT adjustment logic in
-  /// Fragmenter::FinalizeFragment is removed.
-  size_t output_file_index = 0;
-
   /// Specify output segment name pattern for generated segments. It can
   /// furthermore be configured by using a subset of the SegmentTemplate
   /// identifiers: $RepresentationID$, $Number$, $Bandwidth$ and $Time.

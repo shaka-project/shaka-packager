@@ -1,4 +1,4 @@
-bandwidth: 133406
+bandwidth: 133663
 audio_info {
   codec: "mp4a.40.2"
   sampling_frequency: 44100
@@ -8,11 +8,11 @@ audio_info {
 }
 init_range {
   begin: 0
-  end: 966
+  end: 1002
 }
 index_range {
-  begin: 967
-  end: 1034
+  begin: 1003
+  end: 1070
 }
 media_file_name: "bear-640x360-audio.mp4"
 media_duration_seconds: 2.76317453

@@ -6,11 +6,9 @@
 #EXT-X-MAP:URI="bear-640x360-audio-init.mp4"
 #EXTINF:1.022,
 bear-640x360-audio-1.m4s
-#EXTINF:0.998,
+#EXTINF:0.975,
 bear-640x360-audio-2.m4s
-#EXTINF:0.046,
-bear-640x360-audio-3.m4s
 #EXT-X-PLACEMENT-OPPORTUNITY
-#EXTINF:0.697,
-bear-640x360-audio-4.m4s
+#EXTINF:0.743,
+bear-640x360-audio-3.m4s
 #EXT-X-ENDLIST

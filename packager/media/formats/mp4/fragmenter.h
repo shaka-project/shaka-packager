@@ -32,7 +32,11 @@ class Fragmenter {
  public:
   /// @param info contains stream information.
   /// @param traf points to a TrackFragment box.
-  Fragmenter(std::shared_ptr<const StreamInfo> info, TrackFragment* traf);
+  /// @param edit_list_offset is the edit list offset that is encoded in Edit
+  ///        List. It should be 0 if there is no EditList.
+  Fragmenter(std::shared_ptr<const StreamInfo> info,
+             TrackFragment* traf,
+             int64_t edit_list_offset);
 
   ~Fragmenter();
 
@@ -67,15 +71,6 @@ class Fragmenter {
     return key_frame_infos_;
   }
 
-  /// Set the flag allow_use_adjust_earliest_presentation_time, which if set to
-  /// true, earlist_presentation_time (EPT) may be adjusted not to be smaller
-  /// than the decoding timestamp (dts) for the first fragment.
-  void set_allow_adjust_earliest_presentation_time(
-      bool allow_adjust_earliest_presentation_time) {
-    allow_adjust_earliest_presentation_time_ =
-        allow_adjust_earliest_presentation_time;
-  }
-
  protected:
   TrackFragment* traf() { return traf_; }
 
@@ -91,15 +86,14 @@ class Fragmenter {
   bool StartsWithSAP() const;
 
   std::shared_ptr<const StreamInfo> stream_info_;
-  TrackFragment* traf_;
-  uint64_t seek_preroll_;
-  bool fragment_initialized_;
-  bool fragment_finalized_;
-  uint64_t fragment_duration_;
-  int64_t earliest_presentation_time_;
-  bool first_fragment_ = true;
-  bool allow_adjust_earliest_presentation_time_ = false;
-  int64_t first_sap_time_;
+  TrackFragment* traf_ = nullptr;
+  int64_t edit_list_offset_ = 0;
+  int64_t seek_preroll_ = 0;
+  bool fragment_initialized_ = false;
+  bool fragment_finalized_ = false;
+  int64_t fragment_duration_ = 0;
+  int64_t earliest_presentation_time_ = 0;
+  int64_t first_sap_time_ = 0;
   std::unique_ptr<BufferWriter> data_;
   // Saves key frames information, for Video.
   std::vector<KeyFrameInfo> key_frame_infos_;

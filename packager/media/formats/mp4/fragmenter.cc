@@ -14,6 +14,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_frame_info.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -22,7 +23,7 @@ namespace mp4 {
 namespace {
 const int64_t kInvalidTime = std::numeric_limits<int64_t>::max();
 
-uint64_t GetSeekPreroll(const StreamInfo& stream_info) {
+int64_t GetSeekPreroll(const StreamInfo& stream_info) {
   if (stream_info.stream_type() != kStreamAudio)
     return 0;
   const AudioStreamInfo& audio_stream_info =
@@ -47,13 +48,12 @@ void NewSampleEncryptionEntry(const DecryptConfig& decrypt_config,
 }  // namespace
 
 Fragmenter::Fragmenter(std::shared_ptr<const StreamInfo> stream_info,
-                       TrackFragment* traf)
+                       TrackFragment* traf,
+                       int64_t edit_list_offset)
     : stream_info_(std::move(stream_info)),
       traf_(traf),
+      edit_list_offset_(edit_list_offset),
       seek_preroll_(GetSeekPreroll(*stream_info_)),
-      fragment_initialized_(false),
-      fragment_finalized_(false),
-      fragment_duration_(0),
       earliest_presentation_time_(kInvalidTime),
       first_sap_time_(kInvalidTime) {
   DCHECK(stream_info_);
@@ -63,16 +63,14 @@ Fragmenter::Fragmenter(std::shared_ptr<const StreamInfo> stream_info,
 Fragmenter::~Fragmenter() {}
 
 Status Fragmenter::AddSample(const MediaSample& sample) {
-  if (sample.duration() == 0) {
-    LOG(WARNING) << "Unexpected sample with zero duration @ dts "
-                 << sample.dts();
-  }
+  const int64_t pts = sample.pts();
+  const int64_t dts = sample.dts();
+  const int64_t duration = sample.duration();
+  if (duration == 0)
+    LOG(WARNING) << "Unexpected sample with zero duration @ dts " << dts;
 
-  if (!fragment_initialized_) {
-    Status status = InitializeFragment(sample.dts());
-    if (!status.ok())
-      return status;
-  }
+  if (!fragment_initialized_)
+    RETURN_IF_ERROR(InitializeFragment(dts));
 
   if (sample.side_data_size() > 0)
     LOG(WARNING) << "MP4 samples do not support side data. Side data ignored.";
@@ -80,7 +78,7 @@ Status Fragmenter::AddSample(const MediaSample& sample) {
   // Fill in sample parameters. It will be optimized later.
   traf_->runs[0].sample_sizes.push_back(
       static_cast<uint32_t>(sample.data_size()));
-  traf_->runs[0].sample_durations.push_back(sample.duration());
+  traf_->runs[0].sample_durations.push_back(duration);
   traf_->runs[0].sample_flags.push_back(
       sample.is_key_frame() ? 0 : TrackFragmentHeader::kNonKeySampleMask);
 
@@ -92,29 +90,38 @@ Status Fragmenter::AddSample(const MediaSample& sample) {
 
   if (stream_info_->stream_type() == StreamType::kStreamVideo &&
       sample.is_key_frame()) {
-    key_frame_infos_.push_back({static_cast<uint64_t>(sample.pts()),
-                                data_->Size(), sample.data_size()});
+    key_frame_infos_.push_back(
+        {static_cast<uint64_t>(pts), data_->Size(), sample.data_size()});
   }
 
   data_->AppendArray(sample.data(), sample.data_size());
-  fragment_duration_ += sample.duration();
-
-  const int64_t pts = sample.pts();
-  const int64_t dts = sample.dts();
-
-  const int64_t timestamp = pts;
-  // Set |earliest_presentation_time_| to |timestamp| if |timestamp| is smaller
-  // or if it is not yet initialized (kInvalidTime > timestamp is always true).
-  if (earliest_presentation_time_ > timestamp)
-    earliest_presentation_time_ = timestamp;
 
   traf_->runs[0].sample_composition_time_offsets.push_back(pts - dts);
   if (pts != dts)
     traf_->runs[0].flags |= TrackFragmentRun::kSampleCompTimeOffsetsPresentMask;
 
-  if (sample.is_key_frame()) {
-    if (first_sap_time_ == kInvalidTime)
-      first_sap_time_ = pts;
+  // Exclude the part of sample with negative pts out of duration calculation as
+  // they are not presented.
+  if (pts < 0) {
+    const int64_t end_pts = pts + duration;
+    if (end_pts > 0) {
+      // Include effective presentation duration.
+      fragment_duration_ += end_pts;
+
+      earliest_presentation_time_ = 0;
+      if (sample.is_key_frame())
+        first_sap_time_ = 0;
+    }
+  } else {
+    fragment_duration_ += duration;
+
+    if (earliest_presentation_time_ > pts)
+      earliest_presentation_time_ = pts;
+
+    if (sample.is_key_frame()) {
+      if (first_sap_time_ == kInvalidTime)
+        first_sap_time_ = pts;
+    }
   }
   return Status::OK;
 }
@@ -122,7 +129,13 @@ Status Fragmenter::AddSample(const MediaSample& sample) {
 Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   fragment_initialized_ = true;
   fragment_finalized_ = false;
-  traf_->decode_time.decode_time = first_sample_dts;
+
+  // |first_sample_dts| is adjusted by the edit list offset. The offset should
+  // be un-applied in |decode_time|, so when applying the Edit List, the result
+  // dts is |first_sample_dts|.
+  const int64_t dts_before_edit = first_sample_dts + edit_list_offset_;
+  traf_->decode_time.decode_time = dts_before_edit;
+
   traf_->runs.clear();
   traf_->runs.resize(1);
   traf_->runs[0].flags = TrackFragmentRun::kDataOffsetPresentMask;
@@ -148,26 +161,6 @@ Status Fragmenter::FinalizeFragment() {
     Status status = FinalizeFragmentForEncryption();
     if (!status.ok())
       return status;
-  }
-
-  if (first_fragment_) {
-    if (allow_adjust_earliest_presentation_time_) {
-      // Chrome (as of v66 https://crbug.com/398141) does not like negative
-      // values for adjusted dts = dts + Period@start (0 for first Period)
-      //                           - presentationTimeOffset
-      // Since |earliest_presentation_time| of the first fragment will be used
-      // to set presentationTimeOffset, the adjusted dts can become negative for
-      // the frames in the first segment in the first Period. To avoid seeing
-      // that, |earliest_presentation_time| is adjusted so it is not larger than
-      // the dts.
-      const int64_t dts = traf_->decode_time.decode_time;
-      if (earliest_presentation_time_ > dts) {
-        const uint64_t delta = earliest_presentation_time_ - dts;
-        earliest_presentation_time_ = dts;
-        fragment_duration_ += delta;
-      }
-    }
-    first_fragment_ = false;
   }
 
   // Optimize trun box.

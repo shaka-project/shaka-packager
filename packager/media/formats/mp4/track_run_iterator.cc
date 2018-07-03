@@ -17,6 +17,13 @@
 
 namespace {
 const int64_t kInvalidOffset = std::numeric_limits<int64_t>::max();
+
+int64_t Rescale(int64_t time_in_old_scale,
+                uint32_t old_scale,
+                uint32_t new_scale) {
+  return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
+}
+
 }  // namespace
 
 namespace shaka {
@@ -154,19 +161,6 @@ bool TrackRunIterator::Init() {
       continue;
     }
 
-    // Edit list is ignored.
-    // We may consider supporting the single edit with a nonnegative media time
-    // if it is required. Just need to pass the media_time to Muxer and
-    // generate the edit list.
-    const std::vector<EditListEntry>& edits = trak->edit.list.edits;
-    if (!edits.empty()) {
-      if (edits.size() > 1)
-        DVLOG(1) << "Multi-entry edit box detected.";
-
-      DLOG(INFO) << "Edit list with media time " << edits[0].media_time
-                 << " ignored.";
-    }
-
     DecodingTimeIterator decoding_time(
         trak->media.information.sample_table.decoding_time_to_sample);
     CompositionOffsetIterator composition_offset(
@@ -184,7 +178,9 @@ bool TrackRunIterator::Init() {
     const std::vector<uint64_t>& chunk_offset_vector =
         trak->media.information.sample_table.chunk_large_offset.offsets;
 
-    int64_t run_start_dts = 0;
+    // dts is directly adjusted, which then propagates to pts as pts is encoded
+    // as difference (composition offset) to dts in mp4.
+    int64_t run_start_dts = GetTimestampAdjustment(*moov_, *trak);
 
     uint32_t num_samples = sample_size.sample_count;
     uint32_t num_chunks = static_cast<uint32_t>(chunk_offset_vector.size());
@@ -350,6 +346,11 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     int64_t run_start_dts = traf.decode_time_absent
                                 ? next_fragment_start_dts_[i]
                                 : traf.decode_time.decode_time;
+
+    // dts is directly adjusted, which then propagates to pts as pts is encoded
+    // as difference (composition offset) to dts in mp4.
+    run_start_dts += GetTimestampAdjustment(*moov_, *trak);
+
     int sample_count_sum = 0;
 
     for (size_t j = 0; j < traf.runs.size(); j++) {
@@ -412,8 +413,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       tri.samples.resize(trun.sample_count);
       for (size_t k = 0; k < trun.sample_count; k++) {
-        PopulateSampleInfo(*trex, traf.header, trun, k,
-                           &tri.samples[k]);
+        PopulateSampleInfo(*trex, traf.header, trun, k, &tri.samples[k]);
         run_start_dts += tri.samples[k].duration;
       }
       runs_.push_back(tri);
@@ -631,6 +631,33 @@ std::unique_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
       track_encryption().default_kid, iv, subsamples, protection_scheme,
       track_encryption().default_crypt_byte_block,
       track_encryption().default_skip_byte_block));
+}
+
+int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
+                                                 const Track& track) {
+  int64_t edit_list_offset = 0;
+  const std::vector<EditListEntry>& edits = track.edit.list.edits;
+  if (!edits.empty()) {
+    // ISO/IEC 14496-12:2015 8.6.6 Edit List Box.
+    for (const EditListEntry& edit : edits) {
+      if (edit.media_rate_integer != 1) {
+        LOG(INFO) << "dwell EditListEntry is ignored.";
+        continue;
+      }
+
+      if (edit.media_time < 0) {
+        // This is an empty edit. |segment_duration| is in movie's timescale
+        // instead of track's timescale.
+        const int64_t scaled_time =
+            Rescale(edit.segment_duration, movie.header.timescale,
+                    track.media.header.timescale);
+        edit_list_offset += scaled_time;
+      } else {
+        edit_list_offset -= edit.media_time;
+      }
+    }
+  }
+  return edit_list_offset;
 }
 
 }  // namespace mp4

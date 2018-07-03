@@ -103,6 +103,7 @@ class TrackRunIterator {
  private:
   void ResetRun();
   const TrackEncryption& track_encryption() const;
+  int64_t GetTimestampAdjustment(const Movie& movie, const Track& track);
 
   const Movie* moov_;
 

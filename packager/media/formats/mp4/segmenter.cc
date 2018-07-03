@@ -68,13 +68,16 @@ Status Segmenter::Initialize(
       if (sidx_->reference_id == 0)
         sidx_->reference_id = i + 1;
     }
-    fragmenters_[i].reset(new Fragmenter(streams[i], &moof_->tracks[i]));
-  }
 
-  // Only allow |EPT| to be adjusted for the first file.
-  if (options_.output_file_index == 0) {
-    for (uint32_t i = 0; i < streams.size(); ++i)
-      fragmenters_[i]->set_allow_adjust_earliest_presentation_time(true);
+    const EditList& edit_list = moov_->tracks[i].edit.list;
+    int64_t edit_list_offset = 0;
+    if (edit_list.edits.size() > 0) {
+      DCHECK_EQ(edit_list.edits.size(), 1u);
+      edit_list_offset = edit_list.edits.front().media_time;
+    }
+
+    fragmenters_[i].reset(
+        new Fragmenter(streams[i], &moof_->tracks[i], edit_list_offset));
   }
 
   // Choose the first stream if there is no VIDEO.

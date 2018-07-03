@@ -4,7 +4,7 @@
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
 #EXT-X-MAP:URI="bear-640x360-video-init.mp4"
-#EXTINF:1.068,
+#EXTINF:1.001,
 bear-640x360-video-1.m4s
 #EXTINF:1.001,
 bear-640x360-video-2.m4s
