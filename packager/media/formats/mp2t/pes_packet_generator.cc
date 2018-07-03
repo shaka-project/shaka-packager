@@ -30,7 +30,10 @@ const uint8_t kAc3AudioStreamId = 0xBD;  // AC3 uses private stream 1 id.
 const double kTsTimescale = 90000.0;
 }  // namespace
 
-PesPacketGenerator::PesPacketGenerator() {}
+PesPacketGenerator::PesPacketGenerator(
+    uint32_t transport_stream_timestamp_offset)
+    : transport_stream_timestamp_offset_(transport_stream_timestamp_offset) {}
+
 PesPacketGenerator::~PesPacketGenerator() {}
 
 bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
@@ -76,9 +79,23 @@ bool PesPacketGenerator::PushSample(const MediaSample& sample) {
   if (!current_processing_pes_)
     current_processing_pes_.reset(new PesPacket());
 
+  const int64_t pts =
+      sample.pts() * timescale_scale_ + transport_stream_timestamp_offset_;
+  const int64_t dts =
+      sample.dts() * timescale_scale_ + transport_stream_timestamp_offset_;
+
+  if (pts < 0 || dts < 0) {
+    LOG(ERROR) << "Seeing negative timestamp (" << pts << "," << dts << ")"
+               << " after applying offset "
+               << transport_stream_timestamp_offset_
+               << ". Please check if it is expected. Adjust "
+                  "--transport_stream_timestamp_offset_ms if needed.";
+    return false;
+  }
+
   current_processing_pes_->set_is_key_frame(sample.is_key_frame());
-  current_processing_pes_->set_pts(timescale_scale_ * sample.pts());
-  current_processing_pes_->set_dts(timescale_scale_ * sample.dts());
+  current_processing_pes_->set_pts(pts);
+  current_processing_pes_->set_dts(dts);
   if (stream_type_ == kStreamVideo) {
     DCHECK(converter_);
     std::vector<SubsampleEntry> subsamples;

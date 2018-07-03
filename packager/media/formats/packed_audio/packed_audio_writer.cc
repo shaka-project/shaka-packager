@@ -14,7 +14,12 @@ namespace shaka {
 namespace media {
 
 PackedAudioWriter::PackedAudioWriter(const MuxerOptions& muxer_options)
-    : Muxer(muxer_options), segmenter_(new PackedAudioSegmenter) {}
+    : Muxer(muxer_options),
+      transport_stream_timestamp_offset_(
+          muxer_options.transport_stream_timestamp_offset_ms *
+          kPackedAudioTimescale / 1000),
+      segmenter_(new PackedAudioSegmenter(transport_stream_timestamp_offset_)) {
+}
 
 PackedAudioWriter::~PackedAudioWriter() = default;
 
@@ -84,7 +89,7 @@ Status PackedAudioWriter::FinalizeSegment(size_t stream_id,
 
   if (muxer_listener()) {
     muxer_listener()->OnNewSegment(
-        segment_path, segment_timestamp,
+        segment_path, segment_timestamp + transport_stream_timestamp_offset_,
         segment_info.duration * segmenter_->TimescaleScale(), segment_size);
   }
   return Status::OK;

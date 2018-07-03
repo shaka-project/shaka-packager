@@ -84,6 +84,7 @@ class TsSegmenter {
   Codec codec_ = kUnknownCodec;
   std::vector<uint8_t> audio_codec_config_;
 
+  const uint32_t transport_stream_timestamp_offset_ = 0;
   // Scale used to scale the input stream to TS's timesccale (which is 90000).
   // Used for calculating the duration in seconds fo the current segment.
   double timescale_scale_ = 1.0;

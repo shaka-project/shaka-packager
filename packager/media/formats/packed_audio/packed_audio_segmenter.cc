@@ -24,7 +24,10 @@ std::string TimestampToString(uint64_t timestamp) {
 }
 }  // namespace
 
-PackedAudioSegmenter::PackedAudioSegmenter() = default;
+PackedAudioSegmenter::PackedAudioSegmenter(
+    uint32_t transport_stream_timestamp_offset)
+    : transport_stream_timestamp_offset_(transport_stream_timestamp_offset) {}
+
 PackedAudioSegmenter::~PackedAudioSegmenter() = default;
 
 Status PackedAudioSegmenter::Initialize(const StreamInfo& stream_info) {
@@ -54,7 +57,7 @@ Status PackedAudioSegmenter::AddSample(const MediaSample& sample) {
     RETURN_IF_ERROR(EncryptionAudioSetup(sample));
 
   if (start_of_new_segment_) {
-    StartNewSegment(sample);
+    RETURN_IF_ERROR(StartNewSegment(sample));
     start_of_new_segment_ = false;
   }
 
@@ -118,18 +121,30 @@ Status PackedAudioSegmenter::EncryptionAudioSetup(const MediaSample& sample) {
   return Status::OK;
 }
 
-void PackedAudioSegmenter::StartNewSegment(const MediaSample& sample) {
+Status PackedAudioSegmenter::StartNewSegment(const MediaSample& sample) {
   segment_buffer_.Clear();
+
+  const int64_t pts =
+      sample.pts() * timescale_scale_ + transport_stream_timestamp_offset_;
+  if (pts < 0) {
+    LOG(ERROR) << "Seeing negative timestamp " << pts
+               << " after applying offset "
+               << transport_stream_timestamp_offset_
+               << ". Please check if it is expected. Adjust "
+                  "--transport_stream_timestamp_offset_ms if needed.";
+    return Status(error::MUXER_FAILURE, "Unsupported negative timestamp.");
+  }
 
   // Use a unique_ptr so it can be mocked for testing.
   std::unique_ptr<Id3Tag> id3_tag = CreateId3Tag();
-  id3_tag->AddPrivateFrame(kTimestampOwnerIdentifier,
-                           TimestampToString(sample.pts() * timescale_scale_));
+  id3_tag->AddPrivateFrame(kTimestampOwnerIdentifier, TimestampToString(pts));
   if (!audio_setup_information_.empty()) {
     id3_tag->AddPrivateFrame(kAudioDescriptionOwnerIdentifier,
                              audio_setup_information_);
   }
   CHECK(id3_tag->WriteToBuffer(&segment_buffer_));
+
+  return Status::OK;
 }
 
 }  // namespace media

@@ -20,7 +20,7 @@ class TextSample;
 // all the formatting requirements for a webvtt file.
 class WebVttFileBuffer {
  public:
-  WebVttFileBuffer();
+  explicit WebVttFileBuffer(uint32_t transport_stream_timestamp_offset_ms);
   virtual ~WebVttFileBuffer() = default;
 
   void Reset();
@@ -35,6 +35,7 @@ class WebVttFileBuffer {
   WebVttFileBuffer(const WebVttFileBuffer&) = delete;
   WebVttFileBuffer& operator=(const WebVttFileBuffer&) = delete;
 
+  const uint32_t transport_stream_timestamp_offset_ = 0;
   std::string buffer_;
   size_t sample_count_ = 0;
 };

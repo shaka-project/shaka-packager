@@ -381,6 +381,9 @@ base::Optional<PackagingParams> GetPackagingParams() {
       FLAGS_generate_sidx_in_media_segments;
   mp4_params.include_pssh_in_stream = FLAGS_mp4_include_pssh_in_stream;
 
+  packaging_params.transport_stream_timestamp_offset_ms =
+      FLAGS_transport_stream_timestamp_offset_ms;
+
   packaging_params.output_media_info = FLAGS_output_media_info;
 
   MpdParams& mpd_params = packaging_params.mpd_params;

@@ -6,8 +6,8 @@
       <Representation id="0" bandwidth="1023201" codecs="avc1.64001e" mimeType="video/MP2T" sar="1:1" frameRate="90000/0">
         <SegmentTemplate timescale="90000" media="bear-640x360-video-$Number$.ts" startNumber="1">
           <SegmentTimeline>
-            <S t="6006" d="90090" r="1"/>
-            <S t="186186" d="66066"/>
+            <S t="15006" d="90090" r="1"/>
+            <S t="195186" d="66066"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
@@ -17,9 +17,9 @@
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="90000" media="bear-640x360-audio-$Number$.ts" startNumber="1">
           <SegmentTimeline>
-            <S t="3916" d="87771"/>
-            <S t="91688" d="89860"/>
-            <S t="181549" d="71052"/>
+            <S t="12916" d="87771"/>
+            <S t="100688" d="89860"/>
+            <S t="190549" d="71052"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>

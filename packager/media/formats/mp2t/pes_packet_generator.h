@@ -28,7 +28,10 @@ class PesPacket;
 /// Methods are virtual for mocking.
 class PesPacketGenerator {
  public:
-  PesPacketGenerator();
+  /// @param transport_stream_timestamp_offset is the offset to be applied to
+  ///        sample timestamps to compensate for possible negative timestamps in
+  ///        the input.
+  explicit PesPacketGenerator(uint32_t transport_stream_timestamp_offset);
   virtual ~PesPacketGenerator();
 
   /// Initialize the object. This clears the internal state first so any
@@ -62,6 +65,7 @@ class PesPacketGenerator {
 
   StreamType stream_type_;
 
+  const uint32_t transport_stream_timestamp_offset_ = 0;
   // Calculated by 90000 / input stream's timescale. This is used to scale the
   // timestamps.
   double timescale_scale_ = 0.0;

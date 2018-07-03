@@ -48,6 +48,8 @@ Synopsis
 
 .. include:: /options/mp4_output_options.rst
 
+.. include:: /options/transport_stream_output_options.rst
+
 .. include:: /options/dash_options.rst
 
 .. include:: /options/hls_options.rst

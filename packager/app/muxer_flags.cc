@@ -41,3 +41,10 @@ DEFINE_string(temp_dir,
 DEFINE_bool(mp4_include_pssh_in_stream,
             true,
             "MP4 only: include pssh in the encrypted stream.");
+DEFINE_int32(transport_stream_timestamp_offset_ms,
+             100,
+             "A positive value, in milliseconds, by which output timestamps "
+             "are offset to compensate for possible negative timestamps in the "
+             "input. For example, timestamps from ISO-BMFF after adjusted by "
+             "EditList could be negative. In transport streams, timestamps are "
+             "not allowed to be less than zero.");

@@ -20,6 +20,8 @@ namespace media {
 
 MuxerFactory::MuxerFactory(const PackagingParams& packaging_params)
     : mp4_params_(packaging_params.mp4_output_params),
+      transport_stream_timestamp_offset_ms_(
+          packaging_params.transport_stream_timestamp_offset_ms),
       temp_dir_(packaging_params.temp_dir) {}
 
 std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
@@ -27,6 +29,8 @@ std::shared_ptr<Muxer> MuxerFactory::CreateMuxer(
     const StreamDescriptor& stream) {
   MuxerOptions options;
   options.mp4_params = mp4_params_;
+  options.transport_stream_timestamp_offset_ms =
+      transport_stream_timestamp_offset_ms_;
   options.temp_dir = temp_dir_;
   options.output_file_name = stream.output;
   options.segment_template = stream.segment_template;

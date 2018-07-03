@@ -35,6 +35,7 @@ const uint8_t kExtraData[] = {
     0x00,
 };
 const int kTrackId = 0;
+const uint32_t kZeroTransportStreamTimestampOffset = 0;
 const uint32_t kTimeScale = 90000;
 const uint64_t kDuration = 180000;
 const char kCodecString[] = "avc1";
@@ -53,6 +54,9 @@ const uint8_t kAnyData[] = {
 
 class MockPesPacketGenerator : public PesPacketGenerator {
  public:
+  MockPesPacketGenerator()
+      : PesPacketGenerator(kZeroTransportStreamTimestampOffset) {}
+
   MOCK_METHOD1(Initialize, bool(const StreamInfo& info));
   MOCK_METHOD1(PushSample, bool(const MediaSample& sample));
 

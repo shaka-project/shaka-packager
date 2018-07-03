@@ -61,6 +61,10 @@ Status WebMMuxer::Finalize() {
 Status WebMMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK(segmenter_);
   DCHECK_EQ(stream_id, 0u);
+  if (sample.pts() < 0) {
+    LOG(ERROR) << "Seeing negative timestamp " << sample.pts();
+    return Status(error::MUXER_FAILURE, "Unsupported negative timestamp.");
+  }
   return segmenter_->AddSample(sample);
 }
 

@@ -30,6 +30,7 @@ namespace shaka {
 namespace media {
 namespace {
 
+constexpr uint32_t kZeroTransportStreamTimestampOffset = 0;
 constexpr uint32_t kTimescale = 5625;
 constexpr double kExpectedTimescaleScale = kPackedAudioTimescale / kTimescale;
 static_assert(kExpectedTimescaleScale == 16.0, "");
@@ -115,6 +116,9 @@ class MockId3Tag : public Id3Tag {
 
 class TestablePackedAudioSegmenter : public PackedAudioSegmenter {
  public:
+  TestablePackedAudioSegmenter()
+      : PackedAudioSegmenter(kZeroTransportStreamTimestampOffset) {}
+
   MOCK_METHOD0(CreateAdtsConverter, std::unique_ptr<AACAudioSpecificConfig>());
   MOCK_METHOD0(CreateId3Tag, std::unique_ptr<Id3Tag>());
 };

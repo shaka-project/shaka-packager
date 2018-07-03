@@ -36,6 +36,8 @@ using ::testing::SetArgPointee;
 
 namespace {
 
+const uint32_t kZeroTransportStreamTimestampOffset = 0;
+
 // Bogus data for testing.
 const uint8_t kAnyData[] = {
   0x56, 0x87, 0x88, 0x33, 0x98, 0xAF, 0xE5,
@@ -135,6 +137,8 @@ std::shared_ptr<AudioStreamInfo> CreateAudioStreamInfo(Codec codec) {
 
 class PesPacketGeneratorTest : public ::testing::Test {
  protected:
+  PesPacketGeneratorTest() : generator_(kZeroTransportStreamTimestampOffset) {}
+
   void UseMockNalUnitToByteStreamConverter(
       std::unique_ptr<MockNalUnitToByteStreamConverter>
           mock_nal_unit_to_byte_stream_converter) {

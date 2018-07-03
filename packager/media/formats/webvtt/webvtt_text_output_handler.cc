@@ -24,7 +24,8 @@ WebVttTextOutputHandler::WebVttTextOutputHandler(
     const MuxerOptions& muxer_options,
     std::unique_ptr<MuxerListener> muxer_listener)
     : muxer_options_(muxer_options),
-      muxer_listener_(std::move(muxer_listener)) {}
+      muxer_listener_(std::move(muxer_listener)),
+      buffer_(muxer_options.transport_stream_timestamp_offset_ms) {}
 
 Status WebVttTextOutputHandler::InitializeInternal() {
   return Status::OK;

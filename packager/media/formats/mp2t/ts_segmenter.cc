@@ -36,7 +36,11 @@ bool IsVideoCodec(Codec codec) {
 TsSegmenter::TsSegmenter(const MuxerOptions& options, MuxerListener* listener)
     : muxer_options_(options),
       listener_(listener),
-      pes_packet_generator_(new PesPacketGenerator()) {}
+      transport_stream_timestamp_offset_(
+          options.transport_stream_timestamp_offset_ms * kTsTimescale / 1000),
+      pes_packet_generator_(
+          new PesPacketGenerator(transport_stream_timestamp_offset_)) {}
+
 TsSegmenter::~TsSegmenter() {}
 
 Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
@@ -184,7 +188,8 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
       const int64_t file_size =
           File::GetFileSize(current_segment_path_.c_str());
       listener_->OnNewSegment(current_segment_path_,
-                              start_timestamp * timescale_scale_,
+                              start_timestamp * timescale_scale_ +
+                                  transport_stream_timestamp_offset_,
                               duration * timescale_scale_, file_size);
     }
     ts_writer_file_opened_ = false;

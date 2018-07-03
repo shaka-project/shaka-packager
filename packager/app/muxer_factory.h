@@ -46,8 +46,9 @@ class MuxerFactory {
   MuxerFactory(const MuxerFactory&) = delete;
   MuxerFactory& operator=(const MuxerFactory&) = delete;
 
-  Mp4OutputParams mp4_params_;
-  std::string temp_dir_;
+  const Mp4OutputParams mp4_params_;
+  const uint32_t transport_stream_timestamp_offset_ms_ = 0;
+  const std::string temp_dir_;
   base::Clock* clock_ = nullptr;
 };
 

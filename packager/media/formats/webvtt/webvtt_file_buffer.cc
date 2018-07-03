@@ -6,16 +6,21 @@
 
 #include "packager/media/formats/webvtt/webvtt_file_buffer.h"
 
+#include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/text_sample.h"
 #include "packager/media/formats/webvtt/webvtt_timestamp.h"
 
 namespace shaka {
 namespace media {
 namespace {
-const char* kHeader = "WEBVTT\n\n";
+const char* kHeader = "WEBVTT\n";
+const int kTsTimescale = 90000;
 }
 
-WebVttFileBuffer::WebVttFileBuffer() {
+WebVttFileBuffer::WebVttFileBuffer(
+    uint32_t transport_stream_timestamp_offset_ms)
+    : transport_stream_timestamp_offset_(transport_stream_timestamp_offset_ms *
+                                         kTsTimescale / 1000) {
   // Make sure we start with the same state that we would end up with if
   // the caller reset our state.
   Reset();
@@ -26,6 +31,13 @@ void WebVttFileBuffer::Reset() {
 
   buffer_.clear();
   buffer_.append(kHeader);
+  if (transport_stream_timestamp_offset_ > 0) {
+    // https://tools.ietf.org/html/rfc8216#section-3.5 WebVTT.
+    base::StringAppendF(&buffer_,
+                        "X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:%d\n",
+                        transport_stream_timestamp_offset_);
+  }
+  buffer_.append("\n");  // end of header.
 }
 
 void WebVttFileBuffer::Append(const TextSample& sample) {

@@ -43,6 +43,7 @@ class PackedAudioWriter : public Muxer {
 
   Status CloseFile(std::unique_ptr<File, FileCloser> file);
 
+  const uint32_t transport_stream_timestamp_offset_ = 0;
   std::unique_ptr<PackedAudioSegmenter> segmenter_;
 
   // Used in single segment mode.

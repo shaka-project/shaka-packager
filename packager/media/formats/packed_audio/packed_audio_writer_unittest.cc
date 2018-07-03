@@ -35,6 +35,7 @@ const size_t kOutputs = 0;
 const size_t kInput = 0;
 const size_t kStreamIndex = 0;
 
+const uint32_t kZeroTransportStreamTimestampOffset = 0;
 const uint32_t kTimescale = 9000;
 
 // For single-segment mode.
@@ -46,6 +47,9 @@ const char kSegment2Name[] = "memory://test_2.aac";
 
 class MockPackedAudioSegmenter : public PackedAudioSegmenter {
  public:
+  MockPackedAudioSegmenter()
+      : PackedAudioSegmenter(kZeroTransportStreamTimestampOffset) {}
+
   MOCK_METHOD1(Initialize, Status(const StreamInfo& stream_info));
   MOCK_METHOD1(AddSample, Status(const MediaSample& sample));
   MOCK_METHOD0(FinalizeSegment, Status());
