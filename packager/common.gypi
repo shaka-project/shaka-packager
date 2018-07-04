@@ -42,15 +42,13 @@
             '-Wno-reserved-user-defined-literal',
           ],
         },
-        'conditions': [
-          ['OS == "win"', {
-            'msvs_settings': {
-              'VCCLCompilerTool': {
-                'WarnAsError': 'true',
-                'DisableSpecificWarnings': ['4125']
-              },
-            },
-          }],
+        # TODO(kqyang): Fix these msvs warnings.
+        'msvs_disabled_warnings': [
+          4125,  # Decimal digit terminates octal escape sequence, e.g. "\709".
+          4819,  # The file contains a character that cannot be represented in
+                 # the current code page. It typically happens when compiling
+                 # the code in CJK environment if there is non-ASCII characters
+                 # in the file.
         ],
       }, {
         # We do not have control over non-shaka code. Disable some warnings to
@@ -61,6 +59,12 @@
             '-Wno-unguarded-availability',
           ],
         },
+        'msvs_disabled_warnings': [
+          4819,  # The file contains a character that cannot be represented in
+                 # the current code page. It typically happens when compiling
+                 # the code in CJK environment if there is non-ASCII characters
+                 # in the file.
+        ],
         'conditions': [
           ['clang==0', {
             'cflags': [
