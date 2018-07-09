@@ -12,6 +12,7 @@
     {
       'target_name': 'media_base',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'aes_cryptor.cc',
         'aes_cryptor.h',

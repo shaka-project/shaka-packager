@@ -11,6 +11,7 @@
       'target_name': 'gtest',
       'toolsets': ['host', 'target'],
       'type': 'static_library',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         '<@(gtest_sources)',
       ],
@@ -193,7 +194,7 @@
             ],
           }],
         ],
-        'msvs_disabled_warnings': [4800],
+        'msvs_disabled_warnings': [4800, 4819],
       },
     },
     {

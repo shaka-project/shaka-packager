@@ -12,6 +12,7 @@
     {
       'target_name': 'hls_builder',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'base/hls_notifier.h',
         'base/master_playlist.cc',

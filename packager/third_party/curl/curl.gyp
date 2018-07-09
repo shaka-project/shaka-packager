@@ -91,7 +91,7 @@
             'source/lib/system_win32.c',
             'source/lib/system_win32.h',
           ],
-          'msvs_disabled_warnings': [ 4267, ],
+          'msvs_disabled_warnings': [ 4267, 4819, ],
         }],
       ],
       'defines': [

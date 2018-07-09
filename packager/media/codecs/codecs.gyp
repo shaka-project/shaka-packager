@@ -12,6 +12,7 @@
     {
       'target_name': 'codecs',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'aac_audio_specific_config.cc',
         'aac_audio_specific_config.h',

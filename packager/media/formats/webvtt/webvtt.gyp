@@ -12,6 +12,7 @@
     {
       'target_name': 'webvtt',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'text_padder.cc',
         'text_padder.h',

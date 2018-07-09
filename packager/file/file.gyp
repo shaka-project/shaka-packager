@@ -12,6 +12,7 @@
     {
       'target_name': 'file',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'callback_file.cc',
         'callback_file.h',
@@ -42,6 +43,7 @@
     {
       'target_name': 'file_unittest',
       'type': '<(gtest_target_type)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'callback_file_unittest.cc',
         'file_unittest.cc',
