@@ -224,17 +224,21 @@ Status WebVttParser::ParseCue(const std::string& id,
         "Could not parse start time, -->, and end time from " + block[0]);
   }
 
-  // According to the WebVTT spec
-  // (https://www.w3.org/TR/webvtt1/#webvtt-cue-timings) end time must be
-  // greater than the start time of the cue. Since we are seeing content with
-  // zero-duration cues in the field, we are going to drop the cue instead of
-  // failing to package.
+  // According to the WebVTT spec end time must be greater than the start time
+  // of the cue. Since we are seeing content with invalid times in the field, we
+  // are going to drop the cue instead of failing to package.
+  //
+  // For more context see:
+  //   - https://www.w3.org/TR/webvtt1/#webvtt-cue-timings
+  //   - https://github.com/google/shaka-packager/issues/335
+  //   - https://github.com/google/shaka-packager/issues/425
   //
   // Print a warning so that those packaging content can know that their
   // content is not spec compliant.
-  if (start_time == end_time) {
-    LOG(WARNING) << "WebVTT input is not spec compliant."
-                    " Skipping zero-duration cue\n"
+  if (end_time <= start_time) {
+    LOG(WARNING) << "WebVTT input is not spec compliant. Start time ("
+                 << start_time << ") should be less than end time (" << end_time
+                 << "). Skipping webvtt cue:"
                  << BlockToString(block, block_size);
 
     return Status::OK;
