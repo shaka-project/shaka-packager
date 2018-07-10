@@ -304,8 +304,8 @@ class PackagerAppTest(unittest.TestCase):
                 include_pssh_in_stream=True,
                 dash_if_iop=True,
                 output_media_info=False,
-                output_hls=False,
                 output_dash=False,
+                output_hls=False,
                 hls_playlist_type=None,
                 time_shift_buffer_depth=0.0,
                 preserved_segments_outside_live_window=0,
@@ -370,12 +370,12 @@ class PackagerAppTest(unittest.TestCase):
 
     if output_media_info:
       flags.append('--output_media_info')
+    if output_dash:
+      flags += ['--mpd_output', self.mpd_output]
     if output_hls:
       flags += ['--hls_master_playlist_output', self.hls_master_playlist_output]
       if hls_playlist_type:
         flags += ['--hls_playlist_type', hls_playlist_type]
-    if output_dash:
-      flags += ['--mpd_output', self.mpd_output]
 
     if time_shift_buffer_depth != 0.0:
       flags += ['--time_shift_buffer_depth={0}'.format(time_shift_buffer_depth)]
@@ -658,32 +658,36 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='por'),
-        self._GetFlags(default_language='por', output_dash=True))
+        self._GetStreams(['audio', 'video'], language='por', hls=True),
+        self._GetFlags(default_language='por', output_dash=True,
+                       output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideUsingMixingCode(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='por'),
-        self._GetFlags(default_language='pt', output_dash=True))
+        self._GetStreams(['audio', 'video'], language='por', hls=True),
+        self._GetFlags(default_language='pt', output_dash=True,
+                       output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideUsingMixingCode2(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='pt'),
-        self._GetFlags(default_language='por', output_dash=True))
+        self._GetStreams(['audio', 'video'], language='pt', hls=True),
+        self._GetFlags(default_language='por', output_dash=True,
+                       output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideUsingTwoCharacterCode(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='pt'),
-        self._GetFlags(default_language='pt', output_dash=True))
+        self._GetStreams(['audio', 'video'], language='pt', hls=True),
+        self._GetFlags(default_language='pt', output_dash=True,
+                       output_hls=True))
     self._CheckTestResults('audio-video-with-language-override')
 
   def testAudioVideoWithLanguageOverrideWithSubtag(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], language='por-BR'),
-        self._GetFlags(output_dash=True))
+        self._GetStreams(['audio', 'video'], language='por-BR', hls=True),
+        self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
 
   def testAacHe(self):
@@ -711,34 +715,8 @@ class PackagerFunctionalTest(PackagerAppTest):
             segmented=True,
             hls=True,
             test_files=['bear-640x360.ts']),
-        self._GetFlags(output_hls=True, output_dash=True))
+        self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('avc-aac-ts')
-
-  def testAvcAacTsLanguage(self):
-    # Currently we only support live packaging for ts.
-    self.assertPackageSuccess(
-        self._GetStreams(
-            ['audio', 'video'],
-            output_format='ts',
-            segmented=True,
-            hls=True,
-            language='por',
-            test_files=['bear-640x360.ts']),
-        self._GetFlags(output_hls=True, default_language='por'))
-    self._CheckTestResults('avc-aac-ts-language')
-
-  def testAvcAacTsLanguageUsingTwoCharacterCode(self):
-    # Currently we only support live packaging for ts.
-    self.assertPackageSuccess(
-        self._GetStreams(
-            ['audio', 'video'],
-            output_format='ts',
-            segmented=True,
-            hls=True,
-            language='pt',
-            test_files=['bear-640x360.ts']),
-        self._GetFlags(output_hls=True, default_language='pt'))
-    self._CheckTestResults('avc-aac-ts-language')
 
   def testAvcAc3Ts(self):
     # Currently we only support live packaging for ts.
@@ -802,37 +780,6 @@ class PackagerFunctionalTest(PackagerAppTest):
             hls_playlist_type='EVENT',
             time_shift_buffer_depth=0.5))
     self._CheckTestResults('avc-ts-event-playlist')
-
-  def testAvcTsLivePlaylistWithSegmentDeletion(self):
-    self.assertPackageSuccess(
-        self._GetStreams(
-            ['audio'],
-            output_format='mp4',
-            segmented=True,
-            hls=True,
-            test_files=['bear-640x360.ts']),
-        self._GetFlags(
-            output_hls=True,
-            hls_playlist_type='LIVE',
-            segment_duration=0.5,
-            time_shift_buffer_depth=0.5,
-            preserved_segments_outside_live_window=1))
-    self._CheckTestResults('avc-ts-live-playlist-with-segment-deletion')
-
-  def testAvcTsDashDynamicWithSegmentDeletion(self):
-    self.assertPackageSuccess(
-        self._GetStreams(
-            ['audio'],
-            output_format='mp4',
-            segmented=True,
-            hls=True,
-            test_files=['bear-640x360.ts']),
-        self._GetFlags(
-            output_dash=True,
-            segment_duration=0.5,
-            time_shift_buffer_depth=0.5,
-            preserved_segments_outside_live_window=1))
-    self._CheckTestResults('avc-ts-dash-dynamic-with-segment-deletion')
 
   def testAvcTsLivePlaylistAndDashDynamicWithSegmentDeletion(self):
     self.assertPackageSuccess(
@@ -1017,8 +964,9 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testEncryptionAndAdCues(self):
     self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video']),
-        self._GetFlags(encryption=True, output_dash=True, ad_cues='1.5'))
+        self._GetStreams(['audio', 'video'], hls=True),
+        self._GetFlags(encryption=True, output_dash=True, output_hls=True,
+                       ad_cues='1.5'))
     self._CheckTestResults('encryption-and-ad-cues')
 
   def testEncryptionAndAdCuesSplitContent(self):
@@ -1060,7 +1008,8 @@ class PackagerFunctionalTest(PackagerAppTest):
                         test_file='bear-subtitle-english.vtt',
                         output_format='mp4')
     ]
-    flags = self._GetFlags(output_hls=True, ad_cues='1.5')
+    flags = self._GetFlags(output_dash=True, output_hls=True,
+                           generate_static_mpd=True, ad_cues='1.5')
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
 
@@ -1350,12 +1299,6 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('ec3-packed-audio-encrypted')
 
-  def testHlsSingleSegmentMp4EncryptedAndAdCues(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], hls=True),
-        self._GetFlags(encryption=True, output_hls=True, ad_cues='1.5'))
-    self._CheckTestResults('hls-single-segment-mp4-encrypted-and-ad-cues')
-
   # Test HLS with multi-segment mp4 and content in subdirectories.
   def testHlsMultiSegmentMp4WithCustomPath(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
@@ -1405,13 +1348,6 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(output_dash=True, generate_static_mpd=True))
     self._CheckTestResults('live-static-profile')
-
-  def testLiveStaticProfileAndAdCues(self):
-    self.assertPackageSuccess(
-        self._GetStreams(['audio', 'video'], segmented=True),
-        self._GetFlags(
-            output_dash=True, generate_static_mpd=True, ad_cues='1.5'))
-    self._CheckTestResults('live-static-profile-and-ad-cues')
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
@@ -1532,27 +1468,16 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('hls-segmented-webvtt')
 
-  def testHlsWithBandwidthOverride(self):
+  def testBandwidthOverride(self):
     streams = [
-        self._GetStream('audio', segmented=True, bandwidth=11111),
-        self._GetStream('video', segmented=True, bandwidth=44444)
+        self._GetStream('audio', hls=True, bandwidth=11111),
+        self._GetStream('video', hls=True, bandwidth=44444)
     ]
 
-    flags = self._GetFlags(output_hls=True)
+    flags = self._GetFlags(output_dash=True, output_hls=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('hls-with-bandwidth-override')
-
-  def testDashWithBandwidthOverride(self):
-    streams = [
-        self._GetStream('audio', bandwidth=11111),
-        self._GetStream('video', bandwidth=44444)
-    ]
-
-    flags = self._GetFlags(output_dash=True)
-
-    self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('dash-with-bandwidth-override')
+    self._CheckTestResults('bandwidth-override')
 
 
 class PackagerCommandParsingTest(PackagerAppTest):
