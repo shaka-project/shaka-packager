@@ -12,6 +12,7 @@
     {
       'target_name': 'origin',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'origin_handler.cc',
         'origin_handler.h',

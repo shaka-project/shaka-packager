@@ -12,6 +12,7 @@
     {
       'target_name': 'replicator',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'replicator.cc',
         'replicator.h',

@@ -12,6 +12,7 @@
     {
       'target_name': 'media_event',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'combined_muxer_listener.cc',
         'combined_muxer_listener.h',

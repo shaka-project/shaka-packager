@@ -12,6 +12,7 @@
     {
       'target_name': 'mp2t',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'ac3_header.cc',
         'ac3_header.h',

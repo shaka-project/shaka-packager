@@ -12,6 +12,7 @@
     {
       'target_name': 'public',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'ad_cue_generator_params.h',
         'chunking_params.h',

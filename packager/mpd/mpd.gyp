@@ -14,6 +14,7 @@
     {
       'target_name': 'media_info_proto',
       'type': 'static_library',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'base/media_info.proto',
       ],
@@ -28,6 +29,7 @@
       # directory shared by MPD and HLS.
       'target_name': 'manifest_base',
       'type': 'static_library',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'base/bandwidth_estimator.cc',
         'base/bandwidth_estimator.h',
@@ -39,6 +41,7 @@
     {
       'target_name': 'mpd_builder',
       'type': 'static_library',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'base/adaptation_set.cc',
         'base/adaptation_set.h',
@@ -82,6 +85,7 @@
     {
       'target_name': 'mpd_mocks',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'base/mock_mpd_builder.cc',
         'base/mock_mpd_builder.h',
@@ -96,6 +100,7 @@
     {
       'target_name': 'mpd_unittest',
       'type': '<(gtest_target_type)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'base/adaptation_set_unittest.cc',
         'base/bandwidth_estimator_unittest.cc',
@@ -125,6 +130,7 @@
     {
       'target_name': 'mpd_util',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'util/mpd_writer.cc',
         'util/mpd_writer.h',

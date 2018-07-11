@@ -12,6 +12,7 @@
     {
       'target_name': 'chunking',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'chunking_handler.cc',
         'chunking_handler.h',

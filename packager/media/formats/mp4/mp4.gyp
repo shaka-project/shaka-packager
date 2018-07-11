@@ -12,6 +12,7 @@
     {
       'target_name': 'mp4',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'box.cc',
         'box.h',

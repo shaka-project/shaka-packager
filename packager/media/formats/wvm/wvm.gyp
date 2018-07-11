@@ -12,6 +12,7 @@
     {
       'target_name': 'wvm',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'wvm_media_parser.cc',
         'wvm_media_parser.h',

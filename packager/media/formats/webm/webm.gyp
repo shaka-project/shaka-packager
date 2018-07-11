@@ -12,6 +12,7 @@
     {
       'target_name': 'webm',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'encryptor.cc',
         'encryptor.h',

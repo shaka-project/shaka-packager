@@ -34,7 +34,7 @@
       },
       # TODO(davidben): Fix size_t truncations in BoringSSL.
       # https://crbug.com/429039
-      'msvs_disabled_warnings': [ 4267, ],
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'conditions': [
         ['component == "shared_library"', {
           'defines': [
@@ -73,7 +73,7 @@
       'dependencies': [ 'boringssl_asm' ],
       # TODO(davidben): Fix size_t truncations in BoringSSL.
       # https://crbug.com/429039
-      'msvs_disabled_warnings': [ 4267, ],
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'conditions': [
         ['component == "shared_library"', {
           'defines': [

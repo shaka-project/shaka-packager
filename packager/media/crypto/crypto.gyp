@@ -12,6 +12,7 @@
     {
       'target_name': 'crypto',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'encryption_handler.cc',
         'encryption_handler.h',

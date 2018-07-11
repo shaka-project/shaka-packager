@@ -12,6 +12,7 @@
     {
       'target_name': 'run_tests_with_atexit_manager',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'run_tests_with_atexit_manager.cc',
       ],

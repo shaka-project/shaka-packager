@@ -12,6 +12,7 @@
     {
       'target_name': 'packed_audio',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'packed_audio_segmenter.cc',
         'packed_audio_segmenter.h',

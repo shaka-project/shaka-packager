@@ -12,6 +12,7 @@
     {
       'target_name': 'libpackager',
       'type': '<(libpackager_type)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         # TODO(kqyang): Clean up the file path.
         'app/job_manager.cc',

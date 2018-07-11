@@ -12,6 +12,7 @@
     {
       'target_name': 'trick_play',
       'type': '<(component)',
+      'msvs_disabled_warnings': [ 4267, 4819, ],
       'sources': [
         'trick_play_handler.cc',
         'trick_play_handler.h',
