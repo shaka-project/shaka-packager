@@ -53,8 +53,8 @@ TEST_F(DemuxerTest, FileNotFound) {
 }
 
 TEST_F(DemuxerTest, EncryptedContentWithoutKeySource) {
-  Demuxer demuxer(
-      GetAppTestDataFilePath("bear-640x360-v-cenc-golden.mp4").AsUTF8Unsafe());
+  Demuxer demuxer(GetAppTestDataFilePath("encryption/bear-640x360-video.mp4")
+                      .AsUTF8Unsafe());
   ASSERT_OK(demuxer.SetHandler("video", some_handler()));
   EXPECT_EQ(error::INVALID_ARGUMENT, demuxer.Run().error_code());
 }
@@ -65,8 +65,8 @@ TEST_F(DemuxerTest, EncryptedContentWithKeySource) {
       .WillOnce(
           DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
 
-  Demuxer demuxer(
-      GetAppTestDataFilePath("bear-640x360-v-cenc-golden.mp4").AsUTF8Unsafe());
+  Demuxer demuxer(GetAppTestDataFilePath("encryption/bear-640x360-video.mp4")
+                      .AsUTF8Unsafe());
   demuxer.SetKeySource(std::move(mock_key_source));
   ASSERT_OK(demuxer.SetHandler("video", some_handler()));
   EXPECT_OK(demuxer.Run());

@@ -83,7 +83,8 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
   base::StringPairs pairs;
   if (!base::SplitStringIntoKeyValuePairs(descriptor_string, '=', ',',
                                           &pairs)) {
-    LOG(ERROR) << "Invalid stream descriptors name/value pairs.";
+    LOG(ERROR) << "Invalid stream descriptors name/value pairs: "
+               << descriptor_string;
     return base::nullopt;
   }
   for (base::StringPairs::const_iterator iter = pairs.begin();

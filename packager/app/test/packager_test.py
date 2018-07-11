@@ -42,6 +42,20 @@ class StreamDescriptor(object):
     return self.buffer
 
 
+class DiffFilesPolicy(object):
+  """Specifies the policy for diff_files.
+
+  Attributes:
+    allowed_diff_files: The list of files allowed to be different.
+    exact: The actual list of diff_files must match the above list exactly, i.e.
+        all the files in the above list must be different.
+  """
+
+  def __init__(self, allowed_diff_files, exact):
+    self.allowed_diff_files = allowed_diff_files
+    self.exact = exact
+
+
 def _UpdateMediaInfoPaths(media_info_filepath):
   # Example:
   #   before: media_file_name: "/tmp/tmpD1h5UC/bear-640x360-audio.mp4"
@@ -144,6 +158,7 @@ class PackagerAppTest(unittest.TestCase):
   def _GetStream(self,
                  descriptor,
                  language=None,
+                 output_file_prefix=None,
                  output_format=None,
                  segmented=False,
                  hls=False,
@@ -164,6 +179,8 @@ class PackagerAppTest(unittest.TestCase):
       descriptor: The name of the stream in the container that should be used as
           input for the output.
       language: The language override for the input stream.
+      output_file_prefix: The output file prefix. Default to empty if not
+          specified.
       output_format: Specify the format for the output.
       segmented: Should the output use a segmented formatted. This will affect
           the output extensions and manifests.
@@ -197,11 +214,14 @@ class PackagerAppTest(unittest.TestCase):
     if language:
       stream.Append('lang', language)
 
+    output_file_name = ''
+    if output_file_prefix:
+      output_file_name += '%s-' % output_file_prefix
+
     # Use the input file name (no extension) and pair it with the
     # descriptor to create the root of the output file_name.
-    output_file_name = '%s-%s' % (
-        os.path.splitext(input_file_name)[0],
-        descriptor)
+    output_file_name += '%s-%s' % (os.path.splitext(
+        os.path.basename(input_file_name))[0], descriptor)
 
     if trick_play_factor:
       stream.Append('trick_play_factor', trick_play_factor)
@@ -387,10 +407,6 @@ class PackagerAppTest(unittest.TestCase):
     flags += ['--test_packager_version', '<tag>-<hash>-<test>']
     return flags
 
-  def _CompareWithGold(self, test_output, golden_file_name):
-    golden_file = os.path.join(self.golden_file_dir, golden_file_name)
-    return filecmp.cmp(test_output, golden_file)
-
   def _GitDiff(self, file_a, file_b):
     cmd = [
         'git',
@@ -405,45 +421,41 @@ class PackagerAppTest(unittest.TestCase):
     p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     return p.communicate()
 
-  def _DiffGold(self, test_output, golden_file_name):
-    golden_file = os.path.join(self.golden_file_dir, golden_file_name)
-    if test_env.options.test_update_golden_files:
-      if not os.path.exists(golden_file) or not filecmp.cmp(test_output,
-                                                            golden_file):
-        print 'Updating golden file: ', golden_file_name
-        shutil.copyfile(test_output, golden_file)
-    else:
-      match = filecmp.cmp(test_output, golden_file)
-      if not match:
-        output, error = self._GitDiff(golden_file, test_output)
-        command_line = self.packager.GetCommandLine()
-        failure_message = '\n'.join([
-            output,
-            error,
-            _TEST_FAILURE_COMMAND_LINE_MESSAGE,
-            command_line
-        ])
-        self.fail(failure_message)
+  def _AssertStreamInfo(self, stream, info):
+    stream_info = self.packager.DumpStreamInfo(stream)
+    self.assertIn('Found 1 stream(s).', stream_info)
+    self.assertIn(info, stream_info)
 
-  # TODO(vaage): Replace all used of this with |_CheckTestResults|.
-  def _DiffLiveGold(self,
-                    test_output_prefix,
-                    golden_file_name_prefix,
-                    output_format='mp4'):
-    # Compare init and the first three segments.
-    if output_format == 'ts':
-      for i in range(1, 4):
-        self._DiffGold('%s-%d.ts' % (test_output_prefix, i),
-                       '%s-%d.ts' % (golden_file_name_prefix, i))
-    else:
-      self._DiffGold(test_output_prefix + '-init.mp4',
-                     golden_file_name_prefix + '-init.mp4')
-      for i in range(1, 4):
-        self._DiffGold('%s-%d.m4s' % (test_output_prefix, i),
-                       '%s-%d.m4s' % (golden_file_name_prefix, i))
+  def _Decrypt(self, file_path, output_format):
+    streams = [
+        self._GetStream(
+            '0',
+            output_file_prefix='decrypted',
+            output_format=output_format,
+            test_file=file_path)
+    ]
+    self.assertPackageSuccess(streams, self._GetFlags(decryption=True))
 
-  # |test_dir| is expected to be relative to |self.golden_file_dir|.
-  def _CheckTestResults(self, test_dir):
+  def _CheckTestResults(self,
+                        test_dir,
+                        verify_decryption=False,
+                        diff_files_policy=None,
+                        allow_updating_golden_files=True):
+    """Check test results. Updates golden files in update mode.
+
+    Args:
+      test_dir: The golden directory to be compared with. It is expected to be
+          relative to |self.golden_file_dir|.
+      verify_decryption: If set to true, assumes the media files without
+          'skip-encryption' in name to be encrypted and tries to decrypt and
+          then compare these files.
+      diff_files_policy: Some files are allowed to be different if this argument
+          is specified.
+      allow_updating_golden_files: When set to false, golden files will not be
+          updated for this test even if updating_golden_files is requested by
+          user. This is useful for tests generating different outputs in each
+          run, which is often used together with a non-default DiffFilesPolicy.
+    """
     # Live mpd contains current availabilityStartTime and publishTime, which
     # needs to be replaced before comparison. If this is not a live test, then
     # this will be a no-op.
@@ -457,10 +469,19 @@ class PackagerAppTest(unittest.TestCase):
     for media_info in media_infos:
       _UpdateMediaInfoPaths(media_info)
 
+    if verify_decryption:
+      for file_name in os.listdir(self.tmp_dir):
+        if 'skip_encryption' in file_name:
+          continue
+        extension = os.path.splitext(file_name)[1][1:]
+        if extension not in ['mpd', 'm3u8', 'media_info']:
+          self._Decrypt(os.path.join(self.tmp_dir, file_name), extension)
+
     if test_env.options.test_update_golden_files:
-      self._UpdateGold(test_dir)
+      if allow_updating_golden_files:
+        self._UpdateGold(test_dir)
     else:
-      self._DiffDir(test_dir)
+      self._DiffDir(test_dir, diff_files_policy)
 
   # |test_dir| is expected to be relative to |self.golden_file_dir|.
   def _UpdateGold(self, test_dir):
@@ -472,8 +493,15 @@ class PackagerAppTest(unittest.TestCase):
 
     shutil.copytree(out_dir, gold_dir)
 
-  # |test_dir| is expected to be relative to |self.golden_file_dir|.
-  def _DiffDir(self, test_dir):
+  def _DiffDir(self, test_dir, diff_files_policy=None):
+    """Compare test output to golden output.
+
+    Args:
+      test_dir: The golden directory to be compared with. It is expected to be
+          relative to |self.golden_file_dir|.
+      diff_files_policy: Some files are allowed to be different if this argument
+          is specified.
+    """
     out_dir = self.tmp_dir
     gold_dir = os.path.join(self.golden_file_dir, test_dir)
 
@@ -499,6 +527,10 @@ class PackagerAppTest(unittest.TestCase):
 
     # Produce nice diffs for each file that differs.
     for diff_file in diff.diff_files:
+      if diff_files_policy:
+        if diff_file in diff_files_policy.allowed_diff_files:
+          continue
+
       actual_file = os.path.join(out_dir, diff_file)
       expected_file = os.path.join(gold_dir, diff_file)
 
@@ -509,6 +541,11 @@ class PackagerAppTest(unittest.TestCase):
 
       if error:
         failure_messages += [error]
+
+    if diff_files_policy and diff_files_policy.exact:
+      for diff_file in diff_files_policy.allowed_diff_files:
+        if diff_file not in diff.diff_files:
+          failure_messages += ['Expecting "%s" to be different' % diff_file]
 
     if failure_messages:
       # Prepend the failure messages with the header.
@@ -851,9 +888,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True))
-    self._CheckTestResults('encryption')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults('encryption', verify_decryption=True)
 
   # Test deprecated flag --enable_fixed_key_encryption, which is still
   # supported currently.
@@ -865,9 +900,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             self.encryption_iv)
     ]
     self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
-    self._CheckTestResults('encryption-using-fixed-key')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults('encryption-using-fixed-key', verify_decryption=True)
 
   def testEncryptionMultiKeys(self):
     audio_key_id = '10111213141516171819202122232425'
@@ -883,13 +916,6 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
     self._CheckTestResults('encryption-multi-keys')
-
-    self.encryption_key_id = audio_key_id
-    self.encryption_key = audio_key
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self.encryption_key_id = video_key_id
-    self.encryption_key = video_key
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testEncryptionMultiKeysWithStreamLabel(self):
     audio_key_id = '20212223242526272829303132333435'
@@ -913,13 +939,6 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('encryption-multi-keys-with-stream-label')
 
-    self.encryption_key_id = audio_key_id
-    self.encryption_key = audio_key
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self.encryption_key_id = video_key_id
-    self.encryption_key = video_key
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
-
   def testEncryptionOfOnlyVideoStream(self):
     streams = [
         self._GetStream('audio', skip_encryption=True),
@@ -928,8 +947,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True, output_dash=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('encryption-of-only-video-stream')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults(
+        'encryption-of-only-video-stream', verify_decryption=True)
 
   def testEncryptionAndTrickPlay(self):
     streams = [
@@ -940,10 +959,7 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams,
                               self._GetFlags(encryption=True, output_dash=True))
-    self._CheckTestResults('encryption-and-trick-play')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
-    self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
+    self._CheckTestResults('encryption-and-trick-play', verify_decryption=True)
 
   # TODO(hmchen): Add a test case that SD and HD AdapatationSet share one trick
   # play stream.
@@ -958,10 +974,6 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams,
                               self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('encryption-and-two-trick-plays')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
-    self._VerifyDecryption(self.output[2], 'bear-640x360-v-trick-1-golden.mp4')
-    self._VerifyDecryption(self.output[3], 'bear-640x360-v-trick-2-golden.mp4')
 
   def testEncryptionAndNoClearLead(self):
     streams = [
@@ -972,9 +984,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.clear_lead = 0
     self.assertPackageSuccess(streams,
                               self._GetFlags(encryption=True, output_dash=True))
-    self._CheckTestResults('encryption-and-no-clear-lead')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults(
+        'encryption-and-no-clear-lead', verify_decryption=True)
 
   def testEncryptionAndNoPsshInStream(self):
     self.assertPackageSuccess(
@@ -982,45 +993,33 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(
             encryption=True, include_pssh_in_stream=False, output_dash=True))
     self._CheckTestResults('encryption-and-no-pssh-in-stream')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testEncryptionCbc1(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
             encryption=True, protection_scheme='cbc1', output_dash=True))
-    self._CheckTestResults('encryption-cbc-1')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults('encryption-cbc-1', verify_decryption=True)
 
   def testEncryptionCens(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
             encryption=True, protection_scheme='cens', output_dash=True))
-    self._CheckTestResults('encryption-cens')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults('encryption-cens', verify_decryption=True)
 
   def testEncryptionCbcs(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
             encryption=True, protection_scheme='cbcs', output_dash=True))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cbcs-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cbcs-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cbcs-golden.mpd')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults('encryption-cbcs', verify_decryption=True)
 
   def testEncryptionAndAdCues(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True, ad_cues='1.5'))
     self._CheckTestResults('encryption-and-ad-cues')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testEncryptionAndAdCuesSplitContent(self):
     self.assertPackageSuccess(
@@ -1073,9 +1072,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     self.assertPackageSuccess(streams,
                               self._GetFlags(encryption=True, output_dash=True))
-    self._CheckTestResults('webm-subsample-encryption')
-    self._VerifyDecryption(self.output[0],
-                           'bear-320x180-vp9-altref-dec-golden.webm')
+    self._CheckTestResults('webm-subsample-encryption', verify_decryption=True)
 
   def testWebmVp9FullSampleEncryption(self):
     streams = [
@@ -1087,9 +1084,8 @@ class PackagerFunctionalTest(PackagerAppTest):
         encryption=True, vp9_subsample_encryption=False, output_dash=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('webm-vp9-full-sample-encryption')
-    self._VerifyDecryption(self.output[0],
-                           'bear-320x180-vp9-altref-dec-golden.webm')
+    self._CheckTestResults(
+        'webm-vp9-full-sample-encryption', verify_decryption=True)
 
   def testAvcTsWithEncryption(self):
     # Currently we only support live packaging for ts.
@@ -1194,8 +1190,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True, output_dash=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('webm-with-encryption')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.webm')
+    self._CheckTestResults('webm-with-encryption', verify_decryption=True)
 
   def testHevcWithEncryption(self):
     streams = [
@@ -1204,8 +1199,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True, output_dash=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('hevc-with-encryption')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-hevc-golden.mp4')
+    self._CheckTestResults('hevc-with-encryption', verify_decryption=True)
 
   def testVp8Mp4WithEncryption(self):
     streams = [
@@ -1216,8 +1210,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True, output_dash=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('vp8-mp4-with-encryption')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.mp4')
+    self._CheckTestResults('vp8-mp4-with-encryption', verify_decryption=True)
 
   def testOpusVp9Mp4WithEncryption(self):
     streams = [
@@ -1231,9 +1224,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True, output_dash=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('opus-vp9-mp4-with-encryption')
-    self._VerifyDecryption(self.output[0], 'bear-320x240-opus-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-320x240-vp9-golden.mp4')
+    self._CheckTestResults(
+        'opus-vp9-mp4-with-encryption', verify_decryption=True)
 
   def testFlacWithEncryption(self):
     streams = [
@@ -1243,8 +1235,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('flac-with-encryption')
-    self._VerifyDecryption(self.output[0], 'bear-flac-golden.mp4')
+    self._CheckTestResults('flac-with-encryption', verify_decryption=True)
 
   def testWvmInput(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'
@@ -1276,41 +1267,39 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, random_iv=True, output_dash=True))
-    self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
-    self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
     # The outputs are encrypted with random iv, so they are not the same as
     # golden files.
-    self.assertFalse(self._CompareWithGold(self.output[0],
-                                           'bear-640x360-a-cenc-golden.mp4'))
-    self.assertFalse(self._CompareWithGold(self.output[1],
-                                           'bear-640x360-v-cenc-golden.mp4'))
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults(
+        'encryption',
+        verify_decryption=True,
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=[
+                'bear-640x360-audio.mp4', 'bear-640x360-video.mp4'
+            ],
+            exact=True),
+        allow_updating_golden_files=False)
 
   def testEncryptionAndRealClock(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, output_dash=True, use_fake_clock=False))
-    self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
-    self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
     # The outputs are generated with real clock, so they are not the same as
     # golden files.
-    self.assertFalse(self._CompareWithGold(self.output[0],
-                                           'bear-640x360-a-cenc-golden.mp4'))
-    self.assertFalse(self._CompareWithGold(self.output[1],
-                                           'bear-640x360-v-cenc-golden.mp4'))
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-a-demuxed-golden.mp4')
-    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._CheckTestResults(
+        'encryption',
+        verify_decryption=True,
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=[
+                'bear-640x360-audio.mp4', 'bear-640x360-video.mp4'
+            ],
+            exact=True),
+        allow_updating_golden_files=False)
 
   def testEncryptionAndNonDashIfIop(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True, dash_if_iop=False, output_dash=True))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
-    self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-non-iop-golden.mpd')
+    self._CheckTestResults('encryption-and-non-dash-if-iop')
 
   def testEncryptionAndOutputMediaInfo(self):
     self.assertPackageSuccess(
@@ -1444,12 +1433,14 @@ class PackagerFunctionalTest(PackagerAppTest):
                          test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                                      'bear-320x180.mp4']),
         self._GetFlags(encryption=True, output_dash=True))
-    self._DiffLiveGold(self.output[2], 'bear-640x360-a-live-cenc-golden')
-    self._DiffLiveGold(self.output[3], 'bear-640x360-v-live-cenc-golden')
     # Mpd cannot be validated right now since we don't generate determinstic
     # mpd with multiple inputs due to thread racing.
     # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
     #                   schema.
+    self._CheckTestResults(
+        'live-profile-and-encryption-and-mult-files',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testLiveProfileAndKeyRotation(self):
     self.assertPackageSuccess(
@@ -1562,20 +1553,6 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dash-with-bandwidth-override')
-
-  def _AssertStreamInfo(self, stream, info):
-    stream_info = self.packager.DumpStreamInfo(stream)
-    self.assertIn('Found 1 stream(s).', stream_info)
-    self.assertIn(info, stream_info)
-
-  def _VerifyDecryption(self, test_encrypted_file, golden_clear_file):
-    output_extension = os.path.splitext(golden_clear_file)[1][1:]
-    self.assertPackageSuccess(
-        self._GetStreams(['0'],
-                         output_format=output_extension,
-                         test_files=[test_encrypted_file]),
-        self._GetFlags(decryption=True, output_dash=True))
-    self._DiffGold(self.output[-1], golden_clear_file)
 
 
 class PackagerCommandParsingTest(PackagerAppTest):
