@@ -45,6 +45,7 @@ bear-flac.mp4 - Unfragmented audio-only 44.1kHz FLAC in MP4 file, created using:
   ffmpeg -i bear-1280x720.mp4 -map 0:0 -acodec flac -strict -2 bear-flac.mp4
   Note, "-strict -2" was required because current ffmpeg libavformat version
   57.75.100 indicates that flac in MP4 support is experimental.
+bear-640x360-no_edit_list.mp4  - Same content, but with EditLists removed.
 
 // Non square pixels.
 bear-640x360-non_square_pixel-with_pasp.mp4 - A non-square pixel version of the video track of bear-640x360.mp4 with PixelAspectRatio box.

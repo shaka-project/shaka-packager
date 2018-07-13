@@ -4,6 +4,13 @@
 
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
+#include <gflags/gflags.h>
+
+DEFINE_bool(mp4_reset_initial_composition_offset_to_zero,
+            true,
+            "MP4 only. If it is true, reset the initial composition offset to "
+            "zero, i.e. by assuming that there is a missing EditList.");
+
 #include <algorithm>
 #include <limits>
 
@@ -180,7 +187,7 @@ bool TrackRunIterator::Init() {
 
     // dts is directly adjusted, which then propagates to pts as pts is encoded
     // as difference (composition offset) to dts in mp4.
-    int64_t run_start_dts = GetTimestampAdjustment(*moov_, *trak);
+    int64_t run_start_dts = GetTimestampAdjustment(*moov_, *trak, nullptr);
 
     uint32_t num_samples = sample_size.sample_count;
     uint32_t num_chunks = static_cast<uint32_t>(chunk_offset_vector.size());
@@ -349,7 +356,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
     // dts is directly adjusted, which then propagates to pts as pts is encoded
     // as difference (composition offset) to dts in mp4.
-    run_start_dts += GetTimestampAdjustment(*moov_, *trak);
+    run_start_dts += GetTimestampAdjustment(*moov_, *trak, &traf);
 
     int sample_count_sum = 0;
 
@@ -634,8 +641,14 @@ std::unique_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
 }
 
 int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
-                                                 const Track& track) {
-  int64_t edit_list_offset = 0;
+                                                 const Track& track,
+                                                 const TrackFragment* traf) {
+  const uint32_t track_id = track.header.track_id;
+  const auto iter = timestamp_adjustment_map_.find(track_id);
+  if (iter != timestamp_adjustment_map_.end())
+    return iter->second;
+
+  int64_t timestamp_adjustment = 0;
   const std::vector<EditListEntry>& edits = track.edit.list.edits;
   if (!edits.empty()) {
     // ISO/IEC 14496-12:2015 8.6.6 Edit List Box.
@@ -651,13 +664,48 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
         const int64_t scaled_time =
             Rescale(edit.segment_duration, movie.header.timescale,
                     track.media.header.timescale);
-        edit_list_offset += scaled_time;
+        timestamp_adjustment += scaled_time;
       } else {
-        edit_list_offset -= edit.media_time;
+        timestamp_adjustment -= edit.media_time;
       }
     }
   }
-  return edit_list_offset;
+
+  if (timestamp_adjustment == 0) {
+    int64_t composition_offset = 0;
+    if (traf && !traf->runs.empty()) {
+      const auto& cts_offsets =
+          traf->runs.front().sample_composition_time_offsets;
+      if (!cts_offsets.empty())
+        composition_offset = cts_offsets.front();
+    } else {
+      CompositionOffsetIterator composition_offset_iter(
+          track.media.information.sample_table.composition_time_to_sample);
+      if (composition_offset_iter.IsValid())
+        composition_offset = composition_offset_iter.sample_offset();
+    }
+
+    int64_t decode_time = 0;
+    if (traf)
+      decode_time = traf->decode_time.decode_time;
+    if (composition_offset != 0 && decode_time == 0) {
+      LOG(WARNING) << "Seeing non-zero composition offset "
+                   << composition_offset
+                   << ". An EditList is probably missing.";
+      if (FLAGS_mp4_reset_initial_composition_offset_to_zero) {
+        LOG(WARNING)
+            << "Adjusting timestamps by " << -composition_offset
+            << ". Please file a bug to "
+               "https://github.com/google/shaka-packager/issues if you "
+               "do not think it is right or if you are seeing any problems.";
+        timestamp_adjustment = -composition_offset;
+      }
+    }
+  }
+
+  timestamp_adjustment_map_.insert(
+      std::make_pair(track_id, timestamp_adjustment));
+  return timestamp_adjustment;
 }
 
 }  // namespace mp4

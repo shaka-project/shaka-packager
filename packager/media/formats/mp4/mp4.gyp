@@ -46,6 +46,7 @@
       ],
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
+        '../../../third_party/gflags/gflags.gyp:gflags',
         '../../base/media_base.gyp:media_base',
         '../../codecs/codecs.gyp:codecs',
         '../../event/media_event.gyp:media_event',
@@ -68,6 +69,7 @@
         '../../../file/file.gyp:file',
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../../third_party/gflags/gflags.gyp:gflags',
         '../../test/media_test.gyp:media_test_support',
         'mp4',
       ]

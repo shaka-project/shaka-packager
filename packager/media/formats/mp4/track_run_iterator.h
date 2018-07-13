@@ -5,6 +5,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_
 #define PACKAGER_MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -103,7 +104,9 @@ class TrackRunIterator {
  private:
   void ResetRun();
   const TrackEncryption& track_encryption() const;
-  int64_t GetTimestampAdjustment(const Movie& movie, const Track& track);
+  int64_t GetTimestampAdjustment(const Movie& movie,
+                                 const Track& track,
+                                 const TrackFragment* traf);
 
   const Movie* moov_;
 
@@ -117,6 +120,9 @@ class TrackRunIterator {
 
   int64_t sample_dts_;
   int64_t sample_offset_;
+
+  // TrackId => adjustment map.
+  std::map<uint32_t, int64_t> timestamp_adjustment_map_;
 
   DISALLOW_COPY_AND_ASSIGN(TrackRunIterator);
 };

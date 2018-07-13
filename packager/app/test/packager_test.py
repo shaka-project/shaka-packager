@@ -721,6 +721,11 @@ class PackagerFunctionalTest(PackagerAppTest):
                               self._GetFlags(output_dash=True))
     self._CheckTestResults('video-audio-text')
 
+  def testVideoNoEditList(self):
+    stream = self._GetStream('video', test_file='bear-640x360-no_edit_list.mp4')
+    self.assertPackageSuccess([stream], self._GetFlags(output_dash=True))
+    self._CheckTestResults('video-no-edit-list')
+
   def testAvcAacTs(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(

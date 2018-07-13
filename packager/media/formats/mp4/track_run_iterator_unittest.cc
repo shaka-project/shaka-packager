@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "packager/media/formats/mp4/track_run_iterator.h"
+
+#include <gflags/gflags.h>
 #include <gtest/gtest.h>
 #include <stdint.h>
 #include <memory>
 #include "packager/base/logging.h"
 #include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/track_run_iterator.h"
+
+DECLARE_bool(mp4_reset_initial_composition_offset_to_zero);
 
 namespace {
 
@@ -15,6 +19,7 @@ namespace {
 // less the value of the last element.
 const int kSumAscending1 = 45;
 
+const int kMovieScale = 1000;
 const int kAudioScale = 48000;
 const int kVideoScale = 25;
 
@@ -108,7 +113,7 @@ class TrackRunIteratorTest : public testing::Test {
   std::unique_ptr<TrackRunIterator> iter_;
 
   void CreateMovie() {
-    moov_.header.timescale = 1000;
+    moov_.header.timescale = kMovieScale;
     moov_.tracks.resize(3);
     moov_.extends.tracks.resize(2);
     moov_.tracks[0].header.track_id = 1;
@@ -384,7 +389,49 @@ TEST_F(TrackRunIteratorTest, FirstSampleFlagTest) {
   EXPECT_FALSE(iter_->is_keyframe());
 }
 
+TEST_F(TrackRunIteratorTest, EmptyEditTest) {
+  iter_.reset(new TrackRunIterator(&moov_));
+
+  EditListEntry entry;
+  entry.segment_duration = 2 * kMovieScale;
+  entry.media_time = -1;
+  entry.media_rate_integer = 1;
+  entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(entry);
+
+  MovieFragment moof = CreateFragment();
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), 2 * kVideoScale);
+  EXPECT_EQ(iter_->cts(), 2 * kVideoScale);
+}
+
+TEST_F(TrackRunIteratorTest, NormalEditTest) {
+  iter_.reset(new TrackRunIterator(&moov_));
+
+  const int kMediaTime = 5;
+
+  EditListEntry entry;
+  entry.segment_duration = 0;
+  entry.media_time = kMediaTime;
+  entry.media_rate_integer = 1;
+  entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(entry);
+
+  MovieFragment moof = CreateFragment();
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), -kMediaTime);
+  EXPECT_EQ(iter_->cts(), -kMediaTime);
+}
+
 TEST_F(TrackRunIteratorTest, ReorderingTest) {
+  FLAGS_mp4_reset_initial_composition_offset_to_zero = false;
+
   // Test frame reordering. The frames have the following
   // decode timestamps:
   //
@@ -421,6 +468,71 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->dts(), 3);
   EXPECT_EQ(iter_->cts(), 3);
+  EXPECT_EQ(iter_->duration(), 3);
+}
+
+TEST_F(TrackRunIteratorTest, ReorderingTest_WithEditList) {
+  FLAGS_mp4_reset_initial_composition_offset_to_zero = false;
+
+  // See the test above for background.
+  iter_.reset(new TrackRunIterator(&moov_));
+  MovieFragment moof = CreateFragment();
+  std::vector<int64_t>& cts_offsets =
+      moof.tracks[1].runs[0].sample_composition_time_offsets;
+  cts_offsets.resize(10);
+  cts_offsets[0] = 2;
+  cts_offsets[1] = 5;
+  cts_offsets[2] = 0;
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  EditListEntry entry;
+  entry.segment_duration = 0;
+  entry.media_time = 2;
+  entry.media_rate_integer = 1;
+  entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(entry);
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), -2);
+  EXPECT_EQ(iter_->cts(), 0);
+  EXPECT_EQ(iter_->duration(), 1);
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), -1);
+  EXPECT_EQ(iter_->cts(), 4);
+  EXPECT_EQ(iter_->duration(), 2);
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), 1);
+  EXPECT_EQ(iter_->cts(), 1);
+  EXPECT_EQ(iter_->duration(), 3);
+}
+
+TEST_F(TrackRunIteratorTest, ReorderingTest_ResetInitialCompositionOffset) {
+  FLAGS_mp4_reset_initial_composition_offset_to_zero = true;
+
+  // See the test above for background.
+  iter_.reset(new TrackRunIterator(&moov_));
+  MovieFragment moof = CreateFragment();
+  std::vector<int64_t>& cts_offsets =
+      moof.tracks[1].runs[0].sample_composition_time_offsets;
+  cts_offsets.resize(10);
+  cts_offsets[0] = 2;
+  cts_offsets[1] = 5;
+  cts_offsets[2] = 0;
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), -2);
+  EXPECT_EQ(iter_->cts(), 0);
+  EXPECT_EQ(iter_->duration(), 1);
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), -1);
+  EXPECT_EQ(iter_->cts(), 4);
+  EXPECT_EQ(iter_->duration(), 2);
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), 1);
+  EXPECT_EQ(iter_->cts(), 1);
   EXPECT_EQ(iter_->duration(), 3);
 }
 
