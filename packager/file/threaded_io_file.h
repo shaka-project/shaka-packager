@@ -7,8 +7,8 @@
 #ifndef PACKAGER_FILE_THREADED_IO_FILE_H_
 #define PACKAGER_FILE_THREADED_IO_FILE_H_
 
+#include <atomic>
 #include <memory>
-#include "packager/base/atomicops.h"
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
@@ -55,10 +55,10 @@ class ThreadedIoFile : public File {
   std::vector<uint8_t> io_buffer_;
   uint64_t position_;
   uint64_t size_;
-  base::subtle::Atomic32 eof_;
+  std::atomic<bool> eof_;
   bool flushing_;
   base::WaitableEvent flush_complete_event_;
-  base::subtle::Atomic32 internal_file_error_;
+  std::atomic<int32_t> internal_file_error_;
   // Signalled when thread task exits.
   base::WaitableEvent task_exit_event_;
 

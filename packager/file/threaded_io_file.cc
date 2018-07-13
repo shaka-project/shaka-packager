@@ -13,9 +13,6 @@
 
 namespace shaka {
 
-using base::subtle::NoBarrier_Load;
-using base::subtle::NoBarrier_Store;
-
 ThreadedIoFile::ThreadedIoFile(std::unique_ptr<File, FileCloser> internal_file,
                                Mode mode,
                                uint64_t io_cache_size,
@@ -74,11 +71,11 @@ int64_t ThreadedIoFile::Read(void* buffer, uint64_t length) {
   DCHECK(internal_file_);
   DCHECK_EQ(kInputMode, mode_);
 
-  if (NoBarrier_Load(&eof_) && !cache_.BytesCached())
+  if (eof_.load(std::memory_order_relaxed) && !cache_.BytesCached())
     return 0;
 
-  if (NoBarrier_Load(&internal_file_error_))
-    return NoBarrier_Load(&internal_file_error_);
+  if (internal_file_error_.load(std::memory_order_relaxed))
+    return internal_file_error_.load(std::memory_order_relaxed);
 
   uint64_t bytes_read = cache_.Read(buffer, length);
   position_ += bytes_read;
@@ -90,8 +87,8 @@ int64_t ThreadedIoFile::Write(const void* buffer, uint64_t length) {
   DCHECK(internal_file_);
   DCHECK_EQ(kOutputMode, mode_);
 
-  if (NoBarrier_Load(&internal_file_error_))
-    return NoBarrier_Load(&internal_file_error_);
+  if (internal_file_error_.load(std::memory_order_relaxed))
+    return internal_file_error_.load(std::memory_order_relaxed);
 
   uint64_t bytes_written = cache_.Write(buffer, length);
   position_ += bytes_written;
@@ -111,7 +108,7 @@ bool ThreadedIoFile::Flush() {
   DCHECK(internal_file_);
   DCHECK_EQ(kOutputMode, mode_);
 
-  if (NoBarrier_Load(&internal_file_error_))
+  if (internal_file_error_.load(std::memory_order_relaxed))
     return false;
 
   flushing_ = true;
@@ -175,8 +172,8 @@ void ThreadedIoFile::RunInInputMode() {
     int64_t read_result =
         internal_file_->Read(&io_buffer_[0], io_buffer_.size());
     if (read_result <= 0) {
-      NoBarrier_Store(&eof_, read_result == 0);
-      NoBarrier_Store(&internal_file_error_, read_result);
+      eof_.store(read_result == 0, std::memory_order_relaxed);
+      internal_file_error_.store(read_result, std::memory_order_relaxed);
       cache_.Close();
       return;
     }
@@ -206,7 +203,7 @@ void ThreadedIoFile::RunInOutputMode() {
         int64_t write_result = internal_file_->Write(
             &io_buffer_[bytes_written], write_bytes - bytes_written);
         if (write_result < 0) {
-          NoBarrier_Store(&internal_file_error_, write_result);
+          internal_file_error_.store(write_result, std::memory_order_relaxed);
           cache_.Close();
           if (flushing_) {
             flushing_ = false;
