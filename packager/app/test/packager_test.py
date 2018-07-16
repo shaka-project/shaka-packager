@@ -43,17 +43,109 @@ class StreamDescriptor(object):
 
 
 class DiffFilesPolicy(object):
-  """Specifies the policy for diff_files.
+  """Class for handling files comparison.
 
   Attributes:
-    allowed_diff_files: The list of files allowed to be different.
-    exact: The actual list of diff_files must match the above list exactly, i.e.
-        all the files in the above list must be different.
+    _allowed_diff_files: The list of files allowed to be different.
+    _exact: The actual list of diff_files must match the above list exactly,
+        i.e. all the files in the above list must be different.
+    _allow_updating_golden_files: When set to false, golden files will not be
+        updated for this test even if updating_golden_files is requested. This
+        is useful for tests generating different outputs in each run, which is
+        often used together when _allowed_diff_files is not empty.
   """
 
-  def __init__(self, allowed_diff_files, exact):
-    self.allowed_diff_files = allowed_diff_files
-    self.exact = exact
+  def __init__(self,
+               allowed_diff_files=None,
+               exact=True,
+               allow_updating_golden_files=True):
+    if allowed_diff_files:
+      self._allowed_diff_files = allowed_diff_files
+    else:
+      self._allowed_diff_files = []
+    self._exact = exact
+    self._allow_updating_golden_files = allow_updating_golden_files
+
+  def ProcessDiff(self, out_dir, gold_dir):
+    """Compare test outputs with golden files.
+
+    Args:
+      out_dir: The test output directory.
+      gold_dir: The golden directory to be compared with.
+    Returns:
+      A list of diff messages when the files do not match; An empty list
+      otherwise or in update mode.
+    """
+    if test_env.options.test_update_golden_files:
+      if self._allow_updating_golden_files:
+        self._UpdateGold(out_dir, gold_dir)
+      return []
+    else:
+      return self._DiffDir(out_dir, gold_dir)
+
+  def _DiffDir(self, out_dir, gold_dir):
+    # Get a list of the files and dirs that are different between the two top
+    # level directories.
+    diff = filecmp.dircmp(out_dir, gold_dir)
+
+    # Create a list of all the details about the failure. The list will be
+    # joined together when sent out.
+    failure_messages = []
+
+    missing = diff.left_only
+    if missing:
+      failure_messages += [
+          'Missing %d files: %s' % (len(missing), str(missing))
+      ]
+
+    extra = diff.right_only
+    if extra:
+      failure_messages += [
+          'Found %d unexpected files: %s' % (len(extra), str(extra))
+      ]
+
+    # Produce nice diffs for each file that differs.
+    for diff_file in diff.diff_files:
+      if diff_file in self._allowed_diff_files:
+        continue
+
+      actual_file = os.path.join(out_dir, diff_file)
+      expected_file = os.path.join(gold_dir, diff_file)
+
+      output, error = self._GitDiff(expected_file, actual_file)
+
+      if output:
+        failure_messages += [output]
+
+      if error:
+        failure_messages += [error]
+
+    if self._exact:
+      for diff_file in self._allowed_diff_files:
+        if diff_file not in diff.diff_files:
+          failure_messages += ['Expecting "%s" to be different' % diff_file]
+
+    return failure_messages
+
+  def _GitDiff(self, file_a, file_b):
+    cmd = [
+        'git',
+        '--no-pager',
+        'diff',
+        '--color=auto',
+        '--no-ext-diff',
+        '--no-index',
+        file_a,
+        file_b
+    ]
+    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    return p.communicate()
+
+  def _UpdateGold(self, out_dir, gold_dir):
+    if os.path.exists(gold_dir):
+      shutil.rmtree(gold_dir)
+
+    shutil.copytree(out_dir, gold_dir)
 
 
 def _UpdateMediaInfoPaths(media_info_filepath):
@@ -407,20 +499,6 @@ class PackagerAppTest(unittest.TestCase):
     flags += ['--test_packager_version', '<tag>-<hash>-<test>']
     return flags
 
-  def _GitDiff(self, file_a, file_b):
-    cmd = [
-        'git',
-        '--no-pager',
-        'diff',
-        '--color=auto',
-        '--no-ext-diff',
-        '--no-index',
-        file_a,
-        file_b
-    ]
-    p = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-    return p.communicate()
-
   def _AssertStreamInfo(self, stream, info):
     stream_info = self.packager.DumpStreamInfo(stream)
     self.assertIn('Found 1 stream(s).', stream_info)
@@ -439,8 +517,7 @@ class PackagerAppTest(unittest.TestCase):
   def _CheckTestResults(self,
                         test_dir,
                         verify_decryption=False,
-                        diff_files_policy=None,
-                        allow_updating_golden_files=True):
+                        diff_files_policy=DiffFilesPolicy()):
     """Check test results. Updates golden files in update mode.
 
     Args:
@@ -449,12 +526,8 @@ class PackagerAppTest(unittest.TestCase):
       verify_decryption: If set to true, assumes the media files without
           'skip-encryption' in name to be encrypted and tries to decrypt and
           then compare these files.
-      diff_files_policy: Some files are allowed to be different if this argument
-          is specified.
-      allow_updating_golden_files: When set to false, golden files will not be
-          updated for this test even if updating_golden_files is requested by
-          user. This is useful for tests generating different outputs in each
-          run, which is often used together with a non-default DiffFilesPolicy.
+      diff_files_policy: Specifies DiffFiles policy and handles files
+          comparison.
     """
     # Live mpd contains current availabilityStartTime and publishTime, which
     # needs to be replaced before comparison. If this is not a live test, then
@@ -477,76 +550,9 @@ class PackagerAppTest(unittest.TestCase):
         if extension not in ['mpd', 'm3u8', 'media_info']:
           self._Decrypt(os.path.join(self.tmp_dir, file_name), extension)
 
-    if test_env.options.test_update_golden_files:
-      if allow_updating_golden_files:
-        self._UpdateGold(test_dir)
-    else:
-      self._DiffDir(test_dir, diff_files_policy)
-
-  # |test_dir| is expected to be relative to |self.golden_file_dir|.
-  def _UpdateGold(self, test_dir):
     out_dir = self.tmp_dir
     gold_dir = os.path.join(self.golden_file_dir, test_dir)
-
-    if os.path.exists(gold_dir):
-      shutil.rmtree(gold_dir)
-
-    shutil.copytree(out_dir, gold_dir)
-
-  def _DiffDir(self, test_dir, diff_files_policy=None):
-    """Compare test output to golden output.
-
-    Args:
-      test_dir: The golden directory to be compared with. It is expected to be
-          relative to |self.golden_file_dir|.
-      diff_files_policy: Some files are allowed to be different if this argument
-          is specified.
-    """
-    out_dir = self.tmp_dir
-    gold_dir = os.path.join(self.golden_file_dir, test_dir)
-
-    # Get a list of the files and dirs that are different between the two top
-    # level directories.
-    diff = filecmp.dircmp(out_dir, gold_dir)
-
-    # Create a list of all the details about the failure. The list will be
-    # joined together when sent out.
-    failure_messages = []
-
-    missing = diff.left_only
-    if missing:
-      failure_messages += [
-          'Missing %d files: %s' % (len(missing), str(missing))
-      ]
-
-    extra = diff.right_only
-    if extra:
-      failure_messages += [
-          'Found %d unexpected files: %s' % (len(extra), str(extra))
-      ]
-
-    # Produce nice diffs for each file that differs.
-    for diff_file in diff.diff_files:
-      if diff_files_policy:
-        if diff_file in diff_files_policy.allowed_diff_files:
-          continue
-
-      actual_file = os.path.join(out_dir, diff_file)
-      expected_file = os.path.join(gold_dir, diff_file)
-
-      output, error = self._GitDiff(expected_file, actual_file)
-
-      if output:
-        failure_messages += [output]
-
-      if error:
-        failure_messages += [error]
-
-    if diff_files_policy and diff_files_policy.exact:
-      for diff_file in diff_files_policy.allowed_diff_files:
-        if diff_file not in diff.diff_files:
-          failure_messages += ['Expecting "%s" to be different' % diff_file]
-
+    failure_messages = diff_files_policy.ProcessDiff(out_dir, gold_dir)
     if failure_messages:
       # Prepend the failure messages with the header.
       failure_messages = [
@@ -1225,8 +1231,8 @@ class PackagerFunctionalTest(PackagerAppTest):
             allowed_diff_files=[
                 'bear-640x360-audio.mp4', 'bear-640x360-video.mp4'
             ],
-            exact=True),
-        allow_updating_golden_files=False)
+            exact=True,
+            allow_updating_golden_files=False))
 
   def testEncryptionAndRealClock(self):
     self.assertPackageSuccess(
@@ -1241,8 +1247,8 @@ class PackagerFunctionalTest(PackagerAppTest):
             allowed_diff_files=[
                 'bear-640x360-audio.mp4', 'bear-640x360-video.mp4'
             ],
-            exact=True),
-        allow_updating_golden_files=False)
+            exact=True,
+            allow_updating_golden_files=False))
 
   def testEncryptionAndNonDashIfIop(self):
     self.assertPackageSuccess(
