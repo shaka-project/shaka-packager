@@ -32,14 +32,32 @@ class StreamDescriptor(object):
   """Basic class used to build stream descriptor commands."""
 
   def __init__(self, input_file):
-    self.buffer = 'input=%s' % input_file
+    self._buffer = 'input=%s' % input_file
+    self._output_file_name_base = os.path.splitext(
+        os.path.basename(input_file))[0]
 
   def Append(self, key, value):
-    self.buffer += ',%s=%s' % (key, value)
+    self._buffer += ',%s=%s' % (key, value)
+
+    # Generate an unique |_output_file_name_base| from some of the keys.
+    # We do not need all the keys as it is sufficient with the below keys.
+    if key == 'stream':
+      self._output_file_name_base += '-%s' % value
+    elif key == 'trick_play_factor':
+      self._output_file_name_base += '-trick_play_factor_%d' % value
+    elif key == 'skip_encryption':
+      self._output_file_name_base += '-skip_encryption'
+
     return self
 
+  def GetOutputFileNameBase(self, output_file_prefix):
+    if output_file_prefix:
+      return '%s-%s' % (output_file_prefix, self._output_file_name_base)
+    else:
+      return self._output_file_name_base
+
   def __str__(self):
-    return self.buffer
+    return self._buffer
 
 
 class DiffFilesPolicy(object):
@@ -306,43 +324,34 @@ class PackagerAppTest(unittest.TestCase):
     if language:
       stream.Append('lang', language)
 
-    output_file_name = ''
-    if output_file_prefix:
-      output_file_name += '%s-' % output_file_prefix
-
-    # Use the input file name (no extension) and pair it with the
-    # descriptor to create the root of the output file_name.
-    output_file_name += '%s-%s' % (os.path.splitext(
-        os.path.basename(input_file_name))[0], descriptor)
-
     if trick_play_factor:
       stream.Append('trick_play_factor', trick_play_factor)
-      output_file_name += '-trick_play_factor_%d' % trick_play_factor
 
     if drm_label:
       stream.Append('drm_label', drm_label)
 
     if skip_encryption:
       stream.Append('skip_encryption', 1)
-      output_file_name += '-skip_encryption'
 
     base_ext = GetExtension(descriptor, output_format)
+    output_file_name_base = stream.GetOutputFileNameBase(output_file_prefix)
 
     if hls:
-      stream.Append('playlist_name', output_file_name + '.m3u8')
+      stream.Append('playlist_name', output_file_name_base + '.m3u8')
 
       # By default, add a iframe playlist for all HLS playlists (assuming that
       # the source input is supported). iframe playlists should only be for
       # videos. This check will fail for numeric descriptors, but that is an
       # acceptable limitation (b/73960731).
       if base_ext in ['ts', 'mp4'] and descriptor == 'video':
-        stream.Append('iframe_playlist_name', output_file_name + '-iframe.m3u8')
+        stream.Append('iframe_playlist_name',
+                      output_file_name_base + '-iframe.m3u8')
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt'
     ]
 
-    output_file_path = os.path.join(self.tmp_dir, output_file_name)
+    output_file_path = os.path.join(self.tmp_dir, output_file_name_base)
 
     if requires_init_segment:
       init_seg = '%s-init.%s' % (output_file_path, base_ext)
