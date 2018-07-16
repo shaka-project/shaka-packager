@@ -163,15 +163,14 @@ bool WebVttParser::Parse() {
     }
 
     // CUE with ID
-    if (block.size() > 2 && MaybeCueId(block[0]) &&
+    if (block.size() >= 2 && MaybeCueId(block[0]) &&
         IsLikelyCueTiming(block[1]) && ParseCueWithId(block)) {
       saw_cue = true;
       continue;
     }
 
     // CUE with no ID
-    if (block.size() > 1 && IsLikelyCueTiming(block[0]) &&
-        ParseCueWithNoId(block)) {
+    if (IsLikelyCueTiming(block[0]) && ParseCueWithNoId(block)) {
       saw_cue = true;
       continue;
     }

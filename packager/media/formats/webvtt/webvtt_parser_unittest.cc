@@ -214,6 +214,28 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   ASSERT_OK(parser_->Run());
 }
 
+TEST_F(WebVttParserTest, ParseOneEmptyCue) {
+  const char* text =
+      "WEBVTT\n"
+      "\n"
+      "00:01:00.000 --> 01:00:00.000\n"
+      "\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsTextSample(_, kNoId, 60000u, 3600000u, kNoSettings, "")));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
+  }
+
+  ASSERT_OK(parser_->Run());
+}
+
 TEST_F(WebVttParserTest, FailToParseCueWithArrowInId) {
   const char* text =
       "WEBVTT\n"
@@ -244,6 +266,29 @@ TEST_F(WebVttParserTest, ParseOneCueWithId) {
     EXPECT_CALL(*Output(kOutputIndex),
                 OnProcess(IsTextSample(_, "id", 60000u, 3600000u, kNoSettings,
                                        "subtitle")));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
+  }
+
+  ASSERT_OK(parser_->Run());
+}
+
+TEST_F(WebVttParserTest, ParseOneEmptyCueWithId) {
+  const char* text =
+      "WEBVTT\n"
+      "\n"
+      "id\n"
+      "00:01:00.000 --> 01:00:00.000\n"
+      "\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(
+        *Output(kOutputIndex),
+        OnProcess(IsTextSample(_, "id", 60000u, 3600000u, kNoSettings, "")));
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
