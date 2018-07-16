@@ -743,8 +743,12 @@ TEST_F(OnDemandAdaptationSetTest, ForceSetsubsegmentAlignment) {
 }
 
 // Verify that segmentAlignment is set to true if all the Representations
-// segments' are aligned and the DASH profile is Live.
-TEST_F(LiveAdaptationSetTest, SegmentAlignment) {
+// segments' are aligned and the DASH profile is Live and MPD type is dynamic.
+TEST_F(LiveAdaptationSetTest, SegmentAlignmentDynamicMpd) {
+  const uint64_t kStartTime = 0u;
+  const uint64_t kDuration = 10u;
+  const uint64_t kAnySize = 19834u;
+
   const char k480pMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -767,17 +771,17 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
+
+  mpd_options_.mpd_type = MpdType::kDynamic;
+
+  // For dynamic MPD, we expect the Reprensentations to be synchronized, so the
+  // Reprensentations are added to AdaptationSet before any segments are added.
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
 
-  // First use same start time and duration, and verify that that
-  // segmentAlignment is set.
-  const uint64_t kStartTime = 0u;
-  const uint64_t kDuration = 10u;
-  const uint64_t kAnySize = 19834u;
   representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
   xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
@@ -790,6 +794,60 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignment) {
 
   xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
   EXPECT_THAT(unaligned.get(), Not(AttributeSet("segmentAlignment")));
+}
+
+// Verify that segmentAlignment is set to true if all the Representations
+// segments' are aligned and the DASH profile is Live and MPD type is static.
+TEST_F(LiveAdaptationSetTest, SegmentAlignmentStaticMpd) {
+  const uint64_t kStartTime = 0u;
+  const uint64_t kDuration = 10u;
+  const uint64_t kAnySize = 19834u;
+
+  const char k480pMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 8\n"
+      "  pixel_height: 9\n"
+      "}\n"
+      "container_type: 1\n";
+  const char k360pMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 640\n"
+      "  height: 360\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  mpd_options_.mpd_type = MpdType::kStatic;
+
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
+
+  // For static MPD, the Representations are not synchronized, so it is possible
+  // that the second Representation is added after adding segments to the first
+  // Representation.
+  Representation* representation_480p =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+  representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
+
+  Representation* representation_360p =
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+  representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
+
+  representation_480p->AddNewSegment(kStartTime + kDuration, kDuration,
+                                     kAnySize);
+  representation_360p->AddNewSegment(kStartTime + kDuration, kDuration,
+                                     kAnySize);
+
+  xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
+  EXPECT_THAT(aligned.get(), AttributeEqual("segmentAlignment", "true"));
 }
 
 // Verify that the width and height attribute are set if all the video

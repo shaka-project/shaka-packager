@@ -274,8 +274,8 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   // Note: must be checked before checking segments_aligned_ (below). So that
   // segments_aligned_ is set before checking below.
-  if (mpd_options_.dash_profile == DashProfile::kOnDemand) {
-    CheckVodSegmentAlignment();
+  if (mpd_options_.mpd_type == MpdType::kStatic) {
+    CheckStaticSegmentAlignment();
   }
 
   if (segments_aligned_ == kSegmentAlignmentTrue) {
@@ -348,18 +348,17 @@ void AdaptationSet::AddAdaptationSetSwitching(
   switchable_adaptation_sets_.push_back(adaptation_set);
 }
 
-// Check segmentAlignment for Live here. Storing all start_time and duration
-// will out-of-memory because there's no way of knowing when it will end.
-// VOD subsegmentAlignment check is *not* done here because it is possible
-// that some Representations might not have been added yet (e.g. a thread is
-// assigned per muxer so one might run faster than others).
-// To be clear, for Live, all Representations should be added before a
-// segment is added.
+// For dynamic MPD, storing all start_time and duration will out-of-memory
+// because there's no way of knowing when it will end. Static MPD
+// subsegmentAlignment check is *not* done here because it is possible that some
+// Representations might not have been added yet (e.g. a thread is assigned per
+// muxer so one might run faster than others). To be clear, for dynamic MPD, all
+// Representations should be added before a segment is added.
 void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
                                                   uint64_t start_time,
                                                   uint64_t duration) {
-  if (mpd_options_.dash_profile == DashProfile::kLive) {
-    CheckLiveSegmentAlignment(representation_id, start_time, duration);
+  if (mpd_options_.mpd_type == MpdType::kDynamic) {
+    CheckDynamicSegmentAlignment(representation_id, start_time, duration);
   } else {
     representation_segment_start_times_[representation_id].push_back(
         start_time);
@@ -442,34 +441,37 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 // They are not aligned but this will be marked as aligned.
 // But since this is unlikely to happen in the packager (and to save
 // computation), this isn't handled at the moment.
-void AdaptationSet::CheckLiveSegmentAlignment(uint32_t representation_id,
-                                              uint64_t start_time,
-                                              uint64_t /* duration */) {
+void AdaptationSet::CheckDynamicSegmentAlignment(uint32_t representation_id,
+                                                 uint64_t start_time,
+                                                 uint64_t /* duration */) {
   if (segments_aligned_ == kSegmentAlignmentFalse ||
       force_set_segment_alignment_) {
     return;
   }
 
-  std::list<uint64_t>& representation_start_times =
+  std::list<uint64_t>& current_representation_start_times =
       representation_segment_start_times_[representation_id];
-  representation_start_times.push_back(start_time);
+  current_representation_start_times.push_back(start_time);
   // There's no way to detemine whether the segments are aligned if some
   // representations do not have any segments.
   if (representation_segment_start_times_.size() != representation_map_.size())
     return;
 
-  DCHECK(!representation_start_times.empty());
-  const uint64_t expected_start_time = representation_start_times.front();
-  for (RepresentationTimeline::const_iterator it =
-           representation_segment_start_times_.begin();
-       it != representation_segment_start_times_.end(); ++it) {
+  DCHECK(!current_representation_start_times.empty());
+  const uint64_t expected_start_time =
+      current_representation_start_times.front();
+  for (const auto& key_value : representation_segment_start_times_) {
+    const std::list<uint64_t>& representation_start_time = key_value.second;
     // If there are no entries in a list, then there is no way for the
     // segment alignment status to change.
     // Note that it can be empty because entries get deleted below.
-    if (it->second.empty())
+    if (representation_start_time.empty())
       return;
 
-    if (expected_start_time != it->second.front()) {
+    if (expected_start_time != representation_start_time.front()) {
+      VLOG(1) << "Seeing Misaligned segments with different start_times: "
+              << expected_start_time << " vs "
+              << representation_start_time.front();
       // Flag as false and clear the start times data, no need to keep it
       // around.
       segments_aligned_ = kSegmentAlignmentFalse;
@@ -479,16 +481,15 @@ void AdaptationSet::CheckLiveSegmentAlignment(uint32_t representation_id,
   }
   segments_aligned_ = kSegmentAlignmentTrue;
 
-  for (RepresentationTimeline::iterator it =
-           representation_segment_start_times_.begin();
-       it != representation_segment_start_times_.end(); ++it) {
-    it->second.pop_front();
+  for (auto& key_value : representation_segment_start_times_) {
+    std::list<uint64_t>& representation_start_time = key_value.second;
+    representation_start_time.pop_front();
   }
 }
 
 // Make sure all segements start times match for all Representations.
 // This assumes that the segments are contiguous.
-void AdaptationSet::CheckVodSegmentAlignment() {
+void AdaptationSet::CheckStaticSegmentAlignment() {
   if (segments_aligned_ == kSegmentAlignmentFalse ||
       force_set_segment_alignment_) {
     return;
