@@ -13,11 +13,6 @@ Widevine encryption options
     AES signing key (--aes_signing_key, --aes_signing_iv) or RSA signing key
     (--rsa_signing_key_path).
 
---include_common_pssh
-
-    When using Widevine encryption, include an additional v1 PSSH box for the
-    common system ID that includes the key IDs. See https://goo.gl/s8RIhr.
-
 --key_server_url <url>
 
     Key server url. Required for Widevine encryption and decryption.
