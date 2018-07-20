@@ -1026,7 +1026,14 @@ class PackagerFunctionalTest(PackagerAppTest):
     flags = self._GetFlags(output_dash=True, output_hls=True,
                            generate_static_mpd=True, ad_cues='1.5')
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('vtt-text-to-mp4-with-ad-cues')
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    self._CheckTestResults(
+        'vtt-text-to-mp4-with-ad-cues',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testWebmSubsampleEncryption(self):
     streams = [
