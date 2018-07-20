@@ -197,13 +197,6 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
     RETURN_IF_ERROR(ValidateSegmentTemplate(stream.segment_template));
   }
 
-  if (stream.output.find('$') != std::string::npos) {
-    // "$" is only allowed if the output file name is a template, which is
-    // used to support one file per Representation per Period when there are
-    // Ad Cues.
-    RETURN_IF_ERROR(ValidateSegmentTemplate(stream.output));
-  }
-
   // There are some specifics that must be checked based on which format
   // we are writing to.
   const MediaContainerName output_format = GetOutputFormat(stream);
@@ -246,6 +239,20 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
                     "Please specify 'init_segment'. All non-TS multi-segment "
                     "content must provide an init segment.");
     }
+  }
+
+  if (stream.output.find('$') != std::string::npos) {
+    if (output_format == CONTAINER_WEBVTT) {
+      return Status(
+          error::UNIMPLEMENTED,
+          "WebVTT output with one file per Representation per Period "
+          "is not supported yet. Please use fMP4 instead. If that needs to be "
+          "supported, please file a feature request on GitHub.");
+    }
+    // "$" is only allowed if the output file name is a template, which is
+    // used to support one file per Representation per Period when there are
+    // Ad Cues.
+    RETURN_IF_ERROR(ValidateSegmentTemplate(stream.output));
   }
 
   return Status::OK;
