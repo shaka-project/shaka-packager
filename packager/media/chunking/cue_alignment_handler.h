@@ -39,6 +39,8 @@ class CueAlignmentHandler : public MediaHandler {
     std::list<std::unique_ptr<StreamData>> samples;
     // If set, the stream is pending to be flushed.
     bool to_be_flushed = false;
+    // Only set for text stream.
+    double max_text_sample_end_time_seconds = 0;
 
     // A list of cues that the stream should inject between media samples. When
     // there are no cues, the stream should run up to the hint.

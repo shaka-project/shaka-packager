@@ -474,11 +474,15 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
   const int64_t kSample2Start = kSample1End;
   const int64_t kSample2End = kSample2Start + kSampleDuration;
 
-  // Put the cue between the start and end of the last sample.
-  const double kCueTimeInSeconds =
-      static_cast<double>(kSample2Start + kSample2End) / kMsTimeScale;
+  // Put the cue 1 between the start and end of the last sample.
+  const double kCue1TimeInSeconds =
+      static_cast<double>(kSample2Start + kSample2End) / 2 / kMsTimeScale;
 
-  auto sync_points = CreateSyncPoints({kCueTimeInSeconds});
+  // Put the cue 2 after the end of the last sample.
+  const double kCue2TimeInSeconds =
+      static_cast<double>(kSample2End) / kMsTimeScale;
+
+  auto sync_points = CreateSyncPoints({kCue1TimeInSeconds, kCue2TimeInSeconds});
   auto handler = std::make_shared<CueAlignmentHandler>(sync_points.get());
   ASSERT_OK(SetUpAndInitializeGraph(handler, kOneInput, kOneOutput));
 
@@ -496,8 +500,10 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
     EXPECT_CALL(
         *Output(kTextStream),
         OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    // Cue before the sample end is processed.
     EXPECT_CALL(*Output(kTextStream),
-                OnProcess(IsCueEvent(_, kCueTimeInSeconds)));
+                OnProcess(IsCueEvent(_, kCue1TimeInSeconds)));
+    // Cue after the samples is ignored.
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 

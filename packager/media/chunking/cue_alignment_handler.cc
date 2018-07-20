@@ -6,6 +6,8 @@
 
 #include "packager/media/chunking/cue_alignment_handler.h"
 
+#include <algorithm>
+
 #include "packager/status_macros.h"
 
 namespace shaka {
@@ -44,6 +46,15 @@ int64_t GetScaledTime(const StreamInfo& info, const StreamData& data) {
 
 double TimeInSeconds(const StreamInfo& info, const StreamData& data) {
   const int64_t scaled_time = GetScaledTime(info, data);
+  const uint32_t time_scale = info.time_scale();
+
+  return static_cast<double>(scaled_time) / time_scale;
+}
+
+double TextEndTimeInSeconds(const StreamInfo& info, const StreamData& data) {
+  DCHECK(data.text_sample);
+
+  const int64_t scaled_time = data.text_sample->EndTime();
   const uint32_t time_scale = info.time_scale();
 
   return static_cast<double>(scaled_time) / time_scale;
@@ -132,12 +143,23 @@ Status CueAlignmentHandler::OnFlushRequest(size_t stream_index) {
     RETURN_IF_ERROR(RunThroughSamples(&stream));
     DCHECK_EQ(stream.samples.size(), 0u);
 
-    // It is possible for there to be cues that come after all the samples. Make
-    // sure to send them out too.
-    while (stream.cues.size()) {
-      RETURN_IF_ERROR(Dispatch(std::move(stream.cues.front())));
-      stream.cues.pop_front();
+    // Ignore extra cues at the end, except for text, as they will result in
+    // empty DASH Representations, which is not spec compliant.
+    // For text, if the cue is before the max end time, it will still be
+    // dispatched as the text samples intercepted by the cue can be split into
+    // two at the cue point.
+    for (auto& cue : stream.cues) {
+      // |max_text_sample_end_time_seconds| is always 0 for non-text samples.
+      if (cue->cue_event->time_in_seconds <
+          stream.max_text_sample_end_time_seconds) {
+        RETURN_IF_ERROR(Dispatch(std::move(cue)));
+      } else {
+        VLOG(1) << "Ignore extra cue in stream " << cue->stream_index
+                << " with time " << cue->cue_event->time_in_seconds
+                << "s in the end.";
+      }
     }
+    stream.cues.clear();
   }
 
   return FlushAllDownstreams();
@@ -218,9 +240,16 @@ Status CueAlignmentHandler::OnSample(std::unique_ptr<StreamData> sample) {
   // us until there is a sync point.
 
   const size_t stream_index = sample->stream_index;
+
+  if (sample->text_sample) {
+    StreamState& stream = stream_states_[stream_index];
+    stream.max_text_sample_end_time_seconds =
+        std::max(stream.max_text_sample_end_time_seconds,
+                 TextEndTimeInSeconds(*stream.info, *sample));
+  }
+
   const StreamType stream_type =
       stream_states_[stream_index].info->stream_type();
-
   const bool is_video = stream_type == kStreamVideo;
 
   return is_video ? OnVideoSample(std::move(sample))
