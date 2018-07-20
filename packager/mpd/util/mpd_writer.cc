@@ -19,10 +19,9 @@
 #include "packager/mpd/base/simple_mpd_notifier.h"
 
 DEFINE_bool(generate_dash_if_iop_compliant_mpd,
-            false,
-            "Try to generate DASH-IF IOPv3 compliant MPD. This is best effort "
-            "and does not guarantee compliance. Off by default until players "
-            "support IOP MPDs.");
+            true,
+            "Try to generate DASH-IF IOP compliant MPD. This is best effort "
+            "and does not guarantee compliance.");
 
 namespace shaka {
 
