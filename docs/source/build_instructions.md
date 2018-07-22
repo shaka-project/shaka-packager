@@ -215,7 +215,7 @@ The install-build-deps script can be used to install all the compiler
 and library dependencies directly from Ubuntu:
 
 ```shell
-$ ./pacakger/build/install-build-deps.sh
+$ ./packager/build/install-build-deps.sh
 ```
 
 Install sysroot image and others using `gclient`:
