@@ -96,7 +96,6 @@ class MpdBuilderTest : public ::testing::Test {
 
  private:
   Period* period_ = nullptr;
-  base::AtomicSequenceNumber representation_counter_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdBuilderTest);
 };

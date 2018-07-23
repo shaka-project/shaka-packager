@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/atomic_sequence_num.h"
 #include "packager/base/macros.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/hls/base/hls_notifier.h"
@@ -88,7 +87,7 @@ class SimpleHlsNotifier : public HlsNotifier {
   std::map<uint32_t, std::unique_ptr<StreamEntry>> stream_map_;
   std::list<MediaPlaylist*> media_playlists_;
 
-  base::AtomicSequenceNumber sequence_number_;
+  uint32_t sequence_number_ = 0;
 
   base::Lock lock_;
 

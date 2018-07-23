@@ -33,7 +33,7 @@ class AdaptationSetTest : public ::testing::Test {
 
  protected:
   MpdOptions mpd_options_;
-  base::AtomicSequenceNumber representation_counter_;
+  uint32_t representation_counter_ = 0;
 };
 
 class OnDemandAdaptationSetTest : public AdaptationSetTest {

@@ -37,7 +37,7 @@ std::set<std::string> GetUUIDs(
 Period::Period(uint32_t period_id,
                double start_time_in_seconds,
                const MpdOptions& mpd_options,
-               base::AtomicSequenceNumber* representation_counter)
+               uint32_t* representation_counter)
     : id_(period_id),
       start_time_in_seconds_(start_time_in_seconds),
       mpd_options_(mpd_options),
@@ -139,7 +139,7 @@ const std::list<AdaptationSet*> Period::GetAdaptationSets() const {
 std::unique_ptr<AdaptationSet> Period::NewAdaptationSet(
     const std::string& language,
     const MpdOptions& options,
-    base::AtomicSequenceNumber* representation_counter) {
+    uint32_t* representation_counter) {
   return std::unique_ptr<AdaptationSet>(
       new AdaptationSet(language, options, representation_counter));
 }

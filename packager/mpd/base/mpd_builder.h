@@ -17,7 +17,6 @@
 #include <memory>
 #include <string>
 
-#include "packager/base/atomic_sequence_num.h"
 #include "packager/base/time/clock.h"
 #include "packager/mpd/base/mpd_options.h"
 
@@ -122,8 +121,8 @@ class MpdBuilder {
   std::list<std::string> base_urls_;
   std::string availability_start_time_;
 
-  base::AtomicSequenceNumber period_counter_;
-  base::AtomicSequenceNumber representation_counter_;
+  uint32_t period_counter_ = 0;
+  uint32_t representation_counter_ = 0;
 
   // By default, this returns the current time. This can be injected for
   // testing.

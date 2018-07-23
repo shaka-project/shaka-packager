@@ -80,15 +80,15 @@ class TestablePeriod : public Period {
                mpd_options,
                &sequence_number_) {}
 
-  MOCK_METHOD3(NewAdaptationSet,
-               std::unique_ptr<AdaptationSet>(
-                   const std::string& lang,
-                   const MpdOptions& options,
-                   base::AtomicSequenceNumber* representation_counter));
+  MOCK_METHOD3(
+      NewAdaptationSet,
+      std::unique_ptr<AdaptationSet>(const std::string& lang,
+                                     const MpdOptions& options,
+                                     uint32_t* representation_counter));
 
  private:
   // Only for constructing the super class. Not used for testing.
-  base::AtomicSequenceNumber sequence_number_;
+  uint32_t sequence_number_ = 0;
 };
 
 }  // namespace

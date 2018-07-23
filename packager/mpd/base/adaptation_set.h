@@ -17,7 +17,6 @@
 #include <set>
 #include <vector>
 
-#include "packager/base/atomic_sequence_num.h"
 #include "packager/base/optional.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
@@ -178,7 +177,7 @@ class AdaptationSet {
   ///        Representation. It can not be NULL.
   AdaptationSet(const std::string& language,
                 const MpdOptions& mpd_options,
-                base::AtomicSequenceNumber* representation_counter);
+                uint32_t* representation_counter);
 
  private:
   AdaptationSet(const AdaptationSet&) = delete;
@@ -235,7 +234,7 @@ class AdaptationSet {
   // sorted by default.
   std::map<uint32_t, std::unique_ptr<Representation>> representation_map_;
 
-  base::AtomicSequenceNumber* const representation_counter_;
+  uint32_t* const representation_counter_;
 
   base::Optional<uint32_t> id_;
   const std::string language_;

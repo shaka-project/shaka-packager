@@ -12,7 +12,6 @@
 #include <list>
 #include <map>
 
-#include "packager/base/atomic_sequence_num.h"
 #include "packager/base/optional.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -76,7 +75,7 @@ class Period {
   Period(uint32_t period_id,
          double start_time_in_seconds,
          const MpdOptions& mpd_options,
-         base::AtomicSequenceNumber* representation_counter);
+         uint32_t* representation_counter);
 
  private:
   Period(const Period&) = delete;
@@ -89,7 +88,7 @@ class Period {
   virtual std::unique_ptr<AdaptationSet> NewAdaptationSet(
       const std::string& lang,
       const MpdOptions& options,
-      base::AtomicSequenceNumber* representation_counter);
+      uint32_t* representation_counter);
 
   // Helper function to set new AdaptationSet attributes.
   bool SetNewAdaptationSetAttributes(
@@ -109,7 +108,7 @@ class Period {
   const double start_time_in_seconds_;
   double duration_seconds_ = 0;
   const MpdOptions& mpd_options_;
-  base::AtomicSequenceNumber* const representation_counter_;
+  uint32_t* const representation_counter_;
   std::list<std::unique_ptr<AdaptationSet>> adaptation_sets_;
   // AdaptationSets grouped by a specific adaptation set grouping key.
   // AdaptationSets with the same key contain identical parameters except

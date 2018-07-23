@@ -168,7 +168,7 @@ class RepresentationStateChangeListenerImpl
 
 AdaptationSet::AdaptationSet(const std::string& language,
                              const MpdOptions& mpd_options,
-                             base::AtomicSequenceNumber* counter)
+                             uint32_t* counter)
     : representation_counter_(counter),
       language_(language),
       mpd_options_(mpd_options),
@@ -180,7 +180,7 @@ AdaptationSet::AdaptationSet(const std::string& language,
 AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
-  const uint32_t representation_id = representation_counter_->GetNext();
+  const uint32_t representation_id = (*representation_counter_)++;
   // Note that AdaptationSet outlive Representation, so this object
   // will die before AdaptationSet.
   std::unique_ptr<RepresentationStateChangeListener> listener(

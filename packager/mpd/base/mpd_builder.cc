@@ -131,9 +131,8 @@ Period* MpdBuilder::GetOrCreatePeriod(double start_time_in_seconds) {
     if (match)
       return period.get();
   }
-  periods_.emplace_back(new Period(period_counter_.GetNext(),
-                                   start_time_in_seconds, mpd_options_,
-                                   &representation_counter_));
+  periods_.emplace_back(new Period(period_counter_++, start_time_in_seconds,
+                                   mpd_options_, &representation_counter_));
   return periods_.back().get();
 }
 

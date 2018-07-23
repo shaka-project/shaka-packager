@@ -38,7 +38,7 @@ class MockPeriod : public Period {
 
  private:
   // Only for constructing the super class. Not used for testing.
-  base::AtomicSequenceNumber sequence_counter_;
+  uint32_t sequence_counter_ = 0;
 };
 
 class MockAdaptationSet : public AdaptationSet {
@@ -62,7 +62,7 @@ class MockAdaptationSet : public AdaptationSet {
 
  private:
   // Only for constructing the super class. Not used for testing.
-  base::AtomicSequenceNumber sequence_counter_;
+  uint32_t sequence_counter_ = 0;
 };
 
 class MockRepresentation : public Representation {

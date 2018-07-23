@@ -313,8 +313,8 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     encryption_method = enc_method.value();
   }
 
-  *stream_id = sequence_number_.GetNext();
   base::AutoLock auto_lock(lock_);
+  *stream_id = sequence_number_++;
   media_playlists_.push_back(media_playlist.get());
   stream_map_[*stream_id].reset(
       new StreamEntry{std::move(media_playlist), encryption_method});
