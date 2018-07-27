@@ -221,8 +221,9 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
       first_crypto_period_index_ =
           crypto_period_index ? crypto_period_index - 1 : 0;
       DCHECK(!key_pool_);
-      key_pool_.reset(new EncryptionKeyQueue(crypto_period_count_,
-                                             first_crypto_period_index_));
+      const size_t queue_size = crypto_period_count_ * 10;
+      key_pool_.reset(
+          new EncryptionKeyQueue(queue_size, first_crypto_period_index_));
       start_key_production_.Signal();
       key_production_started_ = true;
     }

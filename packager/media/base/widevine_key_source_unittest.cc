@@ -564,9 +564,9 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   const uint32_t kCryptoPeriodCount = 10;
   // Array of indexes to be checked.
   const uint32_t kCryptoPeriodIndexes[] = {
-      kFirstCryptoPeriodIndex, 17, 37, 38, 36, 39};
-  // Derived from kCryptoPeriodIndexes: ceiling((39 - 8 ) / 10).
-  const uint32_t kCryptoIterations = 4;
+      kFirstCryptoPeriodIndex, 17, 37, 38, 36, 89};
+  // Derived from kCryptoPeriodIndexes: ceiling((89 - 8 ) / 10).
+  const uint32_t kCryptoIterations = 9;
 
   // Generate expectations in sequence.
   InSequence dummy;
@@ -597,6 +597,9 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
     EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
         .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
   }
+  // Fail future requests.
+  EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
+      .WillRepeatedly(Return(false));
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(std::move(mock_request_signer_));

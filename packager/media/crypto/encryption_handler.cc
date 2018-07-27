@@ -227,8 +227,10 @@ Status EncryptionHandler::ProcessMediaSample(
   // need to be encrypted, so we can signal encryption metadata earlier to
   // allows clients to prefetch the keys.
   if (check_new_crypto_period_) {
-    const int64_t current_crypto_period_index =
-        clear_sample->dts() / crypto_period_duration_;
+    // |dts| can be negative, e.g. after EditList adjustments. Normalized to 0
+    // in that case.
+    const int64_t dts = std::max(clear_sample->dts(), static_cast<int64_t>(0));
+    const int64_t current_crypto_period_index = dts / crypto_period_duration_;
     if (current_crypto_period_index != prev_crypto_period_index_) {
       EncryptionKey encryption_key;
       Status status = key_source_->GetCryptoPeriodKey(
