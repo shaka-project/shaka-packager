@@ -317,15 +317,16 @@ Status ValidateParams(const PackagingParams& packaging_params,
 
 bool StreamDescriptorCompareFn(const StreamDescriptor& a,
                                const StreamDescriptor& b) {
+  // This function is used by std::sort() to sort the stream descriptors.
+  // Note that std::sort() need a comparator that return true iff the first
+  // argument is strictly lower than the second one. That is: must return false
+  // when they are equal. The requirement is enforced in gcc/g++ but not in
+  // clang.
   if (a.input == b.input) {
     if (a.stream_selector == b.stream_selector) {
       // The MPD notifier requires that the main track comes first, so make
       // sure that happens.
-      if (a.trick_play_factor == 0 || b.trick_play_factor == 0) {
-        return a.trick_play_factor == 0;
-      } else {
-        return a.trick_play_factor > b.trick_play_factor;
-      }
+      return a.trick_play_factor < b.trick_play_factor;
     } else {
       return a.stream_selector < b.stream_selector;
     }
