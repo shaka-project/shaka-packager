@@ -147,7 +147,16 @@ Status MP4Muxer::InitializeMuxer() {
 }
 
 Status MP4Muxer::Finalize() {
-  DCHECK(segmenter_);
+  // This happens on streams that are not initialized, i.e. not going through
+  // DelayInitializeMuxer, which can only happen if there are no samples from
+  // the stream.
+  if (!segmenter_) {
+    DCHECK(to_be_initialized_);
+    LOG(INFO) << "Skip stream '" << options().output_file_name
+              << "' which does not contain any sample.";
+    return Status::OK;
+  }
+
   Status segmenter_finalized = segmenter_->Finalize();
 
   if (!segmenter_finalized.ok())
