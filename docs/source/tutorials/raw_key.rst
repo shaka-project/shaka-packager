@@ -61,7 +61,7 @@ Widevine PSSH (with pre-generated Widevine PSSH)::
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
       --enable_raw_key_encryption \
       --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
-      --pssh 000000407073736800000000edef8ba979d64acea3c827dcd51d21ed000000201a0d7769646576696e655f74657374220f7465737420636f6e74656e74206964 \
+      --pssh 000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964 \
       --mpd_output h264.mpd
 
 Widevine PSSH and PlayReady PSSH::
@@ -106,13 +106,13 @@ Test vectors used in this tutorial
 
 :Widevine PSSH:
 
-    000000407073736800000000edef8ba979d64acea3c827dcd51d21ed000000201a0d7769646576696e655f74657374220f7465737420636f6e74656e74206964
+    000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964
 
     The PSSH is generated using
     `pssh-box script <https://github.com/google/shaka-packager/tree/master/packager/tools/pssh>`_::
 
         $ pssh-box.py --widevine-system-id \
-          --content-id 7465737420636f6e74656e74206964 --provider widevine_test
+          --content-id 7465737420636f6e74656e74206964 --hex
 
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/general_encryption_options.rst
