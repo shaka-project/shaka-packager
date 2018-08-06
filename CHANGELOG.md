@@ -16,7 +16,7 @@
 
 ## [2.1.0] - 2018-05-22
 ### Added
-- Support Widevine and Playready PSSH generation internally in packager (#245).
+- Support Widevine and PlayReady PSSH generation internally in packager (#245).
   Documentation will be updated later.
 - Support removing segments outside of live window in DASH and HLS (#223).
 - Support UTCTiming for DASH (#311).

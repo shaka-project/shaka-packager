@@ -16,7 +16,7 @@
 namespace shaka {
 namespace media {
 
-/// A key source that uses playready for encryption.
+/// A key source that uses PlayReady for encryption.
 class PlayReadyKeySource : public KeySource {
  public:
   /// Creates a new PlayReadyKeySource from the given packaging information.

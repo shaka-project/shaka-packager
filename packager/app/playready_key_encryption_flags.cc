@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-// Defines command line flags for playready encryption.
+// Defines command line flags for PlayReady encryption.
 
 #include "packager/app/playready_key_encryption_flags.h"
 
@@ -12,7 +12,7 @@
 
 DEFINE_bool(enable_playready_encryption,
             false,
-            "Enable encryption with playready key.");
+            "Enable encryption with PlayReady key.");
 DEFINE_string(playready_server_url, "", "PlayReady packaging server url.");
 DEFINE_string(program_identifier, "",
               "Program identifier for packaging request.");

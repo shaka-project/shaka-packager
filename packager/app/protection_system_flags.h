@@ -11,8 +11,6 @@
 
 #include <gflags/gflags.h>
 
-DECLARE_bool(generate_common_pssh);
-DECLARE_bool(generate_playready_pssh);
-DECLARE_bool(generate_widevine_pssh);
+DECLARE_string(additional_protection_systems);
 
 #endif  // PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_

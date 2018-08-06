@@ -44,18 +44,32 @@ std::unique_ptr<RequestSigner> CreateSigner(const WidevineSigner& signer) {
   return request_signer;
 }
 
+int GetProtectionSystemsFlag(
+    const std::vector<EncryptionParams::ProtectionSystem>& protection_systems) {
+  int protection_systems_flags = 0;
+  for (const auto protection_system : protection_systems) {
+    switch (protection_system) {
+      case EncryptionParams::ProtectionSystem::kCommonSystem:
+        protection_systems_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
+        break;
+      case EncryptionParams::ProtectionSystem::kPlayReady:
+        protection_systems_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
+        break;
+      case EncryptionParams::ProtectionSystem::kWidevine:
+        protection_systems_flags |= WIDEVINE_PROTECTION_SYSTEM_FLAG;
+        break;
+    }
+  }
+  return protection_systems_flags;
+}
+
 }  // namespace
 
 std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
     const EncryptionParams& encryption_params) {
-  int protection_systems_flags(0);
-  if (encryption_params.generate_common_pssh)
-    protection_systems_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
-  if (encryption_params.generate_playready_pssh)
-    protection_systems_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
-  if (encryption_params.generate_widevine_pssh)
-    protection_systems_flags |= WIDEVINE_PROTECTION_SYSTEM_FLAG;
+  int protection_systems_flags =
+      GetProtectionSystemsFlag(encryption_params.additional_protection_systems);
 
   std::unique_ptr<KeySource> encryption_key_source;
   switch (encryption_params.key_provider) {
@@ -105,7 +119,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
           !playready.program_identifier.empty()) {
         if (playready.key_server_url.empty() ||
             playready.program_identifier.empty()) {
-          LOG(ERROR) << "Either playready key_server_url or program_identifier "
+          LOG(ERROR) << "Either PlayReady key_server_url or program_identifier "
                         "is not set.";
           return nullptr;
         }
@@ -115,7 +129,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
             !playready.client_cert_private_key_file.empty()) {
           if (playready.client_cert_file.empty() ||
               playready.client_cert_private_key_file.empty()) {
-            LOG(ERROR) << "Either playready client_cert_file or "
+            LOG(ERROR) << "Either PlayReady client_cert_file or "
                           "client_cert_private_key_file is not set.";
             return nullptr;
           }

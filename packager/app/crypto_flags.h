@@ -5,7 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 //
 // Defines common command line flags for encryption and decryption, which
-// applies to all key sources, i.e. fixed key, widevine and playready.
+// applies to all key sources, i.e. raw key, Widevine and PlayReady.
 
 #ifndef PACKAGER_APP_CRYPTO_FLAGS_H_
 #define PACKAGER_APP_CRYPTO_FLAGS_H_

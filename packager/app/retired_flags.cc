@@ -35,6 +35,18 @@ DEFINE_int32(
     num_subsegments_per_sidx,
     0,
     "This flag is deprecated. Use --generate_sidx_in_media_segments instead.");
+DEFINE_bool(
+    generate_widevine_pssh,
+    false,
+    "This flag is deprecated. Use --additional_protection_systems instead.");
+DEFINE_bool(
+    generate_playready_pssh,
+    false,
+    "This flag is deprecated. Use --additional_protection_systems instead.");
+DEFINE_bool(
+    generate_common_pssh,
+    false,
+    "This flag is deprecated. Use --additional_protection_systems instead.");
 
 // The current gflags library does not provide a way to check whether a flag is
 // set in command line. If a flag has a different value to its default value,
@@ -70,6 +82,16 @@ bool InformRetiredDefaultInt32Flag(const char* flagname, int32_t value) {
   return true;
 }
 
+bool InformRetiredPsshGenerationFlag(const char* flagname, bool value) {
+  if (value) {
+    fprintf(stderr,
+            "WARNING: %s is deprecated and ignored. Please switch to "
+            "--additional_protection_systems.\n",
+            flagname);
+  }
+  return true;
+}
+
 DEFINE_validator(profile, &InformRetiredStringFlag);
 DEFINE_validator(single_segment, &InformRetiredDefaultTrueFlag);
 DEFINE_validator(webm_subsample_encryption, &InformRetiredDefaultTrueFlag);
@@ -79,3 +101,6 @@ DEFINE_validator(playready_key, &InformRetiredStringFlag);
 DEFINE_validator(mp4_use_decoding_timestamp_in_timeline,
                  &InformRetiredDefaultFalseFlag);
 DEFINE_validator(num_subsegments_per_sidx, &InformRetiredDefaultInt32Flag);
+DEFINE_validator(generate_widevine_pssh, &InformRetiredPsshGenerationFlag);
+DEFINE_validator(generate_playready_pssh, &InformRetiredPsshGenerationFlag);
+DEFINE_validator(generate_common_pssh, &InformRetiredPsshGenerationFlag);

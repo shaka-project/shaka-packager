@@ -51,7 +51,7 @@ Common PSSH (different keys for different streams)::
       --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
       --mpd_output h264.mpd
 
-Widevine PSSH (with pre-generated Widevine PSSH)::
+Widevine (with pre-generated Widevine PSSH)::
 
     $ packager \
       in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
@@ -64,7 +64,7 @@ Widevine PSSH (with pre-generated Widevine PSSH)::
       --pssh 000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964 \
       --mpd_output h264.mpd
 
-Widevine PSSH and PlayReady PSSH::
+Widevine and PlayReady::
 
     $ packager \
       in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
@@ -74,12 +74,13 @@ Widevine PSSH and PlayReady PSSH::
       in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
       --enable_raw_key_encryption \
       --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
-      --generate_widevine_pssh \
-      --generate_playready_pssh \
+      --additional_protection_systems Widevine,PlayReady \
       --mpd_output h264.mpd
 
-Note that user is responsible for setting up Widevine and PlayReady license server
-and managing keys there.
+.. note::
+
+    User is responsible for setting up Widevine and PlayReady license server and
+    managing keys there.
 
 Refer to
 `player setup <https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html>`_

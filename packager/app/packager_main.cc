@@ -257,6 +257,32 @@ bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
   return true;
 }
 
+bool ParseProtectionSystems(
+    const std::string& protection_systems_str,
+    std::vector<EncryptionParams::ProtectionSystem>* protection_systems) {
+  protection_systems->clear();
+
+  std::map<std::string, EncryptionParams::ProtectionSystem> mapping = {
+      {"common", EncryptionParams::ProtectionSystem::kCommonSystem},
+      {"commonsystem", EncryptionParams::ProtectionSystem::kCommonSystem},
+      {"playready", EncryptionParams::ProtectionSystem::kPlayReady},
+      {"widevine", EncryptionParams::ProtectionSystem::kWidevine},
+  };
+
+  for (const std::string& protection_system :
+       base::SplitString(base::ToLowerASCII(protection_systems_str), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    auto iter = mapping.find(protection_system);
+    if (iter == mapping.end()) {
+      LOG(ERROR) << "Seeing unrecognized protection system: "
+                 << protection_system;
+      return false;
+    }
+    protection_systems->push_back(iter->second);
+  }
+  return true;
+}
+
 base::Optional<PackagingParams> GetPackagingParams() {
   PackagingParams packaging_params;
 
@@ -276,9 +302,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
 
   int num_key_providers = 0;
   EncryptionParams& encryption_params = packaging_params.encryption_params;
-  encryption_params.generate_common_pssh = FLAGS_generate_common_pssh;
-  encryption_params.generate_playready_pssh = FLAGS_generate_playready_pssh;
-  encryption_params.generate_widevine_pssh = FLAGS_generate_widevine_pssh;
   if (FLAGS_enable_widevine_encryption) {
     encryption_params.key_provider = KeyProvider::kWidevine;
     ++num_key_providers;
@@ -295,6 +318,12 @@ base::Optional<PackagingParams> GetPackagingParams() {
     LOG(ERROR) << "Only one of --enable_widevine_encryption, "
                   "--enable_playready_encryption, "
                   "--enable_raw_key_encryption can be enabled.";
+    return base::nullopt;
+  }
+
+  if (!ParseProtectionSystems(
+          FLAGS_additional_protection_systems,
+          &encryption_params.additional_protection_systems)) {
     return base::nullopt;
   }
 

@@ -64,12 +64,8 @@ struct WidevineEncryptionParams {
 };
 
 /// PlayReady encryption parameters.
-/// Two different modes of playready key acquisition is supported:
-///   (1) Fetch from a key server. `key_server_url` and `program_identifier` are
-///       required. The presence of other parameters may be necessary depends
-///       on server configuration.
-///   (2) Provide the raw key directly. Both `key_id` and `key` are required.
-///       We are planning to merge this mode with `RawKeyParams`.
+/// `key_server_url` and `program_identifier` are required. The presence of
+/// other parameters may be necessary depends on server configuration.
 struct PlayReadyEncryptionParams {
   /// PlayReady license / key server URL.
   std::string key_server_url;
@@ -119,19 +115,14 @@ struct EncryptionParams {
   PlayReadyEncryptionParams playready;
   RawKeyParams raw_key;
 
-  /// When it is true, generate a v1 PSSH box for the common
-  /// system ID. See: https://goo.gl/s8RIhr.
-  /// The flag is default to be true if --enable_raw_key_encryption
-  /// is set and no other pssh flags are specified.
-  bool generate_common_pssh = false;
-  /// When it is true, include a PlayReady PSSH box.
-  /// A playready PSSH is always generated regardless of the value of
-  /// --generate_playready_pssh for --enable_playready_encryption.
-  bool generate_playready_pssh = false;
-  /// When it is true, include a widevine PSSH box.
-  /// A widevine PSSH is always generated regardless of the value of
-  /// --generate_widevine_pssh for --enable_widevine_encryption.
-  bool generate_widevine_pssh = false;
+  /// Supported protection systems.
+  enum class ProtectionSystem {
+    kWidevine,
+    kPlayReady,
+    kCommonSystem,
+  };
+  /// Additional protection systems to be generated.
+  std::vector<ProtectionSystem> additional_protection_systems;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;

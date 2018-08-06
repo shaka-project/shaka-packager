@@ -3,7 +3,11 @@ Raw key encryption options
 
 --enable_raw_key_encryption
 
-    Enable encryption with raw key (keys provided in command line)).
+    Enable encryption with raw key (keys provided in command line)). This
+    generates `Common protection system <https://goo.gl/s8RIhr>`_ if neither
+    --pssh nor --additional_protection_systems is specified. Use --pssh to
+    provide custom protection systems or use --additional_protection_systems to
+    generate protection systems automatically.
 
 --enable_raw_key_decryption
 
@@ -31,5 +35,6 @@ Raw key encryption options
 
 --pssh <hex string>
 
-    One or more concatenated PSSH boxes in hex string format. If not specified,
-    a `v1 common PSSH box <https://goo.gl/s8RIhr>`_ will be generated.
+    One or more concatenated PSSH boxes in hex string format. If neither this
+    flag nor --additional_protection_systems is specified, a
+    `v1 common PSSH box <https://goo.gl/s8RIhr>`_ will be generated.

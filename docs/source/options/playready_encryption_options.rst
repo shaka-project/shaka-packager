@@ -3,7 +3,9 @@ PlayReady encryption options
 
 --enable_playready_encryption
 
-    Enable encryption with playready key.
+    Enable encryption with PlayReady key. This generates PlayReady protection
+    system. Additional protection systems can be generated with
+    --additional_protection_systems option.
 
 --playready_server_url <url>
 
@@ -12,14 +14,6 @@ PlayReady encryption options
 --program_identifier <program_identifier>
 
     Program identifier for packaging request.
-
---playready_key_id <hex>
-
-    PlayReady key id in hex.
-
---playready_key <hex>
-
-    PlayReady key in hex.
 
 --ca_file <file path>
 

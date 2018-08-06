@@ -72,7 +72,7 @@ The examples below uses the H264 streams created in :doc:`encoding`.
       --aes_signing_key 1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9 \
       --aes_signing_iv d58ce954203b7c9a9a9d467f59839249
 
-* One example with multi-DRM support (Playready PSSH in addition to Widevine PSSH)::
+* One example with multi-DRM support (PlayReady in addition to Widevine)::
 
     $ packager \
       in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
@@ -88,9 +88,12 @@ The examples below uses the H264 streams created in :doc:`encoding`.
       --signer widevine_test \
       --aes_signing_key 1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9 \
       --aes_signing_iv d58ce954203b7c9a9a9d467f59839249 \
-      --generate_playready_pssh
+      --additional_protection_systems PlayReady
 
-Note that user is responsible for setting up the PlayReady server and managing keys there.
+.. note::
+
+    User is responsible for setting up the PlayReady server and managing keys
+    there.
 
 Refer to
 `player setup <https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html>`_

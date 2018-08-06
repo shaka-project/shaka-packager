@@ -185,7 +185,7 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
   }
   status = SetKeyInformationFromServerResponse(acquire_license_response,
                                                encryption_key.get());
-  // Playready does not specify different streams.
+  // PlayReady does not specify different streams.
   const char kEmptyDrmLabel[] = "";
   EncryptionKeyMap encryption_key_map;
   encryption_key_map[kEmptyDrmLabel] = std::move(encryption_key);
@@ -199,7 +199,7 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
 
 Status PlayReadyKeySource::FetchKeys(EmeInitDataType init_data_type,
                                      const std::vector<uint8_t>& init_data) {
-  // Do nothing for playready encryption/decryption.
+  // Do nothing for PlayReady encryption/decryption.
   return Status::OK;
 }
 
