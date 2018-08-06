@@ -19,11 +19,19 @@ namespace shaka {
 namespace {
 // Create a temp file name using process id, thread id and current time.
 std::string TempFileName() {
-  const int32_t pid = static_cast<int32_t>(base::GetCurrentProcId());
-  const int32_t tid = static_cast<int32_t>(base::PlatformThread::CurrentId());
+  const int32_t process_id = static_cast<int32_t>(base::GetCurrentProcId());
+  const int32_t thread_id =
+      static_cast<int32_t>(base::PlatformThread::CurrentId());
+
+  // We may need two or more temporary files in the same thread. There might be
+  // name collision if they are requested around the same time, e.g. called
+  // consecutively. Use a thread_local instance to avoid that.
+  static thread_local int32_t instance_id = 0;
+  ++instance_id;
+
   const int64_t current_time = base::Time::Now().ToInternalValue();
-  return base::StringPrintf("packager-tempfile-%x-%x-%" PRIx64, pid, tid,
-                            current_time);
+  return base::StringPrintf("packager-tempfile-%x-%x-%x-%" PRIx64, process_id,
+                            thread_id, instance_id, current_time);
 }
 }  // namespace
 
