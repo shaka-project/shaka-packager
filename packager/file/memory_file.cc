@@ -11,8 +11,10 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <set>
 
 #include "packager/base/logging.h"
+#include "packager/base/synchronization/lock.h"
 
 namespace shaka {
 namespace {
@@ -23,34 +25,88 @@ class FileSystem {
   ~FileSystem() {}
 
   static FileSystem* Instance() {
-    if (!g_file_system_)
-      g_file_system_.reset(new FileSystem());
-
-    return g_file_system_.get();
+    static FileSystem instance;
+    return &instance;
   }
 
-  bool Exists(const std::string& file_name) const {
-    return files_.find(file_name) != files_.end();
+  void Delete(const std::string& file_name) {
+    base::AutoLock auto_lock(lock_);
+
+    if (open_files_.find(file_name) != open_files_.end()) {
+      LOG(ERROR) << "File '" << file_name
+                 << "' is still open. Deleting an open MemoryFile is not "
+                    "allowed. Exit without deleting the file.";
+      return;
+    }
+
+    files_.erase(file_name);
   }
 
-  std::vector<uint8_t>* GetFile(const std::string& file_name) {
+  void DeleteAll() {
+    base::AutoLock auto_lock(lock_);
+    if (!open_files_.empty()) {
+      LOG(ERROR) << "There are still files open. Deleting an open MemoryFile "
+                    "is not allowed. Exit without deleting the file.";
+      return;
+    }
+    files_.clear();
+  }
+
+  std::vector<uint8_t>* Open(const std::string& file_name,
+                             const std::string& mode) {
+    base::AutoLock auto_lock(lock_);
+
+    if (open_files_.find(file_name) != open_files_.end()) {
+      NOTIMPLEMENTED() << "File '" << file_name
+                       << "' is already open. MemoryFile does not support "
+                          "open the same file before it is closed.";
+      return nullptr;
+    }
+
+    auto iter = files_.find(file_name);
+    if (mode == "r") {
+      if (iter == files_.end())
+        return nullptr;
+    } else if (mode == "w") {
+      if (iter != files_.end())
+        iter->second.clear();
+    } else {
+      NOTIMPLEMENTED() << "File mode '" << mode
+                       << "' not supported by MemoryFile";
+      return nullptr;
+    }
+
+    open_files_[file_name] = mode;
     return &files_[file_name];
   }
 
-  void Delete(const std::string& file_name) { files_.erase(file_name); }
+  bool Close(const std::string& file_name) {
+    base::AutoLock auto_lock(lock_);
 
-  void DeleteAll() { files_.clear(); }
+    auto iter = open_files_.find(file_name);
+    if (iter == open_files_.end()) {
+      LOG(ERROR) << "Cannot close file '" << file_name
+                 << "' which is not open.";
+      return false;
+    }
+
+    open_files_.erase(iter);
+    return true;
+  }
 
  private:
-  FileSystem() {}
+  FileSystem(const FileSystem&) = delete;
+  FileSystem& operator=(const FileSystem&) = delete;
 
-  static std::unique_ptr<FileSystem> g_file_system_;
+  FileSystem() = default;
 
-  std::map<std::string, std::vector<uint8_t> > files_;
-  DISALLOW_COPY_AND_ASSIGN(FileSystem);
+  // Filename to file data map.
+  std::map<std::string, std::vector<uint8_t>> files_;
+  // Filename to file open modes map.
+  std::map<std::string, std::string> open_files_;
+
+  base::Lock lock_;
 };
-
-std::unique_ptr<FileSystem> FileSystem::g_file_system_;
 
 }  // namespace
 
@@ -60,6 +116,8 @@ MemoryFile::MemoryFile(const std::string& file_name, const std::string& mode)
 MemoryFile::~MemoryFile() {}
 
 bool MemoryFile::Close() {
+  if (!FileSystem::Instance()->Close(file_name()))
+    return false;
   delete this;
   return true;
 }
@@ -117,19 +175,10 @@ bool MemoryFile::Tell(uint64_t* position) {
 }
 
 bool MemoryFile::Open() {
-  FileSystem* file_system = FileSystem::Instance();
-  if (mode_ == "r") {
-    if (!file_system->Exists(file_name()))
-      return false;
-  } else if (mode_ == "w") {
-    file_system->Delete(file_name());
-  } else {
-    NOTIMPLEMENTED() << "File mode " << mode_ << " not supported by MemoryFile";
+  file_ = FileSystem::Instance()->Open(file_name(), mode_);
+  if (!file_)
     return false;
-  }
 
-  file_ = file_system->GetFile(file_name());
-  DCHECK(file_);
   position_ = 0;
   return true;
 }

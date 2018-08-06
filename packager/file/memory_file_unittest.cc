@@ -25,6 +25,7 @@ TEST_F(MemoryFileTest, ModifiesSameFile) {
   std::unique_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
   ASSERT_TRUE(writer);
   ASSERT_EQ(kWriteBufferSize, writer->Write(kWriteBuffer, kWriteBufferSize));
+  writer.release()->Close();
 
   // Since File::Open should not create a ThreadedIoFile so there should be
   // no cache.
@@ -101,6 +102,7 @@ TEST_F(MemoryFileTest, WriteExistingFileDeletes) {
   std::unique_ptr<File, FileCloser> file1(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file1);
   ASSERT_EQ(kWriteBufferSize, file1->Write(kWriteBuffer, kWriteBufferSize));
+  file1.release()->Close();
 
   std::unique_ptr<File, FileCloser> file2(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file2);

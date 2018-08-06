@@ -15,6 +15,7 @@ using testing::MockFunction;
 using testing::Return;
 using testing::ReturnArg;
 using testing::StrEq;
+using testing::UnitTest;
 using testing::WithArgs;
 
 namespace shaka {
@@ -41,8 +42,6 @@ const double kClearLeadInSeconds = 1.0;
 
 class PackagerTest : public ::testing::Test {
  public:
-  PackagerTest() {}
-
   void SetUp() override {
     FILE* f = fopen(kTestFile, "rb");
     if (!f) {
@@ -50,6 +49,12 @@ class PackagerTest : public ::testing::Test {
       return;
     }
     fclose(f);
+
+    // Use memory file for testing and generate different test directories for
+    // different tests.
+    test_directory_ = std::string("memory://test/") +
+                      UnitTest::GetInstance()->current_test_info()->name() +
+                      "/";
   }
 
   std::string GetFullPath(const std::string& file_name) {
@@ -91,8 +96,7 @@ class PackagerTest : public ::testing::Test {
   }
 
  protected:
-  // Use memory file for testing.
-  std::string test_directory_ = "memory://test/";
+  std::string test_directory_;
 };
 
 TEST_F(PackagerTest, Version) {
