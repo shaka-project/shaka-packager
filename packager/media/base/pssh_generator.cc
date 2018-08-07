@@ -28,9 +28,11 @@ std::vector<uint8_t> CreatePsshBox(
 
 }  // namespace
 
-PsshGenerator::PsshGenerator() {}
+PsshGenerator::PsshGenerator(const std::vector<uint8_t>& system_id,
+                             uint8_t box_version)
+    : system_id_(system_id), box_version_(box_version) {}
 
-PsshGenerator::~PsshGenerator() {}
+PsshGenerator::~PsshGenerator() = default;
 
 Status PsshGenerator::GeneratePsshFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids,
@@ -41,9 +43,9 @@ Status PsshGenerator::GeneratePsshFromKeyIds(
     return Status(error::ENCRYPTION_FAILURE,
                   "Fail to generate PSSH data from multiple Key IDs.");
   }
-  info->system_id = SystemId();
+  info->system_id = system_id_;
   info->psshs =
-      CreatePsshBox(SystemId(), PsshBoxVersion(), key_ids, pssh_data.value());
+      CreatePsshBox(system_id_, box_version_, key_ids, pssh_data.value());
   return Status::OK;
 }
 
@@ -57,9 +59,9 @@ Status PsshGenerator::GeneratePsshFromKeyIdAndKey(
     return Status(error::ENCRYPTION_FAILURE,
                   "Fail to generate PSSH data from Key ID and Key.");
   }
-  info->system_id = SystemId();
+  info->system_id = system_id_;
   info->psshs =
-      CreatePsshBox(SystemId(), PsshBoxVersion(), {key_id}, pssh_data.value());
+      CreatePsshBox(system_id_, box_version_, {key_id}, pssh_data.value());
   return Status::OK;
 }
 

@@ -130,7 +130,7 @@ std::vector<uint8_t> GetTestKeyId2() {
 
 // TODO(hmchen): move each PsshGenerateTest for each specific key system
 // to each individual files (e.g., playready_pssh_generate_unittest.cc).
-TEST(PsshGeneratorTest, GeneratePlayReadyPsshDataFromKeyIds) {
+TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIds) {
   const std::vector<std::vector<uint8_t>> kTestKeyIds = {GetTestKeyId1(),
                                                          GetTestKeyId2()};
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(

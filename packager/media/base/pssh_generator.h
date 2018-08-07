@@ -17,12 +17,12 @@
 namespace shaka {
 namespace media {
 
-struct EncryptionKey;
-
 class PsshGenerator {
  public:
-  PsshGenerator();
-  virtual ~PsshGenerator() = 0;
+  /// @param system_id is the protection system id for the PSSH.
+  /// @param box_version specifies the version of the new PSSH box.
+  PsshGenerator(const std::vector<uint8_t>& system_id, uint8_t box_version);
+  virtual ~PsshGenerator();
 
   /// @return  whether the PSSH generates the PSSH box based on multiple key
   ///          IDs.
@@ -60,11 +60,8 @@ class PsshGenerator {
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key) const = 0;
 
-  /// Return the PSSH box version.
-  virtual uint8_t PsshBoxVersion() const = 0;
-
-  /// Return the System ID.
-  virtual const std::vector<uint8_t>& SystemId() const = 0;
+  std::vector<uint8_t> system_id_;
+  uint8_t box_version_ = 0;
 };
 
 }  // namespace media

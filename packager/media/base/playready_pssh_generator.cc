@@ -17,14 +17,12 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_writer.h"
-#include "packager/media/base/http_key_fetcher.h"
-#include "packager/media/base/key_source.h"
-#include "packager/media/base/playready_key_source.h"
 
 namespace shaka {
 namespace media {
 namespace {
 
+const uint8_t kPlayReadyPsshBoxVersion = 1;
 const std::string kPlayHeaderObject_4_1 =
     "<WRMHEADER "
     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
@@ -128,21 +126,14 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
 }  // namespace
 
 PlayReadyPsshGenerator::PlayReadyPsshGenerator()
-    : system_id_(std::begin(kPlayReadySystemId), std::end(kPlayReadySystemId)) {
-}
+    : PsshGenerator(std::vector<uint8_t>(std::begin(kPlayReadySystemId),
+                                         std::end(kPlayReadySystemId)),
+                    kPlayReadyPsshBoxVersion) {}
 
 PlayReadyPsshGenerator::~PlayReadyPsshGenerator() {}
 
 bool PlayReadyPsshGenerator::SupportMultipleKeys() {
   return false;
-}
-
-uint8_t PlayReadyPsshGenerator::PsshBoxVersion() const {
-  return 1;
-}
-
-const std::vector<uint8_t>& PlayReadyPsshGenerator::SystemId() const {
-  return system_id_;
 }
 
 base::Optional<std::vector<uint8_t>>
@@ -165,5 +156,6 @@ PlayReadyPsshGenerator::GeneratePsshDataFromKeyIds(
   NOTIMPLEMENTED();
   return base::nullopt;
 }
+
 }  // namespace media
 }  // namespace shaka

@@ -7,27 +7,23 @@
 #include "packager/media/base/widevine_pssh_generator.h"
 
 #include "packager/media/base/pssh_generator_util.h"
-#include "packager/media/base/widevine_key_source.h"
 
 namespace shaka {
 namespace media {
+namespace {
+// Use version 0 for backward compatibility.
+const uint8_t kWidevinePsshBoxVersion = 0;
+}  // namespace
 
 WidevinePsshGenerator::WidevinePsshGenerator()
-    : system_id_(std::begin(kWidevineSystemId), std::end(kWidevineSystemId)) {}
+    : PsshGenerator(std::vector<uint8_t>(std::begin(kWidevineSystemId),
+                                         std::end(kWidevineSystemId)),
+                    kWidevinePsshBoxVersion) {}
 
 WidevinePsshGenerator::~WidevinePsshGenerator() {}
 
 bool WidevinePsshGenerator::SupportMultipleKeys() {
   return true;
-}
-
-uint8_t WidevinePsshGenerator::PsshBoxVersion() const {
-  // This is for backward compatibility.
-  return 0;
-}
-
-const std::vector<uint8_t>& WidevinePsshGenerator::SystemId() const {
-  return system_id_;
 }
 
 base::Optional<std::vector<uint8_t>>
@@ -43,5 +39,6 @@ WidevinePsshGenerator::GeneratePsshDataFromKeyIdAndKey(
   NOTIMPLEMENTED();
   return base::nullopt;
 }
+
 }  // namespace media
 }  // namespace shaka

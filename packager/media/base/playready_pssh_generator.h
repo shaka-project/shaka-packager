@@ -7,10 +7,7 @@
 #ifndef MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 #define MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 
-#include <vector>
-
 #include "packager/media/base/pssh_generator.h"
-#include "testing/gtest/include/gtest/gtest_prod.h"
 
 namespace shaka {
 namespace media {
@@ -35,9 +32,6 @@ class PlayReadyPsshGenerator : public PsshGenerator {
   PlayReadyPsshGenerator(const PlayReadyPsshGenerator&) = delete;
 
   // PsshGenerator implemetation overrides.
-  uint8_t PsshBoxVersion() const override;
-
-  const std::vector<uint8_t>& SystemId() const override;
 
   base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIds(
       const std::vector<std::vector<uint8_t>>& key_ids) const override;
@@ -45,10 +39,6 @@ class PlayReadyPsshGenerator : public PsshGenerator {
   base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIdAndKey(
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key) const override;
-
-  std::vector<uint8_t> system_id_;
-
-  FRIEND_TEST(PsshGeneratorTest, GeneratePlayReadyPsshDataFromKeyIdAndKey);
 };
 
 }  // namespace media
