@@ -233,9 +233,8 @@ class WidevineKeySourceTest : public Test {
       protection_system_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
     if (add_playready_pssh_)
       protection_system_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
-    widevine_key_source_.reset(
-        new WidevineKeySource(kServerUrl, protection_system_flags));
-    widevine_key_source_->set_protection_scheme(protection_scheme_);
+    widevine_key_source_.reset(new WidevineKeySource(
+        kServerUrl, protection_system_flags, protection_scheme_));
     widevine_key_source_->set_key_fetcher(std::move(mock_key_fetcher_));
   }
 

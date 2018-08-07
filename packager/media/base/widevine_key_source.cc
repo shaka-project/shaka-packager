@@ -78,16 +78,18 @@ ProtectionSystemSpecificInfo ProtectionSystemInfoFromPsshProto(
 }  // namespace
 
 WidevineKeySource::WidevineKeySource(const std::string& server_url,
-                                     int protection_system_flags)
+                                     int protection_system_flags,
+                                     FourCC protection_scheme)
     // Widevine PSSH is fetched from Widevine license server.
-    : KeySource(protection_system_flags & ~WIDEVINE_PROTECTION_SYSTEM_FLAG),
+    : KeySource(protection_system_flags & ~WIDEVINE_PROTECTION_SYSTEM_FLAG,
+                protection_scheme),
       key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       crypto_period_count_(kDefaultCryptoPeriodCount),
-      protection_scheme_(FOURCC_cenc),
+      protection_scheme_(protection_scheme),
       key_production_started_(false),
       start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED),

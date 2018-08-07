@@ -61,9 +61,11 @@ bool Base64StringToBytes(const std::string& base64_string,
 }
 
 PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url,
-                                       int protection_system_flags)
+                                       int protection_system_flags,
+                                       FourCC protection_scheme)
     // PlayReady PSSH is retrived from PlayReady server response.
-    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG),
+    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG,
+                protection_scheme),
       encryption_key_(new EncryptionKey),
       server_url_(server_url) {}
 
@@ -72,9 +74,11 @@ PlayReadyKeySource::PlayReadyKeySource(
     const std::string& client_cert_file,
     const std::string& client_cert_private_key_file,
     const std::string& client_cert_private_key_password,
-    int protection_system_flags)
+    int protection_system_flags,
+    FourCC protection_scheme)
     // PlayReady PSSH is retrived from PlayReady server response.
-    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG),
+    : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG,
+                protection_scheme),
       encryption_key_(new EncryptionKey),
       server_url_(server_url),
       client_cert_file_(client_cert_file),

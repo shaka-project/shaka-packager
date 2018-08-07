@@ -7,6 +7,7 @@
 #ifndef MEDIA_BASE_WIDEVINE_PSSH_GENERATOR_H_
 #define MEDIA_BASE_WIDEVINE_PSSH_GENERATOR_H_
 
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/pssh_generator.h"
 
 namespace shaka {
@@ -18,7 +19,7 @@ const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
 
 class WidevinePsshGenerator : public PsshGenerator {
  public:
-  WidevinePsshGenerator();
+  explicit WidevinePsshGenerator(FourCC protection_scheme);
   ~WidevinePsshGenerator() override;
 
   /// @name PsshGenerator implemetation overrides.
@@ -38,6 +39,8 @@ class WidevinePsshGenerator : public PsshGenerator {
   base::Optional<std::vector<uint8_t>> GeneratePsshDataFromKeyIdAndKey(
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key) const override;
+
+  FourCC protection_scheme_ = FOURCC_NULL;
 };
 
 }  // namespace media

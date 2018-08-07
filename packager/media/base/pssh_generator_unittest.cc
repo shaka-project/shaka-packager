@@ -115,6 +115,18 @@ const char kExpectedWidevinePssh[] = {
     '~',    '~',    '~',    '~',    '~',
 };
 
+const char kExpectedWidevinePsshCbcs[] = {
+    '\x0',  '\x0',  '\x0',  '\x4A', 'p',    's',    's',    'h',    '\x0',
+    '\x0',  '\x0',  '\x0',  '\xED', '\xEF', '\x8B', '\xA9', '\x79', '\xD6',
+    '\x4A', '\xCE', '\xA3', '\xC8', '\x27', '\xDC', '\xD5', '\x1D', '\x21',
+    '\xED', '\x0',  '\x0',  '\x0',  '\x2A', '\x12', '\x10', 'k',    'e',
+    'y',    'i',    'd',    '1',    '~',    '~',    '~',    '~',    '~',
+    '~',    '~',    '~',    '~',    '~',    '\x12', '\x10', 'k',    'e',
+    'y',    'i',    'd',    '2',    '~',    '~',    '~',    '~',    '~',
+    '~',    '~',    '~',    '~',    '~',    '\x48', '\xF3', '\xC6', '\x89',
+    '\x9B', '\x06',
+};
+
 std::vector<uint8_t> GetTestKeyId1() {
   return std::vector<uint8_t>(std::begin(kTestKeyId1), std::end(kTestKeyId1));
 }
@@ -178,7 +190,7 @@ TEST(PsshGeneratorTest, GenerateWidevinePsshFromKeyIds) {
   const std::vector<std::vector<uint8_t>> kTestKeyIds = {GetTestKeyId1(),
                                                          GetTestKeyId2()};
   std::unique_ptr<WidevinePsshGenerator> widevine_pssh_generator(
-      new WidevinePsshGenerator());
+      new WidevinePsshGenerator(FOURCC_NULL));
   ProtectionSystemSpecificInfo info;
   ASSERT_OK(
       widevine_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
@@ -187,11 +199,25 @@ TEST(PsshGeneratorTest, GenerateWidevinePsshFromKeyIds) {
                                            std::end(kExpectedWidevinePssh)));
 }
 
+TEST(PsshGeneratorTest, GenerateWidevinePsshFromKeyIdsWithProtectionScheme) {
+  const std::vector<std::vector<uint8_t>> kTestKeyIds = {GetTestKeyId1(),
+                                                         GetTestKeyId2()};
+  std::unique_ptr<WidevinePsshGenerator> widevine_pssh_generator(
+      new WidevinePsshGenerator(FOURCC_cbcs));
+  ProtectionSystemSpecificInfo info;
+  ASSERT_OK(
+      widevine_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
+
+  EXPECT_THAT(info.psshs,
+              ElementsAreArray(std::begin(kExpectedWidevinePsshCbcs),
+                               std::end(kExpectedWidevinePsshCbcs)));
+}
+
 TEST(PsshGeneratorTest, GenerateWidevinyPsshFromKeyIdAndKey) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<WidevinePsshGenerator> widevine_pssh_generator(
-      new WidevinePsshGenerator());
+      new WidevinePsshGenerator(FOURCC_NULL));
   ProtectionSystemSpecificInfo info;
   EXPECT_NOT_OK(widevine_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));

@@ -6,19 +6,24 @@
 
 #include "packager/media/base/widevine_pssh_generator.h"
 
-#include "packager/media/base/pssh_generator_util.h"
+#include "packager/media/base/widevine_pssh_data.pb.h"
 
 namespace shaka {
 namespace media {
 namespace {
 // Use version 0 for backward compatibility.
 const uint8_t kWidevinePsshBoxVersion = 0;
+
+std::vector<uint8_t> StringToBytes(const std::string& string) {
+  return std::vector<uint8_t>(string.begin(), string.end());
+}
 }  // namespace
 
-WidevinePsshGenerator::WidevinePsshGenerator()
+WidevinePsshGenerator::WidevinePsshGenerator(FourCC protection_scheme)
     : PsshGenerator(std::vector<uint8_t>(std::begin(kWidevineSystemId),
                                          std::end(kWidevineSystemId)),
-                    kWidevinePsshBoxVersion) {}
+                    kWidevinePsshBoxVersion),
+      protection_scheme_(protection_scheme) {}
 
 WidevinePsshGenerator::~WidevinePsshGenerator() {}
 
@@ -29,7 +34,12 @@ bool WidevinePsshGenerator::SupportMultipleKeys() {
 base::Optional<std::vector<uint8_t>>
 WidevinePsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
-  return GenerateWidevinePsshDataFromKeyIds(key_ids);
+  media::WidevinePsshData widevine_pssh_data;
+  for (const std::vector<uint8_t>& key_id : key_ids)
+    widevine_pssh_data.add_key_id(key_id.data(), key_id.size());
+  if (protection_scheme_ != FOURCC_NULL)
+    widevine_pssh_data.set_protection_scheme(protection_scheme_);
+  return StringToBytes(widevine_pssh_data.SerializeAsString());
 }
 
 base::Optional<std::vector<uint8_t>>

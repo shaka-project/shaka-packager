@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/pssh_generator.h"
 #include "packager/status.h"
@@ -49,7 +50,7 @@ typedef std::map<std::string, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
 /// KeySource is responsible for encryption key acquisition.
 class KeySource {
  public:
-  explicit KeySource(int protection_systems_flags);
+  KeySource(int protection_systems_flags, FourCC protection_scheme);
 
   virtual ~KeySource();
 
