@@ -52,6 +52,9 @@ int GetProtectionSystemsFlag(
       case EncryptionParams::ProtectionSystem::kCommonSystem:
         protection_systems_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
         break;
+      case EncryptionParams::ProtectionSystem::kFairPlay:
+        protection_systems_flags |= FAIRPLAY_PROTECTION_SYSTEM_FLAG;
+        break;
       case EncryptionParams::ProtectionSystem::kPlayReady:
         protection_systems_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
         break;

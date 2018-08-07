@@ -81,12 +81,7 @@ PlayReadyKeySource::PlayReadyKeySource(
       client_cert_private_key_file_(client_cert_private_key_file),
       client_cert_private_key_password_(client_cert_private_key_password) {}
 
-PlayReadyKeySource::PlayReadyKeySource(
-    std::unique_ptr<EncryptionKey> encryption_key)
-    : KeySource(PLAYREADY_PROTECTION_SYSTEM_FLAG),
-      encryption_key_(std::move(encryption_key)) {}
-
-PlayReadyKeySource::~PlayReadyKeySource() {}
+PlayReadyKeySource::~PlayReadyKeySource() = default;
 
 Status RetrieveTextInXMLElement(const std::string& element,
                                 const std::string& xml,

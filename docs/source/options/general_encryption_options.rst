@@ -18,4 +18,4 @@ General encryption options
 
     Generate additional protection systems in addition to the native protection
     system provided by the key source. Supported protection systems include
-    Widevine, PlayReady, and CommonSystem (https://goo.gl/s8RIhr).
+    Widevine, PlayReady, FairPlay, and CommonSystem (https://goo.gl/s8RIhr).

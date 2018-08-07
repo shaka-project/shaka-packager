@@ -80,7 +80,7 @@
   - Support for attributes RESOLUTION, CHANNELS, AUTOSELECT and DEFAULT.
   - Live and Event playlists.
   - fMP4 in HLS (including byte range support).
-  - DRM: Widevine and Fairplay.
+  - DRM: Widevine and FairPlay.
   - I-Frame playlist.
 - Enhanced subtitle support.
   - Segmented WebVTT in fMP4.

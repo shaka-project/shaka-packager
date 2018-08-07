@@ -68,7 +68,6 @@ class PlayReadyKeySource : public KeySource {
  private:
   Status GetKeyInternal();
   Status GetCryptoPeriodKeyInternal();
-  explicit PlayReadyKeySource(std::unique_ptr<EncryptionKey> key);
 
   std::unique_ptr<EncryptionKey> encryption_key_;
   std::string server_url_;

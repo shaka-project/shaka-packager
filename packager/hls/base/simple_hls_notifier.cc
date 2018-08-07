@@ -15,6 +15,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
+#include "packager/media/base/fairplay_pssh_generator.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/proto_json_util.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
@@ -32,7 +33,7 @@ namespace hls {
 namespace {
 
 const char kUriBase64Prefix[] = "data:text/plain;base64,";
-const char kUriFairplayPrefix[] = "skd://";
+const char kUriFairPlayPrefix[] = "skd://";
 const char kWidevineDashIfIopUUID[] =
     "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
 
@@ -47,9 +48,10 @@ bool IsCommonSystemId(const std::vector<uint8_t>& system_id) {
          std::equal(system_id.begin(), system_id.end(), media::kCommonSystemId);
 }
 
-bool IsFairplaySystemId(const std::vector<uint8_t>& system_id) {
-  return system_id.size() == arraysize(media::kFairplaySystemId) &&
-      std::equal(system_id.begin(), system_id.end(), media::kFairplaySystemId);
+bool IsFairPlaySystemId(const std::vector<uint8_t>& system_id) {
+  return system_id.size() == arraysize(media::kFairPlaySystemId) &&
+         std::equal(system_id.begin(), system_id.end(),
+                    media::kFairPlaySystemId);
 }
 
 std::string Base64EncodeData(const std::string& prefix,
@@ -438,16 +440,16 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
                                     iv, "identity", "", media_playlist.get());
     return true;
-  } else if (IsFairplaySystemId(system_id)) {
+  } else if (IsFairPlaySystemId(system_id)) {
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to
       // convert it to the actual key uri.
       std::string key_uri_data = VectorToString(key_id);
-      key_uri = Base64EncodeData(kUriFairplayPrefix, key_uri_data);
+      key_uri = Base64EncodeData(kUriFairPlayPrefix, key_uri_data);
     }
 
-    // Fairplay defines IV to be carried with the key, not the playlist.
+    // FairPlay defines IV to be carried with the key, not the playlist.
     const std::vector<uint8_t> empty_iv;
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
                                     empty_iv, "com.apple.streamingkeydelivery",

@@ -265,6 +265,7 @@ bool ParseProtectionSystems(
   std::map<std::string, EncryptionParams::ProtectionSystem> mapping = {
       {"common", EncryptionParams::ProtectionSystem::kCommonSystem},
       {"commonsystem", EncryptionParams::ProtectionSystem::kCommonSystem},
+      {"fairplay", EncryptionParams::ProtectionSystem::kFairPlay},
       {"playready", EncryptionParams::ProtectionSystem::kPlayReady},
       {"widevine", EncryptionParams::ProtectionSystem::kWidevine},
   };

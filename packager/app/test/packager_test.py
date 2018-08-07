@@ -441,12 +441,11 @@ class PackagerAppTest(unittest.TestCase):
         flags.append('--iv=' + self.encryption_iv)
 
       if fairplay:
-        fairplay_pssh = ('000000207073736800000000'
-                         '29701FE43CC74A348C5BAE90C7439A4700000000')
         fairplay_key_uri = ('skd://www.license.com/'
                             'getkey?KeyId=31323334-3536-3738-3930-313233343536')
         flags += [
-            '--pssh=' + fairplay_pssh, '--hls_key_uri=' + fairplay_key_uri
+            '--additional_protection_systems=FairPlay',
+            '--hls_key_uri=' + fairplay_key_uri
         ]
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
@@ -1096,7 +1095,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('avc-ts-aac-packed-audio-with-encryption')
 
-  def testAvcTsWithEncryptionAndFairplay(self):
+  def testAvcTsWithEncryptionAndFairPlay(self):
     # Currently we only support live packaging for ts.
     self.assertPackageSuccess(
         self._GetStreams(

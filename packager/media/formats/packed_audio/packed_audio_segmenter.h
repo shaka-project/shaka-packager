@@ -28,7 +28,7 @@ constexpr double kPackedAudioTimescale = 90000;
 constexpr char kTimestampOwnerIdentifier[] =
     "com.apple.streaming.transportStreamTimestamp";
 
-/// http://goo.gl/FPhLma 2.4.3.4 Elementary Stream Setup for fairplay streaming
+/// http://goo.gl/FPhLma 2.4.3.4 Elementary Stream Setup for FairPlay streaming
 /// Audio setup information is carried inside an ID3 PRIV tag with identifier:
 constexpr char kAudioDescriptionOwnerIdentifier[] =
     "com.apple.streaming.audioDescription";

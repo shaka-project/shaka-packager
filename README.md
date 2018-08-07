@@ -27,7 +27,7 @@ Shaka Packager supports:
 - Key systems:
   - [Widevine](http://www.widevine.com/)
   - [PlayReady](https://www.microsoft.com/playready/)¹
-  - [Fairplay](https://developer.apple.com/streaming/fps/)¹
+  - [FairPlay](https://developer.apple.com/streaming/fps/)¹
 - Encryption standards:
   - [CENC](https://en.wikipedia.org/wiki/MPEG_Common_Encryption)
   - [SAMPLE-AES](https://developer.apple.com/library/content/documentation/AudioVideo/Conceptual/HLS_Sample_Encryption/Intro/Intro.html)

@@ -44,6 +44,8 @@
         'decryptor_source.cc',
         'decryptor_source.h',
         'encryption_config.h',
+        'fairplay_pssh_generator.cc',
+        'fairplay_pssh_generator.h',
         'fourccs.h',
         'http_key_fetcher.cc',
         'http_key_fetcher.h',

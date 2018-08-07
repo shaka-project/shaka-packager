@@ -13,6 +13,7 @@
 #include "packager/base/files/file_path.h"
 #include "packager/hls/base/mock_media_playlist.h"
 #include "packager/hls/base/simple_hls_notifier.h"
+#include "packager/media/base/fairplay_pssh_generator.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/raw_key_source.h"
@@ -36,7 +37,7 @@ namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
 const char kDefaultLanguage[] = "en";
 const char kEmptyKeyUri[] = "";
-const char kFairplayKeyUri[] = "skd://www.license.com/getkey?key_id=testing";
+const char kFairPlayKeyUri[] = "skd://www.license.com/getkey?key_id=testing";
 const char kIdentityKeyUri[] = "https://www.license.com/getkey?key_id=testing";
 const HlsPlaylistType kVodPlaylist = HlsPlaylistType::kVod;
 const HlsPlaylistType kLivePlaylist = HlsPlaylistType::kLive;
@@ -88,15 +89,12 @@ class SimpleHlsNotifierTest : public ::testing::Test {
   SimpleHlsNotifierTest() : SimpleHlsNotifierTest(kVodPlaylist) {}
 
   SimpleHlsNotifierTest(HlsPlaylistType playlist_type)
-      : widevine_system_id_(
-            media::kWidevineSystemId,
-            media::kWidevineSystemId + arraysize(media::kWidevineSystemId)),
-        common_system_id_(
-            media::kCommonSystemId,
-            media::kCommonSystemId + arraysize(media::kCommonSystemId)),
-        fairplay_system_id_(
-            media::kFairplaySystemId,
-            media::kFairplaySystemId + arraysize(media::kFairplaySystemId)) {
+      : widevine_system_id_(std::begin(media::kWidevineSystemId),
+                            std::end(media::kWidevineSystemId)),
+        common_system_id_(std::begin(media::kCommonSystemId),
+                          std::end(media::kCommonSystemId)),
+        fairplay_system_id_(std::begin(media::kFairPlaySystemId),
+                            std::end(media::kFairPlaySystemId)) {
     hls_params_.playlist_type = kVodPlaylist;
     hls_params_.time_shift_buffer_depth = kTestTimeShiftBufferDepth;
     hls_params_.base_url = kTestPrefix;
@@ -707,14 +705,14 @@ TEST_F(SimpleHlsNotifierTest, EncryptionScheme) {
       stream_id, key_id, common_system_id_, iv, dummy_pssh_data));
 }
 
-// Verify that the Fairplay systemID is correctly handled when constructing
+// Verify that the FairPlay systemID is correctly handled when constructing
 // encryption info.
-TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
+TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairPlay) {
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
       new MockMediaPlaylist("playlist.m3u8", "", "");
   hls_params_.playlist_type = kLivePlaylist;
-  hls_params_.key_uri = kFairplayKeyUri;
+  hls_params_.key_uri = kFairPlayKeyUri;
   SimpleHlsNotifier notifier(hls_params_);
   const uint32_t stream_id =
       SetupStream(kSampleAesProtectionScheme, mock_media_playlist, &notifier);
@@ -724,7 +722,7 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateFairplay) {
   EXPECT_CALL(
       *mock_media_playlist,
       AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
-                        StrEq(kFairplayKeyUri), StrEq(""), StrEq(""),
+                        StrEq(kFairPlayKeyUri), StrEq(""), StrEq(""),
                         StrEq("com.apple.streamingkeydelivery"), StrEq("1")));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       stream_id, key_id, fairplay_system_id_, std::vector<uint8_t>(),

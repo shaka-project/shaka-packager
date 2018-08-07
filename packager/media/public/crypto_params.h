@@ -117,9 +117,10 @@ struct EncryptionParams {
 
   /// Supported protection systems.
   enum class ProtectionSystem {
-    kWidevine,
-    kPlayReady,
     kCommonSystem,
+    kFairPlay,
+    kPlayReady,
+    kWidevine,
   };
   /// Additional protection systems to be generated.
   std::vector<ProtectionSystem> additional_protection_systems;
