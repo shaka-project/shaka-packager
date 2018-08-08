@@ -681,8 +681,15 @@ int64_t TrackRunIterator::GetTimestampAdjustment(const Movie& movie,
     } else {
       CompositionOffsetIterator composition_offset_iter(
           track.media.information.sample_table.composition_time_to_sample);
-      if (composition_offset_iter.IsValid())
-        composition_offset = composition_offset_iter.sample_offset();
+      if (!composition_offset_iter.IsValid()) {
+        // This is the init (sub)segment of a fragmented mp4, which does not
+        // contain any samples. Exit with 0 adjustment and without storing
+        // |timestamp_adjustment|. This function will be called again later
+        // with track fragment |traf|. |timestamp_adjustment| will be computed
+        // and stored then.
+        return 0;
+      }
+      composition_offset = composition_offset_iter.sample_offset();
     }
 
     int64_t decode_time = 0;
