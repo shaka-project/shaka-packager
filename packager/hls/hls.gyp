@@ -31,6 +31,7 @@
         '../media/base/media_base.gyp:widevine_pssh_data_proto',
         '../mpd/mpd.gyp:manifest_base',
         '../mpd/mpd.gyp:media_info_proto',
+        '../third_party/gflags/gflags.gyp:gflags',
       ],
     },
     {
@@ -49,6 +50,7 @@
         '../mpd/mpd.gyp:media_info_proto',
         '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
+        '../third_party/gflags/gflags.gyp:gflags',
         'hls_builder',
       ],
     },
