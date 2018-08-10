@@ -444,8 +444,7 @@ class PackagerAppTest(unittest.TestCase):
         fairplay_key_uri = ('skd://www.license.com/'
                             'getkey?KeyId=31323334-3536-3738-3930-313233343536')
         flags += [
-            '--additional_protection_systems=FairPlay',
-            '--hls_key_uri=' + fairplay_key_uri
+            '--protection_systems=FairPlay', '--hls_key_uri=' + fairplay_key_uri
         ]
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]

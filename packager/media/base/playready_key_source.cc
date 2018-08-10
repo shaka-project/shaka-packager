@@ -68,6 +68,11 @@ PlayReadyKeySource::PlayReadyKeySource(const std::string& server_url,
     // PlayReady PSSH is retrived from PlayReady server response.
     : KeySource(protection_system_flags & ~PLAYREADY_PROTECTION_SYSTEM_FLAG,
                 protection_scheme),
+      generate_playready_protection_system_(
+          // Generate PlayReady protection system if there are no other
+          // protection system specified.
+          protection_system_flags == NO_PROTECTION_SYSTEM_FLAG ||
+          protection_system_flags & PLAYREADY_PROTECTION_SYSTEM_FLAG),
       encryption_key_(new EncryptionKey),
       server_url_(server_url) {}
 
@@ -113,8 +118,10 @@ Status RetrieveTextInXMLElement(const std::string& element,
   return Status::OK;
 }
 
-Status SetKeyInformationFromServerResponse(const std::string& response,
-                                           EncryptionKey* encryption_key) {
+Status SetKeyInformationFromServerResponse(
+    const std::string& response,
+    bool generate_playready_protection_system,
+    EncryptionKey* encryption_key) {
   // TODO(robinconnell): Currently all tracks are encrypted using the same
   // key_id and key.  Add the ability to retrieve multiple key_id/keys from
   // the packager response and encrypt multiple tracks using differnt
@@ -135,20 +142,23 @@ Status SetKeyInformationFromServerResponse(const std::string& response,
     return Status(error::SERVER_ERROR, "Cannot parse key.");
   }
 
-  std::string pssh_data_b64;
-  RETURN_IF_ERROR(RetrieveTextInXMLElement("Data", response, &pssh_data_b64));
-  std::vector<uint8_t> pssh_data;
-  if (!Base64StringToBytes(pssh_data_b64, &pssh_data)) {
-    LOG(ERROR) << "Cannot parse pssh data, " << pssh_data_b64;
-    return Status(error::SERVER_ERROR, "Cannot parse pssh.");
-  }
+  if (generate_playready_protection_system) {
+    std::string pssh_data_b64;
+    RETURN_IF_ERROR(RetrieveTextInXMLElement("Data", response, &pssh_data_b64));
+    std::vector<uint8_t> pssh_data;
+    if (!Base64StringToBytes(pssh_data_b64, &pssh_data)) {
+      LOG(ERROR) << "Cannot parse pssh data, " << pssh_data_b64;
+      return Status(error::SERVER_ERROR, "Cannot parse pssh.");
+    }
 
-  PsshBoxBuilder pssh_builder;
-  pssh_builder.add_key_id(encryption_key->key_id);
-  pssh_builder.set_system_id(kPlayReadySystemId, arraysize(kPlayReadySystemId));
-  pssh_builder.set_pssh_data(pssh_data);
-  encryption_key->key_system_info.push_back(
-      {pssh_builder.system_id(), pssh_builder.CreateBox()});
+    PsshBoxBuilder pssh_builder;
+    pssh_builder.add_key_id(encryption_key->key_id);
+    pssh_builder.set_system_id(kPlayReadySystemId,
+                               arraysize(kPlayReadySystemId));
+    pssh_builder.set_pssh_data(pssh_data);
+    encryption_key->key_system_info.push_back(
+        {pssh_builder.system_id(), pssh_builder.CreateBox()});
+  }
   return Status::OK;
 }
 
@@ -174,8 +184,9 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
   VLOG(1) << "Server response: " << acquire_license_response;
   RETURN_IF_ERROR(status);
 
-  RETURN_IF_ERROR(SetKeyInformationFromServerResponse(acquire_license_response,
-                                                      encryption_key.get()));
+  RETURN_IF_ERROR(SetKeyInformationFromServerResponse(
+      acquire_license_response, generate_playready_protection_system_,
+      encryption_key.get()));
 
   // PlayReady does not specify different streams.
   const char kEmptyDrmLabel[] = "";

@@ -11,6 +11,6 @@
 
 #include <gflags/gflags.h>
 
-DECLARE_string(additional_protection_systems);
+DECLARE_string(protection_systems);
 
 #endif  // PACKAGER_APP_PROTECTION_SYSTEM_FLAGS_H_

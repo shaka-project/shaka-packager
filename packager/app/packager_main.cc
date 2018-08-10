@@ -322,9 +322,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
     return base::nullopt;
   }
 
-  if (!ParseProtectionSystems(
-          FLAGS_additional_protection_systems,
-          &encryption_params.additional_protection_systems)) {
+  if (!ParseProtectionSystems(FLAGS_protection_systems,
+                              &encryption_params.protection_systems)) {
     return base::nullopt;
   }
 

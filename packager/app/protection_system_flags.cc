@@ -8,9 +8,8 @@
 
 #include "packager/app/protection_system_flags.h"
 
-DEFINE_string(additional_protection_systems,
-              "",
-              "Generate additional protection systems in addition to the "
-              "native protection system provided by the key source. Supported "
-              "protection systems include Widevine, PlayReady, FairPlay, and "
-              "CommonSystem (https://goo.gl/s8RIhr).");
+DEFINE_string(
+    protection_systems,
+    "",
+    "Protection systems to be generated. Supported protection systems include "
+    "Widevine, PlayReady, FairPlay, and CommonSystem (https://goo.gl/s8RIhr).");

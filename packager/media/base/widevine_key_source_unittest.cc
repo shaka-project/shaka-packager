@@ -13,7 +13,6 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/key_fetcher.h"
-#include "packager/media/base/playready_pssh_generator.h"
 #include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_key_source.h"
@@ -228,11 +227,11 @@ class WidevineKeySourceTest : public Test {
   }
 
   void CreateWidevineKeySource() {
-    int protection_system_flags = WIDEVINE_PROTECTION_SYSTEM_FLAG;
+    int protection_system_flags = NO_PROTECTION_SYSTEM_FLAG;
+    if (add_widevine_pssh_)
+      protection_system_flags |= WIDEVINE_PROTECTION_SYSTEM_FLAG;
     if (add_common_pssh_)
       protection_system_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
-    if (add_playready_pssh_)
-      protection_system_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;
     widevine_key_source_.reset(new WidevineKeySource(
         kServerUrl, protection_system_flags, protection_scheme_));
     widevine_key_source_->set_key_fetcher(std::move(mock_key_fetcher_));
@@ -246,32 +245,31 @@ class WidevineKeySourceTest : public Test {
       EXPECT_EQ(GetMockKey(stream_label), ToString(encryption_key.key));
       if (!classic) {
         size_t num_key_system_info =
-            1 + (add_common_pssh_ ? 1 : 0) + (add_playready_pssh_ ? 1 : 0);
+            (add_widevine_pssh_ && add_common_pssh_) ? 2 : 1;
         ASSERT_EQ(num_key_system_info, encryption_key.key_system_info.size());
         EXPECT_EQ(GetMockKeyId(stream_label), ToString(encryption_key.key_id));
 
-        const std::vector<uint8_t>& pssh =
-            encryption_key.key_system_info[0].psshs;
-        std::unique_ptr<PsshBoxBuilder> pssh_builder =
-            PsshBoxBuilder::ParseFromBox(pssh.data(), pssh.size());
-        ASSERT_TRUE(pssh_builder);
-        EXPECT_EQ(GetMockPsshData(), ToString(pssh_builder->pssh_data()));
+        auto key_system_info_iter = encryption_key.key_system_info.begin();
+
+        // Default to Widevine if neither are set.
+        if (add_widevine_pssh_ || !add_common_pssh_) {
+          const std::vector<uint8_t> widevine_system_id(
+              std::begin(kWidevineSystemId), std::end(kWidevineSystemId));
+          ASSERT_EQ(widevine_system_id, key_system_info_iter->system_id);
+
+          const std::vector<uint8_t>& pssh = key_system_info_iter->psshs;
+          std::unique_ptr<PsshBoxBuilder> pssh_builder =
+              PsshBoxBuilder::ParseFromBox(pssh.data(), pssh.size());
+          ASSERT_TRUE(pssh_builder);
+          EXPECT_EQ(GetMockPsshData(), ToString(pssh_builder->pssh_data()));
+
+          ++key_system_info_iter;
+        }
 
         if (add_common_pssh_) {
           const std::vector<uint8_t> common_system_id(
-              kCommonSystemId, kCommonSystemId + arraysize(kCommonSystemId));
-          ASSERT_EQ(common_system_id,
-                    encryption_key.key_system_info[1].system_id);
-        }
-
-        if (add_playready_pssh_) {
-          const std::vector<uint8_t> playready_system_id(
-              kPlayReadySystemId,
-              kPlayReadySystemId + arraysize(kPlayReadySystemId));
-          // PlayReady pssh index depends on if there has common pssh box.
-          const uint8_t playready_index = 1 + (add_common_pssh_ ? 1 : 0);
-          ASSERT_EQ(playready_system_id,
-                    encryption_key.key_system_info[playready_index].system_id);
+              std::begin(kCommonSystemId), std::end(kCommonSystemId));
+          ASSERT_EQ(common_system_id, key_system_info_iter->system_id);
         }
       }
     }
@@ -280,8 +278,8 @@ class WidevineKeySourceTest : public Test {
   std::unique_ptr<MockKeyFetcher> mock_key_fetcher_;
   std::unique_ptr<WidevineKeySource> widevine_key_source_;
   std::vector<uint8_t> content_id_;
+  bool add_widevine_pssh_ = false;
   bool add_common_pssh_ = false;
-  bool add_playready_pssh_ = false;
   FourCC protection_scheme_ = FOURCC_cenc;
 
  private:
@@ -371,8 +369,8 @@ class WidevineKeySourceParameterizedTest
       public WithParamInterface<std::tr1::tuple<bool, bool, FourCC>> {
  public:
   WidevineKeySourceParameterizedTest() {
-    add_common_pssh_ = std::tr1::get<0>(GetParam());
-    add_playready_pssh_ = std::tr1::get<1>(GetParam());
+    add_widevine_pssh_ = std::tr1::get<0>(GetParam());
+    add_common_pssh_ = std::tr1::get<1>(GetParam());
     protection_scheme_ = std::tr1::get<2>(GetParam());
   }
 };
@@ -415,10 +413,9 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencOK) {
   VerifyKeys(false);
 }
 
-TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencNotOK) {
+TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencMalformedResponse) {
   std::string mock_response = base::StringPrintf(
-      kHttpResponseFormat, Base64Encode(
-          GenerateMockClassicLicenseResponse()).c_str());
+      kHttpResponseFormat, Base64Encode("malformed response").c_str());
 
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
@@ -444,16 +441,15 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithPsshBoxOK) {
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(std::move(mock_request_signer_));
-  std::vector<uint8_t> pssh_box(kRequestPsshBox,
-                                kRequestPsshBox + arraysize(kRequestPsshBox));
+  std::vector<uint8_t> pssh_box(std::begin(kRequestPsshBox),
+                                std::end(kRequestPsshBox));
   ASSERT_OK(widevine_key_source_->FetchKeys(EmeInitDataType::CENC, pssh_box));
   VerifyKeys(false);
 }
 
 TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithKeyIdsOK) {
-  std::string expected_pssh_data(
-      kRequestPsshDataFromKeyIds,
-      kRequestPsshDataFromKeyIds + arraysize(kRequestPsshDataFromKeyIds));
+  std::string expected_pssh_data(std::begin(kRequestPsshDataFromKeyIds),
+                                 std::end(kRequestPsshDataFromKeyIds));
   std::string expected_message =
       base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
                          Base64Encode(expected_pssh_data).c_str());
@@ -468,8 +464,8 @@ TEST_P(WidevineKeySourceParameterizedTest, LicenseStatusCencWithKeyIdsOK) {
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(std::move(mock_request_signer_));
-  std::vector<uint8_t> key_id(kRequestKeyId,
-                              kRequestKeyId + arraysize(kRequestKeyId));
+  std::vector<uint8_t> key_id(std::begin(kRequestKeyId),
+                              std::end(kRequestKeyId));
   ASSERT_OK(widevine_key_source_->FetchKeys(EmeInitDataType::WEBM, key_id));
   VerifyKeys(false);
 }

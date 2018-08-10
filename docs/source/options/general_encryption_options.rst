@@ -14,8 +14,7 @@ General encryption options
 
     Clear lead in seconds if encryption is enabled.
 
---additional_protection_systems
+--protection_systems
 
-    Generate additional protection systems in addition to the native protection
-    system provided by the key source. Supported protection systems include
+    Protection systems to be generated. Supported protection systems include
     Widevine, PlayReady, FairPlay, and CommonSystem (https://goo.gl/s8RIhr).

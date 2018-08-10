@@ -72,7 +72,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
     FourCC protection_scheme,
     const EncryptionParams& encryption_params) {
   int protection_systems_flags =
-      GetProtectionSystemsFlag(encryption_params.additional_protection_systems);
+      GetProtectionSystemsFlag(encryption_params.protection_systems);
 
   std::unique_ptr<KeySource> encryption_key_source;
   switch (encryption_params.key_provider) {

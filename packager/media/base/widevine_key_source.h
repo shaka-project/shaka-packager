@@ -111,6 +111,9 @@ class WidevineKeySource : public KeySource {
   // Push the keys to the key pool.
   bool PushToKeyPool(EncryptionKeyMap* encryption_key_map);
 
+  // Indicates whether Widevine protection system should be generated.
+  bool generate_widevine_protection_system_ = true;
+
   ClosureThread key_production_thread_;
   // The fetcher object used to fetch keys from the license service.
   // It is initialized to a default fetcher on class initialization.
@@ -121,13 +124,13 @@ class WidevineKeySource : public KeySource {
   std::unique_ptr<CommonEncryptionRequest> common_encryption_request_;
 
   const int crypto_period_count_;
-  FourCC protection_scheme_;
+  FourCC protection_scheme_ = FOURCC_NULL;
   base::Lock lock_;
-  bool key_production_started_;
+  bool key_production_started_ = false;
   base::WaitableEvent start_key_production_;
-  uint32_t first_crypto_period_index_;
+  uint32_t first_crypto_period_index_ = 0;
   std::vector<uint8_t> group_id_;
-  bool enable_entitlement_license_;
+  bool enable_entitlement_license_ = false;
   std::unique_ptr<EncryptionKeyQueue> key_pool_;
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;

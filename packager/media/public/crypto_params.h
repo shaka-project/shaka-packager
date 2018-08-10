@@ -122,8 +122,8 @@ struct EncryptionParams {
     kPlayReady,
     kWidevine,
   };
-  /// Additional protection systems to be generated.
-  std::vector<ProtectionSystem> additional_protection_systems;
+  /// Protection systems to be generated.
+  std::vector<ProtectionSystem> protection_systems;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;

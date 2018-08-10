@@ -4,8 +4,8 @@ PlayReady encryption options
 --enable_playready_encryption
 
     Enable encryption with PlayReady key. This generates PlayReady protection
-    system. Additional protection systems can be generated with
-    --additional_protection_systems option.
+    system if --protection_systems is not specified. Use --protection_system to
+    generate multiple protection systems.
 
 --playready_server_url <url>
 

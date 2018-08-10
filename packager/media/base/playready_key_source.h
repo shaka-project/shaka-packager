@@ -77,6 +77,9 @@ class PlayReadyKeySource : public KeySource {
   Status GetKeyInternal();
   Status GetCryptoPeriodKeyInternal();
 
+  // Indicates whether PlayReady protection system should be generated.
+  bool generate_playready_protection_system_ = true;
+
   std::unique_ptr<EncryptionKey> encryption_key_;
   std::string server_url_;
   std::string ca_file_;

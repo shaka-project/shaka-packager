@@ -83,6 +83,11 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url,
     // Widevine PSSH is fetched from Widevine license server.
     : KeySource(protection_system_flags & ~WIDEVINE_PROTECTION_SYSTEM_FLAG,
                 protection_scheme),
+      generate_widevine_protection_system_(
+          // Generate Widevine protection system if there are no other
+          // protection system specified.
+          protection_system_flags == NO_PROTECTION_SYSTEM_FLAG ||
+          protection_system_flags & WIDEVINE_PROTECTION_SYSTEM_FLAG),
       key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
@@ -90,11 +95,8 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url,
       server_url_(server_url),
       crypto_period_count_(kDefaultCryptoPeriodCount),
       protection_scheme_(protection_scheme),
-      key_production_started_(false),
       start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED),
-      first_crypto_period_index_(0),
-      enable_entitlement_license_(false) {
+                            base::WaitableEvent::InitialState::NOT_SIGNALED) {
   key_production_thread_.Start();
 }
 
@@ -445,13 +447,15 @@ bool WidevineKeySource::ExtractEncryptionKey(
       encryption_key->key_id.assign(track.key_id().begin(),
                                     track.key_id().end());
 
-      if (track.pssh_size() != 1) {
-        LOG(ERROR) << "Expecting one and only one pssh, seeing "
-                   << track.pssh_size();
-        return false;
+      if (generate_widevine_protection_system_) {
+        if (track.pssh_size() != 1) {
+          LOG(ERROR) << "Expecting one and only one pssh, seeing "
+                     << track.pssh_size();
+          return false;
+        }
+        encryption_key->key_system_info.push_back(
+            ProtectionSystemInfoFromPsshProto(track.pssh(0)));
       }
-      encryption_key->key_system_info.push_back(
-          ProtectionSystemInfoFromPsshProto(track.pssh(0)));
     }
     encryption_key_map[stream_label] = std::move(encryption_key);
   }
