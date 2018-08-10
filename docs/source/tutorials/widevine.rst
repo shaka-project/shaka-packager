@@ -35,7 +35,7 @@ RSA signing::
 Examples
 --------
 
-The examples below uses the H264 streams created in :doc:`encoding`.
+The examples below use the H264 streams created in :doc:`encoding`.
 
 * Here is an example with both DASH and HLS output::
 

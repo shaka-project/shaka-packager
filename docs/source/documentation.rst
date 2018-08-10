@@ -40,7 +40,8 @@ Synopsis
                [MP4 Output Options] \
                [encryption / decryption options] \
                [DASH options] \
-               [HLS options]
+               [HLS options] \
+               [Ads options]
 
 .. include:: /options/stream_descriptors.rst
 
@@ -53,6 +54,8 @@ Synopsis
 .. include:: /options/dash_options.rst
 
 .. include:: /options/hls_options.rst
+
+.. include:: /options/ads_options.rst
 
 Encryption / decryption options
 -------------------------------

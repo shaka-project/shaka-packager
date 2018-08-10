@@ -24,7 +24,7 @@ Custom PSSH(s) can be provided in *--pssh*. If absent,
 Examples
 --------
 
-The examples below uses the H264 streams created in :doc:`encoding`. Here are
+The examples below use the H264 streams created in :doc:`encoding`. Here are
 examples with DASH. It can be applied to HLS in a similar way.
 
 Common PSSH (one key for all streams)::
