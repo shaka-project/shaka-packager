@@ -472,9 +472,9 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     return true;
   }
 
-  LOG(ERROR) << "Unknown system ID: "
-             << base::HexEncode(system_id.data(), system_id.size());
-  return false;
+  LOG(WARNING) << "HLS: Ignore unknown or unsupported system ID: "
+               << base::HexEncode(system_id.data(), system_id.size());
+  return true;
 }
 
 bool SimpleHlsNotifier::Flush() {

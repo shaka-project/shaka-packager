@@ -13,8 +13,9 @@ HLS options
 
 --hls_key_uri <uri>
 
-    The key uri for 'identity' and 'com.apple.streamingkeydelivery' key formats.
-    Ignored if the playlist is not encrypted or not using the above key formats.
+    The key uri for 'identity' and 'com.apple.streamingkeydelivery' (FairPlay)
+    key formats. Ignored if the playlist is not encrypted or not using the above
+    key formats.
 
 --hls_playlist_type <type>
 
