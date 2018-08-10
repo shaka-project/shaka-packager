@@ -7,6 +7,7 @@
 #include "packager/media/base/playready_key_source.h"
 
 #include <algorithm>
+
 #include "packager/base/base64.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -15,6 +16,7 @@
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/playready_pssh_generator.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -118,33 +120,23 @@ Status SetKeyInformationFromServerResponse(const std::string& response,
   // the packager response and encrypt multiple tracks using differnt
   // key_id/keys.
   std::string key_id_hex;
-  Status status = RetrieveTextInXMLElement("KeyId", response, &key_id_hex);
-  if (!status.ok()) {
-    return status;
-  }
+  RETURN_IF_ERROR(RetrieveTextInXMLElement("KeyId", response, &key_id_hex));
   key_id_hex.erase(
       std::remove(key_id_hex.begin(), key_id_hex.end(), '-'), key_id_hex.end());
-  std::string key_data_b64;
-  status = RetrieveTextInXMLElement("KeyData", response, &key_data_b64);
-  if (!status.ok()) {
-    LOG(ERROR) << "Key retreiving KeyData";
-    return status;
-  }
-  std::string pssh_data_b64;
-  status = RetrieveTextInXMLElement("Data", response, &pssh_data_b64);
-  if (!status.ok()) {
-    LOG(ERROR) << "Key retreiving Data";
-    return status;
-  }
   if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
     LOG(ERROR) << "Cannot parse key_id_hex, " << key_id_hex;
     return Status(error::SERVER_ERROR, "Cannot parse key_id_hex.");
   }
 
+  std::string key_data_b64;
+  RETURN_IF_ERROR(RetrieveTextInXMLElement("KeyData", response, &key_data_b64));
   if (!Base64StringToBytes(key_data_b64, &encryption_key->key)) {
     LOG(ERROR) << "Cannot parse key, " << key_data_b64;
     return Status(error::SERVER_ERROR, "Cannot parse key.");
   }
+
+  std::string pssh_data_b64;
+  RETURN_IF_ERROR(RetrieveTextInXMLElement("Data", response, &pssh_data_b64));
   std::vector<uint8_t> pssh_data;
   if (!Base64StringToBytes(pssh_data_b64, &pssh_data)) {
     LOG(ERROR) << "Cannot parse pssh data, " << pssh_data_b64;
@@ -172,26 +164,24 @@ Status PlayReadyKeySource::FetchKeysWithProgramIdentifier(
   if (!ca_file_.empty()) {
     key_fetcher.SetCaFile(ca_file_);
   }
+
   std::string acquire_license_request = kAcquireLicenseRequest;
   base::ReplaceFirstSubstringAfterOffset(
       &acquire_license_request, 0, "$0", program_identifier);
   std::string acquire_license_response;
   Status status = key_fetcher.FetchKeys(server_url_, acquire_license_request,
                                         &acquire_license_response);
-  if (!status.ok()) {
-    LOG(ERROR) << "Server response: " << acquire_license_response;
-    return status;
-  }
-  status = SetKeyInformationFromServerResponse(acquire_license_response,
-                                               encryption_key.get());
+  VLOG(1) << "Server response: " << acquire_license_response;
+  RETURN_IF_ERROR(status);
+
+  RETURN_IF_ERROR(SetKeyInformationFromServerResponse(acquire_license_response,
+                                                      encryption_key.get()));
+
   // PlayReady does not specify different streams.
   const char kEmptyDrmLabel[] = "";
   EncryptionKeyMap encryption_key_map;
   encryption_key_map[kEmptyDrmLabel] = std::move(encryption_key);
-  status = UpdateProtectionSystemInfo(&encryption_key_map);
-  if (!status.ok()) {
-    return status;
-  }
+  RETURN_IF_ERROR(UpdateProtectionSystemInfo(&encryption_key_map));
   encryption_key_ = std::move(encryption_key_map[kEmptyDrmLabel]);
   return Status::OK;
 }

@@ -149,8 +149,13 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
         if (!playready.ca_file.empty()) {
           playready_key_source->SetCaFile(playready.ca_file);
         }
-        playready_key_source->FetchKeysWithProgramIdentifier(
+        Status status = playready_key_source->FetchKeysWithProgramIdentifier(
             playready.program_identifier);
+        if (!status.ok()) {
+          LOG(ERROR) << "PlayReady encryption key source failed to fetch keys: "
+                     << status.ToString();
+          return nullptr;
+        }
         encryption_key_source = std::move(playready_key_source);
       } else {
         LOG(ERROR) << "Error creating PlayReady key source.";

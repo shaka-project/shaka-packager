@@ -36,9 +36,6 @@ enum class EmeInitDataType {
 };
 
 struct EncryptionKey {
-  EncryptionKey();
-  ~EncryptionKey();
-
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
   std::vector<uint8_t> key_id;
   std::vector<uint8_t> key;
