@@ -276,12 +276,12 @@ sudo zypper in git python python-xml git curl gcc-c++ tar
 
 ### Xcode license agreement
 
-If you're getting the error
+If you are getting the error
 
 > Agreeing to the Xcode/iOS license requires admin privileges, please re-run as
 > root via sudo.
 
-the Xcode license hasn't been accepted yet which (contrary to the message) any
+the Xcode license has not been accepted yet which (contrary to the message) any
 user can do by running:
 
 ```shell
@@ -292,6 +292,19 @@ Only accepting for all users of the machine requires root:
 
 ```shell
 $ sudo xcodebuild -license
+```
+
+### Missing curl CA bundle
+
+If you are getting the error
+
+> gyp: Call to 'config/mac/find_curl_ca_bundle.sh' returned exit status 1 ...
+
+curl CA bundle is not able to be located. Installing curl with openssl should
+resolve the issue:
+
+```shell
+$ brew install curl --with-openssl
 ```
 
 ## Contributing
