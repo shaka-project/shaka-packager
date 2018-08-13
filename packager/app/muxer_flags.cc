@@ -9,8 +9,13 @@
 #include "packager/app/muxer_flags.h"
 
 DEFINE_double(clear_lead,
-              12.0f,
-              "Clear lead in seconds if encryption is enabled.");
+              5.0f,
+              "Clear lead in seconds if encryption is enabled. Note that we do "
+              "not support partial segment encryption, so it is rounded up to "
+              "full segments. Set it to a value smaller than segment_duration "
+              "so only the first segment is in clear since the first segment "
+              "could be smaller than segment_duration if there is small "
+              "non-zero starting timestamp.");
 DEFINE_double(segment_duration,
               6.0f,
               "Segment duration in seconds. If single_segment is specified, "
