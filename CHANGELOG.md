@@ -1,3 +1,48 @@
+## [2.2.0] - 2018-08-16
+### Added
+- EditList support in ISO-BMFF in both input and output (#112).
+- Multi-DRM support with --protection_systems flag (#245).
+- HLS AVERAGE-BANDWIDTH support (#361).
+- Dynamic Ad Insertion preconditioning support with Google Ad Manager (#362, #382, #384).
+- Configurable UDP receiver buffer size (#411). This can help mitigate or
+  eliminate packet loss due to receiver buffer overrun.
+- Allow non-zero text start time (#416). Needed for live text packaging.
+
+### Changed
+- Deprecated --mp4_use_decoding_timestamp_in_timeline.
+- Deprecated --num_subsegments_per_sidx.
+- Generate DASH IF IOP compliant MPD with mpd_generator by default.
+- Adjust timestamps in ISO-BMFF if there is an initial composition offset
+  as we believe that an EditList is missing in this case (Related to #112).
+- Add an adjustable offset to transport streams (MPEG2-TS, HLS Packed Audio)
+  (Related to #112). The offset is configurable with
+  --transport_stream_offset_ms. The default is 0.1 seconds.
+- Set default --segment_duration to 6 seconds.
+- Set default --clear_lead to 5 seconds. Shaka Packager does not support partial encrypted segments,
+  so if segment_duration is 6 seconds, then only the first segment is in clear, with all the
+  following segments encrypted.
+- Set default --io_block_size to 64K.
+- Disable Legacy Widevine HLS signaling for HLS with Widevine protection system by default. Use flag
+  --enable_legacy_widevine_hls_signaling to enable it if needed.
+
+### Fixed
+- Build failures in Windows with CJK environment (#419).
+- Segmentation fault when processing WebVTT with out of order cues (#425).
+- Support WebVTT cues without payload (#433).
+- segmentAlignment is not set correctly in static live profile for multi-period
+  content (#435). Theoretically it could happen for single period content as
+  well, but with very low possibility of occuring.
+- Segmentation fault when packaging with an empty VTT file (#446).
+- Possible file name collision when --temp_dir is used (#448).
+
+### Doc
+- Added documentation for PlayReady and FairPlay (#306).
+- Added examples for TrickPlay.
+- Fixed live HLS example (#403).
+- Fixed DockerHub instructions link (#408).
+- Added documentation for Dynamic Ad Insertion preconditioning.
+- Added instructions for missing curl CA bundle on mac.
+
 ## [2.1.1] - 2018-07-03
 ### Changed
 - Warn if HLS type is not set set to LIVE for UDP inputs (#347).
@@ -364,6 +409,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.2.0]: https://github.com/google/shaka-packager/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/google/shaka-packager/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/google/shaka-packager/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/google/shaka-packager/compare/v2.0.2...v2.0.3
