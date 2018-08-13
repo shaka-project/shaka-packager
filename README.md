@@ -1,12 +1,10 @@
-<!--
-  While not ideal, absolute URLs are used here as it is the simplest way to make
-  the links work on GitHub and Docker Hub. These links in cloned repositories
-  will point back to the main repository and if it is an issue, we suggest
-  updating the links in the cloned repository.
-
-  See https://github.com/google/shaka-packager/issues/408 for the full
-  background.
--->
+[comment]: # (While not ideal, absolute URLs are used here as it is the        )
+[comment]: # (simplest way to make the links work on GitHub and Docker Hub.    )
+[comment]: # (These links in cloned repositories will point back to the main   )
+[comment]: # (repository and if it is an issue, we suggest updating the links  )
+[comment]: # (in the cloned repository.                                        )
+[comment]: # (See https://github.com/google/shaka-packager/issues/408 for the  )
+[comment]: # (full background.                                                 )
 
 ![Shaka Packager](https://raw.githubusercontent.com/google/shaka-packager/master/docs/shaka-packager.png)
 
