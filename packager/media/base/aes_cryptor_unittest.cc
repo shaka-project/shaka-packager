@@ -53,12 +53,6 @@ const uint8_t kAesCtrCiphertext[] = {
     0x1e, 0x03, 0x1d, 0xda, 0x2f, 0xbe, 0x03, 0xd1,
     0x79, 0x21, 0x70, 0xa0, 0xf3, 0x00, 0x9c, 0xee};
 
-// Subsample test cases.
-struct SubsampleTestCase {
-  const uint8_t* subsample_sizes;
-  uint32_t subsample_count;
-};
-
 const uint8_t kSubsampleTest1[] = {64};
 const uint8_t kSubsampleTest2[] = {13, 51};
 const uint8_t kSubsampleTest3[] = {52, 12};
@@ -69,18 +63,6 @@ const uint8_t kSubsampleTest7[] = {8, 16, 2, 38};
 const uint8_t kSubsampleTest8[] = {10, 1, 33, 20};
 const uint8_t kSubsampleTest9[] = {7, 19, 6, 32};
 const uint8_t kSubsampleTest10[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9};
-
-const SubsampleTestCase kSubsampleTestCases[] = {
-    {kSubsampleTest1, arraysize(kSubsampleTest1)},
-    {kSubsampleTest2, arraysize(kSubsampleTest2)},
-    {kSubsampleTest3, arraysize(kSubsampleTest3)},
-    {kSubsampleTest4, arraysize(kSubsampleTest4)},
-    {kSubsampleTest5, arraysize(kSubsampleTest5)},
-    {kSubsampleTest6, arraysize(kSubsampleTest6)},
-    {kSubsampleTest7, arraysize(kSubsampleTest7)},
-    {kSubsampleTest8, arraysize(kSubsampleTest8)},
-    {kSubsampleTest9, arraysize(kSubsampleTest9)},
-    {kSubsampleTest10, arraysize(kSubsampleTest10)}};
 
 // IV test values.
 const uint32_t kTextSizeInBytes = 60;  // 3 full blocks + 1 partial block.
@@ -101,26 +83,6 @@ const uint8_t kIv64One[] = {0, 0, 0, 0, 0, 0, 0, 1};
 const uint8_t kIv64MaxMinusOne[] = {0xff, 0xff, 0xff, 0xff,
                                     0xff, 0xff, 0xff, 0xfe};
 const uint8_t kIv64Max[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
-struct IvTestCase {
-  const uint8_t* iv_test;
-  uint32_t iv_size;
-  const uint8_t* iv_expected;
-};
-
-// As recommended in ISO/IEC FDIS 23001-7: CENC spec,
-// For 64-bit (8-byte) IV_Sizes, initialization vectors for subsequent samples
-// can be created by incrementing the initialization vector of the previous
-// sample. For 128-bit (16-byte) IV_Sizes, initialization vectors for subsequent
-// samples should be created by adding the block count of the previous sample to
-// the initialization vector of the previous sample.
-const IvTestCase kIvTestCases[] = {
-    {kIv128Zero, arraysize(kIv128Zero), kIv128Four},
-    {kIv128Max64, arraysize(kIv128Max64), kIv128OneAndThree},
-    {kIv128MaxMinusOne, arraysize(kIv128MaxMinusOne), kIv128Two},
-    {kIv64Zero, arraysize(kIv64Zero), kIv64One},
-    {kIv64MaxMinusOne, arraysize(kIv64MaxMinusOne), kIv64Max},
-    {kIv64Max, arraysize(kIv64Max), kIv64Zero}};
 
 // We support AES 128, i.e. 16 bytes key only.
 const uint8_t kInvalidKey[] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2,
@@ -253,6 +215,12 @@ TEST_F(AesCtrEncryptorTest, UnsupportedIV) {
   ASSERT_FALSE(encryptor_.InitializeWithIv(key_, iv));
 }
 
+// Subsample test cases.
+struct SubsampleTestCase {
+  const uint8_t* subsample_sizes;
+  uint32_t subsample_count;
+};
+
 class AesCtrEncryptorSubsampleTest
     : public AesCtrEncryptorTest,
       public ::testing::WithParamInterface<SubsampleTestCase> {};
@@ -280,9 +248,29 @@ TEST_P(AesCtrEncryptorSubsampleTest, NistTestCaseSubsamples) {
   EXPECT_EQ(plaintext_, decrypted);
 }
 
+namespace {
+const SubsampleTestCase kSubsampleTestCases[] = {
+    {kSubsampleTest1, arraysize(kSubsampleTest1)},
+    {kSubsampleTest2, arraysize(kSubsampleTest2)},
+    {kSubsampleTest3, arraysize(kSubsampleTest3)},
+    {kSubsampleTest4, arraysize(kSubsampleTest4)},
+    {kSubsampleTest5, arraysize(kSubsampleTest5)},
+    {kSubsampleTest6, arraysize(kSubsampleTest6)},
+    {kSubsampleTest7, arraysize(kSubsampleTest7)},
+    {kSubsampleTest8, arraysize(kSubsampleTest8)},
+    {kSubsampleTest9, arraysize(kSubsampleTest9)},
+    {kSubsampleTest10, arraysize(kSubsampleTest10)}};
+}  // namespace
+
 INSTANTIATE_TEST_CASE_P(SubsampleTestCases,
                         AesCtrEncryptorSubsampleTest,
                         ::testing::ValuesIn(kSubsampleTestCases));
+
+struct IvTestCase {
+  const uint8_t* iv_test;
+  uint32_t iv_size;
+  const uint8_t* iv_expected;
+};
 
 class AesCtrEncryptorIvTest : public ::testing::TestWithParam<IvTestCase> {};
 
@@ -304,6 +292,22 @@ TEST_P(AesCtrEncryptorIvTest, IvTest) {
   encryptor.UpdateIv();
   EXPECT_EQ(iv_expected, encryptor.iv());
 }
+
+namespace {
+// As recommended in ISO/IEC FDIS 23001-7: CENC spec,
+// For 64-bit (8-byte) IV_Sizes, initialization vectors for subsequent samples
+// can be created by incrementing the initialization vector of the previous
+// sample. For 128-bit (16-byte) IV_Sizes, initialization vectors for subsequent
+// samples should be created by adding the block count of the previous sample to
+// the initialization vector of the previous sample.
+const IvTestCase kIvTestCases[] = {
+    {kIv128Zero, arraysize(kIv128Zero), kIv128Four},
+    {kIv128Max64, arraysize(kIv128Max64), kIv128OneAndThree},
+    {kIv128MaxMinusOne, arraysize(kIv128MaxMinusOne), kIv128Two},
+    {kIv64Zero, arraysize(kIv64Zero), kIv64One},
+    {kIv64MaxMinusOne, arraysize(kIv64MaxMinusOne), kIv64Max},
+    {kIv64Max, arraysize(kIv64Max), kIv64Zero}};
+}  // namespace
 
 INSTANTIATE_TEST_CASE_P(IvTestCases,
                         AesCtrEncryptorIvTest,

@@ -1,4 +1,4 @@
-FROM debian
+FROM debian:9.5
 
 # Update, and install basic packages
 RUN apt-get update

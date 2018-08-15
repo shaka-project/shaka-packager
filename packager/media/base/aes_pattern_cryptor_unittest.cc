@@ -60,13 +60,44 @@ TEST_F(AesPatternCryptorTest, InitializeWithIv) {
   EXPECT_EQ(iv, pattern_cryptor_.iv());
 }
 
-namespace {
-
 struct PatternTestCase {
   const char* text_hex;
   const char* expected_crypt_text_hex;
 };
 
+class AesPatternCryptorVerificationTest
+    : public AesPatternCryptorTest,
+      public ::testing::WithParamInterface<PatternTestCase> {};
+
+TEST_P(AesPatternCryptorVerificationTest, PatternTest) {
+  std::vector<uint8_t> text;
+  std::string text_hex(GetParam().text_hex);
+  if (!text_hex.empty()) {
+    ASSERT_TRUE(base::HexStringToBytes(text_hex, &text));
+  }
+  std::vector<uint8_t> expected_crypt_text;
+  std::string expected_crypt_text_hex(GetParam().expected_crypt_text_hex);
+  if (!expected_crypt_text_hex.empty()) {
+    ASSERT_TRUE(
+        base::HexStringToBytes(expected_crypt_text_hex, &expected_crypt_text));
+  }
+
+  ON_CALL(*mock_cryptor_, CryptInternal(_, _, _, _))
+      .WillByDefault(Invoke([](const uint8_t* text, size_t text_size,
+                               uint8_t* crypt_text, size_t* crypt_text_size) {
+        *crypt_text_size = text_size;
+        for (size_t i = 0; i < text_size; ++i) {
+          *crypt_text++ = *text++ + 0x10;
+        }
+        return true;
+      }));
+
+  std::vector<uint8_t> crypt_text;
+  ASSERT_TRUE(pattern_cryptor_.Crypt(text, &crypt_text));
+  EXPECT_EQ(expected_crypt_text, crypt_text);
+}
+
+namespace {
 const PatternTestCase kPatternTestCases[] = {
     // Empty.
     {"", ""},
@@ -102,40 +133,7 @@ const PatternTestCase kPatternTestCases[] = {
      "81828384858687888990919293949596"
      "97989900010203040506070809101112"},
 };
-
 }  // namespace
-
-class AesPatternCryptorVerificationTest
-    : public AesPatternCryptorTest,
-      public ::testing::WithParamInterface<PatternTestCase> {};
-
-TEST_P(AesPatternCryptorVerificationTest, PatternTest) {
-  std::vector<uint8_t> text;
-  std::string text_hex(GetParam().text_hex);
-  if (!text_hex.empty()) {
-    ASSERT_TRUE(base::HexStringToBytes(text_hex, &text));
-  }
-  std::vector<uint8_t> expected_crypt_text;
-  std::string expected_crypt_text_hex(GetParam().expected_crypt_text_hex);
-  if (!expected_crypt_text_hex.empty()) {
-    ASSERT_TRUE(
-        base::HexStringToBytes(expected_crypt_text_hex, &expected_crypt_text));
-  }
-
-  ON_CALL(*mock_cryptor_, CryptInternal(_, _, _, _))
-      .WillByDefault(Invoke([](const uint8_t* text, size_t text_size,
-                               uint8_t* crypt_text, size_t* crypt_text_size) {
-        *crypt_text_size = text_size;
-        for (size_t i = 0; i < text_size; ++i) {
-          *crypt_text++ = *text++ + 0x10;
-        }
-        return true;
-      }));
-
-  std::vector<uint8_t> crypt_text;
-  ASSERT_TRUE(pattern_cryptor_.Crypt(text, &crypt_text));
-  EXPECT_EQ(expected_crypt_text, crypt_text);
-}
 
 INSTANTIATE_TEST_CASE_P(PatternTestCases,
                         AesPatternCryptorVerificationTest,

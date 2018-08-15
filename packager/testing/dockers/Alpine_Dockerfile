@@ -1,0 +1,21 @@
+FROM alpine:3.8
+
+# Install packages needed for Shaka Packager.
+RUN apk add --no-cache bash build-base curl findutils git ninja python \
+                       bsd-compat-headers linux-headers libexecinfo-dev
+
+# Install depot_tools.
+WORKDIR /
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+ENV PATH $PATH:/depot_tools
+
+# Alpine uses musl which does not have mallinfo defined in malloc.h. Define the
+# structure to workaround a Chromium base bug.
+RUN sed -i \
+    '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
+    /usr/include/malloc.h
+
+ENV GYP_DEFINES='linux_use_bundled_binutils=0 linux_use_bundled_gold=0 clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
+
+# Build and run this docker by mapping shaka-packager with
+# -v "shaka-packager:/shaka-packager".

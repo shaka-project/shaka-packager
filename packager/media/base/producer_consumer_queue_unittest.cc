@@ -278,13 +278,11 @@ TEST_F(MultiThreadProducerConsumerQueueTest, PeekOnLargePosition) {
   queue_.Stop();
 }
 
-namespace {
 enum Operation {
   kPush,
   kPop,
   kPeek,
 };
-}  // namespace
 
 class MultiThreadProducerConsumerQueueStopTest
     : public ::testing::TestWithParam<Operation> {

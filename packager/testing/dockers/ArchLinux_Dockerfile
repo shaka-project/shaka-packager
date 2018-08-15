@@ -1,27 +1,18 @@
-FROM pritunl/archlinux
+FROM pritunl/archlinux:2018-08-11
 
 # Update, and install basic packages.
-RUN pacman -S --needed --noconfirm python2 git curl gcc gcc-libs make fakeroot
+RUN pacman -S --needed --noconfirm python2 git curl gcc gcc-libs make
 
 # depot_tools uses python2 instead of python3.
 RUN ln -sf python2 /usr/bin/python
-
-# Install libtinfo.so.5 which is needed by clang.
-RUN git clone https://aur.archlinux.org/ncurses5-compat-libs.git /tmp/ncurses-libs
-# makepkg need to run from non root user.
-RUN useradd -m makepkg_user
-RUN chown makepkg_user /tmp/ncurses-libs
-USER makepkg_user
-WORKDIR /tmp/ncurses-libs
-RUN gpg --keyserver pgp.mit.edu --recv-keys F7E48EDB
-RUN makepkg
-USER root
-RUN pacman -U --noconfirm /tmp/ncurses-libs/ncurses5-compat-libs-6.0+20170527-1-x86_64.pkg.tar.xz
 
 # Install depot_tools.
 WORKDIR /
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ENV PATH /depot_tools:$PATH
+
+# Clang needs libtinfo.so.5 which is not available on ArchLinux.
+ENV GYP_DEFINES='clang=0'
 
 # Build and run this docker by mapping shaka-packager with
 # -v "shaka-packager:/shaka-packager".

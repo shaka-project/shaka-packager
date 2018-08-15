@@ -57,13 +57,6 @@ TEST(EncryptionUtilTest, SampleNotEncrypted) {
 
 namespace {
 
-struct EncryptionTestCase {
-  const SubsampleEntry* subsamples;
-  size_t num_subsamples;
-  const uint8_t* subsample_partition_data;
-  size_t subsample_partition_data_size;
-};
-
 const SubsampleEntry kSubsamples1[] = {
     SubsampleEntry(0x12, 0x100),
 };
@@ -94,20 +87,14 @@ const uint8_t kSubsamplePartitionData4[] = {
     0x6B, 0x00, 0x09, 0x03, 0x6B, 0x00, 0x09, 0x03, 0x6D,
 };
 
-EncryptionTestCase kEncryptionTestCases[] = {
-    // Special case with no subsamples.
-    {nullptr, 0, nullptr, 0},
-    {kSubsamples1, arraysize(kSubsamples1), kSubsamplePartitionData1,
-     arraysize(kSubsamplePartitionData1)},
-    {kSubsamples2, arraysize(kSubsamples2), kSubsamplePartitionData2,
-     arraysize(kSubsamplePartitionData2)},
-    {kSubsamples3, arraysize(kSubsamples3), kSubsamplePartitionData3,
-     arraysize(kSubsamplePartitionData3)},
-    {kSubsamples4, arraysize(kSubsamples4), kSubsamplePartitionData4,
-     arraysize(kSubsamplePartitionData4)},
-};
-
 }  // namespace
+
+struct EncryptionTestCase {
+  const SubsampleEntry* subsamples;
+  size_t num_subsamples;
+  const uint8_t* subsample_partition_data;
+  size_t subsample_partition_data_size;
+};
 
 class EncryptionUtilEncryptedTest
     : public ::testing::TestWithParam<EncryptionTestCase> {};
@@ -147,6 +134,21 @@ TEST_P(EncryptionUtilEncryptedTest, SampleEncrypted) {
                                      test_case.subsample_partition_data_size,
                                  sample->data() + sample->data_size()));
 }
+
+namespace {
+EncryptionTestCase kEncryptionTestCases[] = {
+    // Special case with no subsamples.
+    {nullptr, 0, nullptr, 0},
+    {kSubsamples1, arraysize(kSubsamples1), kSubsamplePartitionData1,
+     arraysize(kSubsamplePartitionData1)},
+    {kSubsamples2, arraysize(kSubsamples2), kSubsamplePartitionData2,
+     arraysize(kSubsamplePartitionData2)},
+    {kSubsamples3, arraysize(kSubsamples3), kSubsamplePartitionData3,
+     arraysize(kSubsamplePartitionData3)},
+    {kSubsamples4, arraysize(kSubsamples4), kSubsamplePartitionData4,
+     arraysize(kSubsamplePartitionData4)},
+};
+}  // namespace
 
 INSTANTIATE_TEST_CASE_P(Encryption,
                         EncryptionUtilEncryptedTest,

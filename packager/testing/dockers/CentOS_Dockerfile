@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:7.5.1804
 
 # Update, and install basic packages.
 RUN yum install -y git python git curl gcc-c++ findutils bzip2 \

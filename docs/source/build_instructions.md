@@ -232,6 +232,31 @@ $ ninja -C out/Release
 
 ## Notes for other linux distros
 
+### Alpine Linux
+
+Use `apk` command to install dependencies:
+
+```shell
+$apk add --no-cache bash build-base curl findutils git ninja python \
+                    bsd-compat-headers linux-headers libexecinfo-dev
+```
+
+Alpine uses musl which does not have mallinfo defined in malloc.h. It is
+required by one of Shaka Packager's dependency. To workaround the problem, a
+dummy structure has to be defined in /usr/include/malloc.h, e.g.
+
+```shell
+$ sed -i \
+  '/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};' \
+  /usr/include/malloc.h
+```
+
+We also need to disable clang and some other features to make it work with musl:
+
+```shell
+export GYP_DEFINES='linux_use_bundled_binutils=0 linux_use_bundled_gold=0 clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
+```
+
 ### Arch Linux
 
 Instead of running `sudo apt-get install` to install build dependencies, run:
@@ -249,6 +274,12 @@ $ git clone https://aur.archlinux.org/ncurses5-compat-libs.git
 $ cd ncurses5-compat-libs
 $ gpg --keyserver pgp.mit.edu --recv-keys F7E48EDB
 $ makepkg -si
+```
+
+Optionally, disable clang to build with gcc:
+
+```shell
+$ export GYP_DEFINES='clang=0'
 ```
 
 ### Debian

@@ -10,8 +10,11 @@
   'variables': {
     'variables': {
       'shaka_code%': 0,
+      # musl is a lightweight C standard library used in Alpine Linux.
+      'musl%': 0,
     },
     'shaka_code%': '<(shaka_code)',
+    'musl%': '<(musl)',
     'libpackager_type%': 'static_library',
     'conditions': [
       ['shaka_code==1', {
@@ -75,6 +78,20 @@
           }],
         ],
       }],
+      ['musl==1', {
+        'defines': [
+          # musl is not uClibc but is similar to uClibc that a minimal feature
+          # set is supported. One of Shaka Packager's dependencies, Chromium
+          # base uses __UCLIBC__ flag to disable some features, which needs to
+          # be disabled for musl too.
+          '__UCLIBC__',
+        ],
+        'cflags!': [
+          # Do not treat warnings as errors on musl as there is a hard-coded
+          # warning in musl's sys/errno.h.
+          '-Werror',
+        ],
+      }]
     ],
   },
 }

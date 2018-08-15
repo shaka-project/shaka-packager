@@ -1,4 +1,4 @@
-FROM fedora
+FROM fedora:28
 
 # Update, and install basic packages.
 RUN yum install -y git python git curl gcc-c++ findutils bzip2 \

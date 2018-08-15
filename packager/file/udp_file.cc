@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <strings.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
 

@@ -988,7 +988,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H26xBitReader* br = &reader;
 
-  memset(shdr, 0, sizeof(*shdr));
+  memset(reinterpret_cast<void*>(shdr), 0, sizeof(*shdr));
 
   shdr->idr_pic_flag = (nalu.type() == 5);
   shdr->nal_ref_idc = nalu.ref_idc();
@@ -1134,7 +1134,7 @@ H264Parser::Result H264Parser::ParseSEI(const Nalu& nalu,
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H26xBitReader* br = &reader;
 
-  memset(sei_msg, 0, sizeof(*sei_msg));
+  memset(reinterpret_cast<void*>(sei_msg), 0, sizeof(*sei_msg));
 
   READ_BITS_OR_RETURN(8, &byte);
   while (byte == 0xff) {
