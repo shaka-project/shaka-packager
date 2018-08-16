@@ -77,4 +77,7 @@ Use the below option if your player does not like it.
       --ad_cues 600;1800;3000 \
       --hls_master_playlist_output h264_master.m3u8
 
+Configuration options
+---------------------
+
 .. include:: /options/ads_options.rst
