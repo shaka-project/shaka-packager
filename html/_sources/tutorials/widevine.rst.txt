@@ -130,6 +130,9 @@ Here is the test crendential used in this tutorial.
     `Widevine <https://support.google.com/widevine/troubleshooter/6027072>`_ if
     you need something for production use.
 
+Configuration options
+---------------------
+
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/general_encryption_options.rst
 .. include:: /options/widevine_encryption_options.rst

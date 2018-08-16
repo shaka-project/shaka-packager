@@ -87,8 +87,9 @@ playlists, which describe the streams.
 
 .. include:: /tutorials/dash_hls_example.rst
 
+Configuration options
+---------------------
+
 .. include:: /options/hls_stream_descriptors.rst
-
 .. include:: /options/hls_options.rst
-
 .. include:: /options/segment_template_formatting.rst

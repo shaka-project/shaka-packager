@@ -25,7 +25,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using Raw Key" href="raw_key.html" />
+    <link rel="next" title="Using Widevine Key Server" href="widevine.html" />
     <link rel="prev" title="Live" href="live.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="raw_key.html" title="Using Raw Key"
+          <a href="widevine.html" title="Using Widevine Key Server"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="live.html" title="Live"
@@ -50,10 +50,13 @@
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">DRM</a><ul>
+<li><a class="reference internal" href="#configuration-options">Configuration options</a><ul>
 <li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
 <li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
 <li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
 <li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -62,8 +65,8 @@
   <p class="topless"><a href="live.html"
                         title="previous chapter">Live</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="raw_key.html"
-                        title="next chapter">Using Raw Key</a></p>
+  <p class="topless"><a href="widevine.html"
+                        title="next chapter">Using Widevine Key Server</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -92,23 +95,27 @@
   <div class="section" id="drm">
 <h1>DRM<a class="headerlink" href="#drm" title="Permalink to this headline">¶</a></h1>
 <p>Shaka Packager supports fetching encryption keys from Widevine Key Server and
-PlayReady Key Server. In addition, Shaka Packager also supports Raw Keys, for
-which keys and key_ids are provided to Shaka Packager directly.</p>
+PlayReady Key Server. Shaka Packager also supports Raw Keys, for which keys are
+provided to Shaka Packager directly.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="raw_key.html">Using Raw Key</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="raw_key.html#synopsis">Synopsis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="raw_key.html#examples">Examples</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="widevine.html">Using Widevine Key Server</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="widevine.html#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="widevine.html#examples">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="widevine.html#widevine-test-credential">Widevine test credential</a></li>
+<li class="toctree-l2"><a class="reference internal" href="widevine.html#configuration-options">Configuration options</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="playready.html">Using PlayReady Key Server</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="playready.html#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="playready.html#configuration-options">Configuration options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="raw_key.html">Using Raw Key</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="raw_key.html#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raw_key.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raw_key.html#configuration-options">Configuration options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="raw_key.html#pssh-box-utility-to-generate-pssh-boxes">pssh-box (Utility to generate PSSH boxes)</a></li>
 </ul>
 </li>
 </ul>
@@ -116,8 +123,10 @@ which keys and key_ids are provided to Shaka Packager directly.</p>
 <p>Regardless of which key server you are using, you can instruct Shaka Packager to
 generate other protection systems in additional to the native protection system
 from the key server. This allows generating multi-DRM contents easily.</p>
+<div class="section" id="configuration-options">
+<h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="drm-related-stream-descriptor-fields">
-<h2>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h2>
+<h3>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -136,7 +145,7 @@ Note that it is case sensitive.</td>
 </table>
 </div>
 <div class="section" id="general-encryption-options">
-<h2>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h2>
+<h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -163,7 +172,7 @@ Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" h
 </table>
 </div>
 <div class="section" id="widevine-encryption-options">
-<h2>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h2>
+<h3>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h3>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -242,7 +251,7 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
 </table>
 </div>
 <div class="section" id="raw-key-encryption-options">
-<h2>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h2>
+<h3>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h3>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
@@ -289,6 +298,7 @@ flag nor –protection_systems is specified, a
 </table>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -303,7 +313,7 @@ flag nor –protection_systems is specified, a
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="raw_key.html" title="Using Raw Key"
+          <a href="widevine.html" title="Using Widevine Key Server"
              >next</a> |</li>
         <li class="right" >
           <a href="live.html" title="Live"

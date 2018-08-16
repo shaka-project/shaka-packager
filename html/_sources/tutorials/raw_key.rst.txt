@@ -125,11 +125,14 @@ Test vectors used in this tutorial
         $ pssh-box.py --widevine-system-id \
           --content-id 7465737420636f6e74656e74206964 --hex
 
+Configuration options
+---------------------
+
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/general_encryption_options.rst
 .. include:: /options/raw_key_encryption_options.rst
 
 pssh-box (Utility to generate PSSH boxes)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------------
 
 https://github.com/google/shaka-packager/tree/master/packager/tools/pssh

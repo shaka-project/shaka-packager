@@ -11,6 +11,8 @@ contents.
 Synopsis
 --------
 
+::
+
     $ packager <stream_descriptor> ... \
       --enable_playready_encryption \
       --playready_server_url <playready_server_url> \
@@ -23,6 +25,9 @@ Synopsis
 
 The --client_cert_xx and --ca_file parameters can be omitted if not required by
 the key server.
+
+Configuration options
+---------------------
 
 .. include:: /options/drm_stream_descriptors.rst
 .. include:: /options/general_encryption_options.rst
