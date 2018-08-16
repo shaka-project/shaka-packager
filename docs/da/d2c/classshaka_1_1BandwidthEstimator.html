@@ -63,9 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="../../d4/d8c/classshaka_1_1BandwidthEstimator-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::BandwidthEstimator Class Reference</div>  </div>
@@ -74,27 +72,19 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5d151457635582d04bb40b329b2370d7"><td class="memItemLeft" align="right" valign="top"><a id="a5d151457635582d04bb40b329b2370d7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>BandwidthEstimator</b> (size_t num_blocks)</td></tr>
-<tr class="separator:a5d151457635582d04bb40b329b2370d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c73789c7c3f9b70dd2c23e49640fcc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a7c73789c7c3f9b70dd2c23e49640fcc6">AddBlock</a> (uint64_t size, double duration)</td></tr>
-<tr class="separator:a7c73789c7c3f9b70dd2c23e49640fcc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53c67d33f000489d1ebb31a2bdd766a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a53c67d33f000489d1ebb31a2bdd766a4">AddBlock</a> (uint64_t size_in_bytes, double duration)</td></tr>
+<tr class="separator:a53c67d33f000489d1ebb31a2bdd766a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9414560e16c46e7e2da3683a4dfb86cc"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a9414560e16c46e7e2da3683a4dfb86cc">Estimate</a> () const</td></tr>
 <tr class="separator:a9414560e16c46e7e2da3683a4dfb86cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0df6c40f43a89d3d481392ac0298e37c"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a0df6c40f43a89d3d481392ac0298e37c">Max</a> () const</td></tr>
 <tr class="separator:a0df6c40f43a89d3d481392ac0298e37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:a418205a0cbb9f742f7f14730e4d628ed"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d2c/classshaka_1_1BandwidthEstimator.html#a418205a0cbb9f742f7f14730e4d628ed">kUseAllBlocks</a> = 0</td></tr>
-<tr class="separator:a418205a0cbb9f742f7f14730e4d628ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../d8/d19/bandwidth__estimator_8h_source.html#l00017">17</a> of file <a class="el" href="../../d8/d19/bandwidth__estimator_8h_source.html">bandwidth_estimator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/d19/bandwidth__estimator_8h_source.html#l00014">14</a> of file <a class="el" href="../../d8/d19/bandwidth__estimator_8h_source.html">bandwidth_estimator.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a7c73789c7c3f9b70dd2c23e49640fcc6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c73789c7c3f9b70dd2c23e49640fcc6">&#9670;&nbsp;</a></span>AddBlock()</h2>
+<a id="a53c67d33f000489d1ebb31a2bdd766a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c67d33f000489d1ebb31a2bdd766a4">&#9670;&nbsp;</a></span>AddBlock()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -103,7 +93,7 @@ Static Public Attributes</h2></td></tr>
           <td class="memname">void shaka::BandwidthEstimator::AddBlock </td>
           <td>(</td>
           <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>size</em>, </td>
+          <td class="paramname"><em>size_in_bytes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -144,9 +134,9 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The estimate bandwidth, in bits per second, from the harmonic mean of the number of blocks specified in the constructor. The value is rounded up to the nearest integer. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The estimate bandwidth, in bits per second, calculated from the sum of the sizes of every block, divided by the sum of durations of every block, of the number of blocks specified in the constructor. The value is rounded up to the nearest integer. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html#l00030">30</a> of file <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html">bandwidth_estimator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html">bandwidth_estimator.cc</a>.</p>
 
 </div>
 </div>
@@ -166,38 +156,7 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The max bandwidth, in bits per second, of the number of blocks specified in the constructor. The value is rounded up to the nearest integer. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html">bandwidth_estimator.cc</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="a418205a0cbb9f742f7f14730e4d628ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a418205a0cbb9f742f7f14730e4d628ed">&#9670;&nbsp;</a></span>kUseAllBlocks</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t shaka::BandwidthEstimator::kUseAllBlocks = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">num_blocks</td><td>is the number of latest blocks to use. 0 uses all. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="../../d8/d19/bandwidth__estimator_8h_source.html#l00020">20</a> of file <a class="el" href="../../d8/d19/bandwidth__estimator_8h_source.html">bandwidth_estimator.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html#l00042">42</a> of file <a class="el" href="../../d6/d86/bandwidth__estimator_8cc_source.html">bandwidth_estimator.cc</a>.</p>
 
 </div>
 </div>
@@ -208,7 +167,7 @@ Static Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:32:56 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:15 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

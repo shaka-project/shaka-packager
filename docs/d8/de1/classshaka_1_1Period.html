@@ -103,8 +103,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a80692fb7ec33b71f586e6d434959d2b7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de1/classshaka_1_1Period.html#a80692fb7ec33b71f586e6d434959d2b7">Period</a> (uint32_t period_id, double <a class="el" href="../../d8/de1/classshaka_1_1Period.html#a93ec8606ac8aa96139d3b5459ccb303d">start_time_in_seconds</a>, const <a class="el" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a> &amp;mpd_options, base::AtomicSequenceNumber *representation_counter)</td></tr>
-<tr class="separator:a80692fb7ec33b71f586e6d434959d2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92f0486f20c430533a65d37a450ea020"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de1/classshaka_1_1Period.html#a92f0486f20c430533a65d37a450ea020">Period</a> (uint32_t period_id, double <a class="el" href="../../d8/de1/classshaka_1_1Period.html#a93ec8606ac8aa96139d3b5459ccb303d">start_time_in_seconds</a>, const <a class="el" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a> &amp;mpd_options, uint32_t *representation_counter)</td></tr>
+<tr class="separator:a92f0486f20c430533a65d37a450ea020"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -118,10 +118,10 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PeriodTest</b></td><
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d8/de1/classshaka_1_1Period.html">Period</a> class maps to &lt;Period&gt; element and provides methods to add AdaptationSets. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d20/period_8h_source.html#l00031">31</a> of file <a class="el" href="../../d7/d20/period_8h_source.html">period.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d20/period_8h_source.html#l00030">30</a> of file <a class="el" href="../../d7/d20/period_8h_source.html">period.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a80692fb7ec33b71f586e6d434959d2b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80692fb7ec33b71f586e6d434959d2b7">&#9670;&nbsp;</a></span>Period()</h2>
+<a id="a92f0486f20c430533a65d37a450ea020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f0486f20c430533a65d37a450ea020">&#9670;&nbsp;</a></span>Period()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -150,7 +150,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PeriodTest</b></td><
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::AtomicSequenceNumber *&#160;</td>
+          <td class="paramtype">uint32_t *&#160;</td>
           <td class="paramname"><em>representation_counter</em>&#160;</td>
         </tr>
         <tr>
@@ -204,7 +204,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PeriodTest</b></td><
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>period duration in seconds. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d20/period_8h_source.html#l00063">63</a> of file <a class="el" href="../../d7/d20/period_8h_source.html">period.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d20/period_8h_source.html#l00062">62</a> of file <a class="el" href="../../d7/d20/period_8h_source.html">period.h</a>.</p>
 
 </div>
 </div>
@@ -319,7 +319,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PeriodTest</b></td><
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The start time of this <a class="el" href="../../d8/de1/classshaka_1_1Period.html">Period</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d20/period_8h_source.html#l00060">60</a> of file <a class="el" href="../../d7/d20/period_8h_source.html">period.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d20/period_8h_source.html#l00059">59</a> of file <a class="el" href="../../d7/d20/period_8h_source.html">period.h</a>.</p>
 
 </div>
 </div>
@@ -330,7 +330,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PeriodTest</b></td><
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:32:58 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:17 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

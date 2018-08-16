@@ -25,7 +25,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Raw key" href="raw_key.html" />
+    <link rel="next" title="Using Raw Key" href="raw_key.html" />
     <link rel="prev" title="Live" href="live.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="raw_key.html" title="Raw key"
+          <a href="raw_key.html" title="Using Raw Key"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="live.html" title="Live"
@@ -47,12 +47,23 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DRM</a><ul>
+<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
+<li><a class="reference internal" href="#widevine-encryption-options">Widevine encryption options</a></li>
+<li><a class="reference internal" href="#raw-key-encryption-options">Raw key encryption options</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="live.html"
                         title="previous chapter">Live</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="raw_key.html"
-                        title="next chapter">Raw key</a></p>
+                        title="next chapter">Using Raw Key</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -80,21 +91,202 @@
             
   <div class="section" id="drm">
 <h1>DRM<a class="headerlink" href="#drm" title="Permalink to this headline">¶</a></h1>
+<p>Shaka Packager supports fetching encryption keys from Widevine Key Server and
+PlayReady Key Server. In addition, Shaka Packager also supports Raw Keys, for
+which keys and key_ids are provided to Shaka Packager directly.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="raw_key.html">Raw key</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="raw_key.html">Using Raw Key</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="raw_key.html#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raw_key.html#examples">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="widevine.html">Widevine</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="widevine.html">Using Widevine Key Server</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="widevine.html#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="widevine.html#examples">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="widevine.html#widevine-test-credential">Widevine test credential</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="playready.html">PlayReady</a></li>
+<li class="toctree-l1"><a class="reference internal" href="playready.html">Using PlayReady Key Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="playready.html#synopsis">Synopsis</a></li>
 </ul>
+</li>
+</ul>
+</div>
+<p>Regardless of which key server you are using, you can instruct Shaka Packager to
+generate other protection systems in additional to the native protection system
+from the key server. This allows generating multi-DRM contents easily.</p>
+<div class="section" id="drm-related-stream-descriptor-fields">
+<h2>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">skip_encryption=0|1:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional. Defaults to 0 if not specified. If it is set to 1, no encryption
+of the stream will be made.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">drm_label:</th><td class="field-body">Optional value for custom DRM label, which defines the encryption key
+applied to the stream. Typically values include AUDIO, SD, HD, UHD1, UHD2.
+For raw key, it should be a label defined in –keys. If not provided, the
+DRM label is derived from stream type (video, audio), resolutions, etc.
+Note that it is case sensitive.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="general-encryption-options">
+<h2>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h2>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
+schemes ‘cens’ or ‘cbcs’.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable / disable VP9 subsample encryption. Enabled by default.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_systems</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
+Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="widevine-encryption-options">
+<h2>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h2>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_widevine_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
+AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
+(–rsa_signing_key_path). This generates Widevine protection system if
+–protection_systems is not specified. Use –protection_systems to generate
+multiple protection systems.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
+AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
+(–rsa_signing_key_path).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Key server url. Required for Widevine encryption and decryption.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--content_id <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Content identifier that uniquely identifies the content.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--policy <var>&lt;policy&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The name of a stored policy, which specifies DRM content rights.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--max_sd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The video track is considered SD if its max pixels per frame is no higher
+than <em>max_sd_pixels</em>. Default: 442368 (768 x 576).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--max_hd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The video track is considered HD if its max pixels per frame is higher than
+<em>max_sd_pixels</em>, but no higher than <em>max_hd_pixels</em>. Default: 2073600
+(1920 x 1080).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--max_uhd1_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The video track is considered UHD1 if its max pixels per frame is higher
+than <em>max_hd_pixels</em>, but no higher than <em>max_uhd1_pixels</em>. Otherwise it is
+UHD2. Default: 8847360 (4096 x 2160).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--signer <var>&lt;signer&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>The name of the signer.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--aes_signing_key <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>AES signing key in hex string. <em>aes_signing_iv</em> is required if
+<em>aes_signing_key</em> is specified. This option is exclusive with
+<em>rsa_signing_key_path</em>.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--aes_signing_iv <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>AES signing iv in hex string.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--rsa_signing_key_path <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Path to the file containing PKCS#1 RSA private key for request signing.
+This option is exclusive with <em>aes_signing_key</em>.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--crypto_period_duration <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Defines how often key rotates. If it is non-zero, key rotation is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--group_id <var>&lt;hex&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Identifier for a group of licenses.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="raw-key-encryption-options">
+<h2>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h2>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_raw_key_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)). This
+generates <a class="reference external" href="https://goo.gl/s8RIhr">Common protection system</a> if neither
+–pssh nor –protection_systems is specified. Use –pssh to provide custom
+protection systems or use –protection_systems to generate protection
+systems automatically.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_raw_key_decryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable decryption with raw key (keys provided in command line).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td><p class="first"><strong>key_info_string</strong> is of the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><em>label</em> can be an arbitrary string or a predefined DRM label like AUDIO,
+SD, HD, etc. Label with an empty string indicates the default key and
+key_id. The <em>drm_label</em> in <a class="reference internal" href="../options/stream_descriptors.html"><span class="doc">Stream descriptors</span></a>,
+which can be implicit, determines which key info is applied to the stream
+by matching the <em>drm_label</em> with the <em>label</em> in key info.</p>
+<p class="last"><em>key_id</em> and <em>key</em> should be 32-digit hex strings.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>IV in hex string format. If not specified, a random IV will be generated.
+This flag should only be used for testing. IV must be either 8 bytes
+(16 digits HEX) or 16 bytes (32 digits in HEX).</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If neither this
+flag nor –protection_systems is specified, a
+<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -111,7 +303,7 @@
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="raw_key.html" title="Raw key"
+          <a href="raw_key.html" title="Using Raw Key"
              >next</a> |</li>
         <li class="right" >
           <a href="live.html" title="Live"

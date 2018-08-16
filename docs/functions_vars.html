@@ -143,20 +143,14 @@ $(function() {
 
 
 <h3><a id="index_g"></a>- g -</h3><ul>
-<li>generate_common_pssh
-: <a class="el" href="dc/da0/structshaka_1_1EncryptionParams.html#a43faba59aed96c5311c6432407c0c385">shaka::EncryptionParams</a>
-</li>
 <li>generate_dash_if_iop_compliant_mpd
 : <a class="el" href="df/ddc/structshaka_1_1MpdParams.html#aa1b2ec6746586d4981655cee62669ba2">shaka::MpdParams</a>
 </li>
-<li>generate_playready_pssh
-: <a class="el" href="dc/da0/structshaka_1_1EncryptionParams.html#ab68c561d374950d61d3507a2221b5a87">shaka::EncryptionParams</a>
+<li>generate_sidx_in_media_segments
+: <a class="el" href="d0/d43/structshaka_1_1Mp4OutputParams.html#a26b0505cea21a43ca4ce963f8fa84cf3">shaka::Mp4OutputParams</a>
 </li>
 <li>generate_static_live_mpd
 : <a class="el" href="df/ddc/structshaka_1_1MpdParams.html#ab5a09b17ee41a0960e813bd0c72bf4f6">shaka::MpdParams</a>
-</li>
-<li>generate_widevine_pssh
-: <a class="el" href="dc/da0/structshaka_1_1EncryptionParams.html#aea05bd8db0f473ce1466ebcacceb9881">shaka::EncryptionParams</a>
 </li>
 <li>group_id
 : <a class="el" href="d9/dd2/structshaka_1_1WidevineEncryptionParams.html#a6d69402cd4c66d546be180c7800e6d09">shaka::WidevineEncryptionParams</a>
@@ -184,6 +178,9 @@ $(function() {
 
 
 <h3><a id="index_i"></a>- i -</h3><ul>
+<li>include_pssh_in_stream
+: <a class="el" href="d0/d43/structshaka_1_1Mp4OutputParams.html#abdff0b6ab552e27e275d8d23cc2f60b1">shaka::Mp4OutputParams</a>
+</li>
 <li>index_range
 : <a class="el" href="d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html#aa15231fb064efc4b56800df24b074b29">shaka::media::MuxerListener::MediaRanges</a>
 </li>
@@ -214,7 +211,7 @@ $(function() {
 : <a class="el" href="de/d49/classshaka_1_1media_1_1DecryptConfig.html#afa140203b87d3e46d5fd94b231734f53">shaka::media::DecryptConfig</a>
 </li>
 <li>key
-: <a class="el" href="df/d22/structshaka_1_1WidevineSigner.html#a25bb558aa06563d24c3d7f9733ff8898">shaka::WidevineSigner</a>
+: <a class="el" href="df/d22/structshaka_1_1WidevineSigner.html#ad5c378d29df509280d8697f986163324">shaka::WidevineSigner</a>
 </li>
 <li>key_map
 : <a class="el" href="d0/db4/structshaka_1_1RawKeyParams.html#a14e44fed95583d0bb319c082fb1ddb84">shaka::RawKeyParams</a>
@@ -234,9 +231,6 @@ $(function() {
 <li>kNoKeyRotation
 : <a class="el" href="dc/da0/structshaka_1_1EncryptionParams.html#a92ad4ca8e1ccb7d6b5fa2ee0b1b196fa">shaka::EncryptionParams</a>
 </li>
-<li>kNoSidxBoxInSegment
-: <a class="el" href="d0/d43/structshaka_1_1Mp4OutputParams.html#a41ff299070f75fd0dca96d83706d32ff">shaka::Mp4OutputParams</a>
-</li>
 <li>kOrderInvalid
 : <a class="el" href="dc/da6/classshaka_1_1media_1_1ContentEncoding.html#a3ba32d5ca8b0688b2dc6b2ec8a5be6d2">shaka::media::ContentEncoding</a>
 </li>
@@ -245,9 +239,6 @@ $(function() {
 </li>
 <li>kSuggestedPresentationDelayNotSet
 : <a class="el" href="df/ddc/structshaka_1_1MpdParams.html#a13705544aac44c5d2065b8a842744bf0">shaka::MpdParams</a>
-</li>
-<li>kUseAllBlocks
-: <a class="el" href="da/d2c/classshaka_1_1BandwidthEstimator.html#a418205a0cbb9f742f7f14730e4d628ed">shaka::BandwidthEstimator</a>
 </li>
 </ul>
 
@@ -288,9 +279,6 @@ $(function() {
 <li>output
 : <a class="el" href="d2/d7b/structshaka_1_1StreamDescriptor.html#a08ce812991297de47354b99cdaec5415">shaka::StreamDescriptor</a>
 </li>
-<li>output_file_index
-: <a class="el" href="d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ae6f2196d3bc69a25bd9a7ce73ec4db69">shaka::media::MuxerOptions</a>
-</li>
 <li>output_file_name
 : <a class="el" href="d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions</a>
 </li>
@@ -316,6 +304,9 @@ $(function() {
 </li>
 <li>program_identifier
 : <a class="el" href="df/d47/structshaka_1_1PlayReadyEncryptionParams.html#a8716552505d244227bf93c4878071f2d">shaka::PlayReadyEncryptionParams</a>
+</li>
+<li>protection_systems
+: <a class="el" href="dc/da0/structshaka_1_1EncryptionParams.html#a3c5d11615ce906ce4420f873986db81c">shaka::EncryptionParams</a>
 </li>
 <li>pssh
 : <a class="el" href="d0/db4/structshaka_1_1RawKeyParams.html#a448b8c435fc86d4fbc85214e523f2ac5">shaka::RawKeyParams</a>
@@ -390,15 +381,11 @@ $(function() {
 : <a class="el" href="d0/da8/structshaka_1_1HlsParams.html#adc19a9eebbfe20c3f9fe03dd452e4b1b">shaka::HlsParams</a>
 , <a class="el" href="df/ddc/structshaka_1_1MpdParams.html#a95e4824708c8de4b882b86772f680032">shaka::MpdParams</a>
 </li>
+<li>transport_stream_timestamp_offset_ms
+: <a class="el" href="d5/de3/structshaka_1_1PackagingParams.html#aa2c8c5254f14048368edb652dd329556">shaka::PackagingParams</a>
+</li>
 <li>trick_play_factor
 : <a class="el" href="d2/d7b/structshaka_1_1StreamDescriptor.html#a5cc00f367691729460e0b75b8ec6c512">shaka::StreamDescriptor</a>
-</li>
-</ul>
-
-
-<h3><a id="index_u"></a>- u -</h3><ul>
-<li>use_decoding_timestamp_in_timeline
-: <a class="el" href="d0/d43/structshaka_1_1Mp4OutputParams.html#a4e0de7f58e0a83896e14e5603e2f965f">shaka::Mp4OutputParams</a>
 </li>
 </ul>
 
@@ -418,7 +405,7 @@ $(function() {
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:33:28 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:48 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

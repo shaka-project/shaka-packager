@@ -25,17 +25,11 @@ Shaka Packager Library (Continued)
 
 .. doxygenstruct:: shaka::PlayReadyEncryptionParams
 
-.. doxygenstruct:: shaka::RawKeyEncryptionParams
-
-.. doxygenstruct:: shaka::RawKeyEncryptionParams::KeyPair
+.. doxygenstruct:: shaka::RawKeyParams
 
 .. doxygenstruct:: shaka::EncryptionParams
 
 .. doxygenstruct:: shaka::WidevineDecryptionParams
-
-.. doxygenstruct:: shaka::RawKeyDecryptionParams
-
-.. doxygenstruct:: shaka::RawKeyDecryptionParams::KeyPair
 
 .. doxygenstruct:: shaka::DecryptionParams
 

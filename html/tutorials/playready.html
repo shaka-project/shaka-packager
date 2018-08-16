@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>PlayReady &#8212; Shaka Packager  documentation</title>
+    <title>Using PlayReady Key Server &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="FFmpeg piping" href="ffmpeg_piping.html" />
-    <link rel="prev" title="Widevine" href="widevine.html" /> 
+    <link rel="prev" title="Using Widevine Key Server" href="widevine.html" /> 
   </head>
   <body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,7 +39,7 @@
           <a href="ffmpeg_piping.html" title="FFmpeg piping"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="widevine.html" title="Widevine"
+          <a href="widevine.html" title="Using Widevine Key Server"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>
@@ -48,9 +48,22 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using PlayReady Key Server</a><ul>
+<li><a class="reference internal" href="#synopsis">Synopsis</a><ul>
+<li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#general-encryption-options">General encryption options</a></li>
+<li><a class="reference internal" href="#playready-encryption-options">PlayReady encryption options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="widevine.html"
-                        title="previous chapter">Widevine</a></p>
+                        title="previous chapter">Using Widevine Key Server</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="ffmpeg_piping.html"
                         title="next chapter">FFmpeg piping</a></p>
@@ -79,9 +92,112 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="playready">
-<h1>PlayReady<a class="headerlink" href="#playready" title="Permalink to this headline">¶</a></h1>
-<p>To be completed.</p>
+  <div class="section" id="using-playready-key-server">
+<h1>Using PlayReady Key Server<a class="headerlink" href="#using-playready-key-server" title="Permalink to this headline">¶</a></h1>
+<p>Shaka Packager can talk to PlayReady Key Server that implements
+<a class="reference external" href="http://bit.ly/2M9NuOt">AcquirePackagingData Web Method specification</a> to
+fetch encryption keys.</p>
+<p>Refer to <a class="reference internal" href="drm.html"><span class="doc">DRM</span></a> if you are interested in generating multi-DRM
+contents.</p>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="docutils">
+<dt>$ packager &lt;stream_descriptor&gt; … </dt>
+<dd>–enable_playready_encryption –playready_server_url &lt;playready_server_url&gt; –program_identifier &lt;program_identifier&gt; –client_cert_file &lt;client_cert_file&gt; –client_cert_private_key_file &lt;client_cert_private_key_file&gt; –client_cert_private_key_password &lt;client_cert_private_key_password&gt; –ca_file &lt;ca_file&gt; [Other options, e.g. DASH options, HLS options]</dd>
+</dl>
+</div></blockquote>
+<p>The –client_cert_xx and –ca_file parameters can be omitted if not required by
+the key server.</p>
+<div class="section" id="drm-related-stream-descriptor-fields">
+<h3>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">skip_encryption=0|1:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional. Defaults to 0 if not specified. If it is set to 1, no encryption
+of the stream will be made.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">drm_label:</th><td class="field-body">Optional value for custom DRM label, which defines the encryption key
+applied to the stream. Typically values include AUDIO, SD, HD, UHD1, UHD2.
+For raw key, it should be a label defined in –keys. If not provided, the
+DRM label is derived from stream type (video, audio), resolutions, etc.
+Note that it is case sensitive.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="general-encryption-options">
+<h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
+schemes ‘cens’ or ‘cbcs’.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable / disable VP9 subsample encryption. Enabled by default.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_systems</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
+Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="playready-encryption-options">
+<h3>PlayReady encryption options<a class="headerlink" href="#playready-encryption-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--enable_playready_encryption</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Enable encryption with PlayReady key. This generates PlayReady protection
+system if –protection_systems is not specified. Use –protection_system to
+generate multiple protection systems.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--playready_server_url <var>&lt;url&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>PlayReady packaging server url.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--program_identifier <var>&lt;program_identifier&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Program identifier for packaging request.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--ca_file <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Absolute path to the certificate authority file for the server cert.
+PEM format. Optional, depends on server configuration.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--client_cert_file <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Absolute path to client certificate file. Optional, depends on server
+configuration.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--client_cert_private_key_file <var>&lt;file path&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Absolute path to the private key file. Optional, depends on server
+configuration.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--client_cert_private_key_password <var>&lt;string&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Password to the private key file. Optional, depends on server configuration.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 
 
@@ -100,7 +216,7 @@
           <a href="ffmpeg_piping.html" title="FFmpeg piping"
              >next</a> |</li>
         <li class="right" >
-          <a href="widevine.html" title="Widevine"
+          <a href="widevine.html" title="Using Widevine Key Server"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>

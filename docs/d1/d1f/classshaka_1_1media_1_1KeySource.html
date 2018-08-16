@@ -81,7 +81,7 @@ Inheritance diagram for shaka::media::KeySource:</div>
  <div class="center">
   <img src="../../d1/d1f/classshaka_1_1media_1_1KeySource.png" usemap="#shaka::media::KeySource_map" alt=""/>
   <map id="shaka::media::KeySource_map" name="shaka::media::KeySource_map">
-<area href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html" title="A key source that uses playready for encryption. " alt="shaka::media::PlayReadyKeySource" shape="rect" coords="0,56,214,80"/>
+<area href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html" title="A key source that uses PlayReady for encryption. " alt="shaka::media::PlayReadyKeySource" shape="rect" coords="0,56,214,80"/>
 <area href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html" title="A key source that uses raw keys for encryption. " alt="shaka::media::RawKeySource" shape="rect" coords="224,56,438,80"/>
 <area href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html" alt="shaka::media::WidevineKeySource" shape="rect" coords="448,56,662,80"/>
 </map>
@@ -89,9 +89,9 @@ Inheritance diagram for shaka::media::KeySource:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8f16841c5d413f7fa09502a31c2db61d"><td class="memItemLeft" align="right" valign="top"><a id="a8f16841c5d413f7fa09502a31c2db61d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags)</td></tr>
-<tr class="separator:a8f16841c5d413f7fa09502a31c2db61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e6de4121fd0a63c2e9caf7793ee26a"><td class="memItemLeft" align="right" valign="top"><a id="a76e6de4121fd0a63c2e9caf7793ee26a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags, FourCC protection_scheme)</td></tr>
+<tr class="separator:a76e6de4121fd0a63c2e9caf7793ee26a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">FetchKeys</a> (EmeInitDataType init_data_type, const std::vector&lt; uint8_t &gt; &amp;init_data)=0</td></tr>
 <tr class="separator:a38dc8e7c48f86e2b3ab3c1ffe0d7916f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af56c833453d65297c4dc96c9d2f83e1a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#af56c833453d65297c4dc96c9d2f83e1a">GetKey</a> (const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
@@ -109,7 +109,7 @@ Protected Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> is responsible for encryption key acquisition. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00050">50</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00048">48</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a38dc8e7c48f86e2b3ab3c1ffe0d7916f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a38dc8e7c48f86e2b3ab3c1ffe0d7916f">&#9670;&nbsp;</a></span>FetchKeys()</h2>
@@ -332,7 +332,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00039">39</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -343,7 +343,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:33:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:23 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

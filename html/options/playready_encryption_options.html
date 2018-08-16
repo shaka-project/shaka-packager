@@ -72,7 +72,9 @@
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_playready_encryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable encryption with playready key.</td></tr>
+<tr><td>&#160;</td><td>Enable encryption with PlayReady key. This generates PlayReady protection
+system if –protection_systems is not specified. Use –protection_system to
+generate multiple protection systems.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--playready_server_url <var>&lt;url&gt;</var></span></kbd></td>
 </tr>
@@ -82,30 +84,24 @@
 </tr>
 <tr><td>&#160;</td><td>Program identifier for packaging request.</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--playready_key_id <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>PlayReady key id in hex.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--playready_key <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>PlayReady key in hex.</td></tr>
-<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--ca_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Absolute path to the certificate authority file for the server cert.
-PEM format.</td></tr>
+PEM format. Optional, depends on server configuration.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--client_cert_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Absolute path to client certificate file.</td></tr>
+<tr><td>&#160;</td><td>Absolute path to client certificate file. Optional, depends on server
+configuration.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--client_cert_private_key_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Absolute path to the private key file.</td></tr>
+<tr><td>&#160;</td><td>Absolute path to the private key file. Optional, depends on server
+configuration.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--client_cert_private_key_password <var>&lt;string&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Password to the private key file.</td></tr>
+<tr><td>&#160;</td><td>Password to the private key file. Optional, depends on server configuration.</td></tr>
 </tbody>
 </table>
 </div>

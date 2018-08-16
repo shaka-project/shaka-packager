@@ -118,20 +118,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad54aef6c349082d996a436ebea11eff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11d4301cd53ab421f524bfa143eac21a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a11d4301cd53ab421f524bfa143eac21a">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds)=0</td></tr>
 <tr class="separator:a11d4301cd53ab421f524bfa143eac21a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cb75da6ff50d6403da18ea8dcc04265"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a> (const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</td></tr>
-<tr class="separator:a4cb75da6ff50d6403da18ea8dcc04265"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1276239a5fd8f86fd522b8c2b741904f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a1276239a5fd8f86fd522b8c2b741904f">OnKeyFrame</a> (uint64_t timestamp, uint64_t start_byte_offset, uint64_t size)=0</td></tr>
-<tr class="separator:a1276239a5fd8f86fd522b8c2b741904f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab241c43b2de818758b340cba9cc7c9ae"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab241c43b2de818758b340cba9cc7c9ae">OnCueEvent</a> (uint64_t timestamp, const std::string &amp;cue_data)=0</td></tr>
-<tr class="separator:ab241c43b2de818758b340cba9cc7c9ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf755e05c40fdadcca6113164f0585c6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aaf755e05c40fdadcca6113164f0585c6">OnNewSegment</a> (const std::string &amp;segment_name, int64_t start_time, int64_t duration, uint64_t segment_file_size)=0</td></tr>
+<tr class="separator:aaf755e05c40fdadcca6113164f0585c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade7b35913ba90256e567085af1649138"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ade7b35913ba90256e567085af1649138">OnKeyFrame</a> (int64_t timestamp, uint64_t start_byte_offset, uint64_t size)=0</td></tr>
+<tr class="separator:ade7b35913ba90256e567085af1649138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9d6d113d7a0b58fffc1abac99013757"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aa9d6d113d7a0b58fffc1abac99013757">OnCueEvent</a> (int64_t timestamp, const std::string &amp;cue_data)=0</td></tr>
+<tr class="separator:aa9d6d113d7a0b58fffc1abac99013757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> is an event handler that can be registered to a muxer. A <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> cannot be shared amongst muxer instances, in other words, every muxer instance either owns a unique <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> instance. This also assumes that there is one media stream per muxer. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../de/dfa/muxer__listener_8h_source.html#l00032">32</a> of file <a class="el" href="../../de/dfa/muxer__listener_8h_source.html">muxer_listener.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab241c43b2de818758b340cba9cc7c9ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab241c43b2de818758b340cba9cc7c9ae">&#9670;&nbsp;</a></span>OnCueEvent()</h2>
+<a id="aa9d6d113d7a0b58fffc1abac99013757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d6d113d7a0b58fffc1abac99013757">&#9670;&nbsp;</a></span>OnCueEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -142,7 +142,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void shaka::media::MuxerListener::OnCueEvent </td>
           <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>timestamp</em>, </td>
         </tr>
         <tr>
@@ -171,7 +171,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#abd32dae454eafd6078caf3972701802d">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#ae8db9dc7865d136c3fc8b7b5ed86a23e">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a6e6ff5abe8b04f46f740aa4049dfa163">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#afb865efad1302c0514f62498188f77d2">shaka::media::CombinedMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a63f5e613bba435a8496d48d87ea66505">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#aec15d878b48b81b4aafd8e7f8a059613">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a6d4c96d42b1fb17b4b1194dd7d584956">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -262,14 +262,14 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
+<p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aaf755e05c40fdadcca6113164f0585c6">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
 
 <p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a49b4187f39abe517768364f7ecb280f9">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a56ccf04196458894f31d0db102153334">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae8f6f65fbab9f301be5bb35f5b8d1cbc">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a40a2b9e923b6a6e255ee5632bffc1134">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
-<a id="a1276239a5fd8f86fd522b8c2b741904f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1276239a5fd8f86fd522b8c2b741904f">&#9670;&nbsp;</a></span>OnKeyFrame()</h2>
+<a id="ade7b35913ba90256e567085af1649138"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade7b35913ba90256e567085af1649138">&#9670;&nbsp;</a></span>OnKeyFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -280,7 +280,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void shaka::media::MuxerListener::OnKeyFrame </td>
           <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>timestamp</em>, </td>
         </tr>
         <tr>
@@ -316,7 +316,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aca760c4bf4d878f4c30aee60489ac240">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#abfa37764e205e161f4d67de7df6205c4">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a3b563b65b2b2198b177d256fc0bc57e1">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#ab28f1444fb268c8e7e30c8b6392da3a2">shaka::media::CombinedMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a939b705752c295745cc076a20977c731">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#af6c31f1a534d288e77953bc685248074">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a24b45b02ae133efedace054329469058">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -424,8 +424,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a4cb75da6ff50d6403da18ea8dcc04265"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4cb75da6ff50d6403da18ea8dcc04265">&#9670;&nbsp;</a></span>OnNewSegment()</h2>
+<a id="aaf755e05c40fdadcca6113164f0585c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf755e05c40fdadcca6113164f0585c6">&#9670;&nbsp;</a></span>OnNewSegment()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -442,13 +442,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>start_time</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>duration</em>, </td>
         </tr>
         <tr>
@@ -479,7 +479,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#aea9c2b0247695d4cf20d50fe44c7d918">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a9976447daf55bbdea1cd0d8846512e11">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a36e979fe7b3cfa69dc257e5e439dca08">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#a6c785d9517d89b74a4594f201800365c">shaka::media::CombinedMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a90a293a14ff0b63c0b07c7ea8adde59a">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">shaka::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#abea88e872e32c4deaa0b2c54b9fc8c48">shaka::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d9/d68/classshaka_1_1media_1_1CombinedMuxerListener.html#afb4ac528f1f2650f02450b92b29c0101">shaka::media::CombinedMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -523,7 +523,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:33:06 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:24 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

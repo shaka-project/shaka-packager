@@ -4,6 +4,7 @@ var searchData=
   ['makepathsrelativetompd',['MakePathsRelativeToMpd',['../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9',1,'shaka::MpdBuilder']]],
   ['masterplaylist',['MasterPlaylist',['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a2e7ed221fa11eca895eab3bfe0f5d55b',1,'shaka::hls::MasterPlaylist']]],
   ['max',['Max',['../da/d2c/classshaka_1_1BandwidthEstimator.html#a0df6c40f43a89d3d481392ac0298e37c',1,'shaka::BandwidthEstimator']]],
+  ['maxbitrate',['MaxBitrate',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a889e16239425ce84673cb78bc267b552',1,'shaka::hls::MediaPlaylist']]],
   ['mediaplaylist',['MediaPlaylist',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ad0b067471c77f2f9a6adb4df0aa85925',1,'shaka::hls::MediaPlaylist']]],
   ['mergefrom',['MergeFrom',['../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a36dddd88a09f038adfbf87063786178c',1,'shaka::media::VPCodecConfigurationRecord']]],
   ['mp4muxer',['MP4Muxer',['../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497',1,'shaka::media::mp4::MP4Muxer']]],

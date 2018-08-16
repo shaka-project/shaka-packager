@@ -6,7 +6,6 @@ var searchData=
   ['base_5furls',['base_urls',['../df/ddc/structshaka_1_1MpdParams.html#a9fe508f9c56a6424fd857d43a4a69e7c',1,'shaka::MpdParams']]],
   ['bit_5fposition',['bit_position',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a100abf1165633b67359bb3d813594f7e',1,'shaka::media::BitReader']]],
   ['bitpos',['BitPos',['../dc/d76/classshaka_1_1media_1_1BitWriter.html#a66164c7c6fcd524dd1f87b07f4c2e7fd',1,'shaka::media::BitWriter']]],
-  ['bitrate',['Bitrate',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a7810218ac04bb2a4c87d5aff16a65149',1,'shaka::hls::MediaPlaylist']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html',1,'shaka::media::BitReader'],['../d6/da9/classshaka_1_1media_1_1BitReader.html#a264dbe3e94ba76214c1af75ab3877945',1,'shaka::media::BitReader::BitReader()']]],
   ['bits_5favailable',['bits_available',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a94b03de069b0054ee4a534b12644a986',1,'shaka::media::BitReader']]],
   ['bitwriter',['BitWriter',['../dc/d76/classshaka_1_1media_1_1BitWriter.html',1,'shaka::media::BitWriter'],['../dc/d76/classshaka_1_1media_1_1BitWriter.html#a09495a53bd1f1885dcc328b1621041f4',1,'shaka::media::BitWriter::BitWriter()']]],

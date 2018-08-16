@@ -77,6 +77,7 @@
 </li>
 <li><a class="reference internal" href="#tips-tricks-and-troubleshooting">Tips, tricks, and troubleshooting</a><ul>
 <li><a class="reference internal" href="#xcode-license-agreement">Xcode license agreement</a></li>
+<li><a class="reference internal" href="#missing-curl-ca-bundle">Missing curl CA bundle</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#contributing">Contributing</a></li>
@@ -301,7 +302,7 @@ hooks as needed.</p>
 <span id="cross-compiling-for-arm-on-ubuntu-host"></span><h2>Cross compiling for ARM on Ubuntu host<a class="headerlink" href="#cross-compiling-for-arm-on-ubuntu-host" title="Permalink to this headline">¶</a></h2>
 <p>The install-build-deps script can be used to install all the compiler
 and library dependencies directly from Ubuntu:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>$ ./pacakger/build/install-build-deps.sh
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ ./packager/build/install-build-deps.sh
 </pre></div>
 </div>
 <p>Install sysroot image and others using <code class="docutils literal"><span class="pre">gclient</span></code>:</p>
@@ -355,17 +356,28 @@ $ makepkg -si
 <span id="tips-tricks-and-troubleshooting"></span><h2>Tips, tricks, and troubleshooting<a class="headerlink" href="#tips-tricks-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="xcode-license-agreement">
 <span id="xcode-license-agreement"></span><h3>Xcode license agreement<a class="headerlink" href="#xcode-license-agreement" title="Permalink to this headline">¶</a></h3>
-<p>If you’re getting the error</p>
+<p>If you are getting the error</p>
 <blockquote>
 <div>Agreeing to the Xcode/iOS license requires admin privileges, please re-run as
 root via sudo.</div></blockquote>
-<p>the Xcode license hasn’t been accepted yet which (contrary to the message) any
+<p>the Xcode license has not been accepted yet which (contrary to the message) any
 user can do by running:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ xcodebuild -license
 </pre></div>
 </div>
 <p>Only accepting for all users of the machine requires root:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>$ sudo xcodebuild -license
+</pre></div>
+</div>
+</div>
+<div class="section" id="missing-curl-ca-bundle">
+<span id="missing-curl-ca-bundle"></span><h3>Missing curl CA bundle<a class="headerlink" href="#missing-curl-ca-bundle" title="Permalink to this headline">¶</a></h3>
+<p>If you are getting the error</p>
+<blockquote>
+<div>gyp: Call to ‘config/mac/find_curl_ca_bundle.sh’ returned exit status 1 …</div></blockquote>
+<p>curl CA bundle is not able to be located. Installing curl with openssl should
+resolve the issue:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ brew install curl --with-openssl
 </pre></div>
 </div>
 </div>

@@ -8,9 +8,7 @@ var searchData=
   ['key_5fserver_5furl',['key_server_url',['../d9/dd2/structshaka_1_1WidevineEncryptionParams.html#ac222c5bd0620e5a6f9bf5e9fec534fb9',1,'shaka::WidevineEncryptionParams::key_server_url()'],['../df/d47/structshaka_1_1PlayReadyEncryptionParams.html#ac5298ee04e36296e8dd4b7a56e8bc464',1,'shaka::PlayReadyEncryptionParams::key_server_url()'],['../d8/d48/structshaka_1_1WidevineDecryptionParams.html#adb765979bcc7f63ce46c9ed6ead1ee5b',1,'shaka::WidevineDecryptionParams::key_server_url()']]],
   ['key_5furi',['key_uri',['../d0/da8/structshaka_1_1HlsParams.html#a68414aff0f65059c2d05c8d168aadf5f',1,'shaka::HlsParams']]],
   ['knokeyrotation',['kNoKeyRotation',['../dc/da0/structshaka_1_1EncryptionParams.html#a92ad4ca8e1ccb7d6b5fa2ee0b1b196fa',1,'shaka::EncryptionParams']]],
-  ['knosidxboxinsegment',['kNoSidxBoxInSegment',['../d0/d43/structshaka_1_1Mp4OutputParams.html#a41ff299070f75fd0dca96d83706d32ff',1,'shaka::Mp4OutputParams']]],
   ['korderinvalid',['kOrderInvalid',['../dc/da6/classshaka_1_1media_1_1ContentEncoding.html#a3ba32d5ca8b0688b2dc6b2ec8a5be6d2',1,'shaka::media::ContentEncoding']]],
   ['kprotectionschemecenc',['kProtectionSchemeCenc',['../dc/da0/structshaka_1_1EncryptionParams.html#a1d7a8c6b5e46b51ccadcaef3f9cf9cb0',1,'shaka::EncryptionParams']]],
-  ['ksuggestedpresentationdelaynotset',['kSuggestedPresentationDelayNotSet',['../df/ddc/structshaka_1_1MpdParams.html#a13705544aac44c5d2065b8a842744bf0',1,'shaka::MpdParams']]],
-  ['kuseallblocks',['kUseAllBlocks',['../da/d2c/classshaka_1_1BandwidthEstimator.html#a418205a0cbb9f742f7f14730e4d628ed',1,'shaka::BandwidthEstimator']]]
+  ['ksuggestedpresentationdelaynotset',['kSuggestedPresentationDelayNotSet',['../df/ddc/structshaka_1_1MpdParams.html#a13705544aac44c5d2065b8a842744bf0',1,'shaka::MpdParams']]]
 ];

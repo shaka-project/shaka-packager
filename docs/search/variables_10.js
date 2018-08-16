@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['use_5fdecoding_5ftimestamp_5fin_5ftimeline',['use_decoding_timestamp_in_timeline',['../d0/d43/structshaka_1_1Mp4OutputParams.html#a4e0de7f58e0a83896e14e5603e2f965f',1,'shaka::Mp4OutputParams']]]
+  ['vp9_5fsubsample_5fencryption',['vp9_subsample_encryption',['../dc/da0/structshaka_1_1EncryptionParams.html#a48d415f17d51306ce7e1931fd954c37c',1,'shaka::EncryptionParams']]]
 ];

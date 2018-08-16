@@ -72,7 +72,11 @@
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_raw_key_encryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)).</td></tr>
+<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)). This
+generates <a class="reference external" href="https://goo.gl/s8RIhr">Common protection system</a> if neither
+–pssh nor –protection_systems is specified. Use –pssh to provide custom
+protection systems or use –protection_systems to generate protection
+systems automatically.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_raw_key_decryption</span></kbd></td>
 </tr>
@@ -100,8 +104,9 @@ This flag should only be used for testing. IV must be either 8 bytes
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If not specified,
-a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
+<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If neither this
+flag nor –protection_systems is specified, a
+<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
 </tbody>
 </table>
 </div>

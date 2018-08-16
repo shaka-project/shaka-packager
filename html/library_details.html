@@ -98,6 +98,12 @@
 </dd></dl>
 
 <dl class="member">
+<dt id="_CPPv2N5shaka15PackagingParams36transport_stream_timestamp_offset_msE">
+<span id="shaka::PackagingParams::transport_stream_timestamp_offset_ms__uint32_t"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aa2c8c5254f14048368edb652dd329556"></span>uint32_t <code class="descname">transport_stream_timestamp_offset_ms</code> = 0<a class="headerlink" href="#_CPPv2N5shaka15PackagingParams36transport_stream_timestamp_offset_msE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The offset to be applied to transport stream (e.g. MPEG2-TS, HLS packed audio) timestamps to compensate for possible negative timestamps in the input. </p>
+</dd></dl>
+
+<dl class="member">
 <dt id="_CPPv2N5shaka15PackagingParams15chunking_paramsE">
 <span id="shaka::PackagingParams::chunking_params__ChunkingParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1ac992ff58f67ad9b737dfc62d517be8ed"></span><a class="reference internal" href="#_CPPv2N5shaka14ChunkingParamsE" title="shaka::ChunkingParams">ChunkingParams</a> <code class="descname">chunking_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams15chunking_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Chunking (segmentation) related parameters. </p>
@@ -242,18 +248,15 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka15Mp4OutputParams34use_decoding_timestamp_in_timelineE">
-<span id="shaka::Mp4OutputParams::use_decoding_timestamp_in_timeline__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1a4e0de7f58e0a83896e14e5603e2f965f"></span>bool <code class="descname">use_decoding_timestamp_in_timeline</code> = false<a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParams34use_decoding_timestamp_in_timelineE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set the flag use_decoding_timestamp_in_timeline, which if set to true, use decoding timestamp instead of presentation timestamp in media timeline, which is needed to workaround a Chromium bug that decoding timestamp is used in buffered range, <a class="reference external" href="https://crbug.com/398130">https://crbug.com/398130</a>. </p>
+<dt id="_CPPv2N5shaka15Mp4OutputParams22include_pssh_in_streamE">
+<span id="shaka::Mp4OutputParams::include_pssh_in_stream__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1abdff0b6ab552e27e275d8d23cc2f60b1"></span>bool <code class="descname">include_pssh_in_stream</code> = true<a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParams22include_pssh_in_streamE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Include pssh in the encrypted stream. CMAF and DASH-IF recommends carrying license acquisition information in the manifest and not duplicate the information in the stream. (This is not a hard requirement so we are still CMAF compatible even if pssh is included in the stream.) </p>
 </dd></dl>
 
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka15Mp4OutputParams19kNoSidxBoxInSegmentE">
-<span id="shaka::Mp4OutputParams::kNoSidxBoxInSegment__i"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1a41ff299070f75fd0dca96d83706d32ff"></span><em class="property">constexpr</em> int <code class="descname">kNoSidxBoxInSegment</code> = -1<a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParams19kNoSidxBoxInSegmentE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Set the number of subsegments in each SIDX box. If 0, a single SIDX box is used per segment. If -1, no SIDX box is used. Otherwise, the Muxer will pack N subsegments in the root SIDX of the segment, with segment_duration/N/subsegment_duration fragments per subsegment. This flag is ingored for DASH MPD with on-demand profile. </p>
+<dt id="_CPPv2N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE">
+<span id="shaka::Mp4OutputParams::generate_sidx_in_media_segments__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1a26b0505cea21a43ca4ce963f8fa84cf3"></span>bool <code class="descname">generate_sidx_in_media_segments</code> = true<a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicates whether a ‘sidx’ box should be generated in the media segments. Note that it is required by spec if segment_template contains $Times$ specifier. </p>
 </dd></dl>
 
 </div>
@@ -584,7 +587,7 @@
 <dl class="class">
 <dt id="_CPPv2N5shaka25PlayReadyEncryptionParamsE">
 <span id="shaka::PlayReadyEncryptionParams"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">PlayReadyEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>PlayReady encryption parameters. Two different modes of playready key acquisition is supported: (1) Fetch from a key server. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. (2) Provide the raw key directly. Both <code class="docutils literal"><span class="pre">key_id</span></code> and <code class="docutils literal"><span class="pre">key</span></code> are required. We are planning to merge this mode with <code class="docutils literal"><span class="pre">RawKeyParams</span></code>. </p>
+<dd><p>PlayReady encryption parameters. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
@@ -626,18 +629,67 @@
 </div>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">doxygenstruct: Cannot find class “shaka::RawKeyEncryptionParams” in doxygen xml output for project “shaka” from directory: ../../out/doxygen/xml</p>
+<dl class="class">
+<dt id="_CPPv2N5shaka12RawKeyParamsE">
+<span id="shaka::RawKeyParams"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">RawKeyParams</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Raw key encryption/decryption parameters, i.e. with key parameters provided. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="member">
+<dt id="_CPPv2N5shaka12RawKeyParams2ivE">
+<span id="shaka::RawKeyParams::iv__std::vector:uint8_t:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1aab733ab6920dd8fbed523810e64ea3f1"></span>std::vector&lt;uint8_t&gt; <code class="descname">iv</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParams2ivE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An optional initialization vector. If not provided, a random <code class="docutils literal"><span class="pre">iv</span></code> will be generated. Note that this parameter should only be used during testing. Not needed for decryption. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka12RawKeyParams4psshE">
+<span id="shaka::RawKeyParams::pssh__std::vector:uint8_t:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1a448b8c435fc86d4fbc85214e523f2ac5"></span>std::vector&lt;uint8_t&gt; <code class="descname">pssh</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParams4psshE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Inject a custom <code class="docutils literal"><span class="pre">pssh</span></code> or multiple concatenated <code class="docutils literal"><span class="pre">psshs</span></code>. If not provided, a common system pssh will be generated. Not needed for decryption. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka12RawKeyParams7key_mapE">
+<span id="shaka::RawKeyParams::key_map__std::map:StreamLabel.KeyInfo:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1a14e44fed95583d0bb319c082fb1ddb84"></span>std::map&lt;StreamLabel, KeyInfo&gt; <code class="descname">key_map</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParams7key_mapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Defines the KeyInfo for the streams. An empty <code class="docutils literal"><span class="pre">StreamLabel</span></code> indicates the default <code class="docutils literal"><span class="pre">KeyInfo</span></code>, which applies to all the <code class="docutils literal"><span class="pre">StreamLabels</span></code> not present in <code class="docutils literal"><span class="pre">key_map</span></code>. </p>
+</dd></dl>
+
 </div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">doxygenstruct: Cannot find class “shaka::RawKeyEncryptionParams::KeyPair” in doxygen xml output for project “shaka” from directory: ../../out/doxygen/xml</p>
-</div>
+</dd></dl>
+
 <dl class="class">
 <dt id="_CPPv2N5shaka16EncryptionParamsE">
 <span id="shaka::EncryptionParams"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">EncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Encryption parameters. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Types</p>
+<dl class="type">
+<dt id="_CPPv2N5shaka16EncryptionParams16ProtectionSystemE">
+<span id="shaka::EncryptionParams::ProtectionSystem"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9"></span><em class="property">enum </em><code class="descname">ProtectionSystem</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams16ProtectionSystemE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Supported protection systems. </p>
+<p><em>Values:</em></p>
+<dl class="enumerator">
+<dt id="_CPPv2N5shaka16EncryptionParams13kCommonSystemE">
+<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9af3a6cfd02e70e988e7fc8749bd807a9f"></span><code class="descname">kCommonSystem</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams13kCommonSystemE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv2N5shaka16EncryptionParams9kFairPlayE">
+<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a51a26bec7d39600d282361571e71a27c"></span><code class="descname">kFairPlay</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams9kFairPlayE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv2N5shaka16EncryptionParams10kPlayReadyE">
+<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9abb168dc0fb1aa1f4aca8a756f711e51f"></span><code class="descname">kPlayReady</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams10kPlayReadyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv2N5shaka16EncryptionParams9kWidevineE">
+<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a2b4c92d0a1dbc3a696c509b0bdde12eb"></span><code class="descname">kWidevine</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams9kWidevineE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
@@ -647,21 +699,9 @@
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams20generate_common_psshE">
-<span id="shaka::EncryptionParams::generate_common_pssh__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a43faba59aed96c5311c6432407c0c385"></span>bool <code class="descname">generate_common_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams20generate_common_psshE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>When it is true, generate a v1 PSSH box for the common system ID. See: <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>. The flag is default to be true if enable_raw_key_encryption is set and no other pssh flags are specified. </p>
-</dd></dl>
-
-<dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams23generate_playready_psshE">
-<span id="shaka::EncryptionParams::generate_playready_pssh__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1ab68c561d374950d61d3507a2221b5a87"></span>bool <code class="descname">generate_playready_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams23generate_playready_psshE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>When it is true, include a PlayReady PSSH box. A playready PSSH is always generated regardless of the value of generate_playready_pssh for enable_playready_encryption. </p>
-</dd></dl>
-
-<dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams22generate_widevine_psshE">
-<span id="shaka::EncryptionParams::generate_widevine_pssh__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1aea05bd8db0f473ce1466ebcacceb9881"></span>bool <code class="descname">generate_widevine_pssh</code> = false<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams22generate_widevine_psshE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>When it is true, include a widevine PSSH box. A widevine PSSH is always generated regardless of the value of generate_widevine_pssh for enable_widevine_encryption. </p>
+<dt id="_CPPv2N5shaka16EncryptionParams18protection_systemsE">
+<span id="shaka::EncryptionParams::protection_systems__std::vector:ProtectionSystem:"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a3c5d11615ce906ce4420f873986db81c"></span>std::vector&lt;<a class="reference internal" href="#_CPPv2N5shaka16EncryptionParams16ProtectionSystemE" title="shaka::EncryptionParams::ProtectionSystem">ProtectionSystem</a>&gt; <code class="descname">protection_systems</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams18protection_systemsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Protection systems to be generated. </p>
 </dd></dl>
 
 <dl class="member">
@@ -727,14 +767,6 @@
 </div>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">doxygenstruct: Cannot find class “shaka::RawKeyDecryptionParams” in doxygen xml output for project “shaka” from directory: ../../out/doxygen/xml</p>
-</div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">doxygenstruct: Cannot find class “shaka::RawKeyDecryptionParams::KeyPair” in doxygen xml output for project “shaka” from directory: ../../out/doxygen/xml</p>
-</div>
 <dl class="class">
 <dt id="_CPPv2N5shaka16DecryptionParamsE">
 <span id="shaka::DecryptionParams"></span><span class="target" id="d1/d4f/structshaka_1_1DecryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">DecryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka16DecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>

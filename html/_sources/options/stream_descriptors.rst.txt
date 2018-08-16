@@ -38,7 +38,7 @@ These are the available fields:
 
 :bandwidth (bw):
 
-    Optional value which contains a user-specified content bit rate for the
+    Optional value which contains a user-specified maximum bit rate for the
     stream, in bits/sec. If specified, this value is propagated to (HLS)
     EXT-X-STREAM-INF:BANDWIDTH or (DASH) Representation@bandwidth and the
     $Bandwidth$ template parameter for segment names. If not specified, the

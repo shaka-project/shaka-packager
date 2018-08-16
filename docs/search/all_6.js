@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['generate_5fcommon_5fpssh',['generate_common_pssh',['../dc/da0/structshaka_1_1EncryptionParams.html#a43faba59aed96c5311c6432407c0c385',1,'shaka::EncryptionParams']]],
   ['generate_5fdash_5fif_5fiop_5fcompliant_5fmpd',['generate_dash_if_iop_compliant_mpd',['../df/ddc/structshaka_1_1MpdParams.html#aa1b2ec6746586d4981655cee62669ba2',1,'shaka::MpdParams']]],
-  ['generate_5fplayready_5fpssh',['generate_playready_pssh',['../dc/da0/structshaka_1_1EncryptionParams.html#ab68c561d374950d61d3507a2221b5a87',1,'shaka::EncryptionParams']]],
+  ['generate_5fsidx_5fin_5fmedia_5fsegments',['generate_sidx_in_media_segments',['../d0/d43/structshaka_1_1Mp4OutputParams.html#a26b0505cea21a43ca4ce963f8fa84cf3',1,'shaka::Mp4OutputParams']]],
   ['generate_5fstatic_5flive_5fmpd',['generate_static_live_mpd',['../df/ddc/structshaka_1_1MpdParams.html#ab5a09b17ee41a0960e813bd0c72bf4f6',1,'shaka::MpdParams']]],
-  ['generate_5fwidevine_5fpssh',['generate_widevine_pssh',['../dc/da0/structshaka_1_1EncryptionParams.html#aea05bd8db0f473ce1466ebcacceb9881',1,'shaka::EncryptionParams']]],
   ['generatepsshfromkeyidandkey',['GeneratePsshFromKeyIdAndKey',['../d8/dbf/classshaka_1_1media_1_1PsshGenerator.html#af3b145050b28bca84380c4179b4ab8ff',1,'shaka::media::PsshGenerator']]],
   ['generatepsshfromkeyids',['GeneratePsshFromKeyIds',['../d8/dbf/classshaka_1_1media_1_1PsshGenerator.html#a0916d098396ad0bd04c3a5ee37c87e38',1,'shaka::media::PsshGenerator']]],
   ['generaterandomiv',['GenerateRandomIv',['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a40d9a82d274d6fbaee5346328f11dedd',1,'shaka::media::AesCryptor']]],

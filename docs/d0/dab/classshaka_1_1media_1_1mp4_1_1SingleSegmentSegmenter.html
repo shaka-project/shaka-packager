@@ -154,7 +154,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 <tr class="separator:a27aa9f749f1151582732cdbae8fb4f66 inherit pro_methods_classshaka_1_1media_1_1mp4_1_1Segmenter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> for MP4 Dash Video-On-Demand profile. A single MP4 file with a single segment is created, i.e. with only one SIDX box. The generated media file can contain one or many subsegments with subsegment duration defined by <b>MuxerOptions.segment_duration</b>. A subsegment can contain one or many fragments with fragment duration defined by <b>MuxerOptions.fragment_duration</b>. The actual subsegment or fragment duration may not match the requested duration exactly, but will be approximated. That is, the <a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> tries to end subsegment/fragment at the first sample with overall subsegment/fragment duration not smaller than defined duration and yet meet SAP requirements. <a class="el" href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a> ignores <b>MuxerOptions.num_subsegments_per_sidx</b>. </p>
+<div class="textblock"><p><a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> for MP4 Dash Video-On-Demand profile. A single MP4 file with a single segment is created, i.e. with only one SIDX box. The generated media file can contain one or many subsegments with subsegment duration defined by <b>MuxerOptions.segment_duration</b>. A subsegment can contain one or many fragments with fragment duration defined by <b>MuxerOptions.fragment_duration</b>. The actual subsegment or fragment duration may not match the requested duration exactly, but will be approximated. That is, the <a class="el" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> tries to end subsegment/fragment at the first sample with overall subsegment/fragment duration not smaller than defined duration and yet meet SAP requirements. <a class="el" href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a> ignores <b>MuxerOptions.mp4_params.generate_sidx_in_media_segments</b>. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/d01/mp4_2single__segment__segmenter_8h_source.html#l00029">29</a> of file <a class="el" href="../../d9/d01/mp4_2single__segment__segmenter_8h_source.html">single_segment_segmenter.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
@@ -247,7 +247,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:33:23 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:43 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

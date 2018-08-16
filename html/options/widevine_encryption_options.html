@@ -74,18 +74,15 @@
 </tr>
 <tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
-(–rsa_signing_key_path).</td></tr>
+(–rsa_signing_key_path). This generates Widevine protection system if
+–protection_systems is not specified. Use –protection_systems to generate
+multiple protection systems.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
 (–rsa_signing_key_path).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--include_common_pssh</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>When using Widevine encryption, include an additional v1 PSSH box for the
-common system ID that includes the key IDs. See <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
 </tr>

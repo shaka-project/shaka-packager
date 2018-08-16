@@ -85,6 +85,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html">Mp4OutputParams</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de3/structshaka_1_1PackagingParams.html#a794072e13c04de6b98e5d1e7cc5b57d6">mp4_output_params</a></td></tr>
 <tr class="memdesc:a794072e13c04de6b98e5d1e7cc5b57d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">MP4 (ISO-BMFF) output related parameters. <br /></td></tr>
 <tr class="separator:a794072e13c04de6b98e5d1e7cc5b57d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2c8c5254f14048368edb652dd329556"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de3/structshaka_1_1PackagingParams.html#aa2c8c5254f14048368edb652dd329556">transport_stream_timestamp_offset_ms</a> = 0</td></tr>
+<tr class="separator:aa2c8c5254f14048368edb652dd329556"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac992ff58f67ad9b737dfc62d517be8ed"><td class="memItemLeft" align="right" valign="top"><a id="ac992ff58f67ad9b737dfc62d517be8ed"></a>
 <a class="el" href="../../d2/d1f/structshaka_1_1ChunkingParams.html">ChunkingParams</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de3/structshaka_1_1PackagingParams.html#ac992ff58f67ad9b737dfc62d517be8ed">chunking_params</a></td></tr>
 <tr class="memdesc:ac992ff58f67ad9b737dfc62d517be8ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chunking (segmentation) related parameters. <br /></td></tr>
@@ -136,7 +138,24 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Create a human readable format of MediaInfo. The output file name will be the name specified by output flag, suffixed with <code>.media_info</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00051">51</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00055">55</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+
+</div>
+</div>
+<a id="aa2c8c5254f14048368edb652dd329556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2c8c5254f14048368edb652dd329556">&#9670;&nbsp;</a></span>transport_stream_timestamp_offset_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t shaka::PackagingParams::transport_stream_timestamp_offset_ms = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The offset to be applied to transport stream (e.g. MPEG2-TS, HLS packed audio) timestamps to compensate for possible negative timestamps in the input. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00046">46</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -146,7 +165,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:32:58 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:16 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

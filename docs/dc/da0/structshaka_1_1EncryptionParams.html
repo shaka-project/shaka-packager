@@ -64,6 +64,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="../../dc/d35/structshaka_1_1EncryptionParams-members.html">List of all members</a>  </div>
@@ -83,6 +84,16 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encrypted stream information that is used to determine stream label.  <a href="../../d7/d6d/structshaka_1_1EncryptionParams_1_1EncryptedStreamAttributes.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:afe99d2343ace64763249893a4fef6eb9"><td class="memItemLeft" align="right" valign="top"><a id="afe99d2343ace64763249893a4fef6eb9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#afe99d2343ace64763249893a4fef6eb9">ProtectionSystem</a> { <b>kCommonSystem</b>, 
+<b>kFairPlay</b>, 
+<b>kPlayReady</b>, 
+<b>kWidevine</b>
+ }<tr class="memdesc:afe99d2343ace64763249893a4fef6eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported protection systems. <br /></td></tr>
+</td></tr>
+<tr class="separator:afe99d2343ace64763249893a4fef6eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:adcf61ebf8d129a5bcf3f159b9b076eed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d8/daf/namespaceshaka.html#a539b99ce5c34193e294bc544437e9185">KeyProvider</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#adcf61ebf8d129a5bcf3f159b9b076eed">key_provider</a> = KeyProvider::kNone</td></tr>
@@ -96,12 +107,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a00ae0352c77cead21b961f348e8fcf3d"><td class="memItemLeft" align="right" valign="top"><a id="a00ae0352c77cead21b961f348e8fcf3d"></a>
 <a class="el" href="../../d0/db4/structshaka_1_1RawKeyParams.html">RawKeyParams</a>&#160;</td><td class="memItemRight" valign="bottom"><b>raw_key</b></td></tr>
 <tr class="separator:a00ae0352c77cead21b961f348e8fcf3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43faba59aed96c5311c6432407c0c385"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#a43faba59aed96c5311c6432407c0c385">generate_common_pssh</a> = false</td></tr>
-<tr class="separator:a43faba59aed96c5311c6432407c0c385"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab68c561d374950d61d3507a2221b5a87"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#ab68c561d374950d61d3507a2221b5a87">generate_playready_pssh</a> = false</td></tr>
-<tr class="separator:ab68c561d374950d61d3507a2221b5a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea05bd8db0f473ce1466ebcacceb9881"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#aea05bd8db0f473ce1466ebcacceb9881">generate_widevine_pssh</a> = false</td></tr>
-<tr class="separator:aea05bd8db0f473ce1466ebcacceb9881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c5d11615ce906ce4420f873986db81c"><td class="memItemLeft" align="right" valign="top"><a id="a3c5d11615ce906ce4420f873986db81c"></a>
+std::vector&lt; <a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#afe99d2343ace64763249893a4fef6eb9">ProtectionSystem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#a3c5d11615ce906ce4420f873986db81c">protection_systems</a></td></tr>
+<tr class="memdesc:a3c5d11615ce906ce4420f873986db81c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protection systems to be generated. <br /></td></tr>
+<tr class="separator:a3c5d11615ce906ce4420f873986db81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ad46963dc926aa4b72813dccb3f6a45"><td class="memItemLeft" align="right" valign="top"><a id="a1ad46963dc926aa4b72813dccb3f6a45"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#a1ad46963dc926aa4b72813dccb3f6a45">clear_lead_in_seconds</a> = 0</td></tr>
 <tr class="memdesc:a1ad46963dc926aa4b72813dccb3f6a45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear lead duration in seconds. <br /></td></tr>
@@ -140,59 +149,8 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Encryption parameters. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00112">112</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00108">108</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a43faba59aed96c5311c6432407c0c385"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a43faba59aed96c5311c6432407c0c385">&#9670;&nbsp;</a></span>generate_common_pssh</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::EncryptionParams::generate_common_pssh = false</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>When it is true, generate a v1 PSSH box for the common system ID. See: <a href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>. The flag is default to be true if &ndash;enable_raw_key_encryption is set and no other pssh flags are specified. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00126">126</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
-
-</div>
-</div>
-<a id="ab68c561d374950d61d3507a2221b5a87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab68c561d374950d61d3507a2221b5a87">&#9670;&nbsp;</a></span>generate_playready_pssh</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::EncryptionParams::generate_playready_pssh = false</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>When it is true, include a PlayReady PSSH box. A playready PSSH is always generated regardless of the value of &ndash;generate_playready_pssh for &ndash;enable_playready_encryption. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00130">130</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
-
-</div>
-</div>
-<a id="aea05bd8db0f473ce1466ebcacceb9881"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea05bd8db0f473ce1466ebcacceb9881">&#9670;&nbsp;</a></span>generate_widevine_pssh</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::EncryptionParams::generate_widevine_pssh = false</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>When it is true, include a widevine PSSH box. A widevine PSSH is always generated regardless of the value of &ndash;generate_widevine_pssh for &ndash;enable_widevine_encryption. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00134">134</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
-
-</div>
-</div>
 <a id="adcf61ebf8d129a5bcf3f159b9b076eed"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adcf61ebf8d129a5bcf3f159b9b076eed">&#9670;&nbsp;</a></span>key_provider</h2>
 
@@ -206,7 +164,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><div class="memdoc">
 <p>Specifies the key provider, which determines which key provider is used and which encryption params is valid. 'kNone' means not to encrypt the streams. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00116">116</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00112">112</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
 
 </div>
 </div>
@@ -231,7 +189,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><div class="memdoc">
 <p>Crypto period duration in seconds. A positive value means key rotation is enabled, the key provider must support key rotation in this case. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00146">146</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00138">138</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
 
 </div>
 </div>
@@ -248,7 +206,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><div class="memdoc">
 <p>Stream label function assigns a stream label to the stream to be encrypted. Stream label is used to associate KeyPair with streams. Streams with the same stream label always uses the same keyPair; Streams with different stream label could use the same or different KeyPairs. A default stream label function will be generated if not set. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00181">181</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00173">173</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
 
 </div>
 </div>
@@ -258,7 +216,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:32:56 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:15 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

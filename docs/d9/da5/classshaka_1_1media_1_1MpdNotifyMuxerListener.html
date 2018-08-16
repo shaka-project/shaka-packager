@@ -94,12 +94,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3b0457b0147310ba07169cf84cfce2aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa42f5472d5450d897f036ff582a31612"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#aa42f5472d5450d897f036ff582a31612">OnMediaEnd</a> (const <a class="el" href="../../d1/d03/structshaka_1_1media_1_1MuxerListener_1_1MediaRanges.html">MediaRanges</a> &amp;media_ranges, float duration_seconds) override</td></tr>
 <tr class="separator:aa42f5472d5450d897f036ff582a31612"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9976447daf55bbdea1cd0d8846512e11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a9976447daf55bbdea1cd0d8846512e11">OnNewSegment</a> (const std::string &amp;file_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size) override</td></tr>
-<tr class="separator:a9976447daf55bbdea1cd0d8846512e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfa37764e205e161f4d67de7df6205c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#abfa37764e205e161f4d67de7df6205c4">OnKeyFrame</a> (uint64_t timestamp, uint64_t start_byte_offset, uint64_t size)</td></tr>
-<tr class="separator:abfa37764e205e161f4d67de7df6205c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8db9dc7865d136c3fc8b7b5ed86a23e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#ae8db9dc7865d136c3fc8b7b5ed86a23e">OnCueEvent</a> (uint64_t timestamp, const std::string &amp;cue_data) override</td></tr>
-<tr class="separator:ae8db9dc7865d136c3fc8b7b5ed86a23e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d9681e36de82c75c99631a55863d2fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">OnNewSegment</a> (const std::string &amp;file_name, int64_t start_time, int64_t duration, uint64_t segment_file_size) override</td></tr>
+<tr class="separator:a5d9681e36de82c75c99631a55863d2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af18042e753bda8897128b0e091cf9999"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#af18042e753bda8897128b0e091cf9999">OnKeyFrame</a> (int64_t timestamp, uint64_t start_byte_offset, uint64_t size)</td></tr>
+<tr class="separator:af18042e753bda8897128b0e091cf9999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1837b4ff54c1eef191448c49bb3ccc56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a1837b4ff54c1eef191448c49bb3ccc56">OnCueEvent</a> (int64_t timestamp, const std::string &amp;cue_data) override</td></tr>
+<tr class="separator:a1837b4ff54c1eef191448c49bb3ccc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -155,8 +155,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae8db9dc7865d136c3fc8b7b5ed86a23e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8db9dc7865d136c3fc8b7b5ed86a23e">&#9670;&nbsp;</a></span>OnCueEvent()</h2>
+<a id="a1837b4ff54c1eef191448c49bb3ccc56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1837b4ff54c1eef191448c49bb3ccc56">&#9670;&nbsp;</a></span>OnCueEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -167,7 +167,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void shaka::media::MpdNotifyMuxerListener::OnCueEvent </td>
           <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>timestamp</em>, </td>
         </tr>
         <tr>
@@ -196,7 +196,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab241c43b2de818758b340cba9cc7c9ae">shaka::media::MuxerListener</a>.</p>
+<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aa9d6d113d7a0b58fffc1abac99013757">shaka::media::MuxerListener</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00196">196</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
@@ -291,7 +291,7 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a9976447daf55bbdea1cd0d8846512e11">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
+<p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a5d9681e36de82c75c99631a55863d2fb">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">shaka::media::MuxerListener</a>.</p>
 
@@ -299,8 +299,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="abfa37764e205e161f4d67de7df6205c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abfa37764e205e161f4d67de7df6205c4">&#9670;&nbsp;</a></span>OnKeyFrame()</h2>
+<a id="af18042e753bda8897128b0e091cf9999"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af18042e753bda8897128b0e091cf9999">&#9670;&nbsp;</a></span>OnKeyFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -311,7 +311,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">void shaka::media::MpdNotifyMuxerListener::OnKeyFrame </td>
           <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>timestamp</em>, </td>
         </tr>
         <tr>
@@ -347,7 +347,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a1276239a5fd8f86fd522b8c2b741904f">shaka::media::MuxerListener</a>.</p>
+<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ade7b35913ba90256e567085af1649138">shaka::media::MuxerListener</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00190">190</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
@@ -461,8 +461,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a9976447daf55bbdea1cd0d8846512e11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9976447daf55bbdea1cd0d8846512e11">&#9670;&nbsp;</a></span>OnNewSegment()</h2>
+<a id="a5d9681e36de82c75c99631a55863d2fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d9681e36de82c75c99631a55863d2fb">&#9670;&nbsp;</a></span>OnNewSegment()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -479,13 +479,13 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>start_time</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>duration</em>, </td>
         </tr>
         <tr>
@@ -516,7 +516,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener</a>.</p>
+<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#aaf755e05c40fdadcca6113164f0585c6">shaka::media::MuxerListener</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00173">173</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
@@ -565,7 +565,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:33:05 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:24 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Raw key &#8212; Shaka Packager  documentation</title>
+    <title>Using Raw Key &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Widevine" href="widevine.html" />
+    <link rel="next" title="Using Widevine Key Server" href="widevine.html" />
     <link rel="prev" title="DRM" href="drm.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="widevine.html" title="Widevine"
+          <a href="widevine.html" title="Using Widevine Key Server"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="drm.html" title="DRM"
@@ -50,7 +50,7 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Raw key</a><ul>
+<li><a class="reference internal" href="#">Using Raw Key</a><ul>
 <li><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li><a class="reference internal" href="#examples">Examples</a><ul>
 <li><a class="reference internal" href="#test-vectors-used-in-this-tutorial">Test vectors used in this tutorial</a></li>
@@ -69,7 +69,7 @@
                         title="previous chapter">DRM</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="widevine.html"
-                        title="next chapter">Widevine</a></p>
+                        title="next chapter">Using Widevine Key Server</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -95,9 +95,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="raw-key">
-<h1>Raw key<a class="headerlink" href="#raw-key" title="Permalink to this headline">¶</a></h1>
-<p><em>Packager</em> allows encrypting contents with raw key.</p>
+  <div class="section" id="using-raw-key">
+<h1>Using Raw Key<a class="headerlink" href="#using-raw-key" title="Permalink to this headline">¶</a></h1>
+<p>Shaka Packager supports raw keys, for which keys and key_ids are provided to
+Shaka Packager directly.</p>
+<p>This is often used if you are managing the encryption keys yourself. It also
+allows you to support multi-DRM by providing custom PSSHs.</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
@@ -111,26 +114,30 @@
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>Custom PSSH(s) can be provided in <em>–pssh</em>. If absent,
-<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> is generated.</p>
+<p>Custom PSSH(s) can be provided in <em>–pssh</em>. If neither –pssh nor
+–protection_systems is specified, <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a>
+is generated.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The examples below uses the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>. Here are
-examples with DASH. It can be applied to HLS in a similar way.</p>
-<p>Common PSSH (one key for all streams):</p>
+<p>The examples below use the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
+<ul>
+<li><p class="first">Example with pre-generated PSSH:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
-  in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
-  in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
-  in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
-  in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4 \
-  in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4 \
+  in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
+  in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,drm_label=SD \
+  in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,drm_label=SD \
+  in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4,drm_label=HD \
+  in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
   --enable_raw_key_encryption \
-  --keys label=:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392 \
-  --mpd_output h264.mpd
+  --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
+  --pssh 000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964 \
+  --mpd_output h264.mpd \
+  --hls_master_playlist_output h264_master.m3u8
 </pre></div>
 </div>
-<p>Common PSSH (different keys for different streams):</p>
+</li>
+<li><p class="first">Common PSSH is generated if no PSSH or protection system flag is specified:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,drm_label=SD \
@@ -142,7 +149,25 @@ examples with DASH. It can be applied to HLS in a similar way.</p>
   --mpd_output h264.mpd
 </pre></div>
 </div>
-<p>Widevine PSSH (different keys for different streams):</p>
+</li>
+<li><p class="first">Example with FairPlay using ‘cbcs’ protection scheme:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
+  in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,drm_label=SD \
+  in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,drm_label=SD \
+  in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4,drm_label=HD \
+  in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
+  --protection_scheme cbcs \
+  --enable_raw_key_encryption \
+  --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
+  --protection_systems FairPlay \
+  --iv 11223344556677889900112233445566
+  --hls_master_playlist_output h264_master.m3u8 \
+  --hls_key_uri skd://testAssetID
+</pre></div>
+</div>
+</li>
+<li><p class="first">Example with multi-drm (Widevine and PlayReady):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,drm_label=AUDIO \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,drm_label=SD \
@@ -151,9 +176,17 @@ examples with DASH. It can be applied to HLS in a similar way.</p>
   in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4,drm_label=HD \
   --enable_raw_key_encryption \
   --keys label=AUDIO:key_id=f3c5e0361e6654b28f8049c778b23946:key=a4631a153a443df9eed0593043db7519,label=SD:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392,label=HD:key_id=6d76f25cb17f5e16b8eaef6bbf582d8e:key=cb541084c99731aef4fff74500c12ead \
-  --pssh 000000407073736800000000edef8ba979d64acea3c827dcd51d21ed000000201a0d7769646576696e655f74657374220f7465737420636f6e74656e74206964 \
+  --protection_systems Widevine,PlayReady \
   --mpd_output h264.mpd
 </pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Users are responsible for setting up the license servers and managing keys
+there unless they are using a cloud service provided by the DRM provider or
+third_parties.</p>
 </div>
 <p>Refer to
 <a class="reference external" href="https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html">player setup</a>
@@ -180,11 +213,11 @@ on how to config the DRM in Shaka Player.</p>
 <p>Key must be 16 bytes or 32 digits in HEX.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Widevine PSSH:</th><td class="field-body"><p class="first">000000407073736800000000edef8ba979d64acea3c827dcd51d21ed000000201a0d7769646576696e655f74657374220f7465737420636f6e74656e74206964</p>
+<tr class="field-odd field"><th class="field-name">Widevine PSSH:</th><td class="field-body"><p class="first">000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964</p>
 <p>The PSSH is generated using
 <a class="reference external" href="https://github.com/google/shaka-packager/tree/master/packager/tools/pssh">pssh-box script</a>:</p>
 <div class="last highlight-default"><div class="highlight"><pre><span></span>$ pssh-box.py --widevine-system-id \
-  --content-id 7465737420636f6e74656e74206964 --provider widevine_test
+  --content-id 7465737420636f6e74656e74206964 --hex
 </pre></div>
 </div>
 </td>
@@ -230,6 +263,11 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_systems</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
+Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
 </tbody>
 </table>
 </div>
@@ -242,7 +280,11 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_raw_key_encryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)).</td></tr>
+<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)). This
+generates <a class="reference external" href="https://goo.gl/s8RIhr">Common protection system</a> if neither
+–pssh nor –protection_systems is specified. Use –pssh to provide custom
+protection systems or use –protection_systems to generate protection
+systems automatically.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_raw_key_decryption</span></kbd></td>
 </tr>
@@ -270,8 +312,9 @@ This flag should only be used for testing. IV must be either 8 bytes
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If not specified,
-a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
+<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If neither this
+flag nor –protection_systems is specified, a
+<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
 </tbody>
 </table>
 </div>
@@ -295,7 +338,7 @@ a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box<
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="widevine.html" title="Widevine"
+          <a href="widevine.html" title="Using Widevine Key Server"
              >next</a> |</li>
         <li class="right" >
           <a href="drm.html" title="DRM"

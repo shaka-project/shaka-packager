@@ -17,10 +17,8 @@ var searchData=
   ['keyprovider',['KeyProvider',['../d8/daf/namespaceshaka.html#a539b99ce5c34193e294bc544437e9185',1,'shaka']]],
   ['keysource',['KeySource',['../d1/d1f/classshaka_1_1media_1_1KeySource.html',1,'shaka::media']]],
   ['knokeyrotation',['kNoKeyRotation',['../dc/da0/structshaka_1_1EncryptionParams.html#a92ad4ca8e1ccb7d6b5fa2ee0b1b196fa',1,'shaka::EncryptionParams']]],
-  ['knosidxboxinsegment',['kNoSidxBoxInSegment',['../d0/d43/structshaka_1_1Mp4OutputParams.html#a41ff299070f75fd0dca96d83706d32ff',1,'shaka::Mp4OutputParams']]],
   ['korderinvalid',['kOrderInvalid',['../dc/da6/classshaka_1_1media_1_1ContentEncoding.html#a3ba32d5ca8b0688b2dc6b2ec8a5be6d2',1,'shaka::media::ContentEncoding']]],
   ['kprotectionschemecenc',['kProtectionSchemeCenc',['../dc/da0/structshaka_1_1EncryptionParams.html#a1d7a8c6b5e46b51ccadcaef3f9cf9cb0',1,'shaka::EncryptionParams']]],
   ['kskipifcryptbyteblockremaining',['kSkipIfCryptByteBlockRemaining',['../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f',1,'shaka::media::AesPatternCryptor']]],
-  ['ksuggestedpresentationdelaynotset',['kSuggestedPresentationDelayNotSet',['../df/ddc/structshaka_1_1MpdParams.html#a13705544aac44c5d2065b8a842744bf0',1,'shaka::MpdParams']]],
-  ['kuseallblocks',['kUseAllBlocks',['../da/d2c/classshaka_1_1BandwidthEstimator.html#a418205a0cbb9f742f7f14730e4d628ed',1,'shaka::BandwidthEstimator']]]
+  ['ksuggestedpresentationdelaynotset',['kSuggestedPresentationDelayNotSet',['../df/ddc/structshaka_1_1MpdParams.html#a13705544aac44c5d2065b8a842744bf0',1,'shaka::MpdParams']]]
 ];

@@ -56,8 +56,10 @@
 <li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
 <li><a class="reference internal" href="#chunking-options">Chunking options</a></li>
 <li><a class="reference internal" href="#mp4-output-options">MP4 output options</a></li>
+<li><a class="reference internal" href="#transport-stream-output-options">Transport stream output options</a></li>
 <li><a class="reference internal" href="#dash-options">DASH options</a></li>
 <li><a class="reference internal" href="#hls-options">HLS options</a></li>
+<li><a class="reference internal" href="#ads-options">Ads options</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#encryption-decryption-options">Encryption / decryption options</a><ul>
@@ -137,7 +139,8 @@ Instructions are available at <a class="reference internal" href="docker_instruc
            [MP4 Output Options] \
            [encryption / decryption options] \
            [DASH options] \
-           [HLS options]
+           [HLS options] \
+           [Ads options]
 </pre></div>
 </div>
 <div class="section" id="stream-descriptors">
@@ -171,7 +174,7 @@ and that the stream should be split into multiple files. Its presence should
 be consistent across streams. See
 <a class="reference internal" href="options/segment_template_formatting.html"><span class="doc">Segment template formatting</span></a>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">bandwidth (bw):</th><td class="field-body">Optional value which contains a user-specified content bit rate for the
+<tr class="field-even field"><th class="field-name">bandwidth (bw):</th><td class="field-body">Optional value which contains a user-specified maximum bit rate for the
 stream, in bits/sec. If specified, this value is propagated to (HLS)
 EXT-X-STREAM-INF:BANDWIDTH or (DASH) Representation&#64;bandwidth and the
 $Bandwidth$ template parameter for segment names. If not specified, the
@@ -284,17 +287,30 @@ duration. Actual fragment durations may not be exactly as requested.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--mp4_use_decoding_timestamp_in_timeline</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>If set, decoding timestamp instead of presentation timestamp will be used
-when generating media timeline, e.g. timestamps in sidx and mpd. This is
-to workaround a Chromium bug that decoding timestamp is used in buffered
-range, <a class="reference external" href="https://crbug.com/398130">https://crbug.com/398130</a>. Default false.</td></tr>
+<tr><td>&#160;</td><td>Deprecated. Do not use.</td></tr>
+</tbody>
+</table>
+<p>–generate_sidx_in_media_segments
+–nogenerate_sidx_in_media_segments</p>
+<blockquote>
+<div>For MP4 with DASH live profile only: Indicates whether to generate ‘sidx’
+box in media segments. Note that it is reuqired by spec if segment template
+contains $Time$ specifier.</div></blockquote>
+</div>
+<div class="section" id="transport-stream-output-options">
+<h3>Transport stream output options<a class="headerlink" href="#transport-stream-output-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--num_subsegments_per_sidx <var>&lt;number&gt;</var></span></kbd></td>
+<kbd><span class="option">--transport_stream_timestamp_offset_ms</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Set the number of subsegments in each SIDX box. If 0, a single SIDX box is
-used per segment; if -1, no SIDX box is used; Otherwise, the muxer packs N
-subsegments in the root SIDX of the segment, with
-segment_duration/N/fragment_duration fragments per subsegment.</td></tr>
+<tr><td>&#160;</td><td>Transport stream only (MPEG2-TS, HLS Packed Audio): A positive value, in
+milliseconds, by which output timestamps are offset to compensate for
+possible negative timestamps in the input. For example, timestamps from
+ISO-BMFF after adjusted by EditList could be negative. In transport streams,
+timestamps are not allowed to be less than zero. Default: 100ms.</td></tr>
 </tbody>
 </table>
 </div>
@@ -406,8 +422,9 @@ playlists. This is the prefix for the files.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--hls_key_uri <var>&lt;uri&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>The key uri for ‘identity’ and ‘com.apple.streamingkeydelivery’ key formats.
-Ignored if the playlist is not encrypted or not using the above key formats.</td></tr>
+<tr><td>&#160;</td><td>The key uri for ‘identity’ and ‘com.apple.streamingkeydelivery’ (FairPlay)
+key formats. Ignored if the playlist is not encrypted or not using the above
+key formats.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--hls_playlist_type <var>&lt;type&gt;</var></span></kbd></td>
 </tr>
@@ -435,6 +452,27 @@ accessible as they may still be accessed by the player.</p>
 <tr><td>&#160;</td><td>The first audio/text rendition in a group tagged with this language will
 have ‘DEFAULT’ attribute set to ‘YES’. This allows the player to choose the
 correct default language for the content.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="ads-options">
+<h3>Ads options<a class="headerlink" href="#ads-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--ad_cues <var>&lt;start_time[;start_time]…&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>List of cuepoint markers separated by semicolon. The start_time represents
+the start of the cue marker in seconds (double precision) relative to the
+start of the program. This flag preconditions content for
+<a class="reference external" href="http://bit.ly/2KK10DD">Dynamic Ad Insertion</a> with Google Ad Manager.
+For DASH, multiple periods will be generated with period boundaries at the
+next key frame to the designated start times; For HLS, segments will be
+terminated at the next key frame to the designated start times and
+‘#EXT-X-PLACEMENT-OPPORTUNITY’ tag will be inserted after the segment in
+media playlist.</td></tr>
 </tbody>
 </table>
 </div>
@@ -474,6 +512,11 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_systems</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
+Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
 </tbody>
 </table>
 </div>
@@ -486,7 +529,11 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_raw_key_encryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)).</td></tr>
+<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)). This
+generates <a class="reference external" href="https://goo.gl/s8RIhr">Common protection system</a> if neither
+–pssh nor –protection_systems is specified. Use –pssh to provide custom
+protection systems or use –protection_systems to generate protection
+systems automatically.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_raw_key_decryption</span></kbd></td>
 </tr>
@@ -514,8 +561,9 @@ This flag should only be used for testing. IV must be either 8 bytes
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If not specified,
-a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
+<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If neither this
+flag nor –protection_systems is specified, a
+<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
 </tbody>
 </table>
 </div>
@@ -530,18 +578,15 @@ a <a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box<
 </tr>
 <tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
-(–rsa_signing_key_path).</td></tr>
+(–rsa_signing_key_path). This generates Widevine protection system if
+–protection_systems is not specified. Use –protection_systems to generate
+multiple protection systems.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
 (–rsa_signing_key_path).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--include_common_pssh</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>When using Widevine encryption, include an additional v1 PSSH box for the
-common system ID that includes the key IDs. See <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
 </tr>
@@ -610,7 +655,9 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_playready_encryption</span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Enable encryption with playready key.</td></tr>
+<tr><td>&#160;</td><td>Enable encryption with PlayReady key. This generates PlayReady protection
+system if –protection_systems is not specified. Use –protection_system to
+generate multiple protection systems.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--playready_server_url <var>&lt;url&gt;</var></span></kbd></td>
 </tr>
@@ -620,30 +667,24 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
 </tr>
 <tr><td>&#160;</td><td>Program identifier for packaging request.</td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--playready_key_id <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>PlayReady key id in hex.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--playready_key <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>PlayReady key in hex.</td></tr>
-<tr><td class="option-group" colspan="2">
 <kbd><span class="option">--ca_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Absolute path to the certificate authority file for the server cert.
-PEM format.</td></tr>
+PEM format. Optional, depends on server configuration.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--client_cert_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Absolute path to client certificate file.</td></tr>
+<tr><td>&#160;</td><td>Absolute path to client certificate file. Optional, depends on server
+configuration.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--client_cert_private_key_file <var>&lt;file path&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Absolute path to the private key file.</td></tr>
+<tr><td>&#160;</td><td>Absolute path to the private key file. Optional, depends on server
+configuration.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--client_cert_private_key_password <var>&lt;string&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Password to the private key file.</td></tr>
+<tr><td>&#160;</td><td>Password to the private key file. Optional, depends on server configuration.</td></tr>
 </tbody>
 </table>
 </div>

@@ -65,7 +65,7 @@ The above packaging command creates five single track TS streams
       'in=h264_baseline_360p_600.mp4,stream=video,init_segment=h264_360p/init.mp4,segment_template=h264_360p/$Number$.m4s,playlist_name=h264_360p/main.m3u8,iframe_playlist_name=h264_360p/iframe.m3u8' \
       'in=h264_main_480p_1000.mp4,stream=video,init_segment=h264_480p/init.mp4,segment_template=h264_480p/$Number$.m4s,playlist_name=h264_480p/main.m3u8,iframe_playlist_name=h264_480p/iframe.m3u8' \
       'in=h264_main_720p_3000.mp4,stream=video,init_segment=h264_720p/init.mp4,segment_template=h264_720p/$Number$.m4s,playlist_name=h264_720p/main.m3u8,iframe_playlist_name=h264_720p/iframe.m3u8' \
-      'in=h264_main_1080p_6000.mp4,stream=video,init_segment=h264_1080p/init.mp4,segment_template=h264_1080p/$Number$.m4s,playlist_name=h264_1080p/main.m3u8,iframe_playlist_name=h264_1080p/iframe.m3u8' \
+      'in=h264_high_1080p_6000.mp4,stream=video,init_segment=h264_1080p/init.mp4,segment_template=h264_1080p/$Number$.m4s,playlist_name=h264_1080p/main.m3u8,iframe_playlist_name=h264_1080p/iframe.m3u8' \
       --hls_master_playlist_output h264_master.m3u8
 
 The above packaging command creates five groups of streams (each with an init

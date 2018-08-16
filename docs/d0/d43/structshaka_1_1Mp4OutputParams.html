@@ -64,7 +64,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="../../d6/dd7/structshaka_1_1Mp4OutputParams-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">shaka::Mp4OutputParams Struct Reference</div>  </div>
@@ -78,67 +77,47 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:abdff0b6ab552e27e275d8d23cc2f60b1"><td class="memItemLeft" align="right" valign="top"><a id="abdff0b6ab552e27e275d8d23cc2f60b1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>include_pssh_in_stream</b> = true</td></tr>
+<tr class="memitem:abdff0b6ab552e27e275d8d23cc2f60b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#abdff0b6ab552e27e275d8d23cc2f60b1">include_pssh_in_stream</a> = true</td></tr>
 <tr class="separator:abdff0b6ab552e27e275d8d23cc2f60b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e7b9297fca52043abef99859170aa19"><td class="memItemLeft" align="right" valign="top"><a id="a3e7b9297fca52043abef99859170aa19"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>num_subsegments_per_sidx</b> = kSingleSidxPerSegment</td></tr>
-<tr class="separator:a3e7b9297fca52043abef99859170aa19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e0de7f58e0a83896e14e5603e2f965f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#a4e0de7f58e0a83896e14e5603e2f965f">use_decoding_timestamp_in_timeline</a> = false</td></tr>
-<tr class="separator:a4e0de7f58e0a83896e14e5603e2f965f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:a41ff299070f75fd0dca96d83706d32ff"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#a41ff299070f75fd0dca96d83706d32ff">kNoSidxBoxInSegment</a> = -1</td></tr>
-<tr class="separator:a41ff299070f75fd0dca96d83706d32ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29114105681ec79f37faa62cd6dc7889"><td class="memItemLeft" align="right" valign="top"><a id="a29114105681ec79f37faa62cd6dc7889"></a>
-static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kSingleSidxPerSegment</b> = 0</td></tr>
-<tr class="separator:a29114105681ec79f37faa62cd6dc7889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26b0505cea21a43ca4ce963f8fa84cf3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d43/structshaka_1_1Mp4OutputParams.html#a26b0505cea21a43ca4ce963f8fa84cf3">generate_sidx_in_media_segments</a> = true</td></tr>
+<tr class="separator:a26b0505cea21a43ca4ce963f8fa84cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>MP4 (ISO-BMFF) output related parameters. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00013">13</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a41ff299070f75fd0dca96d83706d32ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a41ff299070f75fd0dca96d83706d32ff">&#9670;&nbsp;</a></span>kNoSidxBoxInSegment</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr int shaka::Mp4OutputParams::kNoSidxBoxInSegment = -1</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Set the number of subsegments in each SIDX box. If 0, a single SIDX box is used per segment. If -1, no SIDX box is used. Otherwise, the Muxer will pack N subsegments in the root SIDX of the segment, with segment_duration/N/subsegment_duration fragments per subsegment. This flag is ingored for DASH MPD with on-demand profile. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00024">24</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
-
-</div>
-</div>
-<a id="a4e0de7f58e0a83896e14e5603e2f965f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e0de7f58e0a83896e14e5603e2f965f">&#9670;&nbsp;</a></span>use_decoding_timestamp_in_timeline</h2>
+<a id="a26b0505cea21a43ca4ce963f8fa84cf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26b0505cea21a43ca4ce963f8fa84cf3">&#9670;&nbsp;</a></span>generate_sidx_in_media_segments</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool shaka::Mp4OutputParams::use_decoding_timestamp_in_timeline = false</td>
+          <td class="memname">bool shaka::Mp4OutputParams::generate_sidx_in_media_segments = true</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the flag use_decoding_timestamp_in_timeline, which if set to true, use decoding timestamp instead of presentation timestamp in media timeline, which is needed to workaround a Chromium bug that decoding timestamp is used in buffered range, <a href="https://crbug.com/398130">https://crbug.com/398130</a>. </p>
+<p>Indicates whether a 'sidx' box should be generated in the media segments. Note that it is required by spec if segment_template contains $Times$ specifier. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00031">31</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00022">22</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
+
+</div>
+</div>
+<a id="abdff0b6ab552e27e275d8d23cc2f60b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdff0b6ab552e27e275d8d23cc2f60b1">&#9670;&nbsp;</a></span>include_pssh_in_stream</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::Mp4OutputParams::include_pssh_in_stream = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Include pssh in the encrypted stream. CMAF and DASH-IF recommends carrying license acquisition information in the manifest and not duplicate the information in the stream. (This is not a hard requirement so we are still CMAF compatible even if pssh is included in the stream.) </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html#l00018">18</a> of file <a class="el" href="../../d6/dbe/mp4__output__params_8h_source.html">mp4_output_params.h</a>.</p>
 
 </div>
 </div>
@@ -148,7 +127,7 @@ static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><b>kSing
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:32:58 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:16 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

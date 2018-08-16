@@ -5,6 +5,7 @@ var searchData=
   ['master_5fplaylist_5foutput',['master_playlist_output',['../d0/da8/structshaka_1_1HlsParams.html#ae3706891d39f8da72ed59d8fb13f2e30',1,'shaka::HlsParams']]],
   ['masterplaylist',['MasterPlaylist',['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html',1,'shaka::hls::MasterPlaylist'],['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a2e7ed221fa11eca895eab3bfe0f5d55b',1,'shaka::hls::MasterPlaylist::MasterPlaylist()']]],
   ['max',['Max',['../da/d2c/classshaka_1_1BandwidthEstimator.html#a0df6c40f43a89d3d481392ac0298e37c',1,'shaka::BandwidthEstimator']]],
+  ['maxbitrate',['MaxBitrate',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a889e16239425ce84673cb78bc267b552',1,'shaka::hls::MediaPlaylist']]],
   ['media',['Media',['../dc/ddf/structshaka_1_1media_1_1mp4_1_1Media.html',1,'shaka::media::mp4']]],
   ['mediadata',['MediaData',['../d7/dae/structshaka_1_1media_1_1mp4_1_1MediaData.html',1,'shaka::media::mp4']]],
   ['mediahandler',['MediaHandler',['../da/dfd/classshaka_1_1media_1_1MediaHandler.html',1,'shaka::media']]],

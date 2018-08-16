@@ -75,6 +75,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a9aa5e45420af57c97605377487cb415a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a9aa5e45420af57c97605377487cb415a">PesPacketGenerator</a> (uint32_t transport_stream_timestamp_offset)</td></tr>
+<tr class="separator:a9aa5e45420af57c97605377487cb415a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0346189f99b2f0fc2c71da1543155fa"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#aa0346189f99b2f0fc2c71da1543155fa">Initialize</a> (const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream)</td></tr>
 <tr class="separator:aa0346189f99b2f0fc2c71da1543155fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c6b935ff8daea26e918b243f996da2a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a7c6b935ff8daea26e918b243f996da2a">PushSample</a> (const <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &amp;sample)</td></tr>
@@ -96,7 +98,42 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 <div class="textblock"><p>Generates PesPackets from MediaSamples. Methods are virtual for mocking. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../dd/d88/pes__packet__generator_8h_source.html#l00029">29</a> of file <a class="el" href="../../dd/d88/pes__packet__generator_8h_source.html">pes_packet_generator.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9aa5e45420af57c97605377487cb415a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aa5e45420af57c97605377487cb415a">&#9670;&nbsp;</a></span>PesPacketGenerator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">shaka::media::mp2t::PesPacketGenerator::PesPacketGenerator </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>transport_stream_timestamp_offset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">transport_stream_timestamp_offset</td><td>is the offset to be applied to sample timestamps to compensate for possible negative timestamps in the input. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00033">33</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a71ea0819224b94ba9df5c951424bc6b1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a71ea0819224b94ba9df5c951424bc6b1">&#9670;&nbsp;</a></span>Flush()</h2>
 
@@ -121,7 +158,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><div class="memdoc">
 <p>Flush the object. This may increase <a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a27a700967eb692a8207fd5054263fc3a">NumberOfReadyPesPackets()</a>. </p><dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00135">135</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00152">152</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -149,7 +186,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><div class="memdoc">
 <p>Removes the next PES packet from the stream and returns it. Must have at least one packet ready. </p><dl class="section return"><dt>Returns</dt><dd>Next PES packet that is ready. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00128">128</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00145">145</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -184,7 +221,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00039">39</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -212,7 +249,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of PES packets that are ready to be consumed. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00124">124</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00141">141</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -241,7 +278,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><div class="memdoc">
 <p>Add a sample to the generator. This does not necessarily increase <a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a27a700967eb692a8207fd5054263fc3a">NumberOfReadyPesPackets()</a>. If this returns false, the object may end up in an undefined state. </p><dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00075">75</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00078">78</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -252,7 +289,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:33:13 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:32 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

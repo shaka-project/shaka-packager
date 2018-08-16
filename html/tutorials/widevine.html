@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Widevine &#8212; Shaka Packager  documentation</title>
+    <title>Using Widevine Key Server &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PlayReady" href="playready.html" />
-    <link rel="prev" title="Raw key" href="raw_key.html" /> 
+    <link rel="next" title="Using PlayReady Key Server" href="playready.html" />
+    <link rel="prev" title="Using Raw Key" href="raw_key.html" /> 
   </head>
   <body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,10 +36,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="playready.html" title="PlayReady"
+          <a href="playready.html" title="Using PlayReady Key Server"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="raw_key.html" title="Raw key"
+          <a href="raw_key.html" title="Using Raw Key"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>
@@ -50,7 +50,7 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Widevine</a><ul>
+<li><a class="reference internal" href="#">Using Widevine Key Server</a><ul>
 <li><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 <li><a class="reference internal" href="#widevine-test-credential">Widevine test credential</a><ul>
@@ -65,10 +65,10 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="raw_key.html"
-                        title="previous chapter">Raw key</a></p>
+                        title="previous chapter">Using Raw Key</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="playready.html"
-                        title="next chapter">PlayReady</a></p>
+                        title="next chapter">Using PlayReady Key Server</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -94,18 +94,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="widevine">
-<h1>Widevine<a class="headerlink" href="#widevine" title="Permalink to this headline">¶</a></h1>
-<p>There are two options to package a Widevine DRM encrypted content:</p>
-<ol class="arabic simple">
-<li>If you know the encryption keys and have the associated Widevine PSSH at
-hand, you can provide them in clear text to <em>packager</em> directly. Refer to
-<a class="reference internal" href="raw_key.html"><span class="doc">Raw key</span></a> for details.</li>
-<li>Provide <em>key_server_url</em> and associated credentials to <em>packager</em>.
-<em>Packager</em> will fetch encryption keys from Widevine key server.</li>
-</ol>
+  <div class="section" id="using-widevine-key-server">
+<h1>Using Widevine Key Server<a class="headerlink" href="#using-widevine-key-server" title="Permalink to this headline">¶</a></h1>
+<p>The easiest way to generate Widevine protected content is to use Widevine Cloud
+Service.</p>
+<p>Shaka Packager can talk to Widevine Cloud Service or any key server that
+implements <a class="reference external" href="http://bit.ly/2vTG4oo">Common Encryption API for Widevine DRM</a> to
+fetch encryption keys.</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p>Widevine Common Encryption API supports request validation using either AES or
+RSA.</p>
 <p>AES signing:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --enable_widevine_encryption \
@@ -128,23 +127,23 @@ hand, you can provide them in clear text to <em>packager</em> directly. Refer to
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The examples below uses the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
+<p>The examples below use the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
 <ul>
-<li><p class="first">Here is an example with both DASH and HLS output:</p>
+<li><p class="first">Example with both DASH and HLS output:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
   in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4 \
   in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4 \
-  --mpd_output h264.mpd \
-  --hls_master_playlist_output h264_master.m3u8 \
   --enable_widevine_encryption \
   --key_server_url https://license.uat.widevine.com/cenc/getcontentkey/widevine_test \
   --content_id 7465737420636f6e74656e74206964 \
   --signer widevine_test \
   --aes_signing_key 1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9 \
-  --aes_signing_iv d58ce954203b7c9a9a9d467f59839249
+  --aes_signing_iv d58ce954203b7c9a9a9d467f59839249 \
+  --mpd_output h264.mpd \
+  --hls_master_playlist_output h264_master.m3u8
 </pre></div>
 </div>
 </li>
@@ -155,19 +154,47 @@ hand, you can provide them in clear text to <em>packager</em> directly. Refer to
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
   in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4 \
   in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4 \
-  --mpd_output h264.mpd \
-  --hls_master_playlist_output h264_master.m3u8 \
   --protection_scheme cbcs \
   --enable_widevine_encryption \
   --key_server_url https://license.uat.widevine.com/cenc/getcontentkey/widevine_test \
   --content_id 7465737420636f6e74656e74206964 \
   --signer widevine_test \
   --aes_signing_key 1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9 \
-  --aes_signing_iv d58ce954203b7c9a9a9d467f59839249
+  --aes_signing_iv d58ce954203b7c9a9a9d467f59839249 \
+  --mpd_output h264.mpd \
+  --hls_master_playlist_output h264_master.m3u8
 </pre></div>
 </div>
 </li>
 </ul>
+<p>The examples above generate Widevine protection system by default. It can be
+extended to support multi-drm with –protection_systems flag.</p>
+<ul>
+<li><p class="first">Example with multi-drm (Widevine and PlayReady):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+  in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
+  in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
+  in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
+  in=h264_main_720p_3000.mp4,stream=video,output=h264_720p.mp4 \
+  in=h264_high_1080p_6000.mp4,stream=video,output=h264_1080p.mp4 \
+  --enable_widevine_encryption \
+  --key_server_url https://license.uat.widevine.com/cenc/getcontentkey/widevine_test \
+  --content_id 7465737420636f6e74656e74206964 \
+  --signer widevine_test \
+  --aes_signing_key 1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9 \
+  --aes_signing_iv d58ce954203b7c9a9a9d467f59839249 \
+  --protection_systems Widevine,PlayReady
+  --mpd_output h264.mpd
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Users are responsible for setting up the license servers and managing keys
+there unless they are using a cloud service provided by the DRM provider or
+third_parties.</p>
+</div>
 <p>Refer to
 <a class="reference external" href="https://shaka-player-demo.appspot.com/docs/api/tutorial-drm-config.html">player setup</a>
 on how to config the DRM in Shaka Player.</p>
@@ -234,6 +261,11 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--protection_systems</span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
+Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
 </tbody>
 </table>
 </div>
@@ -248,18 +280,15 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 </tr>
 <tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
-(–rsa_signing_key_path).</td></tr>
+(–rsa_signing_key_path). This generates Widevine protection system if
+–protection_systems is not specified. Use –protection_systems to generate
+multiple protection systems.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
 (–rsa_signing_key_path).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--include_common_pssh</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>When using Widevine encryption, include an additional v1 PSSH box for the
-common system ID that includes the key IDs. See <a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
 </tr>
@@ -335,10 +364,10 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="playready.html" title="PlayReady"
+          <a href="playready.html" title="Using PlayReady Key Server"
              >next</a> |</li>
         <li class="right" >
-          <a href="raw_key.html" title="Raw key"
+          <a href="raw_key.html" title="Using Raw Key"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">Shaka Packager  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="tutorials.html" >Tutorials</a> &#187;</li>

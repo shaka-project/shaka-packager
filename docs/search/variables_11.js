@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vp9_5fsubsample_5fencryption',['vp9_subsample_encryption',['../dc/da0/structshaka_1_1EncryptionParams.html#a48d415f17d51306ce7e1931fd954c37c',1,'shaka::EncryptionParams']]]
+  ['write_5ffunc',['write_func',['../d9/da8/structshaka_1_1BufferCallbackParams.html#ad966040c5a75389ac6376c6378a0f307',1,'shaka::BufferCallbackParams']]]
 ];

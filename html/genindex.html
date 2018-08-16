@@ -90,17 +90,23 @@
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams25EncryptedStreamAttributesE">shaka::EncryptionParams::EncryptedStreamAttributes (C++ class)</a>
 </li>
-      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams20generate_common_psshE">shaka::EncryptionParams::generate_common_pssh (C++ member)</a>
-</li>
-      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams23generate_playready_psshE">shaka::EncryptionParams::generate_playready_pssh (C++ member)</a>
-</li>
-      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams22generate_widevine_psshE">shaka::EncryptionParams::generate_widevine_pssh (C++ member)</a>
+      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams13kCommonSystemE">shaka::EncryptionParams::kCommonSystem (C++ enumerator)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams12key_providerE">shaka::EncryptionParams::key_provider (C++ member)</a>
 </li>
+      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams9kFairPlayE">shaka::EncryptionParams::kFairPlay (C++ enumerator)</a>
+</li>
       <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams14kNoKeyRotationE">shaka::EncryptionParams::kNoKeyRotation (C++ member)</a>
 </li>
+      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams10kPlayReadyE">shaka::EncryptionParams::kPlayReady (C++ enumerator)</a>
+</li>
       <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams21kProtectionSchemeCencE">shaka::EncryptionParams::kProtectionSchemeCenc (C++ member)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams9kWidevineE">shaka::EncryptionParams::kWidevine (C++ enumerator)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams18protection_systemsE">shaka::EncryptionParams::protection_systems (C++ member)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams16ProtectionSystemE">shaka::EncryptionParams::ProtectionSystem (C++ type)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka16EncryptionParams17stream_label_funcE">shaka::EncryptionParams::stream_label_func (C++ member)</a>
 </li>
@@ -184,9 +190,9 @@
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka15Mp4OutputParamsE">shaka::Mp4OutputParams (C++ class)</a>
 </li>
-      <li><a href="library_details.html#_CPPv2N5shaka15Mp4OutputParams19kNoSidxBoxInSegmentE">shaka::Mp4OutputParams::kNoSidxBoxInSegment (C++ member)</a>
+      <li><a href="library_details.html#_CPPv2N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE">shaka::Mp4OutputParams::generate_sidx_in_media_segments (C++ member)</a>
 </li>
-      <li><a href="library_details.html#_CPPv2N5shaka15Mp4OutputParams34use_decoding_timestamp_in_timelineE">shaka::Mp4OutputParams::use_decoding_timestamp_in_timeline (C++ member)</a>
+      <li><a href="library_details.html#_CPPv2N5shaka15Mp4OutputParams22include_pssh_in_streamE">shaka::Mp4OutputParams::include_pssh_in_stream (C++ member)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka9MpdParamsE">shaka::MpdParams (C++ class)</a>
 </li>
@@ -202,10 +208,10 @@
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE">shaka::MpdParams::kSuggestedPresentationDelayNotSet (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="library_details.html#_CPPv2N5shaka9MpdParams15min_buffer_timeE">shaka::MpdParams::min_buffer_time (C++ member)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="library_details.html#_CPPv2N5shaka9MpdParams21minimum_update_periodE">shaka::MpdParams::minimum_update_period (C++ member)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka9MpdParams10mpd_outputE">shaka::MpdParams::mpd_output (C++ member)</a>
@@ -248,6 +254,8 @@
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka15PackagingParams8temp_dirE">shaka::PackagingParams::temp_dir (C++ member)</a>
 </li>
+      <li><a href="library_details.html#_CPPv2N5shaka15PackagingParams36transport_stream_timestamp_offset_msE">shaka::PackagingParams::transport_stream_timestamp_offset_ms (C++ member)</a>
+</li>
       <li><a href="library_details.html#_CPPv2N5shaka25PlayReadyEncryptionParamsE">shaka::PlayReadyEncryptionParams (C++ class)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka25PlayReadyEncryptionParams7ca_fileE">shaka::PlayReadyEncryptionParams::ca_file (C++ member)</a>
@@ -261,6 +269,14 @@
       <li><a href="library_details.html#_CPPv2N5shaka25PlayReadyEncryptionParams14key_server_urlE">shaka::PlayReadyEncryptionParams::key_server_url (C++ member)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka25PlayReadyEncryptionParams18program_identifierE">shaka::PlayReadyEncryptionParams::program_identifier (C++ member)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka12RawKeyParamsE">shaka::RawKeyParams (C++ class)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka12RawKeyParams2ivE">shaka::RawKeyParams::iv (C++ member)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka12RawKeyParams7key_mapE">shaka::RawKeyParams::key_map (C++ member)</a>
+</li>
+      <li><a href="library_details.html#_CPPv2N5shaka12RawKeyParams4psshE">shaka::RawKeyParams::pssh (C++ member)</a>
 </li>
       <li><a href="library_details.html#_CPPv2N5shaka6StatusE">shaka::Status (C++ class)</a>
 </li>

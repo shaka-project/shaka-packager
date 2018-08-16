@@ -104,8 +104,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSet</b></t
 <tr class="memitem:a8e27c18b522c08ee8300a92881d1db5d"><td class="memItemLeft" align="right" valign="top"><a id="a8e27c18b522c08ee8300a92881d1db5d"></a>
 class&#160;</td><td class="memItemRight" valign="bottom"><b>RepresentationTest</b></td></tr>
 <tr class="separator:a8e27c18b522c08ee8300a92881d1db5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ca8bbfd34ef8ca782d2ef18aeaad932"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d52/classshaka_1_1Representation.html#a6ca8bbfd34ef8ca782d2ef18aeaad932">AddNewSegment</a> (uint64_t start_time, uint64_t duration, uint64_t size)</td></tr>
-<tr class="separator:a6ca8bbfd34ef8ca782d2ef18aeaad932"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9b6536925d1107e3f22ad3130cb9fe9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d52/classshaka_1_1Representation.html#ae9b6536925d1107e3f22ad3130cb9fe9">AddNewSegment</a> (int64_t start_time, int64_t duration, uint64_t size)</td></tr>
+<tr class="separator:ae9b6536925d1107e3f22ad3130cb9fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11b32833166b9c4bea78cca2c6069d98"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d52/classshaka_1_1Representation.html#a11b32833166b9c4bea78cca2c6069d98">SetSampleDuration</a> (uint32_t sample_duration)</td></tr>
 <tr class="separator:a11b32833166b9c4bea78cca2c6069d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a524291f7a968cb040fdce0ac1db5fbd3"><td class="memItemLeft" align="right" valign="top">virtual const MediaInfo &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d52/classshaka_1_1Representation.html#a524291f7a968cb040fdce0ac1db5fbd3">GetMediaInfo</a> () const</td></tr>
@@ -182,7 +182,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">media_info</td><td>is a MediaInfo containing information on the media. <em>media_info.bandwidth</em> is required for 'static' profile. If <em>media_info.bandwidth</em> is not present in 'dynamic' profile, this tries to estimate it using the info passed to <a class="el" href="../../de/d52/classshaka_1_1Representation.html#a6ca8bbfd34ef8ca782d2ef18aeaad932">AddNewSegment()</a>. </td></tr>
+    <tr><td class="paramname">media_info</td><td>is a MediaInfo containing information on the media. <em>media_info.bandwidth</em> is required for 'static' profile. If <em>media_info.bandwidth</em> is not present in 'dynamic' profile, this tries to estimate it using the info passed to <a class="el" href="../../de/d52/classshaka_1_1Representation.html#ae9b6536925d1107e3f22ad3130cb9fe9">AddNewSegment()</a>. </td></tr>
     <tr><td class="paramname">mpd_options</td><td>is options for the entire MPD. </td></tr>
     <tr><td class="paramname">representation_id</td><td>is the numeric ID for the &lt;Representation&gt;. </td></tr>
     <tr><td class="paramname">state_change_listener</td><td>is an event handler for state changes to the representation. If null, no event handler registered. </td></tr>
@@ -235,7 +235,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00127">127</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00126">126</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -270,12 +270,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00186">186</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00185">185</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
-<a id="a6ca8bbfd34ef8ca782d2ef18aeaad932"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ca8bbfd34ef8ca782d2ef18aeaad932">&#9670;&nbsp;</a></span>AddNewSegment()</h2>
+<a id="ae9b6536925d1107e3f22ad3130cb9fe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9b6536925d1107e3f22ad3130cb9fe9">&#9670;&nbsp;</a></span>AddNewSegment()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -286,13 +286,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
         <tr>
           <td class="memname">void shaka::Representation::AddNewSegment </td>
           <td>(</td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>start_time</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramtype">int64_t&#160;</td>
           <td class="paramname"><em>duration</em>, </td>
         </tr>
         <tr>
@@ -322,7 +322,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00198">198</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00197">197</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -350,7 +350,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>MediaInfo for the <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00233">233</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00232">232</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -388,7 +388,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00318">318</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00317">317</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -408,7 +408,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Copy of &lt;Representation&gt;. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00243">243</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00242">242</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -456,7 +456,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </div><div class="memdoc">
 <p>Tries to initialize the instance. If this does not succeed, the instance should not be used. </p><dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00144">144</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00143">143</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -490,7 +490,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00218">218</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00217">217</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -511,7 +511,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </div><div class="memdoc">
 <p>By calling this methods, the next time <a class="el" href="../../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960">GetXml()</a> is called, the corresponding attributes will not be set. For example, if SuppressOnce(kSuppressWidth) is called, then <a class="el" href="../../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960">GetXml()</a> will return a &lt;Representation&gt; element without a  attribute. Note that it only applies to the next call to <a class="el" href="../../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960">GetXml()</a>, calling <a class="el" href="../../de/d52/classshaka_1_1Representation.html#a606afa5df6a90f49faad0ce427b7e960">GetXml()</a> again without calling this methods will return a &lt;Representation&gt; element with the attribute. This may be called multiple times to set different (or the same) flags. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00306">306</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00305">305</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -557,7 +557,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </dl>
 <dl class="section attention"><dt>Attention</dt><dd>This might get removed once DASH IF IOP specification makes a a clear guideline on how to handle key rotation. Also to get this working with shaka-player, this method <em>DOES NOT</em> update the PSSH element. Instead, it removes the element regardless of the content of <em>pssh</em>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00192">192</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/d94/representation_8cc_source.html#l00191">191</a> of file <a class="el" href="../../d7/d94/representation_8cc_source.html">representation.cc</a>.</p>
 
 </div>
 </div>
@@ -568,7 +568,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_media_info</b> (c
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 28 2018 17:32:58 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Aug 15 2018 17:34:17 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
