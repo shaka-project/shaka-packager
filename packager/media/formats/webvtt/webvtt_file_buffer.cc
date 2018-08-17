@@ -18,9 +18,11 @@ const int kTsTimescale = 90000;
 }
 
 WebVttFileBuffer::WebVttFileBuffer(
-    uint32_t transport_stream_timestamp_offset_ms)
+    uint32_t transport_stream_timestamp_offset_ms,
+    const std::string& style_region_config)
     : transport_stream_timestamp_offset_(transport_stream_timestamp_offset_ms *
-                                         kTsTimescale / 1000) {
+                                         kTsTimescale / 1000),
+      style_region_config_(style_region_config) {
   // Make sure we start with the same state that we would end up with if
   // the caller reset our state.
   Reset();
@@ -38,6 +40,10 @@ void WebVttFileBuffer::Reset() {
                         transport_stream_timestamp_offset_);
   }
   buffer_.append("\n");  // end of header.
+  if (!style_region_config_.empty()) {
+    buffer_.append(style_region_config_);
+    buffer_.append("\n\n");
+  }
 }
 
 void WebVttFileBuffer::Append(const TextSample& sample) {

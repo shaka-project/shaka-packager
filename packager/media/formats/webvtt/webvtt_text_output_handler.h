@@ -49,7 +49,7 @@ class WebVttTextOutputHandler : public MediaHandler {
   uint64_t total_duration_ms_ = 0;
   uint32_t segment_index_ = 0;
 
-  WebVttFileBuffer buffer_;
+  std::unique_ptr<WebVttFileBuffer> buffer_;
 };
 
 }  // namespace media

@@ -14,6 +14,7 @@
 #include "packager/status_test_util.h"
 
 using ::testing::_;
+using ::testing::SaveArgPointee;
 
 namespace shaka {
 namespace media {
@@ -28,6 +29,10 @@ const bool kEncrypted = true;
 
 const char* kNoId = "";
 const char* kNoSettings = "";
+
+std::string ToString(const std::vector<uint8_t>& v) {
+  return std::string(v.begin(), v.end());
+}
 }  // namespace
 
 class WebVttParserTest : public MediaHandlerTestBase {
@@ -71,8 +76,7 @@ TEST_F(WebVttParserTest, ParseOnlyHeader) {
 
   {
     testing::InSequence s;
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, kLanguage)));
+    EXPECT_CALL(*Output(kOutputIndex), OnProcess(_)).Times(0);
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
@@ -88,8 +92,7 @@ TEST_F(WebVttParserTest, ParseHeaderWithBOM) {
 
   {
     testing::InSequence s;
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
+    EXPECT_CALL(*Output(kOutputIndex), OnProcess(_)).Times(0);
     EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
   }
 
@@ -123,57 +126,7 @@ TEST_F(WebVttParserTest, FailToParseHeaderNotOneLine) {
   ASSERT_NE(Status::OK, parser_->Run());
 }
 
-// Right now we don't support region blocks, but for now make sure that we don't
-// die if we see a region block.
-TEST_F(WebVttParserTest, ParserDoesNotDieOnRegionBlock) {
-  const char* text =
-      "WEBVTT\n"
-      "\n"
-      "REGION\n"
-      "id:fred\n"
-      "width:40%\n"
-      "lines:3\n"
-      "regionanchor:0%,100%\n"
-      "viewportanchor:10%,90%\n"
-      "scroll:up";
-
-  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
-
-  {
-    testing::InSequence s;
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
-  }
-
-  ASSERT_OK(parser_->Run());
-}
-
-// Right now we don't support style blocks, but for now make sure that we don't
-// die if we see a style block.
-TEST_F(WebVttParserTest, ParserDoesNotDieOnStyleBlock) {
-  const char* text =
-      "WEBVTT\n"
-      "\n"
-      "STYLE\n"
-      "::cue {\n"
-      "  background-image: linear-gradient(to bottom, dimgray, lightgray);\n"
-      "  color: papayawhip;\n"
-      "}";
-
-  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
-
-  {
-    testing::InSequence s;
-    EXPECT_CALL(*Output(kOutputIndex),
-                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)));
-    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
-  }
-
-  ASSERT_OK(parser_->Run());
-}
-
-TEST_F(WebVttParserTest, IngoresZeroDurationCues) {
+TEST_F(WebVttParserTest, IgnoresZeroDurationCues) {
   const char* text =
       "WEBVTT\n"
       "\n"
@@ -212,6 +165,44 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   }
 
   ASSERT_OK(parser_->Run());
+}
+
+TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
+  const char* text =
+      "WEBVTT\n"
+      "\n"
+      "STYLE\n"
+      "::cue { color:lime }\n"
+      "\n"
+      "REGION\n"
+      "id:scroll\n"
+      "scrol:up\n"
+      "\n"
+      "00:01:00.000 --> 01:00:00.000\n"
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitializeGraph(text));
+
+  StreamData stream_data;
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsStreamInfo(_, kTimeScale, !kEncrypted, _)))
+        .WillOnce(SaveArgPointee<0>(&stream_data));
+    EXPECT_CALL(*Output(kOutputIndex),
+                OnProcess(IsTextSample(_, kNoId, 60000u, 3600000u, kNoSettings,
+                                       "subtitle")));
+    EXPECT_CALL(*Output(kOutputIndex), OnFlush(_));
+  }
+
+  ASSERT_OK(parser_->Run());
+  EXPECT_EQ(ToString(stream_data.stream_info->codec_config()),
+            "STYLE\n"
+            "::cue { color:lime }\n"
+            "\n"
+            "REGION\n"
+            "id:scroll\n"
+            "scrol:up");
 }
 
 TEST_F(WebVttParserTest, ParseOneEmptyCue) {

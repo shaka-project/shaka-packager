@@ -14,6 +14,7 @@
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_timestamp.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -75,6 +76,13 @@ bool IsLikelyStyle(const std::string& line) {
 bool IsLikelyRegion(const std::string& line) {
   return base::TrimWhitespaceASCII(line, base::TRIM_TRAILING) == "REGION";
 }
+
+void UpdateConfig(const std::vector<std::string>& block, std::string* config) {
+  if (!config->empty())
+    *config += "\n\n";
+  *config += base::JoinString(block, "\n");
+}
+
 }  // namespace
 
 WebVttParser::WebVttParser(std::unique_ptr<FileReader> source,
@@ -121,14 +129,6 @@ bool WebVttParser::Parse() {
     return false;
   }
 
-  const Status send_stream_info_result = DispatchTextStreamInfo();
-
-  if (send_stream_info_result != Status::OK) {
-    LOG(ERROR) << "Failed to send stream info down stream:"
-               << send_stream_info_result.error_message();
-    return false;
-  }
-
   bool saw_cue = false;
 
   while (reader_.Next(&block) && keep_reading_) {
@@ -141,11 +141,10 @@ bool WebVttParser::Parse() {
     // STYLE
     if (IsLikelyStyle(block[0])) {
       if (saw_cue) {
-        LOG(ERROR)
+        LOG(WARNING)
             << "Found style block after seeing cue. Ignoring style block";
       } else {
-        LOG(WARNING) << "Missing support for style blocks. Skipping block:\n"
-                     << BlockToString(block.data(), block.size());
+        UpdateConfig(block, &style_region_config_);
       }
       continue;
     }
@@ -153,11 +152,10 @@ bool WebVttParser::Parse() {
     // REGION
     if (IsLikelyRegion(block[0])) {
       if (saw_cue) {
-        LOG(ERROR)
+        LOG(WARNING)
             << "Found region block after seeing cue. Ignoring region block";
       } else {
-        LOG(WARNING) << "Missing support for region blocks. Skipping block:\n"
-                     << BlockToString(block.data(), block.size());
+        UpdateConfig(block, &style_region_config_);
       }
       continue;
     }
@@ -223,6 +221,9 @@ Status WebVttParser::ParseCue(const std::string& id,
         "Could not parse start time, -->, and end time from " + block[0]);
   }
 
+  if (!stream_info_dispatched_)
+    RETURN_IF_ERROR(DispatchTextStreamInfo());
+
   // According to the WebVTT spec end time must be greater than the start time
   // of the cue. Since we are seeing content with invalid times in the field, we
   // are going to drop the cue instead of failing to package.
@@ -261,6 +262,8 @@ Status WebVttParser::ParseCue(const std::string& id,
 }
 
 Status WebVttParser::DispatchTextStreamInfo() {
+  stream_info_dispatched_ = true;
+
   const int kTrackId = 0;
   // The resolution of timings are in milliseconds.
   const int kTimescale = 1000;
@@ -269,13 +272,12 @@ Status WebVttParser::DispatchTextStreamInfo() {
   // work nicely with the current demuxer.
   const int kDuration = 0;
   const char kWebVttCodecString[] = "wvtt";
-  const char kCodecConfig[] = "";
   const int64_t kNoWidth = 0;
   const int64_t kNoHeight = 0;
 
   std::shared_ptr<StreamInfo> info = std::make_shared<TextStreamInfo>(
       kTrackId, kTimescale, kDuration, kCodecWebVtt, kWebVttCodecString,
-      kCodecConfig, kNoWidth, kNoHeight, language_);
+      style_region_config_, kNoWidth, kNoHeight, language_);
 
   return DispatchStreamInfo(kStreamIndex, std::move(info));
 }

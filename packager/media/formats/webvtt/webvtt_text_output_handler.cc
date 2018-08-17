@@ -18,14 +18,17 @@ namespace shaka {
 namespace media {
 namespace {
 double kMillisecondsToSeconds = 1000.0;
+
+std::string ToString(const std::vector<uint8_t>& v) {
+  return std::string(v.begin(), v.end());
+}
 }  // namespace
 
 WebVttTextOutputHandler::WebVttTextOutputHandler(
     const MuxerOptions& muxer_options,
     std::unique_ptr<MuxerListener> muxer_listener)
     : muxer_options_(muxer_options),
-      muxer_listener_(std::move(muxer_listener)),
-      buffer_(muxer_options.transport_stream_timestamp_offset_ms) {}
+      muxer_listener_(std::move(muxer_listener)) {}
 
 Status WebVttTextOutputHandler::InitializeInternal() {
   return Status::OK;
@@ -50,7 +53,13 @@ Status WebVttTextOutputHandler::Process(
 }
 
 Status WebVttTextOutputHandler::OnFlushRequest(size_t input_stream_index) {
-  DCHECK_EQ(buffer_.sample_count(), 0u)
+  if (!buffer_) {
+    LOG(INFO) << "Skip stream '" << muxer_options_.segment_template
+              << "' which does not contain any sample.";
+    return Status::OK;
+  }
+
+  DCHECK_EQ(buffer_->sample_count(), 0u)
       << "There should have been a segment info before flushing that would "
          "have cleared out all the samples.";
 
@@ -64,6 +73,9 @@ Status WebVttTextOutputHandler::OnFlushRequest(size_t input_stream_index) {
 }
 
 Status WebVttTextOutputHandler::OnStreamInfo(const StreamInfo& info) {
+  buffer_.reset(
+      new WebVttFileBuffer(muxer_options_.transport_stream_timestamp_offset_ms,
+                           ToString(info.codec_config())));
   muxer_listener_->OnMediaStart(muxer_options_, info, info.time_scale(),
                                 MuxerListener::kContainerText);
   return Status::OK;
@@ -89,8 +101,8 @@ Status WebVttTextOutputHandler::OnSegmentInfo(const SegmentInfo& info) {
     return Status(error::FILE_FAILURE, "Failed to open " + filename);
   }
 
-  buffer_.WriteTo(file.get());
-  buffer_.Reset();
+  buffer_->WriteTo(file.get());
+  buffer_->Reset();
 
   if (!file.release()->Close()) {
     return Status(error::FILE_FAILURE, "Failed to close " + filename);
@@ -115,7 +127,7 @@ void WebVttTextOutputHandler::OnTextSample(const TextSample& sample) {
   // Skip empty samples. It is normal to see empty samples as earlier in the
   // pipeline we pad the stream to remove gaps.
   if (sample.payload().size()) {
-    buffer_.Append(sample);
+    buffer_->Append(sample);
   }
 }
 }  // namespace media

@@ -43,6 +43,8 @@ class WebVttParser : public OriginHandler {
 
   BlockReader reader_;
   std::string language_;
+  std::string style_region_config_;
+  bool stream_info_dispatched_ = false;
   bool keep_reading_ = true;
 };
 

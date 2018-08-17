@@ -538,8 +538,19 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
     // Handle WebVTT.
     TextSampleEntry webvtt;
     webvtt.format = FOURCC_wvtt;
-    webvtt.config.config.assign(text_info->codec_config().begin(),
-                                text_info->codec_config().end());
+
+    // 14496-30:2014 7.5 Web Video Text Tracks Sample entry format.
+    // In the sample entry, a WebVTT configuration box must occur, carrying
+    // exactly the lines of the WebVTT file header, i.e. all text lines up to
+    // but excluding the 'two or more line terminators' that end the header.
+    webvtt.config.config = "WEBVTT";
+    // The spec does not define a way to carry STYLE and REGION information in
+    // the mp4 container.
+    if (!text_info->codec_config().empty()) {
+      LOG(INFO) << "Skipping possible style / region configuration as the spec "
+                   "does not define a way to carry them inside ISO-BMFF files.";
+    }
+
     // TODO(rkuroiwa): This should be the source file URI(s). Putting bogus
     // string for now so that the box will be there for samples with overlapping
     // cues.

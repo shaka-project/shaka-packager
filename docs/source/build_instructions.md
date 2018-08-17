@@ -237,8 +237,8 @@ $ ninja -C out/Release
 Use `apk` command to install dependencies:
 
 ```shell
-$apk add --no-cache bash build-base curl findutils git ninja python \
-                    bsd-compat-headers linux-headers libexecinfo-dev
+$ apk add --no-cache bash build-base curl findutils git ninja python \
+                     bsd-compat-headers linux-headers libexecinfo-dev
 ```
 
 Alpine uses musl which does not have mallinfo defined in malloc.h. It is
