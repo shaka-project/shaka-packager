@@ -60,6 +60,8 @@ Here are some examples.
       2. Upload / Sync media segments
       3. Rename uploaded manifest / playlists back to the original names
 
-.. include:: /options/udp_file_options.rst
+Configuration options
+---------------------
 
+.. include:: /options/udp_file_options.rst
 .. include:: /options/segment_template_formatting.rst

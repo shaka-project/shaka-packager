@@ -79,6 +79,8 @@ which describes the streams.
 
 .. include:: /tutorials/dash_hls_example.rst
 
-.. include:: /options/dash_options.rst
+Configuration options
+---------------------
 
+.. include:: /options/dash_options.rst
 .. include:: /options/segment_template_formatting.rst

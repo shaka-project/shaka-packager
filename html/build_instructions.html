@@ -69,6 +69,7 @@
 </li>
 <li><a class="reference internal" href="#cross-compiling-for-arm-on-ubuntu-host">Cross compiling for ARM on Ubuntu host</a></li>
 <li><a class="reference internal" href="#notes-for-other-linux-distros">Notes for other linux distros</a><ul>
+<li><a class="reference internal" href="#alpine-linux">Alpine Linux</a></li>
 <li><a class="reference internal" href="#arch-linux">Arch Linux</a></li>
 <li><a class="reference internal" href="#debian">Debian</a></li>
 <li><a class="reference internal" href="#fedora">Fedora</a></li>
@@ -316,6 +317,26 @@ and library dependencies directly from Ubuntu:</p>
 </div>
 <div class="section" id="notes-for-other-linux-distros">
 <span id="notes-for-other-linux-distros"></span><h2>Notes for other linux distros<a class="headerlink" href="#notes-for-other-linux-distros" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="alpine-linux">
+<span id="alpine-linux"></span><h3>Alpine Linux<a class="headerlink" href="#alpine-linux" title="Permalink to this headline">¶</a></h3>
+<p>Use <code class="docutils literal"><span class="pre">apk</span></code> command to install dependencies:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nv">$apk</span> add --no-cache bash build-base curl findutils git ninja python <span class="se">\</span>
+                    bsd-compat-headers linux-headers libexecinfo-dev
+</pre></div>
+</div>
+<p>Alpine uses musl which does not have mallinfo defined in malloc.h. It is
+required by one of Shaka Packager’s dependency. To workaround the problem, a
+dummy structure has to be defined in /usr/include/malloc.h, e.g.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ sed -i <span class="se">\</span>
+  <span class="s1">&#39;/malloc_usable_size/a \\nstruct mallinfo {\n  int arena;\n  int hblkhd;\n  int uordblks;\n};&#39;</span> <span class="se">\</span>
+  /usr/include/malloc.h
+</pre></div>
+</div>
+<p>We also need to disable clang and some other features to make it work with musl:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;linux_use_bundled_binutils=0 linux_use_bundled_gold=0 clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1&#39;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="arch-linux">
 <span id="arch-linux"></span><h3>Arch Linux<a class="headerlink" href="#arch-linux" title="Permalink to this headline">¶</a></h3>
 <p>Instead of running <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span></code> to install build dependencies, run:</p>
@@ -329,6 +350,10 @@ You can get libtinfo from ncurses5-compat-libs in AUR:</p>
 $ <span class="nb">cd</span> ncurses5-compat-libs
 $ gpg --keyserver pgp.mit.edu --recv-keys F7E48EDB
 $ makepkg -si
+</pre></div>
+</div>
+<p>Optionally, disable clang to build with gcc:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;clang=0&#39;</span>
 </pre></div>
 </div>
 </div>
