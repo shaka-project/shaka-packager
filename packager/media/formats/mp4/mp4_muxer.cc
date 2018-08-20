@@ -114,11 +114,6 @@ void GenerateSinf(FourCC old_type,
       break;
     case FOURCC_cbcs:
     case FOURCC_cens:
-      if (track_encryption.default_skip_byte_block == 0) {
-        // Some clients, e.g. Safari v11.0.3 does not like having
-        // crypt_byte_block as a non-zero value when skip_byte_block is zero.
-        track_encryption.default_crypt_byte_block = 0;
-      }
       // CENCv3 10.3 ‘cens’ AES-CTR subsample pattern encryption scheme and
       //        10.4 ‘cbcs’ AES-CBC subsample pattern encryption scheme:
       // The version of the Track Encryption Box (‘tenc’) SHALL be 1.

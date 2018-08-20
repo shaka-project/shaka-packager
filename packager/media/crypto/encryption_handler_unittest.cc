@@ -406,7 +406,7 @@ class EncryptionHandlerEncryptionTest
         return 0;
       case FOURCC_cens:
       case FOURCC_cbcs:
-        return 1;
+        return codec_ == kCodecAAC ? 0 : 1;
       default:
         return 0;
     }
