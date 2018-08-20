@@ -22,6 +22,7 @@
 #include "packager/media/codecs/vp8_parser.h"
 #include "packager/media/codecs/vp9_parser.h"
 #include "packager/media/crypto/sample_aes_ec3_cryptor.h"
+#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
@@ -32,9 +33,16 @@ const size_t kCencBlockSize = 16u;
 // The encryption handler only supports a single output.
 const size_t kStreamIndex = 0;
 
-// The default KID for key rotation is all 0s.
+// The default KID, KEY and IV for key rotation are all 0s.
+// They are placeholders and are not really being used to encrypt data.
 const uint8_t kKeyRotationDefaultKeyId[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+const uint8_t kKeyRotationDefaultKey[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+const uint8_t kKeyRotationDefaultIv[] = {
+    0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // Adds one or more subsamples to |*decrypt_config|.  This may add more than one
@@ -179,25 +187,21 @@ Status EncryptionHandler::ProcessStreamInfo(const StreamInfo& clear_info) {
     }
   }
 
-  Status status = SetupProtectionPattern(stream_info->stream_type());
-  if (!status.ok())
-    return status;
+  RETURN_IF_ERROR(SetupProtectionPattern(stream_info->stream_type()));
 
   EncryptionKey encryption_key;
   const bool key_rotation_enabled = crypto_period_duration_ != 0;
   if (key_rotation_enabled) {
     check_new_crypto_period_ = true;
-    // Setup dummy key id and key to signal encryption for key rotation.
-    encryption_key.key_id.assign(
-        kKeyRotationDefaultKeyId,
-        kKeyRotationDefaultKeyId + sizeof(kKeyRotationDefaultKeyId));
-    // The key is not really used to encrypt any data. It is there just for
-    // convenience.
-    encryption_key.key = encryption_key.key_id;
+    // Setup dummy key id, key and iv to signal encryption for key rotation.
+    encryption_key.key_id.assign(std::begin(kKeyRotationDefaultKeyId),
+                                 std::end(kKeyRotationDefaultKeyId));
+    encryption_key.key.assign(std::begin(kKeyRotationDefaultKey),
+                              std::end(kKeyRotationDefaultKey));
+    encryption_key.iv.assign(std::begin(kKeyRotationDefaultIv),
+                             std::end(kKeyRotationDefaultIv));
   } else {
-    status = key_source_->GetKey(stream_label_, &encryption_key);
-    if (!status.ok())
-      return status;
+    RETURN_IF_ERROR(key_source_->GetKey(stream_label_, &encryption_key));
   }
   if (!CreateEncryptor(encryption_key))
     return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
@@ -233,10 +237,8 @@ Status EncryptionHandler::ProcessMediaSample(
     const int64_t current_crypto_period_index = dts / crypto_period_duration_;
     if (current_crypto_period_index != prev_crypto_period_index_) {
       EncryptionKey encryption_key;
-      Status status = key_source_->GetCryptoPeriodKey(
-          current_crypto_period_index, stream_label_, &encryption_key);
-      if (!status.ok())
-        return status;
+      RETURN_IF_ERROR(key_source_->GetCryptoPeriodKey(
+          current_crypto_period_index, stream_label_, &encryption_key));
       if (!CreateEncryptor(encryption_key))
         return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
       prev_crypto_period_index_ = current_crypto_period_index;
@@ -355,14 +357,13 @@ Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
         skip_byte_block_ = 9u;
       } else {
         // Tracks other than video are protected using whole-block full-sample
-        // encryption, which is essentially a pattern of 1:0. Note that this may
-        // not be the same as the non-pattern based encryption counterparts,
-        // e.g. in 'cens' for full sample encryption, the whole sample is
-        // encrypted up to the last 16-byte boundary, see 23001-7:2016(E) 9.7;
-        // while in 'cenc' for full sample encryption, the last partial 16-byte
-        // block is also encrypted, see 23001-7:2016(E) 9.4.2. Another
-        // difference is the use of constant iv.
-        crypt_byte_block_ = 1u;
+        // encryption. Note that this may not be the same as the non-pattern
+        // based encryption counterparts, e.g. in 'cens' whole-block full sample
+        // encryption, the whole sample is encrypted up to the last 16-byte
+        // boundary, see 23001-7:2016(E) 9.7; while in 'cenc' full sample
+        // encryption, the last partial 16-byte block is also encrypted, see
+        // 23001-7:2016(E) 9.4.2. Another difference is the use of constant iv.
+        crypt_byte_block_ = 0u;
         skip_byte_block_ = 0u;
       }
       break;

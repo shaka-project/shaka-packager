@@ -1409,6 +1409,16 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, key_rotation=True, output_dash=True))
     self._CheckTestResults('live-profile-and-key-rotation')
 
+  def testLiveProfileAndKeyRotationCbcs(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], segmented=True),
+        self._GetFlags(
+            encryption=True,
+            protection_scheme='cbcs',
+            key_rotation=True,
+            output_dash=True))
+    self._CheckTestResults('live-profile-and-key-rotation-cbcs')
+
   def testLiveProfileAndKeyRotationAndNoPsshInStream(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
