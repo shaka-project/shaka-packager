@@ -135,6 +135,16 @@ void GenerateSinf(FourCC old_type,
   track_encryption.default_kid = encryption_config.key_id;
 }
 
+// The roll distance is expressed in sample units and always takes negative
+// values.
+int16_t GetRollDistance(uint64_t seek_preroll_ns, uint32_t sampling_frequency) {
+  const double kNanosecondsPerSecond = 1000000000;
+  const double preroll_in_samples =
+      seek_preroll_ns / kNanosecondsPerSecond * sampling_frequency;
+  // Round to closest integer.
+  return -static_cast<int16_t>(preroll_in_samples + 0.5);
+}
+
 }  // namespace
 
 MP4Muxer::MP4Muxer(const MuxerOptions& options) : Muxer(options) {}
@@ -497,34 +507,16 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     entry.format = FOURCC_enca;
   }
 
-  // Opus requires at least one sample group description box and at least one
-  // sample to group box with grouping type 'roll' within sample table box.
-  if (audio_info->codec() == kCodecOpus) {
+  if (audio_info->seek_preroll_ns() > 0) {
     sample_table.sample_group_descriptions.resize(1);
     SampleGroupDescription& sample_group_description =
         sample_table.sample_group_descriptions.back();
     sample_group_description.grouping_type = FOURCC_roll;
     sample_group_description.audio_roll_recovery_entries.resize(1);
-    // The roll distance is expressed in sample units and always takes negative
-    // values.
-    const uint64_t kNanosecondsPerSecond = 1000000000ull;
     sample_group_description.audio_roll_recovery_entries[0].roll_distance =
-        (0 - (audio_info->seek_preroll_ns() * audio.samplerate +
-              kNanosecondsPerSecond / 2)) /
-        kNanosecondsPerSecond;
-
-    sample_table.sample_to_groups.resize(1);
-    SampleToGroup& sample_to_group = sample_table.sample_to_groups.back();
-    sample_to_group.grouping_type = FOURCC_roll;
-
-    sample_to_group.entries.resize(1);
-    SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
-    // All samples are in track fragments.
-    sample_to_group_entry.sample_count = 0;
-    sample_to_group_entry.group_description_index =
-        SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
-  } else if (audio_info->seek_preroll_ns() != 0) {
-    LOG(WARNING) << "Unexpected seek preroll for codec " << audio_info->codec();
+        GetRollDistance(audio_info->seek_preroll_ns(), audio.samplerate);
+    // sample to group box is not allowed in the init segment per CMAF
+    // specification. It is put in the fragment instead.
   }
   return true;
 }
