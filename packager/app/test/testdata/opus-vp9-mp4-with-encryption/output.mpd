@@ -10,8 +10,8 @@
       <Representation id="0" bandwidth="86874" codecs="opus" mimeType="audio/mp4" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-320x240-vp9-opus-audio.mp4</BaseURL>
-        <SegmentBase indexRange="975-1042" timescale="1000000" presentationTimeOffset="37000">
-          <Initialization range="0-974"/>
+        <SegmentBase indexRange="947-1014" timescale="1000000" presentationTimeOffset="37000">
+          <Initialization range="0-946"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
