@@ -7,11 +7,17 @@
 #include "packager/media/base/http_key_fetcher.h"
 
 #include <curl/curl.h>
+#include <gflags/gflags.h>
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
+
+DEFINE_bool(disable_peer_verification,
+            false,
+            "Disable peer verification. This is needed to talk to servers "
+            "without valid certificates.");
 
 namespace shaka {
 
@@ -173,6 +179,9 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, AppendToString);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+
+  if (FLAGS_disable_peer_verification)
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 
   if (!client_cert_private_key_file_.empty() && !client_cert_file_.empty()) {
     // Some PlayReady packaging servers only allow connects via HTTPS with
