@@ -304,10 +304,20 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
   media_sample->set_dts(current_timing_desc.dts);
   media_sample->set_pts(current_timing_desc.pts);
   if (pending_sample_) {
-    DCHECK_GT(media_sample->dts(), pending_sample_->dts());
-    pending_sample_duration_ = media_sample->dts() - pending_sample_->dts();
-    pending_sample_->set_duration(pending_sample_duration_);
-    emit_sample_cb_.Run(pid(), pending_sample_);
+    if (media_sample->dts() <= pending_sample_->dts()) {
+      LOG(WARNING) << "[MPEG-2 TS] PID " << pid() << " dts "
+                   << media_sample->dts()
+                   << " less than or equal to previous dts "
+                   << pending_sample_->dts();
+      // Keep the sample but adjust the sample duration to a very small value,
+      // in case that the sample is still needed for the decoding afterwards.
+      const int64_t kArbitrarySmallDuration = 0.001 * kMpeg2Timescale;  // 1ms.
+      pending_sample_->set_duration(kArbitrarySmallDuration);
+    } else {
+      pending_sample_duration_ = media_sample->dts() - pending_sample_->dts();
+      pending_sample_->set_duration(pending_sample_duration_);
+    }
+    emit_sample_cb_.Run(pid(), std::move(pending_sample_));
   }
   pending_sample_ = media_sample;
 
