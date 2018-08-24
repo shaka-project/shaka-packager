@@ -1,3 +1,8 @@
+## [2.3.0] - To be released
+### Changed
+- Disable bundled binutil and gold on Linux by default. There may be a slight
+  increase in binary link time.
+
 ## [2.2.0] - 2018-08-16
 ### Added
 - EditList support in ISO-BMFF in both input and output (#112).

@@ -67,7 +67,8 @@ if __name__ == '__main__':
                       'use_glib': 0,
                       'use_openssl': 1,
                       'use_x11': 0,
-                      'linux_use_gold_binary': 0,
+                      'linux_use_bundled_binutils': 0,
+                      'linux_use_bundled_gold': 0,
                       'linux_use_gold_flags': 0,
                       'clang_use_chrome_plugins': 0}
 

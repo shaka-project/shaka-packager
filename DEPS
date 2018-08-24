@@ -30,6 +30,13 @@ deps = {
   "src/packager/testing/gtest":
     Var("chromium_git") + "/external/github.com/google/googletest@6f8a66431cb592dad629028a50b3dd418a408c87",
 
+  # Keep bundled binutil scripts but not downloading actual binaries by default.
+  # Automatic downloading of binutils has been causing problems for some users:
+  # #164, #412, #440. Using bundled binutils helps reduce linking time, but
+  # packager codebase is relatively small, so the gain is not significant.
+  # User can still enable the usage of bundled binutils by running
+  # 'python src/packager/third_party/binutils/download.py' and set
+  # 'linux_use_bundled_binutils' and 'linux_use_bundled_gold' to 1 in GYP_DEFINES.
   "src/packager/third_party/binutils":
     Var("chromium_git") + "/chromium/src/third_party/binutils@8d77853bc9415bcb7bb4206fa2901de7603387db",
 
@@ -97,15 +104,6 @@ hooks = [
     'name': 'mac_toolchain',
     'pattern': '.',
     'action': ['python', 'src/packager/build/mac_toolchain.py'],
-  },
-  # Pull binutils for linux.
-  {
-    'name': 'binutils',
-    'pattern': 'src/packager/third_party/binutils',
-    'action': [
-        'python',
-        'src/packager/third_party/binutils/download.py',
-    ],
   },
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").

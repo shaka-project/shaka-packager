@@ -254,7 +254,7 @@ $ sed -i \
 We also need to disable clang and some other features to make it work with musl:
 
 ```shell
-export GYP_DEFINES='linux_use_bundled_binutils=0 linux_use_bundled_gold=0 clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
+export GYP_DEFINES='clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1'
 ```
 
 ### Arch Linux
