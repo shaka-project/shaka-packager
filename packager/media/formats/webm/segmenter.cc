@@ -284,10 +284,17 @@ void Segmenter::UpdateProgress(uint64_t progress) {
 
 Status Segmenter::InitializeVideoTrack(const VideoStreamInfo& info,
                                        VideoTrack* track) {
-  if (info.codec() == kCodecVP8) {
-    track->set_codec_id(mkvmuxer::Tracks::kVp8CodecId);
+  if (info.codec() == kCodecAV1) {
+    track->set_codec_id("V_AV1");
+    if (!track->SetCodecPrivate(info.codec_config().data(),
+                                info.codec_config().size())) {
+      return Status(error::INTERNAL_ERROR,
+                    "Private codec data required for AV1 streams");
+    }
+  } else if (info.codec() == kCodecVP8) {
+    track->set_codec_id("V_VP8");
   } else if (info.codec() == kCodecVP9) {
-    track->set_codec_id(mkvmuxer::Tracks::kVp9CodecId);
+    track->set_codec_id("V_VP9");
 
     // The |StreamInfo::codec_config| field is stored using the MP4 format; we
     // need to convert it to the WebM format.
@@ -319,9 +326,9 @@ Status Segmenter::InitializeVideoTrack(const VideoStreamInfo& info,
                     "Private codec data required for VPx streams");
     }
   } else {
-    LOG(ERROR) << "Only VP8 and VP9 video codecs are supported in WebM.";
+    LOG(ERROR) << "Only VP8, VP9 and AV1 video codecs are supported in WebM.";
     return Status(error::UNIMPLEMENTED,
-                  "Only VP8 and VP9 video codecs are supported in WebM.");
+                  "Only VP8, VP9 and AV1 video codecs are supported in WebM.");
   }
 
   track->set_uid(info.track_id());

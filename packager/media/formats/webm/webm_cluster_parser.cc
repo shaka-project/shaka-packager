@@ -433,36 +433,42 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
       streams.push_back(audio_stream_info_);
     if (video_stream_info_) {
       if (stream_type == kStreamVideo) {
-        std::unique_ptr<VPxParser> vpx_parser;
-        switch (video_stream_info_->codec()) {
-          case kCodecVP8:
-            vpx_parser.reset(new VP8Parser);
-            break;
-          case kCodecVP9:
-            vpx_parser.reset(new VP9Parser);
-            break;
-          default:
-            NOTIMPLEMENTED() << "Unsupported codec "
-                             << video_stream_info_->codec();
+        // Setup codec string and codec config for VP8 and VP9.
+        // Codec config for AV1 is already retrieved from WebM CodecPrivate
+        // instead of extracted from the bit stream.
+        if (video_stream_info_->codec() != kCodecAV1) {
+          std::unique_ptr<VPxParser> vpx_parser;
+          switch (video_stream_info_->codec()) {
+            case kCodecVP8:
+              vpx_parser.reset(new VP8Parser);
+              break;
+            case kCodecVP9:
+              vpx_parser.reset(new VP9Parser);
+              break;
+            default:
+              NOTIMPLEMENTED()
+                  << "Unsupported codec " << video_stream_info_->codec();
+              return false;
+          }
+          std::vector<VPxFrameInfo> vpx_frames;
+          if (!vpx_parser->Parse(buffer->data(), buffer->data_size(),
+                                 &vpx_frames)) {
+            LOG(ERROR) << "Failed to parse vpx frame.";
             return false;
-        }
-        std::vector<VPxFrameInfo> vpx_frames;
-        if (!vpx_parser->Parse(buffer->data(), buffer->data_size(),
-                               &vpx_frames)) {
-          LOG(ERROR) << "Failed to parse vpx frame.";
-          return false;
-        }
-        if (vpx_frames.size() != 1u || !vpx_frames[0].is_keyframe) {
-          LOG(ERROR) << "The first frame should be a key frame.";
-          return false;
+          }
+          if (vpx_frames.size() != 1u || !vpx_frames[0].is_keyframe) {
+            LOG(ERROR) << "The first frame should be a key frame.";
+            return false;
+          }
+
+          vp_config_.MergeFrom(vpx_parser->codec_config());
+          video_stream_info_->set_codec_string(
+              vp_config_.GetCodecString(video_stream_info_->codec()));
+          std::vector<uint8_t> config_serialized;
+          vp_config_.WriteMP4(&config_serialized);
+          video_stream_info_->set_codec_config(config_serialized);
         }
 
-        vp_config_.MergeFrom(vpx_parser->codec_config());
-        video_stream_info_->set_codec_string(
-            vp_config_.GetCodecString(video_stream_info_->codec()));
-        std::vector<uint8_t> config_serialized;
-        vp_config_.WriteMP4(&config_serialized);
-        video_stream_info_->set_codec_config(config_serialized);
         streams.push_back(video_stream_info_);
         init_cb_.Run(streams);
         initialized_ = true;

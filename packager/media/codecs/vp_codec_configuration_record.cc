@@ -30,8 +30,6 @@ std::string VPCodecAsString(Codec codec) {
       return "vp08";
     case kCodecVP9:
       return "vp09";
-    case kCodecVP10:
-      return "vp10";
     default:
       LOG(WARNING) << "Unknown VP codec: " << codec;
       return std::string();

@@ -22,6 +22,7 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/ac3_audio_util.h"
+#include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/ec3_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
@@ -59,6 +60,8 @@ H26xStreamFormat GetH26xStreamFormat(FourCC fourcc) {
 
 Codec FourCCToCodec(FourCC fourcc) {
   switch (fourcc) {
+    case FOURCC_av01:
+      return kCodecAV1;
     case FOURCC_avc1:
     case FOURCC_avc3:
       return kCodecH264;
@@ -69,8 +72,6 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecVP8;
     case FOURCC_vp09:
       return kCodecVP9;
-    case FOURCC_vp10:
-      return kCodecVP10;
     case FOURCC_Opus:
       return kCodecOpus;
     case FOURCC_dtsc:
@@ -518,6 +519,15 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
       switch (actual_format) {
+        case FOURCC_av01: {
+          AV1CodecConfigurationRecord av1_config;
+          if (!av1_config.Parse(entry.codec_configuration.data)) {
+            LOG(ERROR) << "Failed to parse av1c.";
+            return false;
+          }
+          codec_string = av1_config.GetCodecString();
+          break;
+        }
         case FOURCC_avc1:
         case FOURCC_avc3: {
           AVCDecoderConfigurationRecord avc_config;
@@ -567,8 +577,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           break;
         }
         case FOURCC_vp08:
-        case FOURCC_vp09:
-        case FOURCC_vp10: {
+        case FOURCC_vp09: {
           VPCodecConfigurationRecord vp_config;
           if (!vp_config.ParseMP4(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse vpcc.";

@@ -34,6 +34,7 @@ const uint16_t kVideoFrameCount = 1;
 const uint16_t kVideoDepth = 0x0018;
 
 const uint32_t kCompressorNameSize = 32u;
+const char kAv1CompressorName[] = "\012AOM Coding";
 const char kAvcCompressorName[] = "\012AVC Coding";
 const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
@@ -1478,24 +1479,24 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
     const FourCC actual_format = GetActualFormat();
     switch (actual_format) {
+      case FOURCC_av01:
+        compressor_name.assign(std::begin(kAv1CompressorName),
+                               std::end(kAv1CompressorName));
+        break;
       case FOURCC_avc1:
       case FOURCC_avc3:
-        compressor_name.assign(
-            kAvcCompressorName,
-            kAvcCompressorName + arraysize(kAvcCompressorName));
+        compressor_name.assign(std::begin(kAvcCompressorName),
+                               std::end(kAvcCompressorName));
         break;
       case FOURCC_hev1:
       case FOURCC_hvc1:
-        compressor_name.assign(
-            kHevcCompressorName,
-            kHevcCompressorName + arraysize(kHevcCompressorName));
+        compressor_name.assign(std::begin(kHevcCompressorName),
+                               std::end(kHevcCompressorName));
         break;
       case FOURCC_vp08:
       case FOURCC_vp09:
-      case FOURCC_vp10:
-        compressor_name.assign(
-            kVpcCompressorName,
-            kVpcCompressorName + arraysize(kVpcCompressorName));
+        compressor_name.assign(std::begin(kVpcCompressorName),
+                               std::end(kVpcCompressorName));
         break;
       default:
         LOG(ERROR) << FourCCToString(actual_format) << " is not supported.";
@@ -1571,6 +1572,8 @@ size_t VideoSampleEntry::ComputeSizeInternal() {
 
 FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
   switch (format) {
+    case FOURCC_av01:
+      return FOURCC_av1C;
     case FOURCC_avc1:
     case FOURCC_avc3:
       return FOURCC_avcC;
@@ -1579,7 +1582,6 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
       return FOURCC_hvcC;
     case FOURCC_vp08:
     case FOURCC_vp09:
-    case FOURCC_vp10:
       return FOURCC_vpcC;
     default:
       LOG(ERROR) << FourCCToString(format) << " is not supported.";

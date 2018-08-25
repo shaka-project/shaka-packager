@@ -29,11 +29,11 @@ enum Codec {
   kUnknownCodec = 0,
 
   kCodecVideo = 100,
-  kCodecH264 = kCodecVideo,
+  kCodecAV1 = kCodecVideo,
+  kCodecH264,
   kCodecH265,
   kCodecVP8,
   kCodecVP9,
-  kCodecVP10,
   kCodecVideoMaxPlusOne,
 
   kCodecAudio = 200,

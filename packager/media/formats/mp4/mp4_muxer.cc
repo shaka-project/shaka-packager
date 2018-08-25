@@ -44,6 +44,8 @@ void SetStartAndEndFromOffsetAndSize(size_t offset,
 
 FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
   switch (codec) {
+    case kCodecAV1:
+      return FOURCC_av01;
     case kCodecH264:
       return h26x_stream_format ==
                      H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
@@ -58,8 +60,6 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_vp08;
     case kCodecVP9:
       return FOURCC_vp09;
-    case kCodecVP10:
-      return FOURCC_vp10;
     case kCodecAAC:
       return FOURCC_mp4a;
     case kCodecAC3:

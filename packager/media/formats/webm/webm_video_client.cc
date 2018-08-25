@@ -5,6 +5,7 @@
 #include "packager/media/formats/webm/webm_video_client.h"
 
 #include "packager/base/logging.h"
+#include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
@@ -57,24 +58,34 @@ void WebMVideoClient::Reset() {
 std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     int64_t track_num,
     const std::string& codec_id,
+    const std::vector<uint8_t>& codec_private,
     bool is_encrypted) {
+  std::string codec_string;
   Codec video_codec = kUnknownCodec;
-  if (codec_id == "V_VP8") {
+  if (codec_id == "V_AV1") {
+    video_codec = kCodecAV1;
+
+    // CodecPrivate is mandatory per AV in Matroska / WebM specification.
+    // https://github.com/Matroska-Org/matroska-specification/blob/av1-mappin/codec/av1.md#codecprivate-1
+    AV1CodecConfigurationRecord av1_config;
+    if (!av1_config.Parse(codec_private)) {
+      LOG(ERROR) << "Failed to parse AV1 codec_private.";
+      return nullptr;
+    }
+    codec_string = av1_config.GetCodecString();
+  } else if (codec_id == "V_VP8") {
     video_codec = kCodecVP8;
+    // codec_string for VP8 is parsed later.
   } else if (codec_id == "V_VP9") {
     video_codec = kCodecVP9;
-    // The codec private data is in WebM format, but needs to be converted to
-    // MP4 format.  Don't do it yet, it will be handled in
-    // webm_cluster_parser.cc
-  } else if (codec_id == "V_VP10") {
-    video_codec = kCodecVP10;
+    // codec_string for VP9 is parsed later.
   } else {
     LOG(ERROR) << "Unsupported video codec_id " << codec_id;
-    return std::shared_ptr<VideoStreamInfo>();
+    return nullptr;
   }
 
   if (pixel_width_ <= 0 || pixel_height_ <= 0)
-    return std::shared_ptr<VideoStreamInfo>();
+    return nullptr;
 
   // Set crop and display unit defaults if these elements are not present.
   if (crop_bottom_ == -1)
@@ -102,10 +113,10 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
       display_height_ = height_after_crop;
   } else if (display_unit_ == 3) {
     if (display_width_ <= 0 || display_height_ <= 0)
-      return std::shared_ptr<VideoStreamInfo>();
+      return nullptr;
   } else {
     LOG(ERROR) << "Unsupported display unit type " << display_unit_;
-    return std::shared_ptr<VideoStreamInfo>();
+    return nullptr;
   }
   // Calculate sample aspect ratio.
   int64_t sar_x = display_width_ * height_after_crop;
@@ -114,10 +125,14 @@ std::shared_ptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   sar_x /= gcd;
   sar_y /= gcd;
 
+  // |codec_private| may be overriden later for some codecs, e.g. VP9 since for
+  // VP9, the format for MP4 and WebM are different; MP4 format is used as the
+  // intermediate format.
   return std::make_shared<VideoStreamInfo>(
       track_num, kWebMTimeScale, 0, video_codec, H26xStreamFormat::kUnSpecified,
-      std::string(), nullptr, 0, width_after_crop, height_after_crop, sar_x,
-      sar_y, 0, 0, std::string(), is_encrypted);
+      codec_string, codec_private.data(), codec_private.size(),
+      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, std::string(),
+      is_encrypted);
 }
 
 VPCodecConfigurationRecord WebMVideoClient::GetVpCodecConfig(

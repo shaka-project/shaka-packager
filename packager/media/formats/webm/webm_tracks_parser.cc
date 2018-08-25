@@ -223,10 +223,14 @@ bool WebMTracksParser::OnListEnd(int id) {
         }
         video_default_duration_ = default_duration_;
 
+        // |vp_config_| is only useful for VP8 and VP9.
+        if (codec_id_ == "V_VP8" || codec_id_ == "V_VP9")
+          vp_config_ = video_client_.GetVpCodecConfig(codec_private_);
+
         DCHECK(!video_stream_info_);
-        vp_config_ = video_client_.GetVpCodecConfig(codec_private_);
         video_stream_info_ = video_client_.GetVideoStreamInfo(
-            video_track_num_, codec_id_, !video_encryption_key_id_.empty());
+            video_track_num_, codec_id_, codec_private_,
+            !video_encryption_key_id_.empty());
         if (!video_stream_info_)
           return false;
       } else {

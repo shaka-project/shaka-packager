@@ -849,6 +849,33 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True))
     self._CheckTestResults('vorbis-webm')
 
+  def testAv1Mp4(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='mp4',
+                         test_files=['bear-av1.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True)
+    )
+    self._CheckTestResults('av1-mp4')
+
+  def testAv1Mp4ToWebM(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['bear-av1.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True)
+    )
+    self._CheckTestResults('av1-mp4-to-webm')
+
+  def testAv1WebM(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'],
+                         output_format='mp4',
+                         test_files=['bear-av1.webm']),
+        self._GetFlags(output_dash=True, output_hls=True)
+    )
+    self._CheckTestResults('av1-webm')
+
   def testEncryption(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),

@@ -27,14 +27,15 @@ class WebMVideoClient : public WebMParserClient {
   void Reset();
 
   /// Create a VideoStreamInfo with the data in |track_num|, |codec_id|,
-  /// |is_encrypted| and the fields parsed from the last video track element
-  /// this object was used to parse.
+  /// |codec_private|, |is_encrypted| and the fields parsed from the last video
+  /// track element this object was used to parse.
   /// @return A VideoStreamInfo if successful.
   /// @return An empty pointer if there was unexpected values in the
   ///         provided parameters or video track element fields.
   std::shared_ptr<VideoStreamInfo> GetVideoStreamInfo(
       int64_t track_num,
       const std::string& codec_id,
+      const std::vector<uint8_t>& codec_private,
       bool is_encrypted);
 
   /// Extracts VPCodecConfigurationRecord parsed from codec private data and
