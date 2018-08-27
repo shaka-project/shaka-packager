@@ -15,7 +15,7 @@ namespace media {
 namespace {
 const char* kHeader = "WEBVTT\n";
 const int kTsTimescale = 90000;
-}
+}  // namespace
 
 WebVttFileBuffer::WebVttFileBuffer(
     uint32_t transport_stream_timestamp_offset_ms,
