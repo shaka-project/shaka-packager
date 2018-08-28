@@ -51,14 +51,31 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
 
   while (text_size > 0) {
     const size_t crypt_byte_size = crypt_byte_block_ * AES_BLOCK_SIZE;
-    if (NeedEncrypt(text_size, crypt_byte_size)) {
-      if (!cryptor_->Crypt(text, crypt_byte_size, crypt_text))
-        return false;
-    } else {
-      // If there is not enough data, just keep it in clear.
+
+    if (text_size <= crypt_byte_size) {
+      const bool need_encrypt =
+          encryption_mode_ == kSkipIfCryptByteBlockRemaining
+              ? (text_size > crypt_byte_size)
+              : (text_size >= AES_BLOCK_SIZE);
+      if (need_encrypt) {
+        // The partial pattern SHALL be followed with the partial 16-byte block
+        // remains unencrypted.
+        const size_t aligned_crypt_byte_size =
+            text_size / AES_BLOCK_SIZE * AES_BLOCK_SIZE;
+        if (!cryptor_->Crypt(text, aligned_crypt_byte_size, crypt_text))
+          return false;
+        text += aligned_crypt_byte_size;
+        text_size -= aligned_crypt_byte_size;
+        crypt_text += aligned_crypt_byte_size;
+      }
+
+      // The remaining bytes are not encrypted.
       memcpy(crypt_text, text, text_size);
       return true;
     }
+
+    if (!cryptor_->Crypt(text, crypt_byte_size, crypt_text))
+      return false;
     text += crypt_byte_size;
     text_size -= crypt_byte_size;
     crypt_text += crypt_byte_size;
@@ -75,13 +92,6 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
 
 void AesPatternCryptor::SetIvInternal() {
   CHECK(cryptor_->SetIv(iv()));
-}
-
-bool AesPatternCryptor::NeedEncrypt(size_t input_size,
-                                    size_t target_data_size) {
-  if (encryption_mode_ == kSkipIfCryptByteBlockRemaining)
-    return input_size > target_data_size;
-  return input_size >= target_data_size;
 }
 
 }  // namespace media

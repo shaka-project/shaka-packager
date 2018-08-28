@@ -19,18 +19,16 @@ class AesPatternCryptor : public AesCryptor {
   /// Enumerator for controling encrytion/decryption mode for the last
   /// encryption/decrytion block(s).
   enum PatternEncryptionMode {
-    /// Use kEncryptIfCryptByteBlockRemaining if the last blocks is exactly the
-    /// same as the number of remaining bytes. IOW
-    /// if (remaining_bytes == encryption_block_bytes)
-    ///   encrypt(remaining_data)
+    /// Use kEncryptIfCryptByteBlockRemaining to encrypt all the full 16-byte
+    /// blocks even if the remaining bytes are less than encryption_block_bytes.
+    /// IOW:
+    /// if (remaining_bytes <= encryption_block_bytes)
+    ///   encrypt(block_aligned_remaining_data)
     kEncryptIfCryptByteBlockRemaining,
-    /// Use kSkipIfCryptByteBlockRemaining to not encrypt/decrypt the last
-    /// clocks if it is exactly the same as the number of remaining bytes.
-    /// if (remaining_bytes > encryption_block_bytes) {
-    ///   // Since this is the last blocks, this is effectively the same
-    ///   // condition as remaining_bytes != encryption_block_bytes.
+    /// Use kSkipIfCryptByteBlockRemaining to not encrypt/decrypt the remaining
+    /// bytes if it is less than or equal to encryption_block_bytes.
+    /// if (remaining_bytes > encryption_block_bytes)
     ///   encrypt().
-    /// }
     /// Use this mode for HLS SAMPLE-AES.
     kSkipIfCryptByteBlockRemaining,
   };
@@ -69,8 +67,6 @@ class AesPatternCryptor : public AesCryptor {
                      uint8_t* crypt_text,
                      size_t* crypt_text_size) override;
   void SetIvInternal() override;
-
-  bool NeedEncrypt(size_t input_size, size_t target_data_size);
 
   uint8_t crypt_byte_block_;
   const uint8_t skip_byte_block_;
