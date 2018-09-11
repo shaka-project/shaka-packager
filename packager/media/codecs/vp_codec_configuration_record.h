@@ -187,6 +187,11 @@ class VPCodecConfigurationRecord {
   /// @return false if there is parsing errors.
   bool ParseWebM(const std::vector<uint8_t>& data);
 
+  /// Compute and set VP9 Level based on the input attributes.
+  void SetVP9Level(uint16_t width,
+                   uint16_t height,
+                   double sample_duration_seconds);
+
   /// @param data should not be null.
   /// Writes VP codec configuration record to buffer using MP4 format.
   void WriteMP4(std::vector<uint8_t>* data) const;

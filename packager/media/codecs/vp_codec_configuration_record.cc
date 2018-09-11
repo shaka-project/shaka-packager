@@ -52,6 +52,79 @@ void MergeField(const std::string& name,
   }
 }
 
+enum VP9Level {
+  LEVEL_UNKNOWN = 0,
+  LEVEL_1 = 10,
+  LEVEL_1_1 = 11,
+  LEVEL_2 = 20,
+  LEVEL_2_1 = 21,
+  LEVEL_3 = 30,
+  LEVEL_3_1 = 31,
+  LEVEL_4 = 40,
+  LEVEL_4_1 = 41,
+  LEVEL_5 = 50,
+  LEVEL_5_1 = 51,
+  LEVEL_5_2 = 52,
+  LEVEL_6 = 60,
+  LEVEL_6_1 = 61,
+  LEVEL_6_2 = 62,
+  LEVEL_MAX = 255
+};
+
+struct VP9LevelCharacteristics {
+  uint64_t max_luma_sample_rate;
+  uint32_t max_luma_picture_size;
+  double max_avg_bitrate;
+  double max_cpb_size;
+  double min_compression_ratio;
+  uint8_t max_num_column_tiles;
+  uint32_t min_altref_distance;
+  uint8_t max_ref_frame_buffers;
+};
+
+struct VP9LevelDefinition {
+  VP9Level level;
+  VP9LevelCharacteristics characteristics;
+};
+
+VP9Level LevelFromCharacteristics(uint64_t luma_sample_rate,
+                                  uint32_t luma_picture_size) {
+  // https://www.webmproject.org/vp9/levels/.
+  const VP9LevelDefinition vp9_level_definitions[] = {
+      {LEVEL_1, {829440, 36864, 200, 400, 2, 1, 4, 8}},
+      {LEVEL_1_1, {2764800, 73728, 800, 1000, 2, 1, 4, 8}},
+      {LEVEL_2, {4608000, 122880, 1800, 1500, 2, 1, 4, 8}},
+      {LEVEL_2_1, {9216000, 245760, 3600, 2800, 2, 2, 4, 8}},
+      {LEVEL_3, {20736000, 552960, 7200, 6000, 2, 4, 4, 8}},
+      {LEVEL_3_1, {36864000, 983040, 12000, 10000, 2, 4, 4, 8}},
+      {LEVEL_4, {83558400, 2228224, 18000, 16000, 4, 4, 4, 8}},
+      {LEVEL_4_1, {160432128, 2228224, 30000, 18000, 4, 4, 5, 6}},
+      {LEVEL_5, {311951360, 8912896, 60000, 36000, 6, 8, 6, 4}},
+      {LEVEL_5_1, {588251136, 8912896, 120000, 46000, 8, 8, 10, 4}},
+      {LEVEL_5_2, {1176502272, 8912896, 180000, 90000, 8, 8, 10, 4}},
+      {LEVEL_6, {1176502272, 35651584, 180000, 90000, 8, 16, 10, 4}},
+      {LEVEL_6_1, {2353004544u, 35651584, 240000, 180000, 8, 16, 10, 4}},
+      {LEVEL_6_2, {4706009088u, 35651584, 480000, 360000, 8, 16, 10, 4}},
+  };
+
+  for (const VP9LevelDefinition& def : vp9_level_definitions) {
+    // All the characteristic fields except max_luma_sample_rate and
+    // max_luma_picture_size are ignored to avoid the extra complexities of
+    // computing those values. It may result in incorrect level being returned.
+    // If this is a problem, please file a bug to
+    // https://github.com/google/shaka-packager/issues.
+    if (luma_sample_rate <= def.characteristics.max_luma_sample_rate &&
+        luma_picture_size <= def.characteristics.max_luma_picture_size) {
+      return def.level;
+    }
+  }
+
+  LOG(WARNING) << "Cannot determine VP9 level for luma_sample_rate ("
+               << luma_sample_rate << ") or luma_picture_size ("
+               << luma_picture_size << "). Returning LEVEL_1.";
+  return LEVEL_1;
+}
+
 }  // namespace
 
 VPCodecConfigurationRecord::VPCodecConfigurationRecord() {}
@@ -150,6 +223,26 @@ bool VPCodecConfigurationRecord::ParseWebM(const std::vector<uint8_t>& data) {
   }
 
   return true;
+}
+
+void VPCodecConfigurationRecord::SetVP9Level(uint16_t width,
+                                             uint16_t height,
+                                             double sample_duration_seconds) {
+  // https://www.webmproject.org/vp9/levels/.
+
+  const uint32_t luma_picture_size = width * height;
+  // Alt-Ref frames are not taken into consideration intentionally to avoid the
+  // extra complexities. It may result in smaller luma_sample_rate may than the
+  // actual luma_sample_rate, leading to incorrect level being returned.
+  // If this is a problem, please file a bug to
+  // https://github.com/google/shaka-packager/issues.
+  const double kUnknownSampleDuration = 0.0;
+  // The decision is based on luma_picture_size only if duration is unknown.
+  uint64_t luma_sample_rate = 0;
+  if (sample_duration_seconds != kUnknownSampleDuration)
+    luma_sample_rate = luma_picture_size / sample_duration_seconds;
+
+  level_ = LevelFromCharacteristics(luma_sample_rate, luma_picture_size);
 }
 
 void VPCodecConfigurationRecord::WriteMP4(std::vector<uint8_t>* data) const {

@@ -223,16 +223,24 @@ bool WebMTracksParser::OnListEnd(int id) {
         }
         video_default_duration_ = default_duration_;
 
-        // |vp_config_| is only useful for VP8 and VP9.
-        if (codec_id_ == "V_VP8" || codec_id_ == "V_VP9")
-          vp_config_ = video_client_.GetVpCodecConfig(codec_private_);
-
         DCHECK(!video_stream_info_);
         video_stream_info_ = video_client_.GetVideoStreamInfo(
             video_track_num_, codec_id_, codec_private_,
             !video_encryption_key_id_.empty());
         if (!video_stream_info_)
           return false;
+
+        if (codec_id_ == "V_VP8" || codec_id_ == "V_VP9") {
+          vp_config_ = video_client_.GetVpCodecConfig(codec_private_);
+          const double kNanosecondsPerSecond = 1000000000.0;
+          if (codec_id_ == "V_VP9" &&
+              (!vp_config_.is_level_set() || vp_config_.level() == 0)) {
+            vp_config_.SetVP9Level(
+                video_stream_info_->width(), video_stream_info_->height(),
+                video_default_duration_ / kNanosecondsPerSecond);
+          }
+        }
+
       } else {
         DLOG(INFO) << "Ignoring video track " << track_num_;
         ignored_tracks_.insert(track_num_);

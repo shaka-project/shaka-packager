@@ -161,5 +161,57 @@ TEST(VPCodecConfigurationRecordTest, MergeChromaSubsampling) {
   EXPECT_EQ(AVCHROMA_LOC_TOPLEFT, vp_config.chroma_location());
 }
 
+TEST(VPCodecConfigurationRecordTest, SetLevel) {
+  const uint8_t kUnknownLevel = 0;
+  VPCodecConfigurationRecord vp_config(0x02, kUnknownLevel, 0x08, 0x02, true,
+                                       0x03, 0x04, 0x05,
+                                       std::vector<uint8_t>());
+  ASSERT_EQ(kUnknownLevel, vp_config.level());
+
+  // kExamples are copied from https://www.webmproject.org/vp9/levels/.
+  struct {
+    int expected_level;
+    int width;
+    int height;
+    int frame_rate;
+  } kExamples[] = {
+      {10, 256, 144, 15},   {11, 384, 192, 30},    {20, 480, 256, 30},
+      {21, 640, 384, 30},   {30, 1080, 512, 30},   {31, 1280, 768, 30},
+      {40, 2048, 1088, 30}, {41, 2048, 1088, 60},  {50, 4096, 2176, 30},
+      {51, 4096, 2176, 60}, {52, 4096, 2176, 120}, {60, 8192, 4352, 30},
+      {61, 8192, 4352, 60}, {62, 8192, 4352, 120},
+  };
+  for (const auto& example : kExamples) {
+    vp_config.SetVP9Level(example.width, example.height,
+                          1.0 / example.frame_rate);
+    ASSERT_EQ(example.expected_level, vp_config.level());
+  }
+}
+
+TEST(VPCodecConfigurationRecordTest, SetLevelWithUnknownFrameDuration) {
+  const uint8_t kUnknownLevel = 0;
+  VPCodecConfigurationRecord vp_config(0x02, kUnknownLevel, 0x08, 0x02, true,
+                                       0x03, 0x04, 0x05,
+                                       std::vector<uint8_t>());
+  ASSERT_EQ(kUnknownLevel, vp_config.level());
+
+  // kExamples are modified from https://www.webmproject.org/vp9/levels/ with
+  // frame rate removed.
+  struct {
+    int expected_level;
+    int width;
+    int height;
+  } kExamples[] = {
+      {10, 256, 144},   {11, 384, 192},   {20, 480, 256},
+      {21, 640, 384},   {30, 1080, 512},  {31, 1280, 768},
+      {40, 2048, 1088}, {50, 4096, 2176}, {60, 8192, 4352},
+  };
+  for (const auto& example : kExamples) {
+    const int kUnknownFrameDuration = 0;
+    vp_config.SetVP9Level(example.width, example.height, kUnknownFrameDuration);
+    ASSERT_EQ(example.expected_level, vp_config.level());
+  }
+}
+
 }  // namespace media
 }  // namespace shaka
