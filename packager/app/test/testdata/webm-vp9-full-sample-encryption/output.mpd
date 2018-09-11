@@ -6,7 +6,7 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b" cenc:default_KID="31323334-3536-3738-3930-313233343536">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="184009" codecs="vp09.00.10.08.00.02.02.02.00" mimeType="video/webm" sar="1:1">
+      <Representation id="0" bandwidth="184009" codecs="vp09.00.11.08.00.02.02.02.00" mimeType="video/webm" sar="1:1">
         <BaseURL>bear-320x180-vp9-altref-video.webm</BaseURL>
         <SegmentBase indexRange="353-371" timescale="1000000">
           <Initialization range="0-352"/>
