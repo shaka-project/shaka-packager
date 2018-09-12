@@ -271,6 +271,7 @@ class PackagerAppTest(unittest.TestCase):
                  output_file_prefix=None,
                  output_format=None,
                  segmented=False,
+                 using_time_specifier=False,
                  hls=False,
                  trick_play_factor=None,
                  drm_label=None,
@@ -294,6 +295,8 @@ class PackagerAppTest(unittest.TestCase):
       output_format: Specify the format for the output.
       segmented: Should the output use a segmented formatted. This will affect
           the output extensions and manifests.
+      using_time_specifier: Use $Time$ in segment name instead of using
+          $Number$. This flag is only relevant if segmented is True.
       hls: Should the output be for an HLS manifest.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
@@ -358,8 +361,10 @@ class PackagerAppTest(unittest.TestCase):
       stream.Append('init_segment', init_seg)
 
     if segmented:
+      segment_specifier = '$Time$' if using_time_specifier else '$Number$'
       segment_ext = GetSegmentedExtension(base_ext)
-      seg_template = '%s-$Number$.%s' % (output_file_path, segment_ext)
+      seg_template = '%s-%s.%s' % (output_file_path, segment_specifier,
+                                   segment_ext)
       stream.Append('segment_template', seg_template)
     else:
       if split_content_on_ad_cues:
@@ -1400,6 +1405,14 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video'], segmented=True),
         self._GetFlags(output_dash=True, generate_static_mpd=True))
     self._CheckTestResults('live-static-profile')
+
+  def testLiveStaticProfileWithTimeInSegmentName(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         segmented=True,
+                         using_time_specifier=True),
+        self._GetFlags(output_dash=True, generate_static_mpd=True))
+    self._CheckTestResults('live-static-profile-with-time-in-segment-name')
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(

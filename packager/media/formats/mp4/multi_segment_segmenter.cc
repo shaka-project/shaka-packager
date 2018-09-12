@@ -92,6 +92,12 @@ Status MultiSegmentSegmenter::WriteSegment() {
   DCHECK(fragment_buffer());
   DCHECK(styp_);
 
+  DCHECK(!sidx()->references.empty());
+  // earliest_presentation_time is the earliest presentation time of any access
+  // unit in the reference stream in the first subsegment.
+  sidx()->earliest_presentation_time =
+      sidx()->references[0].earliest_presentation_time;
+
   std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   std::unique_ptr<File, FileCloser> file;
   std::string file_name;
@@ -115,15 +121,8 @@ Status MultiSegmentSegmenter::WriteSegment() {
     styp_->Write(buffer.get());
   }
 
-  if (options().mp4_params.generate_sidx_in_media_segments) {
-    DCHECK(sidx());
-    DCHECK(!sidx()->references.empty());
-    // earliest_presentation_time is the earliest presentation time of any
-    // access unit in the reference stream in the first subsegment.
-    sidx()->earliest_presentation_time =
-        sidx()->references[0].earliest_presentation_time;
+  if (options().mp4_params.generate_sidx_in_media_segments)
     sidx()->Write(buffer.get());
-  }
 
   const size_t segment_header_size = buffer->Size();
   const size_t segment_size = segment_header_size + fragment_buffer()->Size();
