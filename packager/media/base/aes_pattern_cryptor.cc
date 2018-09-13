@@ -54,9 +54,8 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
 
     if (text_size <= crypt_byte_size) {
       const bool need_encrypt =
-          encryption_mode_ == kSkipIfCryptByteBlockRemaining
-              ? (text_size > crypt_byte_size)
-              : (text_size >= AES_BLOCK_SIZE);
+          encryption_mode_ != kSkipIfCryptByteBlockRemaining &&
+          text_size >= AES_BLOCK_SIZE;
       if (need_encrypt) {
         // The partial pattern SHALL be followed with the partial 16-byte block
         // remains unencrypted.
