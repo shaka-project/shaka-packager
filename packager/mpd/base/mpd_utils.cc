@@ -352,7 +352,7 @@ void AddContentProtectionElementsHelperTemplated(
     if (entry.has_name_version())
       drm_content_protection.value = entry.name_version();
 
-    if (entry.has_pssh()) {
+    if (!entry.pssh().empty()) {
       std::string base64_encoded_pssh;
       base::Base64Encode(
           base::StringPiece(entry.pssh().data(), entry.pssh().size()),

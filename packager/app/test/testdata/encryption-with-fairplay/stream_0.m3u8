@@ -1,0 +1,17 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:2
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="bear-640x360-audio.mp4",BYTERANGE="951@0"
+#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="skd://www.license.com/getkey?KeyId=31323334-3536-3738-3930-313233343536",KEYFORMATVERSIONS="1",KEYFORMAT="com.apple.streamingkeydelivery"
+#EXTINF:1.022,
+#EXT-X-BYTERANGE:17028@1019
+bear-640x360-audio.mp4
+#EXTINF:0.998,
+#EXT-X-BYTERANGE:16682
+bear-640x360-audio.mp4
+#EXTINF:0.720,
+#EXT-X-BYTERANGE:9859
+bear-640x360-audio.mp4
+#EXT-X-ENDLIST

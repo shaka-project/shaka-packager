@@ -8,8 +8,8 @@
 
 #include "packager/base/logging.h"
 #include "packager/media/base/common_pssh_generator.h"
-#include "packager/media/base/fairplay_pssh_generator.h"
 #include "packager/media/base/playready_pssh_generator.h"
+#include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/widevine_pssh_generator.h"
 #include "packager/status_macros.h"
 
@@ -30,7 +30,8 @@ KeySource::KeySource(int protection_systems_flags, FourCC protection_scheme) {
   }
 
   if (protection_systems_flags & FAIRPLAY_PROTECTION_SYSTEM_FLAG) {
-    pssh_generators_.emplace_back(new FairPlayPsshGenerator());
+    no_pssh_systems_.emplace_back(std::begin(kFairPlaySystemId),
+                                  std::end(kFairPlaySystemId));
   }
 }
 
@@ -57,6 +58,14 @@ Status KeySource::UpdateProtectionSystemInfo(
             pair.second->key_id, pair.second->key, &info));
         pair.second->key_system_info.push_back(info);
       }
+    }
+  }
+
+  for (const auto& no_pssh_system : no_pssh_systems_) {
+    ProtectionSystemSpecificInfo info;
+    info.system_id = no_pssh_system;
+    for (const EncryptionKeyMap::value_type& pair : *encryption_key_map) {
+      pair.second->key_system_info.push_back(info);
     }
   }
 

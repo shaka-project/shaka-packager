@@ -268,10 +268,15 @@ Status MP4Muxer::DelayInitializeMuxer() {
     }
 
     if (stream->is_encrypted() && options().mp4_params.include_pssh_in_stream) {
+      moov->pssh.clear();
       const auto& key_system_info = stream->encryption_config().key_system_info;
-      moov->pssh.resize(key_system_info.size());
-      for (size_t j = 0; j < key_system_info.size(); j++)
-        moov->pssh[j].raw_box = key_system_info[j].psshs;
+      for (const ProtectionSystemSpecificInfo& system : key_system_info) {
+        if (system.psshs.empty())
+          continue;
+        ProtectionSystemSpecificHeader pssh;
+        pssh.raw_box = system.psshs;
+        moov->pssh.push_back(pssh);
+      }
     }
   }
 

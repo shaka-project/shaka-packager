@@ -862,6 +862,13 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('encryption', verify_decryption=True)
 
+  def testEncryptionWithFairplay(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True, fairplay=True, output_dash=True, output_hls=True))
+    self._CheckTestResults('encryption-with-fairplay')
+
   # Test deprecated flag --enable_fixed_key_encryption, which is still
   # supported currently.
   def testEncryptionUsingFixedKey(self):

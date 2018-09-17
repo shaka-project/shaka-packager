@@ -92,6 +92,7 @@ class KeySource {
 
  private:
   std::vector<std::unique_ptr<PsshGenerator>> pssh_generators_;
+  std::vector<std::vector<uint8_t>> no_pssh_systems_;
 
   DISALLOW_COPY_AND_ASSIGN(KeySource);
 };

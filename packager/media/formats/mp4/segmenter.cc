@@ -278,11 +278,15 @@ void Segmenter::FinalizeFragmentForKeyRotation(
     bool fragment_encrypted,
     const EncryptionConfig& encryption_config) {
   if (options_.mp4_params.include_pssh_in_stream) {
-    const std::vector<ProtectionSystemSpecificInfo>& system_info =
-        encryption_config.key_system_info;
-    moof_->pssh.resize(system_info.size());
-    for (size_t i = 0; i < system_info.size(); i++)
-      moof_->pssh[i].raw_box = system_info[i].psshs;
+    moof_->pssh.clear();
+    const auto& key_system_info = encryption_config.key_system_info;
+    for (const ProtectionSystemSpecificInfo& system : key_system_info) {
+      if (system.psshs.empty())
+        continue;
+      ProtectionSystemSpecificHeader pssh;
+      pssh.raw_box = system.psshs;
+      moof_->pssh.push_back(pssh);
+    }
   } else {
     LOG(WARNING)
         << "Key rotation and no pssh in stream may not work well together.";
