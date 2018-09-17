@@ -9,8 +9,8 @@
 #include <algorithm>
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/common_pssh_generator.h"
 #include "packager/media/base/key_source.h"
-#include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/status_macros.h"
 
 namespace {

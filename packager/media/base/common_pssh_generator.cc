@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/raw_key_pssh_generator.h"
+#include "packager/media/base/common_pssh_generator.h"
 
 namespace shaka {
 namespace media {
@@ -12,19 +12,19 @@ namespace {
 const uint8_t kCommonSystemPsshBoxVersion = 1;
 }  // namespace
 
-RawKeyPsshGenerator::RawKeyPsshGenerator()
+CommonPsshGenerator::CommonPsshGenerator()
     : PsshGenerator(std::vector<uint8_t>(std::begin(kCommonSystemId),
                                          std::end(kCommonSystemId)),
                     kCommonSystemPsshBoxVersion) {}
 
-RawKeyPsshGenerator::~RawKeyPsshGenerator() = default;
+CommonPsshGenerator::~CommonPsshGenerator() = default;
 
-bool RawKeyPsshGenerator::SupportMultipleKeys() {
+bool CommonPsshGenerator::SupportMultipleKeys() {
   return true;
 }
 
 base::Optional<std::vector<uint8_t>>
-RawKeyPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
+CommonPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
   NOTIMPLEMENTED();
@@ -32,7 +32,7 @@ RawKeyPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
 }
 
 base::Optional<std::vector<uint8_t>>
-RawKeyPsshGenerator::GeneratePsshDataFromKeyIds(
+CommonPsshGenerator::GeneratePsshDataFromKeyIds(
     const std::vector<std::vector<uint8_t>>& key_ids) const {
   // Intentionally empty PSSH data for RawKey.
   return std::vector<uint8_t>();

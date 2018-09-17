@@ -7,8 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "packager/media/base/common_pssh_generator.h"
 #include "packager/media/base/playready_pssh_generator.h"
-#include "packager/media/base/raw_key_pssh_generator.h"
 #include "packager/media/base/widevine_pssh_generator.h"
 #include "packager/status_test_util.h"
 
@@ -165,24 +165,24 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKey) {
                                            std::end(kExpectedPlayReadyPssh)));
 }
 
-TEST(PsshGeneratorTest, GenerateRawKeyPsshFromKeyIds) {
+TEST(PsshGeneratorTest, GenerateCommonPsshFromKeyIds) {
   const std::vector<std::vector<uint8_t>> kTestKeyIds = {GetTestKeyId1(),
                                                          GetTestKeyId2()};
-  std::unique_ptr<RawKeyPsshGenerator> raw_key_pssh_generator(
-      new RawKeyPsshGenerator());
+  std::unique_ptr<CommonPsshGenerator> common_pssh_generator(
+      new CommonPsshGenerator());
   ProtectionSystemSpecificInfo info;
-  EXPECT_OK(raw_key_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
+  EXPECT_OK(common_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
   EXPECT_THAT(info.psshs, ElementsAreArray(std::begin(kExpectedCommonPssh),
                                            std::end(kExpectedCommonPssh)));
 }
 
-TEST(PsshGeneratorTest, GenerateRawKeyPsshFromKeyIdAndKey) {
+TEST(PsshGeneratorTest, GenerateCommonPsshFromKeyIdAndKey) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
-  std::unique_ptr<RawKeyPsshGenerator> raw_key_pssh_generator(
-      new RawKeyPsshGenerator());
+  std::unique_ptr<CommonPsshGenerator> common_pssh_generator(
+      new CommonPsshGenerator());
   ProtectionSystemSpecificInfo info;
-  EXPECT_NOT_OK(raw_key_pssh_generator->GeneratePsshFromKeyIdAndKey(
+  EXPECT_NOT_OK(common_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));
 }
 
