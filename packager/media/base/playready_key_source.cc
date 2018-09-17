@@ -15,7 +15,7 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/key_source.h"
-#include "packager/media/base/playready_pssh_generator.h"
+#include "packager/media/base/protection_system_ids.h"
 #include "packager/status_macros.h"
 
 namespace shaka {

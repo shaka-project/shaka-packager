@@ -12,13 +12,13 @@
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/network_util.h"
 #include "packager/media/base/producer_consumer_queue.h"
+#include "packager/media/base/protection_system_ids.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/proto_json_util.h"
 #include "packager/media/base/pssh_generator_util.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_common_encryption.pb.h"
-#include "packager/media/base/widevine_pssh_generator.h"
 
 namespace shaka {
 namespace media {

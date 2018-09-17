@@ -12,12 +12,6 @@
 namespace shaka {
 namespace media {
 
-// Unofficial FairPlay system id extracted from
-// https://forums.developer.apple.com/thread/6185.
-const uint8_t kFairPlaySystemId[] = {0x29, 0x70, 0x1F, 0xE4, 0x3C, 0xC7,
-                                     0x4A, 0x34, 0x8C, 0x5B, 0xAE, 0x90,
-                                     0xC7, 0x43, 0x9A, 0x47};
-
 class FairPlayPsshGenerator : public PsshGenerator {
  public:
   FairPlayPsshGenerator();

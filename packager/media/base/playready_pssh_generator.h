@@ -12,11 +12,6 @@
 namespace shaka {
 namespace media {
 
-// SystemID defined for PlayReady Drm.
-const uint8_t kPlayReadySystemId[] = {0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40,
-                                      0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b,
-                                      0xe0, 0x88, 0x5f, 0x95};
-
 class PlayReadyPsshGenerator : public PsshGenerator {
  public:
   PlayReadyPsshGenerator();

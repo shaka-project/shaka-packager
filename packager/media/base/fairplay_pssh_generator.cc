@@ -6,6 +6,8 @@
 
 #include "packager/media/base/fairplay_pssh_generator.h"
 
+#include "packager/media/base/protection_system_ids.h"
+
 namespace shaka {
 namespace media {
 namespace {

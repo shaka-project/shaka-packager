@@ -81,6 +81,7 @@
         'playready_pssh_generator.cc',
         'playready_pssh_generator.h',
         'producer_consumer_queue.h',
+        'protection_system_ids.h',
         'protection_system_specific_info.cc',
         'protection_system_specific_info.h',
         'proto_json_util.cc',

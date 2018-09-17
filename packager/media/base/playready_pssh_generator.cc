@@ -17,6 +17,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/protection_system_ids.h"
 
 namespace shaka {
 namespace media {

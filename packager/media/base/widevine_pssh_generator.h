@@ -13,10 +13,6 @@
 namespace shaka {
 namespace media {
 
-const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
-                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
-                                     0xd5, 0x1d, 0x21, 0xed};
-
 class WidevinePsshGenerator : public PsshGenerator {
  public:
   explicit WidevinePsshGenerator(FourCC protection_scheme);
