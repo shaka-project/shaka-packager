@@ -3,18 +3,18 @@
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="bear-subtitle-english-text-init.mp4"
+#EXT-X-MAP:URI="bear-english-text-init.mp4"
 #EXTINF:1.000,
-bear-subtitle-english-text-1.m4s
+bear-english-text-1.m4s
 #EXTINF:1.000,
-bear-subtitle-english-text-2.m4s
+bear-english-text-2.m4s
 #EXTINF:0.001,
-bear-subtitle-english-text-3.m4s
+bear-english-text-3.m4s
 #EXT-X-PLACEMENT-OPPORTUNITY
 #EXTINF:1.000,
-bear-subtitle-english-text-4.m4s
+bear-english-text-4.m4s
 #EXTINF:1.000,
-bear-subtitle-english-text-5.m4s
+bear-english-text-5.m4s
 #EXTINF:1.000,
-bear-subtitle-english-text-6.m4s
+bear-english-text-6.m4s
 #EXT-X-ENDLIST
