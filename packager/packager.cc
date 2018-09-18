@@ -536,7 +536,8 @@ Status CreateTextJobs(
   DCHECK(muxer_listener_factory);
   DCHECK(job_manager);
   for (const StreamDescriptor& stream : streams) {
-    // There are currently four options:
+    // There are currently options:
+    //    TEXT TTML --> TEXT TTML [ supported ], for DASH only.
     //    TEXT WEBVTT --> TEXT WEBVTT [ supported ]
     //    TEXT WEBVTT --> MP4 WEBVTT  [ supported ]
     //    MP4 WEBVTT  --> MP4 WEBVTT  [ unsupported ]
@@ -544,12 +545,20 @@ Status CreateTextJobs(
     const auto input_container = DetermineContainerFromFileName(stream.input);
     const auto output_container = GetOutputFormat(stream);
 
-    if (input_container != CONTAINER_WEBVTT) {
+    if (input_container != CONTAINER_WEBVTT &&
+        input_container != CONTAINER_TTML) {
       return Status(error::INVALID_ARGUMENT,
                     "Text output format is not support for " + stream.input);
     }
 
     if (output_container == CONTAINER_MOV) {
+      if (input_container == CONTAINER_TTML) {
+        return Status(error::INVALID_ARGUMENT,
+                      "TTML in MP4 is not supported yet. Please follow "
+                      "https://github.com/google/shaka-packager/issues/87 for "
+                      "the updates.");
+      }
+
       std::unique_ptr<MuxerListener> muxer_listener =
           muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
 
@@ -566,6 +575,10 @@ Status CreateTextJobs(
 
       // Check input to ensure that output is possible.
       if (hls_listener) {
+        if (input_container == CONTAINER_TTML) {
+          return Status(error::INVALID_ARGUMENT,
+                        "HLS does not support TTML in xml format.");
+        }
         if (stream.segment_template.empty() || !stream.output.empty()) {
           return Status(error::INVALID_ARGUMENT,
                         "segment_template needs to be specified for HLS text "
