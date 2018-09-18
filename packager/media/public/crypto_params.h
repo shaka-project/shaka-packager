@@ -119,6 +119,7 @@ struct EncryptionParams {
   enum class ProtectionSystem {
     kCommonSystem,
     kFairPlay,
+    kMarlin,
     kPlayReady,
     kWidevine,
   };

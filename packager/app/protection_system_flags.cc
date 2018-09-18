@@ -12,4 +12,5 @@ DEFINE_string(
     protection_systems,
     "",
     "Protection systems to be generated. Supported protection systems include "
-    "Widevine, PlayReady, FairPlay, and CommonSystem (https://goo.gl/s8RIhr).");
+    "Widevine, PlayReady, FairPlay, Marlin and "
+    "CommonSystem (https://goo.gl/s8RIhr).");

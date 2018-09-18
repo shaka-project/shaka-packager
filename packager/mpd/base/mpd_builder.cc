@@ -46,10 +46,13 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
   mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
 
   static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
+  static const char kMarlinNamespace[] =
+      "urn:marlin:mas:1-0:services:schemas:mpd";
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
 
   const std::map<std::string, std::string> uris = {
       {"cenc", kCencNamespace},
+      {"mas", kMarlinNamespace},
       {"xlink", kXmlNamespaceXlink},
   };
 

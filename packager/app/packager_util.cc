@@ -16,8 +16,6 @@
 #include "packager/media/base/raw_key_source.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_key_source.h"
-#include "packager/media/chunking/chunking_handler.h"
-#include "packager/media/crypto/encryption_handler.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/status.h"
 
@@ -54,6 +52,9 @@ int GetProtectionSystemsFlag(
         break;
       case EncryptionParams::ProtectionSystem::kFairPlay:
         protection_systems_flags |= FAIRPLAY_PROTECTION_SYSTEM_FLAG;
+        break;
+      case EncryptionParams::ProtectionSystem::kMarlin:
+        protection_systems_flags |= MARLIN_PROTECTION_SYSTEM_FLAG;
         break;
       case EncryptionParams::ProtectionSystem::kPlayReady:
         protection_systems_flags |= PLAYREADY_PROTECTION_SYSTEM_FLAG;

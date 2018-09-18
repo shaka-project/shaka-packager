@@ -33,6 +33,13 @@ KeySource::KeySource(int protection_systems_flags, FourCC protection_scheme) {
     no_pssh_systems_.emplace_back(std::begin(kFairPlaySystemId),
                                   std::end(kFairPlaySystemId));
   }
+  // We only support Marlin Adaptive Streaming Specification – Simple Profile
+  // with Implicit Content ID Mapping, which does not need a PSSH. Marlin
+  // specific PSSH with Explicit Content ID Mapping is not generated.
+  if (protection_systems_flags & MARLIN_PROTECTION_SYSTEM_FLAG) {
+    no_pssh_systems_.emplace_back(std::begin(kMarlinSystemId),
+                                  std::end(kMarlinSystemId));
+  }
 }
 
 KeySource::~KeySource() = default;

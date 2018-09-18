@@ -266,6 +266,7 @@ bool ParseProtectionSystems(
       {"common", EncryptionParams::ProtectionSystem::kCommonSystem},
       {"commonsystem", EncryptionParams::ProtectionSystem::kCommonSystem},
       {"fairplay", EncryptionParams::ProtectionSystem::kFairPlay},
+      {"marlin", EncryptionParams::ProtectionSystem::kMarlin},
       {"playready", EncryptionParams::ProtectionSystem::kPlayReady},
       {"widevine", EncryptionParams::ProtectionSystem::kWidevine},
   };

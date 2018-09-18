@@ -141,11 +141,14 @@ bool XmlNode::AddElements(const std::vector<Element>& elements) {
       child_node.SetStringAttribute(attribute_it->first.c_str(),
                                     attribute_it->second);
     }
+
+    // Note that somehow |SetContent| needs to be called before |AddElements|
+    // otherwise the added children will be overwritten by the content.
+    child_node.SetContent(child_element.content);
+
     // Recursively set children for the child.
     if (!child_node.AddElements(child_element.subelements))
       return false;
-
-    child_node.SetContent(child_element.content);
 
     if (!xmlAddChild(node_.get(), child_node.GetRawPtr())) {
       LOG(ERROR) << "Failed to set child " << child_element.name

@@ -398,7 +398,7 @@ class PackagerAppTest(unittest.TestCase):
   def _GetFlags(self,
                 strip_parameter_set_nalus=True,
                 encryption=False,
-                fairplay=False,
+                protection_systems=None,
                 protection_scheme=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
@@ -443,12 +443,13 @@ class PackagerAppTest(unittest.TestCase):
       if not random_iv:
         flags.append('--iv=' + self.encryption_iv)
 
-      if fairplay:
-        fairplay_key_uri = ('skd://www.license.com/'
-                            'getkey?KeyId=31323334-3536-3738-3930-313233343536')
-        flags += [
-            '--protection_systems=FairPlay', '--hls_key_uri=' + fairplay_key_uri
-        ]
+      if protection_systems:
+        flags += ['--protection_systems=' + protection_systems]
+        if 'FairPlay' in protection_systems:
+          fairplay_key_uri = ('skd://www.license.com/getkey?'
+                              'KeyId=31323334-3536-3738-3930-313233343536')
+          flags += ['--hls_key_uri=' + fairplay_key_uri]
+
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
     if not vp9_subsample_encryption:
@@ -862,12 +863,15 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(encryption=True, output_dash=True))
     self._CheckTestResults('encryption', verify_decryption=True)
 
-  def testEncryptionWithFairplay(self):
+  def testEncryptionWithMultiDrms(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']),
         self._GetFlags(
-            encryption=True, fairplay=True, output_dash=True, output_hls=True))
-    self._CheckTestResults('encryption-with-fairplay')
+            encryption=True,
+            protection_systems='Widevine,PlayReady,FairPlay,Marlin',
+            output_dash=True,
+            output_hls=True))
+    self._CheckTestResults('encryption-with-multi-drms')
 
   # Test deprecated flag --enable_fixed_key_encryption, which is still
   # supported currently.
@@ -1096,7 +1100,8 @@ class PackagerFunctionalTest(PackagerAppTest):
                          segmented=True,
                          hls=True,
                          test_files=['bear-640x360.ts']),
-        self._GetFlags(encryption=True, output_hls=True, fairplay=True))
+        self._GetFlags(
+            encryption=True, protection_systems='FairPlay', output_hls=True))
     self._CheckTestResults('avc-ts-with-encryption-and-fairplay')
 
   def testAvcAc3TsWithEncryption(self):

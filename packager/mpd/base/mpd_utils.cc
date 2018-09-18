@@ -302,6 +302,42 @@ void UpdateContentProtectionPsshHelper(
 }
 
 namespace {
+
+// UUID for Marlin Adaptive Streaming Specification – Simple Profile from
+// https://dashif.org/identifiers/content_protection/.
+const char kMarlinUUID[] = "5e629af5-38da-4063-8977-97ffbd9902d4";
+// Unofficial FairPlay system id extracted from
+// https://forums.developer.apple.com/thread/6185.
+const char kFairPlayUUID[] = "29701fe4-3cc7-4a34-8c5b-ae90c7439a47";
+
+Element GenerateMarlinContentIds(const std::string& key_id) {
+  // See https://github.com/google/shaka-packager/issues/381 for details.
+  static const char kMarlinContentIdName[] = "mas:MarlinContentId";
+  static const char kMarlinContentIdPrefix[] = "urn:marlin:kid:";
+  static const char kMarlinContentIdsName[] = "mas:MarlinContentIds";
+
+  Element marlin_content_id;
+  marlin_content_id.name = kMarlinContentIdName;
+  marlin_content_id.content =
+      kMarlinContentIdPrefix + base::HexEncode(key_id.data(), key_id.size());
+
+  Element marlin_content_ids;
+  marlin_content_ids.name = kMarlinContentIdsName;
+  marlin_content_ids.subelements.push_back(marlin_content_id);
+
+  return marlin_content_ids;
+}
+
+Element GenerateCencPsshElement(const std::string& pssh) {
+  std::string base64_encoded_pssh;
+  base::Base64Encode(base::StringPiece(pssh.data(), pssh.size()),
+                     &base64_encoded_pssh);
+  Element cenc_pssh;
+  cenc_pssh.name = kPsshElementName;
+  cenc_pssh.content = base64_encoded_pssh;
+  return cenc_pssh;
+}
+
 // Helper function. This works because Representation and AdaptationSet both
 // have AddContentProtectionElement().
 template <typename ContentProtectionParent>
@@ -349,18 +385,20 @@ void AddContentProtectionElementsHelperTemplated(
 
     ContentProtectionElement drm_content_protection;
     drm_content_protection.scheme_id_uri = "urn:uuid:" + entry.uuid();
+
     if (entry.has_name_version())
       drm_content_protection.value = entry.name_version();
 
-    if (!entry.pssh().empty()) {
-      std::string base64_encoded_pssh;
-      base::Base64Encode(
-          base::StringPiece(entry.pssh().data(), entry.pssh().size()),
-          &base64_encoded_pssh);
-      Element cenc_pssh;
-      cenc_pssh.name = kPsshElementName;
-      cenc_pssh.content = base64_encoded_pssh;
-      drm_content_protection.subelements.push_back(cenc_pssh);
+    if (entry.uuid() == kFairPlayUUID) {
+      VLOG(1) << "Skipping FairPlay ContentProtection element as FairPlay does "
+                 "not support DASH signaling.";
+      continue;
+    } else if (entry.uuid() == kMarlinUUID) {
+      drm_content_protection.subelements.push_back(
+          GenerateMarlinContentIds(protected_content.default_key_id()));
+    } else if (!entry.pssh().empty()) {
+      drm_content_protection.subelements.push_back(
+          GenerateCencPsshElement(entry.pssh()));
     }
 
     if (!key_id_uuid_format.empty() && !is_mp4_container) {
