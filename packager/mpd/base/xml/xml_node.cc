@@ -81,6 +81,32 @@ bool PopulateSegmentTimeline(const std::list<SegmentInfo>& segment_infos,
   return true;
 }
 
+void CollectNamespaceFromName(const std::string& name,
+                              std::set<std::string>* namespaces) {
+  const size_t pos = name.find(':');
+  if (pos != std::string::npos)
+    namespaces->insert(name.substr(0, pos));
+}
+
+void TraverseAttrsAndCollectNamespaces(const xmlAttr* attr,
+                                       std::set<std::string>* namespaces) {
+  for (const xmlAttr* cur_attr = attr; cur_attr; cur_attr = cur_attr->next) {
+    CollectNamespaceFromName(reinterpret_cast<const char*>(cur_attr->name),
+                             namespaces);
+  }
+}
+
+void TraverseNodesAndCollectNamespaces(const xmlNode* node,
+                                       std::set<std::string>* namespaces) {
+  for (const xmlNode* cur_node = node; cur_node; cur_node = cur_node->next) {
+    CollectNamespaceFromName(reinterpret_cast<const char*>(cur_node->name),
+                             namespaces);
+
+    TraverseNodesAndCollectNamespaces(cur_node->children, namespaces);
+    TraverseAttrsAndCollectNamespaces(cur_node->properties, namespaces);
+  }
+}
+
 }  // namespace
 
 namespace xml {
@@ -164,6 +190,12 @@ void XmlNode::SetId(uint32_t id) {
 void XmlNode::SetContent(const std::string& content) {
   DCHECK(node_);
   xmlNodeSetContent(node_.get(), BAD_CAST content.c_str());
+}
+
+std::set<std::string> XmlNode::ExtractReferencedNamespaces() {
+  std::set<std::string> namespaces;
+  TraverseNodesAndCollectNamespaces(node_.get(), &namespaces);
+  return namespaces;
 }
 
 scoped_xml_ptr<xmlNode> XmlNode::PassScopedPtr() {

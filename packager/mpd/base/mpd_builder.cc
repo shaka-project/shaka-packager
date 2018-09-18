@@ -33,19 +33,34 @@ namespace {
 void AddMpdNameSpaceInfo(XmlNode* mpd) {
   DCHECK(mpd);
 
+  const std::set<std::string> namespaces = mpd->ExtractReferencedNamespaces();
+
   static const char kXmlNamespace[] = "urn:mpeg:dash:schema:mpd:2011";
   static const char kXmlNamespaceXsi[] =
       "http://www.w3.org/2001/XMLSchema-instance";
-  static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
   static const char kDashSchemaMpd2011[] =
       "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd";
-  static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
 
   mpd->SetStringAttribute("xmlns", kXmlNamespace);
   mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi);
-  mpd->SetStringAttribute("xmlns:xlink", kXmlNamespaceXlink);
   mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
-  mpd->SetStringAttribute("xmlns:cenc", kCencNamespace);
+
+  static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
+  static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
+
+  const std::map<std::string, std::string> uris = {
+      {"cenc", kCencNamespace},
+      {"xlink", kXmlNamespaceXlink},
+  };
+
+  for (const std::string& namespace_name : namespaces) {
+    auto iter = uris.find(namespace_name);
+    CHECK(iter != uris.end()) << " unexpected namespace " << namespace_name;
+
+    mpd->SetStringAttribute(
+        base::StringPrintf("xmlns:%s", namespace_name.c_str()).c_str(),
+        iter->second);
+  }
 }
 
 bool Positive(double d) {

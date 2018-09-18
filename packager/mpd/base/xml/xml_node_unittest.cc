@@ -19,6 +19,8 @@
 
 DECLARE_bool(segment_template_constant_duration);
 
+using ::testing::ElementsAre;
+
 namespace shaka {
 namespace xml {
 
@@ -134,6 +136,39 @@ TEST(XmlNodeTest, MetaTestXmlEqualDifferentContent) {
   ASSERT_FALSE(XmlEqual(
       "<A><B>content1</B><B>content2</B></A>",
       "<A><B>c</B><B>ontent1content2</B></A>"));
+}
+
+TEST(XmlNodeTest, ExtractReferencedNamespaces) {
+  XmlNode grand_child_with_namespace("grand_ns:grand_child");
+  grand_child_with_namespace.SetContent("grand child content");
+
+  XmlNode child("child1");
+  child.SetContent("child1 content");
+  child.AddChild(grand_child_with_namespace.PassScopedPtr());
+
+  XmlNode child_with_namespace("child_ns:child2");
+  child_with_namespace.SetContent("child2 content");
+
+  XmlNode root("root");
+  root.AddChild(child.PassScopedPtr());
+  root.AddChild(child_with_namespace.PassScopedPtr());
+
+  EXPECT_THAT(root.ExtractReferencedNamespaces(),
+              ElementsAre("child_ns", "grand_ns"));
+}
+
+TEST(XmlNodeTest, ExtractReferencedNamespacesFromAttributes) {
+  XmlNode child("child");
+  child.SetStringAttribute("child_attribute_ns:attribute",
+                           "child attribute value");
+
+  XmlNode root("root");
+  root.AddChild(child.PassScopedPtr());
+  root.SetStringAttribute("root_attribute_ns:attribute",
+                          "root attribute value");
+
+  EXPECT_THAT(root.ExtractReferencedNamespaces(),
+              ElementsAre("child_attribute_ns", "root_attribute_ns"));
 }
 
 // Verify that AddContentProtectionElements work.

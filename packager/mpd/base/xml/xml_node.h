@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <list>
+#include <set>
 
 #include "packager/base/macros.h"
 #include "packager/mpd/base/content_protection_element.h"
@@ -72,6 +73,9 @@ class XmlNode {
   /// @param content is a string containing the text-encoded child elements to
   ///        be added to the element.
   void SetContent(const std::string& content);
+
+  /// @return namespaces used in the node and its descendents.
+  std::set<std::string> ExtractReferencedNamespaces();
 
   /// Transfer the ownership of the xmlNodePtr. After calling this method, the
   /// behavior of any methods, except the destructor, is undefined.
