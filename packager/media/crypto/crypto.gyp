@@ -19,6 +19,8 @@
         'encryption_handler.h',
         'sample_aes_ec3_cryptor.cc',
         'sample_aes_ec3_cryptor.h',
+        'subsample_generator.cc',
+        'subsample_generator.h',
       ],
       'dependencies': [
         '../base/media_base.gyp:media_base',
@@ -31,6 +33,7 @@
       'sources': [
         'encryption_handler_unittest.cc',
         'sample_aes_ec3_cryptor_unittest.cc',
+        'subsample_generator_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',

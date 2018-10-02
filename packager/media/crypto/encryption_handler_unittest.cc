@@ -13,9 +13,8 @@
 #include "packager/media/base/media_handler_test_base.h"
 #include "packager/media/base/mock_aes_cryptor.h"
 #include "packager/media/base/raw_key_source.h"
-#include "packager/media/codecs/video_slice_header_parser.h"
-#include "packager/media/codecs/vpx_parser.h"
 #include "packager/media/crypto/aes_encryptor_factory.h"
+#include "packager/media/crypto/subsample_generator.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {
@@ -69,19 +68,16 @@ class MockKeySource : public RawKeySource {
                       EncryptionKey* key));
 };
 
-class MockVpxParser : public VPxParser {
+class MockSubsampleGenerator : public SubsampleGenerator {
  public:
-  MOCK_METHOD3(Parse,
-               bool(const uint8_t* data,
-                    size_t data_size,
-                    std::vector<VPxFrameInfo>* vpx_frames));
-};
+  MockSubsampleGenerator() : SubsampleGenerator(true) {}
 
-class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
- public:
-  MOCK_METHOD1(Initialize,
-               bool(const std::vector<uint8_t>& decoder_configuration));
-  MOCK_METHOD1(GetHeaderSize, int64_t(const Nalu& nalu));
+  MOCK_METHOD2(Initialize,
+               Status(FourCC protection_scheme, const StreamInfo& stream_info));
+  MOCK_METHOD3(GenerateSubsamples,
+               Status(const uint8_t* frame,
+                      size_t frame_size,
+                      std::vector<SubsampleEntry>* subsamples));
 };
 
 class MockAesEncryptorFactory : public AesEncryptorFactory {
@@ -118,6 +114,9 @@ class EncryptionHandlerTest : public MediaHandlerGraphTestBase {
     encryption_handler_.reset(
         new EncryptionHandler(new_encryption_params, &mock_key_source_));
     SetUpGraph(1 /* one input */, 1 /* one output */, encryption_handler_);
+    // Inject default subsamples to avoid parsing problems.
+    const std::vector<SubsampleEntry> empty_subsamples;
+    InjectSubsamples(empty_subsamples);
   }
 
   Status Process(std::unique_ptr<StreamData> stream_data) {
@@ -132,14 +131,15 @@ class EncryptionHandlerTest : public MediaHandlerGraphTestBase {
     return encryption_key;
   }
 
-  void InjectVpxParserForTesting(std::unique_ptr<VPxParser> vpx_parser) {
-    encryption_handler_->InjectVpxParserForTesting(std::move(vpx_parser));
-  }
+  void InjectSubsamples(const std::vector<SubsampleEntry>& subsamples) {
+    std::unique_ptr<MockSubsampleGenerator> mock_generator(
+        new MockSubsampleGenerator);
+    EXPECT_CALL(*mock_generator, GenerateSubsamples(_, _, _))
+        .WillRepeatedly(
+            DoAll(SetArgPointee<2>(subsamples), Return(Status::OK)));
 
-  void InjectVideoSliceHeaderParserForTesting(
-      std::unique_ptr<VideoSliceHeaderParser> header_parser) {
-    encryption_handler_->InjectVideoSliceHeaderParserForTesting(
-        std::move(header_parser));
+    encryption_handler_->InjectSubsampleGeneratorForTesting(
+        std::move(mock_generator));
   }
 
   void InjectEncryptorFactoryForTesting(
@@ -199,154 +199,25 @@ TEST_F(EncryptionHandlerTest, CreateEncryptorFailed) {
 
 namespace {
 
-const bool kVp9SubsampleEncryption = true;
 const bool kIsKeyFrame = true;
 const bool kIsSubsegment = true;
 const bool kEncrypted = true;
 const int64_t kSegmentDuration = 1000;
 
-// The data is based on H264. The same data is also used to test audio, which
-// does not care the underlying data, and VP9, for which we will mock the
-// parser.
-const uint8_t kData[]{
-    // First NALU
-    0x30, 0x01, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20, 0x21,
-    0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x30, 0x31, 0x32, 0x33,
-    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45,
-    0x46,
-    // Second NALU
-    0x31, 0x25, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20, 0x21,
-    0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x30, 0x31, 0x32, 0x33,
-    0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45,
-    0x46, 0x47,
-    // Third non-video-slice NALU for H264 or superframe index for VP9.
-    0x06, 0x67, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
-};
+// The contents of the data does not matter.
+const uint8_t kData[] = {0x00, 0x01, 0x02, 0x03, 0x04,
+                         0x05, 0x06, 0x07, 0x08, 0x09};
 const size_t kDataSize = sizeof(kData);
-
-// H264 subsample information for the the above data.
-const size_t kNaluLengthSize = 1u;
-const size_t kNaluHeaderSize = 1u;
-const size_t kSubsampleSize1 = 49u;
-const size_t kSliceHeaderSize1 = 1u;
-const size_t kSubsampleSize2 = 50u;
-const size_t kSliceHeaderSize2 = 16u;
-const size_t kSubsampleSize3 = 7u;
-// VP9 frame information for the above data. It should match H264 subsample
-// information.
-const size_t kVpxFrameSize1 = kSubsampleSize1;
-const size_t kUncompressedHeaderSize1 =
-    kNaluLengthSize + kNaluHeaderSize + kSliceHeaderSize1;
-const size_t kVpxFrameSize2 = kSubsampleSize2;
-const size_t kUncompressedHeaderSize2 =
-    kNaluLengthSize + kNaluHeaderSize + kSliceHeaderSize2;
-// Subsample pairs for the above data.
-const size_t kClearSize1 = kUncompressedHeaderSize1;
-const size_t kCipherSize1 = kVpxFrameSize1 - kUncompressedHeaderSize1;
-const size_t kClearSize2 = kUncompressedHeaderSize2;
-const size_t kCipherSize2 = kVpxFrameSize2 - kUncompressedHeaderSize2;
-// Align cipher bytes for some protection schemes.
-const size_t kAesBlockSize = 16u;
-const size_t kAlignedClearSize1 = kClearSize1 + kCipherSize1 % kAesBlockSize;
-static_assert(kAlignedClearSize1 != kClearSize1,
-              "Clearsize 1 should not be aligned");
-const size_t kAlignedCipherSize1 = kCipherSize1 - kCipherSize1 % kAesBlockSize;
-// Apple Sample AES.
-const size_t kVideoLeadingClearBytesSize = 32u + kNaluLengthSize;
-// Subsample 1 is <= 48 bytes, so not encrypted and merged with subsample2.
-const size_t kSampleAesClearSize1 =
-    kSubsampleSize1 + kVideoLeadingClearBytesSize;
-const size_t kSampleAesCipherSize1 =
-    kSubsampleSize2 - kVideoLeadingClearBytesSize;
 
 }  // namespace
 
-inline bool operator==(const SubsampleEntry& lhs, const SubsampleEntry& rhs) {
-  return lhs.clear_bytes == rhs.clear_bytes &&
-         lhs.cipher_bytes == rhs.cipher_bytes;
-}
-
 class EncryptionHandlerEncryptionTest
     : public EncryptionHandlerTest,
-      public WithParamInterface<std::tr1::tuple<FourCC, Codec, bool>> {
+      public WithParamInterface<std::tr1::tuple<FourCC, Codec>> {
  public:
   void SetUp() override {
     protection_scheme_ = std::tr1::get<0>(GetParam());
     codec_ = std::tr1::get<1>(GetParam());
-    vp9_subsample_encryption_ = std::tr1::get<2>(GetParam());
-  }
-
-  std::vector<VPxFrameInfo> GetMockVpxFrameInfo() {
-    std::vector<VPxFrameInfo> vpx_frames;
-    vpx_frames.resize(2);
-    vpx_frames[0].frame_size = kVpxFrameSize1;
-    vpx_frames[0].uncompressed_header_size = kUncompressedHeaderSize1;
-    vpx_frames[1].frame_size = kVpxFrameSize2;
-    vpx_frames[1].uncompressed_header_size = kUncompressedHeaderSize2;
-    return vpx_frames;
-  }
-
-  // The subsamples values should match |GetMockVpxFrameInfo| above.
-  std::vector<SubsampleEntry> GetExpectedSubsamples() {
-    std::vector<SubsampleEntry> subsamples;
-    if (codec_ == kCodecAAC ||
-        (codec_ == kCodecVP9 && !vp9_subsample_encryption_)) {
-      return subsamples;
-    }
-    if (protection_scheme_ == kAppleSampleAesProtectionScheme) {
-      subsamples.emplace_back(static_cast<uint16_t>(kSampleAesClearSize1),
-                              static_cast<uint32_t>(kSampleAesCipherSize1));
-      subsamples.emplace_back(static_cast<uint16_t>(kSubsampleSize3), 0u);
-    } else {
-      if (codec_ == kCodecVP9 || protection_scheme_ == FOURCC_cbc1 ||
-          protection_scheme_ == FOURCC_cens ||
-          protection_scheme_ == FOURCC_cenc) {
-        // Align the encrypted bytes to multiple of 16 bytes.
-        subsamples.emplace_back(static_cast<uint16_t>(kAlignedClearSize1),
-                                static_cast<uint32_t>(kAlignedCipherSize1));
-        // Subsample 2 is already aligned.
-      } else {
-        subsamples.emplace_back(static_cast<uint16_t>(kClearSize1),
-                                static_cast<uint32_t>(kCipherSize1));
-      }
-      subsamples.emplace_back(static_cast<uint16_t>(kClearSize2),
-                              static_cast<uint32_t>(kCipherSize2));
-      subsamples.emplace_back(static_cast<uint16_t>(kSubsampleSize3), 0u);
-    }
-    return subsamples;
-  }
-
-  // Inject vpx parser / video slice header parser if needed.
-  void InjectCodecParser() {
-    switch (codec_) {
-      case kCodecVP9:
-        if (vp9_subsample_encryption_) {
-          std::unique_ptr<MockVpxParser> mock_vpx_parser(new MockVpxParser);
-          EXPECT_CALL(*mock_vpx_parser, Parse(_, kDataSize, _))
-              .WillRepeatedly(
-                  DoAll(SetArgPointee<2>(GetMockVpxFrameInfo()), Return(true)));
-          InjectVpxParserForTesting(std::move(mock_vpx_parser));
-        }
-        break;
-      case kCodecH264: {
-        std::unique_ptr<MockVideoSliceHeaderParser> mock_header_parser(
-            new MockVideoSliceHeaderParser);
-        if (protection_scheme_ == kAppleSampleAesProtectionScheme) {
-          EXPECT_CALL(*mock_header_parser, GetHeaderSize(_)).Times(0);
-        } else {
-          EXPECT_CALL(*mock_header_parser, GetHeaderSize(_))
-              .WillOnce(Return(kSliceHeaderSize1))
-              .WillOnce(Return(kSliceHeaderSize2))
-              .WillRepeatedly(Return(kSliceHeaderSize2));
-        }
-        InjectVideoSliceHeaderParserForTesting(std::move(mock_header_parser));
-        break;
-      }
-      default:
-        break;
-    }
   }
 
   uint8_t GetExpectedCryptByteBlock() {
@@ -407,7 +278,6 @@ class EncryptionHandlerEncryptionTest
  protected:
   FourCC protection_scheme_;
   Codec codec_;
-  bool vp9_subsample_encryption_;
 };
 
 TEST_P(EncryptionHandlerEncryptionTest, VerifyEncryptorFactoryParams) {
@@ -444,7 +314,6 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
   EncryptionParams encryption_params;
   encryption_params.protection_scheme = protection_scheme_;
   encryption_params.clear_lead_in_seconds = kClearLeadInSeconds;
-  encryption_params.vp9_subsample_encryption = vp9_subsample_encryption_;
   SetUpEncryptionHandler(encryption_params);
 
   const EncryptionKey mock_encryption_key = GetMockEncryptionKey();
@@ -475,8 +344,6 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
   ClearOutputStreamDataVector();
   Mock::VerifyAndClearExpectations(&mock_key_source_);
 
-  InjectCodecParser();
-
   // There are three segments. Only the third segment is encrypted.
   for (int i = 0; i < 3; ++i) {
     // Use single-frame segment for testing.
@@ -501,7 +368,7 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithNoKeyRotation) {
                 decrypt_config->key_id());
       EXPECT_EQ(std::vector<uint8_t>(kIv, kIv + sizeof(kIv)),
                 decrypt_config->iv());
-      EXPECT_EQ(GetExpectedSubsamples(), decrypt_config->subsamples());
+      EXPECT_TRUE(decrypt_config->subsamples().empty());
       EXPECT_EQ(protection_scheme_, decrypt_config->protection_scheme());
       EXPECT_EQ(GetExpectedCryptByteBlock(),
                 decrypt_config->crypt_byte_block());
@@ -523,7 +390,6 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   encryption_params.clear_lead_in_seconds = kClearLeadInSeconds;
   encryption_params.crypto_period_duration_in_seconds =
       kCryptoPeriodDurationInSeconds;
-  encryption_params.vp9_subsample_encryption = vp9_subsample_encryption_;
   SetUpEncryptionHandler(encryption_params);
 
   if (IsVideoCodec(codec_)) {
@@ -549,8 +415,6 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
                                  std::end(kKeyRotationDefaultKeyId)),
             encryption_config.key_id);
   ClearOutputStreamDataVector();
-
-  InjectCodecParser();
 
   // There are five segments with the first two not encrypted.
   for (int i = 0; i < 5; ++i) {
@@ -586,17 +450,109 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
-    CencProtectionSchemes,
-    EncryptionHandlerEncryptionTest,
-    Combine(Values(FOURCC_cenc, FOURCC_cens, FOURCC_cbc1, FOURCC_cbcs),
-            Values(kCodecAAC, kCodecH264, kCodecVP9),
-            Values(kVp9SubsampleEncryption, !kVp9SubsampleEncryption)));
-INSTANTIATE_TEST_CASE_P(AppleSampleAes,
+INSTANTIATE_TEST_CASE_P(ProtectionSchemes,
                         EncryptionHandlerEncryptionTest,
-                        Combine(Values(kAppleSampleAesProtectionScheme),
-                                Values(kCodecAAC, kCodecH264),
-                                Values(kVp9SubsampleEncryption)));
+                        Combine(Values(kAppleSampleAesProtectionScheme,
+                                       FOURCC_cenc,
+                                       FOURCC_cens,
+                                       FOURCC_cbc1,
+                                       FOURCC_cbcs),
+                                Values(kCodecAAC, kCodecH264)));
+
+struct SubsampleTestCase {
+  std::vector<SubsampleEntry> subsamples;
+  std::vector<uint8_t> expected_output;
+};
+
+inline bool operator==(const SubsampleEntry& lhs, const SubsampleEntry& rhs) {
+  return lhs.clear_bytes == rhs.clear_bytes &&
+         lhs.cipher_bytes == rhs.cipher_bytes;
+}
+
+namespace {
+
+const int64_t kSampleDuration = 1000;
+
+// This mock encryption increases every byte by 0x10. See the function below.
+const SubsampleTestCase kSubsampleTestCases[] = {
+    {
+        std::vector<SubsampleEntry>(),  // No subsamples, i.e. full sample
+                                        // encrypted.
+        {0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19},
+    },
+    {
+        {{8, 2}},  // One subsample.
+        {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x18, 0x19},
+    },
+    {
+        {{6, 2}, {2, 0}},  // Two subsamples.
+        {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x16, 0x17, 0x08, 0x09},
+    },
+    {
+        {{6, 2}, {0, 2}},  // Two subsamples.
+        {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x16, 0x17, 0x18, 0x19},
+    },
+};
+
+bool MockEncrypt(const uint8_t* text,
+                 size_t text_size,
+                 uint8_t* crypt_text,
+                 size_t* crypt_text_size) {
+  *crypt_text_size = text_size;
+  for (size_t i = 0; i < text_size; i++)
+    crypt_text[i] = text[i] + 0x10;
+  return true;
+}
+
+}  // namespace
+
+class EncryptionHandlerSubsampleTest
+    : public EncryptionHandlerTest,
+      public WithParamInterface<SubsampleTestCase> {};
+
+INSTANTIATE_TEST_CASE_P(SubsampleTestCases,
+                        EncryptionHandlerSubsampleTest,
+                        ValuesIn(kSubsampleTestCases));
+
+TEST_P(EncryptionHandlerSubsampleTest, SubsampleTest) {
+  std::unique_ptr<MockAesCryptor> mock_encryptor(new MockAesCryptor);
+  EXPECT_CALL(*mock_encryptor, CryptInternal(_, _, _, _))
+      .WillRepeatedly(Invoke(MockEncrypt));
+  ASSERT_TRUE(mock_encryptor->SetIv(
+      std::vector<uint8_t>(std::begin(kIv), std::end(kIv))));
+
+  std::unique_ptr<MockAesEncryptorFactory> mock_encryptor_factory(
+      new MockAesEncryptorFactory);
+  EXPECT_CALL(*mock_encryptor_factory, CreateEncryptor(_, _, _, _, _, _))
+      .WillOnce(Return(ByMove(std::move(mock_encryptor))));
+  InjectEncryptorFactoryForTesting(std::move(mock_encryptor_factory));
+
+  InjectSubsamples(GetParam().subsamples);
+
+  EXPECT_CALL(mock_key_source_, GetKey(_, _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(GetMockEncryptionKey()), Return(Status::OK)));
+
+  ASSERT_OK(Process(StreamData::FromStreamInfo(
+      kStreamIndex, GetVideoStreamInfo(kTimeScale, kCodecH264))));
+  ASSERT_OK(Process(StreamData::FromMediaSample(
+      kStreamIndex,
+      GetMediaSample(0, kSampleDuration, kIsKeyFrame, kData, kDataSize))));
+
+  const auto& output_stream_data = GetOutputStreamDataVector();
+  EXPECT_THAT(output_stream_data,
+              ElementsAre(IsStreamInfo(kStreamIndex, kTimeScale, kEncrypted, _),
+                          IsMediaSample(kStreamIndex, 0, kSampleDuration,
+                                        kEncrypted, _)));
+
+  const MediaSample& sample = *output_stream_data.back()->media_sample;
+  EXPECT_EQ(
+      GetParam().expected_output,
+      std::vector<uint8_t>(sample.data(), sample.data() + sample.data_size()));
+
+  const DecryptConfig& decrypt_config = *sample.decrypt_config();
+  EXPECT_EQ(GetParam().subsamples, decrypt_config.subsamples());
+}
 
 class EncryptionHandlerTrackTypeTest : public EncryptionHandlerTest {};
 
