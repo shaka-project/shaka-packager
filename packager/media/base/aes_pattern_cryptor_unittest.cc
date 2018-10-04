@@ -9,6 +9,7 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
+#include "packager/media/base/mock_aes_cryptor.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -21,21 +22,6 @@ const uint8_t kSkipByteBlock = 1u;
 
 namespace shaka {
 namespace media {
-
-class MockAesCryptor : public AesCryptor {
- public:
-  MockAesCryptor() : AesCryptor(kDontUseConstantIv) {}
-
-  MOCK_METHOD2(InitializeWithIv,
-               bool(const std::vector<uint8_t>& key,
-                    const std::vector<uint8_t>& iv));
-  MOCK_METHOD4(CryptInternal,
-               bool(const uint8_t* text,
-                    size_t text_size,
-                    uint8_t* crypt_text,
-                    size_t* crypt_text_size));
-  MOCK_METHOD0(SetIvInternal, void());
-};
 
 class AesPatternCryptorTest : public ::testing::Test {
  public:

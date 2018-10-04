@@ -13,7 +13,6 @@
 #include <limits>
 
 #include "packager/media/base/aes_encryptor.h"
-#include "packager/media/base/aes_pattern_cryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -21,7 +20,7 @@
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vp8_parser.h"
 #include "packager/media/codecs/vp9_parser.h"
-#include "packager/media/crypto/sample_aes_ec3_cryptor.h"
+#include "packager/media/crypto/aes_encryptor_factory.h"
 #include "packager/status_macros.h"
 
 namespace shaka {
@@ -89,6 +88,12 @@ std::string GetStreamLabelForEncryption(
   }
   return stream_label_func(stream_attributes);
 }
+
+bool IsPatternEncryptionScheme(FourCC protection_scheme) {
+  return protection_scheme == kAppleSampleAesProtectionScheme ||
+         protection_scheme == FOURCC_cbcs || protection_scheme == FOURCC_cens;
+}
+
 }  // namespace
 
 EncryptionHandler::EncryptionHandler(const EncryptionParams& encryption_params,
@@ -96,9 +101,10 @@ EncryptionHandler::EncryptionHandler(const EncryptionParams& encryption_params,
     : encryption_params_(encryption_params),
       protection_scheme_(
           static_cast<FourCC>(encryption_params.protection_scheme)),
-      key_source_(key_source) {}
+      key_source_(key_source),
+      encryptor_factory_(new AesEncryptorFactory) {}
 
-EncryptionHandler::~EncryptionHandler() {}
+EncryptionHandler::~EncryptionHandler() = default;
 
 Status EncryptionHandler::InitializeInternal() {
   if (!encryption_params_.stream_label_func) {
@@ -311,140 +317,71 @@ Status EncryptionHandler::ProcessMediaSample(
 }
 
 Status EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
-  switch (protection_scheme_) {
-    case kAppleSampleAesProtectionScheme: {
-      const size_t kH264LeadingClearBytesSize = 32u;
-      const size_t kSmallNalUnitSize = 32u + 16u;
-      const size_t kAudioLeadingClearBytesSize = 16u;
-      switch (codec_) {
-        case kCodecH264:
-          // Apple Sample AES uses 1:9 pattern for video.
-          crypt_byte_block_ = 1u;
-          skip_byte_block_ = 9u;
-          leading_clear_bytes_size_ = kH264LeadingClearBytesSize;
-          min_protected_data_size_ = kSmallNalUnitSize + 1u;
-          break;
-        case kCodecAAC:
-          FALLTHROUGH_INTENDED;
-        case kCodecAC3:
-          FALLTHROUGH_INTENDED;
-        case kCodecEAC3:
-          // Audio is whole sample encrypted. We could not use a
-          // crypto_byte_block_ of 1 here as if there is one crypto block
-          // remaining, it need not be encrypted for video but it needs to be
-          // encrypted for audio.
-          crypt_byte_block_ = 0u;
-          skip_byte_block_ = 0u;
-          // E-AC3 encryption is handled by SampleAesEc3Cryptor, which also
-          // manages leading clear bytes.
-          leading_clear_bytes_size_ =
-              codec_ == kCodecEAC3 ? 0 : kAudioLeadingClearBytesSize;
-          min_protected_data_size_ = leading_clear_bytes_size_ + 15u;
-          break;
-        default:
-          return Status(
-              error::ENCRYPTION_FAILURE,
-              "Only AAC/AC3/EAC3 and H264 are supported in Sample AES.");
-      }
-      break;
+  if (protection_scheme_ == kAppleSampleAesProtectionScheme) {
+    const size_t kH264LeadingClearBytesSize = 32u;
+    const size_t kSmallNalUnitSize = 32u + 16u;
+    const size_t kAudioLeadingClearBytesSize = 16u;
+    switch (codec_) {
+      case kCodecH264:
+        leading_clear_bytes_size_ = kH264LeadingClearBytesSize;
+        min_protected_data_size_ = kSmallNalUnitSize + 1u;
+        break;
+      case kCodecAAC:
+        FALLTHROUGH_INTENDED;
+      case kCodecAC3:
+        FALLTHROUGH_INTENDED;
+      case kCodecEAC3:
+        // E-AC3 encryption is handled by SampleAesEc3Cryptor, which also
+        // manages leading clear bytes.
+        leading_clear_bytes_size_ =
+            codec_ == kCodecEAC3 ? 0 : kAudioLeadingClearBytesSize;
+        min_protected_data_size_ = leading_clear_bytes_size_ + 15u;
+        break;
+      default:
+        return Status(
+            error::ENCRYPTION_FAILURE,
+            "Only AAC/AC3/EAC3 and H264 are supported in Sample AES.");
     }
-    case FOURCC_cbcs:
-      FALLTHROUGH_INTENDED;
-    case FOURCC_cens:
-      if (stream_type == kStreamVideo) {
-        // Use 1:9 pattern for video.
-        crypt_byte_block_ = 1u;
-        skip_byte_block_ = 9u;
-      } else {
-        // Tracks other than video are protected using whole-block full-sample
-        // encryption. Note that this may not be the same as the non-pattern
-        // based encryption counterparts, e.g. in 'cens' whole-block full sample
-        // encryption, the whole sample is encrypted up to the last 16-byte
-        // boundary, see 23001-7:2016(E) 9.7; while in 'cenc' full sample
-        // encryption, the last partial 16-byte block is also encrypted, see
-        // 23001-7:2016(E) 9.4.2. Another difference is the use of constant iv.
-        crypt_byte_block_ = 0u;
-        skip_byte_block_ = 0u;
-      }
-      break;
-    default:
-      // Not using pattern encryption.
-      crypt_byte_block_ = 0u;
-      skip_byte_block_ = 0u;
-      break;
+  }
+  if (stream_type == kStreamVideo &&
+      IsPatternEncryptionScheme(protection_scheme_)) {
+    // Use 1:9 pattern.
+    crypt_byte_block_ = 1u;
+    skip_byte_block_ = 9u;
+  } else {
+    // Audio stream in pattern encryption scheme does not use pattern; it uses
+    // whole-block full sample encryption instead. Non-pattern encryption does
+    // not have pattern.
+    crypt_byte_block_ = 0u;
+    skip_byte_block_ = 0u;
   }
   return Status::OK;
 }
 
 bool EncryptionHandler::CreateEncryptor(const EncryptionKey& encryption_key) {
-  std::unique_ptr<AesCryptor> encryptor;
-  switch (protection_scheme_) {
-    case FOURCC_cenc:
-      encryptor.reset(new AesCtrEncryptor);
-      break;
-    case FOURCC_cbc1:
-      encryptor.reset(new AesCbcEncryptor(kNoPadding));
-      break;
-    case FOURCC_cens:
-      encryptor.reset(new AesPatternCryptor(
-          crypt_byte_block_, skip_byte_block_,
-          AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
-          AesCryptor::kDontUseConstantIv,
-          std::unique_ptr<AesCryptor>(new AesCtrEncryptor())));
-      break;
-    case FOURCC_cbcs:
-      encryptor.reset(new AesPatternCryptor(
-          crypt_byte_block_, skip_byte_block_,
-          AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
-          AesCryptor::kUseConstantIv,
-          std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
-      break;
-    case kAppleSampleAesProtectionScheme:
-      if (crypt_byte_block_ == 0 && skip_byte_block_ == 0) {
-        if (codec_ == kCodecEAC3) {
-          encryptor.reset(new SampleAesEc3Cryptor(
-              std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
-        } else {
-          encryptor.reset(
-              new AesCbcEncryptor(kNoPadding, AesCryptor::kUseConstantIv));
-        }
-      } else {
-        encryptor.reset(new AesPatternCryptor(
-            crypt_byte_block_, skip_byte_block_,
-            AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
-            AesCryptor::kUseConstantIv,
-            std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
-      }
-      break;
-    default:
-      LOG(ERROR) << "Unsupported protection scheme.";
-      return false;
-  }
-
-  std::vector<uint8_t> iv = encryption_key.iv;
-  if (iv.empty()) {
-    if (!AesCryptor::GenerateRandomIv(protection_scheme_, &iv)) {
-      LOG(ERROR) << "Failed to generate random iv.";
-      return false;
-    }
-  }
-  const bool initialized =
-      encryptor->InitializeWithIv(encryption_key.key, iv);
+  std::unique_ptr<AesCryptor> encryptor = encryptor_factory_->CreateEncryptor(
+      protection_scheme_, crypt_byte_block_, skip_byte_block_, codec_,
+      encryption_key.key, encryption_key.iv);
+  if (!encryptor)
+    return false;
   encryptor_ = std::move(encryptor);
 
   encryption_config_.reset(new EncryptionConfig);
   encryption_config_->protection_scheme = protection_scheme_;
   encryption_config_->crypt_byte_block = crypt_byte_block_;
   encryption_config_->skip_byte_block = skip_byte_block_;
+
+  const std::vector<uint8_t>& iv = encryptor_->iv();
   if (encryptor_->use_constant_iv()) {
     encryption_config_->per_sample_iv_size = 0;
     encryption_config_->constant_iv = iv;
   } else {
     encryption_config_->per_sample_iv_size = static_cast<uint8_t>(iv.size());
   }
+
   encryption_config_->key_id = encryption_key.key_id;
   encryption_config_->key_system_info = encryption_key.key_system_info;
-  return initialized;
+  return true;
 }
 
 bool EncryptionHandler::EncryptVpxFrame(
@@ -582,6 +519,11 @@ void EncryptionHandler::InjectVpxParserForTesting(
 void EncryptionHandler::InjectVideoSliceHeaderParserForTesting(
     std::unique_ptr<VideoSliceHeaderParser> header_parser) {
   header_parser_ = std::move(header_parser);
+}
+
+void EncryptionHandler::InjectEncryptorFactoryForTesting(
+    std::unique_ptr<AesEncryptorFactory> encryptor_factory) {
+  encryptor_factory_ = std::move(encryptor_factory);
 }
 
 }  // namespace media

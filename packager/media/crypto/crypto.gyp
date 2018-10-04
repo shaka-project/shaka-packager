@@ -13,6 +13,8 @@
       'target_name': 'crypto',
       'type': '<(component)',
       'sources': [
+        'aes_encryptor_factory.cc',
+        'aes_encryptor_factory.h',
         'encryption_handler.cc',
         'encryption_handler.h',
         'sample_aes_ec3_cryptor.cc',

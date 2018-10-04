@@ -15,6 +15,7 @@ namespace shaka {
 namespace media {
 
 class AesCryptor;
+class AesEncryptorFactory;
 class VideoSliceHeaderParser;
 class VPxParser;
 struct EncryptionKey;
@@ -80,6 +81,8 @@ class EncryptionHandler : public MediaHandler {
   void InjectVpxParserForTesting(std::unique_ptr<VPxParser> vpx_parser);
   void InjectVideoSliceHeaderParserForTesting(
       std::unique_ptr<VideoSliceHeaderParser> header_parser);
+  void InjectEncryptorFactoryForTesting(
+      std::unique_ptr<AesEncryptorFactory> encryptor_factory);
 
   const EncryptionParams encryption_params_;
   const FourCC protection_scheme_ = FOURCC_NULL;
@@ -111,6 +114,7 @@ class EncryptionHandler : public MediaHandler {
   /// Number of unencrypted blocks (16-byte-block) in pattern based encryption.
   uint8_t skip_byte_block_ = 0;
 
+  std::unique_ptr<AesEncryptorFactory> encryptor_factory_;
   // VPx parser for VPx streams.
   std::unique_ptr<VPxParser> vpx_parser_;
   // Video slice header parser for NAL strucutred streams.
