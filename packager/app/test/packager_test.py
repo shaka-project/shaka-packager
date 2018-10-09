@@ -1198,6 +1198,18 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('flac-with-encryption', verify_decryption=True)
 
+  def testAv1Mp4WithEncryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'], test_files=['bear-av1.mp4']),
+        self._GetFlags(encryption=True, output_dash=True, output_hls=True))
+    self._CheckTestResults('av1-mp4-with-encryption', verify_decryption=True)
+
+  def testAv1WebMWithEncryption(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['video'], test_files=['bear-av1.webm']),
+        self._GetFlags(encryption=True, output_dash=True, output_hls=True))
+    self._CheckTestResults('av1-webm-with-encryption', verify_decryption=True)
+
   def testWvmInput(self):
     self.encryption_key = '9248d245390e0a49d483ba9b43fc69c3'
     self.assertPackageSuccess(

@@ -252,17 +252,22 @@ int FindLatestForward(int shifted_order_hints[],
 AV1Parser::AV1Parser() = default;
 AV1Parser::~AV1Parser() = default;
 
-bool AV1Parser::Parse(const uint8_t* data, size_t data_size) {
+bool AV1Parser::Parse(const uint8_t* data,
+                      size_t data_size,
+                      std::vector<Tile>* tiles) {
+  tiles->clear();
+
   BitReader reader(data, data_size);
   while (reader.bits_available() > 0) {
-    if (!ParseOpenBitstreamUnit(&reader))
+    if (!ParseOpenBitstreamUnit(&reader, tiles))
       return false;
   }
   return true;
 }
 
 // 5.3.1. General OBU syntax.
-bool AV1Parser::ParseOpenBitstreamUnit(BitReader* reader) {
+bool AV1Parser::ParseOpenBitstreamUnit(BitReader* reader,
+                                       std::vector<Tile>* tiles) {
   ObuHeader obu_header;
   RCHECK(ParseObuHeader(reader, &obu_header));
 
@@ -284,10 +289,10 @@ bool AV1Parser::ParseOpenBitstreamUnit(BitReader* reader) {
       RCHECK(ParseFrameHeaderObu(obu_header, reader));
       break;
     case OBU_TILE_GROUP:
-      RCHECK(ParseTileGroupObu(obu_size, reader));
+      RCHECK(ParseTileGroupObu(obu_size, reader, tiles));
       break;
     case OBU_FRAME:
-      RCHECK(ParseFrameObu(obu_header, obu_size, reader));
+      RCHECK(ParseFrameObu(obu_header, obu_size, reader, tiles));
       break;
     default:
       // Skip all OBUs we are not interested.
@@ -1638,18 +1643,21 @@ bool AV1Parser::SkipTemporalPointInfo(BitReader* reader) {
 // 5.10. Frame OBU syntax.
 bool AV1Parser::ParseFrameObu(const ObuHeader& obu_header,
                               size_t size,
-                              BitReader* reader) {
+                              BitReader* reader,
+                              std::vector<Tile>* tiles) {
   const size_t start_bit_pos = reader->bit_position();
   RCHECK(ParseFrameHeaderObu(obu_header, reader));
   RCHECK(ByteAlignment(reader));
   const size_t end_bit_pos = reader->bit_position();
   const size_t header_bytes = (end_bit_pos - start_bit_pos) / 8;
-  RCHECK(ParseTileGroupObu(size - header_bytes, reader));
+  RCHECK(ParseTileGroupObu(size - header_bytes, reader, tiles));
   return true;
 }
 
 // 5.11.1. General tile group OBU syntax.
-bool AV1Parser::ParseTileGroupObu(size_t size, BitReader* reader) {
+bool AV1Parser::ParseTileGroupObu(size_t size,
+                                  BitReader* reader,
+                                  std::vector<Tile>* tiles) {
   const TileInfo& tile_info = frame_header_.tile_info;
   const size_t start_bit_pos = reader->bit_position();
 
@@ -1680,6 +1688,7 @@ bool AV1Parser::ParseTileGroupObu(size_t size, BitReader* reader) {
       tile_size = tile_size_minus_1 + 1;
       size -= tile_size + tile_info.tile_size_bytes;
     }
+    tiles->push_back({reader->bit_position() / 8, tile_size});
     RCHECK(reader->SkipBits(tile_size * 8));  // Skip the tile.
   }
 

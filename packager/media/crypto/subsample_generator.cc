@@ -11,6 +11,7 @@
 
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/codecs/av1_parser.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vp8_parser.h"
 #include "packager/media/codecs/vp9_parser.h"
@@ -28,6 +29,39 @@ uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
   const VideoStreamInfo& video_stream_info =
       static_cast<const VideoStreamInfo&>(stream_info);
   return video_stream_info.nalu_length_size();
+}
+
+bool ShouldAlignProtectedData(Codec codec,
+                              FourCC protection_scheme,
+                              bool vp9_subsample_encryption) {
+  switch (codec) {
+    case kCodecAV1:
+      // Per AV1 in ISO-BMFF spec [1], BytesOfProtectedData SHALL be a multiple
+      // of 16 bytes.
+      // [1] https://aomediacodec.github.io/av1-isobmff/#subsample-encryption
+      return true;
+    case kCodecVP9:
+      // "VP Codec ISO Media File Format Binding" document requires that the
+      // encrypted bytes of each frame within the superframe must be block
+      // aligned so that the counter state can be computed for each frame
+      // within the superframe.
+      // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
+      // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
+      // avoid partial blocks in Subsamples.
+      // For consistency, apply block alignment to all frames when VP9 subsample
+      // encryption is enabled.
+      return vp9_subsample_encryption;
+    default:
+      // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
+      // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to avoid
+      // partial blocks in Subsamples.
+      // CMAF requires 'cenc' scheme BytesOfProtectedData SHALL be a multiple of
+      // 16 bytes; while 'cbcs' scheme BytesOfProtectedData SHALL start on the
+      // first byte of video data following the slice header.
+      return protection_scheme == FOURCC_cbc1 ||
+             protection_scheme == FOURCC_cens ||
+             protection_scheme == FOURCC_cenc;
+  }
 }
 
 // A convenient util class to organize subsamples, e.g. combine consecutive
@@ -97,6 +131,9 @@ Status SubsampleGenerator::Initialize(FourCC protection_scheme,
   nalu_length_size_ = GetNaluLengthSize(stream_info);
 
   switch (codec_) {
+    case kCodecAV1:
+      av1_parser_.reset(new AV1Parser);
+      break;
     case kCodecVP9:
       if (vp9_subsample_encryption_)
         vpx_parser_.reset(new VP9Parser);
@@ -114,39 +151,33 @@ Status SubsampleGenerator::Initialize(FourCC protection_scheme,
         return Status(error::ENCRYPTION_FAILURE, "Unknown video codec.");
       }
   }
+  if (av1_parser_) {
+    // Parse configOBUs in AV1CodecConfigurationRecord if exists.
+    // https://aomediacodec.github.io/av1-isobmff/#av1codecconfigurationbox-syntax.
+    const size_t kConfigOBUsOffset = 4;
+    const bool has_config_obus =
+        stream_info.codec_config().size() > kConfigOBUsOffset;
+    std::vector<AV1Parser::Tile> tiles;
+    if (has_config_obus &&
+        !av1_parser_->Parse(
+            &stream_info.codec_config()[kConfigOBUsOffset],
+            stream_info.codec_config().size() - kConfigOBUsOffset, &tiles)) {
+      return Status(
+          error::ENCRYPTION_FAILURE,
+          "Failed to parse configOBUs in AV1CodecConfigurationRecord.");
+    }
+    DCHECK(tiles.empty());
+  }
   if (header_parser_) {
     CHECK_NE(nalu_length_size_, 0u) << "AnnexB stream is not supported yet";
     if (!header_parser_->Initialize(stream_info.codec_config())) {
       return Status(error::ENCRYPTION_FAILURE,
-                    "Fail to read SPS and PPS data.");
+                    "Failed to read SPS and PPS data.");
     }
   }
 
-  switch (codec_) {
-    case kCodecVP9:
-      // "VP Codec ISO Media File Format Binding" document requires that the
-      // encrypted bytes of each frame within the superframe must be block
-      // aligned so that the counter state can be computed for each frame
-      // within the superframe.
-      // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
-      // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
-      // avoid partial blocks in Subsamples.
-      // For consistency, apply block alignment to all frames when VP9 subsample
-      // encryption is enabled.
-      align_protected_data_ = vp9_subsample_encryption_;
-      break;
-    default:
-      // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
-      // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to avoid
-      // partial blocks in Subsamples.
-      // CMAF requires 'cenc' scheme BytesOfProtectedData SHALL be a multiple of
-      // 16 bytes; while 'cbcs' scheme BytesOfProtectedData SHALL start on the
-      // first byte of video data following the slice header.
-      align_protected_data_ = protection_scheme == FOURCC_cbc1 ||
-                              protection_scheme == FOURCC_cens ||
-                              protection_scheme == FOURCC_cenc;
-      break;
-  }
+  align_protected_data_ = ShouldAlignProtectedData(codec_, protection_scheme,
+                                                   vp9_subsample_encryption_);
 
   if (protection_scheme == kAppleSampleAesProtectionScheme) {
     const size_t kH264LeadingClearBytesSize = 32u;
@@ -184,6 +215,8 @@ Status SubsampleGenerator::GenerateSubsamples(
     std::vector<SubsampleEntry>* subsamples) {
   subsamples->clear();
   switch (codec_) {
+    case kCodecAV1:
+      return GenerateSubsamplesFromAV1Frame(frame, frame_size, subsamples);
     case kCodecH264:
       FALLTHROUGH_INTENDED;
     case kCodecH265:
@@ -219,6 +252,11 @@ void SubsampleGenerator::InjectVpxParserForTesting(
 void SubsampleGenerator::InjectVideoSliceHeaderParserForTesting(
     std::unique_ptr<VideoSliceHeaderParser> header_parser) {
   header_parser_ = std::move(header_parser);
+}
+
+void SubsampleGenerator::InjectAV1ParserForTesting(
+    std::unique_ptr<AV1Parser> av1_parser) {
+  av1_parser_ = std::move(av1_parser);
 }
 
 Status SubsampleGenerator::GenerateSubsamplesFromVPxFrame(
@@ -296,6 +334,32 @@ Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
     LOG(ERROR) << "Failed to parse NAL units.";
     return Status(error::ENCRYPTION_FAILURE, "Failed to parse NAL units.");
   }
+  return Status::OK;
+}
+
+Status SubsampleGenerator::GenerateSubsamplesFromAV1Frame(
+    const uint8_t* frame,
+    size_t frame_size,
+    std::vector<SubsampleEntry>* subsamples) {
+  DCHECK(av1_parser_);
+  std::vector<AV1Parser::Tile> av1_tiles;
+  if (!av1_parser_->Parse(frame, frame_size, &av1_tiles))
+    return Status(error::ENCRYPTION_FAILURE, "Failed to parse AV1 frame.");
+
+  SubsampleOrganizer subsample_organizer(align_protected_data_, subsamples);
+
+  size_t last_tile_end_offset = 0;
+  for (const AV1Parser::Tile& tile : av1_tiles) {
+    DCHECK_LE(last_tile_end_offset, tile.start_offset_in_bytes);
+    // Per AV1 in ISO-BMFF spec [1], only decode_tile is encrypted.
+    // [1] https://aomediacodec.github.io/av1-isobmff/#subsample-encryption
+    subsample_organizer.AddSubsample(
+        tile.start_offset_in_bytes - last_tile_end_offset, tile.size_in_bytes);
+    last_tile_end_offset = tile.start_offset_in_bytes + tile.size_in_bytes;
+  }
+  DCHECK_LE(last_tile_end_offset, frame_size);
+  if (last_tile_end_offset < frame_size)
+    subsample_organizer.AddSubsample(frame_size - last_tile_end_offset, 0);
   return Status::OK;
 }
 

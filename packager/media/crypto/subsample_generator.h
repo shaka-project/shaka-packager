@@ -17,6 +17,7 @@
 namespace shaka {
 namespace media {
 
+class AV1Parser;
 class VideoSliceHeaderParser;
 class VPxParser;
 struct SubsampleEntry;
@@ -63,6 +64,7 @@ class SubsampleGenerator {
   void InjectVpxParserForTesting(std::unique_ptr<VPxParser> vpx_parser);
   void InjectVideoSliceHeaderParserForTesting(
       std::unique_ptr<VideoSliceHeaderParser> header_parser);
+  void InjectAV1ParserForTesting(std::unique_ptr<AV1Parser> av1_parser);
 
  private:
   SubsampleGenerator(const SubsampleGenerator&) = delete;
@@ -73,6 +75,10 @@ class SubsampleGenerator {
       size_t frame_size,
       std::vector<SubsampleEntry>* subsamples);
   Status GenerateSubsamplesFromH26xFrame(
+      const uint8_t* frame,
+      size_t frame_size,
+      std::vector<SubsampleEntry>* subsamples);
+  Status GenerateSubsamplesFromAV1Frame(
       const uint8_t* frame,
       size_t frame_size,
       std::vector<SubsampleEntry>* subsamples);
@@ -95,6 +101,8 @@ class SubsampleGenerator {
   std::unique_ptr<VPxParser> vpx_parser_;
   // Video slice header parser for NAL strucutred streams.
   std::unique_ptr<VideoSliceHeaderParser> header_parser_;
+  // AV1 parser for AV1 streams.
+  std::unique_ptr<AV1Parser> av1_parser_;
 };
 
 }  // namespace media

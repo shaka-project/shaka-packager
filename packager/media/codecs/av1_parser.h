@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <vector>
+
 namespace shaka {
 namespace media {
 
@@ -19,15 +21,25 @@ class BitReader;
 /// https://aomediacodec.github.io/av1-spec/.
 class AV1Parser {
  public:
+  struct Tile {
+    size_t start_offset_in_bytes;
+    size_t size_in_bytes;
+  };
+
   AV1Parser();
-  ~AV1Parser();
+  virtual ~AV1Parser();
 
   /// Parse an AV1 sample. Note that the sample data SHALL be a sequence of OBUs
   /// forming a Temporal Unit, with each OBU SHALL follow the
   /// open_bitstream_unit Low Overhead Bitstream Format syntax. See
   /// https://aomediacodec.github.io/av1-isobmff/#sampleformat for details.
+  /// @param[out] on success, tiles will be filled with the tile information if
+  ///             @a data contains Frame OBU or TileGroup OBU; It will be empty
+  ///             otherwise.
   /// @return true on success, false otherwise.
-  bool Parse(const uint8_t* data, size_t data_size);
+  virtual bool Parse(const uint8_t* data,
+                     size_t data_size,
+                     std::vector<Tile>* tiles);
 
  private:
   AV1Parser(const AV1Parser&) = delete;
@@ -183,7 +195,7 @@ class AV1Parser {
     bool subsampling_y = false;
   };
 
-  bool ParseOpenBitstreamUnit(BitReader* reader);
+  bool ParseOpenBitstreamUnit(BitReader* reader, std::vector<Tile>* tiles);
   bool ParseObuHeader(BitReader* reader, ObuHeader* obu_header);
   bool ParseObuExtensionHeader(BitReader* reader,
                                ObuExtensionHeader* obu_extension_header);
@@ -248,10 +260,13 @@ class AV1Parser {
   // Frame OBU.
   bool ParseFrameObu(const ObuHeader& obu_header,
                      size_t size,
-                     BitReader* reader);
+                     BitReader* reader,
+                     std::vector<Tile>* tiles);
 
   // TileGroup OBU.
-  bool ParseTileGroupObu(size_t size, BitReader* reader);
+  bool ParseTileGroupObu(size_t size,
+                         BitReader* reader,
+                         std::vector<Tile>* tiles);
   bool SegFeatureActiveIdx(int idx, int feature);
 
   // Decoding process related helper functions.

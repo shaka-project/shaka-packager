@@ -11,6 +11,7 @@
 
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/codecs/av1_parser.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
 #include "packager/status_test_util.h"
@@ -30,8 +31,7 @@ using ::testing::Values;
 using ::testing::WithParamInterface;
 
 const bool kVP9SubsampleEncryption = true;
-// Use H264 code config.
-const uint8_t kH264CodecConfig[]{
+const uint8_t kH264CodecConfig[] = {
     // clang-format off
     // Header
     0x01, 0x64, 0x00, 0x1e, 0xff,
@@ -49,6 +49,7 @@ const uint8_t kH264CodecConfig[]{
     0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
     // clang-format on
 };
+const uint8_t kAV1CodecConfig[] = {0x00, 0x01, 0x02, 0x03};
 const int kTrackId = 1;
 const uint32_t kTimeScale = 1000;
 const uint64_t kDuration = 10000;
@@ -70,6 +71,10 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
     case kCodecH264:
       codec_config = kH264CodecConfig;
       codec_config_size = sizeof(kH264CodecConfig);
+      break;
+    case kCodecAV1:
+      codec_config = kAV1CodecConfig;
+      codec_config_size = sizeof(kAV1CodecConfig);
       break;
     default:
       // We do not care about the codec configs for other codecs in this file.
@@ -119,6 +124,14 @@ class MockVideoSliceHeaderParser : public VideoSliceHeaderParser {
   MOCK_METHOD1(Initialize,
                bool(const std::vector<uint8_t>& decoder_configuration));
   MOCK_METHOD1(GetHeaderSize, int64_t(const Nalu& nalu));
+};
+
+class MockAV1Parser : public AV1Parser {
+ public:
+  MOCK_METHOD3(Parse,
+               bool(const uint8_t* data,
+                    size_t data_size,
+                    std::vector<Tile>* tiles));
 };
 
 class SubsampleGeneratorTest : public Test, public WithParamInterface<FourCC> {
@@ -343,6 +356,58 @@ TEST_P(SubsampleGeneratorTest, H264SubsampleEncryption) {
     EXPECT_THAT(subsamples, ElementsAreArray(kExpectedUnalignedSubsamples));
   else
     EXPECT_THAT(subsamples, ElementsAreArray(kExpectedAlignedSubsamples));
+}
+
+TEST_P(SubsampleGeneratorTest, AV1ParserFailed) {
+  SubsampleGenerator generator(kVP9SubsampleEncryption);
+  ASSERT_OK(
+      generator.Initialize(protection_scheme_, GetVideoStreamInfo(kCodecAV1)));
+
+  constexpr size_t kFrameSize = 50;
+  constexpr uint8_t kFrame[kFrameSize] = {};
+
+  std::unique_ptr<MockAV1Parser> mock_av1_parser(new MockAV1Parser);
+  EXPECT_CALL(*mock_av1_parser, Parse(kFrame, kFrameSize, _))
+      .WillOnce(Return(false));
+
+  generator.InjectAV1ParserForTesting(std::move(mock_av1_parser));
+
+  std::vector<SubsampleEntry> subsamples;
+  ASSERT_NOT_OK(generator.GenerateSubsamples(kFrame, kFrameSize, &subsamples));
+}
+
+TEST_P(SubsampleGeneratorTest, AV1SubsampleEncryption) {
+  SubsampleGenerator generator(kVP9SubsampleEncryption);
+  ASSERT_OK(
+      generator.Initialize(protection_scheme_, GetVideoStreamInfo(kCodecAV1)));
+
+  constexpr size_t kFrameSize = 50;
+  constexpr uint8_t kFrame[kFrameSize] = {};
+  constexpr size_t kTileOffsets[] = {4, 11};
+  constexpr size_t kTileSizes[] = {6, 33};
+  // AV1 block align protected data for all protection schemes.
+  const SubsampleEntry kExpectedSubsamples[] = {
+      // {4,6},{11-4-6,33},{50-11-33,0} block aligned => {10,0},{2,32},{6,0}.
+      // Then merge consecutive clear-only subsamples.
+      {12, 32},
+      {6, 0},
+  };
+
+  std::vector<AV1Parser::Tile> tiles(2);
+  for (int i = 0; i < 2; i++) {
+    tiles[i].start_offset_in_bytes = kTileOffsets[i];
+    tiles[i].size_in_bytes = kTileSizes[i];
+  }
+
+  std::unique_ptr<MockAV1Parser> mock_av1_parser(new MockAV1Parser);
+  EXPECT_CALL(*mock_av1_parser, Parse(kFrame, kFrameSize, _))
+      .WillOnce(DoAll(SetArgPointee<2>(tiles), Return(true)));
+
+  generator.InjectAV1ParserForTesting(std::move(mock_av1_parser));
+
+  std::vector<SubsampleEntry> subsamples;
+  ASSERT_OK(generator.GenerateSubsamples(kFrame, kFrameSize, &subsamples));
+  EXPECT_THAT(subsamples, ElementsAreArray(kExpectedSubsamples));
 }
 
 TEST_P(SubsampleGeneratorTest, AACIsFullSampleEncrypted) {
