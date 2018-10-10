@@ -18,7 +18,9 @@ namespace media {
 
 using ::testing::_;
 using ::testing::Bool;
+using ::testing::ElementsAre;
 using ::testing::InSequence;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
 using ::testing::TestWithParam;
@@ -92,6 +94,8 @@ const bool kIFramesOnlyPlaylist = true;
 const char kDefaultPlaylistName[] = "default_playlist.m3u8";
 const char kDefaultName[] = "DEFAULTNAME";
 const char kDefaultGroupId[] = "DEFAULTGROUPID";
+const char kCharactersticA[] = "public.accessibility.transcribes-spoken-dialog";
+const char kCharactersticB[] = "public.easy-to-read";
 
 MATCHER_P(HasEncryptionScheme, expected_scheme, "") {
   *result_listener << "it has_protected_content: "
@@ -113,6 +117,7 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
                   !kIFramesOnlyPlaylist,
                   kDefaultName,
                   kDefaultGroupId,
+                  std::vector<std::string>{kCharactersticA, kCharactersticB},
                   &mock_notifier_) {}
 
   MuxerListener::MediaRanges GetMediaRanges(
@@ -152,9 +157,12 @@ TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
   std::shared_ptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  EXPECT_CALL(mock_notifier_,
-              NotifyNewStream(_, StrEq(kDefaultPlaylistName),
-                              StrEq("DEFAULTNAME"), StrEq("DEFAULTGROUPID"), _))
+  EXPECT_CALL(
+      mock_notifier_,
+      NotifyNewStream(Property(&MediaInfo::hls_characteristics,
+                               ElementsAre(kCharactersticA, kCharactersticB)),
+                      StrEq(kDefaultPlaylistName), StrEq("DEFAULTNAME"),
+                      StrEq("DEFAULTGROUPID"), _))
       .WillOnce(Return(true));
 
   MuxerOptions muxer_options;
@@ -436,6 +444,7 @@ class HlsNotifyMuxerListenerKeyFrameTest : public TestWithParam<bool> {
                   GetParam(),
                   kDefaultName,
                   kDefaultGroupId,
+                  std::vector<std::string>(),  // no characteristics.
                   &mock_notifier_) {}
 
   MockHlsNotifier mock_notifier_;

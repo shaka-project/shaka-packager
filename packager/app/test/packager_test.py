@@ -271,6 +271,7 @@ class PackagerAppTest(unittest.TestCase):
                  segmented=False,
                  using_time_specifier=False,
                  hls=False,
+                 hls_characteristics=None,
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
@@ -290,23 +291,24 @@ class PackagerAppTest(unittest.TestCase):
       language: The language override for the input stream.
       output_file_prefix: The output file prefix. Default to empty if not
           specified.
-      output_format: Specify the format for the output.
+      output_format: The format for the output.
       segmented: Should the output use a segmented formatted. This will affect
           the output extensions and manifests.
       using_time_specifier: Use $Time$ in segment name instead of using
           $Number$. This flag is only relevant if segmented is True.
       hls: Should the output be for an HLS manifest.
+      hls_characteristics: CHARACTERISTICS attribute for the HLS stream.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
           same as not specifying a trick play factor.
-      drm_label: Sets the drm label for the stream.
+      drm_label: The drm label for the stream.
       skip_encryption: If set to true, the stream will not be encrypted.
       bandwidth: The expected bandwidth value that should be listed in the
           manifest.
       split_content_on_ad_cues: If set to true, the output file will be split
           into multiple files, with a total of NumAdCues + 1 files.
-      test_file: Specify the input file to use. If the input file is not
-          specify, a default file will be used.
+      test_file: The input file to use. If the input file is not specified, a
+          default file will be used.
 
 
     Returns:
@@ -347,6 +349,9 @@ class PackagerAppTest(unittest.TestCase):
       if base_ext in ['ts', 'mp4'] and descriptor == 'video':
         stream.Append('iframe_playlist_name',
                       output_file_name_base + '-iframe.m3u8')
+
+    if hls_characteristics:
+      stream.Append('hls_characteristics', hls_characteristics)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt'
@@ -1503,7 +1508,11 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = self._GetStreams(
         ['audio', 'video'], output_format='ts', segmented=True)
     streams += self._GetStreams(
-        ['text'], test_files=['bear-english.vtt'], segmented=True)
+        ['text'],
+        test_files=['bear-english.vtt'],
+        segmented=True,
+        hls_characteristics='public.accessibility.transcribes-spoken-dialog;'
+        'private.accessibility.widevine-special')
 
     flags = self._GetFlags(output_hls=True)
 

@@ -287,6 +287,12 @@ void BuildMediaTag(const MediaPlaylist& playlist,
     tag.AddString("AUTOSELECT", "YES");
   }
 
+  const std::vector<std::string>& characteristics = playlist.characteristics();
+  if (!characteristics.empty()) {
+    tag.AddQuotedString("CHARACTERISTICS",
+                        base::JoinString(characteristics, ","));
+  }
+
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {

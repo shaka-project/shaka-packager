@@ -18,6 +18,7 @@ namespace shaka {
 namespace hls {
 
 using ::testing::_;
+using ::testing::ElementsAreArray;
 using ::testing::ReturnArg;
 
 namespace {
@@ -481,6 +482,20 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {
   media_info.mutable_audio_info()->set_num_channels(8);
   ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
   EXPECT_EQ(8, media_playlist_->GetNumChannels());
+}
+
+TEST_F(MediaPlaylistMultiSegmentTest, Characteristics) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  static const char* kCharacteristics[] = {"some.characteristic",
+                                           "another.characteristic"};
+
+  media_info.add_hls_characteristics(kCharacteristics[0]);
+  media_info.add_hls_characteristics(kCharacteristics[1]);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_THAT(media_playlist_->characteristics(),
+              ElementsAreArray(kCharacteristics));
 }
 
 TEST_F(MediaPlaylistMultiSegmentTest, InitSegment) {

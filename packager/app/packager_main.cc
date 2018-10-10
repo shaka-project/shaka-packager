@@ -101,7 +101,10 @@ const char kUsage[] =
     "  - iframe_playlist_name: The optional HLS I-Frames only playlist file\n"
     "    to create. Usually ends with '.m3u8', and is relative to\n"
     "    hls_master_playlist_output. Should only be set for video streams. If\n"
-    "    unspecified, no I-Frames only playlist is created.\n";
+    "    unspecified, no I-Frames only playlist is created.\n"
+    "  - hls_characteristics (charcs): Optional colon/semicolon separated\n"
+    "    list of values for the CHARACTERISTICS attribute for EXT-X-MEDIA.\n"
+    "    See CHARACTERISTICS attribute in http://bit.ly/2OOUkdB for details.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";

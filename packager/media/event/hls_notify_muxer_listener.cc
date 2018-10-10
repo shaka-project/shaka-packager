@@ -21,11 +21,13 @@ HlsNotifyMuxerListener::HlsNotifyMuxerListener(
     bool iframes_only,
     const std::string& ext_x_media_name,
     const std::string& ext_x_media_group_id,
+    const std::vector<std::string>& characteristics,
     hls::HlsNotifier* hls_notifier)
     : playlist_name_(playlist_name),
       iframes_only_(iframes_only),
       ext_x_media_name_(ext_x_media_name),
       ext_x_media_group_id_(ext_x_media_group_id),
+      characteristics_(characteristics),
       hls_notifier_(hls_notifier) {
   DCHECK(hls_notifier);
 }
@@ -89,6 +91,10 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
                                    container_type, media_info.get())) {
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
+  }
+  if (!characteristics_.empty()) {
+    for (const std::string& characteristic : characteristics_)
+      media_info->add_hls_characteristics(characteristic);
   }
   if (protection_scheme_ != FOURCC_NULL) {
     internal::SetContentProtectionFields(protection_scheme_, next_key_id_,

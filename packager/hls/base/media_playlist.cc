@@ -348,6 +348,11 @@ void MediaPlaylist::SetLanguageForTesting(const std::string& language) {
   language_ = language;
 }
 
+void MediaPlaylist::SetCharacteristicsForTesting(
+    const std::vector<std::string>& characteristics) {
+  characteristics_ = characteristics;
+}
+
 bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   const uint32_t time_scale = GetTimeScale(media_info);
   if (time_scale == 0) {
@@ -370,6 +375,9 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   media_info_ = media_info;
   language_ = GetLanguage(media_info);
   use_byte_range_ = !media_info_.has_segment_template_url();
+  characteristics_ =
+      std::vector<std::string>(media_info_.hls_characteristics().begin(),
+                               media_info_.hls_characteristics().end());
   return true;
 }
 

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace shaka {
 class MpdNotifier;
@@ -44,6 +45,7 @@ class MuxerListenerFactory {
     std::string hls_name;
     std::string hls_playlist_name;
     std::string hls_iframe_playlist_name;
+    std::vector<std::string> hls_characteristics;
   };
 
   /// Create a new muxer listener.

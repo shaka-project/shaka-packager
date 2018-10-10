@@ -91,6 +91,7 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
   data.hls_name = stream.hls_name;
   data.hls_playlist_name = stream.hls_playlist_name;
   data.hls_iframe_playlist_name = stream.hls_iframe_playlist_name;
+  data.hls_characteristics = stream.hls_characteristics;
   return data;
 };
 

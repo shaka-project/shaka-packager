@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "packager/base/macros.h"
 #include "packager/hls/public/hls_params.h"
@@ -86,6 +87,10 @@ class MediaPlaylist {
 
   /// For testing only.
   void SetLanguageForTesting(const std::string& language);
+
+  /// For testing only.
+  void SetCharacteristicsForTesting(
+      const std::vector<std::string>& characteristics);
 
   /// This must succeed before calling any other public methods.
   /// @param media_info is the info of the segments that are going to be added
@@ -182,7 +187,11 @@ class MediaPlaylist {
 
   /// @return the language of the media, as an ISO language tag in its shortest
   ///         form.  May be an empty string for video.
-  std::string language() const { return language_; }
+  const std::string& language() const { return language_; }
+
+  const std::vector<std::string>& characteristics() const {
+    return characteristics_;
+  }
 
  private:
   // Add a SegmentInfoEntry (#EXTINF).
@@ -213,6 +222,7 @@ class MediaPlaylist {
   bool use_byte_range_ = false;
   std::string codec_;
   std::string language_;
+  std::vector<std::string> characteristics_;
   int media_sequence_number_ = 0;
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;

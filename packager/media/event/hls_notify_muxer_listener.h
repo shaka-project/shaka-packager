@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "packager/base/optional.h"
 #include "packager/media/event/event_info.h"
@@ -35,11 +36,15 @@ class HlsNotifyMuxerListener : public MuxerListener {
   /// @param ext_x_media_group_id is the group ID for this playlist. This is the
   ///        value of GROUP-ID attribute for EXT-X-MEDIA. This may be empty for
   ///        video.
+  /// @param characteristics is the characteristics for this playlist. This is
+  ///        the value of CHARACTERISTICS attribute for EXT-X-MEDIA. This may be
+  ///        empty.
   /// @param hls_notifier used by this listener. Ownership does not transfer.
   HlsNotifyMuxerListener(const std::string& playlist_name,
                          bool iframes_only,
                          const std::string& ext_x_media_name,
                          const std::string& ext_x_media_group_id,
+                         const std::vector<std::string>& characteristics,
                          hls::HlsNotifier* hls_notifier);
   ~HlsNotifyMuxerListener() override;
 
@@ -77,6 +82,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const bool iframes_only_;
   const std::string ext_x_media_name_;
   const std::string ext_x_media_group_id_;
+  const std::vector<std::string> characteristics_;
   hls::HlsNotifier* const hls_notifier_;
   base::Optional<uint32_t> stream_id_;
 

@@ -44,26 +44,29 @@ std::list<std::unique_ptr<MuxerListener>> CreateHlsListenersInternal(
   DCHECK(notifier);
   DCHECK_GE(stream_index, 0);
 
-  std::string group_id = stream.hls_group_id;
   std::string name = stream.hls_name;
-  std::string hls_playlist_name = stream.hls_playlist_name;
-  std::string hls_iframe_playlist_name = stream.hls_iframe_playlist_name;
+  std::string playlist_name = stream.hls_playlist_name;
+
+  const std::string& group_id = stream.hls_group_id;
+  const std::string& iframe_playlist_name = stream.hls_iframe_playlist_name;
+  const std::vector<std::string>& characteristics = stream.hls_characteristics;
 
   if (name.empty()) {
     name = base::StringPrintf("stream_%d", stream_index);
   }
 
-  if (hls_playlist_name.empty()) {
-    hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_index);
+  if (playlist_name.empty()) {
+    playlist_name = base::StringPrintf("stream_%d.m3u8", stream_index);
   }
 
   const bool kIFramesOnly = true;
   std::list<std::unique_ptr<MuxerListener>> listeners;
   listeners.emplace_back(new HlsNotifyMuxerListener(
-      hls_playlist_name, !kIFramesOnly, name, group_id, notifier));
-  if (!hls_iframe_playlist_name.empty()) {
+      playlist_name, !kIFramesOnly, name, group_id, characteristics, notifier));
+  if (!iframe_playlist_name.empty()) {
     listeners.emplace_back(new HlsNotifyMuxerListener(
-        hls_iframe_playlist_name, kIFramesOnly, name, group_id, notifier));
+        iframe_playlist_name, kIFramesOnly, name, group_id,
+        std::vector<std::string>(), notifier));
   }
   return listeners;
 }

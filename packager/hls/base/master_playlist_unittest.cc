@@ -399,6 +399,42 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
   ASSERT_EQ(expected, actual);
 }
 
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
+  // Video, sd.m3u8.
+  std::unique_ptr<MockMediaPlaylist> video =
+      CreateVideoPlaylist("sd.m3u8", "sdvideocodec", 300000, 200000);
+
+  // Text, eng.m3u8.
+  std::unique_ptr<MockMediaPlaylist> text =
+      CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
+  text->SetCharacteristicsForTesting(std::vector<std::string>{
+      "public.accessibility.transcribes-spoken-dialog", "public.easy-to-read"});
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+                                                   {video.get(), text.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
+      "AUTOSELECT=YES,CHARACTERISTICS=\""
+      "public.accessibility.transcribes-spoken-dialog,public.easy-to-read\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
+      "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
+      "SUBTITLES=\"textgroup\"\n"
+      "http://playlists.org/sd.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
   // Video, sd.m3u8.
   std::unique_ptr<MockMediaPlaylist> video =

@@ -30,6 +30,7 @@ enum FieldType {
   kTrickPlayFactorField,
   kSkipEncryptionField,
   kDrmStreamLabelField,
+  kHlsCharacteristicsField,
 };
 
 struct FieldNameToTypeMapping {
@@ -63,6 +64,9 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"skip_encryption", kSkipEncryptionField},
     {"drm_stream_label", kDrmStreamLabelField},
     {"drm_label", kDrmStreamLabelField},
+    {"hls_characteristics", kHlsCharacteristicsField},
+    {"characteristics", kHlsCharacteristicsField},
+    {"charcs", kHlsCharacteristicsField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -164,10 +168,14 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         descriptor.skip_encryption = skip_encryption_value > 0;
         break;
       }
-      case kDrmStreamLabelField: {
+      case kDrmStreamLabelField:
         descriptor.drm_label = iter->second;
         break;
-      }
+      case kHlsCharacteristicsField:
+        descriptor.hls_characteristics =
+            base::SplitString(iter->second, ";:", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
                    << "\").";
