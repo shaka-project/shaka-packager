@@ -77,13 +77,15 @@ bool AV1CodecConfigurationRecord::Parse(const uint8_t* data, size_t data_size) {
 //   <sample entry 4CC>.<profile>.<level><tier>.<bitDepth>.<monochrome>.
 //   <chromaSubsampling>.<colorPrimaries>.<transferCharacteristics>.
 //   <matrixCoefficients>.<videoFullRangeFlag>
-// The parameters starting from colorPrimaries are omitted as they are not
-// present in AV1 Codec Configuration Record and they are optional.
+// The parameters sample entry 4CC, profile, level, tier, and bitDepth are all
+// mandatory fields.
+// All the other fields (including their leading '.') are optional, mutually
+// inclusive (all or none) fields.
+// Since some of the optional fields (e.g. colorPrimaries) are not present in
+// AV1CodecConfigurationRecord, we omit all the optional fields.
 std::string AV1CodecConfigurationRecord::GetCodecString() const {
-  return base::StringPrintf("av01.%d.%02d%c.%02d.%d.%d%d%d", profile_, level_,
-                            tier_ ? 'H' : 'M', bit_depth_, mono_chrome_,
-                            chroma_subsampling_x_, chroma_subsampling_y_,
-                            chroma_sample_position_);
+  return base::StringPrintf("av01.%d.%02d%c.%02d", profile_, level_,
+                            tier_ ? 'H' : 'M', bit_depth_);
 }
 
 }  // namespace media
