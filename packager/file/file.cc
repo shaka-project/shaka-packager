@@ -21,6 +21,7 @@
 #include "packager/file/memory_file.h"
 #include "packager/file/threaded_io_file.h"
 #include "packager/file/udp_file.h"
+#include "packager/file/http_file.h"
 
 DEFINE_uint64(io_cache_size,
               32ULL << 20,
@@ -41,6 +42,7 @@ const char* kCallbackFilePrefix = "callback://";
 const char* kLocalFilePrefix = "file://";
 const char* kMemoryFilePrefix = "memory://";
 const char* kUdpFilePrefix = "udp://";
+const char* kHttpFilePrefix = "http://";
 
 namespace {
 
@@ -58,6 +60,10 @@ struct FileTypeInfo {
 
 File* CreateCallbackFile(const char* file_name, const char* mode) {
   return new CallbackFile(file_name, mode);
+}
+
+File* CreateHttpFile(const char* file_name, const char* mode) {
+  return new HttpFile(file_name, mode);
 }
 
 File* CreateLocalFile(const char* file_name, const char* mode) {
@@ -114,6 +120,7 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kUdpFilePrefix, &CreateUdpFile, nullptr, nullptr},
     {kMemoryFilePrefix, &CreateMemoryFile, &DeleteMemoryFile, nullptr},
     {kCallbackFilePrefix, &CreateCallbackFile, nullptr, nullptr},
+    {kHttpFilePrefix, &CreateHttpFile, nullptr, nullptr},
 };
 
 base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {

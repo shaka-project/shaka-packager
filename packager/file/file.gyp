@@ -20,6 +20,8 @@
         'file_util.cc',
         'file_util.h',
         'file_closer.h',
+        'http_file.cc',
+        'http_file.h',
         'io_cache.cc',
         'io_cache.h',
         'local_file.cc',

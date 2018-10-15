@@ -8,6 +8,7 @@
 .cproject
 .project
 .pydevproject
+.idea
 .repo
 .settings
 /out*
