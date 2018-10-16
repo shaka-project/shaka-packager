@@ -11,3 +11,4 @@ Tutorials
    drm.rst
    ads.rst
    ffmpeg_piping.rst
+   http_upload.rst

@@ -38,7 +38,9 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
+        '../packager.gyp:status',
         '../third_party/gflags/gflags.gyp:gflags',
+        '../third_party/curl/curl.gyp:libcurl',
       ],
     },
     {
