@@ -33,6 +33,7 @@ The produced artefacts are:
 Research
 --------
 We identified a few sensible ways of uploading files using HTTP.
+We will refer to them as "transfer modes".
 
 1. HTTP POST
 
@@ -67,13 +68,34 @@ Implementation
 This section describes the current state of the implementation,
 contributions are welcome.
 
-The "HTTP PATCH with append" (4.) method has been implemented first, but the
-"HTTP PUT with chunked transfer" (3.) method suggested by @colleenkhenry
-and provided by @kqyang will be implemented, being an even better variant.
-As @kqyang noted, this transport mode should be more efficient than
-HTTP PATCH as only one HTTP connection needs to be setup.
+- The "HTTP PATCH with append" transfer mode (4.) has been implemented
+  and works flawlessly. However, this mode uses a full HTTP request
+  for each segment, so it is like medium-efficient.
 
-All data will be declared as ``Content-Type: application/octet-stream``.
+- The "HTTP PUT with chunked transfer" transfer mode (3.) suggested by
+  `@colleenkhenry`_ and sketched out by `@kqyang`_ is also implemented,
+  but segfaults after a short while. Also, while HTTP requests
+  are being made, no data seems to arrive at the HTTP sink.
+  Bummer!
+
+As `@kqyang`_ noted, chunked transfer mode should be most efficient,
+so we are definitively aiming at that target.
+
+For pragmatic reasons, all HTTP requests will be declared as
+``Content-Type: application/octet-stream``.
+
+For controlling the transfer mode, an appropriate identifier
+is prefixed to the designated url scheme, which is covered by
+the HTTP/URI specification.
+This saves us from introducing yet another commandline parameter.
+Please refer to these examples about how to apply this to your
+scenario and also refer to the example section below::
+
+    # Use "HTTP PATCH with append" transfer mode
+    patch.append+http://media.example.org/hls-live
+
+    # Use "HTTP PUT with chunked transfer" transfer mode
+    put+http://media.example.org/hls-live
 
 
 Drawbacks
@@ -81,7 +103,7 @@ Drawbacks
 As ``File::file_name()`` returns the real file name with its scheme prefix
 (file://, http://) stripped off already by ``File::CreateInternalFile()``
 and ``File::GetFileTypeInfo``, the ``http_upload`` module currently can
-not account for https.
+not account for https as it doesn't know about the designated protocol scheme.
 
 
 Example
@@ -112,16 +134,15 @@ Acquire and transcode RTMP stream::
 Configure and run packager::
 
     # Define upload target
-    export META_PATH=http://localhost:6767/hls-live/meta
-    export DATA_PATH=http://localhost:6767/hls-live/media
+    export BASE_PATH=patch.append+http://localhost:6767/hls-live
 
     # Go
     packager \
-        "input=${PIPE},stream=audio,segment_template=${DATA_PATH}/bigbuckbunny-audio-aac-\$Number%04d\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio" \
-        "input=${PIPE},stream=video,segment_template=${DATA_PATH}/bigbuckbunny-video-h264-450-\$Number%04d\$.ts,playlist_name=bigbuckbunny-video-450.m3u8" \
+        "input=${PIPE},stream=audio,segment_template=${BASE_PATH}/media/bigbuckbunny-audio-aac-\$Number%04d\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio" \
+        "input=${PIPE},stream=video,segment_template=${BASE_PATH}/media/bigbuckbunny-video-h264-450-\$Number%04d\$.ts,playlist_name=bigbuckbunny-video-450.m3u8" \
         --io_block_size 65536 --fragment_duration 2 --segment_duration 2 \
         --time_shift_buffer_depth 3600 --preserved_segments_outside_live_window 7200 \
-        --hls_master_playlist_output "${META_PATH}/bigbuckbunny.m3u8" \
+        --hls_master_playlist_output "${BASE_PATH}/meta/bigbuckbunny.m3u8" \
         --hls_playlist_type LIVE
 
 Output
@@ -232,3 +253,6 @@ Have fun!
 .. _httpd-reflector.py: https://gist.github.com/amotl/3ed38e461af743aeeade5a5a106c1296
 .. _M3U: https://en.wikipedia.org/wiki/M3U
 .. _MPEG transport stream: https://en.wikipedia.org/wiki/MPEG_transport_stream
+
+.. _@colleenkhenry: https://github.com/colleenkhenry
+.. _@kqyang: https://github.com/kqyang

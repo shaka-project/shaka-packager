@@ -11,9 +11,58 @@
 
 #include "packager/base/compiler_specific.h"
 #include "packager/file/file.h"
+#include "packager/file/io_cache.h"
 #include "packager/status.h"
 
 namespace shaka {
+
+    namespace {
+
+        // Scoped CURL implementation which cleans up itself when goes out of scope.
+        // Stolen from `http_key_fetcher.cc`.
+        class ScopedCurl {
+        public:
+            ScopedCurl() { ptr_ = curl_easy_init(); }
+
+            ~ScopedCurl() {
+                    if (ptr_)
+                            curl_easy_cleanup(ptr_);
+            }
+
+            CURL *get() { return ptr_; }
+
+        private:
+            CURL *ptr_;
+            DISALLOW_COPY_AND_ASSIGN(ScopedCurl);
+        };
+
+        class LibCurlInitializer {
+        public:
+            LibCurlInitializer() : initialized_(false) {
+                    base::AutoLock lock(lock_);
+                    if (!initialized_) {
+                            curl_global_init(CURL_GLOBAL_DEFAULT);
+                            initialized_ = true;
+                    }
+            }
+
+            ~LibCurlInitializer() {
+                    base::AutoLock lock(lock_);
+                    if (initialized_) {
+                            curl_global_cleanup();
+                            initialized_ = false;
+                    }
+            }
+
+        private:
+            base::Lock lock_;
+            bool initialized_;
+
+            DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
+        };
+
+    }
+
 
 /// HttpFile delegates read calls to HTTP GET requests and
 /// write calls to HTTP PATCH requests by following the
@@ -30,20 +79,20 @@ class HttpFile : public File {
 
     public:
 
-        /// Create a HTTP client with no timeout
-        /// @param file_name C string containing the url of the resource to be accessed.
-        ///        Note that the file type prefix should be stripped off already.
-        /// @param mode C string containing a file access mode, refer to fopen for
-        ///        the available modes.
-        HttpFile(const char* file_name, const char* mode);
+        enum TransferMode {
+            POST_RAW,
+            POST_MULTIPART,
+            PUT_FULL,
+            PUT_CHUNKED,
+            PATCH_APPEND,
+        };
 
-        /// Create a HTTP client with timeout
+        /// Create a HTTP client
         /// @param file_name C string containing the url of the resource to be accessed.
         ///        Note that the file type prefix should be stripped off already.
-        /// @param mode C string containing a file access mode, refer to fopen for
+        /// @param the mode the file is being uploaded, refer to TransferMode for
         ///        the available modes.
-        /// @param timeout_in_seconds specifies the timeout in seconds.
-        HttpFile(const char* file_name, const char* mode, uint32_t timeout_in_seconds);
+        HttpFile(const char* file_name, TransferMode transfer_mode);
 
         /// @name File implementation overrides.
         /// @{
@@ -56,8 +105,12 @@ class HttpFile : public File {
         bool Tell(uint64_t* position) override;
         /// @}
 
+        /// @return The designated transfer mode
+        TransferMode transfer_mode() const { return transfer_mode_; }
+
         /// @return The full resource url
         const std::string& resource_url() const { return resource_url_; }
+
 
     protected:
         // Destructor
@@ -78,26 +131,30 @@ class HttpFile : public File {
         HttpFile& operator=(const HttpFile&) = delete;
 
         // Internal implementation of HTTP functions, e.g. Get and Post.
-        bool SetupRequest(CURL* curl,
-                          std::string* response,
-                          HttpMethod method,
-                          const std::string& url,
-                          const std::string& data,
-                          const bool append_data);
-
-        Status Request(std::string* response,
-                       HttpMethod method,
+        Status Request(HttpMethod http_method,
                        const std::string& url,
                        const std::string& data,
-                       const bool append_data);
+                       std::string* response);
+
+        void SetupRequestBase(HttpMethod http_method,
+                              const std::string& url,
+                              std::string* response);
+
+        void SetupRequestData(const std::string& data);
+
+        void CurlPut();
 
         std::string method_as_text(HttpMethod method);
 
+        TransferMode transfer_mode_;
         std::string resource_url_;
-        std::string file_mode_;
         const uint32_t timeout_in_seconds_;
+        IoCache cache_;
 
-    };
+        ScopedCurl scoped_curl;
+        CURL* curl;
+
+};
 
 }  // namespace shaka
 

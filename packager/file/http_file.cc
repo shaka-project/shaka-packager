@@ -6,22 +6,33 @@
 
 #include "packager/file/http_file.h"
 
+#include <gflags/gflags.h>
+#include "packager/base/bind.h"
+#include "packager/base/threading/worker_pool.h"
 #include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
 
+DECLARE_uint64(io_cache_size);
+
 namespace shaka {
 
-    // curl primitives stolen from http_key_fetcher.cc
+    // curl primitives stolen from `http_key_fetcher.cc`.
     namespace {
 
         const char kUserAgentString[] = "shaka-packager-uploader/0.1";
-        const char kOctetStreamContentTypeHeader[] = "Content-Type: application/octet-stream";
-        const char kUpdateRangeAppendHeader[] = "Update-Range: append";
 
         const int kMinLogLevelForCurlDebugFunction = 3;
+
+        size_t AppendToString(char *ptr, size_t size, size_t nmemb, std::string *response) {
+          DCHECK(ptr);
+          DCHECK(response);
+          const size_t total_size = size * nmemb;
+          response->append(ptr, total_size);
+          return total_size;
+        }
 
         int CurlDebugFunction(CURL* /* handle */,
                               curl_infotype type,
@@ -77,86 +88,62 @@ namespace shaka {
           return 0;
         }
 
-        // Scoped CURL implementation which cleans up itself when goes out of scope.
-        class ScopedCurl {
-        public:
-            ScopedCurl() { ptr_ = curl_easy_init(); }
-            ~ScopedCurl() {
-              if (ptr_)
-                curl_easy_cleanup(ptr_);
-            }
-
-            CURL* get() { return ptr_; }
-
-        private:
-            CURL* ptr_;
-            DISALLOW_COPY_AND_ASSIGN(ScopedCurl);
-        };
-
-        size_t AppendToString(char* ptr, size_t size, size_t nmemb, std::string* response) {
-          DCHECK(ptr);
-          DCHECK(response);
-          const size_t total_size = size * nmemb;
-          response->append(ptr, total_size);
-          return total_size;
-        }
-
-        class LibCurlInitializer {
-        public:
-            LibCurlInitializer() : initialized_(false) {
-              base::AutoLock lock(lock_);
-              if (!initialized_) {
-                curl_global_init(CURL_GLOBAL_DEFAULT);
-                initialized_ = true;
-              }
-            }
-
-            ~LibCurlInitializer() {
-              base::AutoLock lock(lock_);
-              if (initialized_) {
-                curl_global_cleanup();
-                initialized_ = false;
-              }
-            }
-
-        private:
-            base::Lock lock_;
-            bool initialized_;
-
-            DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
-        };
-
     }  // namespace
 
 
-    /// Create a HTTP client with no timeout
-    HttpFile::HttpFile(const char* file_name, const char* mode)
-            : File(file_name), file_mode_(mode), timeout_in_seconds_(0) {
+    /// Create a HTTP client
+    HttpFile::HttpFile(const char* file_name, TransferMode transfer_mode)
+            : File(file_name), transfer_mode_(transfer_mode), timeout_in_seconds_(0), cache_(FLAGS_io_cache_size) {
 
-      // FIXME: Prepending the assumed again is insufficient. It could be https or even others.
+      // FIXME: Prepend the scheme again. Improve: It could be https or even others.
       std::string scheme = "http://";
       resource_url_ = scheme + std::string(file_name);
+
+      static LibCurlInitializer lib_curl_initializer;
+
+      // Setup libcurl scope
+      curl = scoped_curl.get();
+      if (!curl) {
+        LOG(ERROR) << "curl_easy_init() failed.";
+        //return Status(error::HTTP_FAILURE, "curl_easy_init() failed.");
+        delete this;
+      }
+
     }
 
-    /// Create a HTTP client with timeout
-    HttpFile::HttpFile(const char* file_name, const char* mode, uint32_t timeout_in_seconds)
-            : File(file_name), file_mode_(mode), timeout_in_seconds_(timeout_in_seconds) {
-
-      // FIXME: Prepending the assumed again is insufficient. It could be https or even others.
-      std::string scheme = "http://";
-      resource_url_ = scheme + std::string(file_name);
-    }
 
     // Destructor
     HttpFile::~HttpFile() {}
 
     bool HttpFile::Open() {
       VLOG(1) << "Opening " << resource_url();
+
+      if (transfer_mode_ == PUT_CHUNKED) {
+        if (cache_.closed()) {
+          cache_.Reopen();
+        }
+        base::WorkerPool::PostTask(
+                FROM_HERE,
+                base::Bind(&HttpFile::CurlPut, base::Unretained(this)),
+                true // task_is_slow
+        );
+      }
+
       return true;
+    }
+
+    void HttpFile::CurlPut() {
+      // Put a libcurl handle into chunked transfer mode
+      std::string request_body;
+      std::string response_body;
+      Request(PUT, resource_url(), request_body, &response_body);
     }
 
     bool HttpFile::Close() {
       VLOG(1) << "Closing " << resource_url();
+      if (transfer_mode_ == PUT_CHUNKED) {
+        cache_.Close();
+      }
       delete this;
       return true;
     }
@@ -173,16 +160,44 @@ namespace shaka {
       VLOG(1) << "Writing to " << url << ", length=" << length;
 
       // TODO: Implement retrying with exponential backoff, see "widevine_key_source.cc"
+      Status status;
 
-      // Convert void pointer to C buffer into C++ std::string
-      std::string request_body = std::string((const char*)buffer, length);
+      switch (transfer_mode_) {
 
-      // Debugging. Attention: This yields binary output which will ring your bell.
-      //VLOG(1) << "Request: " << request_body;
+        case PUT_CHUNKED: {
+          uint64_t bytes_written = cache_.Write(buffer, length);
+          VLOG(1) << "PUT CHUNK bytes_written: " << bytes_written;
+          return bytes_written;
+          break;
+        }
 
-      // Perform HTTP request
-      std::string response_body;
-      Status status = Request(&response_body, PATCH, url, request_body, true);
+        case PATCH_APPEND: {
+
+          // Convert void pointer to C buffer into C++ std::string
+          std::string request_body = std::string((const char *) buffer, length);
+
+          // Debugging. Attention: This yields binary output which will ring your bell.
+          //VLOG(1) << "Request: " << request_body;
+
+          // Perform HTTP request
+          std::string response_body;
+          status = Request(PATCH, url, request_body, &response_body);
+
+          break;
+        }
+
+
+        /*
+        case POST_RAW:
+        case POST_MULTIPART:
+        case PUT_FULL:
+        */
+
+        default:
+          LOG(ERROR) << "TransferMode " << transfer_mode() << " not implemented yet";
+          //break;
+
+      }
 
       // Debugging based on response status
       /*
@@ -222,30 +237,17 @@ namespace shaka {
       return false;
     }
 
-
     // Perform HTTP request
-    Status HttpFile::Request(std::string* response,
-                             HttpMethod method,
+    Status HttpFile::Request(HttpMethod http_method,
                              const std::string& url,
                              const std::string& data,
-                             const bool append_data) {
+                             std::string* response) {
 
-      //DCHECK(method == GET || method == POST);
+      //DCHECK(http_method == GET || http_method == POST);
+      VLOG(1) << "HttpFile::Request url=" << url;
 
-      static LibCurlInitializer lib_curl_initializer;
-
-      // Setup libcurl scope
-      ScopedCurl scoped_curl;
-      CURL* curl = scoped_curl.get();
-      if (!curl) {
-        LOG(ERROR) << "curl_easy_init() failed.";
-        return Status(error::HTTP_FAILURE, "curl_easy_init() failed.");
-      }
-
-      if (!SetupRequest(curl, response, method, url, data, append_data)) {
-        LOG(ERROR) << "SetupRequest() failed.";
-        return Status(error::HTTP_FAILURE, "SetupRequest() failed.");
-      }
+      SetupRequestBase(http_method, url, response);
+      SetupRequestData(data);
 
       // Perform HTTP request
       CURLcode res = curl_easy_perform(curl);
@@ -253,7 +255,7 @@ namespace shaka {
       // Handle request failure
       if (res != CURLE_OK) {
 
-        std::string method_text = method_as_text(method);
+        std::string method_text = method_as_text(http_method);
         std::string error_message = base::StringPrintf(
                 "%s request for %s failed. Reason: %s.", method_text.c_str(), url.c_str(), curl_easy_strerror(res));
         if (res == CURLE_HTTP_RETURNED_ERROR) {
@@ -264,7 +266,6 @@ namespace shaka {
 
         // Signal error to logfile
         LOG(ERROR) << error_message;
-
 
         // Signal error to caller
         return Status(
@@ -278,37 +279,30 @@ namespace shaka {
 
 
     // Configure curl handle with reasonable defaults
-    bool HttpFile::SetupRequest(CURL* curl,
-                                std::string* response,
-                                HttpMethod method,
-                                const std::string& url,
-                                const std::string& data,
-                                const bool append_data) {
+    void HttpFile::SetupRequestBase(HttpMethod http_method,
+                                    const std::string& url,
+                                    std::string* response) {
 
       response->clear();
 
-      // Configure HTTP request method (verb)
-      std::string method_text = "UNKNOWN";
-      switch (method) {
+      // Configure HTTP request method/verb
+      switch (http_method) {
         case GET:
           curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
-          method_text = "GET";
           break;
         case POST:
           curl_easy_setopt(curl, CURLOPT_POST, 1L);
-          method_text = "POST";
           break;
         case PUT:
           curl_easy_setopt(curl, CURLOPT_PUT, 1L);
-          method_text = "PUT";
           break;
         case PATCH:
           curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-          method_text = "PATCH";
           break;
       }
 
       // Configure HTTP request
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 3);
       curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
       curl_easy_setopt(curl, CURLOPT_USERAGENT, kUserAgentString);
       curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
@@ -339,29 +333,66 @@ namespace shaka {
       }
       */
 
-      if (method == POST || method == PUT || method == PATCH) {
-
-        // Add HTTP request headers
-        curl_slist* chunk = nullptr;
-        chunk = curl_slist_append(chunk, kOctetStreamContentTypeHeader);
-        if (append_data) {
-          chunk = curl_slist_append(chunk, kUpdateRangeAppendHeader);
-        }
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
-
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
-      }
-
       // Enable libcurl debugging
       if (VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
         curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
       }
 
-      return true;
+    }
+
+    // https://ec.haxx.se/callback-read.html
+    size_t read_callback(char *buffer, size_t size, size_t nitems, void *stream) {
+      VLOG(1) << "read_callback";
+
+      // Cast stream back to what is actually is
+      //IoCache* cache = reinterpret_cast<IoCache*>(stream);
+      IoCache* cache = (IoCache *)stream;
+      VLOG(1) << "read_callback, cache: " << cache;
+
+      // Copy cache content into buffer
+      size_t length = cache->Read(buffer, size * nitems);
+      VLOG(1) << "read_callback, length: " << length << "; buffer: " << buffer;
+      return length;
+    }
+
+    // Configure curl handle wrt to transfer mode
+    void HttpFile::SetupRequestData(const std::string& data) {
+
+      //if (method == POST || method == PUT || method == PATCH)
+
+      // Collect HTTP request headers
+      struct curl_slist *chunk = nullptr;
+
+      chunk = curl_slist_append(chunk, "Content-Type: application/octet-stream");
+
+      if (transfer_mode_ == PATCH_APPEND) {
+        chunk = curl_slist_append(chunk, "Update-Range: append");
+
+      } else if (transfer_mode_ == PUT_CHUNKED) {
+        VLOG(1) << "SetupRequestData: PUT_CHUNKED";
+        chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
+
+        curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+        curl_easy_setopt(curl, CURLOPT_READDATA, &cache_);
+        curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+
+        //curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, 1000);
+      }
+
+      if (transfer_mode_ == POST_RAW || transfer_mode_ == PUT_FULL || transfer_mode_ == PATCH_APPEND) {
+
+        // Add request data
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
+
+      }
+
+      // Add HTTP request headers
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 
     }
+
 
     // Return HTTP request method (verb) as string
     std::string HttpFile::method_as_text(HttpMethod method) {

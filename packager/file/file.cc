@@ -42,7 +42,8 @@ const char* kCallbackFilePrefix = "callback://";
 const char* kLocalFilePrefix = "file://";
 const char* kMemoryFilePrefix = "memory://";
 const char* kUdpFilePrefix = "udp://";
-const char* kHttpFilePrefix = "http://";
+const char* kHttpPutFilePrefix = "put+http://";
+const char* kHttpPatchFilePrefix = "patch.append+http://";
 
 namespace {
 
@@ -62,8 +63,12 @@ File* CreateCallbackFile(const char* file_name, const char* mode) {
   return new CallbackFile(file_name, mode);
 }
 
-File* CreateHttpFile(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, mode);
+File* CreateHttpFilePut(const char* file_name, const char* mode) {
+  return new HttpFile(file_name, HttpFile::PUT_CHUNKED);
+}
+
+File* CreateHttpFilePatch(const char* file_name, const char* mode) {
+  return new HttpFile(file_name, HttpFile::PATCH_APPEND);
 }
 
 File* CreateLocalFile(const char* file_name, const char* mode) {
@@ -120,7 +125,8 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kUdpFilePrefix, &CreateUdpFile, nullptr, nullptr},
     {kMemoryFilePrefix, &CreateMemoryFile, &DeleteMemoryFile, nullptr},
     {kCallbackFilePrefix, &CreateCallbackFile, nullptr, nullptr},
-    {kHttpFilePrefix, &CreateHttpFile, nullptr, nullptr},
+    {kHttpPutFilePrefix, &CreateHttpFilePut, nullptr, nullptr},
+    {kHttpPatchFilePrefix, &CreateHttpFilePatch, nullptr, nullptr},
 };
 
 base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {
