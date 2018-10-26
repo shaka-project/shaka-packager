@@ -10,13 +10,12 @@
 #include <curl/curl.h>
 
 #include "packager/base/compiler_specific.h"
+#include "packager/base/synchronization/waitable_event.h"
 #include "packager/file/file.h"
 #include "packager/file/io_cache.h"
 #include "packager/status.h"
 
 namespace shaka {
-
-namespace {
 
 // Scoped CURL implementation which cleans up itself when goes out of scope.
 // Stolen from `http_key_fetcher.cc`.
@@ -60,8 +59,6 @@ class LibCurlInitializer {
 
   DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
 };
-
-}  // namespace
 
 /// HttpFile delegates read calls to HTTP GET requests and
 /// write calls to HTTP PATCH requests by following the
@@ -149,7 +146,12 @@ class HttpFile : public File {
   IoCache cache_;
 
   ScopedCurl scoped_curl;
-  CURL* curl;
+  CURL* curl_ = nullptr;
+
+  std::string response_body_;
+
+  // Signaled when the "curl easy perform" task completes.
+  base::WaitableEvent task_exit_event_;
 };
 
 }  // namespace shaka

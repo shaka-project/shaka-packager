@@ -19,7 +19,7 @@ DECLARE_uint64(io_cache_size);
 
 namespace shaka {
 
-// curl primitives stolen from `http_key_fetcher.cc`.
+// curl_ primitives stolen from `http_key_fetcher.cc`.
 namespace {
 
 const char kUserAgentString[] = "shaka-packager-uploader/0.1";
@@ -97,7 +97,9 @@ HttpFile::HttpFile(const char* file_name, TransferMode transfer_mode)
     : File(file_name),
       transfer_mode_(transfer_mode),
       timeout_in_seconds_(0),
-      cache_(FLAGS_io_cache_size) {
+      cache_(FLAGS_io_cache_size),
+      task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                       base::WaitableEvent::InitialState::NOT_SIGNALED) {
   // FIXME: Prepend the scheme again. Improve: It could be https or even others.
   std::string scheme = "http://";
   resource_url_ = scheme + std::string(file_name);
@@ -105,8 +107,8 @@ HttpFile::HttpFile(const char* file_name, TransferMode transfer_mode)
   static LibCurlInitializer lib_curl_initializer;
 
   // Setup libcurl scope
-  curl = scoped_curl.get();
-  if (!curl) {
+  curl_ = scoped_curl.get();
+  if (!curl_) {
     LOG(ERROR) << "curl_easy_init() failed.";
     // return Status(error::HTTP_FAILURE, "curl_easy_init() failed.");
     delete this;
@@ -135,8 +137,7 @@ bool HttpFile::Open() {
 void HttpFile::CurlPut() {
   // Put a libcurl handle into chunked transfer mode
   std::string request_body;
-  std::string response_body;
-  Request(PUT, resource_url(), request_body, &response_body);
+  Request(PUT, resource_url(), request_body, &response_body_);
 }
 
 bool HttpFile::Close() {
@@ -144,6 +145,7 @@ bool HttpFile::Close() {
   if (transfer_mode_ == PUT_CHUNKED) {
     cache_.Close();
   }
+  task_exit_event_.Wait();
   delete this;
   return true;
 }
@@ -246,7 +248,7 @@ Status HttpFile::Request(HttpMethod http_method,
   SetupRequestData(data);
 
   // Perform HTTP request
-  CURLcode res = curl_easy_perform(curl);
+  CURLcode res = curl_easy_perform(curl_);
 
   // Handle request failure
   if (res != CURLE_OK) {
@@ -256,7 +258,7 @@ Status HttpFile::Request(HttpMethod http_method,
         url.c_str(), curl_easy_strerror(res));
     if (res == CURLE_HTTP_RETURNED_ERROR) {
       long response_code = 0;
-      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+      curl_easy_getinfo(curl_, CURLINFO_RESPONSE_CODE, &response_code);
       error_message +=
           base::StringPrintf(" Response code: %ld.", response_code);
     }
@@ -270,11 +272,13 @@ Status HttpFile::Request(HttpMethod http_method,
         error_message);
   }
 
+  task_exit_event_.Signal();
+
   // Request succeeded
   return Status::OK;
 }
 
-// Configure curl handle with reasonable defaults
+// Configure curl_ handle with reasonable defaults
 void HttpFile::SetupRequestBase(HttpMethod http_method,
                                 const std::string& url,
                                 std::string* response) {
@@ -283,55 +287,55 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   // Configure HTTP request method/verb
   switch (http_method) {
     case GET:
-      curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+      curl_easy_setopt(curl_, CURLOPT_HTTPGET, 1L);
       break;
     case POST:
-      curl_easy_setopt(curl, CURLOPT_POST, 1L);
+      curl_easy_setopt(curl_, CURLOPT_POST, 1L);
       break;
     case PUT:
-      curl_easy_setopt(curl, CURLOPT_PUT, 1L);
+      curl_easy_setopt(curl_, CURLOPT_PUT, 1L);
       break;
     case PATCH:
-      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+      curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "PATCH");
       break;
   }
 
   // Configure HTTP request
-  curl_easy_setopt(curl, CURLOPT_VERBOSE, 3);
-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, kUserAgentString);
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
-  curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
-  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, AppendToString);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+  curl_easy_setopt(curl_, CURLOPT_VERBOSE, 3);
+  curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl_, CURLOPT_USERAGENT, kUserAgentString);
+  curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_in_seconds_);
+  curl_easy_setopt(curl_, CURLOPT_FAILONERROR, 1L);
+  curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, AppendToString);
+  curl_easy_setopt(curl_, CURLOPT_WRITEDATA, response);
 
   // HTTPS
   /*
   if (!client_cert_private_key_file_.empty() && !client_cert_file_.empty()) {
     // Some PlayReady packaging servers only allow connects via HTTPS with
     // client certificates.
-    curl_easy_setopt(curl, CURLOPT_SSLKEY,
+    curl_easy_setopt(curl_, CURLOPT_SSLKEY,
                      client_cert_private_key_file_.data());
     if (!client_cert_private_key_password_.empty()) {
-      curl_easy_setopt(curl, CURLOPT_KEYPASSWD,
+      curl_easy_setopt(curl_, CURLOPT_KEYPASSWD,
                        client_cert_private_key_password_.data());
     }
-    curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
-    curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
-    curl_easy_setopt(curl, CURLOPT_SSLCERT, client_cert_file_.data());
+    curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, "PEM");
+    curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, "PEM");
+    curl_easy_setopt(curl_, CURLOPT_SSLCERT, client_cert_file_.data());
   }
   if (!ca_file_.empty()) {
     // Host validation needs to be off when using self-signed certificates.
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    curl_easy_setopt(curl, CURLOPT_CAINFO, ca_file_.data());
+    curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(curl_, CURLOPT_CAINFO, ca_file_.data());
   }
   */
 
   // Enable libcurl debugging
   if (VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
-    curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(curl_, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
+    curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1L);
   }
 }
 
@@ -350,7 +354,7 @@ size_t read_callback(char* buffer, size_t size, size_t nitems, void* stream) {
   return length;
 }
 
-// Configure curl handle wrt to transfer mode
+// Configure curl_ handle wrt to transfer mode
 void HttpFile::SetupRequestData(const std::string& data) {
   // if (method == POST || method == PUT || method == PATCH)
 
@@ -365,23 +369,24 @@ void HttpFile::SetupRequestData(const std::string& data) {
   } else if (transfer_mode_ == PUT_CHUNKED) {
     VLOG(1) << "SetupRequestData: PUT_CHUNKED";
     chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
+    chunk = curl_slist_append(chunk, "Expect:");
 
-    curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
-    curl_easy_setopt(curl, CURLOPT_READDATA, &cache_);
-    curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+    curl_easy_setopt(curl_, CURLOPT_READFUNCTION, read_callback);
+    curl_easy_setopt(curl_, CURLOPT_READDATA, &cache_);
+    curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
 
-    // curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, 1000);
+    // curl_easy_setopt(curl_, CURLOPT_INFILESIZE_LARGE, 1000);
   }
 
   if (transfer_mode_ == POST_RAW || transfer_mode_ == PUT_FULL ||
       transfer_mode_ == PATCH_APPEND) {
     // Add request data
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
+    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, data.c_str());
+    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, data.size());
   }
 
   // Add HTTP request headers
-  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
+  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, chunk);
 }
 
 // Return HTTP request method (verb) as string
