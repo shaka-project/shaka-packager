@@ -16,53 +16,52 @@
 
 namespace shaka {
 
-    namespace {
+namespace {
 
-        // Scoped CURL implementation which cleans up itself when goes out of scope.
-        // Stolen from `http_key_fetcher.cc`.
-        class ScopedCurl {
-        public:
-            ScopedCurl() { ptr_ = curl_easy_init(); }
+// Scoped CURL implementation which cleans up itself when goes out of scope.
+// Stolen from `http_key_fetcher.cc`.
+class ScopedCurl {
+ public:
+  ScopedCurl() { ptr_ = curl_easy_init(); }
 
-            ~ScopedCurl() {
-                    if (ptr_)
-                            curl_easy_cleanup(ptr_);
-            }
+  ~ScopedCurl() {
+    if (ptr_)
+      curl_easy_cleanup(ptr_);
+  }
 
-            CURL *get() { return ptr_; }
+  CURL* get() { return ptr_; }
 
-        private:
-            CURL *ptr_;
-            DISALLOW_COPY_AND_ASSIGN(ScopedCurl);
-        };
+ private:
+  CURL* ptr_;
+  DISALLOW_COPY_AND_ASSIGN(ScopedCurl);
+};
 
-        class LibCurlInitializer {
-        public:
-            LibCurlInitializer() : initialized_(false) {
-                    base::AutoLock lock(lock_);
-                    if (!initialized_) {
-                            curl_global_init(CURL_GLOBAL_DEFAULT);
-                            initialized_ = true;
-                    }
-            }
-
-            ~LibCurlInitializer() {
-                    base::AutoLock lock(lock_);
-                    if (initialized_) {
-                            curl_global_cleanup();
-                            initialized_ = false;
-                    }
-            }
-
-        private:
-            base::Lock lock_;
-            bool initialized_;
-
-            DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
-        };
-
+class LibCurlInitializer {
+ public:
+  LibCurlInitializer() : initialized_(false) {
+    base::AutoLock lock(lock_);
+    if (!initialized_) {
+      curl_global_init(CURL_GLOBAL_DEFAULT);
+      initialized_ = true;
     }
+  }
 
+  ~LibCurlInitializer() {
+    base::AutoLock lock(lock_);
+    if (initialized_) {
+      curl_global_cleanup();
+      initialized_ = false;
+    }
+  }
+
+ private:
+  base::Lock lock_;
+  bool initialized_;
+
+  DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
+};
+
+}  // namespace
 
 /// HttpFile delegates read calls to HTTP GET requests and
 /// write calls to HTTP PATCH requests by following the
@@ -73,87 +72,84 @@ namespace shaka {
 ///
 /// [1] http://sabre.io/dav/http-patch/
 /// [2] https://google.github.io/shaka-packager/html/tutorials/http_upload.html
-/// [3] https://github.com/3QSDN/shaka-packager/blob/http-upload/docs/source/tutorials/http_upload.rst
+/// [3]
+/// https://github.com/3QSDN/shaka-packager/blob/http-upload/docs/source/tutorials/http_upload.rst
 ///
 class HttpFile : public File {
+ public:
+  enum TransferMode {
+    POST_RAW,
+    POST_MULTIPART,
+    PUT_FULL,
+    PUT_CHUNKED,
+    PATCH_APPEND,
+  };
 
-    public:
+  /// Create a HTTP client
+  /// @param file_name C string containing the url of the resource to be
+  /// accessed.
+  ///        Note that the file type prefix should be stripped off already.
+  /// @param the mode the file is being uploaded, refer to TransferMode for
+  ///        the available modes.
+  HttpFile(const char* file_name, TransferMode transfer_mode);
 
-        enum TransferMode {
-            POST_RAW,
-            POST_MULTIPART,
-            PUT_FULL,
-            PUT_CHUNKED,
-            PATCH_APPEND,
-        };
+  /// @name File implementation overrides.
+  /// @{
+  bool Close() override;
+  int64_t Read(void* buffer, uint64_t length) override;
+  int64_t Write(const void* buffer, uint64_t length) override;
+  int64_t Size() override;
+  bool Flush() override;
+  bool Seek(uint64_t position) override;
+  bool Tell(uint64_t* position) override;
+  /// @}
 
-        /// Create a HTTP client
-        /// @param file_name C string containing the url of the resource to be accessed.
-        ///        Note that the file type prefix should be stripped off already.
-        /// @param the mode the file is being uploaded, refer to TransferMode for
-        ///        the available modes.
-        HttpFile(const char* file_name, TransferMode transfer_mode);
+  /// @return The designated transfer mode
+  TransferMode transfer_mode() const { return transfer_mode_; }
 
-        /// @name File implementation overrides.
-        /// @{
-        bool Close() override;
-        int64_t Read(void* buffer, uint64_t length) override;
-        int64_t Write(const void* buffer, uint64_t length) override;
-        int64_t Size() override;
-        bool Flush() override;
-        bool Seek(uint64_t position) override;
-        bool Tell(uint64_t* position) override;
-        /// @}
+  /// @return The full resource url
+  const std::string& resource_url() const { return resource_url_; }
 
-        /// @return The designated transfer mode
-        TransferMode transfer_mode() const { return transfer_mode_; }
+ protected:
+  // Destructor
+  ~HttpFile() override;
 
-        /// @return The full resource url
-        const std::string& resource_url() const { return resource_url_; }
+  bool Open() override;
 
+ private:
+  enum HttpMethod {
+    GET,
+    POST,
+    PUT,
+    PATCH,
+  };
 
-    protected:
-        // Destructor
-        ~HttpFile() override;
+  HttpFile(const HttpFile&) = delete;
+  HttpFile& operator=(const HttpFile&) = delete;
 
-        bool Open() override;
+  // Internal implementation of HTTP functions, e.g. Get and Post.
+  Status Request(HttpMethod http_method,
+                 const std::string& url,
+                 const std::string& data,
+                 std::string* response);
 
-    private:
+  void SetupRequestBase(HttpMethod http_method,
+                        const std::string& url,
+                        std::string* response);
 
-        enum HttpMethod {
-            GET,
-            POST,
-            PUT,
-            PATCH,
-        };
+  void SetupRequestData(const std::string& data);
 
-        HttpFile(const HttpFile&) = delete;
-        HttpFile& operator=(const HttpFile&) = delete;
+  void CurlPut();
 
-        // Internal implementation of HTTP functions, e.g. Get and Post.
-        Status Request(HttpMethod http_method,
-                       const std::string& url,
-                       const std::string& data,
-                       std::string* response);
+  std::string method_as_text(HttpMethod method);
 
-        void SetupRequestBase(HttpMethod http_method,
-                              const std::string& url,
-                              std::string* response);
+  TransferMode transfer_mode_;
+  std::string resource_url_;
+  const uint32_t timeout_in_seconds_;
+  IoCache cache_;
 
-        void SetupRequestData(const std::string& data);
-
-        void CurlPut();
-
-        std::string method_as_text(HttpMethod method);
-
-        TransferMode transfer_mode_;
-        std::string resource_url_;
-        const uint32_t timeout_in_seconds_;
-        IoCache cache_;
-
-        ScopedCurl scoped_curl;
-        CURL* curl;
-
+  ScopedCurl scoped_curl;
+  CURL* curl;
 };
 
 }  // namespace shaka
