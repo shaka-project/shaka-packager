@@ -51,7 +51,7 @@ DASH options
 
     The segments are not removed if the value is zero.
 
---utc_timing <scheme_id_uri_value_pairs>
+--utc_timings <scheme_id_uri_value_pairs>
 
     Comma separated UTCTiming schemeIdUri and value pairs for the MPD:
         **<scheme_id_uri>=<value>[,<scheme_id_uri>=<value>]...**
