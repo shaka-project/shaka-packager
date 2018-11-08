@@ -250,6 +250,9 @@ Status HttpFile::Request(HttpMethod http_method,
   // Perform HTTP request
   CURLcode res = curl_easy_perform(curl_);
 
+  // Assume successful request
+  Status status = Status::OK;
+
   // Handle request failure
   if (res != CURLE_OK) {
     std::string method_text = method_as_text(http_method);
@@ -267,15 +270,16 @@ Status HttpFile::Request(HttpMethod http_method,
     LOG(ERROR) << error_message;
 
     // Signal error to caller
-    return Status(
+    status = Status(
         res == CURLE_OPERATION_TIMEDOUT ? error::TIME_OUT : error::HTTP_FAILURE,
         error_message);
   }
 
+  // Signal task completion
   task_exit_event_.Signal();
 
-  // Request succeeded
-  return Status::OK;
+  // Return request status to caller
+  return status;
 }
 
 // Configure curl_ handle with reasonable defaults
