@@ -341,16 +341,16 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
 
 // https://ec.haxx.se/callback-read.html
 size_t read_callback(char* buffer, size_t size, size_t nitems, void* stream) {
-  VLOG(1) << "read_callback";
+  VLOG(3) << "read_callback";
 
   // Cast stream back to what is actually is
   // IoCache* cache = reinterpret_cast<IoCache*>(stream);
   IoCache* cache = (IoCache*)stream;
-  VLOG(1) << "read_callback, cache: " << cache;
+  VLOG(3) << "read_callback, cache: " << cache;
 
   // Copy cache content into buffer
   size_t length = cache->Read(buffer, size * nitems);
-  VLOG(1) << "read_callback, length: " << length << "; buffer: " << buffer;
+  VLOG(3) << "read_callback, length: " << length << "; buffer: " << buffer;
   return length;
 }
 

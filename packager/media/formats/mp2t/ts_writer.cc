@@ -168,6 +168,7 @@ bool TsWriter::NewSegment(const std::string& file_name) {
     LOG(ERROR) << "File " << current_file_->file_name() << " still open.";
     return false;
   }
+  VLOG(2) << "TsWriter::NewSegment: File::Open(" << file_name << ")";
   current_file_.reset(File::Open(file_name.c_str(), "w"));
   if (!current_file_) {
     LOG(ERROR) << "Failed to open file " << file_name;

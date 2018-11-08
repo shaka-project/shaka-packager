@@ -71,6 +71,8 @@ Status BufferWriter::WriteToFile(File* file) {
   DCHECK(file);
   DCHECK(!buf_.empty());
 
+  VLOG(2) << "BufferWriter::WriteToFile";
+
   size_t remaining_size = buf_.size();
   const uint8_t* buf = &buf_[0];
   while (remaining_size > 0) {
