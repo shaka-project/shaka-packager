@@ -199,9 +199,17 @@ Status Demuxer::InitializeParser() {
     case CONTAINER_WEBM:
       parser_.reset(new WebMMediaParser());
       break;
-      break;
+    case CONTAINER_UNKNOWN: {
+      const int64_t kDumpSizeLimit = 512;
+      LOG(ERROR) << "Failed to detect the container type from the buffer: "
+                 << base::HexEncode(buffer_.get(),
+                                    std::min(bytes_read, kDumpSizeLimit));
+      return Status(error::INVALID_ARGUMENT,
+                    "Failed to detect the container type.");
+    }
     default:
-      NOTIMPLEMENTED();
+      NOTIMPLEMENTED() << "Container " << container_name_
+                       << " is not supported.";
       return Status(error::UNIMPLEMENTED, "Container not supported.");
   }
 
