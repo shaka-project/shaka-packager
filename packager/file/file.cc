@@ -64,11 +64,11 @@ File* CreateCallbackFile(const char* file_name, const char* mode) {
 }
 
 File* CreateHttpFilePut(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, HttpFile::PUT_CHUNKED);
+  return new HttpFile(file_name, mode, HttpFile::PUT_CHUNKED);
 }
 
 File* CreateHttpFilePatch(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, HttpFile::PATCH_APPEND);
+  return new HttpFile(file_name, mode, HttpFile::PATCH_APPEND);
 }
 
 File* CreateLocalFile(const char* file_name, const char* mode) {

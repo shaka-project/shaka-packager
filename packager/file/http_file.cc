@@ -93,8 +93,9 @@ int CurlDebugFunction(CURL* /* handle */,
 }  // namespace
 
 /// Create a HTTP client
-HttpFile::HttpFile(const char* file_name, TransferMode transfer_mode)
+HttpFile::HttpFile(const char* file_name, const char* mode, TransferMode transfer_mode)
     : File(file_name),
+      file_mode_(mode),
       transfer_mode_(transfer_mode),
       timeout_in_seconds_(0),
       cache_(FLAGS_io_cache_size),
@@ -119,12 +120,19 @@ HttpFile::HttpFile(const char* file_name, TransferMode transfer_mode)
 HttpFile::~HttpFile() {}
 
 bool HttpFile::Open() {
-  VLOG(1) << "Opening " << resource_url();
 
+  VLOG(1) << "Opening " << resource_url() << " with file mode \"" << file_mode_ << "\".";
+
+  // Must ignore read requests as they would zero-out the file.
+  // See also https://github.com/google/shaka-packager/issues/149#issuecomment-437203701
+  if (std::string(file_mode_) == "r") {
+    VLOG(1) << "HttpFile only supports write mode, skipping further operations";
+    task_exit_event_.Signal();
+    return false;
+  }
+
+  // Run chunked upload in separate thread.
   if (transfer_mode_ == PUT_CHUNKED) {
-    if (cache_.closed()) {
-      cache_.Reopen();
-    }
     base::WorkerPool::PostTask(
         FROM_HERE, base::Bind(&HttpFile::CurlPut, base::Unretained(this)),
         true  // task_is_slow
@@ -135,13 +143,13 @@ bool HttpFile::Open() {
 }
 
 void HttpFile::CurlPut() {
-  // Put a libcurl handle into chunked transfer mode
+  // Put a libcurl handle into chunked transfer mode.
   std::string request_body;
   Request(PUT, resource_url(), request_body, &response_body_);
 }
 
 bool HttpFile::Close() {
-  VLOG(1) << "Closing " << resource_url();
+  VLOG(1) << "Closing " << resource_url() << ".";
   if (transfer_mode_ == PUT_CHUNKED) {
     cache_.Close();
   }
@@ -305,7 +313,6 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   }
 
   // Configure HTTP request
-  curl_easy_setopt(curl_, CURLOPT_VERBOSE, 3);
   curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
   curl_easy_setopt(curl_, CURLOPT_USERAGENT, kUserAgentString);
   curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_in_seconds_);
@@ -337,10 +344,16 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   */
 
   // Enable libcurl debugging
-  if (VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
+
+  if (FALSE && VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
     curl_easy_setopt(curl_, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
-    curl_easy_setopt(curl_, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(curl_, CURLOPT_VERBOSE, 3L);
   }
+
+  int loglevel = logging::GetVlogLevel(__FILE__);
+  //VLOG(1) << "Log level: " << loglevel;
+  curl_easy_setopt(curl_, CURLOPT_VERBOSE, loglevel);
+
 }
 
 // https://ec.haxx.se/callback-read.html

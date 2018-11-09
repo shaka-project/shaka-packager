@@ -88,7 +88,7 @@ class HttpFile : public File {
   ///        Note that the file type prefix should be stripped off already.
   /// @param the mode the file is being uploaded, refer to TransferMode for
   ///        the available modes.
-  HttpFile(const char* file_name, TransferMode transfer_mode);
+  HttpFile(const char* file_name, const char* mode, TransferMode transfer_mode);
 
   /// @name File implementation overrides.
   /// @{
@@ -140,6 +140,7 @@ class HttpFile : public File {
 
   std::string method_as_text(HttpMethod method);
 
+  const char* file_mode_;
   TransferMode transfer_mode_;
   std::string resource_url_;
   const uint32_t timeout_in_seconds_;

@@ -185,8 +185,10 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
       return Status(error::MUXER_FAILURE, "Failed to finalize TsWriter.");
     }
     if (listener_) {
+      VLOG(2) << "Getting file size for " << current_segment_path_;
       const int64_t file_size =
           File::GetFileSize(current_segment_path_.c_str());
+      VLOG(2) << "File size of " << current_segment_path_ << " is " << file_size;
       listener_->OnNewSegment(current_segment_path_,
                               start_timestamp * timescale_scale_ +
                                   transport_stream_timestamp_offset_,
