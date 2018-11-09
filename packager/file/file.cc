@@ -45,6 +45,16 @@ const char* kUdpFilePrefix = "udp://";
 const char* kHttpPutFilePrefix = "put+http://";
 const char* kHttpPatchFilePrefix = "patch.append+http://";
 
+// Compute effective filename/url without transport mode prefix (e.g. `put+`)
+// for propagating into playlist file. This is related to HTTP PUT upload.
+std::string GetEffectiveFileAddress(std::string file_name) {
+  if (file_name.find("put+") == 0 || file_name.find("patch.append+") == 0) {
+    size_t pos = file_name.find("+");
+    return (pos == std::string::npos) ? file_name : file_name.substr(pos + 1);
+  }
+  return file_name;
+}
+
 namespace {
 
 typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);

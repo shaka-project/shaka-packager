@@ -345,7 +345,7 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
 
   // Enable libcurl debugging
 
-  if (FALSE && VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
+  if (false && VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
     curl_easy_setopt(curl_, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
     curl_easy_setopt(curl_, CURLOPT_VERBOSE, 3L);
   }
