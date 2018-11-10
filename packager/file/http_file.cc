@@ -24,8 +24,6 @@ namespace {
 
 const char kUserAgentString[] = "shaka-packager-uploader/0.1";
 
-const int kMinLogLevelForCurlDebugFunction = 3;
-
 size_t AppendToString(char* ptr,
                       size_t size,
                       size_t nmemb,
@@ -35,59 +33,6 @@ size_t AppendToString(char* ptr,
   const size_t total_size = size * nmemb;
   response->append(ptr, total_size);
   return total_size;
-}
-
-int CurlDebugFunction(CURL* /* handle */,
-                      curl_infotype type,
-                      const char* data,
-                      size_t size,
-                      void* /* userptr */) {
-  const char* type_text;
-  int log_level = kMinLogLevelForCurlDebugFunction;
-  switch (type) {
-    case CURLINFO_TEXT:
-      type_text = "== Info";
-      log_level = kMinLogLevelForCurlDebugFunction + 1;
-      break;
-    case CURLINFO_HEADER_IN:
-      type_text = "<= Recv header";
-      log_level = kMinLogLevelForCurlDebugFunction;
-      break;
-    case CURLINFO_HEADER_OUT:
-      type_text = "=> Send header";
-      log_level = kMinLogLevelForCurlDebugFunction;
-      break;
-    case CURLINFO_DATA_IN:
-      type_text = "<= Recv data";
-      log_level = kMinLogLevelForCurlDebugFunction + 1;
-      break;
-    case CURLINFO_DATA_OUT:
-      type_text = "=> Send data";
-      log_level = kMinLogLevelForCurlDebugFunction + 1;
-      break;
-    // HTTPS
-    /*
-    case CURLINFO_SSL_DATA_IN:
-      type_text = "<= Recv SSL data";
-      log_level = kMinLogLevelForCurlDebugFunction + 2;
-      break;
-    case CURLINFO_SSL_DATA_OUT:
-      type_text = "=> Send SSL data";
-      log_level = kMinLogLevelForCurlDebugFunction + 2;
-      break;
-    */
-    default:
-      // Ignore other debug data.
-      return 0;
-  }
-
-  VLOG(log_level) << "\n\n"
-                  << type_text << " (0x" << std::hex << size << std::dec
-                  << " bytes)"
-                  << "\n"
-                  << std::string(data, size) << "\nHex Format: \n"
-                  << base::HexEncode(data, size);
-  return 0;
 }
 
 }  // namespace
@@ -343,13 +288,7 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   }
   */
 
-  // Enable libcurl debugging
-
-  if (false && VLOG_IS_ON(kMinLogLevelForCurlDebugFunction)) {
-    curl_easy_setopt(curl_, CURLOPT_DEBUGFUNCTION, CurlDebugFunction);
-    curl_easy_setopt(curl_, CURLOPT_VERBOSE, 3L);
-  }
-
+  // Propagate log level to libcurl
   int loglevel = logging::GetVlogLevel(__FILE__);
   //VLOG(1) << "Log level: " << loglevel;
   curl_easy_setopt(curl_, CURLOPT_VERBOSE, loglevel);
