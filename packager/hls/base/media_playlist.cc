@@ -193,10 +193,7 @@ std::string SegmentInfoEntry::ToString() {
     }
   }
 
-  // Use effective filename/url without transport mode prefix (e.g. `put+`)
-  // for propagating into playlist file. This is related to HTTP PUT upload.
-  std::string effective_filename = GetEffectiveFileAddress(file_name_);
-  base::StringAppendF(&result, "\n%s", effective_filename.c_str());
+  base::StringAppendF(&result, "\n%s", file_name_.c_str());
 
   return result;
 }

@@ -60,35 +60,22 @@ class LibCurlInitializer {
   DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
 };
 
-/// HttpFile delegates read calls to HTTP GET requests and
-/// write calls to HTTP PATCH requests by following the
-/// sabre/dav WebDAV implementation [1].
+/// HttpFile delegates write calls to HTTP PUT requests.
 ///
-/// For running this on your workbench, please visit the
-/// corresponding documentation [2,3].
+/// About how to use this, please visit the corresponding documentation [1,2].
 ///
-/// [1] http://sabre.io/dav/http-patch/
-/// [2] https://google.github.io/shaka-packager/html/tutorials/http_upload.html
-/// [3]
+/// [1] https://google.github.io/shaka-packager/html/tutorials/http_upload.html
+/// [2]
 /// https://github.com/3QSDN/shaka-packager/blob/http-upload/docs/source/tutorials/http_upload.rst
 ///
 class HttpFile : public File {
  public:
-  enum TransferMode {
-    POST_RAW,
-    POST_MULTIPART,
-    PUT_FULL,
-    PUT_CHUNKED,
-    PATCH_APPEND,
-  };
 
   /// Create a HTTP client
-  /// @param file_name C string containing the url of the resource to be
-  /// accessed.
+  /// @param file_name contains the url of the resource to be accessed.
   ///        Note that the file type prefix should be stripped off already.
-  /// @param the mode the file is being uploaded, refer to TransferMode for
-  ///        the available modes.
-  HttpFile(const char* file_name, const char* mode, TransferMode transfer_mode);
+  /// @param mode contains file access mode. Implementation dependent.
+  HttpFile(const char* file_name, const char* mode);
 
   /// @name File implementation overrides.
   /// @{
@@ -100,9 +87,6 @@ class HttpFile : public File {
   bool Seek(uint64_t position) override;
   bool Tell(uint64_t* position) override;
   /// @}
-
-  /// @return The designated transfer mode
-  TransferMode transfer_mode() const { return transfer_mode_; }
 
   /// @return The full resource url
   const std::string& resource_url() const { return resource_url_; }
@@ -141,7 +125,6 @@ class HttpFile : public File {
   std::string method_as_text(HttpMethod method);
 
   const char* file_mode_;
-  TransferMode transfer_mode_;
   std::string resource_url_;
   const uint32_t timeout_in_seconds_;
   IoCache cache_;

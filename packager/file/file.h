@@ -20,9 +20,8 @@ extern const char* kCallbackFilePrefix;
 extern const char* kLocalFilePrefix;
 extern const char* kMemoryFilePrefix;
 extern const char* kUdpFilePrefix;
+extern const char* kHttpFilePrefix;
 const int64_t kWholeFile = -1;
-
-std::string GetEffectiveFileAddress(std::string file_name);
 
 /// Define an abstract file interface.
 class File {

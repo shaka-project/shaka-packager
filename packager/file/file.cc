@@ -42,18 +42,8 @@ const char* kCallbackFilePrefix = "callback://";
 const char* kLocalFilePrefix = "file://";
 const char* kMemoryFilePrefix = "memory://";
 const char* kUdpFilePrefix = "udp://";
-const char* kHttpPutFilePrefix = "put+http://";
-const char* kHttpPatchFilePrefix = "patch.append+http://";
+const char* kHttpFilePrefix = "http://";
 
-// Compute effective filename/url without transport mode prefix (e.g. `put+`)
-// for propagating into playlist file. This is related to HTTP PUT upload.
-std::string GetEffectiveFileAddress(std::string file_name) {
-  if (file_name.find("put+") == 0 || file_name.find("patch.append+") == 0) {
-    size_t pos = file_name.find("+");
-    return (pos == std::string::npos) ? file_name : file_name.substr(pos + 1);
-  }
-  return file_name;
-}
 
 namespace {
 
@@ -71,14 +61,6 @@ struct FileTypeInfo {
 
 File* CreateCallbackFile(const char* file_name, const char* mode) {
   return new CallbackFile(file_name, mode);
-}
-
-File* CreateHttpFilePut(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, mode, HttpFile::PUT_CHUNKED);
-}
-
-File* CreateHttpFilePatch(const char* file_name, const char* mode) {
-  return new HttpFile(file_name, mode, HttpFile::PATCH_APPEND);
 }
 
 File* CreateLocalFile(const char* file_name, const char* mode) {
@@ -116,6 +98,10 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
   return new UdpFile(file_name);
 }
 
+File* CreateHttpFile(const char* file_name, const char* mode) {
+  return new HttpFile(file_name, mode);
+}
+
 File* CreateMemoryFile(const char* file_name, const char* mode) {
   return new MemoryFile(file_name, mode);
 }
@@ -135,8 +121,7 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kUdpFilePrefix, &CreateUdpFile, nullptr, nullptr},
     {kMemoryFilePrefix, &CreateMemoryFile, &DeleteMemoryFile, nullptr},
     {kCallbackFilePrefix, &CreateCallbackFile, nullptr, nullptr},
-    {kHttpPutFilePrefix, &CreateHttpFilePut, nullptr, nullptr},
-    {kHttpPatchFilePrefix, &CreateHttpFilePatch, nullptr, nullptr},
+    {kHttpFilePrefix, &CreateHttpFile, nullptr, nullptr},
 };
 
 base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {

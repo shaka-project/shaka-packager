@@ -38,10 +38,9 @@ size_t AppendToString(char* ptr,
 }  // namespace
 
 /// Create a HTTP client
-HttpFile::HttpFile(const char* file_name, const char* mode, TransferMode transfer_mode)
+HttpFile::HttpFile(const char* file_name, const char* mode)
     : File(file_name),
       file_mode_(mode),
-      transfer_mode_(transfer_mode),
       timeout_in_seconds_(0),
       cache_(FLAGS_io_cache_size),
       task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -68,7 +67,8 @@ bool HttpFile::Open() {
 
   VLOG(1) << "Opening " << resource_url() << " with file mode \"" << file_mode_ << "\".";
 
-  // Must ignore read requests as they would zero-out the file.
+  // Ignore read requests as they would truncate the target
+  // file by propagating as zero-length PUT requests.
   // See also https://github.com/google/shaka-packager/issues/149#issuecomment-437203701
   if (std::string(file_mode_) == "r") {
     VLOG(1) << "HttpFile only supports write mode, skipping further operations";
@@ -76,28 +76,24 @@ bool HttpFile::Open() {
     return false;
   }
 
-  // Run chunked upload in separate thread.
-  if (transfer_mode_ == PUT_CHUNKED) {
-    base::WorkerPool::PostTask(
-        FROM_HERE, base::Bind(&HttpFile::CurlPut, base::Unretained(this)),
-        true  // task_is_slow
-    );
-  }
+  // Run progressive upload in separate thread.
+  base::WorkerPool::PostTask(
+      FROM_HERE, base::Bind(&HttpFile::CurlPut, base::Unretained(this)),
+      true  // task_is_slow
+  );
 
   return true;
 }
 
 void HttpFile::CurlPut() {
-  // Put a libcurl handle into chunked transfer mode.
+  // Setup libcurl handle with HTTP PUT upload transfer mode.
   std::string request_body;
   Request(PUT, resource_url(), request_body, &response_body_);
 }
 
 bool HttpFile::Close() {
   VLOG(1) << "Closing " << resource_url() << ".";
-  if (transfer_mode_ == PUT_CHUNKED) {
-    cache_.Close();
-  }
+  cache_.Close();
   task_exit_event_.Wait();
   delete this;
   return true;
@@ -117,40 +113,9 @@ int64_t HttpFile::Write(const void* buffer, uint64_t length) {
   // "widevine_key_source.cc"
   Status status;
 
-  switch (transfer_mode_) {
-    case PUT_CHUNKED: {
-      uint64_t bytes_written = cache_.Write(buffer, length);
-      VLOG(1) << "PUT CHUNK bytes_written: " << bytes_written;
-      return bytes_written;
-      break;
-    }
-
-    case PATCH_APPEND: {
-      // Convert void pointer to C buffer into C++ std::string
-      std::string request_body = std::string((const char*)buffer, length);
-
-      // Debugging. Attention: This yields binary output which will ring your
-      // bell.
-      // VLOG(1) << "Request: " << request_body;
-
-      // Perform HTTP request
-      std::string response_body;
-      status = Request(PATCH, url, request_body, &response_body);
-
-      break;
-    }
-
-      /*
-      case POST_RAW:
-      case POST_MULTIPART:
-      case PUT_FULL:
-      */
-
-    default:
-      LOG(ERROR) << "TransferMode " << transfer_mode()
-                 << " not implemented yet";
-      // break;
-  }
+  uint64_t bytes_written = cache_.Write(buffer, length);
+  VLOG(1) << "PUT CHUNK bytes_written: " << bytes_written;
+  return bytes_written;
 
   // Debugging based on response status
   /*
@@ -194,10 +159,16 @@ Status HttpFile::Request(HttpMethod http_method,
                          const std::string& url,
                          const std::string& data,
                          std::string* response) {
+
+  // TODO: Sanity checks.
   // DCHECK(http_method == GET || http_method == POST);
+
   VLOG(1) << "HttpFile::Request url=" << url;
 
+  // Setup HTTP method and libcurl options
   SetupRequestBase(http_method, url, response);
+
+  // Setup HTTP request headers and body
   SetupRequestData(data);
 
   // Perform HTTP request
@@ -288,7 +259,7 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   }
   */
 
-  // Propagate log level to libcurl
+  // Propagate log level to libcurl.
   int loglevel = logging::GetVlogLevel(__FILE__);
   //VLOG(1) << "Log level: " << loglevel;
   curl_easy_setopt(curl_, CURLOPT_VERBOSE, loglevel);
@@ -310,39 +281,28 @@ size_t read_callback(char* buffer, size_t size, size_t nitems, void* stream) {
   return length;
 }
 
-// Configure curl_ handle wrt to transfer mode
+// Configure curl_ handle for HTTP PUT upload
 void HttpFile::SetupRequestData(const std::string& data) {
+
+  // TODO: Sanity checks.
   // if (method == POST || method == PUT || method == PATCH)
 
-  // Collect HTTP request headers
-  struct curl_slist* chunk = nullptr;
+  // Build list of HTTP request headers.
+  struct curl_slist* headers = nullptr;
 
-  chunk = curl_slist_append(chunk, "Content-Type: application/octet-stream");
+  headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+  headers = curl_slist_append(headers, "Transfer-Encoding: chunked");
 
-  if (transfer_mode_ == PATCH_APPEND) {
-    chunk = curl_slist_append(chunk, "Update-Range: append");
+  // Don't stop on 200 OK responses.
+  headers = curl_slist_append(headers, "Expect:");
 
-  } else if (transfer_mode_ == PUT_CHUNKED) {
-    VLOG(1) << "SetupRequestData: PUT_CHUNKED";
-    chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
-    chunk = curl_slist_append(chunk, "Expect:");
+  // Enable progressive upload with chunked transfer encoding.
+  curl_easy_setopt(curl_, CURLOPT_READFUNCTION, read_callback);
+  curl_easy_setopt(curl_, CURLOPT_READDATA, &cache_);
+  curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
 
-    curl_easy_setopt(curl_, CURLOPT_READFUNCTION, read_callback);
-    curl_easy_setopt(curl_, CURLOPT_READDATA, &cache_);
-    curl_easy_setopt(curl_, CURLOPT_UPLOAD, 1L);
-
-    // curl_easy_setopt(curl_, CURLOPT_INFILESIZE_LARGE, 1000);
-  }
-
-  if (transfer_mode_ == POST_RAW || transfer_mode_ == PUT_FULL ||
-      transfer_mode_ == PATCH_APPEND) {
-    // Add request data
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, data.c_str());
-    curl_easy_setopt(curl_, CURLOPT_POSTFIELDSIZE, data.size());
-  }
-
-  // Add HTTP request headers
-  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, chunk);
+  // Add HTTP request headers.
+  curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
 }
 
 // Return HTTP request method (verb) as string
