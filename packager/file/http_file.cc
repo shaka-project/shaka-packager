@@ -107,14 +107,14 @@ int64_t HttpFile::Read(void* buffer, uint64_t length) {
 int64_t HttpFile::Write(const void* buffer, uint64_t length) {
   std::string url = resource_url();
 
-  VLOG(1) << "Writing to " << url << ", length=" << length;
+  VLOG(2) << "Writing to " << url << ", length=" << length;
 
   // TODO: Implement retrying with exponential backoff, see
   // "widevine_key_source.cc"
   Status status;
 
   uint64_t bytes_written = cache_.Write(buffer, length);
-  VLOG(1) << "PUT CHUNK bytes_written: " << bytes_written;
+  VLOG(3) << "PUT CHUNK bytes_written: " << bytes_written;
   return bytes_written;
 
   // Debugging based on response status
@@ -163,7 +163,7 @@ Status HttpFile::Request(HttpMethod http_method,
   // TODO: Sanity checks.
   // DCHECK(http_method == GET || http_method == POST);
 
-  VLOG(1) << "HttpFile::Request url=" << url;
+  VLOG(1) << "Sending request to URL " << url;
 
   // Setup HTTP method and libcurl options
   SetupRequestBase(http_method, url, response);

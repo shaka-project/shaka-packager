@@ -131,6 +131,7 @@ base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {
 
 const FileTypeInfo* GetFileTypeInfo(base::StringPiece file_name,
                                     base::StringPiece* real_file_name) {
+
   base::StringPiece file_type_prefix = GetFileTypePrefix(file_name);
   for (const FileTypeInfo& file_type : kFileTypeInfo) {
     if (file_type_prefix == file_type.type) {
@@ -241,6 +242,7 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
 
 bool File::WriteStringToFile(const char* file_name,
                              const std::string& contents) {
+  VLOG(2) << "File::WriteStringToFile: " << file_name;
   std::unique_ptr<File, FileCloser> file(File::Open(file_name, "w"));
   if (!file) {
     LOG(ERROR) << "Failed to open file " << file_name;
@@ -269,6 +271,7 @@ bool File::WriteStringToFile(const char* file_name,
 
 bool File::WriteFileAtomically(const char* file_name,
                                const std::string& contents) {
+  VLOG(2) << "File::WriteFileAtomically: " << file_name;
   base::StringPiece real_file_name;
   const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
   DCHECK(file_type);
@@ -288,6 +291,7 @@ bool File::WriteFileAtomically(const char* file_name,
 
 bool File::Copy(const char* from_file_name, const char* to_file_name) {
   std::string content;
+  VLOG(1) << "File::Copy from " << from_file_name << " to " << to_file_name;
   if (!ReadFileToString(from_file_name, &content)) {
     LOG(ERROR) << "Failed to open file " << from_file_name;
     return false;
@@ -330,6 +334,8 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
   DCHECK(destination);
   if (max_copy < 0)
     max_copy = std::numeric_limits<int64_t>::max();
+
+  VLOG(1) << "File::CopyFile from " << source->file_name() << " to " << destination->file_name();
 
   const int64_t kBufferSize = 0x40000;  // 256KB.
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[kBufferSize]);

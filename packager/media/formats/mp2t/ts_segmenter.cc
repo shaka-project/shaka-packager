@@ -132,7 +132,7 @@ Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
       GetSegmentName(muxer_options_.segment_template, next_pts,
                      segment_number_++, muxer_options_.bandwidth);
   if (!ts_writer_->NewSegment(segment_name))
-    return Status(error::MUXER_FAILURE, "Failed to initilize TsPacketWriter.");
+    return Status(error::MUXER_FAILURE, "Failed to initialize TsPacketWriter.");
   current_segment_path_ = segment_name;
   ts_writer_file_opened_ = true;
   return Status::OK;
