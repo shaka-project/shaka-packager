@@ -15,6 +15,10 @@
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/threading/worker_pool.h"
 
+DEFINE_int32(libcurl_verbosity,
+0,
+"Set verbosity level for libcurl.");
+
 DECLARE_uint64(io_cache_size);
 
 namespace shaka {
@@ -259,10 +263,8 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   }
   */
 
-  // Propagate log level to libcurl.
-  int loglevel = logging::GetVlogLevel(__FILE__);
-  //VLOG(1) << "Log level: " << loglevel;
-  curl_easy_setopt(curl_, CURLOPT_VERBOSE, loglevel);
+  // Propagate log level indicated by "--libcurl_verbosity" to libcurl.
+  curl_easy_setopt(curl_, CURLOPT_VERBOSE, FLAGS_libcurl_verbosity);
 
 }
 
