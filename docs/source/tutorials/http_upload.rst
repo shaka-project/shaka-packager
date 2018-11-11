@@ -5,118 +5,59 @@
     it and give us some feedback. However, there are things that haven't
     been finalized yet so you can expect some changes.
 
+    This document describes the current state of the implementation,
+    contributions are always welcome.
+
     The discussion about this feature currently happens at
     `Add HTTP PUT output #149 <https://github.com/google/shaka-packager/issues/149>`_,
     its development on the
     `http-upload <https://github.com/3QSDN/shaka-packager/tree/http-upload>`_ branch,
     feel free to join us.
 
-
+###########
 HTTP upload
-===========
+###########
 
+
+************
 Introduction
-------------
+************
 Shaka Packager can upload produced artefacts to a HTTP server using
-POST, PUT and PATCH methods to improve live publishing performance
-when content is not served directly from the packaging output location.
+HTTP PUT requests with chunked transfer encoding to improve live
+publishing performance when content is not served directly from
+the packaging output location. For talking HTTP, libcurl_ is used.
 
 The produced artefacts are:
 
-- HLS playlist files in M3U_ Format encoded with UTF-8 (.m3u8)
+- HLS_ playlist files in M3U_ Format encoded with UTF-8 (.m3u8)
 - Chunked audio segments encoded with AAC (.aac)
 - Chunked video segments encapsulated into the
   `MPEG transport stream`_ container format (.ts)
 
+References
+==========
+- `RFC 2616 about HTTP PUT`_
+- `RFC 2616 about Chunked Transfer Coding`_
 
 
-Research
---------
-We identified a few sensible ways of uploading files using HTTP.
-We will refer to them as "transfer modes".
+*************
+Documentation
+*************
 
-1. HTTP POST
-
-   Full upload only. Framing: HTML form / multipart stream. See `RFC 1867`_.
-
-2. HTTP PUT
-
-   Full upload only. Framing: None. See `RFC 2616 » PUT`_.
-
-3. HTTP PUT with chunked transfer
-
-   Incremental upload. Framing: Chunks. See `RFC 2616 » Chunked Transfer Coding`_.
-
-4. HTTP PATCH with append
-
-   Incremental upload. Framing: None. See `RFC 5789`_ plus ``Update-Range: append`` header.
-
-5. HTTP2
-
-   Is there anything special we should take care of?
-
-
-Each method has different pros and cons regarding behavior, compatibility,
-conveniency and efficiency. Note that while raw performance is in the main
-focus, other aspects like idempotency, server-side constraints or which
-mode would be suitable for live vs. non-live transmission might also be
-relevant for choosing the transport method which fits your needs best.
-
-
-Implementation
---------------
-This section describes the current state of the implementation,
-contributions are welcome.
-
-- The "HTTP PATCH with append" transfer mode (4.) has been implemented
-  and works flawlessly. However, this mode uses a full HTTP request
-  for each segment, so it is like medium-efficient.
-
-- The "HTTP PUT with chunked transfer" transfer mode (3.) suggested by
-  `@colleenkhenry`_ and sketched out by `@kqyang`_ is also implemented,
-  but segfaults after a short while. Also, while HTTP requests
-  are being made, no data seems to arrive at the HTTP sink.
-  Bummer!
-
-As `@kqyang`_ noted, chunked transfer mode should be most efficient,
-so we are definitively aiming at that target.
+Getting started
+===============
+For enabling the HTTP upload transfer mode, please use
+the ``--http_upload_url`` commandline parameter.
+It will obtain a base url which will be used later on for
+issuing HTTP PUT requests to.
 
 For pragmatic reasons, all HTTP requests will be declared as
 ``Content-Type: application/octet-stream``.
 
-For controlling the transfer mode, an appropriate identifier
-is prefixed to the designated url scheme, which is covered by
-the HTTP/URI specification.
-This saves us from introducing yet another commandline parameter.
-Please refer to these examples about how to apply this to your
-scenario and also refer to the example section below::
-
-    # Use "HTTP PATCH with append" transfer mode
-    patch.append+http://media.example.org/hls-live
-
-    # Use "HTTP PUT with chunked transfer" transfer mode
-    put+http://media.example.org/hls-live
-
-
-Drawbacks
----------
-As ``File::file_name()`` returns the real file name with its scheme prefix
-(file://, http://) stripped off already by ``File::CreateInternalFile()``
-and ``File::GetFileTypeInfo``, the ``http_upload`` module currently can
-not account for https as it doesn't know about the designated protocol scheme.
-
-
-Example
--------
+Synopsis
+========
 Here is a basic example. It is similar to the "live" example and also
-borrow features from "FFmpeg piping", see :doc:`live` and :doc:`ffmpeg_piping`.
-
-Grab and run `httpd-reflector.py`_ to use it as a dummy HTTP sink::
-
-    # Ready
-    wget https://gist.githubusercontent.com/amotl/3ed38e461af743aeeade5a5a106c1296/raw/httpd-reflector.py
-    chmod +x httpd-reflector.py
-    ./httpd-reflector.py --port 6767
+borrows features from "FFmpeg piping", see :doc:`live` and :doc:`ffmpeg_piping`.
 
 Define UNIX pipe to connect ffmpeg with packager::
 
@@ -133,126 +74,164 @@ Acquire and transcode RTMP stream::
 
 Configure and run packager::
 
-    # Define upload target
-    export BASE_PATH=patch.append+http://localhost:6767/hls-live
+    # Define upload URL
+    export UPLOAD_URL=http://localhost:6767/hls-live
 
     # Go
     packager \
-        "input=${PIPE},stream=audio,segment_template=${BASE_PATH}/media/bigbuckbunny-audio-aac-\$Number%04d\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio" \
-        "input=${PIPE},stream=video,segment_template=${BASE_PATH}/media/bigbuckbunny-video-h264-450-\$Number%04d\$.ts,playlist_name=bigbuckbunny-video-450.m3u8" \
+        "input=${PIPE},stream=audio,segment_template=bigbuckbunny-audio-aac-\$Number%04d\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio" \
+        "input=${PIPE},stream=video,segment_template=bigbuckbunny-video-h264-450-\$Number%04d\$.ts,playlist_name=bigbuckbunny-video-450.m3u8" \
         --io_block_size 65536 --fragment_duration 2 --segment_duration 2 \
         --time_shift_buffer_depth 3600 --preserved_segments_outside_live_window 7200 \
-        --hls_master_playlist_output "${BASE_PATH}/meta/bigbuckbunny.m3u8" \
-        --hls_playlist_type LIVE
-
-Output
-------
-The terminal running ``httpd-reflector.py`` should display the payload chunks
-arriving from ``packager``. It will be the expected mixture of playlist files
-and media artefacts outlined above.
+        --hls_master_playlist_output "bigbuckbunny.m3u8" \
+        --hls_playlist_type LIVE \
+        --http_upload_url "${UPLOAD_URL}" \
+        --vmodule=http_file=1
 
 
-**Main playlist file**::
+*******
+Backlog
+*******
+Please note the HTTP upload feature still lacks some features
+probably important for production. Contributions are welcome!
 
-    ----- Request Start ----->
-    Method:         PATCH
-    Path:           /hls-live/meta/bigbuckbunny.m3u8
+DASH
+====
+While the current implementation works for HLS_,
+we should also check DASH_.
 
-    Headers:
-    Accept:         */*
-    Content-Length: 360
-    Content-Type:   application/octet-stream
-    Host:           localhost:6767
-    Update-Range:   append
-    User-Agent:     shaka-packager-uploader/0.1
+Basic Auth
+==========
+There's no support for authentication yet.
 
-    Payload:
-    b'#EXTM3U\n## Generated with https://github.com/google/shaka-packager version f32c934-release\n\n#EXT-X-MEDIA:TYPE=AUDIO,URI="bigbuckbunny-audio.m3u8",GROUP-ID="audio",NAME="stream_0",AUTOSELECT=YES,CHANNELS="2"\n\n#EXT-X-STREAM-INF:BANDWIDTH=134423,AVERAGE-BANDWIDTH=131947,CODECS="avc1.64000c,mp4a.40.2",RESOLUTION=320x180,AUDIO="audio"\nbigbuckbunny-video-450.m3u8\n'
-    <----- Request End -----
+HTTPS
+=====
+While there's already some code in place,
+HTTPS is currently not supported yet.
 
-**Auxiliary playlist files for audio and video**::
+HTTP DELETE
+===========
+Nothing has be done to support this yet:
 
-    ----- Request Start ----->
-    Method:         PATCH
-    Path:           /hls-live/meta/bigbuckbunny-audio.m3u8
+    Packager supports removing old segments automatically.
+    See ``preserved_segments_outside_live_window`` option in
+    DASH_ options or HLS_ options for details.
 
-    Headers:
-    Accept:         */*
-    Content-Length: 216
-    Content-Type:   application/octet-stream
-    Host:           localhost:6767
-    Update-Range:   append
-    User-Agent:     shaka-packager-uploader/0.1
+Software tests
+==============
+We should do some minimal QA, check whether the test
+suite breaks and maybe add some tests covering new code.
 
-    Payload:
-    b'#EXTM3U\n#EXT-X-VERSION:6\n## Generated with https://github.com/google/shaka-packager version f32c934-release\n#EXT-X-TARGETDURATION:1\n#EXTINF:0.939,\nhttp://localhost:6767/hls-live/media/bigbuckbunny-audio-aac-0001.aac\n'
-    <----- Request End -----
+Network timeouts
+================
+libcurl_ can apply network timeout settings. However,
+we haven't addressed this yet.
 
-    ----- Request Start ----->
-    Method:         PATCH
-    Path:           /hls-live/meta/bigbuckbunny-video-450.m3u8
+Miscellaneous
+=============
+- Address all things TODO and FIXME
+- Make ``io_cache_size`` configurable?
 
-    Headers:
-    Accept:         */*
-    Content-Length: 220
-    Content-Type:   application/octet-stream
-    Host:           localhost:6767
-    Update-Range:   append
-    User-Agent:     shaka-packager-uploader/0.1
 
-    Payload:
-    b'#EXTM3U\n#EXT-X-VERSION:6\n## Generated with https://github.com/google/shaka-packager version f32c934-release\n#EXT-X-TARGETDURATION:9\n#EXTINF:8.875,\nhttp://localhost:6767/hls-live/media/bigbuckbunny-video-h264-450-0001.ts\n'
-    <----- Request End -----
+*******
+Backend
+*******
 
-**Audio and video data**::
+HTTP PUT file uploads to Nginx
+==============================
+The receiver is based on the native Nginx_ module "`ngx_http_dav_module`_",
+it handles HTTP PUT requests with chunked transfer encoding
+like emitted by Shaka Packager.
 
-    ----- Request Start ----->
-    Method:         PATCH
-    Path:           /hls-live/media/bigbuckbunny-audio-aac-0001.aac
+The configuration is very simple::
 
-    Headers:
-    Accept:         */*
-    Content-Length: 15775
-    Content-Type:   application/octet-stream
-    Expect:         100-continue
-    Host:           localhost:6767
-    Update-Range:   append
-    User-Agent:     shaka-packager-uploader/0.1
+    server {
+        listen 6767 default_server;
 
-    Payload:
-    b'ID3\x04\x00\x00\x00 [...]'
-    <----- Request End -----
+        access_log  /dev/stdout combined;
+        error_log   /dev/stdout info;
 
-    ----- Request Start ----->
-    Method:         PATCH
-    Path:           /hls-live/media/bigbuckbunny-video-h264-450-0001.ts
+        root /var/spool;
+        location ~ ^/hls-live/(.+)$ {
 
-    Headers:
-    Accept:         */*
-    Content-Length: 65536
-    Content-Type:   application/octet-stream
-    Expect:         100-continue
-    Host:           localhost:6767
-    Update-Range:   append
-    User-Agent:     shaka-packager-uploader/0.1
+            dav_methods PUT;
+            create_full_put_path on;
 
-    Payload:
-    b'G@P<\x07\x10\x00\x03\x9 [...]'
-    <----- Request End -----
+            proxy_buffering off;
+            client_max_body_size 20m;
+
+        }
+
+    }
+
+Run Nginx::
+
+    nginx -p `pwd` -c nginx.conf -g "daemon off;"
+
+
+HTTP PUT file uploads to Caddy
+==============================
+The receiver is based on the Caddy_ webserver, it handles HTTP PUT
+requests with chunked transfer encoding like emitted by Shaka Packager.
+
+Put this configuration into a `Caddyfile`::
+
+    # Bind address
+    :6767
+
+    # Enable logging
+    log stdout
+
+    # Web server root with autoindex
+    root /var/spool
+    redir /hls-live {
+        if {path} is "/"
+    }
+    browse
+
+    # Enable upload with HTTP PUT
+    upload /hls-live {
+        to "/var/spool/hls-live"
+    }
+
+Run Caddy::
+
+    caddy -conf Caddyfile
+
+
+*************************
+Development and debugging
+*************************
+
+Watch the network::
+
+    ngrep -Wbyline -dlo port 6767
+
+Grab and run `httpd-reflector.py`_ to use it as a dummy HTTP sink::
+
+    # Ready
+    wget https://gist.githubusercontent.com/amotl/3ed38e461af743aeeade5a5a106c1296/raw/httpd-reflector.py
+    chmod +x httpd-reflector.py
+    ./httpd-reflector.py --port 6767
 
 
 ----
 
 Have fun!
 
-
-.. _RFC 1867: https://tools.ietf.org/html/rfc1867
-.. _RFC 2616 » PUT: https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6
-.. _RFC 2616 » Chunked Transfer Coding: https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1
-.. _RFC 5789: https://tools.ietf.org/html/rfc5789
-.. _httpd-reflector.py: https://gist.github.com/amotl/3ed38e461af743aeeade5a5a106c1296
+.. _HLS: https://en.wikipedia.org/wiki/HTTP_Live_Streaming
+.. _DASH: https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP
 .. _M3U: https://en.wikipedia.org/wiki/M3U
 .. _MPEG transport stream: https://en.wikipedia.org/wiki/MPEG_transport_stream
+.. _libcurl: https://curl.haxx.se/libcurl/
+.. _RFC 1867: https://tools.ietf.org/html/rfc1867
+.. _RFC 2616 about HTTP PUT: https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6
+.. _RFC 2616 about Chunked Transfer Coding: https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.6.1
+.. _RFC 5789: https://tools.ietf.org/html/rfc5789
+.. _Nginx: http://nginx.org/
+.. _ngx_http_dav_module: http://nginx.org/en/docs/http/ngx_http_dav_module.html
+.. _Caddy: https://caddyserver.com/
+.. _httpd-reflector.py: https://gist.github.com/amotl/3ed38e461af743aeeade5a5a106c1296
 
 .. _@colleenkhenry: https://github.com/colleenkhenry
 .. _@kqyang: https://github.com/kqyang
