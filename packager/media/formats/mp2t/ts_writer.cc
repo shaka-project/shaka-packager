@@ -218,6 +218,7 @@ bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet) {
 base::Optional<uint64_t> TsWriter::GetFilePosition() {
   if (!current_file_)
     return base::nullopt;
+  VLOG(1) << "TsWriter::GetFilePosition for " << current_file_->file_name();
   uint64_t position;
   return current_file_->Tell(&position) ? base::make_optional(position)
                                         : base::nullopt;

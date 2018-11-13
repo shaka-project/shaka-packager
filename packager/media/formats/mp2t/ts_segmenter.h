@@ -98,9 +98,7 @@ class TsSegmenter {
   bool ts_writer_file_opened_ = false;
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
-  // For OnNewSegment().
-  // Path of the current segment so that File::GetFileSize() can be used after
-  // the segment has been finalized.
+  // Path of the current segment obtained by OnNewSegment().
   std::string current_segment_path_;
 
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
