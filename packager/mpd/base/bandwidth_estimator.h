@@ -13,7 +13,7 @@ namespace shaka {
 
 class BandwidthEstimator {
  public:
-  BandwidthEstimator();
+  explicit BandwidthEstimator(double target_segment_duration);
   ~BandwidthEstimator();
 
   /// @param size is the size of the block in bytes. Should be positive.
@@ -35,6 +35,7 @@ class BandwidthEstimator {
   BandwidthEstimator(const BandwidthEstimator&) = delete;
   BandwidthEstimator& operator=(const BandwidthEstimator&) = delete;
 
+  const double target_segment_duration_ = 0;
   uint64_t total_size_in_bits_ = 0;
   double total_duration_ = 0;
   uint64_t max_bitrate_ = 0;

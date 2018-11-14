@@ -115,6 +115,7 @@ Representation::Representation(
     std::unique_ptr<RepresentationStateChangeListener> state_change_listener)
     : media_info_(media_info),
       id_(id),
+      bandwidth_estimator_(mpd_options.mpd_params.target_segment_duration),
       mpd_options_(mpd_options),
       state_change_listener_(std::move(state_change_listener)),
       allow_approximate_segment_timeline_(
@@ -426,7 +427,8 @@ int64_t Representation::AdjustDuration(int64_t duration) const {
   if (!allow_approximate_segment_timeline_)
     return duration;
   const int64_t scaled_target_duration =
-      mpd_options_.target_segment_duration * media_info_.reference_time_scale();
+      mpd_options_.mpd_params.target_segment_duration *
+      media_info_.reference_time_scale();
   return ApproximiatelyEqual(scaled_target_duration, duration)
              ? scaled_target_duration
              : duration;

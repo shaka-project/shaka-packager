@@ -13,7 +13,9 @@
 
 namespace shaka {
 
-BandwidthEstimator::BandwidthEstimator() = default;
+BandwidthEstimator::BandwidthEstimator(double target_segment_duration)
+    : target_segment_duration_(target_segment_duration) {}
+
 BandwidthEstimator::~BandwidthEstimator() = default;
 
 void BandwidthEstimator::AddBlock(uint64_t size_in_bytes, double duration) {
@@ -30,6 +32,30 @@ void BandwidthEstimator::AddBlock(uint64_t size_in_bytes, double duration) {
   total_duration_ += duration;
 
   const uint64_t bitrate = static_cast<uint64_t>(ceil(size_in_bits / duration));
+
+  if (duration < 0.5 * target_segment_duration_) {
+    // https://tools.ietf.org/html/rfc8216#section-4.1
+    // The peak segment bit rate of a Media Playlist is the largest bit rate of
+    // any continuous set of segments whose total duration is between 0.5
+    // and 1.5 times the target duration.
+    // Only the short segments are excluded here as our media playlist generator
+    // sets the target duration in the playlist to the largest segment duration.
+    // So although the segment duration could be 1.5 times the user provided
+    // segment duration, it will never be larger than the actual target
+    // duration.
+    //
+    // TODO(kqyang): Review if we can just stick to the user provided segment
+    // duration as our target duration.
+    //
+    // We also apply the same exclusion to the bandwidth computation for DASH as
+    // the bitrate for the short segment is not a good signal for peak
+    // bandwidth.
+    // See https://github.com/google/shaka-packager/issues/498 for details.
+    VLOG(1) << "Exclude short segment (duration " << duration
+            << ", target_duration " << target_segment_duration_
+            << ") in peak bandwidth computation.";
+    return;
+  }
   max_bitrate_ = std::max(bitrate, max_bitrate_);
 }
 

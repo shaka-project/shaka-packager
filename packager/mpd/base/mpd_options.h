@@ -26,11 +26,6 @@ struct MpdOptions {
   DashProfile dash_profile = DashProfile::kOnDemand;
   MpdType mpd_type = MpdType::kStatic;
   MpdParams mpd_params;
-  /// This is the target segment duration requested by the user. The actual
-  /// segment duration may be different to the target segment duration.
-  /// This parameter is included here to calculate the approximate
-  /// SegmentTimeline if it is enabled.
-  double target_segment_duration = 0;
 };
 
 }  // namespace shaka

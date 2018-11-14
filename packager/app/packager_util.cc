@@ -210,9 +210,7 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
   return decryption_key_source;
 }
 
-MpdOptions GetMpdOptions(bool on_demand_profile,
-                         const MpdParams& mpd_params,
-                         double target_segment_duration) {
+MpdOptions GetMpdOptions(bool on_demand_profile, const MpdParams& mpd_params) {
   MpdOptions mpd_options;
   mpd_options.dash_profile =
       on_demand_profile ? DashProfile::kOnDemand : DashProfile::kLive;
@@ -221,7 +219,6 @@ MpdOptions GetMpdOptions(bool on_demand_profile,
           ? MpdType::kStatic
           : MpdType::kDynamic;
   mpd_options.mpd_params = mpd_params;
-  mpd_options.target_segment_duration = target_segment_duration;
   return mpd_options;
 }
 

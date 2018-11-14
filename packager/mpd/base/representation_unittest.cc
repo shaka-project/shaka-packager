@@ -416,6 +416,8 @@ const char kSElementTemplateWithoutR[] =
 const int kDefaultStartNumber = 1;
 const uint32_t kDefaultTimeScale = 1000u;
 const int64_t kScaledTargetSegmentDuration = 10;
+const double kTargetSegmentDurationInSeconds =
+    static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
 const uint32_t kSampleDuration = 2;
 
 std::string GetDefaultMediaInfo() {
@@ -441,6 +443,9 @@ std::string GetDefaultMediaInfo() {
 
 class SegmentTemplateTest : public RepresentationTest {
  public:
+  SegmentTemplateTest()
+      : bandwidth_estimator_(kTargetSegmentDurationInSeconds) {}
+
   void SetUp() override {
     mpd_options_.mpd_type = MpdType::kDynamic;
     representation_ =
@@ -715,8 +720,8 @@ class SegmentTimelineTestBase : public SegmentTemplateTest {
     const std::string& number_template_media_info =
         base::StringPrintf(kMediaInfo, kDefaultTimeScale);
     mpd_options_.mpd_type = MpdType::kDynamic;
-    mpd_options_.target_segment_duration =
-        static_cast<double>(kScaledTargetSegmentDuration) / kDefaultTimeScale;
+    mpd_options_.mpd_params.target_segment_duration =
+        kTargetSegmentDurationInSeconds;
     representation_ =
         CreateRepresentation(ConvertToMediaInfo(number_template_media_info),
                              kAnyRepresentationId, NoListener());

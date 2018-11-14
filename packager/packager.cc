@@ -867,18 +867,28 @@ Status Packager::Initialize(
       return Status(error::INVALID_ARGUMENT, "Failed to create key source.");
   }
 
-  // Store callback params to make it available during packaging.
-  internal->buffer_callback_params = packaging_params.buffer_callback_params;
-
-  // Update MPD output and HLS output if callback param is specified.
+  // Update MPD output and HLS output if needed.
   MpdParams mpd_params = packaging_params.mpd_params;
   HlsParams hls_params = packaging_params.hls_params;
+
+  // |target_segment_duration| is needed for bandwidth estimation and also for
+  // DASH approximate segment timeline.
+  const double target_segment_duration =
+      packaging_params.chunking_params.segment_duration_in_seconds;
+  if (mpd_params.target_segment_duration != 0)
+    mpd_params.target_segment_duration = target_segment_duration;
+  if (hls_params.target_segment_duration != 0)
+    hls_params.target_segment_duration = target_segment_duration;
+
+  // Store callback params to make it available during packaging.
+  internal->buffer_callback_params = packaging_params.buffer_callback_params;
   if (internal->buffer_callback_params.write_func) {
     mpd_params.mpd_output = File::MakeCallbackFileName(
         internal->buffer_callback_params, mpd_params.mpd_output);
     hls_params.master_playlist_output = File::MakeCallbackFileName(
         internal->buffer_callback_params, hls_params.master_playlist_output);
   }
+
   // Both DASH and HLS require language to follow RFC5646
   // (https://tools.ietf.org/html/rfc5646), which requires the language to be
   // in the shortest form.
@@ -890,10 +900,8 @@ Status Packager::Initialize(
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();
-    const double target_segment_duration =
-        packaging_params.chunking_params.segment_duration_in_seconds;
-    const MpdOptions mpd_options = media::GetMpdOptions(
-        on_demand_dash_profile, mpd_params, target_segment_duration);
+    const MpdOptions mpd_options =
+        media::GetMpdOptions(on_demand_dash_profile, mpd_params);
     internal->mpd_notifier.reset(new SimpleMpdNotifier(mpd_options));
     if (!internal->mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";
