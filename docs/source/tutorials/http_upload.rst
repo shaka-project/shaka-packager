@@ -46,10 +46,10 @@ Documentation
 
 Getting started
 ===============
-For enabling the HTTP upload transfer mode, please use
-the ``--http_upload_url`` commandline parameter.
-It will obtain a base url which will be used later on for
-issuing HTTP PUT requests to.
+For enabling the HTTP upload transfer mode, please populate
+the ``segment_template`` attribute in the ``stream_descriptor``
+parameter as well as the ``--hls_master_playlist_output`` parameter
+with appropriate URLs where the HTTP PUT requests will be issued to.
 
 For pragmatic reasons, all HTTP requests will be declared as
 ``Content-Type: application/octet-stream``.
@@ -79,13 +79,12 @@ Configure and run packager::
 
     # Go
     packager \
-        "input=${PIPE},stream=audio,segment_template=bigbuckbunny-audio-aac-\$Number%04d\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio" \
-        "input=${PIPE},stream=video,segment_template=bigbuckbunny-video-h264-450-\$Number%04d\$.ts,playlist_name=bigbuckbunny-video-450.m3u8" \
+        "input=${PIPE},stream=audio,segment_template=${UPLOAD_URL}/bigbuckbunny-audio-aac-\$Number%04d\$.aac,playlist_name=bigbuckbunny-audio.m3u8,hls_group_id=audio" \
+        "input=${PIPE},stream=video,segment_template=${UPLOAD_URL}/bigbuckbunny-video-h264-450-\$Number%04d\$.ts,playlist_name=bigbuckbunny-video-450.m3u8" \
         --io_block_size 65536 --fragment_duration 2 --segment_duration 2 \
         --time_shift_buffer_depth 3600 --preserved_segments_outside_live_window 7200 \
-        --hls_master_playlist_output "bigbuckbunny.m3u8" \
+        --hls_master_playlist_output "${UPLOAD_URL}/bigbuckbunny.m3u8" \
         --hls_playlist_type LIVE \
-        --http_upload_url "${UPLOAD_URL}" \
         --vmodule=http_file=1
 
 
