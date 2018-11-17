@@ -319,7 +319,8 @@ Element GenerateMarlinContentIds(const std::string& key_id) {
   Element marlin_content_id;
   marlin_content_id.name = kMarlinContentIdName;
   marlin_content_id.content =
-      kMarlinContentIdPrefix + base::HexEncode(key_id.data(), key_id.size());
+      kMarlinContentIdPrefix +
+      base::ToLowerASCII(base::HexEncode(key_id.data(), key_id.size()));
 
   Element marlin_content_ids;
   marlin_content_ids.name = kMarlinContentIdsName;

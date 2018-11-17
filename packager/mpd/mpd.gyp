@@ -100,6 +100,7 @@
         'base/adaptation_set_unittest.cc',
         'base/bandwidth_estimator_unittest.cc',
         'base/mpd_builder_unittest.cc',
+        'base/mpd_utils_unittest.cc',
         'base/period_unittest.cc',
         'base/representation_unittest.cc',
         'base/simple_mpd_notifier_unittest.cc',
