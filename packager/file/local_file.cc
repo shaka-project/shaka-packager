@@ -9,11 +9,88 @@
 #include <stdio.h>
 #if defined(OS_WIN)
 #include <windows.h>
+#else
+#include <sys/stat.h>
 #endif  // defined(OS_WIN)
+#include "packager/base/files/file_path.h"
 #include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 
 namespace shaka {
+namespace {
+
+// Check if the directory |path| exists. Returns false if it does not exist or
+// it is not a directory. On non-Windows, |mode| will be filled with the file
+// permission bits on success.
+bool DirectoryExists(const base::FilePath& path, int* mode) {
+#if defined(OS_WIN)
+  DWORD fileattr = GetFileAttributes(path.value().c_str());
+  if (fileattr != INVALID_FILE_ATTRIBUTES)
+    return (fileattr & FILE_ATTRIBUTE_DIRECTORY) != 0;
+#else
+  struct stat info;
+  if (stat(path.value().c_str(), &info) != 0)
+    return false;
+  if (S_ISDIR(info.st_mode)) {
+    const int FILE_PERMISSION_MASK = S_IRWXU | S_IRWXG | S_IRWXO;
+    if (mode)
+      *mode = info.st_mode & FILE_PERMISSION_MASK;
+    return true;
+  }
+#endif
+  return false;
+}
+
+// Create all the inexistent directories in the path. Returns true on success or
+// if the directory already exists.
+bool CreateDirectory(const base::FilePath& full_path) {
+  std::vector<base::FilePath> subpaths;
+
+  // Collect a list of all parent directories.
+  base::FilePath last_path = full_path;
+  subpaths.push_back(full_path);
+  for (base::FilePath path = full_path.DirName();
+       path.value() != last_path.value(); path = path.DirName()) {
+    subpaths.push_back(path);
+    last_path = path;
+  }
+
+  // For non-Windows only. File permission for the new directories.
+  // The file permission will be inherited from the last existing directory in
+  // the file path. If none of the directory exists in the path, it is set to
+  // 0755 by default.
+  int mode = 0755;
+
+  // Iterate through the parents and create the missing ones.
+  for (auto i = subpaths.rbegin(); i != subpaths.rend(); ++i) {
+    if (DirectoryExists(*i, &mode)) {
+      continue;
+    }
+#if defined(OS_WIN)
+    if (::CreateDirectory(i->value().c_str(), nullptr)) {
+      continue;
+    }
+#else
+    if (mkdir(i->value().c_str(), mode) == 0) {
+      continue;
+    }
+#endif
+
+    // Mkdir failed, but it might have failed with EEXIST, or some other error
+    // due to the the directory appearing out of thin air. This can occur if
+    // two processes are trying to create the same file system tree at the same
+    // time. Check to see if it exists and make sure it is a directory.
+    const auto saved_error_code = ::logging::GetLastSystemErrorCode();
+    if (!DirectoryExists(*i, nullptr)) {
+      LOG(ERROR) << "Failed to create directory " << i->value().c_str()
+                 << " ErrorCode " << saved_error_code;
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 // Always open files in binary mode.
 const char kAdditionalFileMode[] = "b";
@@ -109,12 +186,8 @@ bool LocalFile::Open() {
 
   // Create upper level directories for write mode.
   if (file_mode_.find("w") != std::string::npos) {
-    base::File::Error error;
-    // The function returns success if the directories already exist.
-    if (!base::CreateDirectoryAndGetError(file_path.DirName(), &error)) {
-      LOG(ERROR) << "Failed to create directories for file '"
-                 << file_path.AsUTF8Unsafe()
-                 << "'. Error: " << base::File::ErrorToString(error);
+    // The function returns true if the directories already exist.
+    if (!shaka::CreateDirectory(file_path.DirName())) {
       return false;
     }
   }
