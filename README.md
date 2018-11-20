@@ -38,6 +38,7 @@ Shaka Packager supports:
   |    H265 (HEVC)    |    I / O     |      -       |       I      |      -      |       -      |
   |       VP8         |    I / O     |    I / O     |       -      |      -      |       -      |
   |       VP9         |    I / O     |    I / O     |       -      |      -      |       -      |
+  |       AV1         |    I / O     |    I / O     |       -      |      -      |       -      |
   |       AAC         |    I / O     |      -       |     I / O    |      I      |       O      |
   |  Dolby AC3/EAC3   |    I / O     |      -       |       I      |      -      |       O      |
   |       DTS         |    I / O     |      -       |       -      |      -      |       -      |
