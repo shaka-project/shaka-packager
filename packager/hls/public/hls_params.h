@@ -45,7 +45,12 @@ struct HlsParams {
   /// The renditions tagged with this language will have 'DEFAULT' set to 'YES'
   /// in 'EXT-X-MEDIA' tag. This allows the player to choose the correct default
   /// language for the content.
+  /// This applies to both audio and text tracks. The default language for text
+  /// tracks can be overriden by 'default_text_language'.
   std::string default_language;
+  /// Same as above, but this overrides the default language for text tracks,
+  /// i.e. subtitles or close-captions.
+  std::string default_text_language;
   /// This is the target segment duration requested by the user. The actual
   /// segment duration may be different to the target segment duration.
   /// This parameter is included here to for bandwidth estimator to exclude the

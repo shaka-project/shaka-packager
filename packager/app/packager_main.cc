@@ -443,6 +443,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   }
 
   mpd_params.default_language = FLAGS_default_language;
+  mpd_params.default_text_language = FLAGS_default_text_language;
   mpd_params.generate_static_live_mpd = FLAGS_generate_static_mpd;
   mpd_params.generate_dash_if_iop_compliant_mpd =
       FLAGS_generate_dash_if_iop_compliant_mpd;
@@ -460,6 +461,7 @@ base::Optional<PackagingParams> GetPackagingParams() {
   hls_params.preserved_segments_outside_live_window =
       FLAGS_preserved_segments_outside_live_window;
   hls_params.default_language = FLAGS_default_language;
+  hls_params.default_text_language = FLAGS_default_text_language;
 
   TestParams& test_params = packaging_params.test_params;
   test_params.dump_stream_info = FLAGS_dump_stream_info;

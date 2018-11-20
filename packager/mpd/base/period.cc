@@ -32,6 +32,16 @@ std::set<std::string> GetUUIDs(
   return uuids;
 }
 
+const std::string& GetDefaultAudioLanguage(const MpdOptions& mpd_options) {
+  return mpd_options.mpd_params.default_language;
+}
+
+const std::string& GetDefaultTextLanguage(const MpdOptions& mpd_options) {
+  return mpd_options.mpd_params.default_text_language.empty()
+             ? mpd_options.mpd_params.default_language
+             : mpd_options.mpd_params.default_text_language;
+}
+
 }  // namespace
 
 Period::Period(uint32_t period_id,
@@ -149,8 +159,14 @@ bool Period::SetNewAdaptationSetAttributes(
     const MediaInfo& media_info,
     const std::list<AdaptationSet*>& adaptation_sets,
     AdaptationSet* new_adaptation_set) {
-  if (!language.empty() && language == mpd_options_.mpd_params.default_language)
-    new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  if (!language.empty()) {
+    const bool is_main_role =
+        language == (media_info.has_audio_info()
+                         ? GetDefaultAudioLanguage(mpd_options_)
+                         : GetDefaultTextLanguage(mpd_options_));
+    if (is_main_role)
+      new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  }
 
   if (media_info.has_video_info()) {
     // Because 'language' is ignored for videos, |adaptation_sets| must have

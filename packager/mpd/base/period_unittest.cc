@@ -93,14 +93,12 @@ class TestablePeriod : public Period {
 
 }  // namespace
 
-class PeriodTest : public ::testing::TestWithParam<bool> {
+class PeriodTest : public ::testing::Test {
  public:
   PeriodTest()
       : testable_period_(mpd_options_),
         default_adaptation_set_(new StrictMock<MockAdaptationSet>()),
         default_adaptation_set_ptr_(default_adaptation_set_.get()) {}
-
-  void SetUp() override { content_protection_in_adaptation_set_ = GetParam(); }
 
  protected:
   MpdOptions mpd_options_;
@@ -112,7 +110,7 @@ class PeriodTest : public ::testing::TestWithParam<bool> {
   StrictMock<MockAdaptationSet>* default_adaptation_set_ptr_;
 };
 
-TEST_P(PeriodTest, GetXml) {
+TEST_F(PeriodTest, GetXml) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -143,7 +141,7 @@ TEST_P(PeriodTest, GetXml) {
               XmlNodeEqual(kExpectedXml));
 }
 
-TEST_P(PeriodTest, DynamicMpdGetXml) {
+TEST_F(PeriodTest, DynamicMpdGetXml) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -175,7 +173,7 @@ TEST_P(PeriodTest, DynamicMpdGetXml) {
               XmlNodeEqual(kExpectedXml));
 }
 
-TEST_P(PeriodTest, SetDurationAndGetXml) {
+TEST_F(PeriodTest, SetDurationAndGetXml) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -217,7 +215,7 @@ TEST_P(PeriodTest, SetDurationAndGetXml) {
 }
 
 // Verify ForceSetSegmentAlignment is called.
-TEST_P(PeriodTest, Text) {
+TEST_F(PeriodTest, Text) {
   const char kTextMediaInfo[] =
       "text_info {\n"
       "  codec: 'ttml'\n"
@@ -235,7 +233,7 @@ TEST_P(PeriodTest, Text) {
                 content_protection_in_adaptation_set_));
 }
 
-TEST_P(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
+TEST_F(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -282,7 +280,7 @@ TEST_P(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
 }
 
 // Verify no AdaptationSet is returned on trickplay media info.
-TEST_P(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
+TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
   const char kVideoMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -324,11 +322,338 @@ TEST_P(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
       content_protection_in_adaptation_set_));
 }
 
+// Don't put different audio languages or codecs in the same AdaptationSet.
+TEST_F(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
+  const char kAacEnglishAudioContent[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'eng'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  const char kAacGermanAudioContent[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  const char kVorbisGermanAudioContent1[] =
+      "audio_info {\n"
+      "  codec: 'vorbis'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_WEBM\n"
+      "media_duration_seconds: 10.5\n";
+  const char kVorbisGermanAudioContent2[] =
+      "audio_info {\n"
+      "  codec: 'vorbis'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_WEBM\n"
+      "media_duration_seconds: 10.5\n";
+
+  std::unique_ptr<StrictMock<MockAdaptationSet>> aac_eng_adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* aac_eng_adaptation_set_ptr = aac_eng_adaptation_set.get();
+  std::unique_ptr<StrictMock<MockAdaptationSet>> aac_ger_adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* aac_ger_adaptation_set_ptr = aac_ger_adaptation_set.get();
+  std::unique_ptr<StrictMock<MockAdaptationSet>> vorbis_german_adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* vorbis_german_adaptation_set_ptr = vorbis_german_adaptation_set.get();
+
+  // We expect three AdaptationSets.
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(aac_eng_adaptation_set))))
+      .WillOnce(Return(ByMove(std::move(aac_ger_adaptation_set))))
+      .WillOnce(Return(ByMove(std::move(vorbis_german_adaptation_set))));
+
+  ASSERT_EQ(aac_eng_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kAacEnglishAudioContent),
+                content_protection_in_adaptation_set_));
+  ASSERT_EQ(aac_ger_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kAacGermanAudioContent),
+                content_protection_in_adaptation_set_));
+  ASSERT_EQ(vorbis_german_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVorbisGermanAudioContent1),
+                content_protection_in_adaptation_set_));
+  // The same AdaptationSet is returned.
+  ASSERT_EQ(vorbis_german_adaptation_set_ptr,
+            testable_period_.GetOrCreateAdaptationSet(
+                ConvertToMediaInfo(kVorbisGermanAudioContent2),
+                content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, GetAdaptationSets) {
+  const char kContent1[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'eng'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  const char kContent2[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_1(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_1_ptr = adaptation_set_1.get();
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_2(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_2_ptr = adaptation_set_2.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
+      .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
+
+  ASSERT_EQ(adaptation_set_1_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                      ConvertToMediaInfo(kContent1),
+                                      content_protection_in_adaptation_set_));
+  EXPECT_THAT(testable_period_.GetAdaptationSets(),
+              ElementsAre(adaptation_set_1_ptr));
+
+  ASSERT_EQ(adaptation_set_2_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                      ConvertToMediaInfo(kContent2),
+                                      content_protection_in_adaptation_set_));
+  EXPECT_THAT(testable_period_.GetAdaptationSets(),
+              ElementsAre(adaptation_set_1_ptr, adaptation_set_2_ptr));
+}
+
+TEST_F(PeriodTest, OrderedByAdaptationSetId) {
+  const char kContent1[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'eng'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  const char kContent2[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_1(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_1_ptr = adaptation_set_1.get();
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_2(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_2_ptr = adaptation_set_2.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
+      .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
+
+  ASSERT_EQ(adaptation_set_1_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                      ConvertToMediaInfo(kContent1),
+                                      content_protection_in_adaptation_set_));
+  ASSERT_EQ(adaptation_set_2_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                      ConvertToMediaInfo(kContent2),
+                                      content_protection_in_adaptation_set_));
+
+  adaptation_set_1_ptr->set_id(2);
+  adaptation_set_2_ptr->set_id(1);
+  const char kExpectedXml[] =
+      R"(<Period id="9">)"
+      // ContentType and Representation elements are populated after
+      // Representation::Init() is called.
+      R"(  <AdaptationSet id="1" contentType=""/>)"
+      R"(  <AdaptationSet id="2" contentType=""/>)"
+      R"(</Period>)";
+  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
+              XmlNodeEqual(kExpectedXml));
+}
+
+TEST_F(PeriodTest, AudioAdaptationSetDefaultLanguage) {
+  mpd_options_.mpd_params.default_language = "en";
+  const char kEnglishAudioContent[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'en'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_ptr = adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set))));
+  EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+  ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                    ConvertToMediaInfo(kEnglishAudioContent),
+                                    content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, AudioAdaptationSetNonDefaultLanguage) {
+  mpd_options_.mpd_params.default_language = "fr";
+  const char kEnglishAudioContent[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'en'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_ptr = adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set))));
+  EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain)).Times(0);
+  ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                    ConvertToMediaInfo(kEnglishAudioContent),
+                                    content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, TextAdaptationSetDefaultLanguage) {
+  mpd_options_.mpd_params.default_language = "en";
+  const char kEnglishTextContent[] =
+      "text_info {\n"
+      "  codec: 'webvtt'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}";
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_ptr = adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set))));
+  EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+  EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
+  ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                    ConvertToMediaInfo(kEnglishTextContent),
+                                    content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, TextAdaptationSetNonDefaultLanguage) {
+  mpd_options_.mpd_params.default_language = "fr";
+  const char kEnglishTextContent[] =
+      "text_info {\n"
+      "  codec: 'webvtt'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}";
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_ptr = adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set))));
+  EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain)).Times(0);
+  EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
+  ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                    ConvertToMediaInfo(kEnglishTextContent),
+                                    content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, TextAdaptationSetNonDefaultLanguageButDefaultTextLanguage) {
+  mpd_options_.mpd_params.default_language = "fr";
+  mpd_options_.mpd_params.default_text_language = "en";
+  const char kEnglishTextContent[] =
+      "text_info {\n"
+      "  codec: 'webvtt'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}";
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_ptr = adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set))));
+  EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
+  EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
+  ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                    ConvertToMediaInfo(kEnglishTextContent),
+                                    content_protection_in_adaptation_set_));
+}
+
+TEST_F(PeriodTest, TextAdaptationSetDefaultLanguageButNonDefaultTextLanguage) {
+  mpd_options_.mpd_params.default_language = "en";
+  mpd_options_.mpd_params.default_text_language = "fr";
+  const char kEnglishTextContent[] =
+      "text_info {\n"
+      "  codec: 'webvtt'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}";
+  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set(
+      new StrictMock<MockAdaptationSet>());
+  auto* adaptation_set_ptr = adaptation_set.get();
+
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+      .WillOnce(Return(ByMove(std::move(adaptation_set))));
+  EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain)).Times(0);
+  EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
+  ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
+                                    ConvertToMediaInfo(kEnglishTextContent),
+                                    content_protection_in_adaptation_set_));
+}
+
+class PeriodTestWithContentProtection
+    : public PeriodTest,
+      public ::testing::WithParamInterface<bool> {
+  void SetUp() override { content_protection_in_adaptation_set_ = GetParam(); }
+};
+
 // With content_protection_adaptation_set_ == true, verify with different
 // MediaInfo::ProtectedContent, two AdaptationSets should be created.
 // AdaptationSets with different DRM won't be switchable.
 // Otherwise, only one AdaptationSet is created.
-TEST_P(PeriodTest, DifferentProtectedContent) {
+TEST_P(PeriodTestWithContentProtection, DifferentProtectedContent) {
   // Note they both have different (bogus) pssh, like real use case.
   // default Key ID = _default_key_id_
   const char kSdProtectedContent[] =
@@ -435,7 +760,7 @@ TEST_P(PeriodTest, DifferentProtectedContent) {
 // Verify with the same MediaInfo::ProtectedContent, only one AdaptationSets
 // should be created regardless of the value of
 // content_protection_in_adaptation_set_.
-TEST_P(PeriodTest, SameProtectedContent) {
+TEST_P(PeriodTestWithContentProtection, SameProtectedContent) {
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
       "video_info {\n"
@@ -527,7 +852,7 @@ TEST_P(PeriodTest, SameProtectedContent) {
 //   3. Add a 4k protected content. This should also make a new AdaptationSet.
 //      It should be switchable with SD/HD AdaptationSet.
 // Otherwise only one AdaptationSet is created.
-TEST_P(PeriodTest, SetAdaptationSetSwitching) {
+TEST_P(PeriodTestWithContentProtection, SetAdaptationSetSwitching) {
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
       "video_info {\n"
@@ -668,7 +993,8 @@ TEST_P(PeriodTest, SetAdaptationSetSwitching) {
 
 // Even if the UUIDs match, video and audio AdaptationSets should not be
 // switchable.
-TEST_P(PeriodTest, DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
+TEST_P(PeriodTestWithContentProtection,
+       DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
   // These have the same default key ID and PSSH.
   const char kVideoContent[] =
       "video_info {\n"
@@ -745,192 +1071,8 @@ TEST_P(PeriodTest, DoNotSetAdaptationSetSwitchingIfContentTypesDifferent) {
                 content_protection_in_adaptation_set_));
 }
 
-// Don't put different audio languages or codecs in the same AdaptationSet.
-TEST_P(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
-  const char kAacEnglishAudioContent[] =
-      "audio_info {\n"
-      "  codec: 'mp4a.40.2'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'eng'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_MP4\n"
-      "media_duration_seconds: 10.5\n";
-  const char kAacGermanAudioContent[] =
-      "audio_info {\n"
-      "  codec: 'mp4a.40.2'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'ger'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_MP4\n"
-      "media_duration_seconds: 10.5\n";
-  const char kVorbisGermanAudioContent1[] =
-      "audio_info {\n"
-      "  codec: 'vorbis'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'ger'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_WEBM\n"
-      "media_duration_seconds: 10.5\n";
-  const char kVorbisGermanAudioContent2[] =
-      "audio_info {\n"
-      "  codec: 'vorbis'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'ger'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_WEBM\n"
-      "media_duration_seconds: 10.5\n";
-
-  std::unique_ptr<StrictMock<MockAdaptationSet>> aac_eng_adaptation_set(
-      new StrictMock<MockAdaptationSet>());
-  auto* aac_eng_adaptation_set_ptr = aac_eng_adaptation_set.get();
-  std::unique_ptr<StrictMock<MockAdaptationSet>> aac_ger_adaptation_set(
-      new StrictMock<MockAdaptationSet>());
-  auto* aac_ger_adaptation_set_ptr = aac_ger_adaptation_set.get();
-  std::unique_ptr<StrictMock<MockAdaptationSet>> vorbis_german_adaptation_set(
-      new StrictMock<MockAdaptationSet>());
-  auto* vorbis_german_adaptation_set_ptr = vorbis_german_adaptation_set.get();
-
-  // We expect three AdaptationSets.
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
-      .WillOnce(Return(ByMove(std::move(aac_eng_adaptation_set))))
-      .WillOnce(Return(ByMove(std::move(aac_ger_adaptation_set))))
-      .WillOnce(Return(ByMove(std::move(vorbis_german_adaptation_set))));
-
-  ASSERT_EQ(aac_eng_adaptation_set_ptr,
-            testable_period_.GetOrCreateAdaptationSet(
-                ConvertToMediaInfo(kAacEnglishAudioContent),
-                content_protection_in_adaptation_set_));
-  ASSERT_EQ(aac_ger_adaptation_set_ptr,
-            testable_period_.GetOrCreateAdaptationSet(
-                ConvertToMediaInfo(kAacGermanAudioContent),
-                content_protection_in_adaptation_set_));
-  ASSERT_EQ(vorbis_german_adaptation_set_ptr,
-            testable_period_.GetOrCreateAdaptationSet(
-                ConvertToMediaInfo(kVorbisGermanAudioContent1),
-                content_protection_in_adaptation_set_));
-  // The same AdaptationSet is returned.
-  ASSERT_EQ(vorbis_german_adaptation_set_ptr,
-            testable_period_.GetOrCreateAdaptationSet(
-                ConvertToMediaInfo(kVorbisGermanAudioContent2),
-                content_protection_in_adaptation_set_));
-}
-
-TEST_P(PeriodTest, GetAdaptationSets) {
-  const char kContent1[] =
-      "audio_info {\n"
-      "  codec: 'mp4a.40.2'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'eng'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_MP4\n"
-      "media_duration_seconds: 10.5\n";
-  const char kContent2[] =
-      "audio_info {\n"
-      "  codec: 'mp4a.40.2'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'ger'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_MP4\n"
-      "media_duration_seconds: 10.5\n";
-
-  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_1(
-      new StrictMock<MockAdaptationSet>());
-  auto* adaptation_set_1_ptr = adaptation_set_1.get();
-  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_2(
-      new StrictMock<MockAdaptationSet>());
-  auto* adaptation_set_2_ptr = adaptation_set_2.get();
-
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
-      .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
-      .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
-
-  ASSERT_EQ(adaptation_set_1_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                      ConvertToMediaInfo(kContent1),
-                                      content_protection_in_adaptation_set_));
-  EXPECT_THAT(testable_period_.GetAdaptationSets(),
-              ElementsAre(adaptation_set_1_ptr));
-
-  ASSERT_EQ(adaptation_set_2_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                      ConvertToMediaInfo(kContent2),
-                                      content_protection_in_adaptation_set_));
-  EXPECT_THAT(testable_period_.GetAdaptationSets(),
-              ElementsAre(adaptation_set_1_ptr, adaptation_set_2_ptr));
-}
-
-TEST_P(PeriodTest, OrderedByAdaptationSetId) {
-  const char kContent1[] =
-      "audio_info {\n"
-      "  codec: 'mp4a.40.2'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'eng'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_MP4\n"
-      "media_duration_seconds: 10.5\n";
-  const char kContent2[] =
-      "audio_info {\n"
-      "  codec: 'mp4a.40.2'\n"
-      "  sampling_frequency: 44100\n"
-      "  time_scale: 1200\n"
-      "  num_channels: 2\n"
-      "  language: 'ger'\n"
-      "}\n"
-      "reference_time_scale: 50\n"
-      "container_type: CONTAINER_MP4\n"
-      "media_duration_seconds: 10.5\n";
-
-  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_1(
-      new StrictMock<MockAdaptationSet>());
-  auto* adaptation_set_1_ptr = adaptation_set_1.get();
-  std::unique_ptr<StrictMock<MockAdaptationSet>> adaptation_set_2(
-      new StrictMock<MockAdaptationSet>());
-  auto* adaptation_set_2_ptr = adaptation_set_2.get();
-
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
-      .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
-      .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
-
-  ASSERT_EQ(adaptation_set_1_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                      ConvertToMediaInfo(kContent1),
-                                      content_protection_in_adaptation_set_));
-  ASSERT_EQ(adaptation_set_2_ptr, testable_period_.GetOrCreateAdaptationSet(
-                                      ConvertToMediaInfo(kContent2),
-                                      content_protection_in_adaptation_set_));
-
-  adaptation_set_1_ptr->set_id(2);
-  adaptation_set_2_ptr->set_id(1);
-  const char kExpectedXml[] =
-      R"(<Period id="9">)"
-      // ContentType and Representation elements are populated after
-      // Representation::Init() is called.
-      R"(  <AdaptationSet id="1" contentType=""/>)"
-      R"(  <AdaptationSet id="2" contentType=""/>)"
-      R"(</Period>)";
-  EXPECT_THAT(testable_period_.GetXml(!kOutputPeriodDuration).get(),
-              XmlNodeEqual(kExpectedXml));
-}
 INSTANTIATE_TEST_CASE_P(ContentProtectionInAdaptationSet,
-                        PeriodTest,
+                        PeriodTestWithContentProtection,
                         ::testing::Bool());
 
 }  // namespace shaka

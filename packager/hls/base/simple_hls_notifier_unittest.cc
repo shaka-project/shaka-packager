@@ -35,7 +35,8 @@ using ::testing::WithParamInterface;
 
 namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
-const char kDefaultLanguage[] = "en";
+const char kDefaultAudioLanguage[] = "en";
+const char kDefaultTextLanguage[] = "fr";
 const char kEmptyKeyUri[] = "";
 const char kFairPlayKeyUri[] = "skd://www.license.com/getkey?key_id=testing";
 const char kIdentityKeyUri[] = "https://www.license.com/getkey?key_id=testing";
@@ -45,7 +46,9 @@ const HlsPlaylistType kLivePlaylist = HlsPlaylistType::kLive;
 class MockMasterPlaylist : public MasterPlaylist {
  public:
   MockMasterPlaylist()
-      : MasterPlaylist(kMasterPlaylistName, kDefaultLanguage) {}
+      : MasterPlaylist(kMasterPlaylistName,
+                       kDefaultAudioLanguage,
+                       kDefaultTextLanguage) {}
 
   MOCK_METHOD3(WriteMasterPlaylist,
                bool(const std::string& prefix,

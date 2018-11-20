@@ -28,7 +28,8 @@ using ::testing::StrEq;
 
 namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
-const char kDefaultLanguage[] = "en";
+const char kDefaultAudioLanguage[] = "en";
+const char kDefaultTextLanguage[] = "fr";
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
 
@@ -123,7 +124,9 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
 class MasterPlaylistTest : public ::testing::Test {
  protected:
   MasterPlaylistTest()
-      : master_playlist_(kDefaultMasterPlaylistName, kDefaultLanguage),
+      : master_playlist_(kDefaultMasterPlaylistName,
+                         kDefaultAudioLanguage,
+                         kDefaultTextLanguage),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(
             FilePath::FromUTF8Unsafe(test_output_dir_)
@@ -382,10 +385,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       "test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
-      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\","
       "AUTOSELECT=YES\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
-      "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\",AUTOSELECT=YES\n"
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"fr\",NAME=\"french\",DEFAULT=YES,"
+      "AUTOSELECT=YES\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
@@ -423,8 +427,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
       "test\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
-      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
-      "AUTOSELECT=YES,CHARACTERISTICS=\""
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",AUTOSELECT=YES,"
+      "CHARACTERISTICS=\""
       "public.accessibility.transcribes-spoken-dialog,public.easy-to-read\"\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
@@ -463,10 +467,10 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
       "GROUP-ID=\"en-text-group\",LANGUAGE=\"en\",NAME=\"english\","
-      "DEFAULT=YES,AUTOSELECT=YES\n"
+      "AUTOSELECT=YES\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/fr.m3u8\","
       "GROUP-ID=\"fr-text-group\",LANGUAGE=\"fr\",NAME=\"french\","
-      "AUTOSELECT=YES\n"
+      "DEFAULT=YES,AUTOSELECT=YES\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=300000,AVERAGE-BANDWIDTH=200000,"
       "CODECS=\"sdvideocodec,textcodec\",RESOLUTION=800x600,"
@@ -511,7 +515,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/eng.m3u8\","
-      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\",DEFAULT=YES,"
+      "GROUP-ID=\"textgroup\",LANGUAGE=\"en\",NAME=\"english\","
       "AUTOSELECT=YES\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=230000,"
@@ -537,14 +541,14 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
                           "audiocodec", "en", kAudioChannels, kAudioMaxBitrate,
                           kAudioAvgBitrate),
       CreateAudioPlaylist("audio-2.m3u8", "audio 2", "audio-group-2",
-                          "audiocodec", "en", kAudioChannels, kAudioMaxBitrate,
+                          "audiocodec", "fr", kAudioChannels, kAudioMaxBitrate,
                           kAudioAvgBitrate),
 
       // SUBTITLES
       CreateTextPlaylist("text-1.m3u8", "text 1", "text-group-1", "textcodec",
                          "en"),
       CreateTextPlaylist("text-2.m3u8", "text 2", "text-group-2", "textcodec",
-                         "en"),
+                         "fr"),
 
       // VIDEO
       CreateVideoPlaylist("video-1.m3u8", "sdvideocodec", kVideoMaxBitrate,
@@ -581,14 +585,14 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
       "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
       "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
-      "GROUP-ID=\"audio-group-2\",LANGUAGE=\"en\",NAME=\"audio 2\","
-      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "GROUP-ID=\"audio-group-2\",LANGUAGE=\"fr\",NAME=\"audio 2\","
+      "AUTOSELECT=YES,CHANNELS=\"2\"\n"
       "\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/text-1.m3u8\","
       "GROUP-ID=\"text-group-1\",LANGUAGE=\"en\",NAME=\"text 1\","
-      "DEFAULT=YES,AUTOSELECT=YES\n"
+      "AUTOSELECT=YES\n"
       "#EXT-X-MEDIA:TYPE=SUBTITLES,URI=\"http://playlists.org/text-2.m3u8\","
-      "GROUP-ID=\"text-group-2\",LANGUAGE=\"en\",NAME=\"text 2\","
+      "GROUP-ID=\"text-group-2\",LANGUAGE=\"fr\",NAME=\"text 2\","
       "DEFAULT=YES,AUTOSELECT=YES\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=350000,AVERAGE-BANDWIDTH=130000,"

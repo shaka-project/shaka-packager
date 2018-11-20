@@ -53,7 +53,12 @@ struct MpdParams {
   /// The tracks tagged with this language will have <Role ... value=\"main\" />
   /// in the manifest. This allows the player to choose the correct default
   /// language for the content.
+  /// This applies to both audio and text tracks. The default language for text
+  /// tracks can be overriden by 'default_text_language'.
   std::string default_language;
+  /// Same as above, but this overrides the default language for text tracks,
+  /// i.e. subtitles or close-captions.
+  std::string default_text_language;
   /// Generate static MPD for live profile. Note that this flag has no effect
   /// for on-demand profile, in which case static MPD is always used.
   bool generate_static_live_mpd = false;

@@ -282,9 +282,14 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
   const base::FilePath master_playlist_path(
       base::FilePath::FromUTF8Unsafe(hls_params.master_playlist_output));
   output_dir_ = master_playlist_path.DirName().AsUTF8Unsafe();
+  const std::string& default_audio_langauge = hls_params.default_language;
+  const std::string& default_text_language =
+      hls_params.default_text_language.empty()
+          ? hls_params.default_language
+          : hls_params.default_text_language;
   master_playlist_.reset(
       new MasterPlaylist(master_playlist_path.BaseName().AsUTF8Unsafe(),
-                         hls_params.default_language));
+                         default_audio_langauge, default_text_language));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}

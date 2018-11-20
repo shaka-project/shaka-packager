@@ -343,7 +343,8 @@ void BuildMediaTags(
   }
 }
 
-void AppendPlaylists(const std::string& default_language,
+void AppendPlaylists(const std::string& default_audio_language,
+                     const std::string& default_text_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
                      std::string* content) {
@@ -374,12 +375,13 @@ void AppendPlaylists(const std::string& default_language,
 
   if (!audio_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(audio_playlist_groups, default_language, base_url, content);
+    BuildMediaTags(audio_playlist_groups, default_audio_language, base_url,
+                   content);
   }
 
   if (!subtitle_playlist_groups.empty()) {
     content->append("\n");
-    BuildMediaTags(subtitle_playlist_groups, default_language, base_url,
+    BuildMediaTags(subtitle_playlist_groups, default_text_language, base_url,
                    content);
   }
 
@@ -406,8 +408,12 @@ void AppendPlaylists(const std::string& default_language,
 }  // namespace
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
-                               const std::string& default_language)
-    : file_name_(file_name), default_language_(default_language) {}
+                               const std::string& default_audio_language,
+                               const std::string& default_text_language)
+    : file_name_(file_name),
+      default_audio_language_(default_audio_language),
+      default_text_language_(default_text_language) {}
+
 MasterPlaylist::~MasterPlaylist() {}
 
 bool MasterPlaylist::WriteMasterPlaylist(
@@ -416,7 +422,8 @@ bool MasterPlaylist::WriteMasterPlaylist(
     const std::list<MediaPlaylist*>& playlists) {
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
-  AppendPlaylists(default_language_, base_url, playlists, &content);
+  AppendPlaylists(default_audio_language_, default_text_language_, base_url,
+                  playlists, &content);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)

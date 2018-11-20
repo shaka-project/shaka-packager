@@ -895,8 +895,12 @@ Status Packager::Initialize(
   // in the shortest form.
   mpd_params.default_language =
       LanguageToShortestForm(mpd_params.default_language);
+  mpd_params.default_text_language =
+      LanguageToShortestForm(mpd_params.default_text_language);
   hls_params.default_language =
       LanguageToShortestForm(hls_params.default_language);
+  hls_params.default_text_language =
+      LanguageToShortestForm(hls_params.default_text_language);
 
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
