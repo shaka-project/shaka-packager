@@ -279,6 +279,8 @@ Status ValidateParams(const PackagingParams& packaging_params,
   // generates multiple segments specified using segment template.
   const bool on_demand_dash_profile =
       stream_descriptors.begin()->segment_template.empty();
+  std::set<std::string> outputs;
+  std::set<std::string> segment_templates;
   for (const auto& descriptor : stream_descriptors) {
     if (on_demand_dash_profile != descriptor.segment_template.empty()) {
       return Status(error::INVALID_ARGUMENT,
@@ -303,6 +305,27 @@ Status ValidateParams(const PackagingParams& packaging_params,
       }
       // Skip the check for DASH as DASH defaults to 'dynamic' MPD when segment
       // template is provided.
+    }
+
+    if (!descriptor.output.empty()) {
+      if (outputs.find(descriptor.output) != outputs.end()) {
+        return Status(
+            error::INVALID_ARGUMENT,
+            "Seeing duplicated outputs '" + descriptor.output +
+                "' in stream descriptors. Every output must be unique.");
+      }
+      outputs.insert(descriptor.output);
+    }
+    if (!descriptor.segment_template.empty()) {
+      if (segment_templates.find(descriptor.segment_template) !=
+          segment_templates.end()) {
+        return Status(error::INVALID_ARGUMENT,
+                      "Seeing duplicated segment templates '" +
+                          descriptor.segment_template +
+                          "' in stream descriptors. Every segment template "
+                          "must be unique.");
+      }
+      segment_templates.insert(descriptor.segment_template);
     }
   }
 
