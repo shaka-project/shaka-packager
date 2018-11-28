@@ -98,7 +98,8 @@ std::unique_ptr<MockMediaPlaylist> CreateAudioPlaylist(
   EXPECT_CALL(*playlist, AvgBitrate())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(avg_bitrate));
-  EXPECT_CALL(*playlist, GetDisplayResolution(NotNull(), NotNull())).Times(0);
+  ON_CALL(*playlist, GetDisplayResolution(NotNull(), NotNull()))
+      .WillByDefault(Return(false));
 
   return playlist;
 }
@@ -640,5 +641,56 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
 
   ASSERT_EQ(expected, actual);
 }
+
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
+  const uint64_t kAudioChannels = 2;
+  const uint64_t kAudioMaxBitrate = 50000;
+  const uint64_t kAudioAvgBitrate = 30000;
+
+  std::unique_ptr<MockMediaPlaylist> media_playlists[] = {
+      // AUDIO
+      CreateAudioPlaylist("audio-1.m3u8", "audio 1", "audio-group-1",
+                          "audiocodec", "en", kAudioChannels, kAudioMaxBitrate,
+                          kAudioAvgBitrate),
+      CreateAudioPlaylist("audio-2.m3u8", "audio 2", "audio-group-2",
+                          "audiocodec", "fr", kAudioChannels, kAudioMaxBitrate,
+                          kAudioAvgBitrate),
+  };
+
+  // Add all the media playlists to the master playlist.
+  std::list<MediaPlaylist*> media_playlist_list;
+  for (const auto& media_playlist : media_playlists) {
+    media_playlist_list.push_back(media_playlist.get());
+  }
+
+  const char kBaseUrl[] = "http://playlists.org/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+                                                   media_playlist_list));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-1.m3u8\","
+      "GROUP-ID=\"audio-group-1\",LANGUAGE=\"en\",NAME=\"audio 1\","
+      "DEFAULT=YES,AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "#EXT-X-MEDIA:TYPE=AUDIO,URI=\"http://playlists.org/audio-2.m3u8\","
+      "GROUP-ID=\"audio-group-2\",LANGUAGE=\"fr\",NAME=\"audio 2\","
+      "AUTOSELECT=YES,CHANNELS=\"2\"\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-1\"\n"
+      "http://playlists.org/audio-1.m3u8\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=50000,AVERAGE-BANDWIDTH=30000,"
+      "CODECS=\"audiocodec\",AUDIO=\"audio-group-2\"\n"
+      "http://playlists.org/audio-2.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
 }  // namespace hls
 }  // namespace shaka
