@@ -175,7 +175,8 @@ bool WebVttParser::Parse() {
 
     LOG(ERROR) << "Failed to determine block classification:\n"
                << BlockToString(block.data(), block.size());
-    return false;
+    // Ignore the unknown block
+    continue;
   }
 
   return keep_reading_;
