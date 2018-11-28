@@ -273,10 +273,12 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
                                   int pes_pid,
-                                  int stream_type) {
+                                  int stream_type,
+                                  std::string lang) {
   DVLOG(1) << "RegisterPes:"
            << " pes_pid=" << pes_pid
-           << " stream_type=" << std::hex << stream_type << std::dec;
+           << " stream_type=" << std::hex << stream_type << std::dec
+           << " lang=" << lang;
   std::map<int, std::unique_ptr<PidState>>::iterator it = pids_.find(pes_pid);
   if (it != pids_.end())
     return;
@@ -300,7 +302,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
     case TsStreamType::kAdtsAac:
     case TsStreamType::kAc3:
       es_parser.reset(new EsParserAudio(
-          pes_pid, static_cast<TsStreamType>(stream_type),
+          pes_pid, static_cast<TsStreamType>(stream_type), lang,
           base::Bind(&Mp2tMediaParser::OnNewStreamInfo, base::Unretained(this)),
           base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this)),
           sbr_in_mimetype_));

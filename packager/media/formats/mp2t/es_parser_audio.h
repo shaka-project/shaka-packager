@@ -29,6 +29,7 @@ class EsParserAudio : public EsParser {
  public:
   EsParserAudio(uint32_t pid,
                 TsStreamType stream_type,
+                std::string lang,
                 const NewStreamInfoCB& new_stream_info_cb,
                 const EmitSampleCB& emit_sample_cb,
                 bool sbr_in_mimetype);
@@ -56,6 +57,8 @@ class EsParserAudio : public EsParser {
 
   const TsStreamType stream_type_;
   std::unique_ptr<AudioHeader> audio_header_;
+
+  std::string lang_;
 
   // Callbacks:
   // - to signal a new audio configuration,

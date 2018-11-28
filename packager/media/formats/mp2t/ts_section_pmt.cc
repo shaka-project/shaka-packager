@@ -76,6 +76,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // (4 bytes = size of the CRC).
   int pid_map_end_marker = section_start_marker - section_length + 4;
   std::map<int, int> pid_map;
+  std::map<int, std::string> pid_lang;
   while (static_cast<int>(bit_reader->bits_available()) >
          8 * pid_map_end_marker) {
     int stream_type;
@@ -95,7 +96,29 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
 
     // Read the ES info descriptors.
     // Defined in section 2.6 of ISO-13818.
-    RCHECK(bit_reader->SkipBits(8 * es_info_length));
+    int descriptor_tag;
+    int descriptor_length;
+    char lang[] = { 'u', 'n', 'd', '\0' };
+
+    while (es_info_length) {
+	RCHECK(bit_reader->ReadBits(8, &descriptor_tag));
+	RCHECK(bit_reader->ReadBits(8, &descriptor_length));
+
+	if (descriptor_tag == 10) {
+		RCHECK(bit_reader->ReadBits(8, &lang[0]));	// ISO_639_language_code
+		RCHECK(bit_reader->ReadBits(8, &lang[1]));
+		RCHECK(bit_reader->ReadBits(8, &lang[2]));
+		RCHECK(bit_reader->SkipBits(8));		// audio_type
+
+	}
+	else {
+		RCHECK(bit_reader->SkipBits(8 * descriptor_length));
+	}
+
+	es_info_length -= 2 + descriptor_length;
+    }
+    pid_lang.insert(std::pair<int, std::string>(pid_es, std::string(lang)));
+
   }
 
   // Read the CRC.
@@ -105,7 +128,7 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   // Once the PMT has been proved to be correct, register the PIDs.
   for (std::map<int, int>::iterator it = pid_map.begin();
        it != pid_map.end(); ++it)
-    register_pes_cb_.Run(it->first, it->second);
+    register_pes_cb_.Run(it->first, it->second, pid_lang[it->first]);
 
   return true;
 }

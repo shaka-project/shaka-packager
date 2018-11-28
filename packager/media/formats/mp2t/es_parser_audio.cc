@@ -80,11 +80,13 @@ static bool LookForSyncWord(const uint8_t* raw_es,
 
 EsParserAudio::EsParserAudio(uint32_t pid,
                              TsStreamType stream_type,
+                             std::string lang,
                              const NewStreamInfoCB& new_stream_info_cb,
                              const EmitSampleCB& emit_sample_cb,
                              bool sbr_in_mimetype)
     : EsParser(pid),
       stream_type_(stream_type),
+      lang_(lang),
       new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
       sbr_in_mimetype_(sbr_in_mimetype) {
@@ -213,7 +215,7 @@ bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
       audio_specific_config.data(), audio_specific_config.size(),
       kAacSampleSizeBits, audio_header.GetNumChannels(),
       extended_samples_per_second, 0 /* seek preroll */, 0 /* codec delay */,
-      0 /* max bitrate */, 0 /* avg bitrate */, std::string(), false);
+      0 /* max bitrate */, 0 /* avg bitrate */, lang_, false);
 
   DVLOG(1) << "Sampling frequency: " << samples_per_second;
   DVLOG(1) << "Extended sampling frequency: " << extended_samples_per_second;
