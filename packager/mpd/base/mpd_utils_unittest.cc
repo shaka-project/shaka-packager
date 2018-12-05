@@ -103,7 +103,7 @@ TEST_F(MpdUtilsTest, ContentProtectionMarlin) {
       "      schemeIdUri='urn:mpeg:dash:mp4protection:2011'"
       "      cenc:default_KID='30313233-3435-3637-3839-3a3b3c3d3e3f'/>"
       "  <ContentProtection"
-      "      schemeIdUri='urn:uuid:5e629af5-38da-4063-8977-97ffbd9902d4'>"
+      "      schemeIdUri='urn:uuid:5E629AF5-38DA-4063-8977-97FFBD9902D4'>"
       "    <mas:MarlinContentIds>"
       "      <mas:MarlinContentId>"
       "        urn:marlin:kid:303132333435363738393a3b3c3d3e3f"

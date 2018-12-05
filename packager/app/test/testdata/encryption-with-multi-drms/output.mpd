@@ -10,7 +10,7 @@
       <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
         <cenc:pssh>AAAAOHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABgSEDEyMzQ1Njc4OTAxMjM0NTZI49yVmwY=</cenc:pssh>
       </ContentProtection>
-      <ContentProtection schemeIdUri="urn:uuid:5e629af5-38da-4063-8977-97ffbd9902d4">
+      <ContentProtection schemeIdUri="urn:uuid:5E629AF5-38DA-4063-8977-97FFBD9902D4">
         <mas:MarlinContentIds>
           <mas:MarlinContentId>urn:marlin:kid:31323334353637383930313233343536</mas:MarlinContentId>
         </mas:MarlinContentIds>
@@ -30,7 +30,7 @@
       <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
         <cenc:pssh>AAAAOHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABgSEDEyMzQ1Njc4OTAxMjM0NTZI49yVmwY=</cenc:pssh>
       </ContentProtection>
-      <ContentProtection schemeIdUri="urn:uuid:5e629af5-38da-4063-8977-97ffbd9902d4">
+      <ContentProtection schemeIdUri="urn:uuid:5E629AF5-38DA-4063-8977-97FFBD9902D4">
         <mas:MarlinContentIds>
           <mas:MarlinContentId>urn:marlin:kid:31323334353637383930313233343536</mas:MarlinContentId>
         </mas:MarlinContentIds>
