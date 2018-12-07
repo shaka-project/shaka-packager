@@ -39,6 +39,11 @@ Status TrickPlayHandler::Process(std::unique_ptr<StreamData> stream_data) {
     case StreamDataType::kMediaSample:
       return OnMediaSample(*stream_data->media_sample);
 
+    case StreamDataType::kCueEvent:
+      // Add the cue event to be dispatched later.
+      delayed_messages_.push_back(std::move(stream_data));
+      return Status::OK;
+
     default:
       return Status(error::TRICK_PLAY_ERROR,
                     "Trick play only supports stream info, segment info, and "

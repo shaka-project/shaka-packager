@@ -1010,6 +1010,17 @@ class PackagerFunctionalTest(PackagerAppTest):
                        ad_cues='1.5'))
     self._CheckTestResults('encryption-and-ad-cues')
 
+  def testEncryptionAndAdCuesAndDashTrickPlay(self):
+    streams = [
+        self._GetStream('audio'),
+        self._GetStream('video'),
+        self._GetStream('video', trick_play_factor=1),
+    ]
+    self.assertPackageSuccess(
+        streams, self._GetFlags(
+            encryption=True, output_dash=True, ad_cues='1.5'))
+    self._CheckTestResults('encryption-and-ad-cues-and-dash-trick-play')
+
   def testEncryptionAndAdCuesSplitContent(self):
     self.assertPackageSuccess(
         self._GetStreams(

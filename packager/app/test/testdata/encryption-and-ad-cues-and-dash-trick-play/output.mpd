@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360668182373047S">
+  <Period id="0" duration="PT2.002S">
+    <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <Representation id="0" bandwidth="133457" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <BaseURL>bear-640x360-audio.mp4</BaseURL>
+        <SegmentBase indexRange="1003-1070" timescale="44100">
+          <Initialization range="0-1002"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <Representation id="1" bandwidth="977743" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+        <BaseURL>bear-640x360-video.mp4</BaseURL>
+        <SegmentBase indexRange="1127-1194" timescale="30000">
+          <Initialization range="0-1126"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="2" contentType="video" width="640" height="360" frameRate="30000/30030" subsegmentAlignment="true" par="16:9">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="1"/>
+      <Representation id="2" bandwidth="143393" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" maxPlayoutRate="30" codingDependency="false">
+        <BaseURL>bear-640x360-video-trick_play_factor_1.mp4</BaseURL>
+        <SegmentBase indexRange="1127-1194" timescale="30000">
+          <Initialization range="0-1126"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+  <Period id="1" duration="PT.7340666666666671S">
+    <AdaptationSet id="0" contentType="audio" subsegmentAlignment="true">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <Representation id="0" bandwidth="110595" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <BaseURL>bear-640x360-audio.mp4</BaseURL>
+        <SegmentBase indexRange="1003-1070" timescale="44100" presentationTimeOffset="88288">
+          <Initialization range="0-1002"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <Representation id="1" bandwidth="872586" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
+        <BaseURL>bear-640x360-video.mp4</BaseURL>
+        <SegmentBase indexRange="1127-1194" timescale="30000" presentationTimeOffset="60059">
+          <Initialization range="0-1126"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="2" contentType="video" width="640" height="360" frameRate="30000/30030" subsegmentAlignment="true" par="16:9">
+      <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+      <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
+        <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
+      </ContentProtection>
+      <EssentialProperty schemeIdUri="http://dashif.org/guidelines/trickmode" value="1"/>
+      <Representation id="2" bandwidth="212297" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" maxPlayoutRate="30" codingDependency="false">
+        <BaseURL>bear-640x360-video-trick_play_factor_1.mp4</BaseURL>
+        <SegmentBase indexRange="1127-1194" timescale="30000" presentationTimeOffset="60059">
+          <Initialization range="0-1126"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>
