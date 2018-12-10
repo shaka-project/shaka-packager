@@ -62,6 +62,14 @@ bool EsParserH26x::Parse(const uint8_t* buf,
     // Link the end of the byte queue with the incoming timing descriptor.
     timing_desc_list_.push_back(
         std::pair<int64_t, TimingDesc>(es_queue_->tail(), timing_desc));
+
+    // Warns if there are a large number of cached timestamps, which should be 1
+    // or 2 if everythings works as expected.
+    const size_t kWarningSize =
+        24;  // An arbitrary number (it is 1 second for a fps of 24).
+    LOG_IF(WARNING, timing_desc_list_.size() >= kWarningSize)
+        << "Unusually large number of cached timestamps ("
+        << timing_desc_list_.size() << ").";
   }
 
   // Add the incoming bytes to the ES queue.
@@ -209,8 +217,10 @@ bool EsParserH26x::ParseInternal() {
     // AUD shall be the first NAL unit if present. There shall be at most one
     // AUD in any access unit. We can emit the current access unit which shall
     // not contain the AUD.
-    if (nalu.is_aud())
-      return EmitCurrentAccessUnit();
+    if (nalu.is_aud()) {
+      RCHECK(EmitCurrentAccessUnit());
+      continue;
+    }
 
     // We can only determine if the current access unit ends after seeing
     // another VCL NAL unit.
@@ -281,7 +291,9 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
 
   // Emit a frame.
   DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << access_unit_pos
-                      << " size=" << access_unit_size;
+                      << " size=" << access_unit_size << " pts "
+                      << current_timing_desc.pts << " timing_desc_list size "
+                      << timing_desc_list_.size();
   int es_size;
   const uint8_t* es;
   es_queue_->PeekAt(access_unit_pos, &es, &es_size);

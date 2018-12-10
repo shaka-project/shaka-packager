@@ -163,6 +163,11 @@ class EsParserH26xTest : public testing::Test {
                const H26xNaluType* types,
                size_t types_count);
 
+  // Returns the vector of samples data j
+  std::vector<std::vector<uint8_t>> BuildSamplesData(Nalu::CodecType codec_type,
+                                                     const H26xNaluType* types,
+                                                     size_t types_count);
+
   void EmitSample(uint32_t pid, const std::shared_ptr<MediaSample>& sample) {
     size_t sample_id = sample_count_;
     sample_count_++;
@@ -186,27 +191,29 @@ class EsParserH26xTest : public testing::Test {
   bool has_stream_info_;
 };
 
-void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
-                               const H26xNaluType* types,
-                               size_t types_count) {
-  // Duration of one 25fps video frame in 90KHz clock units.
-  const uint32_t kMpegTicksPerFrame = 3600;
+// Return AnnexB samples data and stores NAL Unit samples data in |samples_|,
+// which is what will be returned from |EsParser|.
+std::vector<std::vector<uint8_t>> EsParserH26xTest::BuildSamplesData(
+    Nalu::CodecType codec_type,
+    const H26xNaluType* types,
+    size_t types_count) {
+  std::vector<std::vector<uint8_t>> samples_data;
+
   const uint8_t kStartCode[] = {0x00, 0x00, 0x01};
 
-  TestableEsParser es_parser(
-      codec_type,
-      base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
-
   bool seen_key_frame = false;
-  std::vector<uint8_t> cur_sample_data;
-  ASSERT_EQ(kSeparator, types[0]);
+  std::vector<uint8_t> nal_unit_sample_data;
+  std::vector<uint8_t> annex_b_sample_data;
+  CHECK_EQ(kSeparator, types[0]);
   for (size_t k = 1; k < types_count; k++) {
     if (types[k] == kSeparator) {
       // We should not be emitting samples until we see a key frame.
       if (seen_key_frame)
-        samples_.push_back(cur_sample_data);
-      cur_sample_data.clear();
+        samples_.push_back(nal_unit_sample_data);
+      if (!annex_b_sample_data.empty())
+        samples_data.push_back(annex_b_sample_data);
+      nal_unit_sample_data.clear();
+      annex_b_sample_data.clear();
     } else {
       if (codec_type == Nalu::kH264) {
         if (types[k] == kH264VclKeyFrame)
@@ -218,34 +225,56 @@ void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
 
       std::vector<uint8_t> es_data =
           CreateNalu(codec_type, types[k], static_cast<uint8_t>(k));
-      cur_sample_data.push_back(0);
-      cur_sample_data.push_back(0);
-      cur_sample_data.push_back(0);
-      cur_sample_data.push_back(static_cast<uint8_t>(es_data.size()));
-      cur_sample_data.insert(cur_sample_data.end(), es_data.begin(),
-                             es_data.end());
+
+      nal_unit_sample_data.push_back(0);
+      nal_unit_sample_data.push_back(0);
+      nal_unit_sample_data.push_back(0);
+      nal_unit_sample_data.push_back(static_cast<uint8_t>(es_data.size()));
+      nal_unit_sample_data.insert(nal_unit_sample_data.end(), es_data.begin(),
+                                  es_data.end());
+
       es_data.insert(es_data.begin(), kStartCode,
                      kStartCode + arraysize(kStartCode));
-
-      const int64_t pts = k * kMpegTicksPerFrame;
-      const int64_t dts = k * kMpegTicksPerFrame;
-      // This may process the previous sample; but since we don't know whether
-      // we are at the end yet, this will not process the current sample until
-      // later.
-      size_t offset = 0;
-      size_t size = 1;
-      while (offset < es_data.size()) {
-        // Insert the data in parts to test partial data searches.
-        size = std::min(size + 1, es_data.size() - offset);
-        ASSERT_TRUE(es_parser.Parse(&es_data[offset], static_cast<int>(size),
-                                    pts, dts));
-        offset += size;
-      }
+      annex_b_sample_data.insert(annex_b_sample_data.end(), es_data.begin(),
+                                 es_data.end());
     }
   }
   if (seen_key_frame)
-    samples_.push_back(cur_sample_data);
+    samples_.push_back(nal_unit_sample_data);
+  if (!annex_b_sample_data.empty())
+    samples_data.push_back(annex_b_sample_data);
 
+  return samples_data;
+}
+
+void EsParserH26xTest::RunTest(Nalu::CodecType codec_type,
+                               const H26xNaluType* types,
+                               size_t types_count) {
+  // Duration of one 25fps video frame in 90KHz clock units.
+  const uint32_t kMpegTicksPerFrame = 3600;
+
+  TestableEsParser es_parser(
+      codec_type,
+      base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
+      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
+
+  int64_t timestamp = 0;
+  for (const auto& sample_data :
+       BuildSamplesData(codec_type, types, types_count)) {
+    // This may process the previous sample; but since we don't know whether
+    // we are at the end yet, this will not process the current sample until
+    // later.
+    size_t offset = 0;
+    size_t size = 1;
+    while (offset < sample_data.size()) {
+      // Insert the data in parts to test partial data searches.
+      size = std::min(size + 1, sample_data.size() - offset);
+      ASSERT_TRUE(es_parser.Parse(&sample_data[offset], static_cast<int>(size),
+                                  timestamp, timestamp));
+      offset += size;
+    }
+    timestamp += kMpegTicksPerFrame;
+  }
   es_parser.Flush();
 }
 
@@ -347,6 +376,55 @@ TEST_F(EsParserH26xTest, H264BasicSupport) {
 
   RunTest(Nalu::kH264, kData, arraysize(kData));
   EXPECT_EQ(3u, sample_count_);
+  EXPECT_TRUE(has_stream_info_);
+}
+
+// This is not compliant to H264 spec, but VLC generates streams like this. See
+// https://github.com/google/shaka-packager/issues/526 for details.
+TEST_F(EsParserH26xTest, H264AudInAccessUnit) {
+  // clang-format off
+  const H26xNaluType kData[] = {
+    kSeparator, kH264Aud, kH264Sps, kH264Aud, kH264VclKeyFrame,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Sps, kH264Aud, kH264VclKeyFrame,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Sps, kH264Aud, kH264VclKeyFrame,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Sps, kH264Aud, kH264VclKeyFrame,
+    kSeparator, kH264Aud, kH264Vcl,
+    kSeparator, kH264Aud, kH264Vcl,
+  };
+  // clang-format on
+
+  TestableEsParser es_parser(
+      Nalu::kH264,
+      base::Bind(&EsParserH26xTest::NewVideoConfig, base::Unretained(this)),
+      base::Bind(&EsParserH26xTest::EmitSample, base::Unretained(this)));
+
+  size_t sample_index = 0;
+  for (const auto& sample_data :
+       BuildSamplesData(Nalu::kH264, kData, arraysize(kData))) {
+    // Duration of one 25fps video frame in 90KHz clock units.
+    const uint32_t kMpegTicksPerFrame = 3600;
+    const int64_t timestamp = kMpegTicksPerFrame * sample_index;
+    ASSERT_TRUE(es_parser.Parse(sample_data.data(),
+                                static_cast<int>(sample_data.size()), timestamp,
+                                timestamp));
+    sample_index++;
+
+    // The number of emitted samples are less than the number of samples that
+    // are pushed to the EsParser since samples could be cached internally
+    // before being emitted.
+    // The delay is at most 2 in our current implementation.
+    const size_t kExpectedMaxDelay = 2;
+    EXPECT_NEAR(sample_index, sample_count_, kExpectedMaxDelay);
+  }
+
+  es_parser.Flush();
+  EXPECT_EQ(sample_index, sample_count_);
   EXPECT_TRUE(has_stream_info_);
 }
 
