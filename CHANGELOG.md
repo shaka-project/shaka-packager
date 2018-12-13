@@ -1,7 +1,33 @@
-## [2.3.0] - To be released
+## [2.3.0] - 2018-12-20
+### Added
+- Alpine Linux support (#164).
+- WebVTT style and region support (#344).
+- Marlin DRM support (#381).
+- HLS CHARACTERISTICS attribute on #EXT-X-MEDIA (#404).
+- Default text language support ('--default_text_language') (#430).
+- AV1 support (#453).
+- HLS audio only master playlist support (#461).
+
+### Fixed
+- MPEG-TS demuxing with AC-3 / E-AC-3 (#487). kFrameSizeCodeTable were reversed
+  results in wrong frame size being detected except for 44.1kHz.
+- HLS peak bandwidth calculation with very short segments (#498). The short
+  segments should be excluded from peak bandwidth calculation per HLS
+  specification.
+- Output directory permission (#499). The new directory permission was fixed to
+  0700.
+- Workaround access units with extra AUD (#526). VLC inserts an extra AUD in the
+  key frames, which caused packager to delay emitting the frame. The delays
+  accumulated and became noticeable after running the live packaging for some
+  time.
+- Problem when using Trick Play with Ad Cues (#528).
+
 ### Changed
 - Disable bundled binutil and gold on Linux by default. There may be a slight
   increase in binary link time.
+- Reduced official Docker image size from ~1GB to ~15MB (#535). The new image
+  is based on Alpine and contains only result binaries (`packager` and
+  `mpd_generator`).
 
 ## [2.2.1] - 2018-09-20
 ### Added
@@ -432,6 +458,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.3.0]: https://github.com/google/shaka-packager/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/google/shaka-packager/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/google/shaka-packager/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/google/shaka-packager/compare/v2.1.0...v2.1.1
