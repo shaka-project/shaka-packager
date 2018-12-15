@@ -500,7 +500,11 @@ void Representation::RemoveSegments(int64_t start_time,
   while (segments_to_be_removed_.size() >
          mpd_options_.mpd_params.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();
-    File::Delete(segments_to_be_removed_.front().c_str());
+    if (!File::Delete(segments_to_be_removed_.front().c_str())) {
+      LOG(WARNING) << "Failed to delete " << segments_to_be_removed_.front()
+                   << "; Will retry later.";
+      break;
+    }
     segments_to_be_removed_.pop_front();
   }
 }
