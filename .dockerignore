@@ -1,0 +1,13 @@
+*.pyc
+*.sln
+*.VC.db
+*.vcxproj*
+*/.vs/*
+*~
+.DS_store
+.cproject
+.project
+.pydevproject
+.repo
+.settings
+/out*
