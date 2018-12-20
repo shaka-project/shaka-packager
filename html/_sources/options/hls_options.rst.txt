@@ -43,3 +43,11 @@ HLS options
     The first audio/text rendition in a group tagged with this language will
     have 'DEFAULT' attribute set to 'YES'. This allows the player to choose the
     correct default language for the content.
+
+    This applies to both audio and text tracks. The default language for text
+    tracks can be overriden by  'default_text_language'.
+
+--default_text_language <text_language>
+
+    Same as above, but this applies to text tracks only, and overrides the
+    default language for text tracks.

@@ -109,9 +109,17 @@ accessible as they may still be accessed by the player.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>The first audio/text rendition in a group tagged with this language will
+<tr><td>&#160;</td><td><p class="first">The first audio/text rendition in a group tagged with this language will
 have ‘DEFAULT’ attribute set to ‘YES’. This allows the player to choose the
-correct default language for the content.</td></tr>
+correct default language for the content.</p>
+<p class="last">This applies to both audio and text tracks. The default language for text
+tracks can be overriden by  ‘default_text_language’.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</td></tr>
 </tbody>
 </table>
 </div>

@@ -51,6 +51,7 @@ var searchData=
   ['aescryptor',['AesCryptor',['../df/d87/classshaka_1_1media_1_1AesCryptor.html',1,'shaka::media::AesCryptor'],['../df/d87/classshaka_1_1media_1_1AesCryptor.html#a47fbdacc296fbddd899c47ec0c17e5e8',1,'shaka::media::AesCryptor::AesCryptor()']]],
   ['aesctrencryptor',['AesCtrEncryptor',['../d0/dd8/classshaka_1_1media_1_1AesCtrEncryptor.html',1,'shaka::media']]],
   ['aesencryptor',['AesEncryptor',['../d3/d75/classshaka_1_1media_1_1AesEncryptor.html',1,'shaka::media::AesEncryptor'],['../d3/d75/classshaka_1_1media_1_1AesEncryptor.html#a873b0794baca91b36dbc484fc9c37e58',1,'shaka::media::AesEncryptor::AesEncryptor()']]],
+  ['aesencryptorfactory',['AesEncryptorFactory',['../d4/d07/classshaka_1_1media_1_1AesEncryptorFactory.html',1,'shaka::media']]],
   ['aespatterncryptor',['AesPatternCryptor',['../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html',1,'shaka::media::AesPatternCryptor'],['../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#abb94f2d6a527b12854e81839fd10e1d5',1,'shaka::media::AesPatternCryptor::AesPatternCryptor()']]],
   ['aesrequestsigner',['AesRequestSigner',['../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html',1,'shaka::media']]],
   ['allow_5fapproximate_5fsegment_5ftimeline',['allow_approximate_segment_timeline',['../df/ddc/structshaka_1_1MpdParams.html#af4424dc23f81ff4000584db2866f24c9',1,'shaka::MpdParams']]],
@@ -64,6 +65,8 @@ var searchData=
   ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html',1,'shaka::media::AudioStreamInfo'],['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a1333ea7b15790da37addb60ba49131b4',1,'shaka::media::AudioStreamInfo::AudioStreamInfo()']]],
   ['audiotimestamphelper',['AudioTimestampHelper',['../d0/d4d/classshaka_1_1media_1_1AudioTimestampHelper.html',1,'shaka::media']]],
   ['auxinfoneedstobecached',['AuxInfoNeedsToBeCached',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#a8d4fb433e66fec693035cac796ca6851',1,'shaka::media::mp4::TrackRunIterator']]],
+  ['av1codecconfigurationrecord',['AV1CodecConfigurationRecord',['../d1/d83/classshaka_1_1media_1_1AV1CodecConfigurationRecord.html',1,'shaka::media']]],
+  ['av1parser',['AV1Parser',['../db/dc7/classshaka_1_1media_1_1AV1Parser.html',1,'shaka::media']]],
   ['avcdecoderconfigurationrecord',['AVCDecoderConfigurationRecord',['../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html',1,'shaka::media']]],
   ['avgbitrate',['AvgBitrate',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a66ea7bbe872b17c0a41402226c203378',1,'shaka::hls::MediaPlaylist']]]
 ];

@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['fairplaypsshgenerator',['FairPlayPsshGenerator',['../d8/ddf/classshaka_1_1media_1_1FairPlayPsshGenerator.html',1,'shaka::media']]],
   ['fakeinputmediahandler',['FakeInputMediaHandler',['../d3/d1e/classshaka_1_1media_1_1FakeInputMediaHandler.html',1,'shaka::media']]],
-  ['fakemediahandler',['FakeMediaHandler',['../d1/d36/classshaka_1_1media_1_1FakeMediaHandler.html',1,'shaka::media']]],
   ['file',['File',['../d3/d73/classshaka_1_1File.html',1,'shaka']]],
   ['filecloser',['FileCloser',['../d3/de2/structshaka_1_1FileCloser.html',1,'shaka']]],
   ['filereader',['FileReader',['../d6/db8/classshaka_1_1media_1_1FileReader.html',1,'shaka::media']]],

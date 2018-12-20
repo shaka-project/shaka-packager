@@ -220,6 +220,11 @@ defaults to something of the form ‘stream_0.m3u8’, ‘stream_1.m3u8’,
 only be set for video streams. If unspecified, no I-Frames only playlist is
 created.</td>
 </tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">hls_characteristics (charcs):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for the
+CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
+<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -269,9 +274,17 @@ accessible as they may still be accessed by the player.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>The first audio/text rendition in a group tagged with this language will
+<tr><td>&#160;</td><td><p class="first">The first audio/text rendition in a group tagged with this language will
 have ‘DEFAULT’ attribute set to ‘YES’. This allows the player to choose the
-correct default language for the content.</td></tr>
+correct default language for the content.</p>
+<p class="last">This applies to both audio and text tracks. The default language for text
+tracks can be overriden by  ‘default_text_language’.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</td></tr>
 </tbody>
 </table>
 </div>

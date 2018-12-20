@@ -74,8 +74,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2e7ed221fa11eca895eab3bfe0f5d55b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a2e7ed221fa11eca895eab3bfe0f5d55b">MasterPlaylist</a> (const std::string &amp;file_name, const std::string &amp;default_language)</td></tr>
-<tr class="separator:a2e7ed221fa11eca895eab3bfe0f5d55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a648695985f1b7d650ef30bb740f815ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a648695985f1b7d650ef30bb740f815ee">MasterPlaylist</a> (const std::string &amp;file_name, const std::string &amp;default_audio_language, const std::string &amp;default_text_language)</td></tr>
+<tr class="separator:a648695985f1b7d650ef30bb740f815ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4255082cd307583e3600a5cffdd2bb1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#ad4255082cd307583e3600a5cffdd2bb1">WriteMasterPlaylist</a> (const std::string &amp;base_url, const std::string &amp;output_dir, const std::list&lt; <a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html">MediaPlaylist</a> *&gt; &amp;playlists)</td></tr>
 <tr class="separator:ad4255082cd307583e3600a5cffdd2bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -84,8 +84,8 @@ Public Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d2/d57/master__playlist_8h_source.html#l00020">20</a> of file <a class="el" href="../../d2/d57/master__playlist_8h_source.html">master_playlist.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a2e7ed221fa11eca895eab3bfe0f5d55b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e7ed221fa11eca895eab3bfe0f5d55b">&#9670;&nbsp;</a></span>MasterPlaylist()</h2>
+<a id="a648695985f1b7d650ef30bb740f815ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a648695985f1b7d650ef30bb740f815ee">&#9670;&nbsp;</a></span>MasterPlaylist()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -100,7 +100,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>default_language</em>&#160;</td>
+          <td class="paramname"><em>default_audio_language</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>default_text_language</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -112,12 +118,13 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">file_name</td><td>is the file name of the master playlist. </td></tr>
-    <tr><td class="paramname">default_language</td><td>determines the rendition that should be tagged with 'DEFAULT'. </td></tr>
+    <tr><td class="paramname">default_audio_language</td><td>determines the audio rendition that should be tagged with 'DEFAULT'. </td></tr>
+    <tr><td class="paramname">default_text_language</td><td>determines the text rendition that should be tagged with 'DEFAULT'. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db1/master__playlist_8cc_source.html#l00402">402</a> of file <a class="el" href="../../d2/db1/master__playlist_8cc_source.html">master_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db1/master__playlist_8cc_source.html#l00429">429</a> of file <a class="el" href="../../d2/db1/master__playlist_8cc_source.html">master_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -170,7 +177,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the playlist is updated successfully or there is no difference since the last write, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/db1/master__playlist_8cc_source.html#l00407">407</a> of file <a class="el" href="../../d2/db1/master__playlist_8cc_source.html">master_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/db1/master__playlist_8cc_source.html#l00438">438</a> of file <a class="el" href="../../d2/db1/master__playlist_8cc_source.html">master_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -181,7 +188,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:46:53 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:40 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

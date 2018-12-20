@@ -104,6 +104,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aac5eac6e0a62201dcb68fd3f084bb281"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c432f4e5a256ed5fb18112ead37df10"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a3c432f4e5a256ed5fb18112ead37df10">ParseWebM</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
 <tr class="separator:a3c432f4e5a256ed5fb18112ead37df10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31b0c3fd4fbbbdd8d588af7b37edec82"><td class="memItemLeft" align="right" valign="top"><a id="a31b0c3fd4fbbbdd8d588af7b37edec82"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a31b0c3fd4fbbbdd8d588af7b37edec82">SetVP9Level</a> (uint16_t width, uint16_t height, double sample_duration_seconds)</td></tr>
+<tr class="memdesc:a31b0c3fd4fbbbdd8d588af7b37edec82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute and set VP9 Level based on the input attributes. <br /></td></tr>
+<tr class="separator:a31b0c3fd4fbbbdd8d588af7b37edec82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17c95b92810ebb43d7dc9ab0783e5f2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a17c95b92810ebb43d7dc9ab0783e5f2a">WriteMP4</a> (std::vector&lt; uint8_t &gt; *data) const</td></tr>
 <tr class="separator:a17c95b92810ebb43d7dc9ab0783e5f2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62bb64ea665385ae67c2fce8fb8b76bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a62bb64ea665385ae67c2fce8fb8b76bd">WriteWebM</a> (std::vector&lt; uint8_t &gt; *data) const</td></tr>
@@ -219,7 +223,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00205">205</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00296">296</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -240,7 +244,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
 </div><div class="memdoc">
 <p>Merges the values from the given configuration. If there are values in both |*this| and |other|, |*this| is not updated. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00227">227</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00318">318</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -261,7 +265,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
 </div><div class="memdoc">
 <p>Parses input (in MP4 format) to extract VP codec configuration record. </p><dl class="section return"><dt>Returns</dt><dd>false if there is parsing errors. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00084">84</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00155">155</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -282,7 +286,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
 </div><div class="memdoc">
 <p>Parses input (in WebM format) to extract VP codec configuration record. </p><dl class="section return"><dt>Returns</dt><dd>false if there is parsing errors. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00116">116</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00187">187</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -308,7 +312,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00157">157</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00248">248</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -334,7 +338,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00174">174</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00265">265</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -345,7 +349,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>chroma_location</b
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:47:04 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:49 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

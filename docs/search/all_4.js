@@ -24,5 +24,6 @@ var searchData=
   ['esparserh265',['EsParserH265',['../d5/d63/classshaka_1_1media_1_1mp2t_1_1EsParserH265.html',1,'shaka::media::mp2t']]],
   ['esparserh26x',['EsParserH26x',['../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html',1,'shaka::media::mp2t']]],
   ['estimate',['Estimate',['../da/d2c/classshaka_1_1BandwidthEstimator.html#a9414560e16c46e7e2da3683a4dfb86cc',1,'shaka::BandwidthEstimator']]],
-  ['eventinfo',['EventInfo',['../db/d49/structshaka_1_1media_1_1EventInfo.html',1,'shaka::media']]]
+  ['eventinfo',['EventInfo',['../db/d49/structshaka_1_1media_1_1EventInfo.html',1,'shaka::media']]],
+  ['extractreferencednamespaces',['ExtractReferencedNamespaces',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a8c41631d1fec1fe96550b5320fb3546f',1,'shaka::xml::XmlNode']]]
 ];

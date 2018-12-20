@@ -109,6 +109,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:aa0d36cf55c46def14bc2fa6c293859ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05f0489a76ea049bc8c9f144b4189591"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#a05f0489a76ea049bc8c9f144b4189591">hls_iframe_playlist_name</a></td></tr>
 <tr class="separator:a05f0489a76ea049bc8c9f144b4189591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac10d35524ea73cc860a3f027181dc627"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d7b/structshaka_1_1StreamDescriptor.html#ac10d35524ea73cc860a3f027181dc627">hls_characteristics</a></td></tr>
+<tr class="separator:ac10d35524ea73cc860a3f027181dc627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines a single input/output stream. </p>
@@ -149,6 +151,23 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
+<a id="ac10d35524ea73cc860a3f027181dc627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac10d35524ea73cc860a3f027181dc627">&#9670;&nbsp;</a></span>hls_characteristics</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; shaka::StreamDescriptor::hls_characteristics</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Optional for HLS output. It defines the CHARACTERISTICS attribute of the stream. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00125">125</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+
+</div>
+</div>
 <a id="a25764b4ffa8cb0da3b88cc251928ad96"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a25764b4ffa8cb0da3b88cc251928ad96">&#9670;&nbsp;</a></span>hls_group_id</h2>
 
@@ -162,7 +181,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Required for audio when outputting HLS. It defines the group ID for the output stream. This is used as the GROUP-ID attribute for EXT-X-MEDIA. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00115">115</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00116">116</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -179,7 +198,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Optional for HLS output. It defines the name of the I-Frames only playlist for the stream. For Video only. Usually ends with <code>.m3u8</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00121">121</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00122">122</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -196,7 +215,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Required for audio when outputting HLS. It defines the name of the output stream, which is not necessarily the same as output. This is used as the <code>NAME</code> attribute for EXT-X-MEDIA. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00112">112</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00113">113</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -213,7 +232,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Required for HLS output. It defines the name of the playlist for the stream. Usually ends with <code>.m3u8</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00118">118</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/db5/packager_8h_source.html#l00119">119</a> of file <a class="el" href="../../dd/db5/packager_8h_source.html">packager.h</a>.</p>
 
 </div>
 </div>
@@ -325,7 +344,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:46:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:40 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

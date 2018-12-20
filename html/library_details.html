@@ -238,6 +238,12 @@
 <dd><p>Optional for HLS output. It defines the name of the I-Frames only playlist for the stream. For Video only. Usually ends with <code class="docutils literal"><span class="pre">.m3u8</span></code>. </p>
 </dd></dl>
 
+<dl class="member">
+<dt id="_CPPv2N5shaka16StreamDescriptor19hls_characteristicsE">
+<span id="shaka::StreamDescriptor::hls_characteristics__std::vector:ss:"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1ac10d35524ea73cc860a3f027181dc627"></span>std::vector&lt;std::string&gt; <code class="descname">hls_characteristics</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor19hls_characteristicsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Optional for HLS output. It defines the CHARACTERISTICS attribute of the stream. </p>
+</dd></dl>
+
 </div>
 </dd></dl>
 
@@ -340,7 +346,13 @@
 <dl class="member">
 <dt id="_CPPv2N5shaka9MpdParams16default_languageE">
 <span id="shaka::MpdParams::default_language__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a74df80bd74635090e97837f3a5941d73"></span>std::string <code class="descname">default_language</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams16default_languageE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>The tracks tagged with this language will have &lt;Role … value=”main” /&gt; in the manifest. This allows the player to choose the correct default language for the content. </p>
+<dd><p>The tracks tagged with this language will have &lt;Role … value=”main” /&gt; in the manifest. This allows the player to choose the correct default language for the content. This applies to both audio and text tracks. The default language for text tracks can be overriden by ‘default_text_language’. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka9MpdParams21default_text_languageE">
+<span id="shaka::MpdParams::default_text_language__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1acafb3925f5d32826a241d00f2bf09509"></span>std::string <code class="descname">default_text_language</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams21default_text_languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Same as above, but this overrides the default language for text tracks, i.e. subtitles or close-captions. </p>
 </dd></dl>
 
 <dl class="member">
@@ -359,6 +371,12 @@
 <dt id="_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE">
 <span id="shaka::MpdParams::allow_approximate_segment_timeline__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1af4424dc23f81ff4000584db2866f24c9"></span>bool <code class="descname">allow_approximate_segment_timeline</code> = false<a class="headerlink" href="#_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>For live profile only. If enabled, segments with close duration (i.e. with difference less than one sample) are considered to have the same duration. This enables MPD generator to generate less SegmentTimeline entries. If all segments are of the same duration except the last one, we will do further optimization to use SegmentTemplate instead and omit SegmentTimeline completely. Ignored if $Time$ is used in segment template, since $Time$ requires accurate Segment Timeline. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka9MpdParams23target_segment_durationE">
+<span id="shaka::MpdParams::target_segment_duration__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a88b8d28e263b2dcb36909869d3c2ceca"></span>double <code class="descname">target_segment_duration</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams23target_segment_durationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to calculate the approximate SegmentTimeline if it is enabled. It is also used by the bandwidth estimator to exclude the segments with duration less than half of the target duration from bandwidth estimation. It will be populated from segment duration specified in <a class="reference internal" href="#d2/d1f/structshaka_1_1ChunkingParams"><span class="std std-ref">ChunkingParams</span></a> if not specified. </p>
 </dd></dl>
 
 </div>
@@ -424,7 +442,19 @@
 <dl class="member">
 <dt id="_CPPv2N5shaka9HlsParams16default_languageE">
 <span id="shaka::HlsParams::default_language__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1abeea3a7ebfe7b2d1e29b3e4445bfd113"></span>std::string <code class="descname">default_language</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams16default_languageE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>The renditions tagged with this language will have ‘DEFAULT’ set to ‘YES’ in ‘EXT-X-MEDIA’ tag. This allows the player to choose the correct default language for the content. </p>
+<dd><p>The renditions tagged with this language will have ‘DEFAULT’ set to ‘YES’ in ‘EXT-X-MEDIA’ tag. This allows the player to choose the correct default language for the content. This applies to both audio and text tracks. The default language for text tracks can be overriden by ‘default_text_language’. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka9HlsParams21default_text_languageE">
+<span id="shaka::HlsParams::default_text_language__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a77961998aa8083ec8f9e58f02521566b"></span>std::string <code class="descname">default_text_language</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams21default_text_languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Same as above, but this overrides the default language for text tracks, i.e. subtitles or close-captions. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv2N5shaka9HlsParams23target_segment_durationE">
+<span id="shaka::HlsParams::target_segment_duration__double"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1aaa9c66720a8fb0e7ee3ef362825919a6"></span>double <code class="descname">target_segment_duration</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9HlsParams23target_segment_durationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to for bandwidth estimator to exclude the segments with duration less than half of the target duration from bandwidth estimation. See <a class="reference external" href="https://github.com/google/shaka-packager/issues/498">https://github.com/google/shaka-packager/issues/498</a> for details. It will be populated from segment duration specified in <a class="reference internal" href="#d2/d1f/structshaka_1_1ChunkingParams"><span class="std std-ref">ChunkingParams</span></a> if not specified. </p>
 </dd></dl>
 
 </div>
@@ -675,6 +705,11 @@
 <dl class="enumerator">
 <dt id="_CPPv2N5shaka16EncryptionParams9kFairPlayE">
 <span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a51a26bec7d39600d282361571e71a27c"></span><code class="descname">kFairPlay</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams9kFairPlayE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv2N5shaka16EncryptionParams7kMarlinE">
+<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9af9f2d77c43b28c5b91fb77806a02b65d"></span><code class="descname">kMarlin</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams7kMarlinE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">

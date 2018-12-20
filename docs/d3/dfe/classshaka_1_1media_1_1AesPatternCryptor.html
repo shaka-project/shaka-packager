@@ -158,9 +158,9 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </div><div class="memdoc">
 <p>Enumerator for controling encrytion/decryption mode for the last encryption/decrytion block(s). </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16"></a>kEncryptIfCryptByteBlockRemaining&#160;</td><td class="fielddoc"><p>Use kEncryptIfCryptByteBlockRemaining if the last blocks is exactly the same as the number of remaining bytes. IOW if (remaining_bytes == encryption_block_bytes) encrypt(remaining_data) </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16"></a>kEncryptIfCryptByteBlockRemaining&#160;</td><td class="fielddoc"><p>Use kEncryptIfCryptByteBlockRemaining to encrypt all the full 16-byte blocks even if the remaining bytes are less than encryption_block_bytes. IOW: if (remaining_bytes &lt;= encryption_block_bytes) encrypt(block_aligned_remaining_data) </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f"></a>kSkipIfCryptByteBlockRemaining&#160;</td><td class="fielddoc"><p>Use kSkipIfCryptByteBlockRemaining to not encrypt/decrypt the last clocks if it is exactly the same as the number of remaining bytes. if (remaining_bytes &gt; encryption_block_bytes) { // Since this is the last blocks, this is effectively the same // condition as remaining_bytes != encryption_block_bytes. encrypt(). } Use this mode for HLS SAMPLE-AES. </p>
+<tr><td class="fieldname"><a id="a54fd35d7782d3b4948c7eb68387711f0a09674e418b61763fdc5cf22c248efd4f"></a>kSkipIfCryptByteBlockRemaining&#160;</td><td class="fielddoc"><p>Use kSkipIfCryptByteBlockRemaining to not encrypt/decrypt the remaining bytes if it is less than or equal to encryption_block_bytes. if (remaining_bytes &gt; encryption_block_bytes) encrypt(). Use this mode for HLS SAMPLE-AES. </p>
 </td></tr>
 </table>
 
@@ -276,7 +276,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:46:54 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:42 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

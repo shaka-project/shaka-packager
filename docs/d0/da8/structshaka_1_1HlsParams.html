@@ -95,6 +95,10 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="separator:a68414aff0f65059c2d05c8d168aadf5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abeea3a7ebfe7b2d1e29b3e4445bfd113"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#abeea3a7ebfe7b2d1e29b3e4445bfd113">default_language</a></td></tr>
 <tr class="separator:abeea3a7ebfe7b2d1e29b3e4445bfd113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77961998aa8083ec8f9e58f02521566b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#a77961998aa8083ec8f9e58f02521566b">default_text_language</a></td></tr>
+<tr class="separator:a77961998aa8083ec8f9e58f02521566b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa9c66720a8fb0e7ee3ef362825919a6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da8/structshaka_1_1HlsParams.html#aaa9c66720a8fb0e7ee3ef362825919a6">target_segment_duration</a> = 0</td></tr>
+<tr class="separator:aaa9c66720a8fb0e7ee3ef362825919a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>HLS related parameters. </p>
@@ -129,9 +133,26 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The renditions tagged with this language will have 'DEFAULT' set to 'YES' in 'EXT-X-MEDIA' tag. This allows the player to choose the correct default language for the content. </p>
+<p>The renditions tagged with this language will have 'DEFAULT' set to 'YES' in 'EXT-X-MEDIA' tag. This allows the player to choose the correct default language for the content. This applies to both audio and text tracks. The default language for text tracks can be overriden by 'default_text_language'. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00048">48</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00050">50</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
+
+</div>
+</div>
+<a id="a77961998aa8083ec8f9e58f02521566b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77961998aa8083ec8f9e58f02521566b">&#9670;&nbsp;</a></span>default_text_language</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string shaka::HlsParams::default_text_language</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Same as above, but this overrides the default language for text tracks, i.e. subtitles or close-captions. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00053">53</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
 
 </div>
 </div>
@@ -169,6 +190,23 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
+<a id="aaa9c66720a8fb0e7ee3ef362825919a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa9c66720a8fb0e7ee3ef362825919a6">&#9670;&nbsp;</a></span>target_segment_duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double shaka::HlsParams::target_segment_duration = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to for bandwidth estimator to exclude the segments with duration less than half of the target duration from bandwidth estimation. See <a href="https://github.com/google/shaka-packager/issues/498">https://github.com/google/shaka-packager/issues/498</a> for details. It will be populated from segment duration specified in <a class="el" href="../../d2/d1f/structshaka_1_1ChunkingParams.html" title="Chunking (segmentation) related parameters. ">ChunkingParams</a> if not specified. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d6/d47/hls__params_8h_source.html#l00062">62</a> of file <a class="el" href="../../d6/d47/hls__params_8h_source.html">hls_params.h</a>.</p>
+
+</div>
+</div>
 <a id="adc19a9eebbfe20c3f9fe03dd452e4b1b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adc19a9eebbfe20c3f9fe03dd452e4b1b">&#9670;&nbsp;</a></span>time_shift_buffer_depth</h2>
 
@@ -192,7 +230,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:46:50 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:38 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

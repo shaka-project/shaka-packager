@@ -24,3 +24,9 @@ HLS specific stream descriptor fields
     '.m3u8', and is relative to hls_master_playlist_output (see below). Should
     only be set for video streams. If unspecified, no I-Frames only playlist is
     created.
+
+:hls_characteristics (charcs):
+
+    Optional colon or semi-colon separated list of values for the
+    CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
+    http://bit.ly/2OOUkdB for details.

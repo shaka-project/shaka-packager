@@ -64,4 +64,5 @@ These are the available fields:
     stream.
 
 .. include:: /options/drm_stream_descriptors.rst
+.. include:: /options/dash_stream_descriptors.rst
 .. include:: /options/hls_stream_descriptors.rst

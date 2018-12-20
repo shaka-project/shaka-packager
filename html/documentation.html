@@ -53,6 +53,7 @@
 <li><a class="reference internal" href="#synopsis">Synopsis</a><ul>
 <li><a class="reference internal" href="#stream-descriptors">Stream descriptors</a></li>
 <li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#dash-specific-stream-descriptor-fields">DASH specific stream descriptor fields</a></li>
 <li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
 <li><a class="reference internal" href="#chunking-options">Chunking options</a></li>
 <li><a class="reference internal" href="#mp4-output-options">MP4 output options</a></li>
@@ -218,6 +219,21 @@ Note that it is case sensitive.</td>
 </tbody>
 </table>
 </div>
+<div class="section" id="dash-specific-stream-descriptor-fields">
+<h3>DASH specific stream descriptor fields<a class="headerlink" href="#dash-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">dash_roles (roles):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for DASH
+Role element. The value should be one of: <strong>caption</strong>, <strong>subtitle</strong>,
+<strong>main</strong>, <strong>alternate</strong>, <strong>supplementary</strong>, <strong>commentary</strong> and <strong>dub</strong>.
+See DASH (ISO/IEC 23009-1) specification for details.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="hls-specific-stream-descriptor-fields">
 <h3>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
 <table class="docutils field-list" frame="void" rules="none">
@@ -240,6 +256,11 @@ defaults to something of the form ‘stream_0.m3u8’, ‘stream_1.m3u8’,
 ‘.m3u8’, and is relative to hls_master_playlist_output (see below). Should
 only be set for video streams. If unspecified, no I-Frames only playlist is
 created.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">hls_characteristics (charcs):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for the
+CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
+<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</td>
 </tr>
 </tbody>
 </table>
@@ -373,7 +394,7 @@ accessible as they may still be accessed by the player.</p>
 <p class="last">The segments are not removed if the value is zero.</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--utc_timing <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
+<kbd><span class="option">--utc_timings <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td><dl class="first docutils">
 <dt>Comma separated UTCTiming schemeIdUri and value pairs for the MPD:</dt>
@@ -384,9 +405,17 @@ accessible as they may still be accessed by the player.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Any audio/text tracks tagged with this language will have
+<tr><td>&#160;</td><td><p class="first">Any audio/text tracks tagged with this language will have
 &lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
-choose the correct default language for the content.</td></tr>
+choose the correct default language for the content.</p>
+<p class="last">This applies to both audio and text tracks. The default language for text
+tracks can be overriden by  ‘default_text_language’.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--allow_approximate_segment_timeline</span></kbd></td>
 </tr>
@@ -449,9 +478,17 @@ accessible as they may still be accessed by the player.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>The first audio/text rendition in a group tagged with this language will
+<tr><td>&#160;</td><td><p class="first">The first audio/text rendition in a group tagged with this language will
 have ‘DEFAULT’ attribute set to ‘YES’. This allows the player to choose the
-correct default language for the content.</td></tr>
+correct default language for the content.</p>
+<p class="last">This applies to both audio and text tracks. The default language for text
+tracks can be overriden by  ‘default_text_language’.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</td></tr>
 </tbody>
 </table>
 </div>
@@ -516,7 +553,8 @@ schemes ‘cens’ or ‘cbcs’.</td></tr>
 <kbd><span class="option">--protection_systems</span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
-Widevine, PlayReady, FairPlay, and CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
+Widevine, PlayReady, FairPlay, Marlin, and
+CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
 </tbody>
 </table>
 </div>

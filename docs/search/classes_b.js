@@ -17,6 +17,7 @@ var searchData=
   ['metadata',['Metadata',['../dd/df6/structshaka_1_1media_1_1mp4_1_1Metadata.html',1,'shaka::media::mp4']]],
   ['mkvwriter',['MkvWriter',['../d1/d0a/classshaka_1_1media_1_1MkvWriter.html',1,'shaka::media']]],
   ['mockadaptationset',['MockAdaptationSet',['../db/d4b/classshaka_1_1MockAdaptationSet.html',1,'shaka']]],
+  ['mockaescryptor',['MockAesCryptor',['../d1/d1b/classshaka_1_1media_1_1MockAesCryptor.html',1,'shaka::media']]],
   ['mockmediaplaylist',['MockMediaPlaylist',['../d3/d95/classshaka_1_1hls_1_1MockMediaPlaylist.html',1,'shaka::hls']]],
   ['mockmpdbuilder',['MockMpdBuilder',['../df/d60/classshaka_1_1MockMpdBuilder.html',1,'shaka']]],
   ['mockmpdnotifier',['MockMpdNotifier',['../dc/d5c/classshaka_1_1MockMpdNotifier.html',1,'shaka']]],

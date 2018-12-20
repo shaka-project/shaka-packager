@@ -42,6 +42,7 @@
   <ul>
 <li><a class="reference internal" href="#">Stream descriptors</a></li>
 <li><a class="reference internal" href="#drm-related-stream-descriptor-fields">DRM related Stream descriptor fields</a></li>
+<li><a class="reference internal" href="#dash-specific-stream-descriptor-fields">DASH specific stream descriptor fields</a></li>
 <li><a class="reference internal" href="#hls-specific-stream-descriptor-fields">HLS specific stream descriptor fields</a></li>
 </ul>
 
@@ -145,6 +146,21 @@ Note that it is case sensitive.</td>
 </tbody>
 </table>
 </div>
+<div class="section" id="dash-specific-stream-descriptor-fields">
+<h1>DASH specific stream descriptor fields<a class="headerlink" href="#dash-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">dash_roles (roles):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for DASH
+Role element. The value should be one of: <strong>caption</strong>, <strong>subtitle</strong>,
+<strong>main</strong>, <strong>alternate</strong>, <strong>supplementary</strong>, <strong>commentary</strong> and <strong>dub</strong>.
+See DASH (ISO/IEC 23009-1) specification for details.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="hls-specific-stream-descriptor-fields">
 <h1>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
 <table class="docutils field-list" frame="void" rules="none">
@@ -167,6 +183,11 @@ defaults to something of the form ‘stream_0.m3u8’, ‘stream_1.m3u8’,
 ‘.m3u8’, and is relative to hls_master_playlist_output (see below). Should
 only be set for video streams. If unspecified, no I-Frames only playlist is
 created.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">hls_characteristics (charcs):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for the
+CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
+<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</td>
 </tr>
 </tbody>
 </table>

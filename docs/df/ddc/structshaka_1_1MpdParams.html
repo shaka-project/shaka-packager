@@ -107,6 +107,8 @@ std::vector&lt; <a class="el" href="../../d3/d6e/structshaka_1_1MpdParams_1_1Utc
 <tr class="separator:adb0cdbb3c3580e1f3a107528c07c8d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74df80bd74635090e97837f3a5941d73"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#a74df80bd74635090e97837f3a5941d73">default_language</a></td></tr>
 <tr class="separator:a74df80bd74635090e97837f3a5941d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acafb3925f5d32826a241d00f2bf09509"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#acafb3925f5d32826a241d00f2bf09509">default_text_language</a></td></tr>
+<tr class="separator:acafb3925f5d32826a241d00f2bf09509"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5a09b17ee41a0960e813bd0c72bf4f6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#ab5a09b17ee41a0960e813bd0c72bf4f6">generate_static_live_mpd</a> = false</td></tr>
 <tr class="separator:ab5a09b17ee41a0960e813bd0c72bf4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1b2ec6746586d4981655cee62669ba2"><td class="memItemLeft" align="right" valign="top"><a id="aa1b2ec6746586d4981655cee62669ba2"></a>
@@ -115,6 +117,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:aa1b2ec6746586d4981655cee62669ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4424dc23f81ff4000584db2866f24c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#af4424dc23f81ff4000584db2866f24c9">allow_approximate_segment_timeline</a> = false</td></tr>
 <tr class="separator:af4424dc23f81ff4000584db2866f24c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88b8d28e263b2dcb36909869d3c2ceca"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/ddc/structshaka_1_1MpdParams.html#a88b8d28e263b2dcb36909869d3c2ceca">target_segment_duration</a> = 0</td></tr>
+<tr class="separator:a88b8d28e263b2dcb36909869d3c2ceca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -139,7 +143,7 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>For live profile only. If enabled, segments with close duration (i.e. with difference less than one sample) are considered to have the same duration. This enables MPD generator to generate less SegmentTimeline entries. If all segments are of the same duration except the last one, we will do further optimization to use SegmentTemplate instead and omit SegmentTimeline completely. Ignored if $Time$ is used in segment template, since $Time$ requires accurate Segment Timeline. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00071">71</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00076">76</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
 
 </div>
 </div>
@@ -171,9 +175,26 @@ Static Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The tracks tagged with this language will have &lt;Role ... value="main" /&gt; in the manifest. This allows the player to choose the correct default language for the content. </p>
+<p>The tracks tagged with this language will have &lt;Role ... value="main" /&gt; in the manifest. This allows the player to choose the correct default language for the content. This applies to both audio and text tracks. The default language for text tracks can be overriden by 'default_text_language'. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00056">56</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00058">58</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
+
+</div>
+</div>
+<a id="acafb3925f5d32826a241d00f2bf09509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acafb3925f5d32826a241d00f2bf09509">&#9670;&nbsp;</a></span>default_text_language</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string shaka::MpdParams::default_text_language</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Same as above, but this overrides the default language for text tracks, i.e. subtitles or close-captions. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00061">61</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
 
 </div>
 </div>
@@ -190,7 +211,7 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Generate static MPD for live profile. Note that this flag has no effect for on-demand profile, in which case static MPD is always used. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00059">59</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00064">64</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
 
 </div>
 </div>
@@ -270,6 +291,23 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a88b8d28e263b2dcb36909869d3c2ceca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88b8d28e263b2dcb36909869d3c2ceca">&#9670;&nbsp;</a></span>target_segment_duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double shaka::MpdParams::target_segment_duration = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to calculate the approximate SegmentTimeline if it is enabled. It is also used by the bandwidth estimator to exclude the segments with duration less than half of the target duration from bandwidth estimation. It will be populated from segment duration specified in <a class="el" href="../../d2/d1f/structshaka_1_1ChunkingParams.html" title="Chunking (segmentation) related parameters. ">ChunkingParams</a> if not specified. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d3/d07/mpd__params_8h_source.html#l00084">84</a> of file <a class="el" href="../../d3/d07/mpd__params_8h_source.html">mpd_params.h</a>.</p>
+
+</div>
+</div>
 <a id="a95e4824708c8de4b882b86772f680032"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a95e4824708c8de4b882b86772f680032">&#9670;&nbsp;</a></span>time_shift_buffer_depth</h2>
 
@@ -293,7 +331,7 @@ Static Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:46:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:40 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

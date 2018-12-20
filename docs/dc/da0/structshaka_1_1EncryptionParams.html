@@ -86,10 +86,14 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:afe99d2343ace64763249893a4fef6eb9"><td class="memItemLeft" align="right" valign="top"><a id="afe99d2343ace64763249893a4fef6eb9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#afe99d2343ace64763249893a4fef6eb9">ProtectionSystem</a> { <b>kCommonSystem</b>, 
+<tr class="memitem:afe99d2343ace64763249893a4fef6eb9"><td class="memItemLeft" align="right" valign="top"><a id="afe99d2343ace64763249893a4fef6eb9"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da0/structshaka_1_1EncryptionParams.html#afe99d2343ace64763249893a4fef6eb9">ProtectionSystem</a> { <br />
+&#160;&#160;<b>kCommonSystem</b>, 
 <b>kFairPlay</b>, 
+<b>kMarlin</b>, 
 <b>kPlayReady</b>, 
-<b>kWidevine</b>
+<br />
+&#160;&#160;<b>kWidevine</b>
+<br />
  }<tr class="memdesc:afe99d2343ace64763249893a4fef6eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported protection systems. <br /></td></tr>
 </td></tr>
 <tr class="separator:afe99d2343ace64763249893a4fef6eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,7 +193,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><div class="memdoc">
 <p>Crypto period duration in seconds. A positive value means key rotation is enabled, the key provider must support key rotation in this case. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00138">138</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00139">139</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
 
 </div>
 </div>
@@ -206,7 +210,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><div class="memdoc">
 <p>Stream label function assigns a stream label to the stream to be encrypted. Stream label is used to associate KeyPair with streams. Streams with the same stream label always uses the same keyPair; Streams with different stream label could use the same or different KeyPairs. A default stream label function will be generated if not set. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00173">173</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/d58/crypto__params_8h_source.html#l00174">174</a> of file <a class="el" href="../../dd/d58/crypto__params_8h_source.html">crypto_params.h</a>.</p>
 
 </div>
 </div>
@@ -216,7 +220,7 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:46:50 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:37:38 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

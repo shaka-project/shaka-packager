@@ -2,7 +2,7 @@ var searchData=
 [
   ['makecallbackfilename',['MakeCallbackFileName',['../d3/d73/classshaka_1_1File.html#a7a90ebd27f7728a7075cf3ba97396cae',1,'shaka::File']]],
   ['makepathsrelativetompd',['MakePathsRelativeToMpd',['../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9',1,'shaka::MpdBuilder']]],
-  ['masterplaylist',['MasterPlaylist',['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a2e7ed221fa11eca895eab3bfe0f5d55b',1,'shaka::hls::MasterPlaylist']]],
+  ['masterplaylist',['MasterPlaylist',['../d1/d87/classshaka_1_1hls_1_1MasterPlaylist.html#a648695985f1b7d650ef30bb740f815ee',1,'shaka::hls::MasterPlaylist']]],
   ['max',['Max',['../da/d2c/classshaka_1_1BandwidthEstimator.html#a0df6c40f43a89d3d481392ac0298e37c',1,'shaka::BandwidthEstimator']]],
   ['maxbitrate',['MaxBitrate',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a889e16239425ce84673cb78bc267b552',1,'shaka::hls::MediaPlaylist']]],
   ['mediaplaylist',['MediaPlaylist',['../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#ad0b067471c77f2f9a6adb4df0aa85925',1,'shaka::hls::MediaPlaylist']]],

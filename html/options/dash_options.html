@@ -122,7 +122,7 @@ accessible as they may still be accessed by the player.</p>
 <p class="last">The segments are not removed if the value is zero.</p>
 </td></tr>
 <tr><td class="option-group" colspan="2">
-<kbd><span class="option">--utc_timing <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
+<kbd><span class="option">--utc_timings <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
 </tr>
 <tr><td>&#160;</td><td><dl class="first docutils">
 <dt>Comma separated UTCTiming schemeIdUri and value pairs for the MPD:</dt>
@@ -133,9 +133,17 @@ accessible as they may still be accessed by the player.</p>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
 </tr>
-<tr><td>&#160;</td><td>Any audio/text tracks tagged with this language will have
+<tr><td>&#160;</td><td><p class="first">Any audio/text tracks tagged with this language will have
 &lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
-choose the correct default language for the content.</td></tr>
+choose the correct default language for the content.</p>
+<p class="last">This applies to both audio and text tracks. The default language for text
+tracks can be overriden by  ‘default_text_language’.</p>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</td></tr>
 <tr><td class="option-group" colspan="2">
 <kbd><span class="option">--allow_approximate_segment_timeline</span></kbd></td>
 </tr>

@@ -320,8 +320,8 @@ and library dependencies directly from Ubuntu:</p>
 <div class="section" id="alpine-linux">
 <span id="alpine-linux"></span><h3>Alpine Linux<a class="headerlink" href="#alpine-linux" title="Permalink to this headline">¶</a></h3>
 <p>Use <code class="docutils literal"><span class="pre">apk</span></code> command to install dependencies:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nv">$apk</span> add --no-cache bash build-base curl findutils git ninja python <span class="se">\</span>
-                    bsd-compat-headers linux-headers libexecinfo-dev
+<div class="highlight-shell"><div class="highlight"><pre><span></span>$ apk add --no-cache bash build-base curl findutils git ninja python <span class="se">\</span>
+                     bsd-compat-headers linux-headers libexecinfo-dev
 </pre></div>
 </div>
 <p>Alpine uses musl which does not have mallinfo defined in malloc.h. It is
@@ -333,7 +333,7 @@ dummy structure has to be defined in /usr/include/malloc.h, e.g.</p>
 </pre></div>
 </div>
 <p>We also need to disable clang and some other features to make it work with musl:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;linux_use_bundled_binutils=0 linux_use_bundled_gold=0 clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1&#39;</span>
+<div class="highlight-shell"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GYP_DEFINES</span><span class="o">=</span><span class="s1">&#39;clang=0 use_experimental_allocator_shim=0 use_allocator=none musl=1&#39;</span>
 </pre></div>
 </div>
 </div>

@@ -34,6 +34,7 @@ var searchData=
   ['headpos',['HeadPos',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#a3ad0ff1e27d529820e27656581a8542b',1,'shaka::media::ProducerConsumerQueue']]],
   ['hevcdecoderconfigurationrecord',['HEVCDecoderConfigurationRecord',['../d4/d8a/classshaka_1_1media_1_1HEVCDecoderConfigurationRecord.html',1,'shaka::media']]],
   ['hextouuid',['HexToUUID',['../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6',1,'shaka']]],
+  ['hls_5fcharacteristics',['hls_characteristics',['../d2/d7b/structshaka_1_1StreamDescriptor.html#ac10d35524ea73cc860a3f027181dc627',1,'shaka::StreamDescriptor']]],
   ['hls_5fgroup_5fid',['hls_group_id',['../d2/d7b/structshaka_1_1StreamDescriptor.html#a25764b4ffa8cb0da3b88cc251928ad96',1,'shaka::StreamDescriptor']]],
   ['hls_5fiframe_5fplaylist_5fname',['hls_iframe_playlist_name',['../d2/d7b/structshaka_1_1StreamDescriptor.html#a05f0489a76ea049bc8c9f144b4189591',1,'shaka::StreamDescriptor']]],
   ['hls_5fname',['hls_name',['../d2/d7b/structshaka_1_1StreamDescriptor.html#a92efcc01f52430f3d3ec030beb8c65c7',1,'shaka::StreamDescriptor']]],
@@ -41,7 +42,7 @@ var searchData=
   ['hls_5fplaylist_5fname',['hls_playlist_name',['../d2/d7b/structshaka_1_1StreamDescriptor.html#aa0d36cf55c46def14bc2fa6c293859ef',1,'shaka::StreamDescriptor']]],
   ['hlsentry',['HlsEntry',['../d5/d76/classshaka_1_1hls_1_1HlsEntry.html',1,'shaka::hls']]],
   ['hlsnotifier',['HlsNotifier',['../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html',1,'shaka::hls']]],
-  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html',1,'shaka::media::HlsNotifyMuxerListener'],['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#acee68189d58b4a0e28f778a54f6738cb',1,'shaka::media::HlsNotifyMuxerListener::HlsNotifyMuxerListener()']]],
+  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html',1,'shaka::media::HlsNotifyMuxerListener'],['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#adf85beae98cc27683b4628a5545840e9',1,'shaka::media::HlsNotifyMuxerListener::HlsNotifyMuxerListener()']]],
   ['hlsparams',['HlsParams',['../d0/da8/structshaka_1_1HlsParams.html',1,'shaka']]],
   ['hlsplaylisttype',['HlsPlaylistType',['../d8/daf/namespaceshaka.html#ab63a3c00cdbf61cfb6dd7a2497b26f8d',1,'shaka']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html',1,'shaka::media::HttpKeyFetcher'],['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a02561dcbbaf66152dce3ebd466810f15',1,'shaka::media::HttpKeyFetcher::HttpKeyFetcher()'],['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a11829a5c6e3507998c4d93c83c3069a4',1,'shaka::media::HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)']]]

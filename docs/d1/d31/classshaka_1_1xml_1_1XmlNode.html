@@ -103,6 +103,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:a7479055041708fb681957a838e7ecc1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73d758186470e7dbcb4f4339eb53458c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a73d758186470e7dbcb4f4339eb53458c">SetContent</a> (const std::string &amp;content)</td></tr>
 <tr class="separator:a73d758186470e7dbcb4f4339eb53458c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c41631d1fec1fe96550b5320fb3546f"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a8c41631d1fec1fe96550b5320fb3546f">ExtractReferencedNamespaces</a> ()</td></tr>
+<tr class="separator:a8c41631d1fec1fe96550b5320fb3546f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0be0a3e9b041978e118d994c1f13e8fb"><td class="memItemLeft" align="right" valign="top">scoped_xml_ptr&lt; xmlNode &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#a0be0a3e9b041978e118d994c1f13e8fb">PassScopedPtr</a> ()</td></tr>
 <tr class="separator:a0be0a3e9b041978e118d994c1f13e8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5cb2c3000ccbd53c0a1867db0b8a2d0"><td class="memItemLeft" align="right" valign="top">xmlNodePtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ae5cb2c3000ccbd53c0a1867db0b8a2d0">Release</a> ()</td></tr>
@@ -113,7 +115,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>These classes are wrapper classes for XML elements for generating MPD. None of the pointer parameters should be NULL. None of the methods are meant to be overridden. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../dd/de7/xml__node_8h_source.html#l00032">32</a> of file <a class="el" href="../../dd/de7/xml__node_8h_source.html">xml_node.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../dd/de7/xml__node_8h_source.html#l00033">33</a> of file <a class="el" href="../../dd/de7/xml__node_8h_source.html">xml_node.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a52ffb838d25293eafbea9f05fb1c2d17"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a52ffb838d25293eafbea9f05fb1c2d17">&#9670;&nbsp;</a></span>XmlNode()</h2>
@@ -145,7 +147,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00088">88</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00114">114</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -173,7 +175,27 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00095">95</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00121">121</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+
+</div>
+</div>
+<a id="a8c41631d1fec1fe96550b5320fb3546f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c41631d1fec1fe96550b5320fb3546f">&#9670;&nbsp;</a></span>ExtractReferencedNamespaces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt; std::string &gt; shaka::xml::XmlNode::ExtractReferencedNamespaces </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>namespaces used in the node and its descendents. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00198">198</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -193,7 +215,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Raw pointer to the element. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00181">181</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00216">216</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -213,7 +235,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <p>Transfer the ownership of the xmlNodePtr. After calling this method, the behavior of any methods, except the destructor, is undefined. </p><dl class="section return"><dt>Returns</dt><dd>The resource of this object. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00169">169</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00204">204</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -233,7 +255,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <p>Release the xmlNodePtr of this object. After calling this method, the behavior of any methods, except the destructor, is undefined. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00175">175</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00210">210</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -259,7 +281,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00164">164</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00193">193</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -296,7 +318,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00152">152</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00181">181</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -322,7 +344,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00160">160</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00189">189</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -359,7 +381,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00144">144</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00173">173</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -396,7 +418,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00137">137</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00166">166</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -407,7 +429,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Aug 20 2018 10:47:24 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 20 2018 14:38:05 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
