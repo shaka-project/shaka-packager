@@ -14,24 +14,17 @@ import os
 import struct
 import sys
 
-# Append the local protobuf location.  Use a path relative to the tools/pssh
-# folder where this file should be found.  This allows the file to be executed
-# from any directory.
-_pssh_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.insert(0, os.path.join(_pssh_dir, '../../third_party/protobuf/python'))
-# Import the widevine protobuf.  Use either Release or Debug.
-_proto_path_format = os.path.join(
-    _pssh_dir, '../../../out/%s/pyproto/packager/media/base')
-if os.path.isdir(_proto_path_format % 'Release'):
-  sys.path.insert(0, _proto_path_format % 'Release')
-else:
-  sys.path.insert(0, _proto_path_format % 'Debug')
-try:
-  import widevine_pssh_data_pb2  # pylint: disable=g-import-not-at-top
-except ImportError:
-  print >> sys.stderr, 'Cannot find proto file, make sure to build first'
-  raise
+_script_dir = os.path.dirname(os.path.realpath(__file__))
+_proto_path = os.path.join(_script_dir, 'pyproto')
+_widevine_proto_path = os.path.join(_proto_path, 'packager/media/base')
 
+assert os.path.exists(_proto_path), (
+    'Please run from output directory, e.g. out/Debug/pssh-box.py')
+
+sys.path.insert(0, _proto_path)
+sys.path.insert(0, _widevine_proto_path)
+
+import widevine_pssh_data_pb2  # pylint: disable=g-import-not-at-top
 
 COMMON_SYSTEM_ID = base64.b16decode('1077EFECC0B24D02ACE33C1E52E2FB4B')
 WIDEVINE_SYSTEM_ID = base64.b16decode('EDEF8BA979D64ACEA3C827DCD51D21ED')
