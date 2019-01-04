@@ -1602,9 +1602,11 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
     std::vector<uint8_t> data;
     RCHECK(buffer->ReadWriteVector(&data, buffer->BytesLeft()));
     RCHECK(es_descriptor.Parse(data));
-    if (es_descriptor.IsAAC()) {
+    if (es_descriptor.decoder_config_descriptor().IsAAC()) {
       RCHECK(aac_audio_specific_config.Parse(
-          es_descriptor.decoder_specific_info()));
+          es_descriptor.decoder_config_descriptor()
+              .decoder_specific_info_descriptor()
+              .data()));
     }
   } else {
     DCHECK(buffer->writer());
@@ -1615,8 +1617,10 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
 
 size_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
-  if (es_descriptor.object_type() == ObjectType::kForbidden)
+  if (es_descriptor.decoder_config_descriptor().object_type() ==
+      ObjectType::kForbidden) {
     return 0;
+  }
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 

@@ -444,15 +444,17 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   audio.format =
       CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
   switch(audio_info->codec()){
-    case kCodecAAC:
-      audio.esds.es_descriptor.set_object_type(
-          ObjectType::kISO_14496_3);  // MPEG4 AAC.
+    case kCodecAAC: {
       audio.esds.es_descriptor.set_esid(track_id);
-      audio.esds.es_descriptor.set_decoder_specific_info(
+      DecoderConfigDescriptor* decoder_config =
+          audio.esds.es_descriptor.mutable_decoder_config_descriptor();
+      decoder_config->set_object_type(ObjectType::kISO_14496_3);  // MPEG4 AAC.
+      decoder_config->set_max_bitrate(audio_info->max_bitrate());
+      decoder_config->set_avg_bitrate(audio_info->avg_bitrate());
+      decoder_config->mutable_decoder_specific_info_descriptor()->set_data(
           audio_info->codec_config());
-      audio.esds.es_descriptor.set_max_bitrate(audio_info->max_bitrate());
-      audio.esds.es_descriptor.set_avg_bitrate(audio_info->avg_bitrate());
       break;
+    }
     case kCodecDTSC:
     case kCodecDTSH:
     case kCodecDTSL:

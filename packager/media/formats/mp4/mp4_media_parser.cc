@@ -392,11 +392,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       std::vector<uint8_t> codec_config;
 
       switch (actual_format) {
-        case FOURCC_mp4a:
-          max_bitrate = entry.esds.es_descriptor.max_bitrate();
-          avg_bitrate = entry.esds.es_descriptor.avg_bitrate();
+        case FOURCC_mp4a: {
+          const DecoderConfigDescriptor& decoder_config =
+              entry.esds.es_descriptor.decoder_config_descriptor();
+          max_bitrate = decoder_config.max_bitrate();
+          avg_bitrate = decoder_config.avg_bitrate();
 
-          codec = ObjectTypeToCodec(entry.esds.es_descriptor.object_type());
+          codec = ObjectTypeToCodec(decoder_config.object_type());
           if (codec == kCodecAAC) {
             const AACAudioSpecificConfig& aac_audio_specific_config =
                 entry.esds.aac_audio_specific_config;
@@ -404,18 +406,19 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             sampling_frequency =
                 aac_audio_specific_config.GetSamplesPerSecond();
             audio_object_type = aac_audio_specific_config.GetAudioObjectType();
-            codec_config = entry.esds.es_descriptor.decoder_specific_info();
+            codec_config =
+                decoder_config.decoder_specific_info_descriptor().data();
           } else if (codec == kUnknownCodec) {
             // Intentionally not to fail in the parser as there may be multiple
             // streams in the source content, which allows the supported stream
             // to be packaged. An error will be returned if the unsupported
             // stream is passed to the muxer.
             LOG(WARNING) << "Unsupported audio object type "
-                         << static_cast<int>(
-                                entry.esds.es_descriptor.object_type())
+                         << static_cast<int>(decoder_config.object_type())
                          << " in stsd.es_desriptor.";
           }
           break;
+        }
         case FOURCC_dtsc:
           FALLTHROUGH_INTENDED;
         case FOURCC_dtse:

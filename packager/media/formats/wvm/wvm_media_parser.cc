@@ -716,7 +716,9 @@ bool WvmMediaParser::ParseIndexEntry() {
                 "Could not extract AudioSpecificConfig from ES_Descriptor";
             return false;
           }
-          audio_codec_config = descriptor.decoder_specific_info();
+          audio_codec_config = descriptor.decoder_config_descriptor()
+                                   .decoder_specific_info_descriptor()
+                                   .data();
           break;
         }
         case Audio_EC3SpecificData:

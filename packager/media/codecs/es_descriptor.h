@@ -28,22 +28,88 @@ enum class ObjectType : uint8_t {
   kDTSL = 0xAB,                // DTS-HD Master Audio
 };
 
-/// This class parses object type and decoder specific information from an
-/// elementary stream descriptor, which is usually contained in an esds
-/// box. Please refer to ISO 14496 Part 1 7.2.6.5 for more details.
-class ESDescriptor {
+enum class DescriptorTag {
+  kForbidden = 0,
+  kES = 0x03,
+  kDecoderConfig = 0x04,
+  kDecoderSpecificInfo = 0x05,
+  kSLConfig = 0x06,
+};
+
+/// Defines the base Descriptor object as defined in ISO 14496-1:2004 Systems
+/// section 7.2.2.2. All descriptors inherit from either BaseDescriptor.
+class BaseDescriptor {
  public:
-  ESDescriptor();
-  ~ESDescriptor();
+  explicit BaseDescriptor(DescriptorTag tag) : tag_(tag) {}
 
+  /// Parse the descriptor from input data.
+  /// @param data contains the descriptor data.
   bool Parse(const std::vector<uint8_t>& data);
-  void Write(BufferWriter* writer) const;
-  size_t ComputeSize() const;
 
-  uint16_t esid() const { return esid_; }
-  void set_esid(uint16_t esid) { esid_ = esid; }
+  /// Read the descriptor.
+  /// @param reader points to a BitReader object.
+  bool Read(BitReader* reader);
 
-  uint32_t max_bitrate() const {return max_bitrate_; }
+  /// Write the descriptor to buffer. This function calls ComputeSize internally
+  /// to compute and update descriptor size.
+  /// @param writer points to a BufferWriter object which wraps the buffer for
+  ///        writing.
+  void Write(BufferWriter* writer);
+
+  /// Compute the size of this descriptor. It will also update descriptor size.
+  /// @return The size of result descriptor including child descriptors.
+  size_t ComputeSize();
+
+ protected:
+  /// Write descriptor header.
+  void WriteHeader(BufferWriter* writer);
+
+  /// @return descriptor data size without header in bytes.
+  size_t data_size() const { return data_size_; }
+
+ private:
+  // Read the descriptor data (header is already read).
+  virtual bool ReadData(BitReader* reader) = 0;
+  // Write the descriptor. The descriptor data size should already be updated.
+  virtual void WriteInternal(BufferWriter* writer) = 0;
+  // Compute the data size, with child descriptors included.
+  virtual size_t ComputeDataSize() = 0;
+
+  DescriptorTag tag_ = DescriptorTag::kForbidden;
+  size_t data_size_ = 0;
+};
+
+/// Implements DecoderSpecificInfo descriptor according to ISO
+/// 14496-1:2004 7.2.6.7 DecoderSpecificInfo.
+class DecoderSpecificInfoDescriptor : public BaseDescriptor {
+ public:
+  DecoderSpecificInfoDescriptor()
+      : BaseDescriptor(DescriptorTag::kDecoderSpecificInfo) {}
+
+  const std::vector<uint8_t>& data() const { return data_; }
+
+  void set_data(const std::vector<uint8_t>& data) { data_ = data; }
+
+ private:
+  bool ReadData(BitReader* reader) override;
+  void WriteInternal(BufferWriter* writer) override;
+  size_t ComputeDataSize() override;
+
+  std::vector<uint8_t> data_;
+};
+
+/// Implements DecoderConfig descriptor according to ISO 14496-1:2004 7.2.6.6
+/// DecoderConfigDescriptor.
+class DecoderConfigDescriptor : public BaseDescriptor {
+ public:
+  DecoderConfigDescriptor() : BaseDescriptor(DescriptorTag::kDecoderConfig) {}
+
+  uint32_t buffer_size_db() const { return buffer_size_db_; }
+  void set_buffer_size_db(uint32_t buffer_size_db) {
+    buffer_size_db_ = buffer_size_db;
+  }
+
+  uint32_t max_bitrate() const { return max_bitrate_; }
   void set_max_bitrate(uint32_t max_bitrate) { max_bitrate_ = max_bitrate; }
 
   uint32_t avg_bitrate() const { return avg_bitrate_; }
@@ -52,20 +118,13 @@ class ESDescriptor {
   ObjectType object_type() const { return object_type_; }
   void set_object_type(ObjectType object_type) { object_type_ = object_type; }
 
-  const std::vector<uint8_t>& decoder_specific_info() const {
-    return decoder_specific_info_;
-  }
-  void set_decoder_specific_info(
-      const std::vector<uint8_t>& decoder_specific_info) {
-    decoder_specific_info_ = decoder_specific_info;
-  }
-
   /// @return true if the stream is AAC.
   bool IsAAC() const {
     return object_type_ == ObjectType::kISO_14496_3 ||
            object_type_ == ObjectType::kISO_13818_7_AAC_LC;
   }
 
+  /// @return true if the stream is DTS.
   bool IsDTS() const {
     return object_type_ == ObjectType::kDTSC ||
            object_type_ == ObjectType::kDTSE ||
@@ -73,22 +132,66 @@ class ESDescriptor {
            object_type_ == ObjectType::kDTSL;
   }
 
+  const DecoderSpecificInfoDescriptor& decoder_specific_info_descriptor()
+      const {
+    return decoder_specific_info_descriptor_;
+  }
+
+  DecoderSpecificInfoDescriptor* mutable_decoder_specific_info_descriptor() {
+    return &decoder_specific_info_descriptor_;
+  }
+
  private:
-  enum Tag {
-    kESDescrTag = 0x03,
-    kDecoderConfigDescrTag = 0x04,
-    kDecoderSpecificInfoTag = 0x05,
-    kSLConfigTag = 0x06,
-  };
+  bool ReadData(BitReader* reader) override;
+  void WriteInternal(BufferWriter* writer) override;
+  size_t ComputeDataSize() override;
 
-  bool ParseDecoderConfigDescriptor(BitReader* reader);
-  bool ParseDecoderSpecificInfo(BitReader* reader);
+  ObjectType object_type_ = ObjectType::kForbidden;
+  uint32_t buffer_size_db_ = 0;
+  uint32_t max_bitrate_ = 0;
+  uint32_t avg_bitrate_ = 0;
+  DecoderSpecificInfoDescriptor decoder_specific_info_descriptor_;
+};
 
-  uint16_t esid_;  // Elementary Stream ID.
-  ObjectType object_type_;
-  uint32_t max_bitrate_;
-  uint32_t avg_bitrate_;
-  std::vector<uint8_t> decoder_specific_info_;
+/// Implements SLConfig descriptor according to ISO 14496-1:2004 7.2.6.8
+/// SLConfigDescriptor.
+class SLConfigDescriptor : public BaseDescriptor {
+ public:
+  SLConfigDescriptor() : BaseDescriptor(DescriptorTag::kSLConfig) {}
+
+ private:
+  bool ReadData(BitReader* reader) override;
+  void WriteInternal(BufferWriter* writer) override;
+  size_t ComputeDataSize() override;
+};
+
+/// This class parses object type and decoder specific information from an
+/// elementary stream descriptor, which is usually contained in an esds
+/// box. Please refer to ISO 14496 Part 1 7.2.6.5 for more details.
+class ESDescriptor : public BaseDescriptor {
+ public:
+  ESDescriptor() : BaseDescriptor(DescriptorTag::kES) {}
+
+  uint16_t esid() const { return esid_; }
+  void set_esid(uint16_t esid) { esid_ = esid; }
+
+  const DecoderConfigDescriptor& decoder_config_descriptor() const {
+    return decoder_config_descriptor_;
+  }
+
+  DecoderConfigDescriptor* mutable_decoder_config_descriptor() {
+    return &decoder_config_descriptor_;
+  }
+
+ private:
+  bool ReadData(BitReader* reader) override;
+  void WriteInternal(BufferWriter* writer) override;
+  size_t ComputeDataSize() override;
+
+  uint16_t esid_ = 0;  // Elementary Stream ID.
+
+  DecoderConfigDescriptor decoder_config_descriptor_;
+  SLConfigDescriptor sl_config_descriptor_;
 };
 
 }  // namespace media

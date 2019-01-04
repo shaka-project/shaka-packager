@@ -373,11 +373,14 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Fill(ElementaryStreamDescriptor* esds) {
     const uint8_t kDecoderSpecificInfo[] = {18, 16};
     esds->es_descriptor.set_esid(1);
-    esds->es_descriptor.set_object_type(ObjectType::kISO_14496_3);
+    esds->es_descriptor.mutable_decoder_config_descriptor()->set_object_type(
+        ObjectType::kISO_14496_3);
     std::vector<uint8_t> decoder_specific_info(
         kDecoderSpecificInfo,
         kDecoderSpecificInfo + sizeof(kDecoderSpecificInfo));
-    esds->es_descriptor.set_decoder_specific_info(decoder_specific_info);
+    esds->es_descriptor.mutable_decoder_config_descriptor()
+        ->mutable_decoder_specific_info_descriptor()
+        ->set_data(decoder_specific_info);
   }
 
   void Modify(ElementaryStreamDescriptor* esds) {
