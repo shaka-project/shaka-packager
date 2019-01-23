@@ -59,6 +59,7 @@ Status RawKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
+                                        uint32_t crypto_period_duration_in_seconds,
                                         const std::string& stream_label,
                                         EncryptionKey* key) {
   RETURN_IF_ERROR(GetKey(stream_label, key));

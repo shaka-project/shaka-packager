@@ -62,8 +62,9 @@ class MockKeySource : public RawKeySource {
  public:
   MOCK_METHOD2(GetKey,
                Status(const std::string& stream_label, EncryptionKey* key));
-  MOCK_METHOD3(GetCryptoPeriodKey,
+  MOCK_METHOD4(GetCryptoPeriodKey,
                Status(uint32_t crypto_period_index,
+                      uint32_t crypto_period_duration_in_seconds,
                       const std::string& stream_label,
                       EncryptionKey* key));
 };
@@ -420,8 +421,9 @@ TEST_P(EncryptionHandlerEncryptionTest, ClearLeadWithKeyRotation) {
   for (int i = 0; i < 5; ++i) {
     if ((i % kSegmentsPerCryptoPeriod) == 0) {
       EXPECT_CALL(mock_key_source_,
-                  GetCryptoPeriodKey(i / kSegmentsPerCryptoPeriod, _, _))
-          .WillOnce(DoAll(SetArgPointee<2>(GetMockEncryptionKey()),
+                  GetCryptoPeriodKey(i / kSegmentsPerCryptoPeriod,
+                                     kCryptoPeriodDurationInSeconds, _, _))
+          .WillOnce(DoAll(SetArgPointee<3>(GetMockEncryptionKey()),
                           Return(Status::OK)));
     }
     // Use single-frame segment for testing.

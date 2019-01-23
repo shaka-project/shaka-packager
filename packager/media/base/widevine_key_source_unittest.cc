@@ -514,7 +514,7 @@ const char kCryptoPeriodRequestMessageFormat[] =
     R"("tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
     R"({"type":"UHD2"},{"type":"AUDIO"}],)"
     R"("drm_types":["WIDEVINE"],)"
-    R"("first_crypto_period_index":%u,"crypto_period_count":%u,)"
+    R"("first_crypto_period_index":%u,"crypto_period_count":%u,"crypto_period_seconds":%u,)"
     R"("protection_scheme":"%s"})";
 
 const char kCryptoPeriodTrackFormat[] =
@@ -557,6 +557,7 @@ std::string GenerateMockKeyRotationLicenseResponse(
 TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   const uint32_t kFirstCryptoPeriodIndex = 8;
   const uint32_t kCryptoPeriodCount = 10;
+  const uint32_t kCryptoPeriodSeconds = 100;
   // Array of indexes to be checked.
   const uint32_t kCryptoPeriodIndexes[] = {
       kFirstCryptoPeriodIndex, 17, 37, 38, 36, 89};
@@ -580,7 +581,7 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
     std::string expected_message = base::StringPrintf(
         kCryptoPeriodRequestMessageFormat, Base64Encode(kContentId).c_str(),
         kPolicy, first_crypto_period_index, kCryptoPeriodCount,
-        GetExpectedProtectionScheme().c_str());
+        kCryptoPeriodSeconds, GetExpectedProtectionScheme().c_str());
     EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
         .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
@@ -605,7 +606,8 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
   for (size_t i = 0; i < arraysize(kCryptoPeriodIndexes); ++i) {
     for (const std::string& stream_label : kStreamLabels) {
       ASSERT_OK(widevine_key_source_->GetCryptoPeriodKey(
-          kCryptoPeriodIndexes[i], stream_label, &encryption_key));
+          kCryptoPeriodIndexes[i], kCryptoPeriodSeconds, stream_label,
+          &encryption_key));
       EXPECT_EQ(GetMockKey(stream_label, kCryptoPeriodIndexes[i]),
                 ToString(encryption_key.key));
     }
@@ -613,7 +615,8 @@ TEST_P(WidevineKeySourceParameterizedTest, KeyRotationTest) {
 
   // The old crypto period indexes should have been garbage collected.
   Status status = widevine_key_source_->GetCryptoPeriodKey(
-      kFirstCryptoPeriodIndex, kStreamLabels[0], &encryption_key);
+      kFirstCryptoPeriodIndex, kCryptoPeriodSeconds, kStreamLabels[0],
+      &encryption_key);
   EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
 }
 

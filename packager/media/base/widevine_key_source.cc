@@ -213,6 +213,7 @@ Status WidevineKeySource::GetKey(const std::vector<uint8_t>& key_id,
 }
 
 Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
+                                             uint32_t crypto_period_duration_in_seconds,
                                              const std::string& stream_label,
                                              EncryptionKey* key) {
   DCHECK(key_production_thread_.HasBeenStarted());
@@ -220,6 +221,9 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   {
     base::AutoLock scoped_lock(lock_);
     if (!key_production_started_) {
+      // Record crypto period duration, which should not change once
+      // the key rotation has been enabled.
+      crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
       // Another client may have a slightly smaller starting crypto period
       // index. Set the initial value to account for that.
       first_crypto_period_index_ =
@@ -353,6 +357,7 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
   if (enable_key_rotation) {
     request->set_first_crypto_period_index(first_crypto_period_index);
     request->set_crypto_period_count(crypto_period_count_);
+    request->set_crypto_period_seconds(crypto_period_duration_in_seconds_);
   }
 
   if (!group_id_.empty())
