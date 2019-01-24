@@ -514,7 +514,8 @@ const char kCryptoPeriodRequestMessageFormat[] =
     R"("tracks":[{"type":"SD"},{"type":"HD"},{"type":"UHD1"},)"
     R"({"type":"UHD2"},{"type":"AUDIO"}],)"
     R"("drm_types":["WIDEVINE"],)"
-    R"("first_crypto_period_index":%u,"crypto_period_count":%u,"crypto_period_seconds":%u,)"
+    R"("first_crypto_period_index":%u,"crypto_period_count":%u,)"
+    R"("crypto_period_seconds":%u,)"
     R"("protection_scheme":"%s"})";
 
 const char kCryptoPeriodTrackFormat[] =

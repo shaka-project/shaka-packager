@@ -221,8 +221,6 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   {
     base::AutoLock scoped_lock(lock_);
     if (!key_production_started_) {
-      // Record crypto period duration, which should not change once
-      // the key rotation has been enabled.
       crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
       // Another client may have a slightly smaller starting crypto period
       // index. Set the initial value to account for that.
@@ -234,6 +232,10 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
           new EncryptionKeyQueue(queue_size, first_crypto_period_index_));
       start_key_production_.Signal();
       key_production_started_ = true;
+    }  else if (crypto_period_duration_in_seconds_ !=
+                crypto_period_duration_in_seconds) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Crypto period duration should not change.");
     }
   }
   return GetKeyInternal(crypto_period_index, stream_label, key);

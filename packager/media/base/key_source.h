@@ -78,7 +78,7 @@ class KeySource {
   /// @param crypto_period_index is the sequence number of the key rotation
   ///        period for which the key is being retrieved.
   /// @param crypto_period_duration_in_seconds is the duration of the crypto
-  ///        period in seconds
+  ///        period in seconds.
   /// @param stream_label is the label of stream for which retrieving the key.
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
