@@ -186,10 +186,13 @@ Status EncryptionHandler::ProcessMediaSample(
     // in that case.
     const int64_t dts = std::max(clear_sample->dts(), static_cast<int64_t>(0));
     const int64_t current_crypto_period_index = dts / crypto_period_duration_;
+    const uint32_t crypto_period_duration_in_seconds =
+        static_cast<uint32_t>(encryption_params_.crypto_period_duration_in_seconds);
     if (current_crypto_period_index != prev_crypto_period_index_) {
       EncryptionKey encryption_key;
       RETURN_IF_ERROR(key_source_->GetCryptoPeriodKey(
-          current_crypto_period_index, stream_label_, &encryption_key));
+          current_crypto_period_index, crypto_period_duration_in_seconds,
+          stream_label_, &encryption_key));
       if (!CreateEncryptor(encryption_key))
         return Status(error::ENCRYPTION_FAILURE, "Failed to create encryptor");
       prev_crypto_period_index_ = current_crypto_period_index;
