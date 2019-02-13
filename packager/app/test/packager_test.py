@@ -173,7 +173,7 @@ def _UpdateMediaInfoPaths(media_info_filepath):
   #   after:  media_file_name: "bear-640x360-audio.mp4"
 
   with open(media_info_filepath, 'rb') as f:
-    content = f.read()
+    content = f.read().decode()
 
   regex = 'media_file_name: "(.*)"'
   for path in re.findall(regex, content):
@@ -181,7 +181,7 @@ def _UpdateMediaInfoPaths(media_info_filepath):
     content = content.replace(path, short_path)
 
   with open(media_info_filepath, 'wb') as f:
-    f.write(content)
+    f.write(content.encode())
 
 
 def _UpdateMpdTimes(mpd_filepath):
@@ -200,7 +200,7 @@ def _UpdateMpdTimes(mpd_filepath):
     return out
 
   with open(mpd_filepath, 'rb') as f:
-    content = f.read()
+    content = f.read().decode()
 
   content = _Replace(
       content,
@@ -213,7 +213,7 @@ def _UpdateMpdTimes(mpd_filepath):
       'publishTime="some_time"')
 
   with open(mpd_filepath, 'wb') as f:
-    f.write(content)
+    f.write(content.encode())
 
 
 def GetExtension(input_file_path, output_format):

@@ -45,11 +45,11 @@ class PackagerApp(object):
   def DumpStreamInfo(self, stream):
     input_str = 'input=%s' % stream
     cmd = [self.packager_binary, input_str, '--dump_stream_info']
-    return subprocess.check_output(cmd, env=self.GetEnv())
+    return subprocess.check_output(cmd, env=self.GetEnv()).decode()
 
   def Version(self):
     return subprocess.check_output(
-        [self.packager_binary, '--version'], env=self.GetEnv())
+        [self.packager_binary, '--version'], env=self.GetEnv()).decode()
 
   def Package(self, streams, flags=None):
     """Executes packager command."""
