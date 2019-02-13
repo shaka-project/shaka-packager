@@ -453,6 +453,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
     if (!widevine_classic) {
       encryption_key->key_id.assign(track.key_id().begin(),
                                     track.key_id().end());
+      encryption_key->iv.assign(track.iv().begin(), track.iv().end());
 
       if (generate_widevine_protection_system_) {
         if (track.pssh_size() != 1) {
