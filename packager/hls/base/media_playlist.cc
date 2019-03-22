@@ -305,19 +305,6 @@ std::string PlacementOpportunityEntry::ToString() {
   return "#EXT-X-PLACEMENT-OPPORTUNITY";
 }
 
-double LatestSegmentStartTime(
-    const std::list<std::unique_ptr<HlsEntry>>& entries) {
-  DCHECK(!entries.empty());
-  for (auto iter = entries.rbegin(); iter != entries.rend(); ++iter) {
-    if (iter->get()->type() == HlsEntry::EntryType::kExtInf) {
-      const SegmentInfoEntry* segment_info =
-          reinterpret_cast<SegmentInfoEntry*>(iter->get());
-      return segment_info->start_time();
-    }
-  }
-  return 0.0;
-}
-
 }  // namespace
 
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
@@ -530,6 +517,13 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
     return;
   }
 
+  // In order for the oldest segment to be accessible for at least
+  // |time_shift_buffer_depth| seconds, the latest segment should not be in the
+  // sliding window since the player could be playing any part of the latest
+  // segment. So the current segment duration is added to the sum of segment
+  // durations (in the manifest/playlist) after sliding the window.
+  SlideWindow();
+
   const double start_time_seconds =
       static_cast<double>(start_time) / time_scale_;
   const double segment_duration_seconds =
@@ -537,12 +531,25 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
   longest_segment_duration_ =
       std::max(longest_segment_duration_, segment_duration_seconds);
   bandwidth_estimator_.AddBlock(size, segment_duration_seconds);
+  current_buffer_depth_ += segment_duration_seconds;
+
+  if (!entries_.empty() &&
+      entries_.back()->type() == HlsEntry::EntryType::kExtInf) {
+    const SegmentInfoEntry* segment_info =
+        static_cast<SegmentInfoEntry*>(entries_.back().get());
+    if (segment_info->start_time() > start_time_seconds) {
+      LOG(WARNING)
+          << "Insert a discontinuity tag after the segment with start time "
+          << segment_info->start_time() << " as the next segment starts at "
+          << start_time_seconds << ".";
+      entries_.emplace_back(new DiscontinuityEntry());
+    }
+  }
 
   entries_.emplace_back(new SegmentInfoEntry(
       segment_file_name, start_time_seconds, segment_duration_seconds,
       use_byte_range_, start_byte_offset, size, previous_segment_end_offset_));
   previous_segment_end_offset_ = start_byte_offset + size - 1;
-  SlideWindow();
 }
 
 void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp) {
@@ -559,7 +566,9 @@ void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp) {
 
       const double segment_duration_seconds =
           next_timestamp_seconds - segment_info->start_time();
-      segment_info->set_duration(segment_duration_seconds);
+      // It could be negative if timestamp messed up.
+      if (segment_duration_seconds > 0)
+        segment_info->set_duration(segment_duration_seconds);
       longest_segment_duration_ =
           std::max(longest_segment_duration_, segment_duration_seconds);
       break;
@@ -568,21 +577,14 @@ void MediaPlaylist::AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp) {
 }
 
 void MediaPlaylist::SlideWindow() {
-  DCHECK(!entries_.empty());
   if (hls_params_.time_shift_buffer_depth <= 0.0 ||
       hls_params_.playlist_type != HlsPlaylistType::kLive) {
     return;
   }
   DCHECK_GT(time_scale_, 0u);
 
-  // The start time of the latest segment is considered the current_play_time,
-  // and this should guarantee that the latest segment will stay in the list.
-  const double current_play_time = LatestSegmentStartTime(entries_);
-  if (current_play_time <= hls_params_.time_shift_buffer_depth)
+  if (current_buffer_depth_ <= hls_params_.time_shift_buffer_depth)
     return;
-
-  const double timeshift_limit =
-      current_play_time - hls_params_.time_shift_buffer_depth;
 
   // Temporary list to hold the EXT-X-KEYs. For example, this allows us to
   // remove <3> without removing <1> and <2> below (<1> and <2> are moved to the
@@ -607,12 +609,17 @@ void MediaPlaylist::SlideWindow() {
       ++discontinuity_sequence_number_;
     } else {
       DCHECK_EQ(entry_type, HlsEntry::EntryType::kExtInf);
+
       const SegmentInfoEntry& segment_info =
           *reinterpret_cast<SegmentInfoEntry*>(last->get());
-      const double last_segment_end_time =
-          segment_info.start_time() + segment_info.duration();
-      if (timeshift_limit < last_segment_end_time)
+      // Remove the current segment only if it falls completely out of time
+      // shift buffer range.
+      const bool segment_within_time_shift_buffer =
+          current_buffer_depth_ - segment_info.duration() <
+          hls_params_.time_shift_buffer_depth;
+      if (segment_within_time_shift_buffer)
         break;
+      current_buffer_depth_ -= segment_info.duration();
       RemoveOldSegment(segment_info.start_time());
       media_sequence_number_++;
     }

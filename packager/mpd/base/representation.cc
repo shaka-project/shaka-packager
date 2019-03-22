@@ -79,33 +79,6 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 1;
 }
 
-int64_t LastSegmentStartTime(const SegmentInfo& segment_info) {
-  return segment_info.start_time + segment_info.duration * segment_info.repeat;
-}
-
-// This is equal to |segment_info| end time
-int64_t LastSegmentEndTime(const SegmentInfo& segment_info) {
-  return segment_info.start_time +
-         segment_info.duration * (segment_info.repeat + 1);
-}
-
-int64_t LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
-  DCHECK(!segments.empty());
-  const SegmentInfo& latest_segment = segments.back();
-  return LastSegmentStartTime(latest_segment);
-}
-
-// Given |timeshift_limit|, finds out the number of segments that are no longer
-// valid and should be removed from |segment_info|.
-uint64_t SearchTimedOutRepeatIndex(int64_t timeshift_limit,
-                                   const SegmentInfo& segment_info) {
-  DCHECK_LE(timeshift_limit, LastSegmentEndTime(segment_info));
-  if (timeshift_limit < segment_info.start_time)
-    return 0;
-
-  return (timeshift_limit - segment_info.start_time) / segment_info.duration;
-}
-
 }  // namespace
 
 Representation::Representation(
@@ -203,16 +176,21 @@ void Representation::AddNewSegment(int64_t start_time,
     return;
   }
 
+  // In order for the oldest segment to be accessible for at least
+  // |time_shift_buffer_depth| seconds, the latest segment should not be in the
+  // sliding window since the player could be playing any part of the latest
+  // segment. So the current segment duration is added to the sum of segment
+  // durations (in the manifest/playlist) after sliding the window.
+  SlideWindow();
+
   if (state_change_listener_)
     state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
 
   AddSegmentInfo(start_time, duration);
+  current_buffer_depth_ += segment_infos_.back().duration;
 
   bandwidth_estimator_.AddBlock(
       size, static_cast<double>(duration) / media_info_.reference_time_scale());
-
-  SlideWindow();
-  DCHECK_GE(segment_infos_.size(), 1u);
 }
 
 void Representation::SetSampleDuration(uint32_t frame_duration) {
@@ -435,7 +413,6 @@ int64_t Representation::AdjustDuration(int64_t duration) const {
 }
 
 void Representation::SlideWindow() {
-  DCHECK(!segment_infos_.empty());
   if (mpd_options_.mpd_params.time_shift_buffer_depth <= 0.0 ||
       mpd_options_.mpd_type == MpdType::kStatic)
     return;
@@ -443,60 +420,40 @@ void Representation::SlideWindow() {
   const uint32_t time_scale = GetTimeScale(media_info_);
   DCHECK_GT(time_scale, 0u);
 
-  int64_t time_shift_buffer_depth = static_cast<int64_t>(
+  const int64_t time_shift_buffer_depth = static_cast<int64_t>(
       mpd_options_.mpd_params.time_shift_buffer_depth * time_scale);
 
-  // The start time of the latest segment is considered the current_play_time,
-  // and this should guarantee that the latest segment will stay in the list.
-  const int64_t current_play_time = LatestSegmentStartTime(segment_infos_);
-  if (current_play_time <= time_shift_buffer_depth)
+  if (current_buffer_depth_ <= time_shift_buffer_depth)
     return;
 
-  const int64_t timeshift_limit = current_play_time - time_shift_buffer_depth;
-
-  // First remove all the SegmentInfos that are completely out of range, by
-  // looking at the very last segment's end time.
   std::list<SegmentInfo>::iterator first = segment_infos_.begin();
   std::list<SegmentInfo>::iterator last = first;
   for (; last != segment_infos_.end(); ++last) {
-    const int64_t last_segment_end_time = LastSegmentEndTime(*last);
-    if (timeshift_limit < last_segment_end_time)
+    // Remove the current segment only if it falls completely out of time shift
+    // buffer range.
+    while (last->repeat >= 0 &&
+           current_buffer_depth_ - last->duration >= time_shift_buffer_depth) {
+      current_buffer_depth_ -= last->duration;
+      RemoveOldSegment(&*last);
+      start_number_++;
+    }
+    if (last->repeat >= 0)
       break;
-    RemoveSegments(last->start_time, last->duration, last->repeat + 1);
-    start_number_ += last->repeat + 1;
   }
   segment_infos_.erase(first, last);
-
-  // Now some segment in the first SegmentInfo should be left in the list.
-  SegmentInfo* first_segment_info = &segment_infos_.front();
-  DCHECK_LE(timeshift_limit, LastSegmentEndTime(*first_segment_info));
-
-  // Identify which segments should still be in the SegmentInfo.
-  const uint64_t repeat_index =
-      SearchTimedOutRepeatIndex(timeshift_limit, *first_segment_info);
-  if (repeat_index == 0)
-    return;
-
-  RemoveSegments(first_segment_info->start_time, first_segment_info->duration,
-                 repeat_index);
-
-  first_segment_info->start_time = first_segment_info->start_time +
-                                   first_segment_info->duration * repeat_index;
-  first_segment_info->repeat = first_segment_info->repeat - repeat_index;
-  start_number_ += repeat_index;
 }
 
-void Representation::RemoveSegments(int64_t start_time,
-                                    int64_t duration,
-                                    uint64_t num_segments) {
+void Representation::RemoveOldSegment(SegmentInfo* segment_info) {
+  int64_t segment_start_time = segment_info->start_time;
+  segment_info->start_time += segment_info->duration;
+  segment_info->repeat--;
+
   if (mpd_options_.mpd_params.preserved_segments_outside_live_window == 0)
     return;
 
-  for (size_t i = 0; i < num_segments; ++i) {
-    segments_to_be_removed_.push_back(media::GetSegmentName(
-        media_info_.segment_template(), start_time + i * duration,
-        start_number_ - 1 + i, media_info_.bandwidth()));
-  }
+  segments_to_be_removed_.push_back(
+      media::GetSegmentName(media_info_.segment_template(), segment_start_time,
+                            start_number_ - 1, media_info_.bandwidth()));
   while (segments_to_be_removed_.size() >
          mpd_options_.mpd_params.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();
