@@ -326,8 +326,18 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
       const int64_t kArbitrarySmallDuration = 0.001 * kMpeg2Timescale;  // 1ms.
       pending_sample_->set_duration(kArbitrarySmallDuration);
     } else {
-      pending_sample_duration_ = media_sample->dts() - pending_sample_->dts();
-      pending_sample_->set_duration(pending_sample_duration_);
+      uint64_t sample_duration = media_sample->dts() - pending_sample_->dts();
+      pending_sample_->set_duration(sample_duration);
+
+      const int kArbitraryGapScale = 10;
+      if (sample_duration > kArbitraryGapScale * pending_sample_duration_) {
+        LOG(WARNING) << "[MPEG-2 TS] PID " << pid() << " Possible GAP at dts "
+                     << pending_sample_->dts() << " with next sample at dts "
+                     << media_sample->dts() << " (difference "
+                     << sample_duration << ")";
+      }
+
+      pending_sample_duration_ = sample_duration;
     }
     emit_sample_cb_.Run(pid(), std::move(pending_sample_));
   }

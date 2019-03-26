@@ -11,6 +11,7 @@
 #include <algorithm>
 
 #include "packager/base/logging.h"
+#include "packager/base/strings/stringprintf.h"
 #include "packager/file/file.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/mpd/base/mpd_options.h"
@@ -358,7 +359,7 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
     // A gap since previous.
     const int64_t kRoundingErrorGrace = 5;
     if (previous_segment_end_time + kRoundingErrorGrace < start_time) {
-      LOG(WARNING) << "Found a gap of size "
+      LOG(WARNING) << RepresentationAsString() << " Found a gap of size "
                    << (start_time - previous_segment_end_time)
                    << " > kRoundingErrorGrace (" << kRoundingErrorGrace
                    << "). The new segment starts at " << start_time
@@ -369,7 +370,8 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
     // No overlapping segments.
     if (start_time < previous_segment_end_time - kRoundingErrorGrace) {
       LOG(WARNING)
-          << "Segments should not be overlapping. The new segment starts at "
+          << RepresentationAsString()
+          << " Segments should not be overlapping. The new segment starts at "
           << start_time << " but the previous segment ends at "
           << previous_segment_end_time << ".";
     }
@@ -502,6 +504,28 @@ std::string Representation::GetTextMimeType() const {
              << media_info_.text_info().codec()
              << " container: " << media_info_.container_type();
   return "";
+}
+
+std::string Representation::RepresentationAsString() const {
+  std::string s = base::StringPrintf("Representation (id=%d,", id_);
+  if (media_info_.has_video_info()) {
+    const MediaInfo_VideoInfo& video_info = media_info_.video_info();
+    base::StringAppendF(&s, "codec='%s',width=%d,height=%d",
+                        video_info.codec().c_str(), video_info.width(),
+                        video_info.height());
+  } else if (media_info_.has_audio_info()) {
+    const MediaInfo_AudioInfo& audio_info = media_info_.audio_info();
+    base::StringAppendF(
+        &s, "codec='%s',frequency=%d,language='%s'", audio_info.codec().c_str(),
+        audio_info.sampling_frequency(), audio_info.language().c_str());
+  } else if (media_info_.has_text_info()) {
+    const MediaInfo_TextInfo& text_info = media_info_.text_info();
+    base::StringAppendF(&s, "codec='%s',language='%s'",
+                        text_info.codec().c_str(),
+                        text_info.language().c_str());
+  }
+  base::StringAppendF(&s, ")");
+  return s;
 }
 
 }  // namespace shaka

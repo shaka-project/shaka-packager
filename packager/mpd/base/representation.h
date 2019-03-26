@@ -206,6 +206,9 @@ class Representation {
   std::string GetAudioMimeType() const;
   std::string GetTextMimeType() const;
 
+  // Get Representation as string. For debugging.
+  std::string RepresentationAsString() const;
+
   // Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So
   // any logic using this can assume only one set.
   MediaInfo media_info_;
