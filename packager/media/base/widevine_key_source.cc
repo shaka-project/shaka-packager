@@ -6,6 +6,8 @@
 
 #include "packager/media/base/widevine_key_source.h"
 
+#include <gflags/gflags.h>
+
 #include "packager/base/base64.h"
 #include "packager/base/bind.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -19,6 +21,10 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_common_encryption.pb.h"
+
+DEFINE_string(video_feature,
+              "",
+              "Specify the optional video feature, e.g. HDR.");
 
 namespace shaka {
 namespace media {
@@ -364,6 +370,9 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
 
   if (!group_id_.empty())
     request->set_group_id(group_id_.data(), group_id_.size());
+
+  if (!FLAGS_video_feature.empty())
+    request->set_video_feature(FLAGS_video_feature);
 }
 
 Status WidevineKeySource::GenerateKeyMessage(

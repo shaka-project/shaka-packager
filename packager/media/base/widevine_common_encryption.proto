@@ -74,6 +74,13 @@ message CommonEncryptionRequest {
 
   // Enable entitlement license if set to true.
   optional bool enable_entitlement_license = 16;
+
+  // Video feature identifier, which is used in conjunction with |content_id|
+  // to derive key IDs and content keys. For example, it can be used to generate
+  // different keys for HDR and SDR. The value is propagated to PSSH.
+  // Ignored for tracks with type “AUDIO”.
+  // Current values are "HDR".
+  optional string video_feature = 19;
 }
 
 message CommonEncryptionResponse {
