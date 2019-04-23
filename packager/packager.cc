@@ -899,10 +899,8 @@ Status Packager::Initialize(
   // DASH approximate segment timeline.
   const double target_segment_duration =
       packaging_params.chunking_params.segment_duration_in_seconds;
-  if (mpd_params.target_segment_duration != 0)
-    mpd_params.target_segment_duration = target_segment_duration;
-  if (hls_params.target_segment_duration != 0)
-    hls_params.target_segment_duration = target_segment_duration;
+  mpd_params.target_segment_duration = target_segment_duration;
+  hls_params.target_segment_duration = target_segment_duration;
 
   // Store callback params to make it available during packaging.
   internal->buffer_callback_params = packaging_params.buffer_callback_params;
