@@ -379,6 +379,8 @@ struct RebaseUrlTestData {
   std::string master_playlist_dir;
   // Media playlist path. This may be relative or absolute.
   std::string playlist_path;
+  // Expected relative playlist path. It is path_relative_to(master_directory).
+  std::string expected_relative_playlist_path;
   // Media segment path. This may be relative or absolute.
   std::string segment_path;
   // Expected segment URL in the media playlist:
@@ -421,7 +423,7 @@ TEST_P(SimpleHlsNotifierRebaseUrlTest, Test) {
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
-      new MockMediaPlaylist(test_data_.playlist_path, "", "");
+      new MockMediaPlaylist(test_data_.expected_relative_playlist_path, "", "");
 
   EXPECT_CALL(
       *mock_media_playlist,
@@ -433,8 +435,9 @@ TEST_P(SimpleHlsNotifierRebaseUrlTest, Test) {
     EXPECT_CALL(*mock_media_playlist,
                 AddSegment(test_data_.expected_segment_url, _, _, _, _));
   }
-  EXPECT_CALL(*factory, CreateMock(_, StrEq(test_data_.playlist_path),
-                                   StrEq("name"), StrEq("groupid")))
+  EXPECT_CALL(*factory,
+              CreateMock(_, StrEq(test_data_.expected_relative_playlist_path),
+                         StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
@@ -459,35 +462,54 @@ INSTANTIATE_TEST_CASE_P(
     SimpleHlsNotifierRebaseUrlTest,
     ::testing::Values(
         // Verify relative segment path.
-        RebaseUrlTestData{
-            "http://testprefix.com/", "master_directory/",
-            "video_playlist.m3u8", "master_directory/path/to/media1.ts",
-            "http://testprefix.com/path/to/media1.ts",
-            "" /* init segment path */, "" /* expected init segment url */},
+        RebaseUrlTestData{"http://testprefix.com/", "master_directory/",
+                          "video_playlist.m3u8", "video_playlist.m3u8",
+                          "master_directory/path/to/media1.ts",
+                          "http://testprefix.com/path/to/media1.ts",
+                          "" /* init segment path */,
+                          "" /* expected init segment url */},
         // Verify relative init segment path.
         RebaseUrlTestData{"http://testprefix.com/", "master_directory/",
-                          "video_playlist.m3u8", "" /* segment path */,
-                          "" /* expected segment url */,
+                          "video_playlist.m3u8", "video_playlist.m3u8",
+                          "" /* segment path */, "" /* expected segment url */,
                           "master_directory/path/to/init.mp4",
                           "http://testprefix.com/path/to/init.mp4"},
         // Verify segment url relative to playlist.
         RebaseUrlTestData{
-            "" /* no base_url */, "master_directory/",
-            "video/video_playlist.m3u8",
+            "" /* no base url */, "master_directory/",
+            "video/video_playlist.m3u8", "video/video_playlist.m3u8",
             "master_directory/video/path/to/media1.m4s", "path/to/media1.m4s",
             "master_directory/video/path/to/init.mp4", "path/to/init.mp4"},
         // Verify absolute directory.
         RebaseUrlTestData{
             "http://testprefix.com/", "/tmp/something/", "video_playlist.m3u8",
-            "/tmp/something/media1.ts", "http://testprefix.com/media1.ts",
-            "" /* init segment path */, "" /* expected init segment url */},
+            "video_playlist.m3u8", "/tmp/something/media1.ts",
+            "http://testprefix.com/media1.ts", "" /* init segment path */,
+            "" /* expected init segment url */},
         // Verify absolute directory, but media in a different directory.
         // Note that we don't really expect this in practice.
-        RebaseUrlTestData{"http://testprefix.com/", "/tmp/something/",
-                          "video_playlist.m3u8", "/var/somewhereelse/media1.ts",
-                          "http://testprefix.com//var/somewhereelse/media1.ts",
-                          "" /* init segment path */,
-                          "" /* expected init segment url */}));
+        RebaseUrlTestData{
+            "http://testprefix.com/", "/tmp/something/", "video_playlist.m3u8",
+            "video_playlist.m3u8", "/var/somewhereelse/media1.ts",
+            "http://testprefix.com//var/somewhereelse/media1.ts",
+            "" /* init segment path */, "" /* expected init segment url */
+        },
+        // Verify absolute directory, absolute media playlist path.
+        RebaseUrlTestData{
+            "http://testprefix.com/", "/tmp/something/",
+            "/tmp/something/video/video_playlist.m3u8",
+            "video/video_playlist.m3u8", "/tmp/something/video/media1.ts",
+            "http://testprefix.com/video/media1.ts", "" /* init segment path */,
+            "" /* expected init segment url */
+        },
+        // Same as above, but without base_url.
+        RebaseUrlTestData{
+            "" /* no base url */, "/tmp/something/",
+            "/tmp/something/video/video_playlist.m3u8",
+            "video/video_playlist.m3u8", "/tmp/something/video/media1.ts",
+            "media1.ts", "" /* init segment path */,
+            "" /* expected init segment url */
+        }));
 
 class LiveOrEventSimpleHlsNotifierTest
     : public SimpleHlsNotifierTest,

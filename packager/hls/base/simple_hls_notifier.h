@@ -77,7 +77,7 @@ class SimpleHlsNotifier : public HlsNotifier {
     MediaPlaylist::EncryptionMethod encryption_method;
   };
 
-  std::string output_dir_;
+  std::string master_playlist_dir_;
   uint32_t target_duration_ = 0;
 
   std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;

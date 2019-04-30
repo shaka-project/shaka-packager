@@ -61,7 +61,8 @@ class MediaPlaylist {
   };
 
   /// @param hls_params contains HLS parameters.
-  /// @param file_name is the file name of this media playlist.
+  /// @param file_name is the file name of this media playlist, relative to
+  ///        master playlist output path.
   /// @param name is the name of this playlist. In other words this is the
   ///        value of the NAME attribute for EXT-X-MEDIA. This is not
   ///        necessarily the same as @a file_name.
