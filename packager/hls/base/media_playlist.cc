@@ -37,6 +37,29 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
   return 0u;
 }
 
+std::string AdjustVideoCodec(const std::string& codec) {
+  // Apple does not like video formats with the parameter sets stored in the
+  // samples. It also fails mediastreamvalidator checks and some Apple devices /
+  // platforms refused to play.
+  // See https://apple.co/30n90DC 1.10 and
+  // https://github.com/google/shaka-packager/issues/587#issuecomment-489182182.
+  // Replaced with the corresponding formats with the parameter sets stored in
+  // the sample descriptions instead.
+  std::string adjusted_codec = codec;
+  std::string fourcc = codec.substr(0, 4);
+  if (fourcc == "avc3")
+    adjusted_codec = "avc1" + codec.substr(4);
+  else if (fourcc == "hev1")
+    adjusted_codec = "hvc1" + codec.substr(4);
+  else if (fourcc == "dvhe")
+    adjusted_codec = "dvh1" + codec.substr(4);
+  if (adjusted_codec != codec) {
+    VLOG(1) << "Adusting video codec string from " << codec << " to "
+            << adjusted_codec;
+  }
+  return adjusted_codec;
+}
+
 // Duplicated from MpdUtils because:
 // 1. MpdUtils header depends on libxml header, which is not in the deps here
 // 2. GetLanguage depends on MediaInfo from packager/mpd/
@@ -349,7 +372,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
-    codec_ = media_info.video_info().codec();
+    codec_ = AdjustVideoCodec(media_info.video_info().codec());
   } else if (media_info.has_audio_info()) {
     stream_type_ = MediaPlaylistStreamType::kAudio;
     codec_ = media_info.audio_info().codec();

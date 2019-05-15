@@ -20,6 +20,8 @@ namespace hls {
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::ReturnArg;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 namespace {
 
@@ -1011,6 +1013,32 @@ TEST_F(MediaPlaylistDeleteSegmentsTest, ManySegments) {
   EXPECT_TRUE(SegmentDeleted(base::StringPrintf(
       kStringPrintTemplate, last_available_segment_index - 1)));
 }
+
+class MediaPlaylistCodecTest
+    : public MediaPlaylistTest,
+      public WithParamInterface<std::pair<std::string, std::string>> {};
+
+TEST_P(MediaPlaylistCodecTest, AdjustVideoCodec) {
+  std::string input_codec, expected_output_codec;
+  std::tie(input_codec, expected_output_codec) = GetParam();
+
+  valid_video_media_info_.mutable_video_info()->set_codec(input_codec);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+  ASSERT_EQ(media_playlist_->codec(), expected_output_codec);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    Codecs,
+    MediaPlaylistCodecTest,
+    Values(std::make_pair("avc1.4d401e", "avc1.4d401e"),
+           // Replace avc3 with avc1.
+           std::make_pair("avc3.4d401e", "avc1.4d401e"),
+           std::make_pair("hvc1.2.4.L63.90", "hvc1.2.4.L63.90"),
+           // Replace hev1 with hvc1.
+           std::make_pair("hev1.2.4.L63.90", "hvc1.2.4.L63.90"),
+           std::make_pair("dvh1.2.4.L63.90", "dvh1.2.4.L63.90"),
+           // Replace dvhe with dvh1.
+           std::make_pair("dvhe.2.4.L63.90", "dvh1.2.4.L63.90")));
 
 }  // namespace hls
 }  // namespace shaka
