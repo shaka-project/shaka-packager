@@ -286,6 +286,16 @@ AdaptationSetXmlNode::AdaptationSetXmlNode()
     : RepresentationBaseXmlNode("AdaptationSet") {}
 AdaptationSetXmlNode::~AdaptationSetXmlNode() {}
 
+void AdaptationSetXmlNode::AddAccessibilityElement(
+    const std::string& scheme_id_uri,
+    const std::string& value) {
+  XmlNode accessibility("Accessibility");
+  accessibility.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  if (!value.empty())
+    accessibility.SetStringAttribute("value", value);
+  AddChild(accessibility.PassScopedPtr());
+}
+
 void AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
                                           const std::string& value) {
   XmlNode role("Role");

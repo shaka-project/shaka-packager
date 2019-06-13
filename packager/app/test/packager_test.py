@@ -275,6 +275,8 @@ class PackagerAppTest(unittest.TestCase):
                  using_time_specifier=False,
                  hls=False,
                  hls_characteristics=None,
+                 dash_accessibilities=None,
+                 dash_roles=None,
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
@@ -301,6 +303,8 @@ class PackagerAppTest(unittest.TestCase):
           $Number$. This flag is only relevant if segmented is True.
       hls: Should the output be for an HLS manifest.
       hls_characteristics: CHARACTERISTICS attribute for the HLS stream.
+      dash_accessibilities: Accessibility element for the DASH stream.
+      dash_roles: Role element for the DASH stream.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
           same as not specifying a trick play factor.
@@ -355,6 +359,11 @@ class PackagerAppTest(unittest.TestCase):
 
     if hls_characteristics:
       stream.Append('hls_characteristics', hls_characteristics)
+
+    if dash_accessibilities:
+      stream.Append('dash_accessibilities', dash_accessibilities)
+    if dash_roles:
+      stream.Append('dash_roles', dash_roles)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt'
@@ -637,6 +646,18 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video']), self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video')
+
+  def testAudioVideoWithAccessibilitiesAndRoles(self):
+    streams = [
+        self._GetStream(
+            'audio',
+            dash_accessibilities='urn:tva:metadata:cs:AudioPurposeCS:2007=1',
+            dash_roles='alternate'),
+        self._GetStream('video'),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
+    self._CheckTestResults('audio-video-with-accessibilities-and-roles')
 
   def testAudioVideoWithTrickPlay(self):
     streams = [

@@ -31,6 +31,8 @@ enum FieldType {
   kSkipEncryptionField,
   kDrmStreamLabelField,
   kHlsCharacteristicsField,
+  kDashAccessiblitiesField,
+  kDashRolesField,
 };
 
 struct FieldNameToTypeMapping {
@@ -67,6 +69,14 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"hls_characteristics", kHlsCharacteristicsField},
     {"characteristics", kHlsCharacteristicsField},
     {"charcs", kHlsCharacteristicsField},
+    {"dash_accessibilities", kDashAccessiblitiesField},
+    {"dash_accessibility", kDashAccessiblitiesField},
+    {"accessibilities", kDashAccessiblitiesField},
+    {"accessibility", kDashAccessiblitiesField},
+    {"dash_roles", kDashRolesField},
+    {"dash_role", kDashRolesField},
+    {"roles", kDashRolesField},
+    {"role", kDashRolesField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -174,6 +184,26 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
       case kHlsCharacteristicsField:
         descriptor.hls_characteristics =
             base::SplitString(iter->second, ";:", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        break;
+      case kDashAccessiblitiesField:
+        descriptor.dash_accessiblities =
+            base::SplitString(iter->second, ";", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        for (const std::string& accessibility :
+             descriptor.dash_accessiblities) {
+          size_t pos = accessibility.find('=');
+          if (pos == std::string::npos) {
+            LOG(ERROR)
+                << "Accessibility should be in scheme=value format, but seeing "
+                << accessibility;
+            return base::nullopt;
+          }
+        }
+        break;
+      case kDashRolesField:
+        descriptor.dash_roles =
+            base::SplitString(iter->second, ";", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY);
         break;
       default:

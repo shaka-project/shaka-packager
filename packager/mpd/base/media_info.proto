@@ -164,4 +164,12 @@ message MediaInfo {
 
   // HLS only. Defines CHARACTERISTICS attribute of the stream.
   repeated string hls_characteristics = 20;
+
+  // DASH only. Defines Accessibility elements of the stream. It should be in
+  // the format: scheme_id_uri=value.
+  repeated string dash_accessibilities = 21;
+  // DASH only. Defines Role elements of the stream. The value can be a valid
+  // Role value defined in "urn:mpeg:dash:role:2011" scheme or in the format:
+  // scheme_id_uri=value (to be implemented).
+  repeated string dash_roles = 22;
 }

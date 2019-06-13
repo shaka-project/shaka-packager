@@ -168,6 +168,18 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info) {
     key.append(":trick_play");
   }
 
+  if (!media_info.dash_accessibilities().empty()) {
+    key.append(":accessibility_");
+    for (const std::string& accessibility : media_info.dash_accessibilities())
+      key.append(accessibility);
+  }
+
+  if (!media_info.dash_roles().empty()) {
+    key.append(":roles_");
+    for (const std::string& role : media_info.dash_roles())
+      key.append(role);
+  }
+
   return key;
 }
 

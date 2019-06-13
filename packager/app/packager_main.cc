@@ -104,7 +104,14 @@ const char kUsage[] =
     "    unspecified, no I-Frames only playlist is created.\n"
     "  - hls_characteristics (charcs): Optional colon/semicolon separated\n"
     "    list of values for the CHARACTERISTICS attribute for EXT-X-MEDIA.\n"
-    "    See CHARACTERISTICS attribute in http://bit.ly/2OOUkdB for details.\n";
+    "    See CHARACTERISTICS attribute in http://bit.ly/2OOUkdB for details.\n"
+    "  - dash_accessibilities (accessibilities): Optional semicolon separated\n"
+    "    list of values for DASH Accessibility elements. The value should be\n"
+    "    in the format: scheme_id_uri=value.\n"
+    "  - dash_roles (roles): Optional semicolon separated list of values for\n"
+    "    DASH Role elements. The value should be one of: caption, subtitle,\n"
+    "    main, alternate, supplementary, commentary and dub. See DASH\n"
+    "    (ISO/IEC 23009-1) specification for details.\n";
 
 // Labels for parameters in RawKey key info.
 const char kDrmLabelLabel[] = "label";

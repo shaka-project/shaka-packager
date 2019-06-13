@@ -123,6 +123,11 @@ struct StreamDescriptor {
   /// Optional for HLS output. It defines the CHARACTERISTICS attribute of the
   /// stream.
   std::vector<std::string> hls_characteristics;
+
+  /// Optional for DASH output. It defines Accessibility elements of the stream.
+  std::vector<std::string> dash_accessiblities;
+  /// Optional for DASH output. It defines Role elements of the stream.
+  std::vector<std::string> dash_roles;
 };
 
 class SHAKA_EXPORT Packager {

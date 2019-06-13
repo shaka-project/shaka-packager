@@ -42,6 +42,24 @@ const std::string& GetDefaultTextLanguage(const MpdOptions& mpd_options) {
              : mpd_options.mpd_params.default_text_language;
 }
 
+AdaptationSet::Role RoleFromString(const std::string& role_str) {
+  if (role_str == "caption")
+    return AdaptationSet::Role::kRoleCaption;
+  if (role_str == "subtitle")
+    return AdaptationSet::Role::kRoleSubtitle;
+  if (role_str == "main")
+    return AdaptationSet::Role::kRoleMain;
+  if (role_str == "alternate")
+    return AdaptationSet::Role::kRoleAlternate;
+  if (role_str == "supplementary")
+    return AdaptationSet::Role::kRoleSupplementary;
+  if (role_str == "commentary")
+    return AdaptationSet::Role::kRoleCommentary;
+  if (role_str == "dub")
+    return AdaptationSet::Role::kRoleDub;
+  return AdaptationSet::Role::kRoleUnknown;
+}
+
 }  // namespace
 
 Period::Period(uint32_t period_id,
@@ -159,13 +177,33 @@ bool Period::SetNewAdaptationSetAttributes(
     const MediaInfo& media_info,
     const std::list<AdaptationSet*>& adaptation_sets,
     AdaptationSet* new_adaptation_set) {
-  if (!language.empty()) {
+  if (!media_info.dash_roles().empty()) {
+    for (const std::string& role_str : media_info.dash_roles()) {
+      AdaptationSet::Role role = RoleFromString(role_str);
+      if (role == AdaptationSet::kRoleUnknown) {
+        LOG(ERROR) << "Unrecognized role '" << role_str << "'.";
+        return false;
+      }
+      new_adaptation_set->AddRole(role);
+    }
+  } else if (!language.empty()) {
     const bool is_main_role =
         language == (media_info.has_audio_info()
                          ? GetDefaultAudioLanguage(mpd_options_)
                          : GetDefaultTextLanguage(mpd_options_));
     if (is_main_role)
       new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  }
+  for (const std::string& accessibility : media_info.dash_accessibilities()) {
+    size_t pos = accessibility.find('=');
+    if (pos == std::string::npos) {
+      LOG(ERROR)
+          << "Accessibility should be in scheme=value format, but seeing "
+          << accessibility;
+      return false;
+    }
+    new_adaptation_set->AddAccessibility(accessibility.substr(0, pos),
+                                         accessibility.substr(pos + 1));
   }
 
   if (media_info.has_video_info()) {

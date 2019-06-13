@@ -163,6 +163,22 @@ TEST_F(AdaptationSetTest, CheckAdaptationSetId) {
               AttributeEqual("id", std::to_string(kAdaptationSetId)));
 }
 
+// Verify AdaptationSet::AddAccessibilityElement() works.
+TEST_F(AdaptationSetTest, AddAccessibilityElement) {
+  auto adaptation_set = CreateAdaptationSet(kNoLanguage);
+  adaptation_set->AddAccessibility("urn:tva:metadata:cs:AudioPurposeCS:2007",
+                                   "2");
+
+  // The empty contentType is sort of a side effect of being able to generate an
+  // MPD without adding any Representations.
+  const char kExpectedOutput[] =
+      "<AdaptationSet contentType=\"\">\n"
+      "  <Accessibility schemeIdUri=\"urn:tva:metadata:cs:AudioPurposeCS:2007\""
+      "                 value=\"2\"/>\n"
+      "</AdaptationSet>";
+  EXPECT_THAT(adaptation_set->GetXml().get(), XmlNodeEqual(kExpectedOutput));
+}
+
 // Verify AdaptationSet::AddRole() works for "main" role.
 TEST_F(AdaptationSetTest, AdaptationAddRoleElementMain) {
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);

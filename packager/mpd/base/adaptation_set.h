@@ -40,6 +40,7 @@ class AdaptationSet {
   // element to the AdaptationSet with schemeIdUri=urn:mpeg:dash:role:2011.
   // See ISO/IEC 23009-1:2012 section 5.8.5.5.
   enum Role {
+    kRoleUnknown,
     kRoleCaption,
     kRoleSubtitle,
     kRoleMain,
@@ -93,6 +94,13 @@ class AdaptationSet {
   ///            the content of @a pssh.
   virtual void UpdateContentProtectionPssh(const std::string& drm_uuid,
                                            const std::string& pssh);
+
+  /// Set the Accessibility element for this AdaptationSet.
+  /// See ISO/IEC 23009-1:2012 section 5.8.4.3.
+  /// @param scheme is the schemeIdUri of the accessibility element.
+  /// @param value is the value of the accessibility element.
+  virtual void AddAccessibility(const std::string& scheme,
+                                const std::string& value);
 
   /// Set the Role element for this AdaptationSet.
   /// The Role element's is schemeIdUri='urn:mpeg:dash:role:2011'.
@@ -270,6 +278,13 @@ class AdaptationSet {
   // The @par attribute should only be set if there is exactly one entry
   // in this set.
   std::set<std::string> picture_aspect_ratio_;
+
+  // accessibilities of this AdaptationSet.
+  struct Accessibility {
+    std::string scheme;
+    std::string value;
+  };
+  std::vector<Accessibility> accessibilities_;
 
   // The roles of this AdaptationSet.
   std::set<Role> roles_;

@@ -71,6 +71,10 @@ void MpdNotifyMuxerListener::OnMediaStart(
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
+  for (const std::string& accessibility : accessibilities_)
+    media_info->add_dash_accessibilities(accessibility);
+  for (const std::string& role : roles_)
+    media_info->add_dash_roles(role);
 
   if (is_encrypted_) {
     internal::SetContentProtectionFields(protection_scheme_, default_key_id_,

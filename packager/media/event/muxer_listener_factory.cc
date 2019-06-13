@@ -6,6 +6,7 @@
 
 #include "packager/media/event/muxer_listener_factory.h"
 
+#include "packager/base/memory/ptr_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/media/event/combined_muxer_listener.h"
@@ -30,10 +31,13 @@ std::unique_ptr<MuxerListener> CreateMediaInfoDumpListenerInternal(
 }
 
 std::unique_ptr<MuxerListener> CreateMpdListenerInternal(
+    const MuxerListenerFactory::StreamData& stream,
     MpdNotifier* notifier) {
   DCHECK(notifier);
 
-  std::unique_ptr<MuxerListener> listener(new MpdNotifyMuxerListener(notifier));
+  auto listener = base::MakeUnique<MpdNotifyMuxerListener>(notifier);
+  listener->set_accessibilities(stream.dash_accessiblities);
+  listener->set_roles(stream.dash_roles);
   return listener;
 }
 
@@ -91,7 +95,8 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
         CreateMediaInfoDumpListenerInternal(stream.media_info_output));
   }
   if (mpd_notifier_) {
-    combined_listener->AddListener(CreateMpdListenerInternal(mpd_notifier_));
+    combined_listener->AddListener(
+        CreateMpdListenerInternal(stream, mpd_notifier_));
   }
   if (hls_notifier_) {
     for (auto& listener :

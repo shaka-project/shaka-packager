@@ -55,6 +55,12 @@ class MpdNotifyMuxerListener : public MuxerListener {
   void OnCueEvent(int64_t timestamp, const std::string& cue_data) override;
   /// @}
 
+  void set_accessibilities(const std::vector<std::string>& accessiblities) {
+    accessibilities_ = accessiblities;
+  }
+
+  void set_roles(const std::vector<std::string>& roles) { roles_ = roles; }
+
  private:
   MpdNotifyMuxerListener(const MpdNotifyMuxerListener&) = delete;
   MpdNotifyMuxerListener& operator=(const MpdNotifyMuxerListener&) = delete;
@@ -64,6 +70,9 @@ class MpdNotifyMuxerListener : public MuxerListener {
   MpdNotifier* const mpd_notifier_ = nullptr;
   base::Optional<uint32_t> notification_id_;
   std::unique_ptr<MediaInfo> media_info_;
+
+  std::vector<std::string> accessibilities_;
+  std::vector<std::string> roles_;
 
   bool is_encrypted_ = false;
   // Storage for values passed to OnEncryptionInfoReady().

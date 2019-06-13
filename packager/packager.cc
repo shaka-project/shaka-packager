@@ -87,11 +87,15 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
     const StreamDescriptor& stream) {
   MuxerListenerFactory::StreamData data;
   data.media_info_output = stream.output;
+
   data.hls_group_id = stream.hls_group_id;
   data.hls_name = stream.hls_name;
   data.hls_playlist_name = stream.hls_playlist_name;
   data.hls_iframe_playlist_name = stream.hls_iframe_playlist_name;
   data.hls_characteristics = stream.hls_characteristics;
+
+  data.dash_accessiblities = stream.dash_accessiblities;
+  data.dash_roles = stream.dash_roles;
   return data;
 };
 

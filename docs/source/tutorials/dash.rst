@@ -82,5 +82,6 @@ which describes the streams.
 Configuration options
 ---------------------
 
+.. include:: /options/dash_stream_descriptors.rst
 .. include:: /options/dash_options.rst
 .. include:: /options/segment_template_formatting.rst

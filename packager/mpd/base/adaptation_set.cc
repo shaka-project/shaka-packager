@@ -55,11 +55,8 @@ std::string RoleToText(AdaptationSet::Role role) {
     case AdaptationSet::kRoleDub:
       return "dub";
     default:
-      break;
+      return "unknown";
   }
-
-  NOTREACHED();
-  return "";
 }
 
 // Returns the picture aspect ratio string e.g. "16:9", "4:3".
@@ -225,6 +222,11 @@ void AdaptationSet::UpdateContentProtectionPssh(const std::string& drm_uuid,
                                     &content_protection_elements_);
 }
 
+void AdaptationSet::AddAccessibility(const std::string& scheme,
+                                     const std::string& value) {
+  accessibilities_.push_back(Accessibility{scheme, value});
+}
+
 void AdaptationSet::AddRole(Role role) {
   roles_.insert(role);
 }
@@ -316,6 +318,11 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   if (!switching_ids.empty()) {
     adaptation_set.AddSupplementalProperty(
         "urn:mpeg:dash:adaptation-set-switching:2016", switching_ids);
+  }
+
+  for (const AdaptationSet::Accessibility& accessibility : accessibilities_) {
+    adaptation_set.AddAccessibilityElement(accessibility.scheme,
+                                           accessibility.value);
   }
 
   for (AdaptationSet::Role role : roles_)
