@@ -117,6 +117,14 @@ class RepresentationBaseXmlNode : public XmlNode {
  protected:
   explicit RepresentationBaseXmlNode(const char* name);
 
+  /// Add a Descriptor.
+  /// @param descriptor_name is the name of the descriptor.
+  /// @param scheme_id_uri is content of the schemeIdUri attribute.
+  /// @param value is the content of value attribute.
+  bool AddDescriptor(const std::string& descriptor_name,
+                     const std::string& scheme_id_uri,
+                     const std::string& value);
+
  private:
   bool AddContentProtectionElement(
       const ContentProtectionElement& content_protection_element);

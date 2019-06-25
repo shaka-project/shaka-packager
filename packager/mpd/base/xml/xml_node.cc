@@ -237,19 +237,24 @@ bool RepresentationBaseXmlNode::AddContentProtectionElements(
 void RepresentationBaseXmlNode::AddSupplementalProperty(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  XmlNode supplemental_property("SupplementalProperty");
-  supplemental_property.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  supplemental_property.SetStringAttribute("value", value);
-  AddChild(supplemental_property.PassScopedPtr());
+  AddDescriptor("SupplementalProperty", scheme_id_uri, value);
 }
 
 void RepresentationBaseXmlNode::AddEssentialProperty(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  XmlNode essential_property("EssentialProperty");
-  essential_property.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  essential_property.SetStringAttribute("value", value);
-  AddChild(essential_property.PassScopedPtr());
+  AddDescriptor("EssentialProperty", scheme_id_uri, value);
+}
+
+bool RepresentationBaseXmlNode::AddDescriptor(
+    const std::string& descriptor_name,
+    const std::string& scheme_id_uri,
+    const std::string& value) {
+  XmlNode descriptor(descriptor_name.c_str());
+  descriptor.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  if (!value.empty())
+    descriptor.SetStringAttribute("value", value);
+  return AddChild(descriptor.PassScopedPtr());
 }
 
 bool RepresentationBaseXmlNode::AddContentProtectionElement(
@@ -289,19 +294,12 @@ AdaptationSetXmlNode::~AdaptationSetXmlNode() {}
 void AdaptationSetXmlNode::AddAccessibilityElement(
     const std::string& scheme_id_uri,
     const std::string& value) {
-  XmlNode accessibility("Accessibility");
-  accessibility.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  if (!value.empty())
-    accessibility.SetStringAttribute("value", value);
-  AddChild(accessibility.PassScopedPtr());
+  AddDescriptor("Accessibility", scheme_id_uri, value);
 }
 
 void AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
                                           const std::string& value) {
-  XmlNode role("Role");
-  role.SetStringAttribute("schemeIdUri", scheme_id_uri);
-  role.SetStringAttribute("value", value);
-  AddChild(role.PassScopedPtr());
+  AddDescriptor("Role", scheme_id_uri, value);
 }
 
 RepresentationXmlNode::RepresentationXmlNode()
@@ -461,12 +459,8 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
         "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
   }
 
-  XmlNode audio_channel_config("AudioChannelConfiguration");
-  audio_channel_config.SetStringAttribute("schemeIdUri",
-                                          audio_channel_config_scheme);
-  audio_channel_config.SetStringAttribute("value", audio_channel_config_value);
-
-  return AddChild(audio_channel_config.PassScopedPtr());
+  return AddDescriptor("AudioChannelConfiguration", audio_channel_config_scheme,
+                       audio_channel_config_value);
 }
 
 // MPD expects one number for sampling frequency, or if it is a range it should
