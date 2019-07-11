@@ -9,11 +9,13 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 namespace shaka {
 
 class BandwidthEstimator {
  public:
-  explicit BandwidthEstimator(double target_segment_duration);
+  BandwidthEstimator();
   ~BandwidthEstimator();
 
   /// @param size is the size of the block in bytes. Should be positive.
@@ -28,14 +30,29 @@ class BandwidthEstimator {
 
   /// @return The max bandwidth, in bits per second, of the number of blocks
   ///         specified in the constructor. The value is rounded up to the
-  ///         nearest integer.
+  ///         nearest integer. Note that small blocks w.r.t.
+  ///         |target_block_duration| are not counted.
   uint64_t Max() const;
 
  private:
   BandwidthEstimator(const BandwidthEstimator&) = delete;
   BandwidthEstimator& operator=(const BandwidthEstimator&) = delete;
 
-  const double target_segment_duration_ = 0;
+  struct Block {
+    uint64_t size_in_bits;
+    double duration;
+  };
+  // Return the average block duration of the blocks in |initial_blocks_|.
+  double GetAverageBlockDuration() const;
+  // Return the bitrate of the block. Note that a bitrate of 0 is returned if
+  // the block duration is less than 50% of target block duration.
+  uint64_t GetBitrate(const Block& block, double target_block_duration) const;
+
+  std::vector<Block> initial_blocks_;
+  // Target block duration will be estimated from the average duration of the
+  // initial blocks.
+  double target_block_duration_ = 0;
+
   uint64_t total_size_in_bits_ = 0;
   double total_duration_ = 0;
   uint64_t max_bitrate_ = 0;
