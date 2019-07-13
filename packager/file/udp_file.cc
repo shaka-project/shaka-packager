@@ -10,6 +10,7 @@
 
 #include <windows.h>
 #include <ws2tcpip.h>
+#include <winsock2.h>
 #define close closesocket
 
 #else
@@ -19,7 +20,10 @@
 #include <strings.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #define INVALID_SOCKET -1
 
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
@@ -31,6 +35,7 @@
 #endif  // defined(OS_WIN)
 
 #include <limits>
+#include <string>
 
 #include "packager/base/logging.h"
 #include "packager/file/udp_options.h"
@@ -39,9 +44,11 @@ namespace shaka {
 
 namespace {
 
+/*
 bool IsIpv4MulticastAddress(const struct in_addr& addr) {
   return (ntohl(addr.s_addr) & 0xf0000000) == 0xe0000000;
 }
+*/
 
 }  // anonymous namespace
 
@@ -163,7 +170,27 @@ bool UdpFile::Open() {
   if (!options)
     return false;
 
-  ScopedSocket new_socket(socket(AF_INET, SOCK_DGRAM, 0));
+  // TODO(kqyang): Support IPv6.
+  struct sockaddr_in local_sock_addr = {0};
+
+  struct addrinfo hints = {0};
+  struct hostent *hp = gethostbyaddr(options->address().c_str(), (socklen_t)sizeof(SOCKET), AF_UNSPEC);
+  struct addrinfo *addrs;
+
+  SOCKET s;
+
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_DGRAM;
+
+  if (getaddrinfo(hp->h_name, std::to_string(options->port()).c_str(), &hints, &addrs) != 0) {
+    LOG(ERROR) << "getaddrinfo";
+    return false;
+  }
+  if ((s = socket(addrs->ai_family, addrs->ai_socktype, addrs->ai_protocol)) == -1) {
+    LOG(ERROR) << "socket";
+    return false;
+  }
+  ScopedSocket new_socket(s);
   if (new_socket.get() == INVALID_SOCKET) {
     LOG(ERROR) << "Could not allocate socket.";
     return false;
@@ -173,17 +200,6 @@ bool UdpFile::Open() {
   if (inet_pton(AF_INET, options->address().c_str(), &local_in_addr) != 1) {
     LOG(ERROR) << "Malformed IPv4 address " << options->address();
     return false;
-  }
-
-  struct sockaddr_in local_sock_addr = {0};
-  // TODO(kqyang): Support IPv6.
-  local_sock_addr.sin_family = AF_INET;
-  local_sock_addr.sin_port = htons(options->port());
-  const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
-  if (is_multicast) {
-    local_sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  } else {
-    local_sock_addr.sin_addr = local_in_addr;
   }
 
   if (options->reuse()) {
@@ -204,6 +220,8 @@ bool UdpFile::Open() {
     return false;
   }
 
+  /* TODO(Korilakkuma) : In the case of multi cast
+  const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
   if (is_multicast) {
     if (options->is_source_specific_multicast()) {
       struct ip_mreq_source source_multicast_group;
@@ -252,8 +270,6 @@ bool UdpFile::Open() {
         return false;
       }
 
-  }
-
 #if defined(__linux__)
     // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets
     // are bound to the same port but joined to different multicast groups.
@@ -267,6 +283,7 @@ bool UdpFile::Open() {
     }
 #endif  // #if defined(__linux__)
   }
+  */
 
   // Set timeout if needed.
   if (options->timeout_us() != 0) {
@@ -292,6 +309,9 @@ bool UdpFile::Open() {
   }
 
   socket_ = new_socket.release();
+
+  freeaddrinfo(addrs);
+
   return true;
 }
 
