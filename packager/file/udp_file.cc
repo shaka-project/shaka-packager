@@ -19,7 +19,10 @@
 #include <strings.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
+#include <netdb.h>
+
 #define INVALID_SOCKET -1
 
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
@@ -163,7 +166,25 @@ bool UdpFile::Open() {
   if (!options)
     return false;
 
-  ScopedSocket new_socket(socket(AF_INET, SOCK_DGRAM, 0));
+  // TODO(kqyang): Support IPv6.
+  struct sockaddr_in local_sock_addr = {0};
+
+  struct addrinfo hints = {0};
+  struct addrinfo *res;
+
+  SOCKET s;
+
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_DGRAM;
+
+  if (getaddrinfo(gethostbyaddr(options->address()).c_str(), options->port(), &hints, &res) != 0) {
+    LOG(ERROR) << "getaddrinfo";
+    return false;
+  }
+  if ((s = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1) {
+    LOG(ERROR) << "socket";
+  }
+  ScopedSocket new_socket(s);
   if (new_socket.get() == INVALID_SOCKET) {
     LOG(ERROR) << "Could not allocate socket.";
     return false;
@@ -173,17 +194,6 @@ bool UdpFile::Open() {
   if (inet_pton(AF_INET, options->address().c_str(), &local_in_addr) != 1) {
     LOG(ERROR) << "Malformed IPv4 address " << options->address();
     return false;
-  }
-
-  struct sockaddr_in local_sock_addr = {0};
-  // TODO(kqyang): Support IPv6.
-  local_sock_addr.sin_family = AF_INET;
-  local_sock_addr.sin_port = htons(options->port());
-  const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
-  if (is_multicast) {
-    local_sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  } else {
-    local_sock_addr.sin_addr = local_in_addr;
   }
 
   if (options->reuse()) {
@@ -204,6 +214,8 @@ bool UdpFile::Open() {
     return false;
   }
 
+  /* TODO(Korilakkuma) : In the case of multi cast
+  const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
   if (is_multicast) {
     if (options->is_source_specific_multicast()) {
       struct ip_mreq_source source_multicast_group;
@@ -253,6 +265,7 @@ bool UdpFile::Open() {
       }
 
   }
+  */
 
 #if defined(__linux__)
     // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets
