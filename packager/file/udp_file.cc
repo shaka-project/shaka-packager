@@ -16,6 +16,7 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <string.h>
 #include <strings.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -34,6 +35,7 @@
 #endif  // defined(OS_WIN)
 
 #include <limits>
+#include <cassert>
 
 #include "packager/base/logging.h"
 #include "packager/file/udp_options.h"
@@ -42,11 +44,17 @@ namespace shaka {
 
 namespace {
 
-/*
 bool IsIpv4MulticastAddress(const struct in_addr& addr) {
   return (ntohl(addr.s_addr) & 0xf0000000) == 0xe0000000;
 }
-*/
+
+bool IsIpv6MulticastAddress(const struct in6_addr& addr) {
+  if (addr.s6_addr[0] == 0xff && addr.s6_addr[1] == 0xff) {
+    return true;
+  }
+
+  return false;
+}
 
 }  // anonymous namespace
 
@@ -194,12 +202,6 @@ bool UdpFile::Open() {
     return false;
   }
 
-  struct in_addr local_in_addr = {0};
-  if (inet_pton(AF_INET, options->address().c_str(), &local_in_addr) != 1) {
-    LOG(ERROR) << "Malformed IPv4 address " << options->address();
-    return false;
-  }
-
   if (options->reuse()) {
     const int optval = 1;
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR,
@@ -218,55 +220,63 @@ bool UdpFile::Open() {
     return false;
   }
 
-  /* TODO(Korilakkuma) : In the case of multi cast
-  const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
-  if (is_multicast) {
-    if (options->is_source_specific_multicast()) {
-      struct ip_mreq_source source_multicast_group;
-
-      source_multicast_group.imr_multiaddr = local_in_addr;
-      if (inet_pton(AF_INET,
-                    options->interface_address().c_str(),
-                    &source_multicast_group.imr_interface) != 1) {
-        LOG(ERROR) << "Malformed IPv4 interface address "
-                   << options->interface_address();
-        return false;
-      }
-      if (inet_pton(AF_INET,
-                    options->source_address().c_str(),
-                    &source_multicast_group.imr_sourceaddr) != 1) {
-        LOG(ERROR) << "Malformed IPv4 source specific multicast address "
-                   << options->source_address();
+  switch (res->ai_family) {
+    case AF_INET: {
+      struct in_addr local_in_addr = {0};
+      if (inet_pton(AF_INET, options->address().c_str(), &local_in_addr) != 1) {
+        LOG(ERROR) << "Malformed IPv4 address " << options->address();
         return false;
       }
 
-      if (setsockopt(new_socket.get(),
-                     IPPROTO_IP,
-                     IP_ADD_SOURCE_MEMBERSHIP,
-                     reinterpret_cast<const char*>(&source_multicast_group),
-                     sizeof(source_multicast_group)) < 0) {
-          LOG(ERROR) << "Failed to join multicast group.";
-          return false;
-      }
-    } else {
-      // this is a v2 join without a specific source.
-      struct ip_mreq multicast_group;
+      const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
+      if (is_multicast) {
+        if (options->is_source_specific_multicast()) {
+          struct ip_mreq_source source_multicast_group;
 
-      multicast_group.imr_multiaddr = local_in_addr;
+          source_multicast_group.imr_multiaddr = local_in_addr;
+          if (inet_pton(AF_INET,
+                        options->interface_address().c_str(),
+                        &source_multicast_group.imr_interface) != 1) {
+            LOG(ERROR) << "Malformed IPv4 interface address "
+                       << options->interface_address();
+            return false;
+          }
+          if (inet_pton(AF_INET,
+                        options->source_address().c_str(),
+                        &source_multicast_group.imr_sourceaddr) != 1) {
+            LOG(ERROR) << "Malformed IPv4 source specific multicast address "
+                       << options->source_address();
+            return false;
+          }
 
-      if (inet_pton(AF_INET, options->interface_address().c_str(),
-                    &multicast_group.imr_interface) != 1) {
-        LOG(ERROR) << "Malformed IPv4 interface address "
-                   << options->interface_address();
-        return false;
-      }
+          if (setsockopt(new_socket.get(),
+                         IPPROTO_IP,
+                         IP_ADD_SOURCE_MEMBERSHIP,
+                         reinterpret_cast<const char*>(&source_multicast_group),
+                         sizeof(source_multicast_group)) < 0) {
+              LOG(ERROR) << "Failed to join multicast group.";
+              return false;
+          }
+        } else {
+          // this is a v2 join without a specific source.
+          struct ip_mreq multicast_group;
 
-      if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                    reinterpret_cast<const char*>(&multicast_group),
-                    sizeof(multicast_group)) < 0) {
-        LOG(ERROR) << "Failed to join multicast group.";
-        return false;
-      }
+          multicast_group.imr_multiaddr = local_in_addr;
+
+          if (inet_pton(AF_INET, options->interface_address().c_str(),
+                        &multicast_group.imr_interface) != 1) {
+            LOG(ERROR) << "Malformed IPv4 interface address "
+                       << options->interface_address();
+            return false;
+          }
+
+          if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                        reinterpret_cast<const char*>(&multicast_group),
+                        sizeof(multicast_group)) < 0) {
+            LOG(ERROR) << "Failed to join multicast group.";
+            return false;
+          }
+        }
 
 #if defined(__linux__)
     // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets
@@ -280,8 +290,88 @@ bool UdpFile::Open() {
       return false;
     }
 #endif  // #if defined(__linux__)
+      }
+
+      break;
+    }
+    case AF_INET6: {
+      struct in6_addr local_in_addr = {{}};
+      if (inet_pton(AF_INET6, options->address().c_str(), &local_in_addr) != 1) {
+        LOG(ERROR) << "Malformed IPv6 address " << options->address();
+        return false;
+      }
+
+      const bool is_multicast = IsIpv6MulticastAddress(local_in_addr);
+      if (is_multicast) {
+        if (options->is_source_specific_multicast()) {
+          struct ipv6_mreq source_multicast_group;
+
+          source_multicast_group.ipv6mr_multiaddr = local_in_addr;
+          if (inet_pton(AF_INET6,
+                        options->interface_address().c_str(),
+                        &source_multicast_group.ipv6mr_interface) != 1) {
+            LOG(ERROR) << "Malformed IPv6 interface address "
+                       << options->interface_address();
+            return false;
+          }
+          if (inet_pton(AF_INET6,
+                        options->source_address().c_str(),
+                        &source_multicast_group.ipv6mr_interface) != 1) {
+            LOG(ERROR) << "Malformed IPv6 source specific multicast address "
+                       << options->source_address();
+            return false;
+          }
+
+          if (setsockopt(new_socket.get(),
+                         IPPROTO_IPV6,
+                         IP_ADD_SOURCE_MEMBERSHIP,
+                         reinterpret_cast<const char*>(&source_multicast_group),
+                         sizeof(source_multicast_group)) < 0) {
+              LOG(ERROR) << "Failed to join multicast group.";
+              return false;
+          }
+        } else {
+          // this is a v2 join without a specific source.
+          struct ipv6_mreq multicast_group;
+
+          multicast_group.ipv6mr_multiaddr = local_in_addr;
+
+          if (inet_pton(AF_INET6, options->interface_address().c_str(),
+                        &multicast_group.ipv6mr_interface) != 1) {
+            LOG(ERROR) << "Malformed IPv6 interface address "
+                       << options->interface_address();
+            return false;
+          }
+
+          if (setsockopt(new_socket.get(), IPPROTO_IPV6, IP_ADD_MEMBERSHIP,
+                        reinterpret_cast<const char*>(&multicast_group),
+                        sizeof(multicast_group)) < 0) {
+            LOG(ERROR) << "Failed to join multicast group.";
+            return false;
+          }
+        }
+
+#if defined(__linux__)
+    // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets
+    // are bound to the same port but joined to different multicast groups.
+    const int optval_zero = 0;
+    if (setsockopt(new_socket.get(), IPPROTO_IPV6, IP_MULTICAST_ALL,
+                   reinterpret_cast<const char*>(&optval_zero),
+                   sizeof(optval_zero)) < 0 &&
+        errno != ENOPROTOOPT) {
+      LOG(ERROR) << "Failed to disable IP_MULTICAST_ALL option.";
+      return false;
+    }
+#endif  // #if defined(__linux__)
+      }
+
+      break;
+    }
+    default:
+      assert(false);
+      LOG(ERROR) << "Unknown `ai_family`";
+      break;
   }
-  */
 
   // Set timeout if needed.
   if (options->timeout_us() != 0) {
