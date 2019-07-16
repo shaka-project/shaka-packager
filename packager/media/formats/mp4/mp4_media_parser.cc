@@ -115,6 +115,56 @@ Codec ObjectTypeToCodec(ObjectType object_type) {
   }
 }
 
+uint64_t CalculateGCD(uint64_t a, uint64_t b) {
+  while (b != 0) {
+    uint64_t temp = a;
+    a = b;
+    b = temp % b;
+  }
+  return a;
+}
+
+void ReducePixelWidthHeight(uint64_t* pixel_width, uint64_t* pixel_height) {
+  if (*pixel_width == 0 || *pixel_height == 0)
+    return;
+  const uint64_t kMaxUint32 = std::numeric_limits<uint32_t>::max();
+  while (true) {
+    uint64_t gcd = CalculateGCD(*pixel_width, *pixel_height);
+    *pixel_width /= gcd;
+    *pixel_height /= gcd;
+    // Both width and height needs to be 32 bit or less.
+    if (*pixel_width <= kMaxUint32 && *pixel_height <= kMaxUint32)
+      break;
+    *pixel_width >>= 1;
+    *pixel_height >>= 1;
+  }
+}
+
+// Derive pixel aspect ratio from Display Aspect Ratio and Frame Aspect Ratio.
+//   DAR = PAR * FAR => PAR = DAR / FAR.
+//   Thus:
+//     pixel_width             display_width            frame_width
+//     -----------      =      -------------      /     -----------
+//     pixel_height            display_height           frame_height
+//   So:
+//     pixel_width             display_width  x  frame_width
+//     -----------      =      ------------------------------
+//     pixel_height            display_height x  frame_height
+void DerivePixelWidthHeight(uint32_t frame_width,
+                            uint32_t frame_height,
+                            uint32_t display_width,
+                            uint32_t display_height,
+                            uint32_t* pixel_width,
+                            uint32_t* pixel_height) {
+  uint64_t pixel_width_unreduced =
+      static_cast<uint64_t>(display_width) * frame_height;
+  uint64_t pixel_height_unreduced =
+      static_cast<uint64_t>(display_height) * frame_width;
+  ReducePixelWidthHeight(&pixel_width_unreduced, &pixel_height_unreduced);
+  *pixel_width = pixel_width_unreduced;
+  *pixel_height = pixel_height_unreduced;
+}
+
 const uint64_t kNanosecondsPerSecond = 1000000000ull;
 
 }  // namespace
@@ -515,8 +565,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint32_t pixel_width = entry.pixel_aspect.h_spacing;
       uint32_t pixel_height = entry.pixel_aspect.v_spacing;
       if (pixel_width == 0 && pixel_height == 0) {
-        pixel_width = 1;
-        pixel_height = 1;
+        DerivePixelWidthHeight(coded_width, coded_height, track->header.width,
+                               track->header.height, &pixel_width,
+                               &pixel_height);
       }
       std::string codec_string;
       uint8_t nalu_length_size = 0;
@@ -543,30 +594,38 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string = avc_config.GetCodecString(actual_format);
           nalu_length_size = avc_config.nalu_length_size();
 
-          if (coded_width != avc_config.coded_width() ||
-              coded_height != avc_config.coded_height()) {
-            LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
-                         << "," << coded_height
-                         << ") does not match with resolution in "
-                            "AVCDecoderConfigurationRecord ("
-                         << avc_config.coded_width() << ","
-                         << avc_config.coded_height()
-                         << "). Use AVCDecoderConfigurationRecord.";
-            coded_width = avc_config.coded_width();
-            coded_height = avc_config.coded_height();
-          }
+          // Use configurations from |avc_config| if it is valid.
+          if (avc_config.coded_width() != 0) {
+            DCHECK_NE(avc_config.coded_height(), 0u);
+            if (coded_width != avc_config.coded_width() ||
+                coded_height != avc_config.coded_height()) {
+              LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
+                           << "," << coded_height
+                           << ") does not match with resolution in "
+                              "AVCDecoderConfigurationRecord ("
+                           << avc_config.coded_width() << ","
+                           << avc_config.coded_height()
+                           << "). Use AVCDecoderConfigurationRecord.";
+              coded_width = avc_config.coded_width();
+              coded_height = avc_config.coded_height();
+            }
 
-          if (pixel_width != avc_config.pixel_width() ||
-              pixel_height != avc_config.pixel_height()) {
-            LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
-                << "Pixel aspect ratio in PASP box (" << pixel_width << ","
-                << pixel_height
-                << ") does not match with SAR in AVCDecoderConfigurationRecord "
-                   "("
-                << avc_config.pixel_width() << "," << avc_config.pixel_height()
-                << "). Use AVCDecoderConfigurationRecord.";
-            pixel_width = avc_config.pixel_width();
-            pixel_height = avc_config.pixel_height();
+            DCHECK_NE(avc_config.pixel_width(), 0u);
+            DCHECK_NE(avc_config.pixel_height(), 0u);
+            if (pixel_width != avc_config.pixel_width() ||
+                pixel_height != avc_config.pixel_height()) {
+              LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
+                  << "Pixel aspect ratio in PASP box (" << pixel_width << ","
+                  << pixel_height
+                  << ") does not match with SAR in "
+                     "AVCDecoderConfigurationRecord "
+                     "("
+                  << avc_config.pixel_width() << ","
+                  << avc_config.pixel_height()
+                  << "). Use AVCDecoderConfigurationRecord.";
+              pixel_width = avc_config.pixel_width();
+              pixel_height = avc_config.pixel_height();
+            }
           }
           break;
         }
