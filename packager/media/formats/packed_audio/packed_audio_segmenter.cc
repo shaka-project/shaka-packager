@@ -18,6 +18,11 @@ namespace shaka {
 namespace media {
 namespace {
 std::string TimestampToString(uint64_t timestamp) {
+  // https://tools.ietf.org/html/rfc8216 The ID3 payload MUST be a 33-bit MPEG-2
+  // Program Elementary Stream timestamp expressed as a big-endian eight-octet
+  // number, with the upper 31 bits set to zero.
+  timestamp &= 0x1FFFFFFFFull;
+
   BufferWriter buffer;
   buffer.AppendInt(timestamp);
   return std::string(buffer.Buffer(), buffer.Buffer() + buffer.Size());
