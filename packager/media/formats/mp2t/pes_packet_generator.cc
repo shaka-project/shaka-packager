@@ -52,7 +52,8 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
     converter_.reset(new NalUnitToByteStreamConverter());
     return converter_->Initialize(video_stream_info.codec_config().data(),
                                   video_stream_info.codec_config().size());
-  } else if (stream_type_ == kStreamAudio) {
+  }
+  if (stream_type_ == kStreamAudio) {
     const AudioStreamInfo& audio_stream_info =
         static_cast<const AudioStreamInfo&>(stream_info);
     timescale_scale_ = kTsTimescale / audio_stream_info.time_scale();
@@ -60,7 +61,8 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
       audio_stream_id_ = kAacAudioStreamId;
       adts_converter_.reset(new AACAudioSpecificConfig());
       return adts_converter_->Parse(audio_stream_info.codec_config());
-    } else if (audio_stream_info.codec() == Codec::kCodecAC3 ||
+    }
+    if (audio_stream_info.codec() == Codec::kCodecAC3 ||
                audio_stream_info.codec() == Codec::kCodecEAC3) {
       audio_stream_id_ = kAc3AudioStreamId;
       // No converter needed for AC3 and E-AC3.
