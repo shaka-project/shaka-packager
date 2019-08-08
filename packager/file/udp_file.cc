@@ -260,6 +260,7 @@ bool UdpFile::Open() {
   ScopedSocket new_socket(socket(res->ai_family, res->ai_socktype, res->ai_protocol));
   if (new_socket.get() == INVALID_SOCKET) {
     LOG(ERROR) << "Could not allocate socket.";
+    freeaddrinfo(res);
     return false;
   }
 
@@ -270,6 +271,7 @@ bool UdpFile::Open() {
                    sizeof(optval)) < 0) {
       LOG(ERROR)
           << "Could not apply the SO_REUSEADDR property to the UDP socket";
+      freeaddrinfo(res);
       return false;
     }
   }
@@ -279,6 +281,7 @@ bool UdpFile::Open() {
            reinterpret_cast<struct sockaddr*>(res->ai_addr),
            sizeof(&res->ai_addr)) < 0) {
     LOG(ERROR) << "Could not bind UDP socket";
+    freeaddrinfo(res);
     return false;
   }
 
@@ -287,6 +290,7 @@ bool UdpFile::Open() {
       struct in_addr local_in_addr = {0};
       if (inet_pton(AF_INET, options->address().c_str(), &local_in_addr) != 1) {
         LOG(ERROR) << "Malformed IPv4 address " << options->address();
+        freeaddrinfo(res);
         return false;
       }
       const bool is_multicast = IsIpv4MulticastAddress(local_in_addr);
@@ -303,6 +307,7 @@ bool UdpFile::Open() {
                                           gsr,
                                           std::move(options));
           if (!result) {
+            freeaddrinfo(res);
             return false;
           }
         } else {
@@ -317,6 +322,7 @@ bool UdpFile::Open() {
                                   greq,
                                   std::move(options));
           if (!result) {
+            freeaddrinfo(res);
             return false;
           }
         }
@@ -344,6 +350,7 @@ bool UdpFile::Open() {
                                           gsr,
                                           std::move(options));
           if (!result) {
+            freeaddrinfo(res);
             return false;
           }
         } else {
@@ -358,6 +365,7 @@ bool UdpFile::Open() {
                                   greq,
                                   std::move(options));
           if (!result) {
+            freeaddrinfo(res);
             return false;
           }
         }
@@ -365,6 +373,7 @@ bool UdpFile::Open() {
       break;
     }
     default:
+      freeaddrinfo(res);
       assert(false);
       LOG(ERROR) << "Unknown `ai_family`";
       break;
@@ -378,6 +387,7 @@ bool UdpFile::Open() {
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVTIMEO,
                    reinterpret_cast<const char*>(&tv), sizeof(tv)) < 0) {
       LOG(ERROR) << "Failed to set socket timeout.";
+      freeaddrinfo(res);
       return false;
     }
   }
@@ -389,6 +399,7 @@ bool UdpFile::Open() {
                    sizeof(receive_buffer_size)) < 0) {
       LOG(ERROR) << "Failed to set the maximum receive buffer size: "
                  << strerror(errno);
+      freeaddrinfo(res);
       return false;
     }
   }
