@@ -119,22 +119,20 @@ bool PesPacketGenerator::PushSample(const MediaSample& sample) {
   }
   DCHECK_EQ(stream_type_, kStreamAudio);
 
-  std::vector<uint8_t> audio_frame(sample.data(),
-                                   sample.data() + sample.data_size());
-
   // AAC is carried in ADTS.
   if (adts_converter_) {
-    // TODO(rkuroiwa): ConvertToADTS() makes another copy of audio_frame
-    // internally. Optimize copying in this function, possibly by adding a
-    // method on AACAudioSpecificConfig that takes {pointer, length} pair and
-    // returns a vector that has the ADTS header.
-    if (!adts_converter_->ConvertToADTS(&audio_frame))
+    auto aac_with_adts_header = adts_converter_->GetAACwithADTSHeader(sample.data(), sample.data_size());
+    if (aac_with_adts_header.empty())
       return false;
+    current_processing_pes_->mutable_data()->swap(aac_with_adts_header);
+  } else {
+    std::vector<uint8_t> audio_frame(sample.data(),
+                                     sample.data() + sample.data_size());
+    current_processing_pes_->mutable_data()->swap(audio_frame);
   }
 
   // TODO(rkuriowa): Put multiple samples in the PES packet to reduce # of PES
   // packets.
-  current_processing_pes_->mutable_data()->swap(audio_frame);
   current_processing_pes_->set_stream_id(audio_stream_id_);
   pes_packets_.push_back(std::move(current_processing_pes_));
   return true;
