@@ -90,6 +90,12 @@ class AACAudioSpecificConfig {
   /// @return true on success, false otherwise.
   virtual bool ConvertToADTS(std::vector<uint8_t>* buffer) const;
 
+  /// Get an AAC with an ADTS header.
+  /// @param data the bytes of ADTS header (minus 7 bytes).
+  /// @param length the size of a raw AAC frame.
+  /// @return not empty vector on success, empty vector otherwise.
+  virtual std::vector<uint8_t> GetAACwithADTSHeader(const uint8_t* data, size_t length) const;
+
   /// @return The audio object type for this AAC config, with possible extension
   ///         considered.
   AudioObjectType GetAudioObjectType() const;

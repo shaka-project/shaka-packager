@@ -162,6 +162,33 @@ bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
   return true;
 }
 
+std::vector<uint8_t> AACAudioSpecificConfig::GetAACwithADTSHeader(const uint8_t* data, size_t length) const {
+  DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
+         frequency_index_ != 0xf && channel_config_ <= 7);
+
+  std::vector<uint8_t> aac_with_adts_header(data, data + length);
+
+  size_t size = kADTSHeaderSize + aac_with_adts_header.size();
+
+  // ADTS header uses 13 bits for packet size.
+  if (size >= (1 << 13)) {
+    aac_with_adts_header.clear();
+    return aac_with_adts_header;
+  }
+
+  aac_with_adts_header.insert(aac_with_adts_header.begin(), kADTSHeaderSize, 0);
+
+  aac_with_adts_header[0] = 0xff;
+  aac_with_adts_header[1] = 0xf1;
+  aac_with_adts_header[2] = ((audio_object_type_ - 1) << 6) + (frequency_index_ << 2) + (channel_config_ >> 2);
+  aac_with_adts_header[3] = ((channel_config_ & 0x3) << 6) + static_cast<uint8_t>(size >> 11);
+  aac_with_adts_header[4] = static_cast<uint8_t>((size & 0x7ff) >> 3);
+  aac_with_adts_header[5] = static_cast<uint8_t>(((size & 7) << 5) + 0x1f);
+  aac_with_adts_header[6] = 0xfc;
+
+  return aac_with_adts_header;
+}
+
 AACAudioSpecificConfig::AudioObjectType
 AACAudioSpecificConfig::GetAudioObjectType() const {
   if (ps_present_)

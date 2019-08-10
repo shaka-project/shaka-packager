@@ -112,7 +112,7 @@ class MockNalUnitToByteStreamConverter : public NalUnitToByteStreamConverter {
 class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
  public:
   MOCK_METHOD1(Parse, bool(const std::vector<uint8_t>& data));
-  MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));
+  MOCK_CONST_METHOD2(GetAACwithADTSHeader, std::vector<uint8_t>(const uint8_t* data, size_t length));
 };
 
 std::shared_ptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
@@ -307,8 +307,8 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
       new MockAACAudioSpecificConfig());
-  EXPECT_CALL(*mock, ConvertToADTS(_))
-      .WillOnce(DoAll(SetArgPointee<0>(expected_data), Return(true)));
+  EXPECT_CALL(*mock, GetAACwithADTSHeader(_, _))
+      .WillOnce(Return(expected_data));
 
   UseMockAACAudioSpecificConfig(std::move(mock));
 
@@ -335,7 +335,10 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 
   std::unique_ptr<MockAACAudioSpecificConfig> mock(
       new MockAACAudioSpecificConfig());
-  EXPECT_CALL(*mock, ConvertToADTS(_)).WillOnce(Return(false));
+
+  std::vector<uint8_t> adts;
+
+  EXPECT_CALL(*mock, GetAACwithADTSHeader(_, _)).WillOnce(Return(adts));
 
   UseMockAACAudioSpecificConfig(std::move(mock));
 
