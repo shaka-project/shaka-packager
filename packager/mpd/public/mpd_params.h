@@ -77,10 +77,8 @@ struct MpdParams {
   /// This is the target segment duration requested by the user. The actual
   /// segment duration may be different to the target segment duration.
   /// This parameter is included here to calculate the approximate
-  /// SegmentTimeline if it is enabled. It is also used by the bandwidth
-  /// estimator to exclude the segments with duration less than half of the
-  /// target duration from bandwidth estimation. It will be populated from
-  /// segment duration specified in ChunkingParams if not specified.
+  /// SegmentTimeline if it is enabled. It will be populated from segment
+  /// duration specified in ChunkingParams if not specified.
   double target_segment_duration = 0;
 };
 

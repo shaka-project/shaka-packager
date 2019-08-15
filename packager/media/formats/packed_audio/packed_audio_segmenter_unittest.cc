@@ -58,11 +58,14 @@ const int64_t kPts1 = 0x12345;
 const int64_t kDts1 = 0x12000;
 const int64_t kPts2 = 0x12445;
 const int64_t kDts2 = 0x12100;
+const int64_t kLargePts = 0x123456781;
 
 // String form of kPts1 * kExpectedTimescaleScale.
 const char kScaledPts1[] = {0, 0, 0, 0, 0, 0x12, 0x34, 0x50};
 // String form of kPts2 * kExpectedTimescaleScale.
 const char kScaledPts2[] = {0, 0, 0, 0, 0, 0x12, 0x44, 0x50};
+// String form of kLargePts * kExpectedTimescaleScale truncated to 33 bits.
+const char kTruncatedScaledLargePts[] = {0, 0, 0, 0, 0x34, 0x56, 0x78, 0x10};
 
 const char kSegment1Data[] = "segment 1 data";
 const char kSegment2Data[] = "segment 2 data";
@@ -190,6 +193,35 @@ TEST_F(PackedAudioSegmenterTest, AacAddSample) {
 
   ASSERT_OK(segmenter_.AddSample(*CreateSample(kPts1, kDts1, kSample1Data)));
   EXPECT_EQ(std::string(kSegment1Data) + kAdtsSample1Data, GetSegmentData());
+}
+
+TEST_F(PackedAudioSegmenterTest, TruncateLargeTimestamp) {
+  EXPECT_CALL(*mock_adts_converter_, Parse(ElementsAreArray(kCodecConfig)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_adts_converter_,
+              ConvertToADTS(Pointee(Eq(StringToVector(kSample1Data)))))
+      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSample1Data)),
+                      Return(true)));
+
+  EXPECT_CALL(segmenter_, CreateAdtsConverter())
+      .WillOnce(Return(ByMove(std::move(mock_adts_converter_))));
+  ASSERT_OK(segmenter_.Initialize(*CreateAudioStreamInfo(kCodecAAC)));
+
+  std::unique_ptr<MockId3Tag> mock_id3_tag(new MockId3Tag);
+  EXPECT_CALL(*mock_id3_tag,
+              AddPrivateFrame(kTimestampOwnerIdentifier,
+                              std::string(std::begin(kTruncatedScaledLargePts),
+                                          std::end(kTruncatedScaledLargePts))));
+  EXPECT_CALL(*mock_id3_tag, WriteToBuffer(_))
+      .WillOnce(Invoke([](BufferWriter* buffer) {
+        buffer->AppendString(kSegment1Data);
+        return true;
+      }));
+  EXPECT_CALL(segmenter_, CreateId3Tag())
+      .WillOnce(Return(ByMove(std::move(mock_id3_tag))));
+
+  ASSERT_OK(
+      segmenter_.AddSample(*CreateSample(kLargePts, kLargePts, kSample1Data)));
 }
 
 TEST_F(PackedAudioSegmenterTest, Ac3AddSample) {

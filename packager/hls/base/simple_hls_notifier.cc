@@ -184,14 +184,15 @@ base::Optional<MediaPlaylist::EncryptionMethod> StringToEncryptionMethod(
     const std::string& method) {
   if (method == "cenc") {
     return MediaPlaylist::EncryptionMethod::kSampleAesCenc;
-  } else if (method == "cbcs") {
+  }
+  if (method == "cbcs") {
     return MediaPlaylist::EncryptionMethod::kSampleAes;
-  } else if (method == "cbca") {
+  }
+  if (method == "cbca") {
     // cbca is a place holder for sample aes.
     return MediaPlaylist::EncryptionMethod::kSampleAes;
-  } else {
-    return base::nullopt;
   }
+  return base::nullopt;
 }
 
 void NotifyEncryptionToMediaPlaylist(
@@ -459,7 +460,8 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     NotifyEncryptionToMediaPlaylist(encryption_method, key_uri, empty_key_id,
                                     iv, "identity", "", media_playlist.get());
     return true;
-  } else if (IsFairPlaySystemId(system_id)) {
+  }
+  if (IsFairPlaySystemId(system_id)) {
     std::string key_uri = hls_params().key_uri;
     if (key_uri.empty()) {
       // Use key_id as the key_uri. The player needs to have custom logic to

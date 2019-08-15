@@ -8,13 +8,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 #include "packager/base/logging.h"
 
 namespace shaka {
 
-BandwidthEstimator::BandwidthEstimator(double target_segment_duration)
-    : target_segment_duration_(target_segment_duration) {}
+BandwidthEstimator::BandwidthEstimator() = default;
 
 BandwidthEstimator::~BandwidthEstimator() = default;
 
@@ -28,12 +28,66 @@ void BandwidthEstimator::AddBlock(uint64_t size_in_bytes, double duration) {
   const int kBitsInByte = 8;
   const uint64_t size_in_bits = size_in_bytes * kBitsInByte;
   total_size_in_bits_ += size_in_bits;
-
   total_duration_ += duration;
 
-  const uint64_t bitrate = static_cast<uint64_t>(ceil(size_in_bits / duration));
+  const size_t kTargetDurationThreshold = 10;
+  if (initial_blocks_.size() < kTargetDurationThreshold) {
+    initial_blocks_.push_back({size_in_bits, duration});
+    return;
+  }
 
-  if (duration < 0.5 * target_segment_duration_) {
+  if (target_block_duration_ == 0) {
+    // Use the average duration as the target block duration. It will be used
+    // to filter small blocks from bandwidth calculation.
+    target_block_duration_ = GetAverageBlockDuration();
+    for (const Block& block : initial_blocks_) {
+      max_bitrate_ =
+          std::max(max_bitrate_, GetBitrate(block, target_block_duration_));
+    }
+    return;
+  }
+  max_bitrate_ = std::max(max_bitrate_, GetBitrate({size_in_bits, duration},
+                                                   target_block_duration_));
+}
+
+uint64_t BandwidthEstimator::Estimate() const {
+  if (total_duration_ == 0)
+    return 0;
+  return static_cast<uint64_t>(ceil(total_size_in_bits_ / total_duration_));
+}
+
+uint64_t BandwidthEstimator::Max() const {
+  if (max_bitrate_ != 0)
+    return max_bitrate_;
+
+  // We don't have the |target_block_duration_| yet. Calculate a target
+  // duration from the current available blocks.
+  DCHECK(target_block_duration_ == 0);
+  const double target_block_duration = GetAverageBlockDuration();
+
+  // Calculate maximum bitrate with the target duration calculated above.
+  uint64_t max_bitrate = 0;
+  for (const Block& block : initial_blocks_) {
+    max_bitrate =
+        std::max(max_bitrate, GetBitrate(block, target_block_duration));
+  }
+  return max_bitrate;
+}
+
+double BandwidthEstimator::GetAverageBlockDuration() const {
+  if (initial_blocks_.empty())
+    return 0.0;
+  const double sum =
+      std::accumulate(initial_blocks_.begin(), initial_blocks_.end(), 0.0,
+                      [](double duration, const Block& block) {
+                        return duration + block.duration;
+                      });
+  return sum / initial_blocks_.size();
+}
+
+uint64_t BandwidthEstimator::GetBitrate(const Block& block,
+                                        double target_block_duration) const {
+  if (block.duration < 0.5 * target_block_duration) {
     // https://tools.ietf.org/html/rfc8216#section-4.1
     // The peak segment bit rate of a Media Playlist is the largest bit rate of
     // any continuous set of segments whose total duration is between 0.5
@@ -44,29 +98,16 @@ void BandwidthEstimator::AddBlock(uint64_t size_in_bytes, double duration) {
     // segment duration, it will never be larger than the actual target
     // duration.
     //
-    // TODO(kqyang): Review if we can just stick to the user provided segment
-    // duration as our target duration.
-    //
     // We also apply the same exclusion to the bandwidth computation for DASH as
     // the bitrate for the short segment is not a good signal for peak
     // bandwidth.
     // See https://github.com/google/shaka-packager/issues/498 for details.
-    VLOG(1) << "Exclude short segment (duration " << duration
-            << ", target_duration " << target_segment_duration_
+    VLOG(1) << "Exclude short segment (duration " << block.duration
+            << ", target_duration " << target_block_duration
             << ") in peak bandwidth computation.";
-    return;
+    return 0.0;
   }
-  max_bitrate_ = std::max(bitrate, max_bitrate_);
-}
-
-uint64_t BandwidthEstimator::Estimate() const {
-  if (total_duration_ == 0)
-    return 0;
-  return static_cast<uint64_t>(ceil(total_size_in_bits_ / total_duration_));
-}
-
-uint64_t BandwidthEstimator::Max() const {
-  return max_bitrate_;
+  return static_cast<uint64_t>(ceil(block.size_in_bits / block.duration));
 }
 
 }  // namespace shaka

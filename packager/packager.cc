@@ -210,7 +210,8 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
 
   if (output_format == CONTAINER_UNKNOWN) {
     return Status(error::INVALID_ARGUMENT, "Unsupported output format.");
-  } else if (output_format == MediaContainerName::CONTAINER_MPEG2TS) {
+  }
+  if (output_format == MediaContainerName::CONTAINER_MPEG2TS) {
     if (stream.segment_template.empty()) {
       return Status(
           error::INVALID_ARGUMENT,
@@ -355,9 +356,8 @@ bool StreamDescriptorCompareFn(const StreamDescriptor& a,
       // The MPD notifier requires that the main track comes first, so make
       // sure that happens.
       return a.trick_play_factor < b.trick_play_factor;
-    } else {
-      return a.stream_selector < b.stream_selector;
     }
+    return a.stream_selector < b.stream_selector;
   }
 
   return a.input < b.input;
