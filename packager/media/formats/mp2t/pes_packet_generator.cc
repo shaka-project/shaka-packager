@@ -63,7 +63,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
       return adts_converter_->Parse(audio_stream_info.codec_config());
     }
     if (audio_stream_info.codec() == Codec::kCodecAC3 ||
-               audio_stream_info.codec() == Codec::kCodecEAC3) {
+        audio_stream_info.codec() == Codec::kCodecEAC3) {
       audio_stream_id_ = kAc3AudioStreamId;
       // No converter needed for AC3 and E-AC3.
       return true;
@@ -119,17 +119,15 @@ bool PesPacketGenerator::PushSample(const MediaSample& sample) {
   }
   DCHECK_EQ(stream_type_, kStreamAudio);
 
-  std::vector<uint8_t> audio_frame(sample.data(),
-                                   sample.data() + sample.data_size());
+  std::vector<uint8_t> audio_frame;
 
   // AAC is carried in ADTS.
   if (adts_converter_) {
-    // TODO(rkuroiwa): ConvertToADTS() makes another copy of audio_frame
-    // internally. Optimize copying in this function, possibly by adding a
-    // method on AACAudioSpecificConfig that takes {pointer, length} pair and
-    // returns a vector that has the ADTS header.
-    if (!adts_converter_->ConvertToADTS(&audio_frame))
+    if (!adts_converter_->ConvertToADTS(sample.data(), sample.data_size(),
+                                        &audio_frame))
       return false;
+  } else {
+    audio_frame.assign(sample.data(), sample.data() + sample.data_size());
   }
 
   // TODO(rkuriowa): Put multiple samples in the PES packet to reduce # of PES
