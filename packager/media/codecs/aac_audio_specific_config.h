@@ -84,11 +84,14 @@ class AACAudioSpecificConfig {
   virtual bool Parse(const std::vector<uint8_t>& data);
 
   /// Convert a raw AAC frame into an AAC frame with an ADTS header.
-  /// @param[in,out] buffer contains the raw AAC frame on input, and the
-  ///                converted frame on output if successful; it is untouched
-  ///                on failure.
+  /// @param data points to the raw AAC frame to be converted.
+  /// @param data_size the size of a raw AAC frame.
+  /// @param[out] audio_frame contains the converted frame if successful; it is
+  /// untouched on failure.
   /// @return true on success, false otherwise.
-  virtual bool ConvertToADTS(std::vector<uint8_t>* buffer) const;
+  virtual bool ConvertToADTS(const uint8_t* data,
+                             size_t data_size,
+                             std::vector<uint8_t>* audio_frame) const;
 
   /// @return The audio object type for this AAC config, with possible extension
   ///         considered.

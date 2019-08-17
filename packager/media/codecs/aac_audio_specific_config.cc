@@ -137,27 +137,33 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
          channel_config_ <= 7;
 }
 
-bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
-  size_t size = buffer->size() + kADTSHeaderSize;
-
+bool AACAudioSpecificConfig::ConvertToADTS(
+    const uint8_t* data,
+    size_t data_size,
+    std::vector<uint8_t>* audio_frame) const {
   DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
          frequency_index_ != 0xf && channel_config_ <= 7);
+
+  size_t size = kADTSHeaderSize + data_size;
 
   // ADTS header uses 13 bits for packet size.
   if (size >= (1 << 13))
     return false;
 
-  std::vector<uint8_t>& adts = *buffer;
+  audio_frame->reserve(size);
+  audio_frame->resize(kADTSHeaderSize);
 
-  adts.insert(buffer->begin(), kADTSHeaderSize, 0);
-  adts[0] = 0xff;
-  adts[1] = 0xf1;
-  adts[2] = ((audio_object_type_ - 1) << 6) + (frequency_index_ << 2) +
-            (channel_config_ >> 2);
-  adts[3] = ((channel_config_ & 0x3) << 6) + static_cast<uint8_t>(size >> 11);
-  adts[4] = static_cast<uint8_t>((size & 0x7ff) >> 3);
-  adts[5] = static_cast<uint8_t>(((size & 7) << 5) + 0x1f);
-  adts[6] = 0xfc;
+  audio_frame->at(0) = 0xff;
+  audio_frame->at(1) = 0xf1;
+  audio_frame->at(2) = ((audio_object_type_ - 1) << 6) +
+                       (frequency_index_ << 2) + (channel_config_ >> 2);
+  audio_frame->at(3) =
+      ((channel_config_ & 0x3) << 6) + static_cast<uint8_t>(size >> 11);
+  audio_frame->at(4) = static_cast<uint8_t>((size & 0x7ff) >> 3);
+  audio_frame->at(5) = static_cast<uint8_t>(((size & 7) << 5) + 0x1f);
+  audio_frame->at(6) = 0xfc;
+
+  audio_frame->insert(audio_frame->end(), data, data + data_size);
 
   return true;
 }
