@@ -19,7 +19,6 @@ using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::ElementsAreArray;
-using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Pointee;
 using ::testing::Return;
@@ -58,6 +57,10 @@ const int64_t kPts1 = 0x12345;
 const int64_t kDts1 = 0x12000;
 const int64_t kPts2 = 0x12445;
 const int64_t kDts2 = 0x12100;
+
+std::vector<uint8_t> kSampleFrame;
+const uint8_t kSampleData = 0x41;
+const char kAdtsSampleFrame[] = "adts A";
 
 // String form of kPts1 * kExpectedTimescaleScale.
 const char kScaledPts1[] = {0, 0, 0, 0, 0, 0x12, 0x34, 0x50};
@@ -104,7 +107,7 @@ std::shared_ptr<MediaSample> CreateEncryptedSample(
 class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
  public:
   MOCK_METHOD1(Parse, bool(const std::vector<uint8_t>& data));
-  MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));
+  MOCK_CONST_METHOD3(ConvertToADTS, bool(std::vector<uint8_t>& audio_frame, const uint8_t* data, size_t data_size));
 };
 
 class MockId3Tag : public Id3Tag {
@@ -167,8 +170,8 @@ TEST_F(PackedAudioSegmenterTest, AacAddSample) {
   EXPECT_CALL(*mock_adts_converter_, Parse(ElementsAreArray(kCodecConfig)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_adts_converter_,
-              ConvertToADTS(Pointee(Eq(StringToVector(kSample1Data)))))
-      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSample1Data)),
+              ConvertToADTS(kSampleFrame, Pointee(kSampleData), sizeof(uint8_t)))
+      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSampleFrame)),
                       Return(true)));
 
   EXPECT_CALL(segmenter_, CreateAdtsConverter())
@@ -269,8 +272,8 @@ TEST_F(PackedAudioSegmenterTest, AacAddEncryptedSample) {
   EXPECT_CALL(*mock_adts_converter_, Parse(ElementsAreArray(kCodecConfig)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_adts_converter_,
-              ConvertToADTS(Pointee(Eq(StringToVector(kSample1Data)))))
-      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSample1Data)),
+              ConvertToADTS(kSampleFrame, Pointee(kSampleData), sizeof(uint8_t)))
+      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSampleFrame)),
                       Return(true)));
 
   EXPECT_CALL(segmenter_, CreateAdtsConverter())
