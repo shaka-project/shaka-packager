@@ -306,6 +306,13 @@ Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
   Nalu nalu;
   NaluReader::Result result;
   while ((result = reader.Advance(&nalu)) == NaluReader::kOk) {
+    // |header_parser_| is only used if |leading_clear_bytes_size_| is not
+    // availble. See lines below.
+    if (leading_clear_bytes_size_ == 0 && !header_parser_->ProcessNalu(nalu)) {
+      LOG(ERROR) << "Failed to process NAL unit: NAL type = " << nalu.type();
+      return Status(error::ENCRYPTION_FAILURE, "Failed to process NAL unit.");
+    }
+
     const size_t nalu_total_size = nalu.header_size() + nalu.payload_size();
     size_t clear_bytes = 0;
     if (nalu.is_video_slice() && nalu_total_size >= min_protected_data_size_) {

@@ -199,7 +199,7 @@ bool UdpFile::Open() {
 
   if (bind(new_socket.get(),
            reinterpret_cast<struct sockaddr*>(&local_sock_addr),
-           sizeof(local_sock_addr))) {
+           sizeof(local_sock_addr)) < 0) {
     LOG(ERROR) << "Could not bind UDP socket";
     return false;
   }

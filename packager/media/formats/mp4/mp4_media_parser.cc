@@ -5,7 +5,6 @@
 #include "packager/media/formats/mp4/mp4_media_parser.h"
 
 #include <algorithm>
-#include <limits>
 
 #include "packager/base/callback.h"
 #include "packager/base/callback_helpers.h"
@@ -21,6 +20,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/base/video_util.h"
 #include "packager/media/codecs/ac3_audio_util.h"
 #include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
@@ -515,8 +515,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint32_t pixel_width = entry.pixel_aspect.h_spacing;
       uint32_t pixel_height = entry.pixel_aspect.v_spacing;
       if (pixel_width == 0 && pixel_height == 0) {
-        pixel_width = 1;
-        pixel_height = 1;
+        DerivePixelWidthHeight(coded_width, coded_height, track->header.width,
+                               track->header.height, &pixel_width,
+                               &pixel_height);
       }
       std::string codec_string;
       uint8_t nalu_length_size = 0;
@@ -543,30 +544,38 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string = avc_config.GetCodecString(actual_format);
           nalu_length_size = avc_config.nalu_length_size();
 
-          if (coded_width != avc_config.coded_width() ||
-              coded_height != avc_config.coded_height()) {
-            LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
-                         << "," << coded_height
-                         << ") does not match with resolution in "
-                            "AVCDecoderConfigurationRecord ("
-                         << avc_config.coded_width() << ","
-                         << avc_config.coded_height()
-                         << "). Use AVCDecoderConfigurationRecord.";
-            coded_width = avc_config.coded_width();
-            coded_height = avc_config.coded_height();
-          }
+          // Use configurations from |avc_config| if it is valid.
+          if (avc_config.coded_width() != 0) {
+            DCHECK_NE(avc_config.coded_height(), 0u);
+            if (coded_width != avc_config.coded_width() ||
+                coded_height != avc_config.coded_height()) {
+              LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
+                           << "," << coded_height
+                           << ") does not match with resolution in "
+                              "AVCDecoderConfigurationRecord ("
+                           << avc_config.coded_width() << ","
+                           << avc_config.coded_height()
+                           << "). Use AVCDecoderConfigurationRecord.";
+              coded_width = avc_config.coded_width();
+              coded_height = avc_config.coded_height();
+            }
 
-          if (pixel_width != avc_config.pixel_width() ||
-              pixel_height != avc_config.pixel_height()) {
-            LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
-                << "Pixel aspect ratio in PASP box (" << pixel_width << ","
-                << pixel_height
-                << ") does not match with SAR in AVCDecoderConfigurationRecord "
-                   "("
-                << avc_config.pixel_width() << "," << avc_config.pixel_height()
-                << "). Use AVCDecoderConfigurationRecord.";
-            pixel_width = avc_config.pixel_width();
-            pixel_height = avc_config.pixel_height();
+            DCHECK_NE(avc_config.pixel_width(), 0u);
+            DCHECK_NE(avc_config.pixel_height(), 0u);
+            if (pixel_width != avc_config.pixel_width() ||
+                pixel_height != avc_config.pixel_height()) {
+              LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
+                  << "Pixel aspect ratio in PASP box (" << pixel_width << ","
+                  << pixel_height
+                  << ") does not match with SAR in "
+                     "AVCDecoderConfigurationRecord "
+                     "("
+                  << avc_config.pixel_width() << ","
+                  << avc_config.pixel_height()
+                  << "). Use AVCDecoderConfigurationRecord.";
+              pixel_width = avc_config.pixel_width();
+              pixel_height = avc_config.pixel_height();
+            }
           }
           break;
         }

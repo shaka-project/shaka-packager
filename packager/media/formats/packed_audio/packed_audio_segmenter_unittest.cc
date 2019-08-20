@@ -56,6 +56,7 @@ const int64_t kPts1 = 0x12345;
 const int64_t kDts1 = 0x12000;
 const int64_t kPts2 = 0x12445;
 const int64_t kDts2 = 0x12100;
+const int64_t kLargePts = 0x123456781;
 
 std::vector<uint8_t> kSampleFrame;
 
@@ -63,6 +64,8 @@ std::vector<uint8_t> kSampleFrame;
 const char kScaledPts1[] = {0, 0, 0, 0, 0, 0x12, 0x34, 0x50};
 // String form of kPts2 * kExpectedTimescaleScale.
 const char kScaledPts2[] = {0, 0, 0, 0, 0, 0x12, 0x44, 0x50};
+// String form of kLargePts * kExpectedTimescaleScale truncated to 33 bits.
+const char kTruncatedScaledLargePts[] = {0, 0, 0, 0, 0x34, 0x56, 0x78, 0x10};
 
 const char kSegment1Data[] = "segment 1 data";
 const char kSegment2Data[] = "segment 2 data";
