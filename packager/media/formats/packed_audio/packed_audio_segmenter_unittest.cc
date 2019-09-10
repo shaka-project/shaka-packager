@@ -19,9 +19,7 @@ using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::ElementsAreArray;
-using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::Test;
@@ -107,7 +105,10 @@ std::shared_ptr<MediaSample> CreateEncryptedSample(
 class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
  public:
   MOCK_METHOD1(Parse, bool(const std::vector<uint8_t>& data));
-  MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));
+  MOCK_CONST_METHOD3(ConvertToADTS,
+                     bool(const uint8_t* data,
+                          size_t data_size,
+                          std::vector<uint8_t>* audio_frame));
 };
 
 class MockId3Tag : public Id3Tag {
@@ -170,8 +171,8 @@ TEST_F(PackedAudioSegmenterTest, AacAddSample) {
   EXPECT_CALL(*mock_adts_converter_, Parse(ElementsAreArray(kCodecConfig)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_adts_converter_,
-              ConvertToADTS(Pointee(Eq(StringToVector(kSample1Data)))))
-      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSample1Data)),
+              ConvertToADTS(_, sizeof(kSample1Data) - 1, _))
+      .WillOnce(DoAll(SetArgPointee<2>(StringToVector(kAdtsSample1Data)),
                       Return(true)));
 
   EXPECT_CALL(segmenter_, CreateAdtsConverter())
@@ -199,8 +200,8 @@ TEST_F(PackedAudioSegmenterTest, TruncateLargeTimestamp) {
   EXPECT_CALL(*mock_adts_converter_, Parse(ElementsAreArray(kCodecConfig)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_adts_converter_,
-              ConvertToADTS(Pointee(Eq(StringToVector(kSample1Data)))))
-      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSample1Data)),
+              ConvertToADTS(_, sizeof(kSample1Data) - 1, _))
+      .WillOnce(DoAll(SetArgPointee<2>(StringToVector(kAdtsSample1Data)),
                       Return(true)));
 
   EXPECT_CALL(segmenter_, CreateAdtsConverter())
@@ -301,8 +302,8 @@ TEST_F(PackedAudioSegmenterTest, AacAddEncryptedSample) {
   EXPECT_CALL(*mock_adts_converter_, Parse(ElementsAreArray(kCodecConfig)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_adts_converter_,
-              ConvertToADTS(Pointee(Eq(StringToVector(kSample1Data)))))
-      .WillOnce(DoAll(SetArgPointee<0>(StringToVector(kAdtsSample1Data)),
+              ConvertToADTS(_, sizeof(kSample1Data) - 1, _))
+      .WillOnce(DoAll(SetArgPointee<2>(StringToVector(kAdtsSample1Data)),
                       Return(true)));
 
   EXPECT_CALL(segmenter_, CreateAdtsConverter())
