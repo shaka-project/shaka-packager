@@ -44,6 +44,18 @@ bool H264VideoSliceHeaderParser::Initialize(
   return true;
 }
 
+bool H264VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
+  int id;
+  switch (nalu.type()) {
+    case Nalu::H264_SPS:
+      return parser_.ParseSps(nalu, &id) == H264Parser::kOk;
+    case Nalu::H264_PPS:
+      return parser_.ParsePps(nalu, &id) == H264Parser::kOk;
+    default:
+      return true;
+  }
+}
+
 int64_t H264VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {
   DCHECK(nalu.is_video_slice());
   H264SliceHeader slice_header;
@@ -77,6 +89,21 @@ bool H265VideoSliceHeaderParser::Initialize(
   }
 
   return true;
+}
+
+bool H265VideoSliceHeaderParser::ProcessNalu(const Nalu& nalu) {
+  int id;
+  switch (nalu.type()) {
+    case Nalu::H265_SPS:
+      return parser_.ParseSps(nalu, &id) == H265Parser::kOk;
+    case Nalu::H265_PPS:
+      return parser_.ParsePps(nalu, &id) == H265Parser::kOk;
+    case Nalu::H265_VPS:
+      // Ignore since it does not affect video slice header parsing.
+      return true;
+    default:
+      return true;
+  }
 }
 
 int64_t H265VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {

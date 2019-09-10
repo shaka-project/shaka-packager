@@ -228,7 +228,7 @@ class MediaPlaylist {
   bool inserted_discontinuity_tag_ = false;
   int discontinuity_sequence_number_ = 0;
 
-  double longest_segment_duration_ = 0.0;
+  double longest_segment_duration_seconds_ = 0.0;
   uint32_t time_scale_ = 0;
 
   BandwidthEstimator bandwidth_estimator_;

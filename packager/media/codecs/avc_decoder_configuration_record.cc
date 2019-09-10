@@ -43,8 +43,7 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
   RCHECK(reader.Read1(&num_sps));
   num_sps &= 0x1f;
   if (num_sps < 1) {
-    LOG(ERROR) << "No SPS found.";
-    return false;
+    VLOG(1) << "No SPS found.";
   }
 
   for (uint8_t i = 0; i < num_sps; i++) {
