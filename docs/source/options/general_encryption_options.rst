@@ -13,6 +13,12 @@ General encryption options
 --clear_lead <seconds>
 
     Clear lead in seconds if encryption is enabled.
+    Shaka Packager does not support partial encrypted segments, all the 
+    segments including the partial segment overlapping with the initial 
+    'clear_lead' seconds are not encrypted, with all the following segments 
+    encrypted. If segment_duration is greater than 'clear_lead', then only the
+    first segment is not encrypted.
+    Default: 5
 
 --protection_systems
 

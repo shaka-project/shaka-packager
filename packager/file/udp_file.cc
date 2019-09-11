@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <ws2tcpip.h>
 #define close closesocket
+#define EINTR_CODE WSAEINTR
 
 #else
 
@@ -24,6 +25,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #define INVALID_SOCKET -1
+#define EINTR_CODE EINTR
 
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
 // building on a machine that is older than that.
@@ -121,6 +123,14 @@ bool Multicast(int ai_family,
     return true;
 }
 
+int GetSocketErrorCode() {
+#if defined(OS_WIN)
+  return WSAGetLastError();
+#else
+  return errno;
+#endif
+}
+
 }  // anonymous namespace
 
 UdpFile::UdpFile(const char* file_name)
@@ -149,7 +159,7 @@ int64_t UdpFile::Read(void* buffer, uint64_t length) {
   do {
     result =
         recvfrom(socket_, reinterpret_cast<char*>(buffer), length, 0, NULL, 0);
-  } while ((result == -1) && (errno == EINTR));
+  } while (result == -1 && GetSocketErrorCode() == EINTR_CODE);
 
   return result;
 }
@@ -259,7 +269,7 @@ bool UdpFile::Open() {
   }
   ScopedSocket new_socket(socket(res->ai_family, res->ai_socktype, res->ai_protocol));
   if (new_socket.get() == INVALID_SOCKET) {
-    LOG(ERROR) << "Could not allocate socket.";
+    LOG(ERROR) << "Could not allocate socket, error = " << GetSocketErrorCode();
     freeaddrinfo(res);
     return false;
   }
@@ -269,8 +279,9 @@ bool UdpFile::Open() {
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR,
                    reinterpret_cast<const char*>(&optval),
                    sizeof(optval)) < 0) {
-      LOG(ERROR)
-          << "Could not apply the SO_REUSEADDR property to the UDP socket";
+      LOG(ERROR) << "Could not apply the SO_REUSEADDR property to the UDP "
+                    "socket, error = "
+                 << GetSocketErrorCode();
       freeaddrinfo(res);
       return false;
     }
@@ -280,7 +291,7 @@ bool UdpFile::Open() {
   if (bind(new_socket.get(),
            reinterpret_cast<struct sockaddr*>(res->ai_addr),
            sizeof(&res->ai_addr)) < 0) {
-    LOG(ERROR) << "Could not bind UDP socket";
+    LOG(ERROR) << "Could not bind UDP socket, error = " << GetSocketErrorCode();
     freeaddrinfo(res);
     return false;
   }
@@ -386,8 +397,8 @@ bool UdpFile::Open() {
     tv.tv_usec = options->timeout_us() % 1000000;
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVTIMEO,
                    reinterpret_cast<const char*>(&tv), sizeof(tv)) < 0) {
-      LOG(ERROR) << "Failed to set socket timeout.";
-      freeaddrinfo(res);
+      LOG(ERROR) << "Failed to set socket timeout, error = "
+                 << GetSocketErrorCode();
       return false;
     }
   }
@@ -397,8 +408,8 @@ bool UdpFile::Open() {
     if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVBUF,
                    reinterpret_cast<const char*>(&receive_buffer_size),
                    sizeof(receive_buffer_size)) < 0) {
-      LOG(ERROR) << "Failed to set the maximum receive buffer size: "
-                 << strerror(errno);
+      LOG(ERROR) << "Failed to set the maximum receive buffer size, error = "
+                 << GetSocketErrorCode();
       freeaddrinfo(res);
       return false;
     }
