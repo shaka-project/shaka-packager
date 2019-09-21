@@ -32,6 +32,7 @@ enum Codec {
   kCodecAV1 = kCodecVideo,
   kCodecH264,
   kCodecH265,
+  kCodecH265DolbyVision,
   kCodecVP8,
   kCodecVP9,
   kCodecVideoMaxPlusOne,

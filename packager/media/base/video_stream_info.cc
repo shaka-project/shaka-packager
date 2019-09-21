@@ -24,6 +24,8 @@ std::string VideoCodecToString(Codec codec) {
       return "H264";
     case kCodecH265:
       return "H265";
+    case kCodecH265DolbyVision:
+      return "H265 Dolby Vision";
     case kCodecVP8:
       return "VP8";
     case kCodecVP9:

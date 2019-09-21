@@ -36,6 +36,7 @@ const uint16_t kVideoDepth = 0x0018;
 const uint32_t kCompressorNameSize = 32u;
 const char kAv1CompressorName[] = "\012AOM Coding";
 const char kAvcCompressorName[] = "\012AVC Coding";
+const char kDolbyVisionCompressorName[] = "\013DOVI Coding";
 const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
 
@@ -1488,6 +1489,11 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
         compressor_name.assign(std::begin(kAvcCompressorName),
                                std::end(kAvcCompressorName));
         break;
+      case FOURCC_dvh1:
+      case FOURCC_dvhe:
+        compressor_name.assign(std::begin(kDolbyVisionCompressorName),
+                               std::end(kDolbyVisionCompressorName));
+        break;
       case FOURCC_hev1:
       case FOURCC_hvc1:
         compressor_name.assign(std::begin(kHevcCompressorName),
@@ -1544,6 +1550,27 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     return false;
 
   RCHECK(buffer->ReadWriteChild(&codec_configuration));
+
+  if (buffer->Reading()) {
+    extra_codec_configs.clear();
+    // Handle Dolby Vision boxes.
+    const bool is_hevc =
+        actual_format == FOURCC_dvhe || actual_format == FOURCC_dvh1 ||
+        actual_format == FOURCC_hev1 || actual_format == FOURCC_hvc1;
+    if (is_hevc) {
+      for (FourCC fourcc : {FOURCC_dvcC, FOURCC_dvvC, FOURCC_hvcE}) {
+        CodecConfiguration dv_box;
+        dv_box.box_type = fourcc;
+        RCHECK(buffer->TryReadWriteChild(&dv_box));
+        if (!dv_box.data.empty())
+          extra_codec_configs.push_back(std::move(dv_box));
+      }
+    }
+  } else {
+    for (CodecConfiguration& extra_codec_config : extra_codec_configs)
+      RCHECK(buffer->ReadWriteChild(&extra_codec_config));
+  }
+
   RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
 
   // Somehow Edge does not support having sinf box before codec_configuration,
@@ -1562,12 +1589,15 @@ size_t VideoSampleEntry::ComputeSizeInternal() {
     return 0;
   codec_configuration.box_type = GetCodecConfigurationBoxType(actual_format);
   DCHECK_NE(codec_configuration.box_type, FOURCC_NULL);
-  return HeaderSize() + sizeof(data_reference_index) + sizeof(width) +
-         sizeof(height) + sizeof(kVideoResolution) * 2 +
-         sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
-         pixel_aspect.ComputeSize() + sinf.ComputeSize() +
-         codec_configuration.ComputeSize() + kCompressorNameSize + 6 + 4 + 16 +
-         2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
+  size_t size = HeaderSize() + sizeof(data_reference_index) + sizeof(width) +
+                sizeof(height) + sizeof(kVideoResolution) * 2 +
+                sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
+                pixel_aspect.ComputeSize() + sinf.ComputeSize() +
+                codec_configuration.ComputeSize() + kCompressorNameSize + 6 +
+                4 + 16 + 2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
+  for (CodecConfiguration& codec_config : extra_codec_configs)
+    size += codec_config.ComputeSize();
+  return size;
 }
 
 FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
@@ -1577,6 +1607,8 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
     case FOURCC_avc1:
     case FOURCC_avc3:
       return FOURCC_avcC;
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
     case FOURCC_hev1:
     case FOURCC_hvc1:
       return FOURCC_hvcC;
@@ -1587,6 +1619,33 @@ FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
       LOG(ERROR) << FourCCToString(format) << " is not supported.";
       return FOURCC_NULL;
   }
+}
+
+std::vector<uint8_t> VideoSampleEntry::ExtraCodecConfigsAsVector() const {
+  BufferWriter buffer;
+  for (CodecConfiguration codec_config : extra_codec_configs)
+    codec_config.Write(&buffer);
+  return std::vector<uint8_t>(buffer.Buffer(), buffer.Buffer() + buffer.Size());
+}
+
+bool VideoSampleEntry::ParseExtraCodecConfigsVector(
+    const std::vector<uint8_t>& data) {
+  extra_codec_configs.clear();
+  size_t pos = 0;
+  while (pos < data.size()) {
+    bool err = false;
+    std::unique_ptr<BoxReader> box_reader(
+        BoxReader::ReadBox(data.data() + pos, data.size() - pos, &err));
+    RCHECK(!err && box_reader);
+
+    CodecConfiguration codec_config;
+    codec_config.box_type = box_reader->type();
+    RCHECK(codec_config.Parse(box_reader.get()));
+    extra_codec_configs.push_back(std::move(codec_config));
+
+    pos += box_reader->pos();
+  }
+  return true;
 }
 
 ElementaryStreamDescriptor::ElementaryStreamDescriptor() = default;

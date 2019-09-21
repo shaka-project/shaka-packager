@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/time/clock.h"
 #include "packager/base/time/time.h"
 #include "packager/file/file.h"
@@ -56,6 +57,11 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
                      H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
                  ? FOURCC_hev1
                  : FOURCC_hvc1;
+    case kCodecH265DolbyVision:
+      return h26x_stream_format ==
+                     H26xStreamFormat::kNalUnitStreamWithParameterSetNalus
+                 ? FOURCC_dvhe
+                 : FOURCC_dvh1;
     case kCodecVP8:
       return FOURCC_vp08;
     case kCodecVP9:
@@ -410,6 +416,12 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   video.width = video_info->width();
   video.height = video_info->height();
   video.codec_configuration.data = video_info->codec_config();
+  if (!video.ParseExtraCodecConfigsVector(video_info->extra_config())) {
+    LOG(ERROR) << "Malformed extra codec configs: "
+               << base::HexEncode(video_info->extra_config().data(),
+                                  video_info->extra_config().size());
+    return false;
+  }
   if (pixel_width != 1 || pixel_height != 1) {
     video.pixel_aspect.h_spacing = pixel_width;
     video.pixel_aspect.v_spacing = pixel_height;

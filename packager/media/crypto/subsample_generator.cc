@@ -142,6 +142,7 @@ Status SubsampleGenerator::Initialize(FourCC protection_scheme,
       header_parser_.reset(new H264VideoSliceHeaderParser);
       break;
     case kCodecH265:
+    case kCodecH265DolbyVision:
       header_parser_.reset(new H265VideoSliceHeaderParser);
       break;
     default:
@@ -220,6 +221,7 @@ Status SubsampleGenerator::GenerateSubsamples(
     case kCodecH264:
       FALLTHROUGH_INTENDED;
     case kCodecH265:
+    case kCodecH265DolbyVision:
       return GenerateSubsamplesFromH26xFrame(frame, frame_size, subsamples);
     case kCodecVP9:
       if (vp9_subsample_encryption_)
@@ -300,7 +302,8 @@ Status SubsampleGenerator::GenerateSubsamplesFromH26xFrame(
   SubsampleOrganizer subsample_organizer(align_protected_data_, subsamples);
 
   const Nalu::CodecType nalu_type =
-      (codec_ == kCodecH265) ? Nalu::kH265 : Nalu::kH264;
+      (codec_ == kCodecH265 || codec_ == kCodecH265DolbyVision) ? Nalu::kH265
+                                                                : Nalu::kH264;
   NaluReader reader(nalu_type, nalu_length_size_, frame, frame_size);
 
   Nalu nalu;

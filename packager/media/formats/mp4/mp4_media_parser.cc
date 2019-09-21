@@ -24,6 +24,7 @@
 #include "packager/media/codecs/ac3_audio_util.h"
 #include "packager/media/codecs/av1_codec_configuration_record.h"
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/dovi_decoder_configuration_record.h"
 #include "packager/media/codecs/ec3_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
@@ -46,13 +47,13 @@ uint64_t Rescale(uint64_t time_in_old_scale,
 H26xStreamFormat GetH26xStreamFormat(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_avc1:
-      return H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
-    case FOURCC_avc3:
-      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
-    case FOURCC_hev1:
-      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
+    case FOURCC_dvh1:
     case FOURCC_hvc1:
       return H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus;
+    case FOURCC_avc3:
+    case FOURCC_dvhe:
+    case FOURCC_hev1:
+      return H26xStreamFormat::kNalUnitStreamWithParameterSetNalus;
     default:
       return H26xStreamFormat::kUnSpecified;
   }
@@ -65,6 +66,9 @@ Codec FourCCToCodec(FourCC fourcc) {
     case FOURCC_avc1:
     case FOURCC_avc3:
       return kCodecH264;
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
+      return kCodecH265DolbyVision;
     case FOURCC_hev1:
     case FOURCC_hvc1:
       return kCodecH265;
@@ -113,6 +117,36 @@ Codec ObjectTypeToCodec(ObjectType object_type) {
     default:
       return kUnknownCodec;
   }
+}
+
+std::vector<uint8_t> GetDOVIDecoderConfig(
+    const std::vector<CodecConfiguration>& configs) {
+  for (const CodecConfiguration& config : configs) {
+    if (config.box_type == FOURCC_dvcC || config.box_type == FOURCC_dvvC) {
+      return config.data;
+    }
+  }
+  return std::vector<uint8_t>();
+}
+
+bool UpdateCodecStringForDolbyVision(
+    FourCC actual_format,
+    const std::vector<CodecConfiguration>& configs,
+    std::string* codec_string) {
+  DOVIDecoderConfigurationRecord dovi_config;
+  if (!dovi_config.Parse(GetDOVIDecoderConfig(configs))) {
+    LOG(ERROR) << "Failed to parse Dolby Vision decoder "
+                  "configuration record.";
+    return false;
+  }
+  if (actual_format == FOURCC_dvh1 || actual_format == FOURCC_dvhe) {
+    // Non-Backward compatibility mode. Replace the code string with
+    // Dolby Vision only.
+    *codec_string = dovi_config.GetCodecString(actual_format);
+  } else {
+    // TODO(kqyang): Support backward compatible signaling.
+  }
+  return true;
 }
 
 const uint64_t kNanosecondsPerSecond = 1000000000ull;
@@ -579,6 +613,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           break;
         }
+        case FOURCC_dvh1:
+        case FOURCC_dvhe:
         case FOURCC_hev1:
         case FOURCC_hvc1: {
           HEVCDecoderConfigurationRecord hevc_config;
@@ -588,6 +624,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           codec_string = hevc_config.GetCodecString(actual_format);
           nalu_length_size = hevc_config.nalu_length_size();
+
+          if (!entry.extra_codec_configs.empty()) {
+            if (!UpdateCodecStringForDolbyVision(
+                    actual_format, entry.extra_codec_configs, &codec_string)) {
+              return false;
+            }
+          }
           break;
         }
         case FOURCC_vp08:
@@ -631,6 +674,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           coded_width, coded_height, pixel_width, pixel_height,
           0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
+      video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());
 
       // Set pssh raw data if it has.
       if (moov_->pssh.size() > 0) {

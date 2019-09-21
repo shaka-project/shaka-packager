@@ -284,6 +284,11 @@ struct VideoSampleEntry : Box {
   // Returns the box type of codec configuration box from video format.
   FourCC GetCodecConfigurationBoxType(FourCC format) const;
 
+  // Convert |extra_codec_configs| to vector.
+  std::vector<uint8_t> ExtraCodecConfigsAsVector() const;
+  // Parse |extra_codec_configs| from vector.
+  bool ParseExtraCodecConfigsVector(const std::vector<uint8_t>& data);
+
   FourCC format = FOURCC_NULL;
   // data_reference_index is 1-based and "dref" box is mandatory so it is
   // always present.
@@ -294,6 +299,9 @@ struct VideoSampleEntry : Box {
   PixelAspectRatio pixel_aspect;
   ProtectionSchemeInfo sinf;
   CodecConfiguration codec_configuration;
+  // Some codecs, e.g. Dolby Vision, have extra codec configuration boxes that
+  // need to be propagated to muxers.
+  std::vector<CodecConfiguration> extra_codec_configs;
 };
 
 struct ElementaryStreamDescriptor : FullBox {
