@@ -27,6 +27,9 @@ class Tag {
   /// Add a non-quoted numeric value to the argument list.
   void AddNumber(const std::string& key, uint64_t value);
 
+  /// Add a non-quoted float value to the argument list.
+  void AddFloat(const std::string& key, float value);
+
   /// Add a pair of numbers with a symbol separating them.
   void AddNumberPair(const std::string& key,
                      uint64_t number1,

@@ -343,6 +343,19 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   return true;
 }
 
+bool SimpleHlsNotifier::NotifySampleDuration(uint32_t stream_id,
+                                             uint32_t sample_duration) {
+  base::AutoLock auto_lock(lock_);
+  auto stream_iterator = stream_map_.find(stream_id);
+  if (stream_iterator == stream_map_.end()) {
+    LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
+    return false;
+  }
+  auto& media_playlist = stream_iterator->second->media_playlist;
+  media_playlist->SetSampleDuration(sample_duration);
+  return true;
+}
+
 bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
                                          const std::string& segment_name,
                                          uint64_t start_time,

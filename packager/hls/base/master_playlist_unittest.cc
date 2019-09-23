@@ -167,6 +167,34 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   ASSERT_EQ(expected, actual);
 }
 
+TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideoWithFrameRate) {
+  const uint64_t kMaxBitrate = 435889;
+  const uint64_t kAvgBitrate = 235889;
+  const double kFrameRate = 60;
+
+  std::unique_ptr<MockMediaPlaylist> mock_playlist =
+      CreateVideoPlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
+  EXPECT_CALL(*mock_playlist, GetFrameRate()).WillOnce(Return(kFrameRate));
+
+  const char kBaseUrl[] = "http://myplaylistdomain.com/";
+  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+                                                   {mock_playlist.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
+      "CODECS=\"avc1\",RESOLUTION=800x600,FRAME-RATE=60.000\n"
+      "http://myplaylistdomain.com/media1.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
   const uint64_t kMaxBitrate = 435889;
   const uint64_t kAvgBitrate = 235889;

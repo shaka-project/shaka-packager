@@ -32,6 +32,11 @@ void Tag::AddNumber(const std::string& key, uint64_t value) {
   base::StringAppendF(buffer_, "%s=%" PRIu64, key.c_str(), value);
 }
 
+void Tag::AddFloat(const std::string& key, float value) {
+  NextField();
+  base::StringAppendF(buffer_, "%s=%.3f", key.c_str(), value);
+}
+
 void Tag::AddNumberPair(const std::string& key,
                         uint64_t number1,
                         char separator,

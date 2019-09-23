@@ -38,6 +38,8 @@ class MockHlsNotifier : public hls::HlsNotifier {
                     const std::string& name,
                     const std::string& group_id,
                     uint32_t* stream_id));
+  MOCK_METHOD2(NotifySampleDuration,
+               bool(uint32_t stream_id, uint32_t sample_duration));
   MOCK_METHOD6(NotifyNewSegment,
                bool(uint32_t stream_id,
                     const std::string& segment_name,
@@ -310,8 +312,18 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyWithProtectionScheme) {
                          MuxerListener::kContainerMpeg2ts);
 }
 
-// Make sure it doesn't crash.
 TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  std::shared_ptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+  muxer_options.segment_template = "$Number$.mp4";
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+
+  EXPECT_CALL(mock_notifier_, NotifySampleDuration(_, 2340));
   listener_.OnSampleDurationReady(2340);
 }
 

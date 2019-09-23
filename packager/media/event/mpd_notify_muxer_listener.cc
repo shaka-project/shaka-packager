@@ -118,9 +118,6 @@ void MpdNotifyMuxerListener::OnSampleDurationReady(
     // If non video, don't worry about it (at the moment).
     return;
   }
-  if (media_info_->video_info().has_frame_duration()) {
-    return;
-  }
 
   media_info_->mutable_video_info()->set_frame_duration(sample_duration);
 }

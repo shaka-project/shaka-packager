@@ -49,6 +49,8 @@ class SimpleHlsNotifier : public HlsNotifier {
                        const std::string& stream_name,
                        const std::string& group_id,
                        uint32_t* stream_id) override;
+  bool NotifySampleDuration(uint32_t stream_id,
+                            uint32_t sample_duration) override;
   bool NotifyNewSegment(uint32_t stream_id,
                         const std::string& segment_name,
                         uint64_t start_time,

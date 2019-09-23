@@ -50,6 +50,7 @@ class MockMediaPlaylist : public MediaPlaylist {
   MOCK_CONST_METHOD0(GetNumChannels, int());
   MOCK_CONST_METHOD2(GetDisplayResolution,
                      bool(uint32_t* width, uint32_t* height));
+  MOCK_CONST_METHOD0(GetFrameRate, double());
 };
 
 }  // namespace hls

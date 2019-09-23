@@ -393,6 +393,11 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   return true;
 }
 
+void MediaPlaylist::SetSampleDuration(uint32_t sample_duration) {
+  if (media_info_.has_video_info())
+    media_info_.mutable_video_info()->set_frame_duration(sample_duration);
+}
+
 void MediaPlaylist::AddSegment(const std::string& file_name,
                                int64_t start_time,
                                int64_t duration,
@@ -541,6 +546,13 @@ std::string MediaPlaylist::GetVideoRange() const {
       // information.
       return "";
   }
+}
+
+double MediaPlaylist::GetFrameRate() const {
+  if (media_info_.video_info().frame_duration() == 0)
+    return 0;
+  return static_cast<double>(time_scale_) /
+         media_info_.video_info().frame_duration();
 }
 
 void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,

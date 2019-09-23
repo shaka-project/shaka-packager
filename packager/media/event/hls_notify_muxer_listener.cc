@@ -125,7 +125,25 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   }
 }
 
-void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
+void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
+  if (stream_id_) {
+    // This happens in live mode.
+    hls_notifier_->NotifySampleDuration(stream_id_.value(), sample_duration);
+    return;
+  }
+
+  if (!media_info_) {
+    LOG(WARNING) << "Got sample duration " << sample_duration
+                 << " but no media was specified.";
+    return;
+  }
+  if (!media_info_->has_video_info()) {
+    // If non video, don't worry about it (at the moment).
+    return;
+  }
+
+  media_info_->mutable_video_info()->set_frame_duration(sample_duration);
+}
 
 void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
                                         float duration_seconds) {
