@@ -222,6 +222,9 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
   uint32_t height;
   if (playlist.GetDisplayResolution(&width, &height)) {
     tag.AddNumberPair("RESOLUTION", width, 'x', height);
+    const std::string video_range = playlist.GetVideoRange();
+    if (!video_range.empty())
+      tag.AddString("VIDEO-RANGE", video_range);
   }
 
   if (variant.audio_group_id) {

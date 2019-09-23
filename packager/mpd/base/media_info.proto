@@ -45,6 +45,10 @@ message MediaInfo {
     // playback_rate: the playout capability (e.g., 4x, 8x, 16x fast foward) of
     // the trick play stream.
     optional uint32 playback_rate = 9;
+
+    // Transfer characteristics. Useful to determine the VIDEO-RANGE for HLS,
+    // i.e. whether it is SDR or HDR.
+    optional uint32 transfer_characteristics = 10;
   }
 
   message AudioInfo {

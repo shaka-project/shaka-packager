@@ -50,6 +50,7 @@ struct H265VuiParameters {
   int aspect_ratio_idc = 0;
   int sar_width = 0;
   int sar_height = 0;
+  int transfer_characteristics = 0;
 
   bool bitstream_restriction_flag = false;
   int min_spatial_segmentation_idc = 0;

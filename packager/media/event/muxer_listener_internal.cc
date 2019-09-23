@@ -87,6 +87,10 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   if (video_stream_info->playback_rate() > 0) {
     video_info->set_playback_rate(video_stream_info->playback_rate());
   }
+  if (video_stream_info->transfer_characteristics() > 0) {
+    video_info->set_transfer_characteristics(
+        video_stream_info->transfer_characteristics());
+  }
 }
 
 void AddAudioInfo(const AudioStreamInfo* audio_stream_info,

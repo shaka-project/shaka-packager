@@ -527,8 +527,11 @@ H264Parser::Result H264Parser::ParseVUIParameters(H26xBitReader* br,
     READ_BITS_OR_RETURN(3, &data);  // video_format
     READ_BOOL_OR_RETURN(&data);  // video_full_range_flag
     READ_BOOL_OR_RETURN(&data);  // colour_description_present_flag
-    if (data)
-      READ_BITS_OR_RETURN(24, &data);  // color description syntax elements
+    if (data) {
+      READ_BITS_OR_RETURN(8, &data);  // colour primaries
+      READ_BITS_OR_RETURN(8, &sps->transfer_characteristics);
+      READ_BITS_OR_RETURN(8, &data);  // matrix coeffs
+    }
   }
 
   READ_BOOL_OR_RETURN(&data);  // chroma_loc_info_present_flag

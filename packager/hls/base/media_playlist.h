@@ -186,6 +186,9 @@ class MediaPlaylist {
   ///         resolution values.
   virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;
 
+  /// @return The video range of the stream.
+  virtual std::string GetVideoRange() const;
+
   /// @return the language of the media, as an ISO language tag in its shortest
   ///         form.  May be an empty string for video.
   const std::string& language() const { return language_; }

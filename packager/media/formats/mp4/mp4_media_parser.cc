@@ -555,6 +555,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       }
       std::string codec_string;
       uint8_t nalu_length_size = 0;
+      uint8_t transfer_characteristics = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
@@ -577,6 +578,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           codec_string = avc_config.GetCodecString(actual_format);
           nalu_length_size = avc_config.nalu_length_size();
+          transfer_characteristics = avc_config.transfer_characteristics();
 
           // Use configurations from |avc_config| if it is valid.
           if (avc_config.coded_width() != 0) {
@@ -624,6 +626,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           codec_string = hevc_config.GetCodecString(actual_format);
           nalu_length_size = hevc_config.nalu_length_size();
+          transfer_characteristics = hevc_config.transfer_characteristics();
 
           if (!entry.extra_codec_configs.empty()) {
             if (!UpdateCodecStringForDolbyVision(
@@ -672,6 +675,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           GetH26xStreamFormat(actual_format), codec_string,
           codec_configuration_data.data(), codec_configuration_data.size(),
           coded_width, coded_height, pixel_width, pixel_height,
+          transfer_characteristics,
           0,  // trick_play_factor
           nalu_length_size, track->media.header.language.code, is_encrypted));
       video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());

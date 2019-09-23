@@ -82,6 +82,8 @@ struct H264Sps {
   bool vui_parameters_present_flag;
   int sar_width;    // Set to 0 when not specified.
   int sar_height;   // Set to 0 when not specified.
+  int transfer_characteristics;
+
   bool bitstream_restriction_flag;
   int max_num_reorder_frames;
   int max_dec_frame_buffering;

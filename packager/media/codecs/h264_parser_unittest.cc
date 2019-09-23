@@ -187,6 +187,47 @@ TEST(H264ParserTest, PredWeightTable) {
   EXPECT_EQ(0, pred_weight_table.chroma_offset[3][1]);
 }
 
+TEST(H264ParserTest, ParseSps) {
+  const uint8_t kSps[] = {0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
+                          0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
+                          0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
+                          0x60, 0x0F, 0x16, 0x2D, 0x96};
+
+  H264Parser parser;
+  int sps_id = 0;
+  Nalu nalu;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
+
+  const H264Sps* sps = parser.GetSps(sps_id);
+  ASSERT_TRUE(sps);
+
+  EXPECT_EQ(100, sps->profile_idc);
+  EXPECT_EQ(30, sps->level_idc);
+  EXPECT_EQ(0, sps->transfer_characteristics);
+}
+
+TEST(H264ParserTest, ParseSpsWithTransferCharacteristics) {
+  const uint8_t kSps[] = {
+      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0,
+      0x00, 0x80, 0x00, 0x96, 0xA1, 0x22, 0x01, 0x28, 0x00, 0x00, 0x03, 0x00,
+      0x08, 0x00, 0x00, 0x03, 0x01, 0x80, 0x78, 0xB1, 0x6C, 0xB0,
+  };
+
+  H264Parser parser;
+  int sps_id = 0;
+  Nalu nalu;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
+
+  const H264Sps* sps = parser.GetSps(sps_id);
+  ASSERT_TRUE(sps);
+
+  EXPECT_EQ(100, sps->profile_idc);
+  EXPECT_EQ(30, sps->level_idc);
+  EXPECT_EQ(16, sps->transfer_characteristics);
+}
+
 TEST(H264ParserTest, ExtractResolutionFromSpsData) {
   const uint8_t kSps[] = {0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
                           0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,

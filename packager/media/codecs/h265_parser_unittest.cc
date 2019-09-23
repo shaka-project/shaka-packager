@@ -15,11 +15,17 @@ namespace H265 {
 
 namespace {
 
-// Data taken from bear-640x360-hevc.mp4
+// Data taken from bear-640x360-hevc.mp4 and bear-640x360-hevc-hdr10.mp4.
 const uint8_t kSpsData[] = {
     0x42, 0x01, 0x01, 0x01, 0x60, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x3f, 0xa0, 0x05, 0x02, 0x01, 0x69, 0x65, 0x95, 0xe4, 0x93,
     0x2b, 0xc0, 0x40, 0x40, 0x00, 0x00, 0xfa, 0x40, 0x00, 0x1d, 0x4c, 0x02};
+const uint8_t kSpsDataWithTransferCharacteristics[] = {
+    0x42, 0x01, 0x01, 0x02, 0x20, 0x00, 0x00, 0x03, 0x00, 0x90, 0x00, 0x00,
+    0x03, 0x00, 0x00, 0x03, 0x00, 0x78, 0xA0, 0x03, 0xC0, 0x80, 0x10, 0xE4,
+    0xD9, 0x65, 0x66, 0x92, 0x4C, 0xAF, 0x01, 0x6A, 0x12, 0x20, 0x13, 0x6C,
+    0x20, 0x00, 0x00, 0x7D, 0x20, 0x00, 0x0B, 0xB8, 0x0C, 0x25, 0x9A, 0x4B,
+    0xC0, 0x01, 0xE8, 0x48, 0x00, 0x3D, 0x09, 0x10};
 const uint8_t kPpsData[] = {0x44, 0x01, 0xc1, 0x73, 0xd1, 0x89};
 const uint8_t kSliceData[] = {
     // Incomplete segment data.
@@ -105,6 +111,32 @@ TEST(H265ParserTest, ParseSps) {
   EXPECT_EQ(4, sps->log2_max_pic_order_cnt_lsb_minus4);
   EXPECT_EQ(3, sps->log2_diff_max_min_luma_transform_block_size);
   EXPECT_EQ(0, sps->max_transform_hierarchy_depth_intra);
+  EXPECT_EQ(0, sps->vui_parameters.transfer_characteristics);
+}
+
+TEST(H265ParserTest, ParseSpsWithTransferCharacteristics) {
+  Nalu nalu;
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsDataWithTransferCharacteristics,
+                              arraysize(kSpsDataWithTransferCharacteristics)));
+  ASSERT_EQ(Nalu::H265_SPS, nalu.type());
+
+  int id = 12;
+  H265Parser parser;
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
+  ASSERT_EQ(0, id);
+
+  const H265Sps* sps = parser.GetSps(id);
+  ASSERT_TRUE(sps);
+
+  EXPECT_EQ(0, sps->video_parameter_set_id);
+  EXPECT_EQ(0, sps->max_sub_layers_minus1);
+  EXPECT_EQ(0, sps->seq_parameter_set_id);
+  EXPECT_EQ(1, sps->chroma_format_idc);
+  EXPECT_EQ(1080, sps->pic_height_in_luma_samples);
+  EXPECT_EQ(4, sps->log2_max_pic_order_cnt_lsb_minus4);
+  EXPECT_EQ(3, sps->log2_diff_max_min_luma_transform_block_size);
+  EXPECT_EQ(0, sps->max_transform_hierarchy_depth_intra);
+  EXPECT_EQ(16, sps->vui_parameters.transfer_characteristics);
 }
 
 TEST(H265ParserTest, ParsePps) {

@@ -63,6 +63,7 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
   const uint16_t kHeight = 20u;
   const uint32_t kPixelWidth = 2u;
   const uint32_t kPixelHeight = 3u;
+  const uint8_t kTransferCharacteristics = 0;
   const int16_t kTrickPlayFactor = 0;
   const uint8_t kNaluLengthSize = 1u;
 
@@ -81,11 +82,11 @@ VideoStreamInfo GetVideoStreamInfo(Codec codec) {
       // We do not care about the codec configs for other codecs in this file.
       break;
   }
-  return VideoStreamInfo(kTrackId, kTimeScale, kDuration, codec,
-                         H26xStreamFormat::kUnSpecified, kCodecString,
-                         codec_config, codec_config_size, kWidth, kHeight,
-                         kPixelWidth, kPixelHeight, kTrickPlayFactor,
-                         kNaluLengthSize, kLanguage, !kEncrypted);
+  return VideoStreamInfo(
+      kTrackId, kTimeScale, kDuration, codec, H26xStreamFormat::kUnSpecified,
+      kCodecString, codec_config, codec_config_size, kWidth, kHeight,
+      kPixelWidth, kPixelHeight, kTransferCharacteristics, kTrickPlayFactor,
+      kNaluLengthSize, kLanguage, !kEncrypted);
 }
 
 AudioStreamInfo GetAudioStreamInfo(Codec codec) {

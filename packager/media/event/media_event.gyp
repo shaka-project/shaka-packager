@@ -54,6 +54,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'hls_notify_muxer_listener_unittest.cc',
+        'muxer_listener_internal_unittest.cc',
         'mpd_notify_muxer_listener_unittest.cc',
         'muxer_listener_test_helper.cc',
         'muxer_listener_test_helper.h',

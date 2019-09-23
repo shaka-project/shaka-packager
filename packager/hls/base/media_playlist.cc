@@ -527,6 +527,22 @@ bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
   return false;
 }
 
+std::string MediaPlaylist::GetVideoRange() const {
+  // HLS specification:
+  // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-02#section-4.4.4.2
+  switch (media_info_.video_info().transfer_characteristics()) {
+    case 1:
+      return "SDR";
+    case 16:
+    case 18:
+      return "PQ";
+    default:
+      // Leave it empty if we do not have the transfer characteristics
+      // information.
+      return "";
+  }
+}
+
 void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
                                         int64_t start_time,
                                         int64_t duration,

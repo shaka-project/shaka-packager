@@ -10,6 +10,7 @@
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/rcheck.h"
+#include "packager/media/codecs/h265_parser.h"
 
 namespace shaka {
 namespace media {
@@ -61,15 +62,9 @@ std::string ReverseBitsAndHexEncode(uint32_t x) {
 
 }  // namespace
 
-HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord()
-    : version_(0),
-      general_profile_space_(0),
-      general_tier_flag_(false),
-      general_profile_idc_(0),
-      general_profile_compatibility_flags_(0),
-      general_level_idc_(0) {}
+HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord() = default;
 
-HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() {}
+HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() = default;
 
 bool HEVCDecoderConfigurationRecord::ParseInternal() {
   BufferReader reader(data(), data_size());
@@ -113,6 +108,14 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
       RCHECK(nalu.Initialize(Nalu::kH265, data() + nalu_offset, nalu_length));
       RCHECK(nalu.type() == nal_unit_type);
       AddNalu(nalu);
+
+      if (nalu.type() == Nalu::H265_SPS) {
+        H265Parser parser;
+        int sps_id = 0;
+        RCHECK(parser.ParseSps(nalu, &sps_id) == H265Parser::kOk);
+        set_transfer_characteristics(
+            parser.GetSps(sps_id)->vui_parameters.transfer_characteristics);
+      }
     }
   }
 

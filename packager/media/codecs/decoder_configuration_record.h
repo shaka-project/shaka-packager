@@ -43,6 +43,9 @@ class DecoderConfigurationRecord {
   ///         lifetime of this object, even if copied.
   const Nalu& nalu(size_t i) const { return nalu_[i]; }
 
+  /// @return Transfer characteristics of the config.
+  uint8_t transfer_characteristics() const { return transfer_characteristics_; }
+
  protected:
   DecoderConfigurationRecord();
 
@@ -61,6 +64,11 @@ class DecoderConfigurationRecord {
     nalu_length_size_ = nalu_length_size;
   }
 
+  /// Sets the transfer characteristics.
+  void set_transfer_characteristics(uint8_t transfer_characteristics) {
+    transfer_characteristics_ = transfer_characteristics;
+  }
+
  private:
   // Performs the actual parsing of the data.
   virtual bool ParseInternal() = 0;
@@ -69,7 +77,12 @@ class DecoderConfigurationRecord {
   // extracted Nalu can accessed.
   std::vector<uint8_t> data_;
   std::vector<Nalu> nalu_;
-  uint8_t nalu_length_size_;
+  uint8_t nalu_length_size_ = 0;
+
+  // Indicates the opto-electronic transfer characteristics of the source
+  // picture, which can be used to determine whether the video is HDR or SDR.
+  // The parameter is extracted from SPS.
+  uint8_t transfer_characteristics_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(DecoderConfigurationRecord);
 };
