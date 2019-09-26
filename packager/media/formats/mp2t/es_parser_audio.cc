@@ -59,16 +59,24 @@ static bool LookForSyncWord(const uint8_t* raw_es,
     if (!audio_header->IsSyncWord(cur_buf))
       continue;
 
-    if (!audio_header->Parse(cur_buf, raw_es_size - offset))
-      continue;
-
-    // Check whether there is another frame |size| apart from the current one.
     const size_t remaining_size = static_cast<size_t>(raw_es_size - offset);
     const int kSyncWordSize = 2;
-    if (remaining_size >= audio_header->GetFrameSize() + kSyncWordSize &&
-        !audio_header->IsSyncWord(&cur_buf[audio_header->GetFrameSize()])) {
+    const size_t frame_size =
+        audio_header->GetFrameSizeWithoutParsing(cur_buf, remaining_size);
+    if (frame_size < audio_header->GetMinFrameSize())
+      // Too short to be a valid frame.
+      continue;
+    if (remaining_size < frame_size)
+      // Not a full frame: will resume when we have more data.
+      return false;
+    // Check whether there is another frame |size| apart from the current one.
+    if (remaining_size >= frame_size + kSyncWordSize &&
+        !audio_header->IsSyncWord(&cur_buf[frame_size])) {
       continue;
     }
+
+    if (!audio_header->Parse(cur_buf, frame_size))
+      continue;
 
     *new_pos = offset;
     return true;

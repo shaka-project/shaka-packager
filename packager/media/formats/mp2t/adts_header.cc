@@ -63,8 +63,7 @@ bool AdtsHeader::Parse(const uint8_t* adts_frame, size_t adts_frame_size) {
   // Skip private stream bit.
   RCHECK(frame.SkipBits(1));
   RCHECK(frame.ReadBits(3, &channel_configuration_));
-  RCHECK((channel_configuration_ > 0) &&
-         (channel_configuration_ < kAdtsNumChannelsTableSize));
+  RCHECK(channel_configuration_ < kAdtsNumChannelsTableSize);
   // Skip originality, home and copyright info.
   RCHECK(frame.SkipBits(4));
   RCHECK(frame.ReadBits(13, &frame_size_));
@@ -89,6 +88,13 @@ size_t AdtsHeader::GetFrameSize() const {
   return frame_size_;
 }
 
+size_t AdtsHeader::GetFrameSizeWithoutParsing(const uint8_t* data,
+                                              size_t num_bytes) const {
+  DCHECK_GT(num_bytes, static_cast<size_t>(5));
+  return ((static_cast<int>(data[5]) >> 5) | (static_cast<int>(data[4]) << 3) |
+          ((static_cast<int>(data[3]) & 0x3) << 11));
+}
+
 void AdtsHeader::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
   DCHECK(buffer);
   buffer->clear();
@@ -109,7 +115,6 @@ uint32_t AdtsHeader::GetSamplingFrequency() const {
 }
 
 uint8_t AdtsHeader::GetNumChannels() const {
-  DCHECK_GT(channel_configuration_, 0);
   DCHECK_LT(channel_configuration_, kAdtsNumChannelsTableSize);
   return kAdtsNumChannelsTable[channel_configuration_];
 }

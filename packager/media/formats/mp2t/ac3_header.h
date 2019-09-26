@@ -32,6 +32,8 @@ class Ac3Header : public AudioHeader {
   bool Parse(const uint8_t* adts_frame, size_t adts_frame_size) override;
   size_t GetHeaderSize() const override;
   size_t GetFrameSize() const override;
+  size_t GetFrameSizeWithoutParsing(const uint8_t* data,
+                                    size_t num_bytes) const override;
   void GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const override;
   uint8_t GetObjectType() const override;
   uint32_t GetSamplingFrequency() const override;

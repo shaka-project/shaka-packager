@@ -40,6 +40,19 @@ const size_t kFrameSizeCodeTable[][3] = {
     {1920, 1393, 1280}, {1920, 1394, 1280},
 };
 
+// Calculate the size of the frame from the sample rate code and the
+// frame size code.
+// @return the size of the frame (header + payload).
+size_t CalcFrameSize(uint8_t fscod, uint8_t frmsizecod) {
+  const size_t kNumFscode = arraysize(kAc3SampleRateTable);
+  DCHECK_LT(fscod, kNumFscode);
+  DCHECK_LT(frmsizecod, arraysize(kFrameSizeCodeTable));
+  // The order of frequencies are reversed in |kFrameSizeCodeTable| compared to
+  // |kAc3SampleRateTable|.
+  const int index = kNumFscode - 1 - fscod;
+  return kFrameSizeCodeTable[frmsizecod][index] * 2;
+}
+
 }  // namespace
 
 bool Ac3Header::IsSyncWord(const uint8_t* buf) const {
@@ -104,13 +117,15 @@ size_t Ac3Header::GetHeaderSize() const {
 }
 
 size_t Ac3Header::GetFrameSize() const {
-  const size_t kNumFscode = arraysize(kAc3SampleRateTable);
-  DCHECK_LT(fscod_, kNumFscode);
-  DCHECK_LT(frmsizecod_, arraysize(kFrameSizeCodeTable));
-  // The order of frequencies are reversed in |kFrameSizeCodeTable| compared to
-  // |kAc3SampleRateTable|.
-  const int index = kNumFscode - 1 - fscod_;
-  return kFrameSizeCodeTable[frmsizecod_][index] * 2;
+  return CalcFrameSize(fscod_, frmsizecod_);
+}
+
+size_t Ac3Header::GetFrameSizeWithoutParsing(const uint8_t* data,
+                                             size_t num_bytes) const {
+  DCHECK_GT(num_bytes, static_cast<size_t>(4));
+  uint8_t fscod = data[4] >> 6;
+  uint8_t frmsizecod = data[4] & 0x3f;
+  return CalcFrameSize(fscod, frmsizecod);
 }
 
 void Ac3Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
