@@ -50,6 +50,12 @@ class AudioHeader {
   /// @return the size of frame (header + payload).
   virtual size_t GetFrameSize() const = 0;
 
+  /// Obtain the size of the frame from the header data without doing a full
+  /// Parse.
+  /// @return the size of the frame (header + payload).
+  virtual size_t GetFrameSizeWithoutParsing(const uint8_t* data,
+                                            size_t num_bytes) const = 0;
+
   /// Synthesize an AudioSpecificConfig record from the fields within the audio
   /// header.
   /// Should only be called after a successful Parse.
