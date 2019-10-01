@@ -1054,9 +1054,38 @@ INSTANTIATE_TEST_CASE_P(
            std::make_pair("hvc1.2.4.L63.90", "hvc1.2.4.L63.90"),
            // Replace hev1 with hvc1.
            std::make_pair("hev1.2.4.L63.90", "hvc1.2.4.L63.90"),
-           std::make_pair("dvh1.2.4.L63.90", "dvh1.2.4.L63.90"),
+           std::make_pair("dvh1.05.08", "dvh1.05.08"),
            // Replace dvhe with dvh1.
-           std::make_pair("dvhe.2.4.L63.90", "dvh1.2.4.L63.90")));
+           std::make_pair("dvhe.05.08", "dvh1.05.08")));
+
+struct VideoRangeTestData {
+  std::string codec;
+  int transfer_characteristics;
+  std::string expected_video_range;
+};
+
+class MediaPlaylistVideoRangeTest
+    : public MediaPlaylistTest,
+      public WithParamInterface<VideoRangeTestData> {};
+
+TEST_P(MediaPlaylistVideoRangeTest, GetVideoRange) {
+  const VideoRangeTestData& test_data = GetParam();
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+  MediaInfo::VideoInfo* video_info = media_info.mutable_video_info();
+  video_info->set_codec(test_data.codec);
+  video_info->set_transfer_characteristics(test_data.transfer_characteristics);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(test_data.expected_video_range, media_playlist_->GetVideoRange());
+}
+
+INSTANTIATE_TEST_CASE_P(VideoRanges,
+                        MediaPlaylistVideoRangeTest,
+                        Values(VideoRangeTestData{"hvc1.2.4.L63.90", 0, ""},
+                               VideoRangeTestData{"hvc1.2.4.L63.90", 1, "SDR"},
+                               VideoRangeTestData{"hvc1.2.4.L63.90", 16, "PQ"},
+                               VideoRangeTestData{"hvc1.2.4.L63.90", 18, "PQ"},
+                               VideoRangeTestData{"dvh1.05.08", 0, "PQ"}));
 
 }  // namespace hls
 }  // namespace shaka

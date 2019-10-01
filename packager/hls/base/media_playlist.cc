@@ -533,6 +533,10 @@ bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
 }
 
 std::string MediaPlaylist::GetVideoRange() const {
+  // Dolby Vision (dvh1 or dvhe) is always HDR.
+  if (codec_.find("dvh") == 0)
+    return "PQ";
+
   // HLS specification:
   // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis-02#section-4.4.4.2
   switch (media_info_.video_info().transfer_characteristics()) {
