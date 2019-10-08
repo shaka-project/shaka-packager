@@ -39,6 +39,7 @@
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 DEFINE_bool(licenses, false, "Dump licenses.");
+DEFINE_bool(quiet, false, "When enabled, LOG(INFO) output is suppressed.");
 DEFINE_bool(use_fake_clock_for_muxer,
             false,
             "Set to true to use a fake clock for muxer. With this flag set, "
@@ -500,6 +501,8 @@ int PackagerMain(int argc, char** argv) {
     google::ShowUsageWithFlags("Usage");
     return kSuccess;
   }
+  if (FLAGS_quiet)
+    logging::SetMinLogLevel(logging::LOG_WARNING);
 
   if (!ValidateWidevineCryptoFlags() || !ValidateRawKeyCryptoFlags() ||
       !ValidatePRCryptoFlags()) {
@@ -530,7 +533,8 @@ int PackagerMain(int argc, char** argv) {
     LOG(ERROR) << "Packaging Error: " << status.ToString();
     return kPackagingFailed;
   }
-  printf("Packaging completed successfully.\n");
+  if (!FLAGS_quiet)
+    printf("Packaging completed successfully.\n");
   return kSuccess;
 }
 

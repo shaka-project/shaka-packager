@@ -36,6 +36,7 @@ Synopsis
 
     $ packager <stream_descriptor> ... \
                [--dump_stream_info] \
+               [--quiet] \
                [Chunking Options] \
                [MP4 Output Options] \
                [encryption / decryption options] \
