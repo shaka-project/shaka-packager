@@ -218,8 +218,12 @@ Status Demuxer::InitializeParser() {
                 key_source_.get());
 
   // Handle trailing 'moov'.
-  if (container_name_ == CONTAINER_MOV)
+  if (container_name_ == CONTAINER_MOV &&
+      File::IsLocalRegularFile(file_name_.c_str())) {
+    // TODO(kqyang): Investigate whether we can reuse the existing file
+    // descriptor |media_file_| instead of opening the same file again.
     static_cast<mp4::MP4MediaParser*>(parser_.get())->LoadMoov(file_name_);
+  }
   if (!parser_->Parse(buffer_.get(), bytes_read)) {
     return Status(error::PARSER_FAILURE,
                   "Cannot parse media file " + file_name_);

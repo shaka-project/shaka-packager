@@ -727,6 +727,13 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
 
+  def testMp4TrailingMoov(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'],
+                         test_files=['bear-640x360-trailing-moov.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('mp4-trailing-moov')
+
   def testAacHe(self):
     self.assertPackageSuccess(
         self._GetStreams(

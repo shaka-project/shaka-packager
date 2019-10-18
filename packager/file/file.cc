@@ -351,6 +351,31 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
   return bytes_copied;
 }
 
+bool File::IsLocalRegularFile(const char* file_name) {
+  base::StringPiece real_file_name;
+  const FileTypeInfo* file_type = GetFileTypeInfo(file_name, &real_file_name);
+  DCHECK(file_type);
+  if (file_type->type != kLocalFilePrefix)
+    return false;
+#if defined(OS_WIN)
+  const base::FilePath file_path(
+      base::FilePath::FromUTF8Unsafe(real_file_name));
+  const DWORD fileattr = GetFileAttributes(file_path.value().c_str());
+  if (fileattr == INVALID_FILE_ATTRIBUTES) {
+    LOG(ERROR) << "Failed to GetFileAttributes of " << file_path.value();
+    return false;
+  }
+  return (fileattr & FILE_ATTRIBUTE_DIRECTORY) == 0;
+#else
+  struct stat info;
+  if (stat(real_file_name.data(), &info) != 0) {
+    LOG(ERROR) << "Failed to run stat on " << real_file_name;
+    return false;
+  }
+  return S_ISREG(info.st_mode);
+#endif
+}
+
 std::string File::MakeCallbackFileName(
     const BufferCallbackParams& callback_params,
     const std::string& name) {

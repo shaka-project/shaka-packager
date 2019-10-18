@@ -142,6 +142,10 @@ class File {
   /// @return Number of bytes written, or a value < 0 on error.
   static int64_t CopyFile(File* source, File* destination, int64_t max_copy);
 
+  /// @param file_name is the name of the file to be checked.
+  /// @return true if `file_name` is a local and regular file.
+  static bool IsLocalRegularFile(const char* file_name);
+
   /// Generate callback file name.
   /// NOTE: THE GENERATED NAME IS ONLY VAID WHILE @a callback_params IS VALID.
   /// @param callback_params references BufferCallbackParams, which will be
