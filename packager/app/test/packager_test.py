@@ -734,6 +734,14 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('mp4-trailing-moov')
 
+  def testVideoNonSquarePixel(self):
+    self.assertPackageSuccess(
+        self._GetStreams(
+            ['video'],
+            test_files=['bear-640x360-non_square_pixel-with_pasp.mp4']),
+        self._GetFlags(output_dash=True, output_hls=True))
+    self._CheckTestResults('video-non-square-pixel')
+
   def testAacHe(self):
     self.assertPackageSuccess(
         self._GetStreams(
