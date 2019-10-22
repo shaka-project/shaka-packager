@@ -1,4 +1,16 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
 #if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text	
 
 
@@ -7,13 +19,21 @@
 
 .p2align	4
 _gcm_gmult_4bit:
+
 	pushq	%rbx
+
 	pushq	%rbp
+
 	pushq	%r12
+
 	pushq	%r13
+
 	pushq	%r14
+
 	pushq	%r15
+
 	subq	$280,%rsp
+
 L$gmult_prologue:
 
 	movzbq	15(%rdi),%r8
@@ -91,23 +111,35 @@ L$break1:
 	movq	%r9,(%rdi)
 
 	leaq	280+48(%rsp),%rsi
+
 	movq	-8(%rsi),%rbx
+
 	leaq	(%rsi),%rsp
+
 L$gmult_epilogue:
 	.byte	0xf3,0xc3
+
 
 .globl	_gcm_ghash_4bit
 .private_extern _gcm_ghash_4bit
 
 .p2align	4
 _gcm_ghash_4bit:
+
 	pushq	%rbx
+
 	pushq	%rbp
+
 	pushq	%r12
+
 	pushq	%r13
+
 	pushq	%r14
+
 	pushq	%r15
+
 	subq	$280,%rsp
+
 L$ghash_prologue:
 	movq	%rdx,%r14
 	movq	%rcx,%r15
@@ -653,21 +685,31 @@ L$outer_loop:
 	movq	%r9,(%rdi)
 
 	leaq	280+48(%rsp),%rsi
+
 	movq	-48(%rsi),%r15
+
 	movq	-40(%rsi),%r14
+
 	movq	-32(%rsi),%r13
+
 	movq	-24(%rsi),%r12
+
 	movq	-16(%rsi),%rbp
+
 	movq	-8(%rsi),%rbx
+
 	leaq	0(%rsi),%rsp
+
 L$ghash_epilogue:
 	.byte	0xf3,0xc3
+
 
 .globl	_gcm_init_clmul
 .private_extern _gcm_init_clmul
 
 .p2align	4
 _gcm_init_clmul:
+
 L$_init_clmul:
 	movdqu	(%rsi),%xmm2
 	pshufd	$78,%xmm2,%xmm2
@@ -820,11 +862,13 @@ L$_init_clmul:
 	movdqu	%xmm4,80(%rdi)
 	.byte	0xf3,0xc3
 
+
 .globl	_gcm_gmult_clmul
 .private_extern _gcm_gmult_clmul
 
 .p2align	4
 _gcm_gmult_clmul:
+
 L$_gmult_clmul:
 	movdqu	(%rdi),%xmm0
 	movdqa	L$bswap_mask(%rip),%xmm5
@@ -872,11 +916,13 @@ L$_gmult_clmul:
 	movdqu	%xmm0,(%rdi)
 	.byte	0xf3,0xc3
 
+
 .globl	_gcm_ghash_clmul
 .private_extern _gcm_ghash_clmul
 
 .p2align	5
 _gcm_ghash_clmul:
+
 L$_ghash_clmul:
 	movdqa	L$bswap_mask(%rip),%xmm10
 
@@ -1257,11 +1303,13 @@ L$done:
 	movdqu	%xmm0,(%rdi)
 	.byte	0xf3,0xc3
 
+
 .globl	_gcm_init_avx
 .private_extern _gcm_init_avx
 
 .p2align	5
 _gcm_init_avx:
+
 	vzeroupper
 
 	vmovdqu	(%rsi),%xmm2
@@ -1365,18 +1413,22 @@ L$init_start_avx:
 	vzeroupper
 	.byte	0xf3,0xc3
 
+
 .globl	_gcm_gmult_avx
 .private_extern _gcm_gmult_avx
 
 .p2align	5
 _gcm_gmult_avx:
+
 	jmp	L$_gmult_clmul
+
 
 .globl	_gcm_ghash_avx
 .private_extern _gcm_ghash_avx
 
 .p2align	5
 _gcm_ghash_avx:
+
 	vzeroupper
 
 	vmovdqu	(%rdi),%xmm10
@@ -1748,6 +1800,7 @@ L$tail_no_xor_avx:
 	vmovdqu	%xmm10,(%rdi)
 	vzeroupper
 	.byte	0xf3,0xc3
+
 
 .p2align	6
 L$bswap_mask:

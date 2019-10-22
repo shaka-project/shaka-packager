@@ -1,4 +1,18 @@
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
+
+#if !defined(__has_feature)
+#define __has_feature(x) 0
+#endif
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__aarch64__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 
 .globl	bn_mul_mont
@@ -1405,3 +1419,5 @@ __bn_mul4x_mont:
 .align	2
 .align	4
 #endif
+#endif  // !OPENSSL_NO_ASM
+.section	.note.GNU-stack,"",%progbits

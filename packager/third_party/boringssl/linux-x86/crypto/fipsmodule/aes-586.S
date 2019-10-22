@@ -1,4 +1,10 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
 #if defined(__i386__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 .hidden	_x86_AES_encrypt_compact
 .type	_x86_AES_encrypt_compact,@function
@@ -979,12 +985,12 @@ _x86_AES_encrypt:
 .long	27,54,0,0
 .long	0,0,0,0
 .size	_x86_AES_encrypt,.-_x86_AES_encrypt
-.globl	asm_AES_encrypt
-.hidden	asm_AES_encrypt
-.type	asm_AES_encrypt,@function
+.globl	aes_nohw_encrypt
+.hidden	aes_nohw_encrypt
+.type	aes_nohw_encrypt,@function
 .align	16
-asm_AES_encrypt:
-.L_asm_AES_encrypt_begin:
+aes_nohw_encrypt:
+.L_aes_nohw_encrypt_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -1044,7 +1050,7 @@ asm_AES_encrypt:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	asm_AES_encrypt,.-.L_asm_AES_encrypt_begin
+.size	aes_nohw_encrypt,.-.L_aes_nohw_encrypt_begin
 .hidden	_x86_AES_decrypt_compact
 .type	_x86_AES_decrypt_compact,@function
 .align	16
@@ -2175,12 +2181,12 @@ _x86_AES_decrypt:
 .byte	23,43,4,126,186,119,214,38
 .byte	225,105,20,99,85,33,12,125
 .size	_x86_AES_decrypt,.-_x86_AES_decrypt
-.globl	asm_AES_decrypt
-.hidden	asm_AES_decrypt
-.type	asm_AES_decrypt,@function
+.globl	aes_nohw_decrypt
+.hidden	aes_nohw_decrypt
+.type	aes_nohw_decrypt,@function
 .align	16
-asm_AES_decrypt:
-.L_asm_AES_decrypt_begin:
+aes_nohw_decrypt:
+.L_aes_nohw_decrypt_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -2240,13 +2246,13 @@ asm_AES_decrypt:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	asm_AES_decrypt,.-.L_asm_AES_decrypt_begin
-.globl	asm_AES_cbc_encrypt
-.hidden	asm_AES_cbc_encrypt
-.type	asm_AES_cbc_encrypt,@function
+.size	aes_nohw_decrypt,.-.L_aes_nohw_decrypt_begin
+.globl	aes_nohw_cbc_encrypt
+.hidden	aes_nohw_cbc_encrypt
+.type	aes_nohw_cbc_encrypt,@function
 .align	16
-asm_AES_cbc_encrypt:
-.L_asm_AES_cbc_encrypt_begin:
+aes_nohw_cbc_encrypt:
+.L_aes_nohw_cbc_encrypt_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -2774,7 +2780,7 @@ asm_AES_cbc_encrypt:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	asm_AES_cbc_encrypt,.-.L_asm_AES_cbc_encrypt_begin
+.size	aes_nohw_cbc_encrypt,.-.L_aes_nohw_cbc_encrypt_begin
 .hidden	_x86_AES_set_encrypt_key
 .type	_x86_AES_set_encrypt_key,@function
 .align	16
@@ -3006,21 +3012,21 @@ _x86_AES_set_encrypt_key:
 	popl	%ebp
 	ret
 .size	_x86_AES_set_encrypt_key,.-_x86_AES_set_encrypt_key
-.globl	asm_AES_set_encrypt_key
-.hidden	asm_AES_set_encrypt_key
-.type	asm_AES_set_encrypt_key,@function
+.globl	aes_nohw_set_encrypt_key
+.hidden	aes_nohw_set_encrypt_key
+.type	aes_nohw_set_encrypt_key,@function
 .align	16
-asm_AES_set_encrypt_key:
-.L_asm_AES_set_encrypt_key_begin:
+aes_nohw_set_encrypt_key:
+.L_aes_nohw_set_encrypt_key_begin:
 	call	_x86_AES_set_encrypt_key
 	ret
-.size	asm_AES_set_encrypt_key,.-.L_asm_AES_set_encrypt_key_begin
-.globl	asm_AES_set_decrypt_key
-.hidden	asm_AES_set_decrypt_key
-.type	asm_AES_set_decrypt_key,@function
+.size	aes_nohw_set_encrypt_key,.-.L_aes_nohw_set_encrypt_key_begin
+.globl	aes_nohw_set_decrypt_key
+.hidden	aes_nohw_set_decrypt_key
+.type	aes_nohw_set_decrypt_key,@function
 .align	16
-asm_AES_set_decrypt_key:
-.L_asm_AES_set_decrypt_key_begin:
+aes_nohw_set_decrypt_key:
+.L_aes_nohw_set_decrypt_key_begin:
 	call	_x86_AES_set_encrypt_key
 	cmpl	$0,%eax
 	je	.L054proceed
@@ -3249,8 +3255,9 @@ asm_AES_set_decrypt_key:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	asm_AES_set_decrypt_key,.-.L_asm_AES_set_decrypt_key_begin
+.size	aes_nohw_set_decrypt_key,.-.L_aes_nohw_set_decrypt_key_begin
 .byte	65,69,83,32,102,111,114,32,120,56,54,44,32,67,82,89
 .byte	80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114
 .byte	111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 #endif
+.section	.note.GNU-stack,"",@progbits

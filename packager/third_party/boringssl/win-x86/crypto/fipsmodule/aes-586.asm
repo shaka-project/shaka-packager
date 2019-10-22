@@ -1,3 +1,9 @@
+; This file is generated from a similarly-named Perl script in the BoringSSL
+; source tree. Do not edit by hand.
+
+%ifdef BORINGSSL_PREFIX
+%include "boringssl_prefix_symbols_nasm.inc"
+%endif
 %ifidn __OUTPUT_FORMAT__,obj
 section	code	use32 class=code align=64
 %elifidn __OUTPUT_FORMAT__,win32
@@ -972,10 +978,10 @@ dd	1,2,4,8
 dd	16,32,64,128
 dd	27,54,0,0
 dd	0,0,0,0
-global	_asm_AES_encrypt
+global	_aes_nohw_encrypt
 align	16
-_asm_AES_encrypt:
-L$_asm_AES_encrypt_begin:
+_aes_nohw_encrypt:
+L$_aes_nohw_encrypt_begin:
 	push	ebp
 	push	ebx
 	push	esi
@@ -2152,10 +2158,10 @@ db	160,224,59,77,174,42,245,176
 db	200,235,187,60,131,83,153,97
 db	23,43,4,126,186,119,214,38
 db	225,105,20,99,85,33,12,125
-global	_asm_AES_decrypt
+global	_aes_nohw_decrypt
 align	16
-_asm_AES_decrypt:
-L$_asm_AES_decrypt_begin:
+_aes_nohw_decrypt:
+L$_aes_nohw_decrypt_begin:
 	push	ebp
 	push	ebx
 	push	esi
@@ -2215,10 +2221,10 @@ L$011x86:
 	pop	ebx
 	pop	ebp
 	ret
-global	_asm_AES_cbc_encrypt
+global	_aes_nohw_cbc_encrypt
 align	16
-_asm_AES_cbc_encrypt:
-L$_asm_AES_cbc_encrypt_begin:
+_aes_nohw_cbc_encrypt:
+L$_aes_nohw_cbc_encrypt_begin:
 	push	ebp
 	push	ebx
 	push	esi
@@ -2974,16 +2980,16 @@ L$045exit:
 	pop	ebx
 	pop	ebp
 	ret
-global	_asm_AES_set_encrypt_key
+global	_aes_nohw_set_encrypt_key
 align	16
-_asm_AES_set_encrypt_key:
-L$_asm_AES_set_encrypt_key_begin:
+_aes_nohw_set_encrypt_key:
+L$_aes_nohw_set_encrypt_key_begin:
 	call	__x86_AES_set_encrypt_key
 	ret
-global	_asm_AES_set_decrypt_key
+global	_aes_nohw_set_decrypt_key
 align	16
-_asm_AES_set_decrypt_key:
-L$_asm_AES_set_decrypt_key_begin:
+_aes_nohw_set_decrypt_key:
+L$_aes_nohw_set_decrypt_key_begin:
 	call	__x86_AES_set_encrypt_key
 	cmp	eax,0
 	je	NEAR L$054proceed

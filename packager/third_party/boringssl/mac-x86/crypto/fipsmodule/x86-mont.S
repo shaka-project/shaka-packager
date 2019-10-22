@@ -1,4 +1,10 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
 #if defined(__i386__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text
 .globl	_bn_mul_mont
 .private_extern	_bn_mul_mont
@@ -445,16 +451,18 @@ L017sub:
 	leal	1(%edx),%edx
 	jge	L017sub
 	sbbl	$0,%eax
-	andl	%eax,%esi
-	notl	%eax
-	movl	%edi,%ebp
-	andl	%eax,%ebp
-	orl	%ebp,%esi
+	movl	$-1,%edx
+	xorl	%eax,%edx
+	jmp	L018copy
 .align	4,0x90
 L018copy:
-	movl	(%esi,%ebx,4),%eax
-	movl	%eax,(%edi,%ebx,4)
+	movl	32(%esp,%ebx,4),%esi
+	movl	(%edi,%ebx,4),%ebp
 	movl	%ecx,32(%esp,%ebx,4)
+	andl	%eax,%esi
+	andl	%edx,%ebp
+	orl	%esi,%ebp
+	movl	%ebp,(%edi,%ebx,4)
 	decl	%ebx
 	jge	L018copy
 	movl	24(%esp),%esp

@@ -1,7 +1,14 @@
+; This file is generated from a similarly-named Perl script in the BoringSSL
+; source tree. Do not edit by hand.
+
 default	rel
 %define XMMWORD
 %define YMMWORD
 %define ZMMWORD
+
+%ifdef BORINGSSL_PREFIX
+%include "boringssl_prefix_symbols_nasm.inc"
+%endif
 section	.text code align=64
 
 
@@ -103,7 +110,7 @@ $L$sqr_1024_no_n_copy:
 	vmovdqu	ymm8,YMMWORD[((256-128))+rsi]
 
 	lea	rbx,[192+rsp]
-	vpbroadcastq	ymm15,QWORD[$L$and_mask]
+	vmovdqu	ymm15,YMMWORD[$L$and_mask]
 	jmp	NEAR $L$OOP_GRANDE_SQR_1024
 
 ALIGN	32
@@ -891,10 +898,10 @@ $L$oop_mul_1024:
 	vpmuludq	ymm12,ymm11,YMMWORD[((192-128))+rcx]
 	vpaddq	ymm6,ymm6,ymm12
 	vpmuludq	ymm13,ymm11,YMMWORD[((224-128))+rcx]
-	vpblendd	ymm9,ymm9,ymm14,3
+	vpblendd	ymm12,ymm9,ymm14,3
 	vpaddq	ymm7,ymm7,ymm13
 	vpmuludq	ymm0,ymm11,YMMWORD[((256-128))+rcx]
-	vpaddq	ymm3,ymm3,ymm9
+	vpaddq	ymm3,ymm3,ymm12
 	vpaddq	ymm8,ymm8,ymm0
 
 	mov	rax,rbx
@@ -907,7 +914,9 @@ $L$oop_mul_1024:
 	vmovdqu	ymm13,YMMWORD[((-8+64-128))+rsi]
 
 	mov	rax,r10
+	vpblendd	ymm9,ymm9,ymm14,0xfc
 	imul	eax,r8d
+	vpaddq	ymm4,ymm4,ymm9
 	and	eax,0x1fffffff
 
 	imul	rbx,QWORD[((16-128))+rsi]
@@ -1136,7 +1145,6 @@ $L$oop_mul_1024:
 
 	dec	r14d
 	jnz	NEAR $L$oop_mul_1024
-	vpermq	ymm15,ymm15,0
 	vpaddq	ymm0,ymm12,YMMWORD[rsp]
 
 	vpsrlq	ymm12,ymm0,29
@@ -1289,6 +1297,7 @@ global	rsaz_1024_red2norm_avx2
 
 ALIGN	32
 rsaz_1024_red2norm_avx2:
+
 	sub	rdx,-128
 	xor	rax,rax
 	mov	r8,QWORD[((-128))+rdx]
@@ -1482,10 +1491,12 @@ rsaz_1024_red2norm_avx2:
 	DB	0F3h,0C3h		;repret
 
 
+
 global	rsaz_1024_norm2red_avx2
 
 ALIGN	32
 rsaz_1024_norm2red_avx2:
+
 	sub	rcx,-128
 	mov	r8,QWORD[rdx]
 	mov	eax,0x1fffffff
@@ -1639,10 +1650,12 @@ rsaz_1024_norm2red_avx2:
 	mov	QWORD[184+rcx],r8
 	DB	0F3h,0C3h		;repret
 
+
 global	rsaz_1024_scatter5_avx2
 
 ALIGN	32
 rsaz_1024_scatter5_avx2:
+
 	vzeroupper
 	vmovdqu	ymm5,YMMWORD[$L$scatter_permd]
 	shl	r8d,4
@@ -1662,6 +1675,7 @@ $L$oop_scatter_1024:
 
 	vzeroupper
 	DB	0F3h,0C3h		;repret
+
 
 
 global	rsaz_1024_gather5_avx2
@@ -1809,21 +1823,9 @@ $L$oop_gather_1024:
 
 $L$SEH_end_rsaz_1024_gather5:
 
-EXTERN	OPENSSL_ia32cap_P
-global	rsaz_avx2_eligible
-
-ALIGN	32
-rsaz_avx2_eligible:
-	lea	rax,[OPENSSL_ia32cap_P]
-	mov	eax,DWORD[8+rax]
-	and	eax,32
-	shr	eax,5
-	DB	0F3h,0C3h		;repret
-
-
 ALIGN	64
 $L$and_mask:
-	DQ	0x1fffffff,0x1fffffff,0x1fffffff,-1
+	DQ	0x1fffffff,0x1fffffff,0x1fffffff,0x1fffffff
 $L$scatter_permd:
 	DD	0,2,4,6,7,7,7,7
 $L$gather_permd:

@@ -1,4 +1,18 @@
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
+
+#if !defined(__has_feature)
+#define __has_feature(x) 0
+#endif
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+
+#if !defined(OPENSSL_NO_ASM)
 #if defined(__arm__)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 #include <openssl/arm_arch.h>
 
 .text
@@ -109,13 +123,13 @@ gcm_ghash_v8:
 						@ loaded value would have
 						@ to be rotated in order to
 						@ make it appear as in
-						@ alorithm specification
+						@ algorithm specification
 	subs	r3,r3,#32		@ see if r3 is 32 or larger
 	mov	r12,#16		@ r12 is used as post-
 						@ increment for input pointer;
 						@ as loop is modulo-scheduled
 						@ r12 is zeroed just in time
-						@ to preclude oversteping
+						@ to preclude overstepping
 						@ inp[len], which means that
 						@ last block[s] are actually
 						@ loaded twice, but last
@@ -235,3 +249,5 @@ gcm_ghash_v8:
 .align	2
 .align	2
 #endif
+#endif  // !OPENSSL_NO_ASM
+.section	.note.GNU-stack,"",%progbits

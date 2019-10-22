@@ -1,4 +1,16 @@
+# This file is generated from a similarly-named Perl script in the BoringSSL
+# source tree. Do not edit by hand.
+
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
+#define OPENSSL_NO_ASM
+#endif
+#endif
+
 #if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if defined(BORINGSSL_PREFIX)
+#include <boringssl_prefix_symbols_asm.h>
+#endif
 .text	
 .align	16
 
@@ -6,11 +18,22 @@
 .hidden md5_block_asm_data_order
 .type	md5_block_asm_data_order,@function
 md5_block_asm_data_order:
+.cfi_startproc	
 	pushq	%rbp
+.cfi_adjust_cfa_offset	8
+.cfi_offset	rbp,-16
 	pushq	%rbx
+.cfi_adjust_cfa_offset	8
+.cfi_offset	rbx,-24
 	pushq	%r12
+.cfi_adjust_cfa_offset	8
+.cfi_offset	r12,-32
 	pushq	%r14
+.cfi_adjust_cfa_offset	8
+.cfi_offset	r14,-40
 	pushq	%r15
+.cfi_adjust_cfa_offset	8
+.cfi_offset	r15,-48
 .Lprologue:
 
 
@@ -660,12 +683,20 @@ md5_block_asm_data_order:
 	movl	%edx,12(%rbp)
 
 	movq	(%rsp),%r15
+.cfi_restore	r15
 	movq	8(%rsp),%r14
+.cfi_restore	r14
 	movq	16(%rsp),%r12
+.cfi_restore	r12
 	movq	24(%rsp),%rbx
+.cfi_restore	rbx
 	movq	32(%rsp),%rbp
+.cfi_restore	rbp
 	addq	$40,%rsp
+.cfi_adjust_cfa_offset	-40
 .Lepilogue:
 	.byte	0xf3,0xc3
+.cfi_endproc	
 .size	md5_block_asm_data_order,.-md5_block_asm_data_order
 #endif
+.section	.note.GNU-stack,"",@progbits
