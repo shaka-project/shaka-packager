@@ -7,6 +7,7 @@
 #include "packager/media/base/aes_cryptor.h"
 
 #include <openssl/aes.h>
+#include <openssl/crypto.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
@@ -31,7 +32,9 @@ namespace media {
 AesCryptor::AesCryptor(ConstantIvFlag constant_iv_flag)
     : aes_key_(new AES_KEY),
       constant_iv_flag_(constant_iv_flag),
-      num_crypt_bytes_(0) {}
+      num_crypt_bytes_(0) {
+  CRYPTO_library_init();
+}
 
 AesCryptor::~AesCryptor() {}
 

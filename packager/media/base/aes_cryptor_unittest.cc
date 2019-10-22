@@ -625,5 +625,40 @@ INSTANTIATE_TEST_CASE_P(CbcTestCases,
                         AesCbcCryptorVerificationTest,
                         ::testing::ValuesIn(kCbcTestCases));
 
+class AesPerformanceTest : public ::testing::Test {
+ public:
+  AesPerformanceTest()
+      : cbc_encryptor_(kNoPadding, AesCryptor::kUseConstantIv),
+        key_(kAesKey, kAesKey + arraysize(kAesKey)),
+        iv_(kAesIv, kAesIv + arraysize(kAesIv)) {}
+
+  void SetUp() override {
+    plaintext_.resize(0x10000);
+    for (size_t i = 0; i < plaintext_.size(); i++)
+      plaintext_[i] = static_cast<uint8_t>(i);
+  }
+
+ protected:
+  AesCbcEncryptor cbc_encryptor_;
+  AesCtrEncryptor ctr_encryptor_;
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> iv_;
+  std::vector<uint8_t> plaintext_;
+};
+
+TEST_F(AesPerformanceTest, AesCbc) {
+  ASSERT_TRUE(cbc_encryptor_.InitializeWithIv(key_, iv_));
+  std::vector<uint8_t> encrypted;
+  for (int i = 0; i < 0x100; i++)
+    ASSERT_TRUE(cbc_encryptor_.Crypt(plaintext_, &encrypted));
+}
+
+TEST_F(AesPerformanceTest, AesCtr) {
+  ASSERT_TRUE(ctr_encryptor_.InitializeWithIv(key_, iv_));
+  std::vector<uint8_t> encrypted;
+  for (int i = 0; i < 0x100; i++)
+    ASSERT_TRUE(ctr_encryptor_.Crypt(plaintext_, &encrypted));
+}
+
 }  // namespace media
 }  // namespace shaka
