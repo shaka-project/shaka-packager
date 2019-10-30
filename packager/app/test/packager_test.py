@@ -431,7 +431,7 @@ class PackagerAppTest(unittest.TestCase):
                 time_shift_buffer_depth=0.0,
                 preserved_segments_outside_live_window=0,
                 utc_timings=None,
-                generate_static_mpd=False,
+                generate_static_live_mpd=False,
                 ad_cues=None,
                 default_language=None,
                 segment_duration=1.0,
@@ -508,8 +508,8 @@ class PackagerAppTest(unittest.TestCase):
     if utc_timings:
       flags += ['--utc_timings', utc_timings]
 
-    if generate_static_mpd:
-      flags += ['--generate_static_mpd']
+    if generate_static_live_mpd:
+      flags += ['--generate_static_live_mpd']
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -1091,7 +1091,7 @@ class PackagerFunctionalTest(PackagerAppTest):
             output_format='mp4')
     ]
     flags = self._GetFlags(output_dash=True, output_hls=True,
-                           generate_static_mpd=True, ad_cues='1.5')
+                           generate_static_live_mpd=True, ad_cues='1.5')
     self.assertPackageSuccess(streams, flags)
     # Mpd cannot be validated right now since we don't generate determinstic
     # mpd with multiple inputs due to thread racing.
@@ -1442,7 +1442,7 @@ class PackagerFunctionalTest(PackagerAppTest):
   def testLiveStaticProfile(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'], segmented=True),
-        self._GetFlags(output_dash=True, generate_static_mpd=True))
+        self._GetFlags(output_dash=True, generate_static_live_mpd=True))
     self._CheckTestResults('live-static-profile')
 
   def testLiveStaticProfileWithTimeInSegmentName(self):
@@ -1450,7 +1450,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStreams(['audio', 'video'],
                          segmented=True,
                          using_time_specifier=True),
-        self._GetFlags(output_dash=True, generate_static_mpd=True))
+        self._GetFlags(output_dash=True, generate_static_live_mpd=True))
     self._CheckTestResults('live-static-profile-with-time-in-segment-name')
 
   def testLiveProfileAndEncryption(self):
