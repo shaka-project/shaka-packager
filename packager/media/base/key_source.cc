@@ -22,7 +22,8 @@ KeySource::KeySource(int protection_systems_flags, FourCC protection_scheme) {
   }
 
   if (protection_systems_flags & PLAYREADY_PROTECTION_SYSTEM_FLAG) {
-    pssh_generators_.emplace_back(new PlayReadyPsshGenerator());
+    pssh_generators_.emplace_back(
+        new PlayReadyPsshGenerator(protection_scheme));
   }
 
   if (protection_systems_flags & WIDEVINE_PROTECTION_SYSTEM_FLAG) {

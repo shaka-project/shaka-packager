@@ -25,71 +25,126 @@ const uint8_t kTestKey1[] = {'c', 'o', 'n', 't', 'e', 'n', 't', 'k',
 const uint8_t kTestKeyId2[] = {'k', 'e', 'y', 'i', 'd', '2', '~', '~',
                                '~', '~', '~', '~', '~', '~', '~', '~'};
 
-const char kExpectedPlayReadyPssh[] = {
-    '\x0',  '\x0',  '\x2',  '\x3A', 'p',    's',    's',    'h',    '\x1',
+const char kExpectedPlayReadyPsshWithCtrKey[] = {
+    '\x0',  '\x0',  '\x2',  '\x26', 'p',    's',    's',    'h',    '\x0',
     '\x0',  '\x0',  '\x0',  '\x9A', '\x04', '\xf0', '\x79', '\x98', '\x40',
     '\x42', '\x86', '\xab', '\x92', '\xe6', '\x5b', '\xe0', '\x88', '\x5f',
-    '\x95', '\x0',  '\x0',  '\x0',  '\x1',  'k',    'e',    'y',    'i',
-    'd',    '1',    '~',    '~',    '~',    '~',    '~',    '~',    '~',
-    '~',    '~',    '~',    '\x0',  '\x0',  '\x2',  '\x6',  '\x6',  '\x2',
-    '\x0',  '\x0',  '\x1',  '\x0',  '\x1',  '\x0',  '\xfc', '\x1',  '<',
-    '\x0',  'W',    '\x0',  'R',    '\x0',  'M',    '\x0',  'H',    '\x0',
-    'E',    '\x0',  'A',    '\x0',  'D',    '\x0',  'E',    '\x0',  'R',
-    '\x0',  ' ',    '\x0',  'x',    '\x0',  'm',    '\x0',  'l',    '\x0',
-    'n',    '\x0',  's',    '\x0',  '=',    '\x0',  '"',    '\x0',  'h',
-    '\x0',  't',    '\x0',  't',    '\x0',  'p',    '\x0',  ':',    '\x0',
-    '/',    '\x0',  '/',    '\x0',  's',    '\x0',  'c',    '\x0',  'h',
-    '\x0',  'e',    '\x0',  'm',    '\x0',  'a',    '\x0',  's',    '\x0',
-    '.',    '\x0',  'm',    '\x0',  'i',    '\x0',  'c',    '\x0',  'r',
-    '\x0',  'o',    '\x0',  's',    '\x0',  'o',    '\x0',  'f',    '\x0',
-    't',    '\x0',  '.',    '\x0',  'c',    '\x0',  'o',    '\x0',  'm',
-    '\x0',  '/',    '\x0',  'D',    '\x0',  'R',    '\x0',  'M',    '\x0',
-    '/',    '\x0',  '2',    '\x0',  '0',    '\x0',  '0',    '\x0',  '7',
-    '\x0',  '/',    '\x0',  '0',    '\x0',  '3',    '\x0',  '/',    '\x0',
-    'P',    '\x0',  'l',    '\x0',  'a',    '\x0',  'y',    '\x0',  'R',
-    '\x0',  'e',    '\x0',  'a',    '\x0',  'd',    '\x0',  'y',    '\x0',
-    'H',    '\x0',  'e',    '\x0',  'a',    '\x0',  'd',    '\x0',  'e',
-    '\x0',  'r',    '\x0',  '"',    '\x0',  ' ',    '\x0',  'v',    '\x0',
-    'e',    '\x0',  'r',    '\x0',  's',    '\x0',  'i',    '\x0',  'o',
-    '\x0',  'n',    '\x0',  '=',    '\x0',  '"',    '\x0',  '4',    '\x0',
-    '.',    '\x0',  '0',    '\x0',  '.',    '\x0',  '0',    '\x0',  '.',
-    '\x0',  '0',    '\x0',  '"',    '\x0',  '>',    '\x0',  '<',    '\x0',
-    'D',    '\x0',  'A',    '\x0',  'T',    '\x0',  'A',    '\x0',  '>',
-    '\x0',  '<',    '\x0',  'P',    '\x0',  'R',    '\x0',  'O',    '\x0',
-    'T',    '\x0',  'E',    '\x0',  'C',    '\x0',  'T',    '\x0',  'I',
-    '\x0',  'N',    '\x0',  'F',    '\x0',  'O',    '\x0',  '>',    '\x0',
-    '<',    '\x0',  'K',    '\x0',  'E',    '\x0',  'Y',    '\x0',  'L',
-    '\x0',  'E',    '\x0',  'N',    '\x0',  '>',    '\x0',  '1',    '\x0',
-    '6',    '\x0',  '<',    '\x0',  '/',    '\x0',  'K',    '\x0',  'E',
-    '\x0',  'Y',    '\x0',  'L',    '\x0',  'E',    '\x0',  'N',    '\x0',
-    '>',    '\x0',  '<',    '\x0',  'A',    '\x0',  'L',    '\x0',  'G',
-    '\x0',  'I',    '\x0',  'D',    '\x0',  '>',    '\x0',  'A',    '\x0',
-    'E',    '\x0',  'S',    '\x0',  'C',    '\x0',  'T',    '\x0',  'R',
-    '\x0',  '<',    '\x0',  '/',    '\x0',  'A',    '\x0',  'L',    '\x0',
-    'G',    '\x0',  'I',    '\x0',  'D',    '\x0',  '>',    '\x0',  '<',
-    '\x0',  '/',    '\x0',  'P',    '\x0',  'R',    '\x0',  'O',    '\x0',
-    'T',    '\x0',  'E',    '\x0',  'C',    '\x0',  'T',    '\x0',  'I',
-    '\x0',  'N',    '\x0',  'F',    '\x0',  'O',    '\x0',  '>',    '\x0',
-    '<',    '\x0',  'K',    '\x0',  'I',    '\x0',  'D',    '\x0',  '>',
+    '\x95', '\x0',  '\x0',  '\x2',  '\x6',  '\x6',  '\x2',  '\x0',  '\x0',
+    '\x1',  '\x0',  '\x1',  '\x0',  '\xfc', '\x1',  '<',    '\x0',  'W',
+    '\x0',  'R',    '\x0',  'M',    '\x0',  'H',    '\x0',  'E',    '\x0',
+    'A',    '\x0',  'D',    '\x0',  'E',    '\x0',  'R',    '\x0',  ' ',
+    '\x0',  'x',    '\x0',  'm',    '\x0',  'l',    '\x0',  'n',    '\x0',
+    's',    '\x0',  '=',    '\x0',  '"',    '\x0',  'h',    '\x0',  't',
+    '\x0',  't',    '\x0',  'p',    '\x0',  ':',    '\x0',  '/',    '\x0',
+    '/',    '\x0',  's',    '\x0',  'c',    '\x0',  'h',    '\x0',  'e',
+    '\x0',  'm',    '\x0',  'a',    '\x0',  's',    '\x0',  '.',    '\x0',
+    'm',    '\x0',  'i',    '\x0',  'c',    '\x0',  'r',    '\x0',  'o',
+    '\x0',  's',    '\x0',  'o',    '\x0',  'f',    '\x0',  't',    '\x0',
+    '.',    '\x0',  'c',    '\x0',  'o',    '\x0',  'm',    '\x0',  '/',
+    '\x0',  'D',    '\x0',  'R',    '\x0',  'M',    '\x0',  '/',    '\x0',
+    '2',    '\x0',  '0',    '\x0',  '0',    '\x0',  '7',    '\x0',  '/',
+    '\x0',  '0',    '\x0',  '3',    '\x0',  '/',    '\x0',  'P',    '\x0',
+    'l',    '\x0',  'a',    '\x0',  'y',    '\x0',  'R',    '\x0',  'e',
+    '\x0',  'a',    '\x0',  'd',    '\x0',  'y',    '\x0',  'H',    '\x0',
+    'e',    '\x0',  'a',    '\x0',  'd',    '\x0',  'e',    '\x0',  'r',
+    '\x0',  '"',    '\x0',  ' ',    '\x0',  'v',    '\x0',  'e',    '\x0',
+    'r',    '\x0',  's',    '\x0',  'i',    '\x0',  'o',    '\x0',  'n',
+    '\x0',  '=',    '\x0',  '"',    '\x0',  '4',    '\x0',  '.',    '\x0',
+    '0',    '\x0',  '.',    '\x0',  '0',    '\x0',  '.',    '\x0',  '0',
+    '\x0',  '"',    '\x0',  '>',    '\x0',  '<',    '\x0',  'D',    '\x0',
+    'A',    '\x0',  'T',    '\x0',  'A',    '\x0',  '>',    '\x0',  '<',
+    '\x0',  'P',    '\x0',  'R',    '\x0',  'O',    '\x0',  'T',    '\x0',
+    'E',    '\x0',  'C',    '\x0',  'T',    '\x0',  'I',    '\x0',  'N',
+    '\x0',  'F',    '\x0',  'O',    '\x0',  '>',    '\x0',  '<',    '\x0',
+    'K',    '\x0',  'E',    '\x0',  'Y',    '\x0',  'L',    '\x0',  'E',
+    '\x0',  'N',    '\x0',  '>',    '\x0',  '1',    '\x0',  '6',    '\x0',
+    '<',    '\x0',  '/',    '\x0',  'K',    '\x0',  'E',    '\x0',  'Y',
+    '\x0',  'L',    '\x0',  'E',    '\x0',  'N',    '\x0',  '>',    '\x0',
+    '<',    '\x0',  'A',    '\x0',  'L',    '\x0',  'G',    '\x0',  'I',
+    '\x0',  'D',    '\x0',  '>',    '\x0',  'A',    '\x0',  'E',    '\x0',
+    'S',    '\x0',  'C',    '\x0',  'T',    '\x0',  'R',    '\x0',  '<',
+    '\x0',  '/',    '\x0',  'A',    '\x0',  'L',    '\x0',  'G',    '\x0',
+    'I',    '\x0',  'D',    '\x0',  '>',    '\x0',  '<',    '\x0',  '/',
+    '\x0',  'P',    '\x0',  'R',    '\x0',  'O',    '\x0',  'T',    '\x0',
+    'E',    '\x0',  'C',    '\x0',  'T',    '\x0',  'I',    '\x0',  'N',
+    '\x0',  'F',    '\x0',  'O',    '\x0',  '>',    '\x0',  '<',    '\x0',
+    'K',    '\x0',  'I',    '\x0',  'D',    '\x0',  '>',    '\x0',  'a',
+    '\x0',  'X',    '\x0',  'l',    '\x0',  'l',    '\x0',  'a',    '\x0',
+    'z',    '\x0',  'F',    '\x0',  'k',    '\x0',  'f',    '\x0',  'n',
+    '\x0',  '5',    '\x0',  '+',    '\x0',  'f',    '\x0',  'n',    '\x0',
+    '5',    '\x0',  '+',    '\x0',  'f',    '\x0',  'n',    '\x0',  '5',
+    '\x0',  '+',    '\x0',  'f',    '\x0',  'g',    '\x0',  '=',    '\x0',
+    '=',    '\x0',  '<',    '\x0',  '/',    '\x0',  'K',    '\x0',  'I',
+    '\x0',  'D',    '\x0',  '>',    '\x0',  '<',    '\x0',  'C',    '\x0',
+    'H',    '\x0',  'E',    '\x0',  'C',    '\x0',  'K',    '\x0',  'S',
+    '\x0',  'U',    '\x0',  'M',    '\x0',  '>',    '\x0',  'u',    '\x0',
+    'F',    '\x0',  'Y',    '\x0',  '/',    '\x0',  'O',    '\x0',  'i',
+    '\x0',  'r',    '\x0',  'Q',    '\x0',  'j',    '\x0',  '/',    '\x0',
+    'U',    '\x0',  '=',    '\x0',  '<',    '\x0',  '/',    '\x0',  'C',
+    '\x0',  'H',    '\x0',  'E',    '\x0',  'C',    '\x0',  'K',    '\x0',
+    'S',    '\x0',  'U',    '\x0',  'M',    '\x0',  '>',    '\x0',  '<',
+    '\x0',  '/',    '\x0',  'D',    '\x0',  'A',    '\x0',  'T',    '\x0',
+    'A',    '\x0',  '>',    '\x0',  '<',    '\x0',  '/',    '\x0',  'W',
+    '\x0',  'R',    '\x0',  'M',    '\x0',  'H',    '\x0',  'E',    '\x0',
+    'A',    '\x0',  'D',    '\x0',  'E',    '\x0',  'R',    '\x0',  '>',
+    '\x0',
+};
+
+const char kExpectedPlayReadyPsshWithCbcKey[] = {
+    '\x0',  '\x0',  '\x1',  '\xde', 'p',    's',    's',    'h',    '\x0',
+    '\x0',  '\x0',  '\x0',  '\x9A', '\x04', '\xf0', '\x79', '\x98', '\x40',
+    '\x42', '\x86', '\xab', '\x92', '\xe6', '\x5b', '\xe0', '\x88', '\x5f',
+    '\x95', '\x0',  '\x0',  '\x1',  '\xbe', '\xbe', '\x1',  '\x0',  '\x0',
+    '\x1',  '\x0',  '\x1',  '\x0',  '\xb4', '\x1',  '<',    '\x0',  'W',
+    '\x0',  'R',    '\x0',  'M',    '\x0',  'H',    '\x0',  'E',    '\x0',
+    'A',    '\x0',  'D',    '\x0',  'E',    '\x0',  'R',    '\x0',  ' ',
+    '\x0',  'x',    '\x0',  'm',    '\x0',  'l',    '\x0',  'n',    '\x0',
+    's',    '\x0',  '=',    '\x0',  '"',    '\x0',  'h',    '\x0',  't',
+    '\x0',  't',    '\x0',  'p',    '\x0',  ':',    '\x0',  '/',    '\x0',
+    '/',    '\x0',  's',    '\x0',  'c',    '\x0',  'h',    '\x0',  'e',
+    '\x0',  'm',    '\x0',  'a',    '\x0',  's',    '\x0',  '.',    '\x0',
+    'm',    '\x0',  'i',    '\x0',  'c',    '\x0',  'r',    '\x0',  'o',
+    '\x0',  's',    '\x0',  'o',    '\x0',  'f',    '\x0',  't',    '\x0',
+    '.',    '\x0',  'c',    '\x0',  'o',    '\x0',  'm',    '\x0',  '/',
+    '\x0',  'D',    '\x0',  'R',    '\x0',  'M',    '\x0',  '/',    '\x0',
+    '2',    '\x0',  '0',    '\x0',  '0',    '\x0',  '7',    '\x0',  '/',
+    '\x0',  '0',    '\x0',  '3',    '\x0',  '/',    '\x0',  'P',    '\x0',
+    'l',    '\x0',  'a',    '\x0',  'y',    '\x0',  'R',    '\x0',  'e',
+    '\x0',  'a',    '\x0',  'd',    '\x0',  'y',    '\x0',  'H',    '\x0',
+    'e',    '\x0',  'a',    '\x0',  'd',    '\x0',  'e',    '\x0',  'r',
+    '\x0',  '"',    '\x0',  ' ',    '\x0',  'v',    '\x0',  'e',    '\x0',
+    'r',    '\x0',  's',    '\x0',  'i',    '\x0',  'o',    '\x0',  'n',
+    '\x0',  '=',    '\x0',  '"',    '\x0',  '4',    '\x0',  '.',    '\x0',
+    '3',    '\x0',  '.',    '\x0',  '0',    '\x0',  '.',    '\x0',  '0',
+    '\x0',  '"',    '\x0',  '>',    '\x0',  '<',    '\x0',  'D',    '\x0',
+    'A',    '\x0',  'T',    '\x0',  'A',    '\x0',  '>',    '\x0',  '<',
+    '\x0',  'P',    '\x0',  'R',    '\x0',  'O',    '\x0',  'T',    '\x0',
+    'E',    '\x0',  'C',    '\x0',  'T',    '\x0',  'I',    '\x0',  'N',
+    '\x0',  'F',    '\x0',  'O',    '\x0',  '>',    '\x0',  '<',    '\x0',
+    'K',    '\x0',  'I',    '\x0',  'D',    '\x0',  'S',    '\x0',  '>',
+    '\x0',  '<',    '\x0',  'K',    '\x0',  'I',    '\x0',  'D',    '\x0',
+    ' ',    '\x0',  'A',    '\x0',  'L',    '\x0',  'G',    '\x0',  'I',
+    '\x0',  'D',    '\x0',  '=',    '\x0',  '"',    '\x0',  'A',    '\x0',
+    'E',    '\x0',  'S',    '\x0',  'C',    '\x0',  'B',    '\x0',  'C',
+    '\x0',  '"',    '\x0',  ' ',    '\x0',  'V',    '\x0',  'A',    '\x0',
+    'L',    '\x0',  'U',    '\x0',  'E',    '\x0',  '=',    '\x0',  '"',
     '\x0',  'a',    '\x0',  'X',    '\x0',  'l',    '\x0',  'l',    '\x0',
     'a',    '\x0',  'z',    '\x0',  'F',    '\x0',  'k',    '\x0',  'f',
     '\x0',  'n',    '\x0',  '5',    '\x0',  '+',    '\x0',  'f',    '\x0',
     'n',    '\x0',  '5',    '\x0',  '+',    '\x0',  'f',    '\x0',  'n',
     '\x0',  '5',    '\x0',  '+',    '\x0',  'f',    '\x0',  'g',    '\x0',
-    '=',    '\x0',  '=',    '\x0',  '<',    '\x0',  '/',    '\x0',  'K',
-    '\x0',  'I',    '\x0',  'D',    '\x0',  '>',    '\x0',  '<',    '\x0',
-    'C',    '\x0',  'H',    '\x0',  'E',    '\x0',  'C',    '\x0',  'K',
-    '\x0',  'S',    '\x0',  'U',    '\x0',  'M',    '\x0',  '>',    '\x0',
-    'u',    '\x0',  'F',    '\x0',  'Y',    '\x0',  '/',    '\x0',  'O',
-    '\x0',  'i',    '\x0',  'r',    '\x0',  'Q',    '\x0',  'j',    '\x0',
-    '/',    '\x0',  'U',    '\x0',  '=',    '\x0',  '<',    '\x0',  '/',
-    '\x0',  'C',    '\x0',  'H',    '\x0',  'E',    '\x0',  'C',    '\x0',
-    'K',    '\x0',  'S',    '\x0',  'U',    '\x0',  'M',    '\x0',  '>',
-    '\x0',  '<',    '\x0',  '/',    '\x0',  'D',    '\x0',  'A',    '\x0',
-    'T',    '\x0',  'A',    '\x0',  '>',    '\x0',  '<',    '\x0',  '/',
-    '\x0',  'W',    '\x0',  'R',    '\x0',  'M',    '\x0',  'H',    '\x0',
-    'E',    '\x0',  'A',    '\x0',  'D',    '\x0',  'E',    '\x0',  'R',
-    '\x0',  '>',    '\x0',
+    '=',    '\x0',  '=',    '\x0',  '"',    '\x0',  '>',    '\x0',  '<',
+    '\x0',  '/',    '\x0',  'K',    '\x0',  'I',    '\x0',  'D',    '\x0',
+    '>',    '\x0',  '<',    '\x0',  '/',    '\x0',  'K',    '\x0',  'I',
+    '\x0',  'D',    '\x0',  'S',    '\x0',  '>',    '\x0',  '<',    '\x0',
+    '/',    '\x0',  'P',    '\x0',  'R',    '\x0',  'O',    '\x0',  'T',
+    '\x0',  'E',    '\x0',  'C',    '\x0',  'T',    '\x0',  'I',    '\x0',
+    'N',    '\x0',  'F',    '\x0',  'O',    '\x0',  '>',    '\x0',  '<',
+    '\x0',  '/',    '\x0',  'D',    '\x0',  'A',    '\x0',  'T',    '\x0',
+    'A',    '\x0',  '>',    '\x0',  '<',    '\x0',  '/',    '\x0',  'W',
+    '\x0',  'R',    '\x0',  'M',    '\x0',  'H',    '\x0',  'E',    '\x0',
+    'A',    '\x0',  'D',    '\x0',  'E',    '\x0',  'R',    '\x0',  '>',
+    '\x0',
 };
 
 const char kExpectedCommonPssh[] = {
@@ -146,23 +201,77 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIds) {
   const std::vector<std::vector<uint8_t>> kTestKeyIds = {GetTestKeyId1(),
                                                          GetTestKeyId2()};
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator());
+      new PlayReadyPsshGenerator(FOURCC_cenc));
   ProtectionSystemSpecificInfo info;
   EXPECT_NOT_OK(
       playready_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
 }
 
-TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKey) {
+TEST(PsshGeneratorTest,
+     GeneratePlayReadyPsshFromKeyIdAndKeyWithoutProtectionScheme) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator());
+      new PlayReadyPsshGenerator(FOURCC_NULL));
+  ProtectionSystemSpecificInfo info;
+  EXPECT_NOT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
+      kTestKeyId, kTestKey, &info));
+}
+
+TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCenc) {
+  const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
+  const std::vector<uint8_t> kTestKey = GetTestKey1();
+  std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
+      new PlayReadyPsshGenerator(FOURCC_cenc));
   ProtectionSystemSpecificInfo info;
   EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));
 
-  EXPECT_THAT(info.psshs, ElementsAreArray(std::begin(kExpectedPlayReadyPssh),
-                                           std::end(kExpectedPlayReadyPssh)));
+  EXPECT_THAT(info.psshs,
+              ElementsAreArray(std::begin(kExpectedPlayReadyPsshWithCtrKey),
+                               std::end(kExpectedPlayReadyPsshWithCtrKey)));
+}
+
+TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCens) {
+  const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
+  const std::vector<uint8_t> kTestKey = GetTestKey1();
+  std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
+      new PlayReadyPsshGenerator(FOURCC_cens));
+  ProtectionSystemSpecificInfo info;
+  EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
+      kTestKeyId, kTestKey, &info));
+
+  EXPECT_THAT(info.psshs,
+              ElementsAreArray(std::begin(kExpectedPlayReadyPsshWithCtrKey),
+                               std::end(kExpectedPlayReadyPsshWithCtrKey)));
+}
+
+TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCbc1) {
+  const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
+  const std::vector<uint8_t> kTestKey = GetTestKey1();
+  std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
+      new PlayReadyPsshGenerator(FOURCC_cbc1));
+  ProtectionSystemSpecificInfo info;
+  EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
+      kTestKeyId, kTestKey, &info));
+
+  EXPECT_THAT(info.psshs,
+              ElementsAreArray(std::begin(kExpectedPlayReadyPsshWithCbcKey),
+                               std::end(kExpectedPlayReadyPsshWithCbcKey)));
+}
+
+TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCbcs) {
+  const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
+  const std::vector<uint8_t> kTestKey = GetTestKey1();
+  std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
+      new PlayReadyPsshGenerator(FOURCC_cbcs));
+  ProtectionSystemSpecificInfo info;
+  EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
+      kTestKeyId, kTestKey, &info));
+
+  EXPECT_THAT(info.psshs,
+              ElementsAreArray(std::begin(kExpectedPlayReadyPsshWithCbcKey),
+                               std::end(kExpectedPlayReadyPsshWithCbcKey)));
 }
 
 TEST(PsshGeneratorTest, GenerateCommonPsshFromKeyIds) {
@@ -213,7 +322,7 @@ TEST(PsshGeneratorTest, GenerateWidevinePsshFromKeyIdsWithProtectionScheme) {
                                std::end(kExpectedWidevinePsshCbcs)));
 }
 
-TEST(PsshGeneratorTest, GenerateWidevinyPsshFromKeyIdAndKey) {
+TEST(PsshGeneratorTest, GenerateWidevinePsshFromKeyIdAndKey) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<WidevinePsshGenerator> widevine_pssh_generator(
