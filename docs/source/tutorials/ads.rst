@@ -34,7 +34,7 @@ respectively.
       'in=h264_main_720p_3000.mp4,stream=video,init_segment=h264_720p/init.mp4,segment_template=h264_720p/$Number$.m4s' \
       'in=h264_high_1080p_6000.mp4,stream=video,init_segment=h264_1080p/init.mp4,segment_template=h264_1080p/$Number$.m4s' \
       --ad_cues 600;1800;3000 \
-      --generate_static_mpd --mpd_output h264.mpd
+      --generate_static_live_mpd --mpd_output h264.mpd
 
 * DASH with on-demand profile::
 

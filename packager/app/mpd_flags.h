@@ -11,7 +11,7 @@
 
 #include <gflags/gflags.h>
 
-DECLARE_bool(generate_static_mpd);
+DECLARE_bool(generate_static_live_mpd);
 DECLARE_bool(output_media_info);
 DECLARE_string(mpd_output);
 DECLARE_string(base_urls);

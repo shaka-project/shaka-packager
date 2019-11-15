@@ -8,8 +8,7 @@
 
 #include "packager/app/mpd_flags.h"
 
-// TODO(kqyang): Rename to generate_static_live_mpd.
-DEFINE_bool(generate_static_mpd,
+DEFINE_bool(generate_static_live_mpd,
             false,
             "Set to true to generate static mpd. If segment_template is "
             "specified in stream descriptors, shaka-packager generates dynamic "
