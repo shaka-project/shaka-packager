@@ -139,12 +139,26 @@ bool UpdateCodecStringForDolbyVision(
                   "configuration record.";
     return false;
   }
-  if (actual_format == FOURCC_dvh1 || actual_format == FOURCC_dvhe) {
-    // Non-Backward compatibility mode. Replace the code string with
-    // Dolby Vision only.
-    *codec_string = dovi_config.GetCodecString(actual_format);
-  } else {
-    // TODO(kqyang): Support backward compatible signaling.
+  switch (actual_format) {
+    case FOURCC_dvh1:
+    case FOURCC_dvhe:
+      // Non-Backward compatibility mode. Replace the code string with
+      // Dolby Vision only.
+      *codec_string = dovi_config.GetCodecString(actual_format);
+      break;
+    case FOURCC_hev1:
+      // Backward compatibility mode. Two codecs are signalled: base codec
+      // without Dolby Vision and HDR with Dolby Vision.
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvhe);
+      break;
+    case FOURCC_hvc1:
+      // See above.
+      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvh1);
+      break;
+    default:
+      LOG(ERROR) << "Unsupported format with extra codec "
+                 << FourCCToString(actual_format);
+      return false;
   }
   return true;
 }
@@ -629,6 +643,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           transfer_characteristics = hevc_config.transfer_characteristics();
 
           if (!entry.extra_codec_configs.empty()) {
+            // |extra_codec_configs| is present only for Dolby Vision.
             if (!UpdateCodecStringForDolbyVision(
                     actual_format, entry.extra_codec_configs, &codec_string)) {
               return false;

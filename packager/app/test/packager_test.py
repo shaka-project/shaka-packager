@@ -1236,6 +1236,15 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-5-with-encryption')
 
+  def testDolbyVisionProfile8WithEncryption(self):
+    streams = [
+        self._GetStream('video', test_file='sparks_dovi_8.mp4')
+    ]
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-profile-8-with-encryption')
+
   def testVp8Mp4WithEncryption(self):
     streams = [
         self._GetStream('video',

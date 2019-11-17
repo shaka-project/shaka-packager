@@ -1,0 +1,20 @@
+#EXTM3U
+#EXT-X-VERSION:6
+## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
+#EXT-X-TARGETDURATION:3
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-MAP:URI="sparks_dovi_8-video.mp4",BYTERANGE="1355@0"
+#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI="data:text/plain;base64,MTIzNDU2Nzg5MDEyMzQ1Ng==",KEYFORMAT="identity"
+#EXTINF:2.002,
+#EXT-X-BYTERANGE:172013@1435
+sparks_dovi_8-video.mp4
+#EXTINF:2.002,
+#EXT-X-BYTERANGE:189474
+sparks_dovi_8-video.mp4
+#EXTINF:2.002,
+#EXT-X-BYTERANGE:204854
+sparks_dovi_8-video.mp4
+#EXTINF:0.017,
+#EXT-X-BYTERANGE:2296
+sparks_dovi_8-video.mp4
+#EXT-X-ENDLIST
