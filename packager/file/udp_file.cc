@@ -66,6 +66,10 @@ bool UdpFile::Close() {
     socket_ = INVALID_SOCKET;
   }
   delete this;
+#if defined(OS_WIN)
+  if (wsa_started_)
+    WSACleanup();
+#endif
   return true;
 }
 
@@ -113,26 +117,6 @@ bool UdpFile::Tell(uint64_t* position) {
   return false;
 }
 
-#if defined(OS_WIN)
-class LibWinsockInitializer {
- public:
-  LibWinsockInitializer() {
-    WSADATA wsa_data;
-    error_ = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-  }
-
-  ~LibWinsockInitializer() {
-    if (error_ == 0)
-      WSACleanup();
-  }
-
-  int error() const { return error_; }
-
- private:
-  int error_;
-};
-#endif  // defined(OS_WIN)
-
 class ScopedSocket {
  public:
   explicit ScopedSocket(SOCKET sock_fd) : sock_fd_(sock_fd) {}
@@ -158,12 +142,13 @@ class ScopedSocket {
 
 bool UdpFile::Open() {
 #if defined(OS_WIN)
-  static LibWinsockInitializer lib_winsock_initializer;
-  if (lib_winsock_initializer.error() != 0) {
-    LOG(ERROR) << "Winsock start up failed with error "
-               << lib_winsock_initializer.error();
+  WSADATA wsa_data;
+  int wsa_error = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+  if (wsa_error != 0) {
+    LOG(ERROR) << "Winsock start up failed with error " << wsa_error;
     return false;
   }
+  wsa_started_ = true;
 #endif  // defined(OS_WIN)
 
   DCHECK_EQ(INVALID_SOCKET, socket_);
