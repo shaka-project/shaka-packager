@@ -78,7 +78,7 @@ class Pssh(object):
     self.version = version
     self.system_id = system_id
     self.key_ids = key_ids or []
-    self.pssh_data = pssh_data or ''
+    self.pssh_data = pssh_data or b''
 
   def binary_string(self):
     """Converts the PSSH box to a binary string."""
