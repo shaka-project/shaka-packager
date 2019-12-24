@@ -1,3 +1,43 @@
+## [2.4.0] - 2019-12-26
+### Added
+- Support hardware accelerated AES (#198).
+- Support various HDR formats for HEVC (#341, #632).
+- Add more loggings for GAPs (#474).
+- Retry file deletion if it fails (#533). Only applicable to live packaging.
+- Simplify the dependency for pssh-box utility (#538).
+- Add crypto_period_duration to Widevine key requests (#545).
+- Include pssh-box.py in docker image and release (#550).
+- Support encryption using IV from Widevine key server (#555).
+- [DASH] Support custom Accessibillity and Role elements (#565). This is needed
+  to support DVS Accessibillity audio in DASH.
+- Support CMAF file extensions (#574).
+- Support PlayReady PSSH generation with CBCS protection scheme (#602).
+- [HLS] Generate FRAME-RATE attribute in EXT-X-STREAM-INF tag (#634).
+- Add --quiet to suppress LOG(INFO) outputs (#661).
+
+### Fixed
+- Handle large descriptor header size in 'esds' box (#536).
+- Improve the handling of corrupted timestamp in live streams (#563).
+- Fix problems that target duration is not set in mpd/hls params, which then
+  results incorrect bandwidth estimates (#498, #581).
+- Allow absolute path in playlist name (#585).
+- [HLS] Fix possible zero bandwidth for EXT-I-FRAME-STREAM-INF (#610).
+- Supports encryption of streams with parameter sets in frames, i.e. avc3, hvc1
+  etc (#621, #627).
+- [HLS] Segments not deleted with $Time$ in segment_template when output HLS
+  segments only (#625).
+- [HLS] ID3 payload for transportStreamTimestamp not truncated to 33 bits
+  (#629).
+- Fix UDP sockets support in Windows (#643).
+- Fix possible packager hangs when reading mp4 files from FIFO (#664).
+
+### Changed
+- [HLS] Replace hev1 in codec with hvc1 and avc3 with avc1 (#587).
+- Rename `--generate_static_mpd` to `--generate_static_live_mpd` (#672).
+
+### Doc
+- Added documentation for pssh-box utility (#500).
+
 ## [2.3.0] - 2018-12-20
 ### Added
 - Alpine Linux support (#164).
