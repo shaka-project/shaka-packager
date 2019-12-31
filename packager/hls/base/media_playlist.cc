@@ -603,12 +603,12 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
           << segment_info->start_time() << " as the next segment starts at "
           << start_time << ".";
       entries_.emplace_back(new DiscontinuityEntry());
-    } else if (hls_params_.media_sequence_number > 0 &&
-      hls_params_.media_sequence_number == media_sequence_number_) {
-      // When there's a forced media_sequence_number, start with discontinuity.
-      entries_.emplace_back(new DiscontinuityEntry());
-      inserted_discontinuity_tag_ = true;
     }
+  } else if (hls_params_.media_sequence_number > 0 &&
+    hls_params_.media_sequence_number == media_sequence_number_) {
+    // When there's a forced media_sequence_number, start with discontinuity.
+    entries_.emplace_back(new DiscontinuityEntry());
+    inserted_discontinuity_tag_ = true;
   }
 
   entries_.emplace_back(new SegmentInfoEntry(
