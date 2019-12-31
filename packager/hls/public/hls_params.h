@@ -56,6 +56,8 @@ struct HlsParams {
   /// be populated from segment duration specified in ChunkingParams if not
   /// specified.
   double target_segment_duration = 0;
+  /// This allows to change the initial EXT-X-MEDIA-SEQUENCE field value.
+  uint32_t media_sequence_number = 0;
 };
 
 }  // namespace shaka
