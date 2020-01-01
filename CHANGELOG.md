@@ -498,6 +498,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.4.0]: https://github.com/google/shaka-packager/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/google/shaka-packager/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/google/shaka-packager/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/google/shaka-packager/compare/v2.1.1...v2.2.0
