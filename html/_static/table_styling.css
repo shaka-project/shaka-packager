@@ -1,6 +1,9 @@
 /* css fragment used by cloud_sptheme.ext.table_styling
  * for themes which don't derive from base cloud theme
  */
+
+/* TODO: could replace most of these with sphinx 2.x's ".align-xxx" utility classes,
+         as well as switch to their :align: directive */
 table.docutils .left-align { text-align: left; }
 table.docutils .center-align { text-align: center; }
 table.docutils .right-align { text-align: right; }
@@ -16,3 +19,8 @@ table.docutils .single-right-divider,
 table.docutils .double-right-divider { border-right-width: 0; }
 table.docutils .single-right-divider:last-child { border-right-width: 2px; border-right-style: solid; }
 table.docutils .double-right-divider:last-child { border-right-width: 6px; border-right-style: double; }
+
+/* make paragraphs inherit alignment from TD/TH; needed for sphinx 2.0 */
+/* XXX: would it be good to replicate "text-align: justify" to table.docutils td/th? */
+table.docutils th > p,
+table.docutils td > p { text-align: inherit; }

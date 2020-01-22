@@ -95,6 +95,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a58d93e453c2fed3d500badb40a349eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8065975e78028683180cd3ae65925c37"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d21/classshaka_1_1media_1_1mp2t_1_1Ac3Header.html#a8065975e78028683180cd3ae65925c37">GetFrameSize</a> () const override</td></tr>
 <tr class="separator:a8065975e78028683180cd3ae65925c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96b66d1749bfafc8a7326fa37f435cd5"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d21/classshaka_1_1media_1_1mp2t_1_1Ac3Header.html#a96b66d1749bfafc8a7326fa37f435cd5">GetFrameSizeWithoutParsing</a> (const uint8_t *data, size_t num_bytes) const override</td></tr>
+<tr class="separator:a96b66d1749bfafc8a7326fa37f435cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a3da0ed02d1790ec176a75bbbdef146"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d21/classshaka_1_1media_1_1mp2t_1_1Ac3Header.html#a9a3da0ed02d1790ec176a75bbbdef146">GetAudioSpecificConfig</a> (std::vector&lt; uint8_t &gt; *buffer) const override</td></tr>
 <tr class="separator:a9a3da0ed02d1790ec176a75bbbdef146"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56de14f98afd205f03bda6b110835aae"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d21/classshaka_1_1media_1_1mp2t_1_1Ac3Header.html#a56de14f98afd205f03bda6b110835aae">GetObjectType</a> () const override</td></tr>
@@ -142,7 +144,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a80da92426102c52da09690a7587d4272">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00116">116</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00131">131</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -172,7 +174,48 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#af8acf05003d2c0dbd062a9f12a2140b3">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00106">106</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00119">119</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+
+</div>
+</div>
+<a id="a96b66d1749bfafc8a7326fa37f435cd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b66d1749bfafc8a7326fa37f435cd5">&#9670;&nbsp;</a></span>GetFrameSizeWithoutParsing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t shaka::media::mp2t::Ac3Header::GetFrameSizeWithoutParsing </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Obtain the size of the frame from the header data without doing a full Parse. </p><dl class="section return"><dt>Returns</dt><dd>the size of the frame (header + payload). </dd></dl>
+
+<p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#ab2cc02601e113e34b99023ae55c033d1">shaka::media::mp2t::AudioHeader</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00123">123</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -202,7 +245,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a60fce7a6810efa2fc0f40a8038805116">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00100">100</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00113">113</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -232,7 +275,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a95018a4488867e584338126922bf128a">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00051">51</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00064">64</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -262,7 +305,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a47b7cff7bfced3a5e5d02a848627a0c8">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00141">141</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00156">156</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -292,7 +335,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a9959124b369045fce424f845c50b9c02">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00131">131</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00146">146</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -322,7 +365,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#abe0df0b59f89036c9c39a2070875a6a7">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00057">57</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00070">70</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -352,7 +395,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#aeb3121ddde96b3e6ca456586c8efdd8c">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00136">136</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00151">151</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -389,7 +432,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a1e5c41162d4a4ff75dc9760a4d12e496">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00058">58</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -437,7 +480,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d1/dba/classshaka_1_1media_1_1mp2t_1_1AudioHeader.html#a334c1ceea413b309a5950cc06619853f">shaka::media::mp2t::AudioHeader</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00064">64</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dda/ac3__header_8cc_source.html#l00077">77</a> of file <a class="el" href="../../d9/dda/ac3__header_8cc_source.html">ac3_header.cc</a>.</p>
 
 </div>
 </div>
@@ -448,7 +491,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:53 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

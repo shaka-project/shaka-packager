@@ -12,7 +12,7 @@ var searchData=
   ['videosampleentry',['VideoSampleEntry',['../d0/d73/structshaka_1_1media_1_1mp4_1_1VideoSampleEntry.html',1,'shaka::media::mp4']]],
   ['videosliceheaderparser',['VideoSliceHeaderParser',['../dd/de4/classshaka_1_1media_1_1VideoSliceHeaderParser.html',1,'shaka::media']]],
   ['videosliceinfo',['VideoSliceInfo',['../d8/dc2/structshaka_1_1media_1_1mp2t_1_1EsParserH26x_1_1VideoSliceInfo.html',1,'shaka::media::mp2t::EsParserH26x']]],
-  ['videostreaminfo',['VideoStreamInfo',['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html',1,'shaka::media::VideoStreamInfo'],['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a3ab048a7c4fc85734915300dbe6298a5',1,'shaka::media::VideoStreamInfo::VideoStreamInfo()']]],
+  ['videostreaminfo',['VideoStreamInfo',['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html',1,'shaka::media::VideoStreamInfo'],['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a7c4eb713af9de075f4214de0b3c4aaf4',1,'shaka::media::VideoStreamInfo::VideoStreamInfo()']]],
   ['videostreaminfoparameters',['VideoStreamInfoParameters',['../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html',1,'shaka::media']]],
   ['vodmediainfodumpmuxerlistener',['VodMediaInfoDumpMuxerListener',['../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html',1,'shaka::media']]],
   ['vp8parser',['VP8Parser',['../d8/d14/classshaka_1_1media_1_1VP8Parser.html',1,'shaka::media']]],

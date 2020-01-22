@@ -1,34 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>FFmpeg piping &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Design" href="../design.html" />
     <link rel="prev" title="Ad Insertion" href="ads.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,7 +37,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">FFmpeg piping</a><ul>
 <li><a class="reference internal" href="#piping-data-to-packager">Piping data to packager</a></li>
@@ -75,13 +65,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -101,11 +91,11 @@ depicted here can be applied to other <em>FFmpeg</em> supported device or protoc
 <h2>Piping data to packager<a class="headerlink" href="#piping-data-to-packager" title="Permalink to this headline">¶</a></h2>
 <p>There are two options to pipe data to packager.</p>
 <ul>
-<li><p class="first">UDP socket</p>
+<li><p>UDP socket</p>
 <blockquote>
 <div><p><em>FFmpeg</em> supports writing to a UDP socket and <em>packager</em> supports reading
 from UDP sockets (See <a class="reference internal" href="../options/udp_file_options.html"><span class="doc">UDP file options</span></a>):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &#39;input=udp://127.0.0.1:40000,...&#39; ...
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &#39;input=udp://127.0.0.1:40000,...&#39; ...
 $ ffmpeg ... -f mpegts udp://127.0.0.1:40000
 </pre></div>
 </div>
@@ -115,10 +105,10 @@ starting packager as the initialization segment is only transmitted in the
 beginning of WebM output.</p>
 </div></blockquote>
 </li>
-<li><p class="first">pipe</p>
+<li><p>pipe</p>
 <blockquote>
 <div><p>Similarily, pipe is also supported in both <em>FFmpeg</em> and <em>packager</em>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ mkfifo pipe1
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mkfifo pipe1
 $ packager &#39;input=pipe1,...&#39; ... --io_block_size 65536
 $ ffmpeg ... -f mpegts pipe: &gt; pipe1
 </pre></div>
@@ -127,8 +117,8 @@ $ ffmpeg ... -f mpegts pipe: &gt; pipe1
 </li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Option -io_block_size 65536 tells packager to use an io_block_size of 65K
+<p class="admonition-title">Note</p>
+<p>Option -io_block_size 65536 tells packager to use an io_block_size of 65K
 for threaded io file. This is necessary when using pipe as reading from pipe
 blocks until the specified number of bytes, which is specified in
 io_block_size for threaded io file, thus the value of io_block_size cannot
@@ -143,42 +133,42 @@ be too large.</p>
 on how to use <em>FFmpeg</em> to capture webmcam inputs.</p>
 <p>The example assumes Mac OS X 10.7 (Lion) or later. It captures from the default
 audio / video devices on the machine:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -f avfoundation -i &quot;default&quot; -f mpegts udp://127.0.0.1:40000
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -f avfoundation -i &quot;default&quot; -f mpegts udp://127.0.0.1:40000
 </pre></div>
 </div>
 <p>The command starts only after packager starts.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">After encoding starts, monitor encoding speed carefully. It should always be
+<p class="admonition-title">Note</p>
+<p>After encoding starts, monitor encoding speed carefully. It should always be
 1x and above. If not, adjust the encoding parameters to recude it.</p>
 </div>
 </div>
 <div class="section" id="rtp-input">
 <h3>RTP input<a class="headerlink" href="#rtp-input" title="Permalink to this headline">¶</a></h3>
 <p>Assume there is an RTP input described by <cite>saved_sdp_file</cite>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -protocol_whitelist &quot;file,rtp,udp&quot; -i saved_sdp_file -vcodec h264 \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -protocol_whitelist &quot;file,rtp,udp&quot; -i saved_sdp_file -vcodec h264 \
   -tune zerolatency -f mpegts udp://127.0.0.1:40000
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>For testing, you can generate an RTP input from a static media file:</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -re -stream_loop 100 -i &lt;static.mp4&gt; -vcodec copy -acodec \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -re -stream_loop 100 -i &lt;static.mp4&gt; -vcodec copy -acodec \
   copy -f rtp rtp://239.255.0.1:1234 -sdp_file saved_sdp_file
 </pre></div>
 </div>
 </div>
 <p>The command starts only after packager starts.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">After encoding starts, monitor encoding speed carefully. It should always be
+<p class="admonition-title">Note</p>
+<p>After encoding starts, monitor encoding speed carefully. It should always be
 1x or above. If not, adjust the encoding parameters to increase it.</p>
 </div>
 </div>
 </div>
 <div class="section" id="example-packaging-command-in-dash">
 <h2>Example packaging command in DASH<a class="headerlink" href="#example-packaging-command-in-dash" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   &#39;in=udp://127.0.0.1:40000,stream=audio,init_segment=live_cam_audio.mp4,segment_template=live_cam_audio_$Number$.m4s&#39; \
   &#39;in=udp://127.0.0.1:40000,stream=video,init_segment=live_cam_video.mp4,segment_template=live_cam_video_$Number$.m4s&#39; \
   --mpd_output live_cam.mpd
@@ -211,7 +201,7 @@ audio / video devices on the machine:</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

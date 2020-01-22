@@ -93,6 +93,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af2d32a59846b455a051a039db6ef772a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab30071699c74739626524ca05fe8d09f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab30071699c74739626524ca05fe8d09f">nalu</a> (size_t i) const</td></tr>
 <tr class="separator:ab30071699c74739626524ca05fe8d09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a302bcd9a86a479961335d21817edb2c4"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a302bcd9a86a479961335d21817edb2c4">transfer_characteristics</a> () const</td></tr>
+<tr class="separator:a302bcd9a86a479961335d21817edb2c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -108,6 +110,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab0c889c2382b6f41ad1993c136b03d07">set_nalu_length_size</a> (uint8_t <a class="el" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a4a78cd42a73d598f002039c2ac68d9a5">nalu_length_size</a>)</td></tr>
 <tr class="memdesc:ab0c889c2382b6f41ad1993c136b03d07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the size of the NAL unit length field. <br /></td></tr>
 <tr class="separator:ab0c889c2382b6f41ad1993c136b03d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa9790c3d2f0a032347f10f8bdf36868"><td class="memItemLeft" align="right" valign="top"><a id="aaa9790c3d2f0a032347f10f8bdf36868"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aaa9790c3d2f0a032347f10f8bdf36868">set_transfer_characteristics</a> (uint8_t <a class="el" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a302bcd9a86a479961335d21817edb2c4">transfer_characteristics</a>)</td></tr>
+<tr class="memdesc:aaa9790c3d2f0a032347f10f8bdf36868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the transfer characteristics. <br /></td></tr>
+<tr class="separator:aaa9790c3d2f0a032347f10f8bdf36868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -137,7 +143,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a pointer to the copy of the data. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html#l00053">53</a> of file <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html">decoder_configuration_record.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html#l00056">56</a> of file <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html">decoder_configuration_record.h</a>.</p>
 
 </div>
 </div>
@@ -165,7 +171,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>the size of the copy of the data. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html#l00056">56</a> of file <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html">decoder_configuration_record.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html#l00059">59</a> of file <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html">decoder_configuration_record.h</a>.</p>
 
 </div>
 </div>
@@ -310,7 +316,35 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <p>Parses input to extract decoder configuration record. This will make and store a copy of the data for <a class="el" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> access. </p><dl class="section return"><dt>Returns</dt><dd>false if there are parsing errors. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/dec/decoder__configuration__record_8cc_source.html#l00016">16</a> of file <a class="el" href="../../d5/dec/decoder__configuration__record_8cc_source.html">decoder_configuration_record.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/dec/decoder__configuration__record_8cc_source.html#l00015">15</a> of file <a class="el" href="../../d5/dec/decoder__configuration__record_8cc_source.html">decoder_configuration_record.cc</a>.</p>
+
+</div>
+</div>
+<a id="a302bcd9a86a479961335d21817edb2c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a302bcd9a86a479961335d21817edb2c4">&#9670;&nbsp;</a></span>transfer_characteristics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t shaka::media::DecoderConfigurationRecord::transfer_characteristics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Transfer characteristics of the config. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html#l00047">47</a> of file <a class="el" href="../../d1/db2/decoder__configuration__record_8h_source.html">decoder_configuration_record.h</a>.</p>
 
 </div>
 </div>
@@ -321,7 +355,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:43 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

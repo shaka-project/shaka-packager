@@ -1,32 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>HLS specific stream descriptor fields &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,13 +36,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -65,34 +55,33 @@
             
   <div class="section" id="hls-specific-stream-descriptor-fields">
 <h1>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h1>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Used for HLS audio to set the NAME attribute for EXT-X-MEDIA.
-Defaults to the base of the playlist name.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
-Defaults to ‘audio’ if not specified.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">The HLS playlist file to create. Usually ends with ‘.m3u8’, and is
+<dl class="field-list simple">
+<dt class="field-odd">hls_name</dt>
+<dd class="field-odd"><p>Used for HLS audio to set the NAME attribute for EXT-X-MEDIA.
+Defaults to the base of the playlist name.</p>
+</dd>
+<dt class="field-even">hls_group_id</dt>
+<dd class="field-even"><p>Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
+Defaults to ‘audio’ if not specified.</p>
+</dd>
+<dt class="field-odd">playlist_name</dt>
+<dd class="field-odd"><p>The HLS playlist file to create. Usually ends with ‘.m3u8’, and is
 relative to hls_master_playlist_output (see below). If unspecified,
 defaults to something of the form ‘stream_0.m3u8’, ‘stream_1.m3u8’,
-‘stream_2.m3u8’, etc.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">iframe_playlist_name:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The optional HLS I-Frames only playlist file to create. Usually ends with
+‘stream_2.m3u8’, etc.</p>
+</dd>
+<dt class="field-even">iframe_playlist_name</dt>
+<dd class="field-even"><p>The optional HLS I-Frames only playlist file to create. Usually ends with
 ‘.m3u8’, and is relative to hls_master_playlist_output (see below). Should
 only be set for video streams. If unspecified, no I-Frames only playlist is
-created.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">hls_characteristics (charcs):</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for the
+created.</p>
+</dd>
+<dt class="field-odd">hls_characteristics (charcs)</dt>
+<dd class="field-odd"><p>Optional colon or semi-colon separated list of values for the
 CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
-<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</td>
-</tr>
-</tbody>
-</table>
+<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</p>
+</dd>
+</dl>
 </div>
 
 
@@ -112,7 +101,7 @@ CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

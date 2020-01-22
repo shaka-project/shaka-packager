@@ -1,33 +1,23 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Media Encoding &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Shaka Packager Library (Continued)" href="../library_details.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -42,7 +32,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Media Encoding</a><ul>
 <li><a class="reference internal" href="#general-guidelines-of-how-contents-should-be-encoded">General guidelines of how contents should be encoded</a></li>
@@ -66,13 +56,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -90,18 +80,18 @@ pre-encoded before passing to Shaka Packager.</p>
 <div class="section" id="general-guidelines-of-how-contents-should-be-encoded">
 <h2>General guidelines of how contents should be encoded<a class="headerlink" href="#general-guidelines-of-how-contents-should-be-encoded" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Encode multiple bitrates or resolutions of the same content. Shaka Packager
+<li><p>Encode multiple bitrates or resolutions of the same content. Shaka Packager
 can then package the content into DASH / HLS formats, allowing different
 bitrates of the content to be served for different network conditions,
-achieving adaptive bitrate streaming.</li>
-<li>Not a must, but the multibirate content is recommended to have aligned GOPs
+achieving adaptive bitrate streaming.</p></li>
+<li><p>Not a must, but the multibirate content is recommended to have aligned GOPs
 across the different bitrate streams. This makes bitrate switching easier and
-smoother.</li>
-<li>We recommend setting GOP size to 5s or less. The streams are usually
+smoother.</p></li>
+<li><p>We recommend setting GOP size to 5s or less. The streams are usually
 switchable only at GOP boundaries. A smaller GOP size results in faster
-switching when network condition changes.</li>
-<li>In the same stream, the bitrate should be more or less the same in the
-inter-GOP level.</li>
+switching when network condition changes.</p></li>
+<li><p>In the same stream, the bitrate should be more or less the same in the
+inter-GOP level.</p></li>
 </ul>
 </div>
 <div class="section" id="sample-commands-to-generate-multi-bitrate-content">
@@ -115,8 +105,8 @@ transcoding.</p>
 <div class="section" id="h264-encoding">
 <h3>H264 encoding<a class="headerlink" href="#h264-encoding" title="Permalink to this headline">¶</a></h3>
 <ul>
-<li><p class="first">360p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+<li><p>360p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
   -vf &quot;scale=-2:360&quot; \
   -c:v libx264 -profile:v baseline -level:v 3.0 \
   -x264-params scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
@@ -125,8 +115,8 @@ transcoding.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">480p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+<li><p>480p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
   -vf &quot;scale=-2:480&quot; \
   -c:v libx264 -profile:v main -level:v 3.1 \
   -x264-params scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
@@ -135,8 +125,8 @@ transcoding.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">720p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+<li><p>720p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
   -vf &quot;scale=-2:720&quot; \
   -c:v libx264 -profile:v main -level:v 4.0 \
   -x264-params scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
@@ -145,8 +135,8 @@ transcoding.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">1080p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
+<li><p>1080p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 -c:a copy \
   -vf &quot;scale=-2:1080&quot; \
   -c:v libx264 -profile:v high -level:v 4.2 \
   -x264-params scenecut=0:open_gop=0:min-keyint=72:keyint=72 \
@@ -161,8 +151,8 @@ transcoding.</p>
 <h3>VP9 encoding<a class="headerlink" href="#vp9-encoding" title="Permalink to this headline">¶</a></h3>
 <p>The audio is encoded into <cite>opus</cite>.</p>
 <ul>
-<li><p class="first">360p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+<li><p>360p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
   -strict -2 -c:a opus \
   -vf &quot;scale=-2:360&quot; \
   -c:v libvpx-vp9 -profile:v 0 \
@@ -174,8 +164,8 @@ transcoding.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">480p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+<li><p>480p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
   -strict -2 -c:a opus \
   -vf &quot;scale=-2:480&quot; \
   -c:v libvpx-vp9 -profile:v 0 \
@@ -187,8 +177,8 @@ transcoding.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">720p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+<li><p>720p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
   -strict -2 -c:a opus \
   -vf &quot;scale=-2:720&quot; \
   -c:v libvpx-vp9 -profile:v 0 \
@@ -200,8 +190,8 @@ transcoding.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">1080p:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
+<li><p>1080p:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i original.mp4 \
   -strict -2 -c:a opus \
   -vf &quot;scale=-2:1080&quot; \
   -c:v libvpx-vp9 -profile:v 0 \
@@ -238,7 +228,7 @@ transcoding.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -1,32 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>DASH options &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,13 +36,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -65,100 +55,79 @@
             
   <div class="section" id="dash-options">
 <h1>DASH options<a class="headerlink" href="#dash-options" title="Permalink to this headline">¶</a></h1>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--generate_static_mpd</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>If enabled, generates static mpd. If segment_template is specified in
+<dl class="option-list">
+<dt><kbd><span class="option">--generate_static_live_mpd</span></kbd></dt>
+<dd><p>If enabled, generates static mpd. If segment_template is specified in
 stream descriptors, shaka-packager generates dynamic mpd by default; if
 this flag is enabled, shaka-packager generates static mpd instead. Note
 that if segment_template is not specified, shaka-packager always generates
-static mpd regardless of the value of this flag.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--mpd_output <var>&lt;file_path&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>MPD output file name.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--base_urls <var>&lt;comma_separated_urls&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><dl class="first docutils">
-<dt>Comma separated BaseURLs for the MPD:</dt>
-<dd><strong>&lt;url&gt;[,&lt;url&gt;]…</strong>.</dd>
+static mpd regardless of the value of this flag.</p>
+</dd>
+<dt><kbd><span class="option">--mpd_output <var>&lt;file_path&gt;</var></span></kbd></dt>
+<dd><p>MPD output file name.</p>
+</dd>
+<dt><kbd><span class="option">--base_urls <var>&lt;comma_separated_urls&gt;</var></span></kbd></dt>
+<dd><dl class="simple">
+<dt>Comma separated BaseURLs for the MPD:</dt><dd><p><strong>&lt;url&gt;[,&lt;url&gt;]…</strong>.</p>
+</dd>
 </dl>
-<p class="last">The values will be added as &lt;BaseURL&gt; element(s) immediately under the &lt;MPD&gt;
+<p>The values will be added as &lt;BaseURL&gt; element(s) immediately under the &lt;MPD&gt;
 element.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--min_buffer_time <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Specifies, in seconds, a common duration used in the definition of the MPD
-Representation data rate.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--minimum_update_period <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Indicates to the player how often to refresh the media presentation
-description in seconds. This value is used for dynamic MPD only.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--suggested_presentation_delay <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Specifies a delay, in seconds, to be added to the media presentation time.
-This value is used for dynamic MPD only.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for dynamic media
-presentations, in seconds.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
+</dd>
+<dt><kbd><span class="option">--min_buffer_time <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Specifies, in seconds, a common duration used in the definition of the MPD
+Representation data rate.</p>
+</dd>
+<dt><kbd><span class="option">--minimum_update_period <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Indicates to the player how often to refresh the media presentation
+description in seconds. This value is used for dynamic MPD only.</p>
+</dd>
+<dt><kbd><span class="option">--suggested_presentation_delay <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Specifies a delay, in seconds, to be added to the media presentation time.
+This value is used for dynamic MPD only.</p>
+</dd>
+<dt><kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Guaranteed duration of the time shifting buffer for dynamic media
+presentations, in seconds.</p>
+</dd>
+<dt><kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></dt>
+<dd><p>Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
 above) are automatically removed except for the most recent X segments
 defined by this parameter. This is needed to accommodate latencies in
 various stages of content serving pipeline, so that the segments stay
 accessible as they may still be accessed by the player.</p>
-<p class="last">The segments are not removed if the value is zero.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--utc_timings <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><dl class="first docutils">
-<dt>Comma separated UTCTiming schemeIdUri and value pairs for the MPD:</dt>
-<dd><strong>&lt;scheme_id_uri&gt;=&lt;value&gt;[,&lt;scheme_id_uri&gt;=&lt;value&gt;]…</strong></dd>
+<p>The segments are not removed if the value is zero.</p>
+</dd>
+<dt><kbd><span class="option">--utc_timings <var>&lt;scheme_id_uri_value_pairs&gt;</var></span></kbd></dt>
+<dd><dl class="simple">
+<dt>Comma separated UTCTiming schemeIdUri and value pairs for the MPD:</dt><dd><p><strong>&lt;scheme_id_uri&gt;=&lt;value&gt;[,&lt;scheme_id_uri&gt;=&lt;value&gt;]…</strong></p>
+</dd>
 </dl>
-<p class="last">This value is used for dynamic MPD only.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">Any audio/text tracks tagged with this language will have
+<p>This value is used for dynamic MPD only.</p>
+</dd>
+<dt><kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></dt>
+<dd><p>Any audio/text tracks tagged with this language will have
 &lt;Role … value=”main” /&gt; in the manifest.  This allows the player to
 choose the correct default language for the content.</p>
-<p class="last">This applies to both audio and text tracks. The default language for text
+<p>This applies to both audio and text tracks. The default language for text
 tracks can be overriden by  ‘default_text_language’.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
-default language for text tracks.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--allow_approximate_segment_timeline</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">For live profile only.</p>
+</dd>
+<dt><kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></dt>
+<dd><p>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</p>
+</dd>
+<dt><kbd><span class="option">--allow_approximate_segment_timeline</span></kbd></dt>
+<dd><p>For live profile only.</p>
 <p>If enabled, segments with close duration (i.e. with difference less than
 one sample) are considered to have the same duration. This enables
 MPD generator to generate less SegmentTimeline entries. If all segments
 are of the same duration except the last one, we will do further
 optimization to use <a class="reference external" href="mailto:SegmentTemplate&#37;&#52;&#48;duration">SegmentTemplate<span>&#64;</span>duration</a> instead and omit
 SegmentTimeline completely.</p>
-<p class="last">Ignored if $Time$ is used in segment template, since $Time$ requires
+<p>Ignored if $Time$ is used in segment template, since $Time$ requires
 accurate Segment Timeline.</p>
-</td></tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </div>
 
 
@@ -178,7 +147,7 @@ accurate Segment Timeline.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -1,34 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Design &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Shaka Packager Library" href="library.html" />
     <link rel="prev" title="FFmpeg piping" href="tutorials/ffmpeg_piping.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,7 +36,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Design</a><ul>
 <li><a class="reference internal" href="#architecture-diagram">Architecture diagram</a></li>
@@ -69,13 +59,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -90,7 +80,7 @@
 <h1>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="architecture-diagram">
 <h2>Architecture diagram<a class="headerlink" href="#architecture-diagram" title="Permalink to this headline">¶</a></h2>
-<img src="_images/graphviz-3d064d3d3c78c2f86da25ace49db3e3c4e03a691.png" alt="digraph shaka_packager {
+<div class="graphviz"><img src="_images/graphviz-bf83f8f1c2843c664b6cd4bc1f27820dfd89c860.png" alt="digraph shaka_packager {
   label=&lt;&lt;u&gt;Shaka Packager Architecture&lt;/u&gt;&gt;
   labelloc=t
 
@@ -132,8 +122,8 @@
     {rank=same; MasterPlaylist, MpdBuilder}
     {rank=same; MediaPlaylist, Representation}
   }
-}" />
-<img src="_images/graphviz-d08592da92fae1a4929d96c1cb6e446e05714101.png" alt="digraph shaka_packager {
+}" class="graphviz" /></div>
+<div class="graphviz"><img src="_images/graphviz-366b26625ec04fed330621f00c3a39700f74259e.png" alt="digraph shaka_packager {
     subgraph cluster_demuxer {
       style=rounded
       label=&lt;&lt;u&gt; &lt;/u&gt;&gt;
@@ -152,8 +142,8 @@
       Muxer2 [label=&quot;Muxer&quot; shape=rectangle]
       Muxer2 -&gt; Mp4Muxer, WebMMuxer, Mp2tMuxer [dir=back arrowtail=onormal]
     }
-}" />
-<img src="_images/graphviz-426ceb00b0739eba2ed2de6d0d71f24a0021c268.png" alt="digraph shaka_packager {
+}" class="graphviz" /></div>
+<div class="graphviz"><img src="_images/graphviz-07af1c119c853656e59490991f24816ae8064016.png" alt="digraph shaka_packager {
   subgraph cluster_legend {
     style=rounded
     label=&lt;&lt;u&gt;Legend&lt;/u&gt;&gt;
@@ -172,11 +162,11 @@
     &quot;Manifest Class&quot; [shape=trapezium]
     MediaHandler [shape=rectangle]
   }
-}" />
+}" class="graphviz" /></div>
 </div>
 <div class="section" id="media-handler-data-flow">
 <h2>Media handler data flow<a class="headerlink" href="#media-handler-data-flow" title="Permalink to this headline">¶</a></h2>
-<img src="_images/graphviz-787838559a989a01982bde69df7d1ba50dba3dae.png" alt="digraph g {
+<div class="graphviz"><img src="_images/graphviz-8ed86a2355342a0020a62fc7db969063daa9597c.png" alt="digraph g {
   rankdir=LR
 
   StreamData [
@@ -188,7 +178,7 @@
   MediaHandler [shape=rectangle]
   MediaHandler2 [shape=rectangle, label=MediaHandler]
   MediaHandler -&gt; StreamData -&gt; MediaHandler2
-}" />
+}" class="graphviz" /></div>
 <p class="plantuml">
 <img src="_images/plantuml-d388f7ab1eb3f4d70c57feb299c189351a097db9.png" alt="MediaHandler -&gt; MediaHandler2 : StreamInfo
 MediaHandler -&gt; MediaHandler2 : MediaSample
@@ -201,7 +191,7 @@ MediaHandler -&gt; MediaHandler2 : MediaSample
 MediaHandler -&gt; MediaHandler2 : ...
 MediaHandler -&gt; MediaHandler2 : MediaSample
 MediaHandler -&gt; MediaHandler2 : SegmentInfo
-MediaHandler -&gt; MediaHandler2 : ..." />
+MediaHandler -&gt; MediaHandler2 : ..."/>
 </p>
 </div>
 </div>
@@ -229,7 +219,7 @@ MediaHandler -&gt; MediaHandler2 : ..." />
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

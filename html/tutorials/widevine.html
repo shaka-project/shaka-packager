@@ -1,34 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Using Widevine Key Server &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Using PlayReady Key Server" href="playready.html" />
     <link rel="prev" title="DRM" href="drm.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -48,7 +38,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Using Widevine Key Server</a><ul>
 <li><a class="reference internal" href="#synopsis">Synopsis</a></li>
@@ -78,13 +68,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -107,7 +97,7 @@ fetch encryption keys.</p>
 <p>Widevine Common Encryption API supports request validation using either AES or
 RSA.</p>
 <p>AES signing:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --enable_widevine_encryption \
   --key_server_url &lt;key_server_url&gt; \
   --content_id &lt;content_id&gt; \
@@ -117,7 +107,7 @@ RSA.</p>
 </pre></div>
 </div>
 <p>RSA signing:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --enable_widevine_encryption \
   --key_server_url &lt;key_server_url&gt; \
   --content_id &lt;content_id&gt; \
@@ -130,8 +120,8 @@ RSA.</p>
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The examples below use the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
 <ul>
-<li><p class="first">Example with both DASH and HLS output:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>Example with both DASH and HLS output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
@@ -148,8 +138,8 @@ RSA.</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">Another example using ‘cbcs’ protection scheme:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>Another example using ‘cbcs’ protection scheme:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
@@ -171,8 +161,8 @@ RSA.</p>
 <p>The examples above generate Widevine protection system by default. It can be
 extended to support multi-drm with –protection_systems flag.</p>
 <ul>
-<li><p class="first">Example with multi-drm (Widevine and PlayReady):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>Example with multi-drm (Widevine and PlayReady):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4 \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4 \
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4 \
@@ -191,8 +181,8 @@ extended to support multi-drm with –protection_systems flag.</p>
 </li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Users are responsible for setting up the license servers and managing keys
+<p class="admonition-title">Note</p>
+<p>Users are responsible for setting up the license servers and managing keys
 there unless they are using a cloud service provided by the DRM provider or
 third_parties.</p>
 </div>
@@ -203,24 +193,23 @@ on how to config the DRM in Shaka Player.</p>
 <div class="section" id="widevine-test-credential">
 <h2>Widevine test credential<a class="headerlink" href="#widevine-test-credential" title="Permalink to this headline">¶</a></h2>
 <p>Here is the test crendential used in this tutorial.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">key_server_url:</th><td class="field-body"><a class="reference external" href="https://license.uat.widevine.com/cenc/getcontentkey/widevine_test">https://license.uat.widevine.com/cenc/getcontentkey/widevine_test</a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">signer:</th><td class="field-body">widevine_test</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">aes_signing_key:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9</td>
-</tr>
-<tr class="field-even field"><th class="field-name">aes_signing_iv:</th><td class="field-body">d58ce954203b7c9a9a9d467f59839249</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">key_server_url</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://license.uat.widevine.com/cenc/getcontentkey/widevine_test">https://license.uat.widevine.com/cenc/getcontentkey/widevine_test</a></p>
+</dd>
+<dt class="field-even">signer</dt>
+<dd class="field-even"><p>widevine_test</p>
+</dd>
+<dt class="field-odd">aes_signing_key</dt>
+<dd class="field-odd"><p>1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9</p>
+</dd>
+<dt class="field-even">aes_signing_iv</dt>
+<dd class="field-even"><p>d58ce954203b7c9a9a9d467f59839249</p>
+</dd>
+</dl>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The test credential is only meant for development. Please reach out to
+<p class="admonition-title">Note</p>
+<p>The test credential is only meant for development. Please reach out to
 <a class="reference external" href="https://support.google.com/widevine/troubleshooter/6027072">Widevine</a> if
 you need something for production use.</p>
 </div>
@@ -229,129 +218,106 @@ you need something for production use.</p>
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="drm-related-stream-descriptor-fields">
 <h3>DRM related Stream descriptor fields<a class="headerlink" href="#drm-related-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">skip_encryption=0|1:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional. Defaults to 0 if not specified. If it is set to 1, no encryption
-of the stream will be made.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">drm_label:</th><td class="field-body">Optional value for custom DRM label, which defines the encryption key
+<dl class="field-list simple">
+<dt class="field-odd">skip_encryption=0|1</dt>
+<dd class="field-odd"><p>Optional. Defaults to 0 if not specified. If it is set to 1, no encryption
+of the stream will be made.</p>
+</dd>
+<dt class="field-even">drm_label</dt>
+<dd class="field-even"><p>Optional value for custom DRM label, which defines the encryption key
 applied to the stream. Typically values include AUDIO, SD, HD, UHD1, UHD2.
 For raw key, it should be a label defined in –keys. If not provided, the
 DRM label is derived from stream type (video, audio), resolutions, etc.
-Note that it is case sensitive.</td>
-</tr>
-</tbody>
-</table>
+Note that it is case sensitive.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="general-encryption-options">
 <h3>General encryption options<a class="headerlink" href="#general-encryption-options" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
-schemes ‘cens’ or ‘cbcs’.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable / disable VP9 subsample encryption. Enabled by default.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Clear lead in seconds if encryption is enabled.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--protection_systems</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Protection systems to be generated. Supported protection systems include
+<dl class="option-list">
+<dt><kbd><span class="option">--protection_scheme <var>&lt;scheme&gt;</var></span></kbd></dt>
+<dd><p>Specify a protection scheme, ‘cenc’ or ‘cbc1’ or pattern-based protection
+schemes ‘cens’ or ‘cbcs’.</p>
+</dd>
+<dt><kbd><span class="option">--vp9_subsample_encryption</span>, <span class="option">--novp9_subsample_encryption</span></kbd></dt>
+<dd><p>Enable / disable VP9 subsample encryption. Enabled by default.</p>
+</dd>
+<dt><kbd><span class="option">--clear_lead <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Clear lead in seconds if encryption is enabled.
+Shaka Packager does not support partial encrypted segments, all the
+segments including the partial segment overlapping with the initial
+‘clear_lead’ seconds are not encrypted, with all the following segments
+encrypted. If segment_duration is greater than ‘clear_lead’, then only the
+first segment is not encrypted.
+Default: 5</p>
+</dd>
+<dt><kbd><span class="option">--protection_systems</span></kbd></dt>
+<dd><p>Protection systems to be generated. Supported protection systems include
 Widevine, PlayReady, FairPlay, Marlin, and
-CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</td></tr>
-</tbody>
-</table>
+CommonSystem (<a class="reference external" href="https://goo.gl/s8RIhr">https://goo.gl/s8RIhr</a>).</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="widevine-encryption-options">
 <h3>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_widevine_encryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
+<dl class="option-list">
+<dt><kbd><span class="option">--enable_widevine_encryption</span></kbd></dt>
+<dd><p>Enable encryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
 (–rsa_signing_key_path). This generates Widevine protection system if
 –protection_systems is not specified. Use –protection_systems to generate
-multiple protection systems.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
+multiple protection systems.</p>
+</dd>
+<dt><kbd><span class="option">--enable_widevine_decryption</span></kbd></dt>
+<dd><p>Enable decryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
-(–rsa_signing_key_path).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Key server url. Required for Widevine encryption and decryption.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--content_id <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Content identifier that uniquely identifies the content.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--policy <var>&lt;policy&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The name of a stored policy, which specifies DRM content rights.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--max_sd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The video track is considered SD if its max pixels per frame is no higher
-than <em>max_sd_pixels</em>. Default: 442368 (768 x 576).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--max_hd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The video track is considered HD if its max pixels per frame is higher than
+(–rsa_signing_key_path).</p>
+</dd>
+<dt><kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></dt>
+<dd><p>Key server url. Required for Widevine encryption and decryption.</p>
+</dd>
+<dt><kbd><span class="option">--content_id <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>Content identifier that uniquely identifies the content.</p>
+</dd>
+<dt><kbd><span class="option">--policy <var>&lt;policy&gt;</var></span></kbd></dt>
+<dd><p>The name of a stored policy, which specifies DRM content rights.</p>
+</dd>
+<dt><kbd><span class="option">--max_sd_pixels <var>&lt;pixels&gt;</var></span></kbd></dt>
+<dd><p>The video track is considered SD if its max pixels per frame is no higher
+than <em>max_sd_pixels</em>. Default: 442368 (768 x 576).</p>
+</dd>
+<dt><kbd><span class="option">--max_hd_pixels <var>&lt;pixels&gt;</var></span></kbd></dt>
+<dd><p>The video track is considered HD if its max pixels per frame is higher than
 <em>max_sd_pixels</em>, but no higher than <em>max_hd_pixels</em>. Default: 2073600
-(1920 x 1080).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--max_uhd1_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The video track is considered UHD1 if its max pixels per frame is higher
+(1920 x 1080).</p>
+</dd>
+<dt><kbd><span class="option">--max_uhd1_pixels <var>&lt;pixels&gt;</var></span></kbd></dt>
+<dd><p>The video track is considered UHD1 if its max pixels per frame is higher
 than <em>max_hd_pixels</em>, but no higher than <em>max_uhd1_pixels</em>. Otherwise it is
-UHD2. Default: 8847360 (4096 x 2160).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--signer <var>&lt;signer&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The name of the signer.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--aes_signing_key <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>AES signing key in hex string. <em>aes_signing_iv</em> is required if
+UHD2. Default: 8847360 (4096 x 2160).</p>
+</dd>
+<dt><kbd><span class="option">--signer <var>&lt;signer&gt;</var></span></kbd></dt>
+<dd><p>The name of the signer.</p>
+</dd>
+<dt><kbd><span class="option">--aes_signing_key <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>AES signing key in hex string. <em>aes_signing_iv</em> is required if
 <em>aes_signing_key</em> is specified. This option is exclusive with
-<em>rsa_signing_key_path</em>.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--aes_signing_iv <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>AES signing iv in hex string.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--rsa_signing_key_path <var>&lt;file path&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Path to the file containing PKCS#1 RSA private key for request signing.
-This option is exclusive with <em>aes_signing_key</em>.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--crypto_period_duration <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Defines how often key rotates. If it is non-zero, key rotation is enabled.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--group_id <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Identifier for a group of licenses.</td></tr>
-</tbody>
-</table>
+<em>rsa_signing_key_path</em>.</p>
+</dd>
+<dt><kbd><span class="option">--aes_signing_iv <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>AES signing iv in hex string.</p>
+</dd>
+<dt><kbd><span class="option">--rsa_signing_key_path <var>&lt;file path&gt;</var></span></kbd></dt>
+<dd><p>Path to the file containing PKCS#1 RSA private key for request signing.
+This option is exclusive with <em>aes_signing_key</em>.</p>
+</dd>
+<dt><kbd><span class="option">--crypto_period_duration <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Defines how often key rotates. If it is non-zero, key rotation is enabled.</p>
+</dd>
+<dt><kbd><span class="option">--group_id <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>Identifier for a group of licenses.</p>
+</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -381,7 +347,7 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -84,6 +84,8 @@ Inheritance diagram for shaka::media::VideoSliceHeaderParser:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a862422cdf78f370069055037338fa53d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/de4/classshaka_1_1media_1_1VideoSliceHeaderParser.html#a862422cdf78f370069055037338fa53d">Initialize</a> (const std::vector&lt; uint8_t &gt; &amp;decoder_configuration)=0</td></tr>
 <tr class="separator:a862422cdf78f370069055037338fa53d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd737bfa18b3a0db900df0665143fe5f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/de4/classshaka_1_1media_1_1VideoSliceHeaderParser.html#acd737bfa18b3a0db900df0665143fe5f">ProcessNalu</a> (const <a class="el" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> &amp;nalu)=0</td></tr>
+<tr class="separator:acd737bfa18b3a0db900df0665143fe5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3346c5afaf83a18cfcf688c36049d586"><td class="memItemLeft" align="right" valign="top"><a id="a3346c5afaf83a18cfcf688c36049d586"></a>
 virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/de4/classshaka_1_1media_1_1VideoSliceHeaderParser.html#a3346c5afaf83a18cfcf688c36049d586">GetHeaderSize</a> (const <a class="el" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> &amp;nalu)=0</td></tr>
 <tr class="memdesc:a3346c5afaf83a18cfcf688c36049d586"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the header size of the given NALU. Returns &lt; 0 on error. <br /></td></tr>
@@ -122,13 +124,42 @@ virtual int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a id="acd737bfa18b3a0db900df0665143fe5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd737bfa18b3a0db900df0665143fe5f">&#9670;&nbsp;</a></span>ProcessNalu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool shaka::media::VideoSliceHeaderParser::ProcessNalu </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a> &amp;&#160;</td>
+          <td class="paramname"><em>nalu</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Process NAL unit, in particular parameter set NAL units. Non parameter set NAL unit is allowed but the function always returns true. Returns false if there is any problem processing the parameter set NAL unit. This function is needed to handle parameter set NAL units not in decoder configuration record, i.e. in the samples. </p>
+
+<p>Implemented in <a class="el" href="../../d1/d79/classshaka_1_1media_1_1H265VideoSliceHeaderParser.html#af388dbe825193fa7844b84a120db9d9b">shaka::media::H265VideoSliceHeaderParser</a>, and <a class="el" href="../../da/df0/classshaka_1_1media_1_1H264VideoSliceHeaderParser.html#a3520720e77722049f2ddaeec87461b42">shaka::media::H264VideoSliceHeaderParser</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>packager/media/codecs/<a class="el" href="../../d2/d33/video__slice__header__parser_8h_source.html">video_slice_header_parser.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:49 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

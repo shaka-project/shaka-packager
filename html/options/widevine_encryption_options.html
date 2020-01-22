@@ -1,32 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Widevine encryption options &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,13 +36,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -65,82 +55,64 @@
             
   <div class="section" id="widevine-encryption-options">
 <h1>Widevine encryption options<a class="headerlink" href="#widevine-encryption-options" title="Permalink to this headline">¶</a></h1>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_widevine_encryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable encryption with Widevine key server. User should provide either
+<dl class="option-list">
+<dt><kbd><span class="option">--enable_widevine_encryption</span></kbd></dt>
+<dd><p>Enable encryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
 (–rsa_signing_key_path). This generates Widevine protection system if
 –protection_systems is not specified. Use –protection_systems to generate
-multiple protection systems.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_widevine_decryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable decryption with Widevine key server. User should provide either
+multiple protection systems.</p>
+</dd>
+<dt><kbd><span class="option">--enable_widevine_decryption</span></kbd></dt>
+<dd><p>Enable decryption with Widevine key server. User should provide either
 AES signing key (–aes_signing_key, –aes_signing_iv) or RSA signing key
-(–rsa_signing_key_path).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Key server url. Required for Widevine encryption and decryption.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--content_id <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Content identifier that uniquely identifies the content.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--policy <var>&lt;policy&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The name of a stored policy, which specifies DRM content rights.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--max_sd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The video track is considered SD if its max pixels per frame is no higher
-than <em>max_sd_pixels</em>. Default: 442368 (768 x 576).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--max_hd_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The video track is considered HD if its max pixels per frame is higher than
+(–rsa_signing_key_path).</p>
+</dd>
+<dt><kbd><span class="option">--key_server_url <var>&lt;url&gt;</var></span></kbd></dt>
+<dd><p>Key server url. Required for Widevine encryption and decryption.</p>
+</dd>
+<dt><kbd><span class="option">--content_id <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>Content identifier that uniquely identifies the content.</p>
+</dd>
+<dt><kbd><span class="option">--policy <var>&lt;policy&gt;</var></span></kbd></dt>
+<dd><p>The name of a stored policy, which specifies DRM content rights.</p>
+</dd>
+<dt><kbd><span class="option">--max_sd_pixels <var>&lt;pixels&gt;</var></span></kbd></dt>
+<dd><p>The video track is considered SD if its max pixels per frame is no higher
+than <em>max_sd_pixels</em>. Default: 442368 (768 x 576).</p>
+</dd>
+<dt><kbd><span class="option">--max_hd_pixels <var>&lt;pixels&gt;</var></span></kbd></dt>
+<dd><p>The video track is considered HD if its max pixels per frame is higher than
 <em>max_sd_pixels</em>, but no higher than <em>max_hd_pixels</em>. Default: 2073600
-(1920 x 1080).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--max_uhd1_pixels <var>&lt;pixels&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The video track is considered UHD1 if its max pixels per frame is higher
+(1920 x 1080).</p>
+</dd>
+<dt><kbd><span class="option">--max_uhd1_pixels <var>&lt;pixels&gt;</var></span></kbd></dt>
+<dd><p>The video track is considered UHD1 if its max pixels per frame is higher
 than <em>max_hd_pixels</em>, but no higher than <em>max_uhd1_pixels</em>. Otherwise it is
-UHD2. Default: 8847360 (4096 x 2160).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--signer <var>&lt;signer&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The name of the signer.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--aes_signing_key <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>AES signing key in hex string. <em>aes_signing_iv</em> is required if
+UHD2. Default: 8847360 (4096 x 2160).</p>
+</dd>
+<dt><kbd><span class="option">--signer <var>&lt;signer&gt;</var></span></kbd></dt>
+<dd><p>The name of the signer.</p>
+</dd>
+<dt><kbd><span class="option">--aes_signing_key <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>AES signing key in hex string. <em>aes_signing_iv</em> is required if
 <em>aes_signing_key</em> is specified. This option is exclusive with
-<em>rsa_signing_key_path</em>.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--aes_signing_iv <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>AES signing iv in hex string.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--rsa_signing_key_path <var>&lt;file path&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Path to the file containing PKCS#1 RSA private key for request signing.
-This option is exclusive with <em>aes_signing_key</em>.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--crypto_period_duration <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Defines how often key rotates. If it is non-zero, key rotation is enabled.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--group_id <var>&lt;hex&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Identifier for a group of licenses.</td></tr>
-</tbody>
-</table>
+<em>rsa_signing_key_path</em>.</p>
+</dd>
+<dt><kbd><span class="option">--aes_signing_iv <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>AES signing iv in hex string.</p>
+</dd>
+<dt><kbd><span class="option">--rsa_signing_key_path <var>&lt;file path&gt;</var></span></kbd></dt>
+<dd><p>Path to the file containing PKCS#1 RSA private key for request signing.
+This option is exclusive with <em>aes_signing_key</em>.</p>
+</dd>
+<dt><kbd><span class="option">--crypto_period_duration <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Defines how often key rotates. If it is non-zero, key rotation is enabled.</p>
+</dd>
+<dt><kbd><span class="option">--group_id <var>&lt;hex&gt;</var></span></kbd></dt>
+<dd><p>Identifier for a group of licenses.</p>
+</dd>
+</dl>
 </div>
 
 
@@ -160,7 +132,7 @@ This option is exclusive with <em>aes_signing_key</em>.</td></tr>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

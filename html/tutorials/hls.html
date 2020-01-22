@@ -1,34 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>HLS &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Live" href="live.html" />
     <link rel="prev" title="DASH" href="dash.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,7 +37,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">HLS</a><ul>
 <li><a class="reference internal" href="#synopsis">Synopsis</a></li>
@@ -76,13 +66,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -112,7 +102,7 @@ packaging of VOD content without encryption. For live content packaging, see
 see <a class="reference internal" href="../documentation.html"><span class="doc">Packager Documentation</span></a>.</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager &lt;stream_descriptor&gt; ... \
   --hls_master_playlist_output &lt;master_playlist_output_path&gt; \
   [Other HLS options] \
   [Other options, e.g. DRM options, DASH options]
@@ -122,8 +112,8 @@ see <a class="reference internal" href="../documentation.html"><span class="doc"
 stream descriptor fields.</p>
 <p>See <a class="reference internal" href="#hls-options">HLS options</a> for the available HLS related options.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">DASH and HLS options can both be specified to output DASH and HLS manifests
+<p class="admonition-title">Note</p>
+<p>DASH and HLS options can both be specified to output DASH and HLS manifests
 at the same time. Note that it works only for MP4 outputs.</p>
 </div>
 </div>
@@ -131,8 +121,8 @@ at the same time. Note that it works only for MP4 outputs.</p>
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The examples below uses the H264 streams created in <a class="reference internal" href="encoding.html"><span class="doc">Media Encoding</span></a>.</p>
 <ul>
-<li><p class="first">TS output with elementary audio:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>TS output with elementary audio:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   &#39;in=h264_baseline_360p_600.mp4,stream=audio,segment_template=audio/$Number$.aac,playlist_name=audio/main.m3u8,hls_group_id=audio,hls_name=ENGLISH&#39; \
   &#39;in=input_text.vtt,stream=text,segment_template=text/$Number$.vtt,playlist_name=text/main.m3u8,hls_group_id=text,hls_name=ENGLISH&#39; \
   &#39;in=h264_baseline_360p_600.mp4,stream=video,segment_template=h264_360p/$Number$.ts,playlist_name=h264_360p/main.m3u8,iframe_playlist_name=h264_360p/iframe.m3u8&#39; \
@@ -147,8 +137,8 @@ at the same time. Note that it works only for MP4 outputs.</p>
 <p>The above packaging command creates five single track TS streams
 (4 video, 1 audio) and HLS playlists, which describe the streams.</p>
 <ul>
-<li><p class="first">MP4 output is also supported:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>MP4 output is also supported:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   &#39;in=h264_baseline_360p_600.mp4,stream=audio,init_segment=audio/init.mp4,segment_template=audio/$Number$.m4s,playlist_name=audio/main.m3u8,hls_group_id=audio,hls_name=ENGLISH&#39; \
   &#39;in=input_text.vtt,stream=text,segment_template=text/$Number$.vtt,playlist_name=text/main.m3u8,hls_group_id=text,hls_name=ENGLISH&#39; \
   &#39;in=h264_baseline_360p_600.mp4,stream=video,init_segment=h264_360p/init.mp4,segment_template=h264_360p/$Number$.m4s,playlist_name=h264_360p/main.m3u8,iframe_playlist_name=h264_360p/iframe.m3u8&#39; \
@@ -164,8 +154,8 @@ at the same time. Note that it works only for MP4 outputs.</p>
 segment and a series of media segments) and HLS playlists, which describe the
 streams.</p>
 <ul>
-<li><p class="first">Single file MP4 output is also supported:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>Single file MP4 output is also supported:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,playlist_name=h264_360p.m3u8 \
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,playlist_name=h264_480p.m3u8 \
@@ -179,8 +169,8 @@ streams.</p>
 <p>The above packaging command creates five single file MP4 streams and HLS
 playlists, which describe the streams.</p>
 <ul>
-<li><p class="first">Single file MP4 output with DASH + HLS:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>Single file MP4 output with DASH + HLS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   in=h264_baseline_360p_600.mp4,stream=audio,output=audio.mp4,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH \
   in=h264_baseline_360p_600.mp4,stream=video,output=h264_360p.mp4,playlist_name=h264_360p.m3u8,iframe_playlist_name=h264_360p_iframe.m3u8 \
   in=h264_main_480p_1000.mp4,stream=video,output=h264_480p.mp4,playlist_name=h264_480p.m3u8,iframe_playlist_name=h264_480p_iframe.m3u8 \
@@ -199,139 +189,124 @@ playlists as well as DASH manifests.</p>
 <h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="hls-specific-stream-descriptor-fields">
 <h3>HLS specific stream descriptor fields<a class="headerlink" href="#hls-specific-stream-descriptor-fields" title="Permalink to this headline">¶</a></h3>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">hls_name:</th><td class="field-body">Used for HLS audio to set the NAME attribute for EXT-X-MEDIA.
-Defaults to the base of the playlist name.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">hls_group_id:</th><td class="field-body">Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
-Defaults to ‘audio’ if not specified.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">playlist_name:</th><td class="field-body">The HLS playlist file to create. Usually ends with ‘.m3u8’, and is
+<dl class="field-list simple">
+<dt class="field-odd">hls_name</dt>
+<dd class="field-odd"><p>Used for HLS audio to set the NAME attribute for EXT-X-MEDIA.
+Defaults to the base of the playlist name.</p>
+</dd>
+<dt class="field-even">hls_group_id</dt>
+<dd class="field-even"><p>Used for HLS audio to set the GROUP-ID attribute for EXT-X-MEDIA.
+Defaults to ‘audio’ if not specified.</p>
+</dd>
+<dt class="field-odd">playlist_name</dt>
+<dd class="field-odd"><p>The HLS playlist file to create. Usually ends with ‘.m3u8’, and is
 relative to hls_master_playlist_output (see below). If unspecified,
 defaults to something of the form ‘stream_0.m3u8’, ‘stream_1.m3u8’,
-‘stream_2.m3u8’, etc.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">iframe_playlist_name:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The optional HLS I-Frames only playlist file to create. Usually ends with
+‘stream_2.m3u8’, etc.</p>
+</dd>
+<dt class="field-even">iframe_playlist_name</dt>
+<dd class="field-even"><p>The optional HLS I-Frames only playlist file to create. Usually ends with
 ‘.m3u8’, and is relative to hls_master_playlist_output (see below). Should
 only be set for video streams. If unspecified, no I-Frames only playlist is
-created.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">hls_characteristics (charcs):</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">Optional colon or semi-colon separated list of values for the
+created.</p>
+</dd>
+<dt class="field-odd">hls_characteristics (charcs)</dt>
+<dd class="field-odd"><p>Optional colon or semi-colon separated list of values for the
 CHARACTERISTICS attribute for EXT-X-MEDIA. See CHARACTERISTICS attribute in
-<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</td>
-</tr>
-</tbody>
-</table>
+<a class="reference external" href="http://bit.ly/2OOUkdB">http://bit.ly/2OOUkdB</a> for details.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="hls-options">
 <h3>HLS options<a class="headerlink" href="#hls-options" title="Permalink to this headline">¶</a></h3>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--hls_master_playlist_output <var>&lt;file_path&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Output path for the master playlist for HLS. This flag must be used to
-output HLS.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--hls_base_url <var>&lt;url&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The base URL for the Media Playlists and media files listed in the
-playlists. This is the prefix for the files.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--hls_key_uri <var>&lt;uri&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>The key uri for ‘identity’ and ‘com.apple.streamingkeydelivery’ (FairPlay)
+<dl class="option-list">
+<dt><kbd><span class="option">--hls_master_playlist_output <var>&lt;file_path&gt;</var></span></kbd></dt>
+<dd><p>Output path for the master playlist for HLS. This flag must be used to
+output HLS.</p>
+</dd>
+<dt><kbd><span class="option">--hls_base_url <var>&lt;url&gt;</var></span></kbd></dt>
+<dd><p>The base URL for the Media Playlists and media files listed in the
+playlists. This is the prefix for the files.</p>
+</dd>
+<dt><kbd><span class="option">--hls_key_uri <var>&lt;uri&gt;</var></span></kbd></dt>
+<dd><p>The key uri for ‘identity’ and ‘com.apple.streamingkeydelivery’ (FairPlay)
 key formats. Ignored if the playlist is not encrypted or not using the above
-key formats.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--hls_playlist_type <var>&lt;type&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>VOD, EVENT, or LIVE. This defines the EXT-X-PLAYLIST-TYPE in the HLS
+key formats.</p>
+</dd>
+<dt><kbd><span class="option">--hls_playlist_type <var>&lt;type&gt;</var></span></kbd></dt>
+<dd><p>VOD, EVENT, or LIVE. This defines the EXT-X-PLAYLIST-TYPE in the HLS
 specification. For hls_playlist_type of LIVE, EXT-X-PLAYLIST-TYPE tag is
-omitted.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Guaranteed duration of the time shifting buffer for LIVE playlists, in
-seconds.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
+omitted.</p>
+</dd>
+<dt><kbd><span class="option">--time_shift_buffer_depth <var>&lt;seconds&gt;</var></span></kbd></dt>
+<dd><p>Guaranteed duration of the time shifting buffer for LIVE playlists, in
+seconds.</p>
+</dd>
+<dt><kbd><span class="option">--preserved_segments_outside_live_window <var>&lt;num_segments&gt;</var></span></kbd></dt>
+<dd><p>Segments outside the live window (defined by <cite>time_shift_buffer_depth</cite>
 above) are automatically removed except for the most recent X segments
 defined by this parameter. This is needed to accommodate latencies in
 various stages of content serving pipeline, so that the segments stay
 accessible as they may still be accessed by the player.</p>
-<p class="last">The segments are not removed if the value is zero.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first">The first audio/text rendition in a group tagged with this language will
+<p>The segments are not removed if the value is zero.</p>
+</dd>
+<dt><kbd><span class="option">--default_language <var>&lt;language&gt;</var></span></kbd></dt>
+<dd><p>The first audio/text rendition in a group tagged with this language will
 have ‘DEFAULT’ attribute set to ‘YES’. This allows the player to choose the
 correct default language for the content.</p>
-<p class="last">This applies to both audio and text tracks. The default language for text
+<p>This applies to both audio and text tracks. The default language for text
 tracks can be overriden by  ‘default_text_language’.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Same as above, but this applies to text tracks only, and overrides the
-default language for text tracks.</td></tr>
-</tbody>
-</table>
+</dd>
+<dt><kbd><span class="option">--default_text_language <var>&lt;text_language&gt;</var></span></kbd></dt>
+<dd><p>Same as above, but this applies to text tracks only, and overrides the
+default language for text tracks.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="segment-template-formatting">
 <h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
 <p>The implementation is based on <em>Template-based Segment URL construction</em>
 described in ISO/IEC 23009-1:2014.</p>
-<table border="1" class="styled-table docutils" id="id1">
+<table class="styled-table docutils align-default" id="id1">
 <caption><span class="caption-text">Supported identifiers</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="19%" />
-<col width="41%" />
-<col width="41%" />
+<col style="width: 19%" />
+<col style="width: 41%" />
+<col style="width: 41%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="left-align head">$&lt;Identifier&gt;$</th>
-<th class="left-align head">Substitution parameter</th>
-<th class="left-align head">Format</th>
+<thead>
+<tr class="row-odd"><th class="left-align head"><p>$&lt;Identifier&gt;$</p></th>
+<th class="left-align head"><p>Substitution parameter</p></th>
+<th class="left-align head"><p>Format</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td class="left-align">$$</td>
-<td class="left-align">is an escape sequence, i.e.
+<tbody>
+<tr class="row-even"><td class="left-align"><p>$$</p></td>
+<td class="left-align"><p>is an escape sequence, i.e.
 “$$” is replaced with a single
-“$”.</td>
-<td class="left-align">Not applicable.</td>
+“$”.</p></td>
+<td class="left-align"><p>Not applicable.</p></td>
 </tr>
-<tr class="row-odd"><td class="left-align">$Number$</td>
-<td class="left-align">This identifier is substitued
+<tr class="row-odd"><td class="left-align"><p>$Number$</p></td>
+<td class="left-align"><p>This identifier is substitued
 with the <em>number</em> of the
-corresponding Segment.</td>
-<td class="left-align"><p class="first">The format tag may be present.</p>
-<p class="last">If no format tag is present, a
+corresponding Segment.</p></td>
+<td class="left-align"><p>The format tag may be present.</p>
+<p>If no format tag is present, a
 default format tag with
 <em>width</em>=1 shall be used.</p>
 </td>
 </tr>
-<tr class="row-even"><td class="left-align">$Time$</td>
-<td class="left-align">This identifier is substituted
+<tr class="row-even"><td class="left-align"><p>$Time$</p></td>
+<td class="left-align"><p>This identifier is substituted
 with the value of the
 <strong>SegmentTimeline&#64;t</strong>
 attribute for the Segment
 being accessed. Either
 $Number$ or $Time$ may be used
-but not both at the same time.</td>
-<td class="left-align"><p class="first">The format tag may be present.</p>
-<p class="last">If no format tag is present, a
+but not both at the same time.</p></td>
+<td class="left-align"><p>The format tag may be present.</p>
+<p>If no format tag is present, a
 default format tag with
 <em>width</em>=1 shall be used.</p>
 </td>
@@ -339,8 +314,8 @@ default format tag with
 </tbody>
 </table>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
+<p class="admonition-title">Note</p>
+<p>Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
 version. Please file an <a class="reference external" href="https://github.com/google/shaka-packager/issues">issue</a> if you want it to be
 supported.</p>
 </div>
@@ -349,7 +324,7 @@ per the definition in the above table. Identifier matching is case-sensitive.</p
 <p>Each identifier may be suffixed, within the enclosing ‘$’ characters, with an
 additional format tag aligned with the <em>printf</em> format tag as defined in IEEE
 1003.1-2008 following this prototype:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
 </pre></div>
 </div>
 <p>The <em>width</em> parameter is an unsigned integer that provides the minimum number
@@ -386,7 +361,7 @@ within URLs according to RFC 3986.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

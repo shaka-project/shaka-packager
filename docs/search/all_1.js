@@ -4,6 +4,7 @@ var searchData=
   ['bandwidthestimator',['BandwidthEstimator',['../da/d2c/classshaka_1_1BandwidthEstimator.html',1,'shaka']]],
   ['base_5furl',['base_url',['../d0/da8/structshaka_1_1HlsParams.html#a546dcdf68c8a0a5e188f84b5c9fca9dd',1,'shaka::HlsParams']]],
   ['base_5furls',['base_urls',['../df/ddc/structshaka_1_1MpdParams.html#a9fe508f9c56a6424fd857d43a4a69e7c',1,'shaka::MpdParams']]],
+  ['basedescriptor',['BaseDescriptor',['../df/db9/classshaka_1_1media_1_1BaseDescriptor.html',1,'shaka::media']]],
   ['bit_5fposition',['bit_position',['../d6/da9/classshaka_1_1media_1_1BitReader.html#a100abf1165633b67359bb3d813594f7e',1,'shaka::media::BitReader']]],
   ['bitpos',['BitPos',['../dc/d76/classshaka_1_1media_1_1BitWriter.html#a66164c7c6fcd524dd1f87b07f4c2e7fd',1,'shaka::media::BitWriter']]],
   ['bitreader',['BitReader',['../d6/da9/classshaka_1_1media_1_1BitReader.html',1,'shaka::media::BitReader'],['../d6/da9/classshaka_1_1media_1_1BitReader.html#a264dbe3e94ba76214c1af75ab3877945',1,'shaka::media::BitReader::BitReader()']]],

@@ -1,34 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Shaka Packager Library (Continued) &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Media Encoding" href="tutorials/encoding.html" />
     <link rel="prev" title="Using Docker" href="docker_instructions.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -60,13 +50,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -80,68 +70,68 @@
   <div class="section" id="shaka-packager-library-continued">
 <h1>Shaka Packager Library (Continued)<a class="headerlink" href="#shaka-packager-library-continued" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="_CPPv2N5shaka15PackagingParamsE">
-<span id="shaka::PackagingParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">PackagingParams</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParamsE">
+<span id="_CPPv3N5shaka15PackagingParamsE"></span><span id="_CPPv2N5shaka15PackagingParamsE"></span><span id="shaka::PackagingParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams"></span><em class="property">struct </em><code class="sig-name descname">PackagingParams</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Packaging parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams8temp_dirE">
-<span id="shaka::PackagingParams::temp_dir__ss"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1ae179e88ad853856b0e006326ff445f6e"></span>std::string <code class="descname">temp_dir</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams8temp_dirE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams8temp_dirE">
+<span id="_CPPv3N5shaka15PackagingParams8temp_dirE"></span><span id="_CPPv2N5shaka15PackagingParams8temp_dirE"></span><span id="shaka::PackagingParams::temp_dir__ss"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1ae179e88ad853856b0e006326ff445f6e"></span>std::string <code class="sig-name descname">temp_dir</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams8temp_dirE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specify temporary directory for intermediate temporary files. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams17mp4_output_paramsE">
-<span id="shaka::PackagingParams::mp4_output_params__Mp4OutputParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a794072e13c04de6b98e5d1e7cc5b57d6"></span><a class="reference internal" href="#_CPPv2N5shaka15Mp4OutputParamsE" title="shaka::Mp4OutputParams">Mp4OutputParams</a> <code class="descname">mp4_output_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams17mp4_output_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams17mp4_output_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams17mp4_output_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams17mp4_output_paramsE"></span><span id="shaka::PackagingParams::mp4_output_params__Mp4OutputParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a794072e13c04de6b98e5d1e7cc5b57d6"></span><a class="reference internal" href="#_CPPv4N5shaka15Mp4OutputParamsE" title="shaka::Mp4OutputParams">Mp4OutputParams</a> <code class="sig-name descname">mp4_output_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams17mp4_output_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>MP4 (ISO-BMFF) output related parameters. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams36transport_stream_timestamp_offset_msE">
-<span id="shaka::PackagingParams::transport_stream_timestamp_offset_ms__uint32_t"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aa2c8c5254f14048368edb652dd329556"></span>uint32_t <code class="descname">transport_stream_timestamp_offset_ms</code> = 0<a class="headerlink" href="#_CPPv2N5shaka15PackagingParams36transport_stream_timestamp_offset_msE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams36transport_stream_timestamp_offset_msE">
+<span id="_CPPv3N5shaka15PackagingParams36transport_stream_timestamp_offset_msE"></span><span id="_CPPv2N5shaka15PackagingParams36transport_stream_timestamp_offset_msE"></span><span id="shaka::PackagingParams::transport_stream_timestamp_offset_ms__uint32_t"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aa2c8c5254f14048368edb652dd329556"></span>uint32_t <code class="sig-name descname">transport_stream_timestamp_offset_ms</code> = 0<a class="headerlink" href="#_CPPv4N5shaka15PackagingParams36transport_stream_timestamp_offset_msE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The offset to be applied to transport stream (e.g. MPEG2-TS, HLS packed audio) timestamps to compensate for possible negative timestamps in the input. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams15chunking_paramsE">
-<span id="shaka::PackagingParams::chunking_params__ChunkingParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1ac992ff58f67ad9b737dfc62d517be8ed"></span><a class="reference internal" href="#_CPPv2N5shaka14ChunkingParamsE" title="shaka::ChunkingParams">ChunkingParams</a> <code class="descname">chunking_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams15chunking_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams15chunking_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams15chunking_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams15chunking_paramsE"></span><span id="shaka::PackagingParams::chunking_params__ChunkingParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1ac992ff58f67ad9b737dfc62d517be8ed"></span><a class="reference internal" href="#_CPPv4N5shaka14ChunkingParamsE" title="shaka::ChunkingParams">ChunkingParams</a> <code class="sig-name descname">chunking_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams15chunking_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Chunking (segmentation) related parameters. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams23ad_cue_generator_paramsE">
-<span id="shaka::PackagingParams::ad_cue_generator_params__AdCueGeneratorParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aa52d546c86b3b36234bcfc0cd50ef083"></span>AdCueGeneratorParams <code class="descname">ad_cue_generator_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams23ad_cue_generator_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams23ad_cue_generator_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams23ad_cue_generator_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams23ad_cue_generator_paramsE"></span><span id="shaka::PackagingParams::ad_cue_generator_params__AdCueGeneratorParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aa52d546c86b3b36234bcfc0cd50ef083"></span>AdCueGeneratorParams <code class="sig-name descname">ad_cue_generator_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams23ad_cue_generator_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Out of band cuepoint parameters. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams17output_media_infoE">
-<span id="shaka::PackagingParams::output_media_info__b"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a9206160a0fb92a9e9ee27fd8e9725ea1"></span>bool <code class="descname">output_media_info</code> = false<a class="headerlink" href="#_CPPv2N5shaka15PackagingParams17output_media_infoE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Create a human readable format of MediaInfo. The output file name will be the name specified by output flag, suffixed with <code class="docutils literal"><span class="pre">.media_info</span></code>. </p>
+<dt id="_CPPv4N5shaka15PackagingParams17output_media_infoE">
+<span id="_CPPv3N5shaka15PackagingParams17output_media_infoE"></span><span id="_CPPv2N5shaka15PackagingParams17output_media_infoE"></span><span id="shaka::PackagingParams::output_media_info__b"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a9206160a0fb92a9e9ee27fd8e9725ea1"></span>bool <code class="sig-name descname">output_media_info</code> = false<a class="headerlink" href="#_CPPv4N5shaka15PackagingParams17output_media_infoE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a human readable format of MediaInfo. The output file name will be the name specified by output flag, suffixed with <code class="docutils literal notranslate"><span class="pre">.media_info</span></code>. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams10mpd_paramsE">
-<span id="shaka::PackagingParams::mpd_params__MpdParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1acfa10a8e9c877a3c2baf83525837a254"></span><a class="reference internal" href="#_CPPv2N5shaka9MpdParamsE" title="shaka::MpdParams">MpdParams</a> <code class="descname">mpd_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams10mpd_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams10mpd_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams10mpd_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams10mpd_paramsE"></span><span id="shaka::PackagingParams::mpd_params__MpdParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1acfa10a8e9c877a3c2baf83525837a254"></span><a class="reference internal" href="#_CPPv4N5shaka9MpdParamsE" title="shaka::MpdParams">MpdParams</a> <code class="sig-name descname">mpd_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams10mpd_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>DASH MPD related parameters. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams10hls_paramsE">
-<span id="shaka::PackagingParams::hls_params__HlsParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a88e4e2cc444fb79b8e35075dd5a20fbe"></span><a class="reference internal" href="#_CPPv2N5shaka9HlsParamsE" title="shaka::HlsParams">HlsParams</a> <code class="descname">hls_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams10hls_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams10hls_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams10hls_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams10hls_paramsE"></span><span id="shaka::PackagingParams::hls_params__HlsParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a88e4e2cc444fb79b8e35075dd5a20fbe"></span><a class="reference internal" href="#_CPPv4N5shaka9HlsParamsE" title="shaka::HlsParams">HlsParams</a> <code class="sig-name descname">hls_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams10hls_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>HLS related parameters. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams17encryption_paramsE">
-<span id="shaka::PackagingParams::encryption_params__EncryptionParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a7792bf4a71a35d2a3f99d8b4806a3913"></span><a class="reference internal" href="#_CPPv2N5shaka16EncryptionParamsE" title="shaka::EncryptionParams">EncryptionParams</a> <code class="descname">encryption_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams17encryption_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams17encryption_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams17encryption_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams17encryption_paramsE"></span><span id="shaka::PackagingParams::encryption_params__EncryptionParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1a7792bf4a71a35d2a3f99d8b4806a3913"></span><a class="reference internal" href="#_CPPv4N5shaka16EncryptionParamsE" title="shaka::EncryptionParams">EncryptionParams</a> <code class="sig-name descname">encryption_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams17encryption_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Encryption and Decryption Parameters. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15PackagingParams22buffer_callback_paramsE">
-<span id="shaka::PackagingParams::buffer_callback_params__BufferCallbackParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aaaf233248e46b6ff3285bbac87857f81"></span>BufferCallbackParams <code class="descname">buffer_callback_params</code><a class="headerlink" href="#_CPPv2N5shaka15PackagingParams22buffer_callback_paramsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15PackagingParams22buffer_callback_paramsE">
+<span id="_CPPv3N5shaka15PackagingParams22buffer_callback_paramsE"></span><span id="_CPPv2N5shaka15PackagingParams22buffer_callback_paramsE"></span><span id="shaka::PackagingParams::buffer_callback_params__BufferCallbackParams"></span><span class="target" id="d5/de3/structshaka_1_1PackagingParams_1aaaf233248e46b6ff3285bbac87857f81"></span>BufferCallbackParams <code class="sig-name descname">buffer_callback_params</code><a class="headerlink" href="#_CPPv4N5shaka15PackagingParams22buffer_callback_paramsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Buffer callback params. </p>
 </dd></dl>
 
@@ -149,119 +139,131 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka16StreamDescriptorE">
-<span id="shaka::StreamDescriptor"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">StreamDescriptor</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptorE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptorE">
+<span id="_CPPv3N5shaka16StreamDescriptorE"></span><span id="_CPPv2N5shaka16StreamDescriptorE"></span><span id="shaka::StreamDescriptor"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor"></span><em class="property">struct </em><code class="sig-name descname">StreamDescriptor</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptorE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Defines a single input/output stream. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor5inputE">
-<span id="shaka::StreamDescriptor::input__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1ae86324b838baa66dbab9a3d35352e200"></span>std::string <code class="descname">input</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor5inputE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor5inputE">
+<span id="_CPPv3N5shaka16StreamDescriptor5inputE"></span><span id="_CPPv2N5shaka16StreamDescriptor5inputE"></span><span id="shaka::StreamDescriptor::input__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1ae86324b838baa66dbab9a3d35352e200"></span>std::string <code class="sig-name descname">input</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor5inputE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Input/source media file path or network stream URL. Required. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor15stream_selectorE">
-<span id="shaka::StreamDescriptor::stream_selector__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a386c5e3717b5f982f72698abba09df2c"></span>std::string <code class="descname">stream_selector</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor15stream_selectorE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Stream selector, can be <code class="docutils literal"><span class="pre">audio</span></code>, <code class="docutils literal"><span class="pre">video</span></code>, <code class="docutils literal"><span class="pre">text</span></code> or a zero based stream index. Required. </p>
+<dt id="_CPPv4N5shaka16StreamDescriptor15stream_selectorE">
+<span id="_CPPv3N5shaka16StreamDescriptor15stream_selectorE"></span><span id="_CPPv2N5shaka16StreamDescriptor15stream_selectorE"></span><span id="shaka::StreamDescriptor::stream_selector__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a386c5e3717b5f982f72698abba09df2c"></span>std::string <code class="sig-name descname">stream_selector</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor15stream_selectorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stream selector, can be <code class="docutils literal notranslate"><span class="pre">audio</span></code>, <code class="docutils literal notranslate"><span class="pre">video</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code> or a zero based stream index. Required. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor6outputE">
-<span id="shaka::StreamDescriptor::output__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a08ce812991297de47354b99cdaec5415"></span>std::string <code class="descname">output</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor6outputE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor6outputE">
+<span id="_CPPv3N5shaka16StreamDescriptor6outputE"></span><span id="_CPPv2N5shaka16StreamDescriptor6outputE"></span><span id="shaka::StreamDescriptor::output__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a08ce812991297de47354b99cdaec5415"></span>std::string <code class="sig-name descname">output</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor6outputE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies output file path or init segment path (if segment template is specified). Can be empty for self initialization media segments. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor16segment_templateE">
-<span id="shaka::StreamDescriptor::segment_template__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1af3e55c8970e8a7604ca79a98f4642872"></span>std::string <code class="descname">segment_template</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor16segment_templateE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor16segment_templateE">
+<span id="_CPPv3N5shaka16StreamDescriptor16segment_templateE"></span><span id="_CPPv2N5shaka16StreamDescriptor16segment_templateE"></span><span id="shaka::StreamDescriptor::segment_template__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1af3e55c8970e8a7604ca79a98f4642872"></span>std::string <code class="sig-name descname">segment_template</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor16segment_templateE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies segment template. Can be empty. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor13output_formatE">
-<span id="shaka::StreamDescriptor::output_format__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a025d9a9a1612654da2b0c99fe81378db"></span>std::string <code class="descname">output_format</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor13output_formatE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor13output_formatE">
+<span id="_CPPv3N5shaka16StreamDescriptor13output_formatE"></span><span id="_CPPv2N5shaka16StreamDescriptor13output_formatE"></span><span id="shaka::StreamDescriptor::output_format__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a025d9a9a1612654da2b0c99fe81378db"></span>std::string <code class="sig-name descname">output_format</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor13output_formatE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Optional value which specifies output container format, e.g. “mp4”. If not specified, will detect from output / segment template name. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor15skip_encryptionE">
-<span id="shaka::StreamDescriptor::skip_encryption__b"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1abbaf07b1faa84803478f89bc6dd8cb4a"></span>bool <code class="descname">skip_encryption</code> = false<a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor15skip_encryptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor15skip_encryptionE">
+<span id="_CPPv3N5shaka16StreamDescriptor15skip_encryptionE"></span><span id="_CPPv2N5shaka16StreamDescriptor15skip_encryptionE"></span><span id="shaka::StreamDescriptor::skip_encryption__b"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1abbaf07b1faa84803478f89bc6dd8cb4a"></span>bool <code class="sig-name descname">skip_encryption</code> = false<a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor15skip_encryptionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>If set to true, the stream will not be encrypted. This is useful, e.g. to encrypt only video streams. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor9drm_labelE">
-<span id="shaka::StreamDescriptor::drm_label__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a8f2a517450433cf69bbc87cef17d05cf"></span>std::string <code class="descname">drm_label</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor9drm_labelE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor9drm_labelE">
+<span id="_CPPv3N5shaka16StreamDescriptor9drm_labelE"></span><span id="_CPPv2N5shaka16StreamDescriptor9drm_labelE"></span><span id="shaka::StreamDescriptor::drm_label__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a8f2a517450433cf69bbc87cef17d05cf"></span>std::string <code class="sig-name descname">drm_label</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor9drm_labelE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies a custom DRM stream label, which can be a DRM label defined by the DRM system. Typically values include AUDIO, SD, HD, UHD1, UHD2. If not provided, the DRM stream label is derived from stream type (video, audio), resolutions etc. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor17trick_play_factorE">
-<span id="shaka::StreamDescriptor::trick_play_factor__uint32_t"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a5cc00f367691729460e0b75b8ec6c512"></span>uint32_t <code class="descname">trick_play_factor</code> = 0<a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor17trick_play_factorE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>If set to a non-zero value, will generate a trick play / trick mode stream with frames sampled from the key frames in the original stream. <code class="docutils literal"><span class="pre">trick_play_factor</span></code> defines the sampling rate. </p>
+<dt id="_CPPv4N5shaka16StreamDescriptor17trick_play_factorE">
+<span id="_CPPv3N5shaka16StreamDescriptor17trick_play_factorE"></span><span id="_CPPv2N5shaka16StreamDescriptor17trick_play_factorE"></span><span id="shaka::StreamDescriptor::trick_play_factor__uint32_t"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a5cc00f367691729460e0b75b8ec6c512"></span>uint32_t <code class="sig-name descname">trick_play_factor</code> = 0<a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor17trick_play_factorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>If set to a non-zero value, will generate a trick play / trick mode stream with frames sampled from the key frames in the original stream. <code class="docutils literal notranslate"><span class="pre">trick_play_factor</span></code> defines the sampling rate. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor9bandwidthE">
-<span id="shaka::StreamDescriptor::bandwidth__uint32_t"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a9bcce2ca86a33f41803f7a6417a2758c"></span>uint32_t <code class="descname">bandwidth</code> = 0<a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor9bandwidthE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Optional user-specified content bit rate for the stream, in bits/sec. If specified, this value is propagated to the <code class="docutils literal"><span class="pre">$Bandwidth$</span></code> template parameter for segment names. If not specified, its value may be estimated. </p>
+<dt id="_CPPv4N5shaka16StreamDescriptor9bandwidthE">
+<span id="_CPPv3N5shaka16StreamDescriptor9bandwidthE"></span><span id="_CPPv2N5shaka16StreamDescriptor9bandwidthE"></span><span id="shaka::StreamDescriptor::bandwidth__uint32_t"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a9bcce2ca86a33f41803f7a6417a2758c"></span>uint32_t <code class="sig-name descname">bandwidth</code> = 0<a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor9bandwidthE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Optional user-specified content bit rate for the stream, in bits/sec. If specified, this value is propagated to the <code class="docutils literal notranslate"><span class="pre">$Bandwidth$</span></code> template parameter for segment names. If not specified, its value may be estimated. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor8languageE">
-<span id="shaka::StreamDescriptor::language__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1af2e3479d90070a03a801ecc5a3d35d7e"></span>std::string <code class="descname">language</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor8languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor8languageE">
+<span id="_CPPv3N5shaka16StreamDescriptor8languageE"></span><span id="_CPPv2N5shaka16StreamDescriptor8languageE"></span><span id="shaka::StreamDescriptor::language__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1af2e3479d90070a03a801ecc5a3d35d7e"></span>std::string <code class="sig-name descname">language</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor8languageE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Optional value which contains a user-specified language tag. If specified, this value overrides any language metadata in the input stream. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor8hls_nameE">
-<span id="shaka::StreamDescriptor::hls_name__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a92efcc01f52430f3d3ec030beb8c65c7"></span>std::string <code class="descname">hls_name</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor8hls_nameE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Required for audio when outputting HLS. It defines the name of the output stream, which is not necessarily the same as output. This is used as the <code class="docutils literal"><span class="pre">NAME</span></code> attribute for EXT-X-MEDIA. </p>
+<dt id="_CPPv4N5shaka16StreamDescriptor8hls_nameE">
+<span id="_CPPv3N5shaka16StreamDescriptor8hls_nameE"></span><span id="_CPPv2N5shaka16StreamDescriptor8hls_nameE"></span><span id="shaka::StreamDescriptor::hls_name__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a92efcc01f52430f3d3ec030beb8c65c7"></span>std::string <code class="sig-name descname">hls_name</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor8hls_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Required for audio when outputting HLS. It defines the name of the output stream, which is not necessarily the same as output. This is used as the <code class="docutils literal notranslate"><span class="pre">NAME</span></code> attribute for EXT-X-MEDIA. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor12hls_group_idE">
-<span id="shaka::StreamDescriptor::hls_group_id__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a25764b4ffa8cb0da3b88cc251928ad96"></span>std::string <code class="descname">hls_group_id</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor12hls_group_idE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor12hls_group_idE">
+<span id="_CPPv3N5shaka16StreamDescriptor12hls_group_idE"></span><span id="_CPPv2N5shaka16StreamDescriptor12hls_group_idE"></span><span id="shaka::StreamDescriptor::hls_group_id__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a25764b4ffa8cb0da3b88cc251928ad96"></span>std::string <code class="sig-name descname">hls_group_id</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor12hls_group_idE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Required for audio when outputting HLS. It defines the group ID for the output stream. This is used as the GROUP-ID attribute for EXT-X-MEDIA. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor17hls_playlist_nameE">
-<span id="shaka::StreamDescriptor::hls_playlist_name__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1aa0d36cf55c46def14bc2fa6c293859ef"></span>std::string <code class="descname">hls_playlist_name</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor17hls_playlist_nameE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Required for HLS output. It defines the name of the playlist for the stream. Usually ends with <code class="docutils literal"><span class="pre">.m3u8</span></code>. </p>
+<dt id="_CPPv4N5shaka16StreamDescriptor17hls_playlist_nameE">
+<span id="_CPPv3N5shaka16StreamDescriptor17hls_playlist_nameE"></span><span id="_CPPv2N5shaka16StreamDescriptor17hls_playlist_nameE"></span><span id="shaka::StreamDescriptor::hls_playlist_name__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1aa0d36cf55c46def14bc2fa6c293859ef"></span>std::string <code class="sig-name descname">hls_playlist_name</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor17hls_playlist_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Required for HLS output. It defines the name of the playlist for the stream. Usually ends with <code class="docutils literal notranslate"><span class="pre">.m3u8</span></code>. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor24hls_iframe_playlist_nameE">
-<span id="shaka::StreamDescriptor::hls_iframe_playlist_name__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a05f0489a76ea049bc8c9f144b4189591"></span>std::string <code class="descname">hls_iframe_playlist_name</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor24hls_iframe_playlist_nameE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Optional for HLS output. It defines the name of the I-Frames only playlist for the stream. For Video only. Usually ends with <code class="docutils literal"><span class="pre">.m3u8</span></code>. </p>
+<dt id="_CPPv4N5shaka16StreamDescriptor24hls_iframe_playlist_nameE">
+<span id="_CPPv3N5shaka16StreamDescriptor24hls_iframe_playlist_nameE"></span><span id="_CPPv2N5shaka16StreamDescriptor24hls_iframe_playlist_nameE"></span><span id="shaka::StreamDescriptor::hls_iframe_playlist_name__ss"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a05f0489a76ea049bc8c9f144b4189591"></span>std::string <code class="sig-name descname">hls_iframe_playlist_name</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor24hls_iframe_playlist_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Optional for HLS output. It defines the name of the I-Frames only playlist for the stream. For Video only. Usually ends with <code class="docutils literal notranslate"><span class="pre">.m3u8</span></code>. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16StreamDescriptor19hls_characteristicsE">
-<span id="shaka::StreamDescriptor::hls_characteristics__std::vector:ss:"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1ac10d35524ea73cc860a3f027181dc627"></span>std::vector&lt;std::string&gt; <code class="descname">hls_characteristics</code><a class="headerlink" href="#_CPPv2N5shaka16StreamDescriptor19hls_characteristicsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16StreamDescriptor19hls_characteristicsE">
+<span id="_CPPv3N5shaka16StreamDescriptor19hls_characteristicsE"></span><span id="_CPPv2N5shaka16StreamDescriptor19hls_characteristicsE"></span><span id="shaka::StreamDescriptor::hls_characteristics__std::vector:ss:"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1ac10d35524ea73cc860a3f027181dc627"></span>std::vector&lt;std::string&gt; <code class="sig-name descname">hls_characteristics</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor19hls_characteristicsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Optional for HLS output. It defines the CHARACTERISTICS attribute of the stream. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv4N5shaka16StreamDescriptor19dash_accessiblitiesE">
+<span id="_CPPv3N5shaka16StreamDescriptor19dash_accessiblitiesE"></span><span id="_CPPv2N5shaka16StreamDescriptor19dash_accessiblitiesE"></span><span id="shaka::StreamDescriptor::dash_accessiblities__std::vector:ss:"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a03bb87af04ca55f1cc83221fa4f3efdc"></span>std::vector&lt;std::string&gt; <code class="sig-name descname">dash_accessiblities</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor19dash_accessiblitiesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Optional for DASH output. It defines Accessibility elements of the stream. </p>
+</dd></dl>
+
+<dl class="member">
+<dt id="_CPPv4N5shaka16StreamDescriptor10dash_rolesE">
+<span id="_CPPv3N5shaka16StreamDescriptor10dash_rolesE"></span><span id="_CPPv2N5shaka16StreamDescriptor10dash_rolesE"></span><span id="shaka::StreamDescriptor::dash_roles__std::vector:ss:"></span><span class="target" id="d2/d7b/structshaka_1_1StreamDescriptor_1a14f5522df8e5a06fa9e0f7852efdfca0"></span>std::vector&lt;std::string&gt; <code class="sig-name descname">dash_roles</code><a class="headerlink" href="#_CPPv4N5shaka16StreamDescriptor10dash_rolesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Optional for DASH output. It defines Role elements of the stream. </p>
 </dd></dl>
 
 </div>
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka15Mp4OutputParamsE">
-<span id="shaka::Mp4OutputParams"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">Mp4OutputParams</code><a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15Mp4OutputParamsE">
+<span id="_CPPv3N5shaka15Mp4OutputParamsE"></span><span id="_CPPv2N5shaka15Mp4OutputParamsE"></span><span id="shaka::Mp4OutputParams"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams"></span><em class="property">struct </em><code class="sig-name descname">Mp4OutputParams</code><a class="headerlink" href="#_CPPv4N5shaka15Mp4OutputParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>MP4 (ISO-BMFF) output related parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka15Mp4OutputParams22include_pssh_in_streamE">
-<span id="shaka::Mp4OutputParams::include_pssh_in_stream__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1abdff0b6ab552e27e275d8d23cc2f60b1"></span>bool <code class="descname">include_pssh_in_stream</code> = true<a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParams22include_pssh_in_streamE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15Mp4OutputParams22include_pssh_in_streamE">
+<span id="_CPPv3N5shaka15Mp4OutputParams22include_pssh_in_streamE"></span><span id="_CPPv2N5shaka15Mp4OutputParams22include_pssh_in_streamE"></span><span id="shaka::Mp4OutputParams::include_pssh_in_stream__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1abdff0b6ab552e27e275d8d23cc2f60b1"></span>bool <code class="sig-name descname">include_pssh_in_stream</code> = true<a class="headerlink" href="#_CPPv4N5shaka15Mp4OutputParams22include_pssh_in_streamE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Include pssh in the encrypted stream. CMAF and DASH-IF recommends carrying license acquisition information in the manifest and not duplicate the information in the stream. (This is not a hard requirement so we are still CMAF compatible even if pssh is included in the stream.) </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE">
-<span id="shaka::Mp4OutputParams::generate_sidx_in_media_segments__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1a26b0505cea21a43ca4ce963f8fa84cf3"></span>bool <code class="descname">generate_sidx_in_media_segments</code> = true<a class="headerlink" href="#_CPPv2N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE">
+<span id="_CPPv3N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE"></span><span id="_CPPv2N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE"></span><span id="shaka::Mp4OutputParams::generate_sidx_in_media_segments__b"></span><span class="target" id="d0/d43/structshaka_1_1Mp4OutputParams_1a26b0505cea21a43ca4ce963f8fa84cf3"></span>bool <code class="sig-name descname">generate_sidx_in_media_segments</code> = true<a class="headerlink" href="#_CPPv4N5shaka15Mp4OutputParams31generate_sidx_in_media_segmentsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Indicates whether a ‘sidx’ box should be generated in the media segments. Note that it is required by spec if segment_template contains $Times$ specifier. </p>
 </dd></dl>
 
@@ -269,32 +271,32 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka14ChunkingParamsE">
-<span id="shaka::ChunkingParams"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">ChunkingParams</code><a class="headerlink" href="#_CPPv2N5shaka14ChunkingParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14ChunkingParamsE">
+<span id="_CPPv3N5shaka14ChunkingParamsE"></span><span id="_CPPv2N5shaka14ChunkingParamsE"></span><span id="shaka::ChunkingParams"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams"></span><em class="property">struct </em><code class="sig-name descname">ChunkingParams</code><a class="headerlink" href="#_CPPv4N5shaka14ChunkingParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Chunking (segmentation) related parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka14ChunkingParams27segment_duration_in_secondsE">
-<span id="shaka::ChunkingParams::segment_duration_in_seconds__double"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1a01414f1502775576d68e45d172029358"></span>double <code class="descname">segment_duration_in_seconds</code> = 0<a class="headerlink" href="#_CPPv2N5shaka14ChunkingParams27segment_duration_in_secondsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14ChunkingParams27segment_duration_in_secondsE">
+<span id="_CPPv3N5shaka14ChunkingParams27segment_duration_in_secondsE"></span><span id="_CPPv2N5shaka14ChunkingParams27segment_duration_in_secondsE"></span><span id="shaka::ChunkingParams::segment_duration_in_seconds__double"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1a01414f1502775576d68e45d172029358"></span>double <code class="sig-name descname">segment_duration_in_seconds</code> = 0<a class="headerlink" href="#_CPPv4N5shaka14ChunkingParams27segment_duration_in_secondsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Segment duration in seconds. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14ChunkingParams30subsegment_duration_in_secondsE">
-<span id="shaka::ChunkingParams::subsegment_duration_in_seconds__double"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1ae303f5bf58edbb231b0cfbbf9c4e05d7"></span>double <code class="descname">subsegment_duration_in_seconds</code> = 0<a class="headerlink" href="#_CPPv2N5shaka14ChunkingParams30subsegment_duration_in_secondsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14ChunkingParams30subsegment_duration_in_secondsE">
+<span id="_CPPv3N5shaka14ChunkingParams30subsegment_duration_in_secondsE"></span><span id="_CPPv2N5shaka14ChunkingParams30subsegment_duration_in_secondsE"></span><span id="shaka::ChunkingParams::subsegment_duration_in_seconds__double"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1ae303f5bf58edbb231b0cfbbf9c4e05d7"></span>double <code class="sig-name descname">subsegment_duration_in_seconds</code> = 0<a class="headerlink" href="#_CPPv4N5shaka14ChunkingParams30subsegment_duration_in_secondsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Subsegment duration in seconds. Should not be larger than the segment duration. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14ChunkingParams19segment_sap_alignedE">
-<span id="shaka::ChunkingParams::segment_sap_aligned__b"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1a1ab10c82260dc073fb3830efcdabb171"></span>bool <code class="descname">segment_sap_aligned</code> = true<a class="headerlink" href="#_CPPv2N5shaka14ChunkingParams19segment_sap_alignedE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14ChunkingParams19segment_sap_alignedE">
+<span id="_CPPv3N5shaka14ChunkingParams19segment_sap_alignedE"></span><span id="_CPPv2N5shaka14ChunkingParams19segment_sap_alignedE"></span><span id="shaka::ChunkingParams::segment_sap_aligned__b"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1a1ab10c82260dc073fb3830efcdabb171"></span>bool <code class="sig-name descname">segment_sap_aligned</code> = true<a class="headerlink" href="#_CPPv4N5shaka14ChunkingParams19segment_sap_alignedE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Force segments to begin with stream access points. Actual segment duration may not be exactly what is specified by segment_duration. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14ChunkingParams22subsegment_sap_alignedE">
-<span id="shaka::ChunkingParams::subsegment_sap_aligned__b"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1afcde8cc6cf9646c78f5bf13181022aa7"></span>bool <code class="descname">subsegment_sap_aligned</code> = true<a class="headerlink" href="#_CPPv2N5shaka14ChunkingParams22subsegment_sap_alignedE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14ChunkingParams22subsegment_sap_alignedE">
+<span id="_CPPv3N5shaka14ChunkingParams22subsegment_sap_alignedE"></span><span id="_CPPv2N5shaka14ChunkingParams22subsegment_sap_alignedE"></span><span id="shaka::ChunkingParams::subsegment_sap_aligned__b"></span><span class="target" id="d2/d1f/structshaka_1_1ChunkingParams_1afcde8cc6cf9646c78f5bf13181022aa7"></span>bool <code class="sig-name descname">subsegment_sap_aligned</code> = true<a class="headerlink" href="#_CPPv4N5shaka14ChunkingParams22subsegment_sap_alignedE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Force subsegments to begin with stream access points. Actual subsegment duration may not be exactly what is specified by subsegment_duration. Setting to subsegment_sap_aligned to true but segment_sap_aligned to false is not allowed. </p>
 </dd></dl>
 
@@ -302,312 +304,312 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka9MpdParamsE">
-<span id="shaka::MpdParams"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">MpdParams</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParamsE">
+<span id="_CPPv3N5shaka9MpdParamsE"></span><span id="_CPPv2N5shaka9MpdParamsE"></span><span id="shaka::MpdParams"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams"></span><em class="property">struct </em><code class="sig-name descname">MpdParams</code><a class="headerlink" href="#_CPPv4N5shaka9MpdParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>DASH MPD related parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams10mpd_outputE">
-<span id="shaka::MpdParams::mpd_output__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aa6ca18997bb307d3b5fe1c9ced161ff6"></span>std::string <code class="descname">mpd_output</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams10mpd_outputE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams10mpd_outputE">
+<span id="_CPPv3N5shaka9MpdParams10mpd_outputE"></span><span id="_CPPv2N5shaka9MpdParams10mpd_outputE"></span><span id="shaka::MpdParams::mpd_output__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aa6ca18997bb307d3b5fe1c9ced161ff6"></span>std::string <code class="sig-name descname">mpd_output</code><a class="headerlink" href="#_CPPv4N5shaka9MpdParams10mpd_outputE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>MPD output file path. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams9base_urlsE">
-<span id="shaka::MpdParams::base_urls__std::vector:ss:"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a9fe508f9c56a6424fd857d43a4a69e7c"></span>std::vector&lt;std::string&gt; <code class="descname">base_urls</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams9base_urlsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams9base_urlsE">
+<span id="_CPPv3N5shaka9MpdParams9base_urlsE"></span><span id="_CPPv2N5shaka9MpdParams9base_urlsE"></span><span id="shaka::MpdParams::base_urls__std::vector:ss:"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a9fe508f9c56a6424fd857d43a4a69e7c"></span>std::vector&lt;std::string&gt; <code class="sig-name descname">base_urls</code><a class="headerlink" href="#_CPPv4N5shaka9MpdParams9base_urlsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>BaseURLs for the MPD. The values will be added as &lt;BaseURL&gt; element(s) under the &lt;MPD&gt; element. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams15min_buffer_timeE">
-<span id="shaka::MpdParams::min_buffer_time__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aee1510b64b9acbc17b8bfccac2e132a3"></span>double <code class="descname">min_buffer_time</code> = 2.0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams15min_buffer_timeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams15min_buffer_timeE">
+<span id="_CPPv3N5shaka9MpdParams15min_buffer_timeE"></span><span id="_CPPv2N5shaka9MpdParams15min_buffer_timeE"></span><span id="shaka::MpdParams::min_buffer_time__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aee1510b64b9acbc17b8bfccac2e132a3"></span>double <code class="sig-name descname">min_buffer_time</code> = 2.0<a class="headerlink" href="#_CPPv4N5shaka9MpdParams15min_buffer_timeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set MPD attribute, which specifies, in seconds, a common duration used in the definition of the MPD representation data rate. A client can be assured of having enough data for continous playout providing playout begins at min_buffer_time after the first bit is received. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams21minimum_update_periodE">
-<span id="shaka::MpdParams::minimum_update_period__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a4a5dafe570fd7e35749ce12d83ca9559"></span>double <code class="descname">minimum_update_period</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams21minimum_update_periodE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams21minimum_update_periodE">
+<span id="_CPPv3N5shaka9MpdParams21minimum_update_periodE"></span><span id="_CPPv2N5shaka9MpdParams21minimum_update_periodE"></span><span id="shaka::MpdParams::minimum_update_period__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a4a5dafe570fd7e35749ce12d83ca9559"></span>double <code class="sig-name descname">minimum_update_period</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9MpdParams21minimum_update_periodE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set MPD attribute, which indicates to the player how often to refresh the MPD in seconds. For dynamic MPD only. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams23time_shift_buffer_depthE">
-<span id="shaka::MpdParams::time_shift_buffer_depth__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a95e4824708c8de4b882b86772f680032"></span>double <code class="descname">time_shift_buffer_depth</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams23time_shift_buffer_depthE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams23time_shift_buffer_depthE">
+<span id="_CPPv3N5shaka9MpdParams23time_shift_buffer_depthE"></span><span id="_CPPv2N5shaka9MpdParams23time_shift_buffer_depthE"></span><span id="shaka::MpdParams::time_shift_buffer_depth__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a95e4824708c8de4b882b86772f680032"></span>double <code class="sig-name descname">time_shift_buffer_depth</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9MpdParams23time_shift_buffer_depthE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set MPD attribute, which is the guaranteed duration of the time shifting buffer for ‘dynamic’ media presentations, in seconds. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams38preserved_segments_outside_live_windowE">
-<span id="shaka::MpdParams::preserved_segments_outside_live_window__s"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a84378ed480ed2e9b8915afd9c349b458"></span>size_t <code class="descname">preserved_segments_outside_live_window</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams38preserved_segments_outside_live_windowE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams38preserved_segments_outside_live_windowE">
+<span id="_CPPv3N5shaka9MpdParams38preserved_segments_outside_live_windowE"></span><span id="_CPPv2N5shaka9MpdParams38preserved_segments_outside_live_windowE"></span><span id="shaka::MpdParams::preserved_segments_outside_live_window__s"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a84378ed480ed2e9b8915afd9c349b458"></span>size_t <code class="sig-name descname">preserved_segments_outside_live_window</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9MpdParams38preserved_segments_outside_live_windowE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Segments outside the live window (defined by ‘time_shift_buffer_depth’ above) are automatically removed except for the most recent X segments defined by this parameter. This is needed to accommodate latencies in various stages of content serving pipeline, so that the segments stay accessible as they may still be accessed by the player. The segments are not removed if the value is zero. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams16default_languageE">
-<span id="shaka::MpdParams::default_language__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a74df80bd74635090e97837f3a5941d73"></span>std::string <code class="descname">default_language</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams16default_languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams16default_languageE">
+<span id="_CPPv3N5shaka9MpdParams16default_languageE"></span><span id="_CPPv2N5shaka9MpdParams16default_languageE"></span><span id="shaka::MpdParams::default_language__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a74df80bd74635090e97837f3a5941d73"></span>std::string <code class="sig-name descname">default_language</code><a class="headerlink" href="#_CPPv4N5shaka9MpdParams16default_languageE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The tracks tagged with this language will have &lt;Role … value=”main” /&gt; in the manifest. This allows the player to choose the correct default language for the content. This applies to both audio and text tracks. The default language for text tracks can be overriden by ‘default_text_language’. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams21default_text_languageE">
-<span id="shaka::MpdParams::default_text_language__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1acafb3925f5d32826a241d00f2bf09509"></span>std::string <code class="descname">default_text_language</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams21default_text_languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams21default_text_languageE">
+<span id="_CPPv3N5shaka9MpdParams21default_text_languageE"></span><span id="_CPPv2N5shaka9MpdParams21default_text_languageE"></span><span id="shaka::MpdParams::default_text_language__ss"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1acafb3925f5d32826a241d00f2bf09509"></span>std::string <code class="sig-name descname">default_text_language</code><a class="headerlink" href="#_CPPv4N5shaka9MpdParams21default_text_languageE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Same as above, but this overrides the default language for text tracks, i.e. subtitles or close-captions. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams24generate_static_live_mpdE">
-<span id="shaka::MpdParams::generate_static_live_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1ab5a09b17ee41a0960e813bd0c72bf4f6"></span>bool <code class="descname">generate_static_live_mpd</code> = false<a class="headerlink" href="#_CPPv2N5shaka9MpdParams24generate_static_live_mpdE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams24generate_static_live_mpdE">
+<span id="_CPPv3N5shaka9MpdParams24generate_static_live_mpdE"></span><span id="_CPPv2N5shaka9MpdParams24generate_static_live_mpdE"></span><span id="shaka::MpdParams::generate_static_live_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1ab5a09b17ee41a0960e813bd0c72bf4f6"></span>bool <code class="sig-name descname">generate_static_live_mpd</code> = false<a class="headerlink" href="#_CPPv4N5shaka9MpdParams24generate_static_live_mpdE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Generate static MPD for live profile. Note that this flag has no effect for on-demand profile, in which case static MPD is always used. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE">
-<span id="shaka::MpdParams::generate_dash_if_iop_compliant_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aa1b2ec6746586d4981655cee62669ba2"></span>bool <code class="descname">generate_dash_if_iop_compliant_mpd</code> = true<a class="headerlink" href="#_CPPv2N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE">
+<span id="_CPPv3N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE"></span><span id="_CPPv2N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE"></span><span id="shaka::MpdParams::generate_dash_if_iop_compliant_mpd__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1aa1b2ec6746586d4981655cee62669ba2"></span>bool <code class="sig-name descname">generate_dash_if_iop_compliant_mpd</code> = true<a class="headerlink" href="#_CPPv4N5shaka9MpdParams34generate_dash_if_iop_compliant_mpdE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Try to generate DASH-IF IOP compliant MPD. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE">
-<span id="shaka::MpdParams::allow_approximate_segment_timeline__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1af4424dc23f81ff4000584db2866f24c9"></span>bool <code class="descname">allow_approximate_segment_timeline</code> = false<a class="headerlink" href="#_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams34allow_approximate_segment_timelineE">
+<span id="_CPPv3N5shaka9MpdParams34allow_approximate_segment_timelineE"></span><span id="_CPPv2N5shaka9MpdParams34allow_approximate_segment_timelineE"></span><span id="shaka::MpdParams::allow_approximate_segment_timeline__b"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1af4424dc23f81ff4000584db2866f24c9"></span>bool <code class="sig-name descname">allow_approximate_segment_timeline</code> = false<a class="headerlink" href="#_CPPv4N5shaka9MpdParams34allow_approximate_segment_timelineE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>For live profile only. If enabled, segments with close duration (i.e. with difference less than one sample) are considered to have the same duration. This enables MPD generator to generate less SegmentTimeline entries. If all segments are of the same duration except the last one, we will do further optimization to use SegmentTemplate instead and omit SegmentTimeline completely. Ignored if $Time$ is used in segment template, since $Time$ requires accurate Segment Timeline. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams23target_segment_durationE">
-<span id="shaka::MpdParams::target_segment_duration__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a88b8d28e263b2dcb36909869d3c2ceca"></span>double <code class="descname">target_segment_duration</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams23target_segment_durationE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to calculate the approximate SegmentTimeline if it is enabled. It is also used by the bandwidth estimator to exclude the segments with duration less than half of the target duration from bandwidth estimation. It will be populated from segment duration specified in <a class="reference internal" href="#d2/d1f/structshaka_1_1ChunkingParams"><span class="std std-ref">ChunkingParams</span></a> if not specified. </p>
+<dt id="_CPPv4N5shaka9MpdParams23target_segment_durationE">
+<span id="_CPPv3N5shaka9MpdParams23target_segment_durationE"></span><span id="_CPPv2N5shaka9MpdParams23target_segment_durationE"></span><span id="shaka::MpdParams::target_segment_duration__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a88b8d28e263b2dcb36909869d3c2ceca"></span>double <code class="sig-name descname">target_segment_duration</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9MpdParams23target_segment_durationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to calculate the approximate SegmentTimeline if it is enabled. It will be populated from segment duration specified in <a class="reference internal" href="#d2/d1f/structshaka_1_1ChunkingParams"><span class="std std-ref">ChunkingParams</span></a> if not specified. </p>
 </dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE">
-<span id="shaka::MpdParams::kSuggestedPresentationDelayNotSet__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a13705544aac44c5d2065b8a842744bf0"></span><em class="property">constexpr</em> double <code class="descname">kSuggestedPresentationDelayNotSet</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE">
+<span id="_CPPv3N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE"></span><span id="_CPPv2N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE"></span><span id="shaka::MpdParams::kSuggestedPresentationDelayNotSet__double"></span><span class="target" id="df/ddc/structshaka_1_1MpdParams_1a13705544aac44c5d2065b8a842744bf0"></span><em class="property">constexpr</em> double <code class="sig-name descname">kSuggestedPresentationDelayNotSet</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9MpdParams33kSuggestedPresentationDelayNotSetE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Set MPD attribute. For ‘dynamic’ media presentations, it specifies a delay, in seconds, to be added to the media presentation time. The attribute is not set if the value is 0; the client is expected to choose a suitable value in this case. </p>
 </dd></dl>
 
 </div>
 <dl class="class">
-<dt id="_CPPv2N5shaka9MpdParams9UtcTimingE">
-<span id="shaka::MpdParams::UtcTiming"></span><span class="target" id="d3/d6e/structshaka_1_1MpdParams_1_1UtcTiming"></span><em class="property">struct </em><code class="descname">UtcTiming</code><a class="headerlink" href="#_CPPv2N5shaka9MpdParams9UtcTimingE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9MpdParams9UtcTimingE">
+<span id="_CPPv3N5shaka9MpdParams9UtcTimingE"></span><span id="_CPPv2N5shaka9MpdParams9UtcTimingE"></span><span id="shaka::MpdParams::UtcTiming"></span><span class="target" id="d3/d6e/structshaka_1_1MpdParams_1_1UtcTiming"></span><em class="property">struct </em><code class="sig-name descname">UtcTiming</code><a class="headerlink" href="#_CPPv4N5shaka9MpdParams9UtcTimingE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>UTCTimings. For dynamic MPD only. </p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka9HlsParamsE">
-<span id="shaka::HlsParams"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">HlsParams</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParamsE">
+<span id="_CPPv3N5shaka9HlsParamsE"></span><span id="_CPPv2N5shaka9HlsParamsE"></span><span id="shaka::HlsParams"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams"></span><em class="property">struct </em><code class="sig-name descname">HlsParams</code><a class="headerlink" href="#_CPPv4N5shaka9HlsParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>HLS related parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams13playlist_typeE">
-<span id="shaka::HlsParams::playlist_type__HlsPlaylistType"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a9bfeae8a0c112ca82830dd3f228438e6"></span><a class="reference internal" href="#_CPPv2N5shaka15HlsPlaylistTypeE" title="shaka::HlsPlaylistType">HlsPlaylistType</a> <code class="descname">playlist_type</code> = HlsPlaylistType::kVod<a class="headerlink" href="#_CPPv2N5shaka9HlsParams13playlist_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams13playlist_typeE">
+<span id="_CPPv3N5shaka9HlsParams13playlist_typeE"></span><span id="_CPPv2N5shaka9HlsParams13playlist_typeE"></span><span id="shaka::HlsParams::playlist_type__HlsPlaylistType"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a9bfeae8a0c112ca82830dd3f228438e6"></span><a class="reference internal" href="#_CPPv4N5shaka15HlsPlaylistTypeE" title="shaka::HlsPlaylistType">HlsPlaylistType</a> <code class="sig-name descname">playlist_type</code> = <a class="reference internal" href="#_CPPv4N5shaka15HlsPlaylistTypeE" title="shaka::HlsPlaylistType">HlsPlaylistType</a>::kVod<a class="headerlink" href="#_CPPv4N5shaka9HlsParams13playlist_typeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>HLS playlist type. See HLS specification for details. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams22master_playlist_outputE">
-<span id="shaka::HlsParams::master_playlist_output__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1ae3706891d39f8da72ed59d8fb13f2e30"></span>std::string <code class="descname">master_playlist_output</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams22master_playlist_outputE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams22master_playlist_outputE">
+<span id="_CPPv3N5shaka9HlsParams22master_playlist_outputE"></span><span id="_CPPv2N5shaka9HlsParams22master_playlist_outputE"></span><span id="shaka::HlsParams::master_playlist_output__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1ae3706891d39f8da72ed59d8fb13f2e30"></span>std::string <code class="sig-name descname">master_playlist_output</code><a class="headerlink" href="#_CPPv4N5shaka9HlsParams22master_playlist_outputE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>HLS master playlist output path. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams8base_urlE">
-<span id="shaka::HlsParams::base_url__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a546dcdf68c8a0a5e188f84b5c9fca9dd"></span>std::string <code class="descname">base_url</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams8base_urlE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams8base_urlE">
+<span id="_CPPv3N5shaka9HlsParams8base_urlE"></span><span id="_CPPv2N5shaka9HlsParams8base_urlE"></span><span id="shaka::HlsParams::base_url__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a546dcdf68c8a0a5e188f84b5c9fca9dd"></span>std::string <code class="sig-name descname">base_url</code><a class="headerlink" href="#_CPPv4N5shaka9HlsParams8base_urlE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The base URL for the Media Playlists and media files listed in the playlists. This is the prefix for the files. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams23time_shift_buffer_depthE">
-<span id="shaka::HlsParams::time_shift_buffer_depth__double"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1adc19a9eebbfe20c3f9fe03dd452e4b1b"></span>double <code class="descname">time_shift_buffer_depth</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9HlsParams23time_shift_buffer_depthE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams23time_shift_buffer_depthE">
+<span id="_CPPv3N5shaka9HlsParams23time_shift_buffer_depthE"></span><span id="_CPPv2N5shaka9HlsParams23time_shift_buffer_depthE"></span><span id="shaka::HlsParams::time_shift_buffer_depth__double"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1adc19a9eebbfe20c3f9fe03dd452e4b1b"></span>double <code class="sig-name descname">time_shift_buffer_depth</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9HlsParams23time_shift_buffer_depthE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Defines the live window, or the guaranteed duration of the time shifting buffer for ‘live’ playlists. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams38preserved_segments_outside_live_windowE">
-<span id="shaka::HlsParams::preserved_segments_outside_live_window__s"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1aa471aaa93cb7c95996902648e376c2e6"></span>size_t <code class="descname">preserved_segments_outside_live_window</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9HlsParams38preserved_segments_outside_live_windowE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams38preserved_segments_outside_live_windowE">
+<span id="_CPPv3N5shaka9HlsParams38preserved_segments_outside_live_windowE"></span><span id="_CPPv2N5shaka9HlsParams38preserved_segments_outside_live_windowE"></span><span id="shaka::HlsParams::preserved_segments_outside_live_window__s"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1aa471aaa93cb7c95996902648e376c2e6"></span>size_t <code class="sig-name descname">preserved_segments_outside_live_window</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9HlsParams38preserved_segments_outside_live_windowE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Segments outside the live window (defined by ‘time_shift_buffer_depth’ above) are automatically removed except for the most recent X segments defined by this parameter. This is needed to accommodate latencies in various stages of content serving pipeline, so that the segments stay accessible as they may still be accessed by the player. The segments are not removed if the value is zero. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams7key_uriE">
-<span id="shaka::HlsParams::key_uri__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a68414aff0f65059c2d05c8d168aadf5f"></span>std::string <code class="descname">key_uri</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams7key_uriE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams7key_uriE">
+<span id="_CPPv3N5shaka9HlsParams7key_uriE"></span><span id="_CPPv2N5shaka9HlsParams7key_uriE"></span><span id="shaka::HlsParams::key_uri__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a68414aff0f65059c2d05c8d168aadf5f"></span>std::string <code class="sig-name descname">key_uri</code><a class="headerlink" href="#_CPPv4N5shaka9HlsParams7key_uriE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Defines the key uri for “identity” and “com.apple.streamingkeydelivery” key formats. Ignored if the playlist is not encrypted or not using the above key formats. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams16default_languageE">
-<span id="shaka::HlsParams::default_language__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1abeea3a7ebfe7b2d1e29b3e4445bfd113"></span>std::string <code class="descname">default_language</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams16default_languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams16default_languageE">
+<span id="_CPPv3N5shaka9HlsParams16default_languageE"></span><span id="_CPPv2N5shaka9HlsParams16default_languageE"></span><span id="shaka::HlsParams::default_language__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1abeea3a7ebfe7b2d1e29b3e4445bfd113"></span>std::string <code class="sig-name descname">default_language</code><a class="headerlink" href="#_CPPv4N5shaka9HlsParams16default_languageE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The renditions tagged with this language will have ‘DEFAULT’ set to ‘YES’ in ‘EXT-X-MEDIA’ tag. This allows the player to choose the correct default language for the content. This applies to both audio and text tracks. The default language for text tracks can be overriden by ‘default_text_language’. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams21default_text_languageE">
-<span id="shaka::HlsParams::default_text_language__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a77961998aa8083ec8f9e58f02521566b"></span>std::string <code class="descname">default_text_language</code><a class="headerlink" href="#_CPPv2N5shaka9HlsParams21default_text_languageE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9HlsParams21default_text_languageE">
+<span id="_CPPv3N5shaka9HlsParams21default_text_languageE"></span><span id="_CPPv2N5shaka9HlsParams21default_text_languageE"></span><span id="shaka::HlsParams::default_text_language__ss"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1a77961998aa8083ec8f9e58f02521566b"></span>std::string <code class="sig-name descname">default_text_language</code><a class="headerlink" href="#_CPPv4N5shaka9HlsParams21default_text_languageE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Same as above, but this overrides the default language for text tracks, i.e. subtitles or close-captions. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka9HlsParams23target_segment_durationE">
-<span id="shaka::HlsParams::target_segment_duration__double"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1aaa9c66720a8fb0e7ee3ef362825919a6"></span>double <code class="descname">target_segment_duration</code> = 0<a class="headerlink" href="#_CPPv2N5shaka9HlsParams23target_segment_durationE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. This parameter is included here to for bandwidth estimator to exclude the segments with duration less than half of the target duration from bandwidth estimation. See <a class="reference external" href="https://github.com/google/shaka-packager/issues/498">https://github.com/google/shaka-packager/issues/498</a> for details. It will be populated from segment duration specified in <a class="reference internal" href="#d2/d1f/structshaka_1_1ChunkingParams"><span class="std std-ref">ChunkingParams</span></a> if not specified. </p>
+<dt id="_CPPv4N5shaka9HlsParams23target_segment_durationE">
+<span id="_CPPv3N5shaka9HlsParams23target_segment_durationE"></span><span id="_CPPv2N5shaka9HlsParams23target_segment_durationE"></span><span id="shaka::HlsParams::target_segment_duration__double"></span><span class="target" id="d0/da8/structshaka_1_1HlsParams_1aaa9c66720a8fb0e7ee3ef362825919a6"></span>double <code class="sig-name descname">target_segment_duration</code> = 0<a class="headerlink" href="#_CPPv4N5shaka9HlsParams23target_segment_durationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This is the target segment duration requested by the user. The actual segment duration may be different to the target segment duration. It will be populated from segment duration specified in <a class="reference internal" href="#d2/d1f/structshaka_1_1ChunkingParams"><span class="std std-ref">ChunkingParams</span></a> if not specified. </p>
 </dd></dl>
 
 </div>
 </dd></dl>
 
-<dl class="type">
-<dt id="_CPPv2N5shaka15HlsPlaylistTypeE">
-<span id="shaka::HlsPlaylistType"></span><span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8d"></span><em class="property">enum </em><code class="descclassname">shaka::</code><code class="descname">HlsPlaylistType</code><a class="headerlink" href="#_CPPv2N5shaka15HlsPlaylistTypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="enum">
+<dt id="_CPPv4N5shaka15HlsPlaylistTypeE">
+<span id="_CPPv3N5shaka15HlsPlaylistTypeE"></span><span id="_CPPv2N5shaka15HlsPlaylistTypeE"></span><span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8d"></span><em class="property">enum </em><code class="sig-prename descclassname">shaka<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">HlsPlaylistType</code><a class="headerlink" href="#_CPPv4N5shaka15HlsPlaylistTypeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Defines the EXT-X-PLAYLIST-TYPE in the HLS specification. For HlsPlaylistType of kLive, EXT-X-PLAYLIST-TYPE tag is omitted. </p>
 <p><em>Values:</em></p>
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka4kVodE">
-<span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8da1e17bc9cc968c62f2424715e2f57b7d1"></span><code class="descname">kVod</code><a class="headerlink" href="#_CPPv2N5shaka4kVodE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka4kVodE">
+<span id="_CPPv3N5shaka4kVodE"></span><span id="_CPPv2N5shaka4kVodE"></span><span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8da1e17bc9cc968c62f2424715e2f57b7d1"></span><code class="sig-name descname">kVod</code><a class="headerlink" href="#_CPPv4N5shaka4kVodE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka6kEventE">
-<span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8dab38bfe9b7b9eafa5a368e22761e21c41"></span><code class="descname">kEvent</code><a class="headerlink" href="#_CPPv2N5shaka6kEventE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka6kEventE">
+<span id="_CPPv3N5shaka6kEventE"></span><span id="_CPPv2N5shaka6kEventE"></span><span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8dab38bfe9b7b9eafa5a368e22761e21c41"></span><code class="sig-name descname">kEvent</code><a class="headerlink" href="#_CPPv4N5shaka6kEventE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5kLiveE">
-<span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8da691aa15e9e6b889f9f400cddfdd194b6"></span><code class="descname">kLive</code><a class="headerlink" href="#_CPPv2N5shaka5kLiveE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5kLiveE">
+<span id="_CPPv3N5shaka5kLiveE"></span><span id="_CPPv2N5shaka5kLiveE"></span><span class="target" id="d8/daf/namespaceshaka_1ab63a3c00cdbf61cfb6dd7a2497b26f8da691aa15e9e6b889f9f400cddfdd194b6"></span><code class="sig-name descname">kLive</code><a class="headerlink" href="#_CPPv4N5shaka5kLiveE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="type">
-<dt id="_CPPv2N5shaka11KeyProviderE">
-<span id="shaka::KeyProvider"></span><span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185"></span><em class="property">enum </em><code class="descclassname">shaka::</code><code class="descname">KeyProvider</code><a class="headerlink" href="#_CPPv2N5shaka11KeyProviderE" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="enum">
+<dt id="_CPPv4N5shaka11KeyProviderE">
+<span id="_CPPv3N5shaka11KeyProviderE"></span><span id="_CPPv2N5shaka11KeyProviderE"></span><span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185"></span><em class="property">enum </em><code class="sig-prename descclassname">shaka<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">KeyProvider</code><a class="headerlink" href="#_CPPv4N5shaka11KeyProviderE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Encryption / decryption key providers. </p>
 <p><em>Values:</em></p>
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5kNoneE">
-<span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a35c3ace1970663a16e5c65baa5941b13"></span><code class="descname">kNone</code> = 0<a class="headerlink" href="#_CPPv2N5shaka5kNoneE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5kNoneE">
+<span id="_CPPv3N5shaka5kNoneE"></span><span id="_CPPv2N5shaka5kNoneE"></span><span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a35c3ace1970663a16e5c65baa5941b13"></span><code class="sig-name descname">kNone</code> = 0<a class="headerlink" href="#_CPPv4N5shaka5kNoneE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka9kWidevineE">
-<span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a2b4c92d0a1dbc3a696c509b0bdde12eb"></span><code class="descname">kWidevine</code> = 1<a class="headerlink" href="#_CPPv2N5shaka9kWidevineE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka9kWidevineE">
+<span id="_CPPv3N5shaka9kWidevineE"></span><span id="_CPPv2N5shaka9kWidevineE"></span><span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a2b4c92d0a1dbc3a696c509b0bdde12eb"></span><code class="sig-name descname">kWidevine</code> = 1<a class="headerlink" href="#_CPPv4N5shaka9kWidevineE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka10kPlayReadyE">
-<span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185abb168dc0fb1aa1f4aca8a756f711e51f"></span><code class="descname">kPlayReady</code> = 2<a class="headerlink" href="#_CPPv2N5shaka10kPlayReadyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka10kPlayReadyE">
+<span id="_CPPv3N5shaka10kPlayReadyE"></span><span id="_CPPv2N5shaka10kPlayReadyE"></span><span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185abb168dc0fb1aa1f4aca8a756f711e51f"></span><code class="sig-name descname">kPlayReady</code> = 2<a class="headerlink" href="#_CPPv4N5shaka10kPlayReadyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka7kRawKeyE">
-<span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a1537564eae41fe408316528882a721cf"></span><code class="descname">kRawKey</code> = 3<a class="headerlink" href="#_CPPv2N5shaka7kRawKeyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka7kRawKeyE">
+<span id="_CPPv3N5shaka7kRawKeyE"></span><span id="_CPPv2N5shaka7kRawKeyE"></span><span class="target" id="d8/daf/namespaceshaka_1a539b99ce5c34193e294bc544437e9185a1537564eae41fe408316528882a721cf"></span><code class="sig-name descname">kRawKey</code> = 3<a class="headerlink" href="#_CPPv4N5shaka7kRawKeyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka14WidevineSignerE">
-<span id="shaka::WidevineSigner"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">WidevineSigner</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSignerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSignerE">
+<span id="_CPPv3N5shaka14WidevineSignerE"></span><span id="_CPPv2N5shaka14WidevineSignerE"></span><span id="shaka::WidevineSigner"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner"></span><em class="property">struct </em><code class="sig-name descname">WidevineSigner</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSignerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Signer credential for Widevine license server. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka14WidevineSigner11signer_nameE">
-<span id="shaka::WidevineSigner::signer_name__ss"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a6768d5addb3c90f33ce5f241705c827e"></span>std::string <code class="descname">signer_name</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner11signer_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner11signer_nameE">
+<span id="_CPPv3N5shaka14WidevineSigner11signer_nameE"></span><span id="_CPPv2N5shaka14WidevineSigner11signer_nameE"></span><span id="shaka::WidevineSigner::signer_name__ss"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a6768d5addb3c90f33ce5f241705c827e"></span>std::string <code class="sig-name descname">signer_name</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner11signer_nameE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Name of the signer / content provider. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14WidevineSigner16signing_key_typeE">
-<span id="shaka::WidevineSigner::signing_key_type__SigningKeyType"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a656fbc14799c96fa8b822e3917070cf6"></span><a class="reference internal" href="#_CPPv2N5shaka14WidevineSigner14SigningKeyTypeE" title="shaka::WidevineSigner::SigningKeyType">SigningKeyType</a> <code class="descname">signing_key_type</code> = SigningKeyType::kNone<a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner16signing_key_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner16signing_key_typeE">
+<span id="_CPPv3N5shaka14WidevineSigner16signing_key_typeE"></span><span id="_CPPv2N5shaka14WidevineSigner16signing_key_typeE"></span><span id="shaka::WidevineSigner::signing_key_type__SigningKeyType"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a656fbc14799c96fa8b822e3917070cf6"></span><a class="reference internal" href="#_CPPv4N5shaka14WidevineSigner14SigningKeyTypeE" title="shaka::WidevineSigner::SigningKeyType">SigningKeyType</a> <code class="sig-name descname">signing_key_type</code> = <a class="reference internal" href="#_CPPv4N5shaka14WidevineSigner14SigningKeyTypeE" title="shaka::WidevineSigner::SigningKeyType">SigningKeyType</a>::kNone<a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner16signing_key_typeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies the signing key type, which determines whether AES or RSA key are used to authenticate the signer. A type of ‘kNone’ is invalid. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14WidevineSigner3keyE">
-<span id="shaka::WidevineSigner::key__std::vector:uint8_t:"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1ad5c378d29df509280d8697f986163324"></span>std::vector&lt;uint8_t&gt; <code class="descname">key</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner3keyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner3keyE">
+<span id="_CPPv3N5shaka14WidevineSigner3keyE"></span><span id="_CPPv2N5shaka14WidevineSigner3keyE"></span><span id="shaka::WidevineSigner::key__std::vector:uint8_t:"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1ad5c378d29df509280d8697f986163324"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">key</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner3keyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>AES signing key. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14WidevineSigner2ivE">
-<span id="shaka::WidevineSigner::iv__std::vector:uint8_t:"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a6db96d4c3f1189bbd09515732bec94d9"></span>std::vector&lt;uint8_t&gt; <code class="descname">iv</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner2ivE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner2ivE">
+<span id="_CPPv3N5shaka14WidevineSigner2ivE"></span><span id="_CPPv2N5shaka14WidevineSigner2ivE"></span><span id="shaka::WidevineSigner::iv__std::vector:uint8_t:"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a6db96d4c3f1189bbd09515732bec94d9"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">iv</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner2ivE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>AES signing IV. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka14WidevineSigner3keyE">
-<span id="shaka::WidevineSigner::key__ss"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a25bb558aa06563d24c3d7f9733ff8898"></span>std::string <code class="descname">key</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner3keyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner3keyE">
+<span id="_CPPv3N5shaka14WidevineSigner3keyE"></span><span id="_CPPv2N5shaka14WidevineSigner3keyE"></span><span id="shaka::WidevineSigner::key__ss"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a25bb558aa06563d24c3d7f9733ff8898"></span>std::string <code class="sig-name descname">key</code><br /></dt>
 <dd><p>RSA signing private key. </p>
 </dd></dl>
 
 </div>
 </dd></dl>
 
-<dl class="type">
-<dt id="_CPPv2N5shaka14WidevineSigner14SigningKeyTypeE">
-<span id="shaka::WidevineSigner::SigningKeyType"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313"></span><em class="property">enum </em><code class="descclassname">shaka::WidevineSigner::</code><code class="descname">SigningKeyType</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner14SigningKeyTypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="enum">
+<dt id="_CPPv4N5shaka14WidevineSigner14SigningKeyTypeE">
+<span id="_CPPv3N5shaka14WidevineSigner14SigningKeyTypeE"></span><span id="_CPPv2N5shaka14WidevineSigner14SigningKeyTypeE"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313"></span><em class="property">enum </em><code class="sig-prename descclassname">shaka::<a class="reference internal" href="#_CPPv4N5shaka14WidevineSignerE" title="shaka::WidevineSigner">WidevineSigner</a><code class="sig-prename descclassname">::</code></code><code class="sig-name descname">SigningKeyType</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner14SigningKeyTypeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p><em>Values:</em></p>
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka14WidevineSigner5kNoneE">
-<span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313a35c3ace1970663a16e5c65baa5941b13"></span><code class="descname">kNone</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner5kNoneE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner5kNoneE">
+<span id="_CPPv3N5shaka14WidevineSigner5kNoneE"></span><span id="_CPPv2N5shaka14WidevineSigner5kNoneE"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313a35c3ace1970663a16e5c65baa5941b13"></span><code class="sig-name descname">kNone</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner5kNoneE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka14WidevineSigner4kAesE">
-<span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313aa71c96d1cd0362bf95fb3bd419048129"></span><code class="descname">kAes</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner4kAesE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner4kAesE">
+<span id="_CPPv3N5shaka14WidevineSigner4kAesE"></span><span id="_CPPv2N5shaka14WidevineSigner4kAesE"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313aa71c96d1cd0362bf95fb3bd419048129"></span><code class="sig-name descname">kAes</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner4kAesE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka14WidevineSigner4kRsaE">
-<span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313a57693b7d41958c8db30e208b02faf71c"></span><code class="descname">kRsa</code><a class="headerlink" href="#_CPPv2N5shaka14WidevineSigner4kRsaE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka14WidevineSigner4kRsaE">
+<span id="_CPPv3N5shaka14WidevineSigner4kRsaE"></span><span id="_CPPv2N5shaka14WidevineSigner4kRsaE"></span><span class="target" id="df/d22/structshaka_1_1WidevineSigner_1a4f118f7b3a763c9f81b22be37d851313a57693b7d41958c8db30e208b02faf71c"></span><code class="sig-name descname">kRsa</code><a class="headerlink" href="#_CPPv4N5shaka14WidevineSigner4kRsaE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParamsE">
-<span id="shaka::WidevineEncryptionParams"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">WidevineEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParamsE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParamsE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParamsE"></span><span id="shaka::WidevineEncryptionParams"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams"></span><em class="property">struct </em><code class="sig-name descname">WidevineEncryptionParams</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Widevine encryption parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams14key_server_urlE">
-<span id="shaka::WidevineEncryptionParams::key_server_url__ss"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1ac222c5bd0620e5a6f9bf5e9fec534fb9"></span>std::string <code class="descname">key_server_url</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParams14key_server_urlE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParams14key_server_urlE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParams14key_server_urlE"></span><span id="shaka::WidevineEncryptionParams::key_server_url__ss"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1ac222c5bd0620e5a6f9bf5e9fec534fb9"></span>std::string <code class="sig-name descname">key_server_url</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Widevine license / key server URL. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams10content_idE">
-<span id="shaka::WidevineEncryptionParams::content_id__std::vector:uint8_t:"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a6b9770524a9507d0a9a3606ceef23075"></span>std::vector&lt;uint8_t&gt; <code class="descname">content_id</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams10content_idE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParams10content_idE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParams10content_idE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParams10content_idE"></span><span id="shaka::WidevineEncryptionParams::content_id__std::vector:uint8_t:"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a6b9770524a9507d0a9a3606ceef23075"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">content_id</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParams10content_idE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Content identifier. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams6policyE">
-<span id="shaka::WidevineEncryptionParams::policy__ss"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a469f3db91b42af20f270a280c4d42b4f"></span>std::string <code class="descname">policy</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams6policyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParams6policyE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParams6policyE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParams6policyE"></span><span id="shaka::WidevineEncryptionParams::policy__ss"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a469f3db91b42af20f270a280c4d42b4f"></span>std::string <code class="sig-name descname">policy</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParams6policyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The name of a stored policy, which specifies DRM content rights. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams6signerE">
-<span id="shaka::WidevineEncryptionParams::signer__WidevineSigner"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a233141ad4baf2f2afce30f96adf340ae"></span><a class="reference internal" href="#_CPPv2N5shaka14WidevineSignerE" title="shaka::WidevineSigner">WidevineSigner</a> <code class="descname">signer</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams6signerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParams6signerE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParams6signerE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParams6signerE"></span><span id="shaka::WidevineEncryptionParams::signer__WidevineSigner"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a233141ad4baf2f2afce30f96adf340ae"></span><a class="reference internal" href="#_CPPv4N5shaka14WidevineSignerE" title="shaka::WidevineSigner">WidevineSigner</a> <code class="sig-name descname">signer</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParams6signerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Signer credential for Widevine license / key server. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams8group_idE">
-<span id="shaka::WidevineEncryptionParams::group_id__std::vector:uint8_t:"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a6d69402cd4c66d546be180c7800e6d09"></span>std::vector&lt;uint8_t&gt; <code class="descname">group_id</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams8group_idE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParams8group_idE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParams8group_idE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParams8group_idE"></span><span id="shaka::WidevineEncryptionParams::group_id__std::vector:uint8_t:"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a6d69402cd4c66d546be180c7800e6d09"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">group_id</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParams8group_idE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Group identifier, if present licenses will belong to this group. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE">
-<span id="shaka::WidevineEncryptionParams::enable_entitlement_license__b"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a47239bcc571757930ba89e8831013234"></span>bool <code class="descname">enable_entitlement_license</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE">
+<span id="_CPPv3N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE"></span><span id="_CPPv2N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE"></span><span id="shaka::WidevineEncryptionParams::enable_entitlement_license__b"></span><span class="target" id="d9/dd2/structshaka_1_1WidevineEncryptionParams_1a47239bcc571757930ba89e8831013234"></span>bool <code class="sig-name descname">enable_entitlement_license</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineEncryptionParams26enable_entitlement_licenseE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Enables entitlement license when set to true. </p>
 </dd></dl>
 
@@ -615,44 +617,44 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParamsE">
-<span id="shaka::PlayReadyEncryptionParams"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">PlayReadyEncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>PlayReady encryption parameters. <code class="docutils literal"><span class="pre">key_server_url</span></code> and <code class="docutils literal"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. </p>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParamsE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParamsE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParamsE"></span><span id="shaka::PlayReadyEncryptionParams"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams"></span><em class="property">struct </em><code class="sig-name descname">PlayReadyEncryptionParams</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>PlayReady encryption parameters. <code class="docutils literal notranslate"><span class="pre">key_server_url</span></code> and <code class="docutils literal notranslate"><span class="pre">program_identifier</span></code> are required. The presence of other parameters may be necessary depends on server configuration. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams14key_server_urlE">
-<span id="shaka::PlayReadyEncryptionParams::key_server_url__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1ac5298ee04e36296e8dd4b7a56e8bc464"></span>std::string <code class="descname">key_server_url</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParams14key_server_urlE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParams14key_server_urlE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParams14key_server_urlE"></span><span id="shaka::PlayReadyEncryptionParams::key_server_url__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1ac5298ee04e36296e8dd4b7a56e8bc464"></span>std::string <code class="sig-name descname">key_server_url</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>PlayReady license / key server URL. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams18program_identifierE">
-<span id="shaka::PlayReadyEncryptionParams::program_identifier__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a8716552505d244227bf93c4878071f2d"></span>std::string <code class="descname">program_identifier</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams18program_identifierE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParams18program_identifierE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParams18program_identifierE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParams18program_identifierE"></span><span id="shaka::PlayReadyEncryptionParams::program_identifier__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a8716552505d244227bf93c4878071f2d"></span>std::string <code class="sig-name descname">program_identifier</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParams18program_identifierE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>PlayReady program identifier. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams7ca_fileE">
-<span id="shaka::PlayReadyEncryptionParams::ca_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1aff3107b2636f730056c6c5a673376226"></span>std::string <code class="descname">ca_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams7ca_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParams7ca_fileE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParams7ca_fileE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParams7ca_fileE"></span><span id="shaka::PlayReadyEncryptionParams::ca_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1aff3107b2636f730056c6c5a673376226"></span>std::string <code class="sig-name descname">ca_file</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParams7ca_fileE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Absolute path to the Certificate Authority file for the server cert in PEM format. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams16client_cert_fileE">
-<span id="shaka::PlayReadyEncryptionParams::client_cert_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a8e3c7d3b038b602e09589e0fda0aad66"></span>std::string <code class="descname">client_cert_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams16client_cert_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParams16client_cert_fileE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParams16client_cert_fileE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParams16client_cert_fileE"></span><span id="shaka::PlayReadyEncryptionParams::client_cert_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a8e3c7d3b038b602e09589e0fda0aad66"></span>std::string <code class="sig-name descname">client_cert_file</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParams16client_cert_fileE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Absolute path to client certificate file. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE">
-<span id="shaka::PlayReadyEncryptionParams::client_cert_private_key_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a63e0f55b12ef1a0305bd51315322b153"></span>std::string <code class="descname">client_cert_private_key_file</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE"></span><span id="shaka::PlayReadyEncryptionParams::client_cert_private_key_file__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a63e0f55b12ef1a0305bd51315322b153"></span>std::string <code class="sig-name descname">client_cert_private_key_file</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParams28client_cert_private_key_fileE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Absolute path to the private key file. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE">
-<span id="shaka::PlayReadyEncryptionParams::client_cert_private_key_password__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a672dbcea4caa427b3fd83e1a2e329859"></span>std::string <code class="descname">client_cert_private_key_password</code><a class="headerlink" href="#_CPPv2N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE">
+<span id="_CPPv3N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE"></span><span id="_CPPv2N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE"></span><span id="shaka::PlayReadyEncryptionParams::client_cert_private_key_password__ss"></span><span class="target" id="df/d47/structshaka_1_1PlayReadyEncryptionParams_1a672dbcea4caa427b3fd83e1a2e329859"></span>std::string <code class="sig-name descname">client_cert_private_key_password</code><a class="headerlink" href="#_CPPv4N5shaka25PlayReadyEncryptionParams32client_cert_private_key_passwordE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Password to the private key file. </p>
 </dd></dl>
 
@@ -660,66 +662,66 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka12RawKeyParamsE">
-<span id="shaka::RawKeyParams"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">RawKeyParams</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka12RawKeyParamsE">
+<span id="_CPPv3N5shaka12RawKeyParamsE"></span><span id="_CPPv2N5shaka12RawKeyParamsE"></span><span id="shaka::RawKeyParams"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams"></span><em class="property">struct </em><code class="sig-name descname">RawKeyParams</code><a class="headerlink" href="#_CPPv4N5shaka12RawKeyParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Raw key encryption/decryption parameters, i.e. with key parameters provided. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka12RawKeyParams2ivE">
-<span id="shaka::RawKeyParams::iv__std::vector:uint8_t:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1aab733ab6920dd8fbed523810e64ea3f1"></span>std::vector&lt;uint8_t&gt; <code class="descname">iv</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParams2ivE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>An optional initialization vector. If not provided, a random <code class="docutils literal"><span class="pre">iv</span></code> will be generated. Note that this parameter should only be used during testing. Not needed for decryption. </p>
+<dt id="_CPPv4N5shaka12RawKeyParams2ivE">
+<span id="_CPPv3N5shaka12RawKeyParams2ivE"></span><span id="_CPPv2N5shaka12RawKeyParams2ivE"></span><span id="shaka::RawKeyParams::iv__std::vector:uint8_t:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1aab733ab6920dd8fbed523810e64ea3f1"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">iv</code><a class="headerlink" href="#_CPPv4N5shaka12RawKeyParams2ivE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>An optional initialization vector. If not provided, a random <code class="docutils literal notranslate"><span class="pre">iv</span></code> will be generated. Note that this parameter should only be used during testing. Not needed for decryption. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka12RawKeyParams4psshE">
-<span id="shaka::RawKeyParams::pssh__std::vector:uint8_t:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1a448b8c435fc86d4fbc85214e523f2ac5"></span>std::vector&lt;uint8_t&gt; <code class="descname">pssh</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParams4psshE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Inject a custom <code class="docutils literal"><span class="pre">pssh</span></code> or multiple concatenated <code class="docutils literal"><span class="pre">psshs</span></code>. If not provided, a common system pssh will be generated. Not needed for decryption. </p>
+<dt id="_CPPv4N5shaka12RawKeyParams4psshE">
+<span id="_CPPv3N5shaka12RawKeyParams4psshE"></span><span id="_CPPv2N5shaka12RawKeyParams4psshE"></span><span id="shaka::RawKeyParams::pssh__std::vector:uint8_t:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1a448b8c435fc86d4fbc85214e523f2ac5"></span>std::vector&lt;uint8_t&gt; <code class="sig-name descname">pssh</code><a class="headerlink" href="#_CPPv4N5shaka12RawKeyParams4psshE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Inject a custom <code class="docutils literal notranslate"><span class="pre">pssh</span></code> or multiple concatenated <code class="docutils literal notranslate"><span class="pre">psshs</span></code>. If not provided, a common system pssh will be generated. Not needed for decryption. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka12RawKeyParams7key_mapE">
-<span id="shaka::RawKeyParams::key_map__std::map:StreamLabel.KeyInfo:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1a14e44fed95583d0bb319c082fb1ddb84"></span>std::map&lt;StreamLabel, KeyInfo&gt; <code class="descname">key_map</code><a class="headerlink" href="#_CPPv2N5shaka12RawKeyParams7key_mapE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Defines the KeyInfo for the streams. An empty <code class="docutils literal"><span class="pre">StreamLabel</span></code> indicates the default <code class="docutils literal"><span class="pre">KeyInfo</span></code>, which applies to all the <code class="docutils literal"><span class="pre">StreamLabels</span></code> not present in <code class="docutils literal"><span class="pre">key_map</span></code>. </p>
+<dt id="_CPPv4N5shaka12RawKeyParams7key_mapE">
+<span id="_CPPv3N5shaka12RawKeyParams7key_mapE"></span><span id="_CPPv2N5shaka12RawKeyParams7key_mapE"></span><span id="shaka::RawKeyParams::key_map__std::map:StreamLabel.KeyInfo:"></span><span class="target" id="d0/db4/structshaka_1_1RawKeyParams_1a14e44fed95583d0bb319c082fb1ddb84"></span>std::map&lt;StreamLabel, KeyInfo&gt; <code class="sig-name descname">key_map</code><a class="headerlink" href="#_CPPv4N5shaka12RawKeyParams7key_mapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Defines the KeyInfo for the streams. An empty <code class="docutils literal notranslate"><span class="pre">StreamLabel</span></code> indicates the default <code class="docutils literal notranslate"><span class="pre">KeyInfo</span></code>, which applies to all the <code class="docutils literal notranslate"><span class="pre">StreamLabels</span></code> not present in <code class="docutils literal notranslate"><span class="pre">key_map</span></code>. </p>
 </dd></dl>
 
 </div>
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka16EncryptionParamsE">
-<span id="shaka::EncryptionParams"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">EncryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParamsE">
+<span id="_CPPv3N5shaka16EncryptionParamsE"></span><span id="_CPPv2N5shaka16EncryptionParamsE"></span><span id="shaka::EncryptionParams"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams"></span><em class="property">struct </em><code class="sig-name descname">EncryptionParams</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Encryption parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Types</p>
-<dl class="type">
-<dt id="_CPPv2N5shaka16EncryptionParams16ProtectionSystemE">
-<span id="shaka::EncryptionParams::ProtectionSystem"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9"></span><em class="property">enum </em><code class="descname">ProtectionSystem</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams16ProtectionSystemE" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="enum">
+<dt id="_CPPv4N5shaka16EncryptionParams16ProtectionSystemE">
+<span id="_CPPv3N5shaka16EncryptionParams16ProtectionSystemE"></span><span id="_CPPv2N5shaka16EncryptionParams16ProtectionSystemE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9"></span><em class="property">enum </em><code class="sig-name descname">ProtectionSystem</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams16ProtectionSystemE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Supported protection systems. </p>
 <p><em>Values:</em></p>
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka16EncryptionParams13kCommonSystemE">
-<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9af3a6cfd02e70e988e7fc8749bd807a9f"></span><code class="descname">kCommonSystem</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams13kCommonSystemE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams13kCommonSystemE">
+<span id="_CPPv3N5shaka16EncryptionParams13kCommonSystemE"></span><span id="_CPPv2N5shaka16EncryptionParams13kCommonSystemE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9af3a6cfd02e70e988e7fc8749bd807a9f"></span><code class="sig-name descname">kCommonSystem</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams13kCommonSystemE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka16EncryptionParams9kFairPlayE">
-<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a51a26bec7d39600d282361571e71a27c"></span><code class="descname">kFairPlay</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams9kFairPlayE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams9kFairPlayE">
+<span id="_CPPv3N5shaka16EncryptionParams9kFairPlayE"></span><span id="_CPPv2N5shaka16EncryptionParams9kFairPlayE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a51a26bec7d39600d282361571e71a27c"></span><code class="sig-name descname">kFairPlay</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams9kFairPlayE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka16EncryptionParams7kMarlinE">
-<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9af9f2d77c43b28c5b91fb77806a02b65d"></span><code class="descname">kMarlin</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams7kMarlinE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams7kMarlinE">
+<span id="_CPPv3N5shaka16EncryptionParams7kMarlinE"></span><span id="_CPPv2N5shaka16EncryptionParams7kMarlinE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9af9f2d77c43b28c5b91fb77806a02b65d"></span><code class="sig-name descname">kMarlin</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams7kMarlinE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka16EncryptionParams10kPlayReadyE">
-<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9abb168dc0fb1aa1f4aca8a756f711e51f"></span><code class="descname">kPlayReady</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams10kPlayReadyE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams10kPlayReadyE">
+<span id="_CPPv3N5shaka16EncryptionParams10kPlayReadyE"></span><span id="_CPPv2N5shaka16EncryptionParams10kPlayReadyE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9abb168dc0fb1aa1f4aca8a756f711e51f"></span><code class="sig-name descname">kPlayReady</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams10kPlayReadyE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka16EncryptionParams9kWidevineE">
-<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a2b4c92d0a1dbc3a696c509b0bdde12eb"></span><code class="descname">kWidevine</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams9kWidevineE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams9kWidevineE">
+<span id="_CPPv3N5shaka16EncryptionParams9kWidevineE"></span><span id="_CPPv2N5shaka16EncryptionParams9kWidevineE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1afe99d2343ace64763249893a4fef6eb9a2b4c92d0a1dbc3a696c509b0bdde12eb"></span><code class="sig-name descname">kWidevine</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams9kWidevineE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -728,32 +730,32 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams12key_providerE">
-<span id="shaka::EncryptionParams::key_provider__KeyProvider"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1adcf61ebf8d129a5bcf3f159b9b076eed"></span><a class="reference internal" href="#_CPPv2N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a> <code class="descname">key_provider</code> = KeyProvider::kNone<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams12key_providerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams12key_providerE">
+<span id="_CPPv3N5shaka16EncryptionParams12key_providerE"></span><span id="_CPPv2N5shaka16EncryptionParams12key_providerE"></span><span id="shaka::EncryptionParams::key_provider__KeyProvider"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1adcf61ebf8d129a5bcf3f159b9b076eed"></span><a class="reference internal" href="#_CPPv4N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a> <code class="sig-name descname">key_provider</code> = <a class="reference internal" href="#_CPPv4N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a>::kNone<a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams12key_providerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies the key provider, which determines which key provider is used and which encryption params is valid. ‘kNone’ means not to encrypt the streams. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams18protection_systemsE">
-<span id="shaka::EncryptionParams::protection_systems__std::vector:ProtectionSystem:"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a3c5d11615ce906ce4420f873986db81c"></span>std::vector&lt;<a class="reference internal" href="#_CPPv2N5shaka16EncryptionParams16ProtectionSystemE" title="shaka::EncryptionParams::ProtectionSystem">ProtectionSystem</a>&gt; <code class="descname">protection_systems</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams18protection_systemsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams18protection_systemsE">
+<span id="_CPPv3N5shaka16EncryptionParams18protection_systemsE"></span><span id="_CPPv2N5shaka16EncryptionParams18protection_systemsE"></span><span id="shaka::EncryptionParams::protection_systems__std::vector:ProtectionSystem:"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a3c5d11615ce906ce4420f873986db81c"></span>std::vector&lt;<a class="reference internal" href="#_CPPv4N5shaka16EncryptionParams16ProtectionSystemE" title="shaka::EncryptionParams::ProtectionSystem">ProtectionSystem</a>&gt; <code class="sig-name descname">protection_systems</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams18protection_systemsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Protection systems to be generated. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams21clear_lead_in_secondsE">
-<span id="shaka::EncryptionParams::clear_lead_in_seconds__double"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a1ad46963dc926aa4b72813dccb3f6a45"></span>double <code class="descname">clear_lead_in_seconds</code> = 0<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams21clear_lead_in_secondsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams21clear_lead_in_secondsE">
+<span id="_CPPv3N5shaka16EncryptionParams21clear_lead_in_secondsE"></span><span id="_CPPv2N5shaka16EncryptionParams21clear_lead_in_secondsE"></span><span id="shaka::EncryptionParams::clear_lead_in_seconds__double"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a1ad46963dc926aa4b72813dccb3f6a45"></span>double <code class="sig-name descname">clear_lead_in_seconds</code> = 0<a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams21clear_lead_in_secondsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Clear lead duration in seconds. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams24vp9_subsample_encryptionE">
-<span id="shaka::EncryptionParams::vp9_subsample_encryption__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a48d415f17d51306ce7e1931fd954c37c"></span>bool <code class="descname">vp9_subsample_encryption</code> = true<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams24vp9_subsample_encryptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams24vp9_subsample_encryptionE">
+<span id="_CPPv3N5shaka16EncryptionParams24vp9_subsample_encryptionE"></span><span id="_CPPv2N5shaka16EncryptionParams24vp9_subsample_encryptionE"></span><span id="shaka::EncryptionParams::vp9_subsample_encryption__b"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a48d415f17d51306ce7e1931fd954c37c"></span>bool <code class="sig-name descname">vp9_subsample_encryption</code> = true<a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams24vp9_subsample_encryptionE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Enable/disable subsample encryption for VP9. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams17stream_label_funcE">
-<span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a7686a6aca6a7c3d077a5d7215c39fc51"></span>std::function&lt;std::string<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv2N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="shaka::EncryptionParams::EncryptedStreamAttributes">EncryptedStreamAttributes</a> &amp;stream_attributes<span class="sig-paren">)</span>&gt; <code class="descname">stream_label_func</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams17stream_label_funcE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams17stream_label_funcE">
+<span id="_CPPv3N5shaka16EncryptionParams17stream_label_funcE"></span><span id="_CPPv2N5shaka16EncryptionParams17stream_label_funcE"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a7686a6aca6a7c3d077a5d7215c39fc51"></span>std::function&lt;std::string<span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="shaka::EncryptionParams::EncryptedStreamAttributes">EncryptedStreamAttributes</a> &amp;stream_attributes<span class="sig-paren">)</span>&gt; <code class="sig-name descname">stream_label_func</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams17stream_label_funcE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stream label function assigns a stream label to the stream to be encrypted. Stream label is used to associate KeyPair with streams. Streams with the same stream label always uses the same keyPair; Streams with different stream label could use the same or different KeyPairs. A default stream label function will be generated if not set. </p>
 </dd></dl>
 
@@ -761,41 +763,41 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Static Attributes</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams21kProtectionSchemeCencE">
-<span id="shaka::EncryptionParams::kProtectionSchemeCenc__uint32_t"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a1d7a8c6b5e46b51ccadcaef3f9cf9cb0"></span><em class="property">constexpr</em> uint32_t <code class="descname">kProtectionSchemeCenc</code> = 0x63656E63<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams21kProtectionSchemeCencE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams21kProtectionSchemeCencE">
+<span id="_CPPv3N5shaka16EncryptionParams21kProtectionSchemeCencE"></span><span id="_CPPv2N5shaka16EncryptionParams21kProtectionSchemeCencE"></span><span id="shaka::EncryptionParams::kProtectionSchemeCenc__uint32_t"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a1d7a8c6b5e46b51ccadcaef3f9cf9cb0"></span><em class="property">constexpr</em> uint32_t <code class="sig-name descname">kProtectionSchemeCenc</code> = 0x63656E63<a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams21kProtectionSchemeCencE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>The protection scheme: “cenc”, “cens”, “cbc1”, “cbcs”. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka16EncryptionParams14kNoKeyRotationE">
-<span id="shaka::EncryptionParams::kNoKeyRotation__double"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a92ad4ca8e1ccb7d6b5fa2ee0b1b196fa"></span><em class="property">constexpr</em> double <code class="descname">kNoKeyRotation</code> = 0<a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams14kNoKeyRotationE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams14kNoKeyRotationE">
+<span id="_CPPv3N5shaka16EncryptionParams14kNoKeyRotationE"></span><span id="_CPPv2N5shaka16EncryptionParams14kNoKeyRotationE"></span><span id="shaka::EncryptionParams::kNoKeyRotation__double"></span><span class="target" id="dc/da0/structshaka_1_1EncryptionParams_1a92ad4ca8e1ccb7d6b5fa2ee0b1b196fa"></span><em class="property">constexpr</em> double <code class="sig-name descname">kNoKeyRotation</code> = 0<a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams14kNoKeyRotationE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Crypto period duration in seconds. A positive value means key rotation is enabled, the key provider must support key rotation in this case. </p>
 </dd></dl>
 
 </div>
 <dl class="class">
-<dt id="_CPPv2N5shaka16EncryptionParams25EncryptedStreamAttributesE">
-<span id="shaka::EncryptionParams::EncryptedStreamAttributes"></span><span class="target" id="d7/d6d/structshaka_1_1EncryptionParams_1_1EncryptedStreamAttributes"></span><em class="property">struct </em><code class="descname">EncryptedStreamAttributes</code><a class="headerlink" href="#_CPPv2N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16EncryptionParams25EncryptedStreamAttributesE">
+<span id="_CPPv3N5shaka16EncryptionParams25EncryptedStreamAttributesE"></span><span id="_CPPv2N5shaka16EncryptionParams25EncryptedStreamAttributesE"></span><span id="shaka::EncryptionParams::EncryptedStreamAttributes"></span><span class="target" id="d7/d6d/structshaka_1_1EncryptionParams_1_1EncryptedStreamAttributes"></span><em class="property">struct </em><code class="sig-name descname">EncryptedStreamAttributes</code><a class="headerlink" href="#_CPPv4N5shaka16EncryptionParams25EncryptedStreamAttributesE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Encrypted stream information that is used to determine stream label. </p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka24WidevineDecryptionParamsE">
-<span id="shaka::WidevineDecryptionParams"></span><span class="target" id="d8/d48/structshaka_1_1WidevineDecryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">WidevineDecryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineDecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineDecryptionParamsE">
+<span id="_CPPv3N5shaka24WidevineDecryptionParamsE"></span><span id="_CPPv2N5shaka24WidevineDecryptionParamsE"></span><span id="shaka::WidevineDecryptionParams"></span><span class="target" id="d8/d48/structshaka_1_1WidevineDecryptionParams"></span><em class="property">struct </em><code class="sig-name descname">WidevineDecryptionParams</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineDecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Widevine decryption parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineDecryptionParams14key_server_urlE">
-<span id="shaka::WidevineDecryptionParams::key_server_url__ss"></span><span class="target" id="d8/d48/structshaka_1_1WidevineDecryptionParams_1adb765979bcc7f63ce46c9ed6ead1ee5b"></span>std::string <code class="descname">key_server_url</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineDecryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineDecryptionParams14key_server_urlE">
+<span id="_CPPv3N5shaka24WidevineDecryptionParams14key_server_urlE"></span><span id="_CPPv2N5shaka24WidevineDecryptionParams14key_server_urlE"></span><span id="shaka::WidevineDecryptionParams::key_server_url__ss"></span><span class="target" id="d8/d48/structshaka_1_1WidevineDecryptionParams_1adb765979bcc7f63ce46c9ed6ead1ee5b"></span>std::string <code class="sig-name descname">key_server_url</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineDecryptionParams14key_server_urlE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Widevine license / key server URL. </p>
 </dd></dl>
 
 <dl class="member">
-<dt id="_CPPv2N5shaka24WidevineDecryptionParams6signerE">
-<span id="shaka::WidevineDecryptionParams::signer__WidevineSigner"></span><span class="target" id="d8/d48/structshaka_1_1WidevineDecryptionParams_1acf84772bb9787f61110e388490412939"></span><a class="reference internal" href="#_CPPv2N5shaka14WidevineSignerE" title="shaka::WidevineSigner">WidevineSigner</a> <code class="descname">signer</code><a class="headerlink" href="#_CPPv2N5shaka24WidevineDecryptionParams6signerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka24WidevineDecryptionParams6signerE">
+<span id="_CPPv3N5shaka24WidevineDecryptionParams6signerE"></span><span id="_CPPv2N5shaka24WidevineDecryptionParams6signerE"></span><span id="shaka::WidevineDecryptionParams::signer__WidevineSigner"></span><span class="target" id="d8/d48/structshaka_1_1WidevineDecryptionParams_1acf84772bb9787f61110e388490412939"></span><a class="reference internal" href="#_CPPv4N5shaka14WidevineSignerE" title="shaka::WidevineSigner">WidevineSigner</a> <code class="sig-name descname">signer</code><a class="headerlink" href="#_CPPv4N5shaka24WidevineDecryptionParams6signerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Signer credential for Widevine license / key server. </p>
 </dd></dl>
 
@@ -803,14 +805,14 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka16DecryptionParamsE">
-<span id="shaka::DecryptionParams"></span><span class="target" id="d1/d4f/structshaka_1_1DecryptionParams"></span><em class="property">struct </em><code class="descclassname">shaka::</code><code class="descname">DecryptionParams</code><a class="headerlink" href="#_CPPv2N5shaka16DecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16DecryptionParamsE">
+<span id="_CPPv3N5shaka16DecryptionParamsE"></span><span id="_CPPv2N5shaka16DecryptionParamsE"></span><span id="shaka::DecryptionParams"></span><span class="target" id="d1/d4f/structshaka_1_1DecryptionParams"></span><em class="property">struct </em><code class="sig-name descname">DecryptionParams</code><a class="headerlink" href="#_CPPv4N5shaka16DecryptionParamsE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Decryption parameters. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Members</p>
 <dl class="member">
-<dt id="_CPPv2N5shaka16DecryptionParams12key_providerE">
-<span id="shaka::DecryptionParams::key_provider__KeyProvider"></span><span class="target" id="d1/d4f/structshaka_1_1DecryptionParams_1ad93d153f9e777cccb6404611d5b4d339"></span><a class="reference internal" href="#_CPPv2N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a> <code class="descname">key_provider</code> = KeyProvider::kNone<a class="headerlink" href="#_CPPv2N5shaka16DecryptionParams12key_providerE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka16DecryptionParams12key_providerE">
+<span id="_CPPv3N5shaka16DecryptionParams12key_providerE"></span><span id="_CPPv2N5shaka16DecryptionParams12key_providerE"></span><span id="shaka::DecryptionParams::key_provider__KeyProvider"></span><span class="target" id="d1/d4f/structshaka_1_1DecryptionParams_1ad93d153f9e777cccb6404611d5b4d339"></span><a class="reference internal" href="#_CPPv4N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a> <code class="sig-name descname">key_provider</code> = <a class="reference internal" href="#_CPPv4N5shaka11KeyProviderE" title="shaka::KeyProvider">KeyProvider</a>::kNone<a class="headerlink" href="#_CPPv4N5shaka16DecryptionParams12key_providerE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Specifies the key provider, which determines which key provider is used and which encryption params is valid. ‘kNone’ means not to decrypt the streams. </p>
 </dd></dl>
 
@@ -818,35 +820,35 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="_CPPv2N5shaka6StatusE">
-<span id="shaka::Status"></span><span class="target" id="d2/d20/classshaka_1_1Status"></span><em class="property">class </em><code class="descclassname">shaka::</code><code class="descname">Status</code><a class="headerlink" href="#_CPPv2N5shaka6StatusE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka6StatusE">
+<span id="_CPPv3N5shaka6StatusE"></span><span id="_CPPv2N5shaka6StatusE"></span><span id="shaka::Status"></span><span class="target" id="d2/d20/classshaka_1_1Status"></span><em class="property">class </em><code class="sig-name descname">Status</code><a class="headerlink" href="#_CPPv4N5shaka6StatusE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric">Public Functions</p>
 <dl class="function">
-<dt id="_CPPv2N5shaka6Status6StatusEv">
-<span id="shaka::Status::Status"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a12c04257e2480e0ce87cd16b944921d0"></span><code class="descname">Status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka6Status6StatusEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka6Status6StatusEv">
+<span id="_CPPv3N5shaka6Status6StatusEv"></span><span id="_CPPv2N5shaka6Status6StatusEv"></span><span id="shaka::Status::Status"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a12c04257e2480e0ce87cd16b944921d0"></span><code class="sig-name descname">Status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka6Status6StatusEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Creates a “successful” status. </p>
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv2N5shaka6Status6StatusEN5error4CodeERKNSt6stringE">
-<span id="shaka::Status::Status__error::Code.ssCR"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a2fa2116c9e12215a4e3430b362ba622b"></span><code class="descname">Status</code><span class="sig-paren">(</span>error::<a class="reference internal" href="#_CPPv2N5shaka5error4CodeE" title="shaka::error::Code">Code</a> <em>error_code</em>, <em class="property">const</em> std::string &amp;<em>error_message</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka6Status6StatusEN5error4CodeERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka6Status6StatusEN5error4CodeERKNSt6stringE">
+<span id="_CPPv3N5shaka6Status6StatusEN5error4CodeERKNSt6stringE"></span><span id="_CPPv2N5shaka6Status6StatusEN5error4CodeERKNSt6stringE"></span><span id="shaka::Status::Status__error::Code.ssCR"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a2fa2116c9e12215a4e3430b362ba622b"></span><code class="sig-name descname">Status</code><span class="sig-paren">(</span>error::<a class="reference internal" href="#_CPPv4N5shaka5error4CodeE" title="shaka::error::Code">Code</a> <em>error_code</em>, <em class="property">const</em> std::string &amp;<em>error_message</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka6Status6StatusEN5error4CodeERKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Create a status with the specified code, and error message. If “error_code == error::OK”, error_message is ignored and a <a class="reference internal" href="#d2/d20/classshaka_1_1Status"><span class="std std-ref">Status</span></a> object identical to Status::OK is constructed. </p>
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv2N5shaka6Status6UpdateE6Status">
-<span id="shaka::Status::Update__Status"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a9c0536749c9abc21c1111e622de6b7c8"></span>void <code class="descname">Update</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv2N5shaka6StatusE" title="shaka::Status">Status</a> <em>new_status</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv2N5shaka6Status6UpdateE6Status" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka6Status6UpdateE6Status">
+<span id="_CPPv3N5shaka6Status6UpdateE6Status"></span><span id="_CPPv2N5shaka6Status6UpdateE6Status"></span><span id="shaka::Status::Update__Status"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a9c0536749c9abc21c1111e622de6b7c8"></span>void <code class="sig-name descname">Update</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5shaka6StatusE" title="shaka::Status">Status</a> <em>new_status</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5shaka6Status6UpdateE6Status" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>If “ok()”, stores “new_status” into *this. If “!ok()”, preserves the current “error_code()/error_message()”,</p>
 <p>Convenient way of keeping track of the first error encountered. Instead of: if (overall_status.ok()) overall_status = new_status Use: overall_status.Update(new_status); </p>
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv2NK5shaka6Status8ToStringEv">
-<span id="shaka::Status::ToStringC"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a6c5c3c528296f2cb0dec56506cb8d3c3"></span>std::string <code class="descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv2NK5shaka6Status8ToStringEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p><dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>A combination of the error code name and message. </dd>
+<dt id="_CPPv4NK5shaka6Status8ToStringEv">
+<span id="_CPPv3NK5shaka6Status8ToStringEv"></span><span id="_CPPv2NK5shaka6Status8ToStringEv"></span><span id="shaka::Status::ToStringC"></span><span class="target" id="d2/d20/classshaka_1_1Status_1a6c5c3c528296f2cb0dec56506cb8d3c3"></span>std::string <code class="sig-name descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5shaka6Status8ToStringEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>A combination of the error code name and message. </p>
+</dd>
 </dl>
 </p>
 </dd></dl>
@@ -854,109 +856,109 @@
 </div>
 </dd></dl>
 
-<dl class="type">
-<dt id="_CPPv2N5shaka5error4CodeE">
-<span id="shaka::error::Code"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202"></span><em class="property">enum </em><code class="descclassname">shaka::error::</code><code class="descname">Code</code><a class="headerlink" href="#_CPPv2N5shaka5error4CodeE" title="Permalink to this definition">¶</a><br /></dt>
+<dl class="enum">
+<dt id="_CPPv4N5shaka5error4CodeE">
+<span id="_CPPv3N5shaka5error4CodeE"></span><span id="_CPPv2N5shaka5error4CodeE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202"></span><em class="property">enum </em><code class="sig-prename descclassname">shaka::error<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">Code</code><a class="headerlink" href="#_CPPv4N5shaka5error4CodeE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Error codes for the packager APIs. </p>
 <p><em>Values:</em></p>
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error2OKE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a3e25f9aa2cf1b8f59c41295b3ee41241"></span><code class="descname">OK</code><a class="headerlink" href="#_CPPv2N5shaka5error2OKE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error2OKE">
+<span id="_CPPv3N5shaka5error2OKE"></span><span id="_CPPv2N5shaka5error2OKE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a3e25f9aa2cf1b8f59c41295b3ee41241"></span><code class="sig-name descname">OK</code><a class="headerlink" href="#_CPPv4N5shaka5error2OKE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error7UNKNOWNE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a7319bbf317137520ba7bdd71f623ef9a"></span><code class="descname">UNKNOWN</code><a class="headerlink" href="#_CPPv2N5shaka5error7UNKNOWNE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error7UNKNOWNE">
+<span id="_CPPv3N5shaka5error7UNKNOWNE"></span><span id="_CPPv2N5shaka5error7UNKNOWNE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a7319bbf317137520ba7bdd71f623ef9a"></span><code class="sig-name descname">UNKNOWN</code><a class="headerlink" href="#_CPPv4N5shaka5error7UNKNOWNE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error9CANCELLEDE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a5bde48d63183f485d225b1cb21b0805b"></span><code class="descname">CANCELLED</code><a class="headerlink" href="#_CPPv2N5shaka5error9CANCELLEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error9CANCELLEDE">
+<span id="_CPPv3N5shaka5error9CANCELLEDE"></span><span id="_CPPv2N5shaka5error9CANCELLEDE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a5bde48d63183f485d225b1cb21b0805b"></span><code class="sig-name descname">CANCELLED</code><a class="headerlink" href="#_CPPv4N5shaka5error9CANCELLEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error16INVALID_ARGUMENTE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a396b9de39f7b02f8fc745de9f9f65ffe"></span><code class="descname">INVALID_ARGUMENT</code><a class="headerlink" href="#_CPPv2N5shaka5error16INVALID_ARGUMENTE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error16INVALID_ARGUMENTE">
+<span id="_CPPv3N5shaka5error16INVALID_ARGUMENTE"></span><span id="_CPPv2N5shaka5error16INVALID_ARGUMENTE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a396b9de39f7b02f8fc745de9f9f65ffe"></span><code class="sig-name descname">INVALID_ARGUMENT</code><a class="headerlink" href="#_CPPv4N5shaka5error16INVALID_ARGUMENTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error13UNIMPLEMENTEDE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a64bd43a603c04a99ca138e95c8f37cf9"></span><code class="descname">UNIMPLEMENTED</code><a class="headerlink" href="#_CPPv2N5shaka5error13UNIMPLEMENTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error13UNIMPLEMENTEDE">
+<span id="_CPPv3N5shaka5error13UNIMPLEMENTEDE"></span><span id="_CPPv2N5shaka5error13UNIMPLEMENTEDE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a64bd43a603c04a99ca138e95c8f37cf9"></span><code class="sig-name descname">UNIMPLEMENTED</code><a class="headerlink" href="#_CPPv4N5shaka5error13UNIMPLEMENTEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error12FILE_FAILUREE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a52af57d1c33d9624f9bf793eda21bacf"></span><code class="descname">FILE_FAILURE</code><a class="headerlink" href="#_CPPv2N5shaka5error12FILE_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error12FILE_FAILUREE">
+<span id="_CPPv3N5shaka5error12FILE_FAILUREE"></span><span id="_CPPv2N5shaka5error12FILE_FAILUREE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a52af57d1c33d9624f9bf793eda21bacf"></span><code class="sig-name descname">FILE_FAILURE</code><a class="headerlink" href="#_CPPv4N5shaka5error12FILE_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error13END_OF_STREAME">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a489d8a0c2c7f87212c1f37151fab8741"></span><code class="descname">END_OF_STREAM</code><a class="headerlink" href="#_CPPv2N5shaka5error13END_OF_STREAME" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error13END_OF_STREAME">
+<span id="_CPPv3N5shaka5error13END_OF_STREAME"></span><span id="_CPPv2N5shaka5error13END_OF_STREAME"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a489d8a0c2c7f87212c1f37151fab8741"></span><code class="sig-name descname">END_OF_STREAM</code><a class="headerlink" href="#_CPPv4N5shaka5error13END_OF_STREAME" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error12HTTP_FAILUREE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a52c5964c464dd70217363e515f95de7f"></span><code class="descname">HTTP_FAILURE</code><a class="headerlink" href="#_CPPv2N5shaka5error12HTTP_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error12HTTP_FAILUREE">
+<span id="_CPPv3N5shaka5error12HTTP_FAILUREE"></span><span id="_CPPv2N5shaka5error12HTTP_FAILUREE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a52c5964c464dd70217363e515f95de7f"></span><code class="sig-name descname">HTTP_FAILURE</code><a class="headerlink" href="#_CPPv4N5shaka5error12HTTP_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error14PARSER_FAILUREE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a5854e8b94884dba436f9fd3532b2f1dd"></span><code class="descname">PARSER_FAILURE</code><a class="headerlink" href="#_CPPv2N5shaka5error14PARSER_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error14PARSER_FAILUREE">
+<span id="_CPPv3N5shaka5error14PARSER_FAILUREE"></span><span id="_CPPv2N5shaka5error14PARSER_FAILUREE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a5854e8b94884dba436f9fd3532b2f1dd"></span><code class="sig-name descname">PARSER_FAILURE</code><a class="headerlink" href="#_CPPv4N5shaka5error14PARSER_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error18ENCRYPTION_FAILUREE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202af0c9eb427366e84fb675f6c42215de9e"></span><code class="descname">ENCRYPTION_FAILURE</code><a class="headerlink" href="#_CPPv2N5shaka5error18ENCRYPTION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error18ENCRYPTION_FAILUREE">
+<span id="_CPPv3N5shaka5error18ENCRYPTION_FAILUREE"></span><span id="_CPPv2N5shaka5error18ENCRYPTION_FAILUREE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202af0c9eb427366e84fb675f6c42215de9e"></span><code class="sig-name descname">ENCRYPTION_FAILURE</code><a class="headerlink" href="#_CPPv4N5shaka5error18ENCRYPTION_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error14CHUNKING_ERRORE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202aef7aafb9097e6eaa166e400a1fedfce1"></span><code class="descname">CHUNKING_ERROR</code><a class="headerlink" href="#_CPPv2N5shaka5error14CHUNKING_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error14CHUNKING_ERRORE">
+<span id="_CPPv3N5shaka5error14CHUNKING_ERRORE"></span><span id="_CPPv2N5shaka5error14CHUNKING_ERRORE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202aef7aafb9097e6eaa166e400a1fedfce1"></span><code class="sig-name descname">CHUNKING_ERROR</code><a class="headerlink" href="#_CPPv4N5shaka5error14CHUNKING_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error13MUXER_FAILUREE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a745fa5e68f07bab311b99027bfd78ace"></span><code class="descname">MUXER_FAILURE</code><a class="headerlink" href="#_CPPv2N5shaka5error13MUXER_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error13MUXER_FAILUREE">
+<span id="_CPPv3N5shaka5error13MUXER_FAILUREE"></span><span id="_CPPv2N5shaka5error13MUXER_FAILUREE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a745fa5e68f07bab311b99027bfd78ace"></span><code class="sig-name descname">MUXER_FAILURE</code><a class="headerlink" href="#_CPPv4N5shaka5error13MUXER_FAILUREE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error18FRAGMENT_FINALIZEDE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a40d8f27644d86fe3353ab11e3d203410"></span><code class="descname">FRAGMENT_FINALIZED</code><a class="headerlink" href="#_CPPv2N5shaka5error18FRAGMENT_FINALIZEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error18FRAGMENT_FINALIZEDE">
+<span id="_CPPv3N5shaka5error18FRAGMENT_FINALIZEDE"></span><span id="_CPPv2N5shaka5error18FRAGMENT_FINALIZEDE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a40d8f27644d86fe3353ab11e3d203410"></span><code class="sig-name descname">FRAGMENT_FINALIZED</code><a class="headerlink" href="#_CPPv4N5shaka5error18FRAGMENT_FINALIZEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error12SERVER_ERRORE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a98e2156719ef2baa18d4bf2ff71b6070"></span><code class="descname">SERVER_ERROR</code><a class="headerlink" href="#_CPPv2N5shaka5error12SERVER_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error12SERVER_ERRORE">
+<span id="_CPPv3N5shaka5error12SERVER_ERRORE"></span><span id="_CPPv2N5shaka5error12SERVER_ERRORE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a98e2156719ef2baa18d4bf2ff71b6070"></span><code class="sig-name descname">SERVER_ERROR</code><a class="headerlink" href="#_CPPv4N5shaka5error12SERVER_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error14INTERNAL_ERRORE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a0a392809478e3c1d71391a10775c8928"></span><code class="descname">INTERNAL_ERROR</code><a class="headerlink" href="#_CPPv2N5shaka5error14INTERNAL_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error14INTERNAL_ERRORE">
+<span id="_CPPv3N5shaka5error14INTERNAL_ERRORE"></span><span id="_CPPv2N5shaka5error14INTERNAL_ERRORE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a0a392809478e3c1d71391a10775c8928"></span><code class="sig-name descname">INTERNAL_ERROR</code><a class="headerlink" href="#_CPPv4N5shaka5error14INTERNAL_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error7STOPPEDE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a993b12bd092d9eba0632be6e8554705e"></span><code class="descname">STOPPED</code><a class="headerlink" href="#_CPPv2N5shaka5error7STOPPEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error7STOPPEDE">
+<span id="_CPPv3N5shaka5error7STOPPEDE"></span><span id="_CPPv2N5shaka5error7STOPPEDE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a993b12bd092d9eba0632be6e8554705e"></span><code class="sig-name descname">STOPPED</code><a class="headerlink" href="#_CPPv4N5shaka5error7STOPPEDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error8TIME_OUTE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a3dabebb3d7b17ea708aeaf53818554e1"></span><code class="descname">TIME_OUT</code><a class="headerlink" href="#_CPPv2N5shaka5error8TIME_OUTE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error8TIME_OUTE">
+<span id="_CPPv3N5shaka5error8TIME_OUTE"></span><span id="_CPPv2N5shaka5error8TIME_OUTE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a3dabebb3d7b17ea708aeaf53818554e1"></span><code class="sig-name descname">TIME_OUT</code><a class="headerlink" href="#_CPPv4N5shaka5error8TIME_OUTE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error9NOT_FOUNDE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202afa648960bdde267d5c7ca2a656587c38"></span><code class="descname">NOT_FOUND</code><a class="headerlink" href="#_CPPv2N5shaka5error9NOT_FOUNDE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error9NOT_FOUNDE">
+<span id="_CPPv3N5shaka5error9NOT_FOUNDE"></span><span id="_CPPv2N5shaka5error9NOT_FOUNDE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202afa648960bdde267d5c7ca2a656587c38"></span><code class="sig-name descname">NOT_FOUND</code><a class="headerlink" href="#_CPPv4N5shaka5error9NOT_FOUNDE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error14ALREADY_EXISTSE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a904de325c12b4fd80fbdad4fb6648ab1"></span><code class="descname">ALREADY_EXISTS</code><a class="headerlink" href="#_CPPv2N5shaka5error14ALREADY_EXISTSE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error14ALREADY_EXISTSE">
+<span id="_CPPv3N5shaka5error14ALREADY_EXISTSE"></span><span id="_CPPv2N5shaka5error14ALREADY_EXISTSE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a904de325c12b4fd80fbdad4fb6648ab1"></span><code class="sig-name descname">ALREADY_EXISTS</code><a class="headerlink" href="#_CPPv4N5shaka5error14ALREADY_EXISTSE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="enumerator">
-<dt id="_CPPv2N5shaka5error16TRICK_PLAY_ERRORE">
-<span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a82bdf348d48e12f7d62ca6754a6137cc"></span><code class="descname">TRICK_PLAY_ERROR</code><a class="headerlink" href="#_CPPv2N5shaka5error16TRICK_PLAY_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4N5shaka5error16TRICK_PLAY_ERRORE">
+<span id="_CPPv3N5shaka5error16TRICK_PLAY_ERRORE"></span><span id="_CPPv2N5shaka5error16TRICK_PLAY_ERRORE"></span><span class="target" id="d1/d13/status_8h_1a792f290a20d02dd2876d806006fca202a82bdf348d48e12f7d62ca6754a6137cc"></span><code class="sig-name descname">TRICK_PLAY_ERROR</code><a class="headerlink" href="#_CPPv4N5shaka5error16TRICK_PLAY_ERRORE" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -986,7 +988,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -1,34 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Live &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="DRM" href="drm.html" />
     <link rel="prev" title="HLS" href="hls.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,7 +37,7 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Live</a><ul>
 <li><a class="reference internal" href="#examples">Examples</a></li>
@@ -74,13 +64,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -102,8 +92,8 @@ See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FF
 <p>The command is similar to the on-demand, see <a class="reference internal" href="dash.html"><span class="doc">DASH</span></a> and <a class="reference internal" href="hls.html"><span class="doc">HLS</span></a>.</p>
 <p>Here are some examples.</p>
 <ul>
-<li><p class="first">DASH:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>DASH:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=audio,init_segment=audio_init.mp4,segment_template=audio_$Number$.m4s&#39; \
   &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=video,init_segment=h264_360p_init.mp4,segment_template=h264_360p_$Number$.m4s&#39; \
   &#39;in=udp://225.1.1.8:8002?interface=172.29.46.122,stream=video,init_segment=h264_480p_init.mp4,segment_template=h264_480p_$Number$.m4s&#39; \
@@ -113,8 +103,8 @@ See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FF
 </pre></div>
 </div>
 </li>
-<li><p class="first">HLS:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ packager \
+<li><p>HLS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ packager \
   &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=audio,init_segment=audio_init.mp4,segment_template=audio_$Number$.m4s,playlist_name=audio.m3u8,hls_group_id=audio,hls_name=ENGLISH&#39; \
   &#39;in=udp://225.1.1.8:8001?interface=172.29.46.122,stream=video,init_segment=h264_360p_init.mp4,segment_template=h264_360p_$Number$.m4s,playlist_name=h264_360p.m3u8&#39; \
   &#39;in=udp://225.1.1.8:8002?interface=172.29.46.122,stream=video,init_segment=h264_480p_init.mp4,segment_template=h264_480p_$Number$.m4s,playlist_name=h264_480p.m3u8&#39; \
@@ -127,13 +117,13 @@ See <a class="reference internal" href="ffmpeg_piping.html"><span class="doc">FF
 </li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Packager supports removing old segments automatically. See
+<p class="admonition-title">Note</p>
+<p>Packager supports removing old segments automatically. See
 <cite>preserved_segments_outside_live_window</cite> option in
 <a class="reference internal" href="../options/dash_options.html"><span class="doc">DASH options</span></a> or <a class="reference internal" href="../options/hls_options.html"><span class="doc">HLS options</span></a> for details.</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>Shaka Packager ensures all segments referenced in DASH manifest / HLS
 playlists are available, by updating the manifest / playlists only after a
 segment is completed.</p>
@@ -143,11 +133,11 @@ playlists without updating media segments.</p>
 <p>Here is an example flow that avoids potential race condition. The following
 steps should be done SERIALLY AND IN ORDER in every sync loop when uploading
 manifest / playlists and media segments to content server:</p>
-<blockquote class="last">
+<blockquote>
 <div><ol class="arabic simple">
-<li>Upload manifest / playlists under different names</li>
-<li>Upload / Sync media segments</li>
-<li>Rename uploaded manifest / playlists back to the original names</li>
+<li><p>Upload manifest / playlists under different names</p></li>
+<li><p>Upload / Sync media segments</p></li>
+<li><p>Rename uploaded manifest / playlists back to the original names</p></li>
 </ol>
 </div></blockquote>
 </div>
@@ -157,41 +147,39 @@ manifest / playlists and media segments to content server:</p>
 <div class="section" id="udp-file-options">
 <h3>UDP file options<a class="headerlink" href="#udp-file-options" title="Permalink to this headline">¶</a></h3>
 <p>UDP file is of the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>udp://&lt;ip&gt;:&lt;port&gt;[?&lt;option&gt;[&amp;&lt;option&gt;]...]
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>udp://&lt;ip&gt;:&lt;port&gt;[?&lt;option&gt;[&amp;&lt;option&gt;]...]
 </pre></div>
 </div>
 <p>Here is the list of supported options:</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">buffer_size=&lt;size_in_bytes&gt;:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP maximum receive buffer size in bytes. Note that although it can be set
+<dl class="field-list simple">
+<dt class="field-odd">buffer_size=&lt;size_in_bytes&gt;</dt>
+<dd class="field-odd"><p>UDP maximum receive buffer size in bytes. Note that although it can be set
 to any value, the actual value is capped by maximum allowed size defined by
 the underlying operating system. On linux, the maximum size allowed can be
 retrieved using <cite>sysctl net.core.rmem_max</cite> and configured using
-<cite>sysctl -w net.core.rmem_max=&lt;size_in_bytes&gt;</cite>.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">interface=&lt;addr&gt;:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">Multicast group interface address. Only the packets sent to this address are
-received. Default to “0.0.0.0” if not specified.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">reuse=0|1:</th><td class="field-body">Allow or disallow reusing UDP sockets.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">source=&lt;addr&gt;:</th><td class="field-body">Multicast source ip address. Only the packets sent from this source address
-are received. Enables Source Specific Multicast (SSM) if set.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">timeout=&lt;microseconds&gt;:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">UDP timeout in microseconds.</td>
-</tr>
-</tbody>
-</table>
+<cite>sysctl -w net.core.rmem_max=&lt;size_in_bytes&gt;</cite>.</p>
+</dd>
+<dt class="field-even">interface=&lt;addr&gt;</dt>
+<dd class="field-even"><p>Multicast group interface address. Only the packets sent to this address are
+received. Default to “0.0.0.0” if not specified.</p>
+</dd>
+<dt class="field-odd">reuse=0|1</dt>
+<dd class="field-odd"><p>Allow or disallow reusing UDP sockets.</p>
+</dd>
+<dt class="field-even">source=&lt;addr&gt;</dt>
+<dd class="field-even"><p>Multicast source ip address. Only the packets sent from this source address
+are received. Enables Source Specific Multicast (SSM) if set.</p>
+</dd>
+<dt class="field-odd">timeout=&lt;microseconds&gt;</dt>
+<dd class="field-odd"><p>UDP timeout in microseconds.</p>
+</dd>
+</dl>
 <p>Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>udp://224.1.2.30:88?interface=10.11.12.13&amp;reuse=1
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>udp://224.1.2.30:88?interface=10.11.12.13&amp;reuse=1
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>UDP is by definition unreliable. There could be packets dropped.</p>
 <p>UDP packets do not get lost magically. There are things you can do to
 minimize the packet loss. A common cause of packet loss is buffer overrun,
@@ -201,7 +189,7 @@ either in send buffer or receive buffer.</p>
 <p>If there is an increase in <cite>send buffer errors</cite> from the <cite>netstat</cite> output,
 then try increasing <cite>buffer_size</cite> in
 [FFmpeg](<a class="reference external" href="https://ffmpeg.org/ffmpeg-protocols.html#udp">https://ffmpeg.org/ffmpeg-protocols.html#udp</a>).</p>
-<p class="last">If there is an increase in <cite>receive buffer errors</cite>, then try increasing
+<p>If there is an increase in <cite>receive buffer errors</cite>, then try increasing
 <cite>buffer_size</cite> in UDP options (See above) or increasing <cite>–io_cache_size</cite>.
 <cite>buffer_size</cite> in UDP options defines the UDP buffer size of the underlying
 system while <cite>io_cache_size</cite> defines the size of the internal circular
@@ -212,46 +200,46 @@ buffer managed by <cite>Shaka Packager</cite>.</p>
 <h3>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h3>
 <p>The implementation is based on <em>Template-based Segment URL construction</em>
 described in ISO/IEC 23009-1:2014.</p>
-<table border="1" class="styled-table docutils" id="id1">
+<table class="styled-table docutils align-default" id="id1">
 <caption><span class="caption-text">Supported identifiers</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="19%" />
-<col width="41%" />
-<col width="41%" />
+<col style="width: 19%" />
+<col style="width: 41%" />
+<col style="width: 41%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="left-align head">$&lt;Identifier&gt;$</th>
-<th class="left-align head">Substitution parameter</th>
-<th class="left-align head">Format</th>
+<thead>
+<tr class="row-odd"><th class="left-align head"><p>$&lt;Identifier&gt;$</p></th>
+<th class="left-align head"><p>Substitution parameter</p></th>
+<th class="left-align head"><p>Format</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td class="left-align">$$</td>
-<td class="left-align">is an escape sequence, i.e.
+<tbody>
+<tr class="row-even"><td class="left-align"><p>$$</p></td>
+<td class="left-align"><p>is an escape sequence, i.e.
 “$$” is replaced with a single
-“$”.</td>
-<td class="left-align">Not applicable.</td>
+“$”.</p></td>
+<td class="left-align"><p>Not applicable.</p></td>
 </tr>
-<tr class="row-odd"><td class="left-align">$Number$</td>
-<td class="left-align">This identifier is substitued
+<tr class="row-odd"><td class="left-align"><p>$Number$</p></td>
+<td class="left-align"><p>This identifier is substitued
 with the <em>number</em> of the
-corresponding Segment.</td>
-<td class="left-align"><p class="first">The format tag may be present.</p>
-<p class="last">If no format tag is present, a
+corresponding Segment.</p></td>
+<td class="left-align"><p>The format tag may be present.</p>
+<p>If no format tag is present, a
 default format tag with
 <em>width</em>=1 shall be used.</p>
 </td>
 </tr>
-<tr class="row-even"><td class="left-align">$Time$</td>
-<td class="left-align">This identifier is substituted
+<tr class="row-even"><td class="left-align"><p>$Time$</p></td>
+<td class="left-align"><p>This identifier is substituted
 with the value of the
 <strong>SegmentTimeline&#64;t</strong>
 attribute for the Segment
 being accessed. Either
 $Number$ or $Time$ may be used
-but not both at the same time.</td>
-<td class="left-align"><p class="first">The format tag may be present.</p>
-<p class="last">If no format tag is present, a
+but not both at the same time.</p></td>
+<td class="left-align"><p>The format tag may be present.</p>
+<p>If no format tag is present, a
 default format tag with
 <em>width</em>=1 shall be used.</p>
 </td>
@@ -259,8 +247,8 @@ default format tag with
 </tbody>
 </table>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
+<p class="admonition-title">Note</p>
+<p>Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
 version. Please file an <a class="reference external" href="https://github.com/google/shaka-packager/issues">issue</a> if you want it to be
 supported.</p>
 </div>
@@ -269,7 +257,7 @@ per the definition in the above table. Identifier matching is case-sensitive.</p
 <p>Each identifier may be suffixed, within the enclosing ‘$’ characters, with an
 additional format tag aligned with the <em>printf</em> format tag as defined in IEEE
 1003.1-2008 following this prototype:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
 </pre></div>
 </div>
 <p>The <em>width</em> parameter is an unsigned integer that provides the minimum number
@@ -306,7 +294,7 @@ within URLs according to RFC 3986.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -98,8 +98,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af56c833453d65297c4dc96c9d2f83e1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#ae33f2cdbd045572095acd7b8d6c1a789">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
 <tr class="separator:ae33f2cdbd045572095acd7b8d6c1a789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34340247a575bc693d14c3bef9102258"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
-<tr class="separator:a34340247a575bc693d14c3bef9102258"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef67793f02b0cd34b57993fab9f789ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aef67793f02b0cd34b57993fab9f789ae">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, uint32_t crypto_period_duration_in_seconds, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="separator:aef67793f02b0cd34b57993fab9f789ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -157,8 +157,8 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a34340247a575bc693d14c3bef9102258"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a34340247a575bc693d14c3bef9102258">&#9670;&nbsp;</a></span>GetCryptoPeriodKey()</h2>
+<a id="aef67793f02b0cd34b57993fab9f789ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef67793f02b0cd34b57993fab9f789ae">&#9670;&nbsp;</a></span>GetCryptoPeriodKey()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,6 +171,12 @@ Protected Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>crypto_period_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>crypto_period_duration_in_seconds</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -199,6 +205,7 @@ Protected Member Functions</h2></td></tr>
 <p>Get encryption key of the specified track type at the specified index. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_period_index</td><td>is the sequence number of the key rotation period for which the key is being retrieved. </td></tr>
+    <tr><td class="paramname">crypto_period_duration_in_seconds</td><td>is the duration of the crypto period in seconds. </td></tr>
     <tr><td class="paramname">stream_label</td><td>is the label of stream for which retrieving the key. </td></tr>
     <tr><td class="paramname">key</td><td>is a pointer to the <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> which will hold the retrieved key. Owner retains ownership, and may not be NULL. </td></tr>
   </table>
@@ -206,7 +213,7 @@ Protected Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a783cd4a9bf35fe2a7a610806bfda8e62">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#aa5b50bc57ebd9691db6fbed256cd763e">shaka::media::RawKeySource</a>.</p>
+<p>Implemented in <a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#ad155a38ccb7bd7cfa991580eb0e1bbd3">shaka::media::PlayReadyKeySource</a>, <a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#aab3666bda5a756ccdd1855cea088b4c6">shaka::media::WidevineKeySource</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1RawKeySource.html#a7518bb799554beefebda75eb76aafbd5">shaka::media::RawKeySource</a>.</p>
 
 </div>
 </div>
@@ -332,7 +339,7 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00047">47</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00048">48</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -343,7 +350,7 @@ Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:45 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

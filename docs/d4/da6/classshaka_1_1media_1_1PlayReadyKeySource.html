@@ -105,8 +105,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:a0d2e038e477a5a2bc903292977fc65bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41c393f477ff4b723aa448b35e9ee896"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#a41c393f477ff4b723aa448b35e9ee896">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
 <tr class="separator:a41c393f477ff4b723aa448b35e9ee896"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af53a97f0812b07e766c83e128b807c01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#af53a97f0812b07e766c83e128b807c01">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
-<tr class="separator:af53a97f0812b07e766c83e128b807c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad155a38ccb7bd7cfa991580eb0e1bbd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d20/classshaka_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da6/classshaka_1_1media_1_1PlayReadyKeySource.html#ad155a38ccb7bd7cfa991580eb0e1bbd3">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, uint32_t crypto_period_duration_in_seconds, const std::string &amp;stream_label, <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key) override</td></tr>
+<tr class="separator:ad155a38ccb7bd7cfa991580eb0e1bbd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classshaka_1_1media_1_1KeySource"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1KeySource')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></td></tr>
 <tr class="memitem:a76e6de4121fd0a63c2e9caf7793ee26a inherit pub_methods_classshaka_1_1media_1_1KeySource"><td class="memItemLeft" align="right" valign="top"><a id="a76e6de4121fd0a63c2e9caf7793ee26a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>KeySource</b> (int protection_systems_flags, FourCC protection_scheme)</td></tr>
@@ -323,8 +323,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="af53a97f0812b07e766c83e128b807c01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af53a97f0812b07e766c83e128b807c01">&#9670;&nbsp;</a></span>GetCryptoPeriodKey()</h2>
+<a id="ad155a38ccb7bd7cfa991580eb0e1bbd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad155a38ccb7bd7cfa991580eb0e1bbd3">&#9670;&nbsp;</a></span>GetCryptoPeriodKey()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -337,6 +337,12 @@ Additional Inherited Members</h2></td></tr>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>crypto_period_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>crypto_period_duration_in_seconds</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -365,6 +371,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Get encryption key of the specified track type at the specified index. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">crypto_period_index</td><td>is the sequence number of the key rotation period for which the key is being retrieved. </td></tr>
+    <tr><td class="paramname">crypto_period_duration_in_seconds</td><td>is the duration of the crypto period in seconds. </td></tr>
     <tr><td class="paramname">stream_label</td><td>is the label of stream for which retrieving the key. </td></tr>
     <tr><td class="paramname">key</td><td>is a pointer to the <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> which will hold the retrieved key. Owner retains ownership, and may not be NULL. </td></tr>
   </table>
@@ -372,7 +379,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a34340247a575bc693d14c3bef9102258">shaka::media::KeySource</a>.</p>
+<p>Implements <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#aef67793f02b0cd34b57993fab9f789ae">shaka::media::KeySource</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html#l00227">227</a> of file <a class="el" href="../../da/dd0/playready__key__source_8cc_source.html">playready_key_source.cc</a>.</p>
 
@@ -481,7 +488,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:47 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

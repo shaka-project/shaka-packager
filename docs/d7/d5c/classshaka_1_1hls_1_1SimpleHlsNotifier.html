@@ -106,6 +106,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 <tr class="separator:a40850c462766a0ce4e9c92014ed77a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44409a32566bb416e572946fc2f511c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#a44409a32566bb416e572946fc2f511c9">NotifyNewStream</a> (const MediaInfo &amp;media_info, const std::string &amp;playlist_name, const std::string &amp;stream_name, const std::string &amp;group_id, uint32_t *stream_id) override</td></tr>
 <tr class="separator:a44409a32566bb416e572946fc2f511c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7af83ad4387d28f5aa391a8a558d104"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#aa7af83ad4387d28f5aa391a8a558d104">NotifySampleDuration</a> (uint32_t stream_id, uint32_t sample_duration) override</td></tr>
+<tr class="separator:aa7af83ad4387d28f5aa391a8a558d104"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afab88a610a6d2ac8b21dd86a456c2c06"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#afab88a610a6d2ac8b21dd86a456c2c06">NotifyNewSegment</a> (uint32_t stream_id, const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t start_byte_offset, uint64_t size) override</td></tr>
 <tr class="separator:afab88a610a6d2ac8b21dd86a456c2c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3eed6f6e65b079b3ece7d3c503b33fbf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#a3eed6f6e65b079b3ece7d3c503b33fbf">NotifyKeyFrame</a> (uint32_t stream_id, uint64_t timestamp, uint64_t start_byte_offset, uint64_t size) override</td></tr>
@@ -152,7 +154,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00279">279</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00280">280</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -183,7 +185,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a5d788d47d01aee4f75c7b55251d69edf">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00481">481</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00499">499</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -213,7 +215,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a8bd9273a1893899036e640c1e35fbaff">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00297">297</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00298">298</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -261,7 +263,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a064753b88baf3e2db4cbb316b07fd236">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00408">408</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00425">425</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -329,7 +331,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a310fadabce7f3ac4a3313631340b880f">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00420">420</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00437">437</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -390,7 +392,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#ad97b17a04765577090ef9b6124928af2">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00393">393</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00410">410</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -465,7 +467,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#af5a0d6670313d81eff20bb959732a2cd">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00342">342</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00359">359</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -534,7 +536,55 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 
 <p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a2b85f6e4c2798f2634cd535011c230a2">shaka::hls::HlsNotifier</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00301">301</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00302">302</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
+
+</div>
+</div>
+<a id="aa7af83ad4387d28f5aa391a8a558d104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7af83ad4387d28f5aa391a8a558d104">&#9670;&nbsp;</a></span>NotifySampleDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::hls::SimpleHlsNotifier::NotifySampleDuration </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>stream_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sample_duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Change the sample duration of stream with <em>stream_id</em>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream_id</td><td>is the value set by <a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#a44409a32566bb416e572946fc2f511c9">NotifyNewStream()</a>. </td></tr>
+    <tr><td class="paramname">sample_duration</td><td>is the duration of a sample in timescale of the media. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. This may fail if the stream specified by <em>stream_id</em> does not exist. </dd></dl>
+
+<p>Implements <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a63a11df343b1f75a5d89327a23d5249c">shaka::hls::HlsNotifier</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html#l00346">346</a> of file <a class="el" href="../../d7/dad/simple__hls__notifier_8cc_source.html">simple_hls_notifier.cc</a>.</p>
 
 </div>
 </div>
@@ -545,7 +595,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:41 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

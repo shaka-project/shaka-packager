@@ -138,8 +138,8 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6b3deca725a42113bf7303387ab74f0f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a6b3deca725a42113bf7303387ab74f0f">Parse</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
 <tr class="separator:a6b3deca725a42113bf7303387ab74f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7ebc6deaa2e44d666617d48e101b98b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#ae7ebc6deaa2e44d666617d48e101b98b">ConvertToADTS</a> (std::vector&lt; uint8_t &gt; *buffer) const</td></tr>
-<tr class="separator:ae7ebc6deaa2e44d666617d48e101b98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cde95e7125bcee23be34a00a92f4097"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a5cde95e7125bcee23be34a00a92f4097">ConvertToADTS</a> (const uint8_t *data, size_t data_size, std::vector&lt; uint8_t &gt; *audio_frame) const</td></tr>
+<tr class="separator:a5cde95e7125bcee23be34a00a92f4097"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7936da4be5297ea78e0cbbb0f167941"><td class="memItemLeft" align="right" valign="top">AudioObjectType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#ae7936da4be5297ea78e0cbbb0f167941">GetAudioObjectType</a> () const</td></tr>
 <tr class="separator:ae7936da4be5297ea78e0cbbb0f167941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a784e2b9e2371c8757c9a5cae62935c68"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a784e2b9e2371c8757c9a5cae62935c68">GetSamplesPerSecond</a> () const</td></tr>
@@ -165,8 +165,8 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 
 <p class="definition">Definition at line <a class="el" href="../../d2/d7e/aac__audio__specific__config_8h_source.html#l00023">23</a> of file <a class="el" href="../../d2/d7e/aac__audio__specific__config_8h_source.html">aac_audio_specific_config.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae7ebc6deaa2e44d666617d48e101b98b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae7ebc6deaa2e44d666617d48e101b98b">&#9670;&nbsp;</a></span>ConvertToADTS()</h2>
+<a id="a5cde95e7125bcee23be34a00a92f4097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cde95e7125bcee23be34a00a92f4097">&#9670;&nbsp;</a></span>ConvertToADTS()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -177,9 +177,25 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
         <tr>
           <td class="memname">bool shaka::media::AACAudioSpecificConfig::ConvertToADTS </td>
           <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>data_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">std::vector&lt; uint8_t &gt; *&#160;</td>
-          <td class="paramname"><em>buffer</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>audio_frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -190,7 +206,9 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><div class="memdoc">
 <p>Convert a raw AAC frame into an AAC frame with an ADTS header. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">buffer</td><td>contains the raw AAC frame on input, and the converted frame on output if successful; it is untouched on failure. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">data</td><td>points to the raw AAC frame to be converted. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">data_size</td><td>the size of a raw AAC frame. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">audio_frame</td><td>contains the converted frame if successful; it is untouched on failure. </td></tr>
   </table>
   </dd>
 </dl>
@@ -216,7 +234,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The audio object type for this AAC config, with possible extension considered. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html#l00166">166</a> of file <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html">aac_audio_specific_config.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html#l00172">172</a> of file <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html">aac_audio_specific_config.cc</a>.</p>
 
 </div>
 </div>
@@ -236,7 +254,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Number of channels for the AAC stream, with possible extensions considered. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html#l00188">188</a> of file <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html">aac_audio_specific_config.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html#l00194">194</a> of file <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html">aac_audio_specific_config.cc</a>.</p>
 
 </div>
 </div>
@@ -256,7 +274,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Sample rate for the AAC stream, with possible extensions considered. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html#l00174">174</a> of file <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html">aac_audio_specific_config.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html#l00180">180</a> of file <a class="el" href="../../d9/ded/aac__audio__specific__config_8cc_source.html">aac_audio_specific_config.cc</a>.</p>
 
 </div>
 </div>
@@ -319,7 +337,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>whether Spectral Band Repliation (SBR) is present in the stream. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d7e/aac__audio__specific__config_8h_source.html#l00109">109</a> of file <a class="el" href="../../d2/d7e/aac__audio__specific__config_8h_source.html">aac_audio_specific_config.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d7e/aac__audio__specific__config_8h_source.html#l00112">112</a> of file <a class="el" href="../../d2/d7e/aac__audio__specific__config_8h_source.html">aac_audio_specific_config.h</a>.</p>
 
 </div>
 </div>
@@ -330,7 +348,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:41 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:52 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

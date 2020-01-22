@@ -63,6 +63,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
@@ -87,12 +88,13 @@ Inheritance diagram for shaka::AdaptationSet:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a89f6573af412970297f4cf888d31edbd"><td class="memItemLeft" align="right" valign="top"><a id="a89f6573af412970297f4cf888d31edbd"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Role</b> { <br />
-&#160;&#160;<b>kRoleCaption</b>, 
+&#160;&#160;<b>kRoleUnknown</b>, 
+<b>kRoleCaption</b>, 
 <b>kRoleSubtitle</b>, 
 <b>kRoleMain</b>, 
-<b>kRoleAlternate</b>, 
 <br />
-&#160;&#160;<b>kRoleSupplementary</b>, 
+&#160;&#160;<b>kRoleAlternate</b>, 
+<b>kRoleSupplementary</b>, 
 <b>kRoleCommentary</b>, 
 <b>kRoleDub</b>
 <br />
@@ -109,6 +111,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a28c52febc71a581ebec2c1308f6ea15c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8a28838bf1bbc1ad8f5b80961fe33c2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#ae8a28838bf1bbc1ad8f5b80961fe33c2">UpdateContentProtectionPssh</a> (const std::string &amp;drm_uuid, const std::string &amp;pssh)</td></tr>
 <tr class="separator:ae8a28838bf1bbc1ad8f5b80961fe33c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20609cca5e9416194697615ec4086623"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a20609cca5e9416194697615ec4086623">AddAccessibility</a> (const std::string &amp;scheme, const std::string &amp;value)</td></tr>
+<tr class="separator:a20609cca5e9416194697615ec4086623"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae96ad89ec7cc7d5ef1db467a9cf13730"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#ae96ad89ec7cc7d5ef1db467a9cf13730">AddRole</a> (Role role)</td></tr>
 <tr class="separator:ae96ad89ec7cc7d5ef1db467a9cf13730"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af988e3a6d8b0d3ede66e3f3aea992d5e"><td class="memItemLeft" align="right" valign="top">xml::scoped_xml_ptr&lt; xmlNode &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html#af988e3a6d8b0d3ede66e3f3aea992d5e">GetXml</a> ()</td></tr>
@@ -204,11 +208,56 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00169">169</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00166">166</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a20609cca5e9416194697615ec4086623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20609cca5e9416194697615ec4086623">&#9670;&nbsp;</a></span>AddAccessibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::AdaptationSet::AddAccessibility </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scheme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the Accessibility element for this <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. See ISO/IEC 23009-1:2012 section 5.8.4.3. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scheme</td><td>is the schemeIdUri of the accessibility element. </td></tr>
+    <tr><td class="paramname">value</td><td>is the value of the accessibility element. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00225">225</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+
+</div>
+</div>
 <a id="a979cef296d0e67c271641a0c3146e8f3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a979cef296d0e67c271641a0c3146e8f3">&#9670;&nbsp;</a></span>AddAdaptationSetSwitching()</h2>
 
@@ -239,7 +288,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00346">346</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00353">353</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -273,7 +322,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00216">216</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00213">213</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -308,7 +357,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>On success, returns a pointer to <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>. Otherwise returns NULL. The returned pointer is owned by the <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> instance. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00182">182</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00179">179</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -342,7 +391,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00228">228</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00230">230</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -376,7 +425,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00374">374</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00381">381</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -411,7 +460,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>On success, returns a pointer to <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>. Otherwise returns NULL. The returned pointer is owned by the <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> instance. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00201">201</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00198">198</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -445,7 +494,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00340">340</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00347">347</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -465,7 +514,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><div class="memdoc">
 <p>Makes a copy of <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a> xml element with its child <a class="el" href="../../de/d52/classshaka_1_1Representation.html">Representation</a> and ContentProtection elements. </p><dl class="section return"><dt>Returns</dt><dd>On success returns a non-NULL scoped_xml_ptr. Otherwise returns a NULL scoped_xml_ptr. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00238">238</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00240">240</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -493,7 +542,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if id is set, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00121">121</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00129">129</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
 
 </div>
 </div>
@@ -513,7 +562,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if it is a video <a class="el" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00386">386</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00393">393</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -557,7 +606,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00357">357</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00364">364</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -600,7 +649,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00368">368</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00375">375</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -634,7 +683,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00128">128</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/d72/adaptation__set_8h_source.html#l00136">136</a> of file <a class="el" href="../../d8/d72/adaptation__set_8h_source.html">adaptation_set.h</a>.</p>
 
 </div>
 </div>
@@ -680,7 +729,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </dl>
 <dl class="section attention"><dt>Attention</dt><dd>This might get removed once DASH IF IOP specification makes a a clear guideline on how to handle key rotation. Also to get this working with shaka-player, this method <em>DOES NOT</em> update the PSSH element. Instead, it removes the element regardless of the content of <em>pssh</em>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00222">222</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html#l00219">219</a> of file <a class="el" href="../../de/dc2/adaptation__set_8cc_source.html">adaptation_set.cc</a>.</p>
 
 </div>
 </div>
@@ -691,7 +740,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>AdaptationSetTest</b
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:38 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

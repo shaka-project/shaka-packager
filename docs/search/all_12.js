@@ -31,6 +31,7 @@ var searchData=
   ['trackheader',['TrackHeader',['../da/dc4/structshaka_1_1media_1_1mp4_1_1TrackHeader.html',1,'shaka::media::mp4']]],
   ['trackruniterator',['TrackRunIterator',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html',1,'shaka::media::mp4::TrackRunIterator'],['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#a743961add0060500509c3fc74ffd26ab',1,'shaka::media::mp4::TrackRunIterator::TrackRunIterator()']]],
   ['tracksbuilder',['TracksBuilder',['../d8/d74/classshaka_1_1media_1_1TracksBuilder.html',1,'shaka::media']]],
+  ['transfer_5fcharacteristics',['transfer_characteristics',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a302bcd9a86a479961335d21817edb2c4',1,'shaka::media::DecoderConfigurationRecord']]],
   ['transferdata',['TransferData',['../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a5402405ad4abb5102078d047972a56fa',1,'shaka::media::MediaSample']]],
   ['transport_5fstream_5ftimestamp_5foffset_5fms',['transport_stream_timestamp_offset_ms',['../d5/de3/structshaka_1_1PackagingParams.html#aa2c8c5254f14048368edb652dd329556',1,'shaka::PackagingParams']]],
   ['trick_5fplay_5ffactor',['trick_play_factor',['../d2/d7b/structshaka_1_1StreamDescriptor.html#a5cc00f367691729460e0b75b8ec6c512',1,'shaka::StreamDescriptor']]],

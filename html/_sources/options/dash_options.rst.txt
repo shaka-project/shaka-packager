@@ -1,7 +1,7 @@
 DASH options
 ^^^^^^^^^^^^
 
---generate_static_mpd
+--generate_static_live_mpd
 
     If enabled, generates static mpd. If segment_template is specified in
     stream descriptors, shaka-packager generates dynamic mpd by default; if

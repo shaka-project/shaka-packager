@@ -1,32 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Segment template formatting &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,13 +36,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -67,46 +57,46 @@
 <h1>Segment template formatting<a class="headerlink" href="#segment-template-formatting" title="Permalink to this headline">¶</a></h1>
 <p>The implementation is based on <em>Template-based Segment URL construction</em>
 described in ISO/IEC 23009-1:2014.</p>
-<table border="1" class="styled-table docutils" id="id1">
+<table class="styled-table docutils align-default" id="id1">
 <caption><span class="caption-text">Supported identifiers</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="19%" />
-<col width="41%" />
-<col width="41%" />
+<col style="width: 19%" />
+<col style="width: 41%" />
+<col style="width: 41%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="left-align head">$&lt;Identifier&gt;$</th>
-<th class="left-align head">Substitution parameter</th>
-<th class="left-align head">Format</th>
+<thead>
+<tr class="row-odd"><th class="left-align head"><p>$&lt;Identifier&gt;$</p></th>
+<th class="left-align head"><p>Substitution parameter</p></th>
+<th class="left-align head"><p>Format</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td class="left-align">$$</td>
-<td class="left-align">is an escape sequence, i.e.
+<tbody>
+<tr class="row-even"><td class="left-align"><p>$$</p></td>
+<td class="left-align"><p>is an escape sequence, i.e.
 “$$” is replaced with a single
-“$”.</td>
-<td class="left-align">Not applicable.</td>
+“$”.</p></td>
+<td class="left-align"><p>Not applicable.</p></td>
 </tr>
-<tr class="row-odd"><td class="left-align">$Number$</td>
-<td class="left-align">This identifier is substitued
+<tr class="row-odd"><td class="left-align"><p>$Number$</p></td>
+<td class="left-align"><p>This identifier is substitued
 with the <em>number</em> of the
-corresponding Segment.</td>
-<td class="left-align"><p class="first">The format tag may be present.</p>
-<p class="last">If no format tag is present, a
+corresponding Segment.</p></td>
+<td class="left-align"><p>The format tag may be present.</p>
+<p>If no format tag is present, a
 default format tag with
 <em>width</em>=1 shall be used.</p>
 </td>
 </tr>
-<tr class="row-even"><td class="left-align">$Time$</td>
-<td class="left-align">This identifier is substituted
+<tr class="row-even"><td class="left-align"><p>$Time$</p></td>
+<td class="left-align"><p>This identifier is substituted
 with the value of the
 <strong>SegmentTimeline&#64;t</strong>
 attribute for the Segment
 being accessed. Either
 $Number$ or $Time$ may be used
-but not both at the same time.</td>
-<td class="left-align"><p class="first">The format tag may be present.</p>
-<p class="last">If no format tag is present, a
+but not both at the same time.</p></td>
+<td class="left-align"><p>The format tag may be present.</p>
+<p>If no format tag is present, a
 default format tag with
 <em>width</em>=1 shall be used.</p>
 </td>
@@ -114,8 +104,8 @@ default format tag with
 </tbody>
 </table>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
+<p class="admonition-title">Note</p>
+<p>Identifiers $RepresentationID$ and $Bandwidth$ are not supported in this
 version. Please file an <a class="reference external" href="https://github.com/google/shaka-packager/issues">issue</a> if you want it to be
 supported.</p>
 </div>
@@ -124,7 +114,7 @@ per the definition in the above table. Identifier matching is case-sensitive.</p
 <p>Each identifier may be suffixed, within the enclosing ‘$’ characters, with an
 additional format tag aligned with the <em>printf</em> format tag as defined in IEEE
 1003.1-2008 following this prototype:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="mi">0</span><span class="p">[</span><span class="n">width</span><span class="p">]</span><span class="n">d</span>
 </pre></div>
 </div>
 <p>The <em>width</em> parameter is an unsigned integer that provides the minimum number
@@ -152,7 +142,7 @@ within URLs according to RFC 3986.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

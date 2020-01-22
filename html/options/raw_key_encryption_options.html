@@ -1,32 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Raw key encryption options &#8212; Shaka Packager  documentation</title>
     <link rel="stylesheet" href="../_static/sphinxdoc_new.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/table_styling.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/table_styling.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head>
-  <body>
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,13 +36,13 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -65,27 +55,20 @@
             
   <div class="section" id="raw-key-encryption-options">
 <h1>Raw key encryption options<a class="headerlink" href="#raw-key-encryption-options" title="Permalink to this headline">¶</a></h1>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_raw_key_encryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable encryption with raw key (keys provided in command line)). This
+<dl class="option-list">
+<dt><kbd><span class="option">--enable_raw_key_encryption</span></kbd></dt>
+<dd><p>Enable encryption with raw key (keys provided in command line)). This
 generates <a class="reference external" href="https://goo.gl/s8RIhr">Common protection system</a> if neither
 –pssh nor –protection_systems is specified. Use –pssh to provide custom
 protection systems or use –protection_systems to generate protection
-systems automatically.</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--enable_raw_key_decryption</span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Enable decryption with raw key (keys provided in command line).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td><p class="first"><strong>key_info_string</strong> is of the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
+systems automatically.</p>
+</dd>
+<dt><kbd><span class="option">--enable_raw_key_decryption</span></kbd></dt>
+<dd><p>Enable decryption with raw key (keys provided in command line).</p>
+</dd>
+<dt><kbd><span class="option">--keys <var>&lt;key_info_string[,key_info_string][,key_info_string]…&gt;</var></span></kbd></dt>
+<dd><p><strong>key_info_string</strong> is of the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="o">=&lt;</span><span class="n">label</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key_id</span><span class="o">=&lt;</span><span class="n">key_id</span><span class="o">&gt;</span><span class="p">:</span><span class="n">key</span><span class="o">=&lt;</span><span class="n">key</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p><em>label</em> can be an arbitrary string or a predefined DRM label like AUDIO,
@@ -93,22 +76,19 @@ SD, HD, etc. Label with an empty string indicates the default key and
 key_id. The <em>drm_label</em> in <a class="reference internal" href="stream_descriptors.html"><span class="doc">Stream descriptors</span></a>,
 which can be implicit, determines which key info is applied to the stream
 by matching the <em>drm_label</em> with the <em>label</em> in key info.</p>
-<p class="last"><em>key_id</em> and <em>key</em> should be 32-digit hex strings.</p>
-</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>IV in hex string format. If not specified, a random IV will be generated.
+<p><em>key_id</em> and <em>key</em> should be 32-digit hex strings.</p>
+</dd>
+<dt><kbd><span class="option">--iv <var>&lt;16-digit or 32-digit hex string&gt;</var></span></kbd></dt>
+<dd><p>IV in hex string format. If not specified, a random IV will be generated.
 This flag should only be used for testing. IV must be either 8 bytes
-(16 digits HEX) or 16 bytes (32 digits in HEX).</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>One or more concatenated PSSH boxes in hex string format. If neither this
+(16 digits HEX) or 16 bytes (32 digits in HEX).</p>
+</dd>
+<dt><kbd><span class="option">--pssh <var>&lt;hex string&gt;</var></span></kbd></dt>
+<dd><p>One or more concatenated PSSH boxes in hex string format. If neither this
 flag nor –protection_systems is specified, a
-<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</td></tr>
-</tbody>
-</table>
+<a class="reference external" href="https://goo.gl/s8RIhr">v1 common PSSH box</a> will be generated.</p>
+</dd>
+</dl>
 </div>
 
 
@@ -128,7 +108,7 @@ flag nor –protection_systems is specified, a
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Google.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.3.1.
     </div>
   </body>
 </html>

@@ -142,6 +142,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:a4ba276c327424377ecdb90bfe0e86121"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acacd79e086a620c82101f1a0f3ba8df9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#acacd79e086a620c82101f1a0f3ba8df9">SetMediaInfo</a> (const MediaInfo &amp;media_info)</td></tr>
 <tr class="separator:acacd79e086a620c82101f1a0f3ba8df9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329a5fa45ab80e78545bafe3866efa71"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a329a5fa45ab80e78545bafe3866efa71">SetSampleDuration</a> (uint32_t sample_duration)</td></tr>
+<tr class="separator:a329a5fa45ab80e78545bafe3866efa71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afecc7ca28e4eb44e69d5771cadd0e3b9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#afecc7ca28e4eb44e69d5771cadd0e3b9">AddSegment</a> (const std::string &amp;file_name, int64_t start_time, int64_t duration, uint64_t start_byte_offset, uint64_t size)</td></tr>
 <tr class="separator:afecc7ca28e4eb44e69d5771cadd0e3b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a505b247de5ec210a0f95d543cf7acc38"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a505b247de5ec210a0f95d543cf7acc38">AddKeyFrame</a> (int64_t timestamp, uint64_t start_byte_offset, uint64_t size)</td></tr>
@@ -164,6 +166,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:a98b813343f29341e612fff2964cd0bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6df3438b8ec8708041fbbd24e4c15878"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a6df3438b8ec8708041fbbd24e4c15878">GetDisplayResolution</a> (uint32_t *width, uint32_t *height) const</td></tr>
 <tr class="separator:a6df3438b8ec8708041fbbd24e4c15878"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa947ee84df71b2d46120953c32542fed"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#aa947ee84df71b2d46120953c32542fed">GetVideoRange</a> () const</td></tr>
+<tr class="separator:aa947ee84df71b2d46120953c32542fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a559ff230a5b751fb04f7df20637976a0"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a559ff230a5b751fb04f7df20637976a0">GetFrameRate</a> () const</td></tr>
+<tr class="separator:a559ff230a5b751fb04f7df20637976a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a499a495bcd51b4121585dfb2cc5861c1"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html#a499a495bcd51b4121585dfb2cc5861c1">language</a> () const</td></tr>
 <tr class="separator:a499a495bcd51b4121585dfb2cc5861c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b4f7c8ff23f989eef61c9b1ff580cc5"><td class="memItemLeft" align="right" valign="top"><a id="a2b4f7c8ff23f989eef61c9b1ff580cc5"></a>
@@ -215,14 +221,14 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">hls_params</td><td>contains HLS parameters. </td></tr>
-    <tr><td class="paramname">file_name</td><td>is the file name of this media playlist. </td></tr>
+    <tr><td class="paramname">file_name</td><td>is the file name of this media playlist, relative to master playlist output path. </td></tr>
     <tr><td class="paramname">name</td><td>is the name of this playlist. In other words this is the value of the NAME attribute for EXT-X-MEDIA. This is not necessarily the same as <em>file_name</em>. </td></tr>
     <tr><td class="paramname">group_id</td><td>is the group ID for this playlist. This is the value of GROUP-ID attribute for EXT-X-MEDIA. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00326">326</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00339">339</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -295,7 +301,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00427">427</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00444">444</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -347,7 +353,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00412">412</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00429">429</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -375,7 +381,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <p>Add #EXT-X-PLACEMENT-OPPORTUNITY for mid-roll ads. See <a href="https://support.google.com/dfp_premium/answer/7295798?hl=en">https://support.google.com/dfp_premium/answer/7295798?hl=en</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00444">444</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00461">461</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -441,7 +447,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00384">384</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00401">401</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -469,7 +475,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <p>Unlike <em>MaxBitrate</em>, AvgBitrate is always computed from the segment size and duration. </p><dl class="section return"><dt>Returns</dt><dd>The average bitrate (in bits per second) of this <a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html" title="Methods are virtual for mocking. ">MediaPlaylist</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00477">477</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00494">494</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -508,7 +514,35 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if |width| and |height| have been set with a valid resolution values. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00500">500</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00517">517</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+
+</div>
+</div>
+<a id="a559ff230a5b751fb04f7df20637976a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a559ff230a5b751fb04f7df20637976a0">&#9670;&nbsp;</a></span>GetFrameRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double shaka::hls::MediaPlaylist::GetFrameRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>the frame rate. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00555">555</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -536,7 +570,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>the longest segment’s duration. This will return 0 if no segments have been added. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00481">481</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00498">498</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -564,7 +598,35 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>number of channels for audio. 0 is returned for video. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00496">496</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00513">513</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+
+</div>
+</div>
+<a id="aa947ee84df71b2d46120953c32542fed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa947ee84df71b2d46120953c32542fed">&#9670;&nbsp;</a></span>GetVideoRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string shaka::hls::MediaPlaylist::GetVideoRange </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The video range of the stream. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00535">535</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -592,7 +654,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>the language of the media, as an ISO language tag in its shortest form. May be an empty string for video. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../da/d4a/media__playlist_8h_source.html#l00190">190</a> of file <a class="el" href="../../da/d4a/media__playlist_8h_source.html">media_playlist.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../da/d4a/media__playlist_8h_source.html#l00203">203</a> of file <a class="el" href="../../da/d4a/media__playlist_8h_source.html">media_playlist.h</a>.</p>
 
 </div>
 </div>
@@ -620,7 +682,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><div class="memdoc">
 <p>If bitrate is specified in MediaInfo then it will use that value. Otherwise, returns the max bitrate. </p><dl class="section return"><dt>Returns</dt><dd>the max bitrate (in bits per second) of this <a class="el" href="../../dd/d1c/classshaka_1_1hls_1_1MediaPlaylist.html" title="Methods are virtual for mocking. ">MediaPlaylist</a>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00471">471</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00488">488</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -655,7 +717,41 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00356">356</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00368">368</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+
+</div>
+</div>
+<a id="a329a5fa45ab80e78545bafe3866efa71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a329a5fa45ab80e78545bafe3866efa71">&#9670;&nbsp;</a></span>SetSampleDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::hls::MediaPlaylist::SetSampleDuration </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sample_duration</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the sample duration. Sample duration is used to generate frame rate. Sample duration is not available right away especially. This allows setting the sample duration after the Media Playlist has been initialized. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sample_duration</td><td>is the duration of a sample. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00396">396</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -689,7 +785,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00485">485</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00502">502</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -724,7 +820,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00448">448</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/df2/media__playlist_8cc_source.html#l00465">465</a> of file <a class="el" href="../../d5/df2/media__playlist_8cc_source.html">media_playlist.cc</a>.</p>
 
 </div>
 </div>
@@ -735,7 +831,7 @@ const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" 
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:41 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

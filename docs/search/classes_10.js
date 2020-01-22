@@ -26,6 +26,7 @@ var searchData=
   ['simplehlsnotifier',['SimpleHlsNotifier',['../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html',1,'shaka::hls']]],
   ['simplempdnotifier',['SimpleMpdNotifier',['../d8/de1/classshaka_1_1SimpleMpdNotifier.html',1,'shaka']]],
   ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html',1,'shaka::media::mp4::SingleSegmentSegmenter'],['../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html',1,'shaka::media::webm::SingleSegmentSegmenter']]],
+  ['slconfigdescriptor',['SLConfigDescriptor',['../df/d38/classshaka_1_1media_1_1SLConfigDescriptor.html',1,'shaka::media']]],
   ['soundmediaheader',['SoundMediaHeader',['../d7/d07/structshaka_1_1media_1_1mp4_1_1SoundMediaHeader.html',1,'shaka::media::mp4']]],
   ['status',['Status',['../d2/d20/classshaka_1_1Status.html',1,'shaka']]],
   ['streamdata',['StreamData',['../de/db5/structshaka_1_1media_1_1MuxerListenerFactory_1_1StreamData.html',1,'shaka::media::MuxerListenerFactory::StreamData'],['../d0/d4c/structshaka_1_1media_1_1StreamData.html',1,'shaka::media::StreamData']]],

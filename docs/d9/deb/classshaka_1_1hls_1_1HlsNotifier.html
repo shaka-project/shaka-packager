@@ -88,6 +88,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8bd9273a1893899036e640c1e35fbaff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b85f6e4c2798f2634cd535011c230a2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a2b85f6e4c2798f2634cd535011c230a2">NotifyNewStream</a> (const MediaInfo &amp;media_info, const std::string &amp;playlist_name, const std::string &amp;stream_name, const std::string &amp;group_id, uint32_t *stream_id)=0</td></tr>
 <tr class="separator:a2b85f6e4c2798f2634cd535011c230a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63a11df343b1f75a5d89327a23d5249c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a63a11df343b1f75a5d89327a23d5249c">NotifySampleDuration</a> (uint32_t stream_id, uint32_t sample_duration)=0</td></tr>
+<tr class="separator:a63a11df343b1f75a5d89327a23d5249c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5a0d6670313d81eff20bb959732a2cd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#af5a0d6670313d81eff20bb959732a2cd">NotifyNewSegment</a> (uint32_t stream_id, const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t start_byte_offset, uint64_t size)=0</td></tr>
 <tr class="separator:af5a0d6670313d81eff20bb959732a2cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad97b17a04765577090ef9b6124928af2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#ad97b17a04765577090ef9b6124928af2">NotifyKeyFrame</a> (uint32_t stream_id, uint64_t timestamp, uint64_t start_byte_offset, uint64_t size)=0</td></tr>
@@ -157,7 +159,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The HLS parameters. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html#l00095">95</a> of file <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html">hls_notifier.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html#l00104">104</a> of file <a class="el" href="../../d1/d1e/hls__notifier_8h_source.html">hls_notifier.h</a>.</p>
 
 </div>
 </div>
@@ -500,13 +502,59 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a63a11df343b1f75a5d89327a23d5249c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63a11df343b1f75a5d89327a23d5249c">&#9670;&nbsp;</a></span>NotifySampleDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool shaka::hls::HlsNotifier::NotifySampleDuration </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>stream_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>sample_duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Change the sample duration of stream with <em>stream_id</em>. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream_id</td><td>is the value set by <a class="el" href="../../d9/deb/classshaka_1_1hls_1_1HlsNotifier.html#a2b85f6e4c2798f2634cd535011c230a2">NotifyNewStream()</a>. </td></tr>
+    <tr><td class="paramname">sample_duration</td><td>is the duration of a sample in timescale of the media. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. This may fail if the stream specified by <em>stream_id</em> does not exist. </dd></dl>
+
+<p>Implemented in <a class="el" href="../../d7/d5c/classshaka_1_1hls_1_1SimpleHlsNotifier.html#aa7af83ad4387d28f5aa391a8a558d104">shaka::hls::SimpleHlsNotifier</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>packager/hls/base/<a class="el" href="../../d1/d1e/hls__notifier_8h_source.html">hls_notifier.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 20 2018 14:37:40 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 21 2020 16:58:51 for Shaka Packager SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
