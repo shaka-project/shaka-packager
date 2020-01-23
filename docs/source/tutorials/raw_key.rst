@@ -117,9 +117,7 @@ Test vectors used in this tutorial
 
 :Widevine PSSH:
 
-    000000317073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED00000011220F7465737420636F6E74656E74206964
-
-    The PSSH is generated using
+    The PSSH 00000031707373... is generated using
     `pssh-box script <https://github.com/google/shaka-packager/tree/master/packager/tools/pssh>`_::
 
         $ pssh-box.py --widevine-system-id \
