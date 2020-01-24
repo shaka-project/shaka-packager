@@ -26,4 +26,7 @@ DEFINE_string(hls_playlist_type,
               "EXT-X-PLAYLIST-TYPE tag is omitted.");
 DEFINE_int32(hls_media_sequence_number,
               0,
-              "Number. This defines the initial EXT-X-MEDIA-SEQUENCE value");
+              "Number. This HLS-only parameter defines the initial "
+              "EXT-X-MEDIA-SEQUENCE value, which allows continuous media "
+              "sequence across packager restarts. See #691 for more "
+              "information about the reasoning of this and its use cases.");
