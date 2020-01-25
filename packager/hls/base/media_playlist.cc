@@ -608,7 +608,6 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
     hls_params_.media_sequence_number == media_sequence_number_) {
     // When there's a forced media_sequence_number, start with discontinuity.
     entries_.emplace_back(new DiscontinuityEntry());
-    inserted_discontinuity_tag_ = true;
   }
 
   entries_.emplace_back(new SegmentInfoEntry(
