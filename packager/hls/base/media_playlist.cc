@@ -343,7 +343,8 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
     : hls_params_(hls_params),
       file_name_(file_name),
       name_(name),
-      group_id_(group_id) {}
+      group_id_(group_id),
+      media_sequence_number_(hls_params_.media_sequence_number) {}
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -390,10 +391,6 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   characteristics_ =
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
-
-  if (hls_params_.media_sequence_number > media_sequence_number_) {
-    media_sequence_number_ = hls_params_.media_sequence_number;
-  }
 
   return true;
 }
