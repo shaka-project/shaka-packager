@@ -42,11 +42,13 @@ after_build:
   - if exist deploy rmdir /s /q deploy
   - mkdir deploy
   - ps: >-
-      copy "out\$env:OUTPUT_DIRECTORY\packager.exe" deploy\packager-win.exe
-      copy "out\$env:OUTPUT_DIRECTORY\mpd_generator.exe" deploy\mpd_generator-win.exe
-      7z a pssh-box.py.zip "$env:APPVEYOR_BUILD_FOLDER\out\$env:OUTPUT_DIRECTORY\pyproto"
-      7z a pssh-box.py.zip "$env:APPVEYOR_BUILD_FOLDER\out\$env:OUTPUT_DIRECTORY\pssh-box.py"
-      copy pssh-box.py.zip deploy\pssh-box-win.py.zip
+      If ($env:LIBPACKAGER_TYPE -eq "static_library") {
+        copy "out\$env:OUTPUT_DIRECTORY\packager.exe" deploy\packager-win.exe
+        copy "out\$env:OUTPUT_DIRECTORY\mpd_generator.exe" deploy\mpd_generator-win.exe
+        7z a pssh-box.py.zip "$env:APPVEYOR_BUILD_FOLDER\out\$env:OUTPUT_DIRECTORY\pyproto"
+        7z a pssh-box.py.zip "$env:APPVEYOR_BUILD_FOLDER\out\$env:OUTPUT_DIRECTORY\pssh-box.py"
+        copy pssh-box.py.zip deploy\pssh-box-win.py.zip
+      }
 
 artifacts:
   - path: 'deploy\*'
