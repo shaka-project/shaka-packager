@@ -344,7 +344,11 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
       file_name_(file_name),
       name_(name),
       group_id_(group_id),
-      media_sequence_number_(hls_params_.media_sequence_number) {}
+      media_sequence_number_(hls_params_.media_sequence_number) {
+        // When there's a forced media_sequence_number, start with discontinuity
+        if (media_sequence_number_ > 0)
+          entries_.emplace_back(new DiscontinuityEntry());
+      }
 
 MediaPlaylist::~MediaPlaylist() {}
 
@@ -601,10 +605,6 @@ void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
           << start_time << ".";
       entries_.emplace_back(new DiscontinuityEntry());
     }
-  } else if (hls_params_.media_sequence_number > 0 &&
-    hls_params_.media_sequence_number == media_sequence_number_) {
-    // When there's a forced media_sequence_number, start with discontinuity.
-    entries_.emplace_back(new DiscontinuityEntry());
   }
 
   entries_.emplace_back(new SegmentInfoEntry(

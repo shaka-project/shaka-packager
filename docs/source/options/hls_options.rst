@@ -70,6 +70,8 @@ HLS options
     EXT-X-MEDIA-SEQUENCE value. This way, it's possible to continue the sequence
     number from previous packager run.
 
-    See #691 for more information about the reasoning of this.
+    For more information about the reasoning of this, see issue #691:
+    `<https://github.com/google/shaka-packager/issues/691>`_
+
     The EXT-X-MEDIA-SEQUENCE documentation can be read here:
     `<https://tools.ietf.org/html/rfc8216#section-4.3.3.2>`_
