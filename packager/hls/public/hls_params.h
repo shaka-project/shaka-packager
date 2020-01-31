@@ -56,6 +56,9 @@ struct HlsParams {
   /// be populated from segment duration specified in ChunkingParams if not
   /// specified.
   double target_segment_duration = 0;
+  /// Custom EXT-X-MEDIA-SEQUENCE value to allow continuous media playback
+  /// across packager restarts. See #691 for details.
+  uint32_t media_sequence_number = 0;
 };
 
 }  // namespace shaka
