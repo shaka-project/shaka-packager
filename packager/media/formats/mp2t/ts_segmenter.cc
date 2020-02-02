@@ -125,7 +125,7 @@ void TsSegmenter::SetTsWriterFileOpenedForTesting(bool value) {
   ts_writer_file_opened_ = value;
 }
 
-Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
+Status TsSegmenter::OpenNewSegmentIfClosed(int64_t next_pts) {
   if (ts_writer_file_opened_)
     return Status::OK;
   const std::string segment_name =
