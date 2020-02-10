@@ -253,9 +253,8 @@ Status EncryptionHandler::ProcessMediaSample(
 void EncryptionHandler::SetupProtectionPattern(StreamType stream_type) {
   if (stream_type == kStreamVideo &&
       IsPatternEncryptionScheme(protection_scheme_)) {
-    // Use 1:9 pattern.
-    crypt_byte_block_ = 1u;
-    skip_byte_block_ = 9u;
+    crypt_byte_block_ = encryption_params_.crypt_byte_block;
+    skip_byte_block_ = encryption_params_.skip_byte_block;
   } else {
     // Audio stream in pattern encryption scheme does not use pattern; it uses
     // whole-block full sample encryption instead. Non-pattern encryption does

@@ -417,6 +417,8 @@ class PackagerAppTest(unittest.TestCase):
                 encryption=False,
                 protection_systems=None,
                 protection_scheme=None,
+                crypt_byte_block=None,
+                skip_byte_block=None,
                 vp9_subsample_encryption=True,
                 decryption=False,
                 random_iv=False,
@@ -469,6 +471,11 @@ class PackagerAppTest(unittest.TestCase):
 
     if protection_scheme:
       flags += ['--protection_scheme', protection_scheme]
+      if crypt_byte_block is not None and skip_byte_block is not None:
+        flags += [
+            '--crypt_byte_block={0}'.format(crypt_byte_block),
+            '--skip_byte_block={0}'.format(skip_byte_block)
+        ]
     if not vp9_subsample_encryption:
       flags += ['--vp9_subsample_encryption=false']
 
@@ -1041,6 +1048,18 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(
             encryption=True, protection_scheme='cbcs', output_dash=True))
     self._CheckTestResults('encryption-cbcs', verify_decryption=True)
+
+  def testEncryptionCbcsWithFullProtection(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True,
+            protection_scheme='cbcs',
+            crypt_byte_block=10,
+            skip_byte_block=0,
+            output_dash=True))
+    self._CheckTestResults(
+        'encryption-cbcs-with-full-protection', verify_decryption=True)
 
   def testEncryptionAndAdCues(self):
     self.assertPackageSuccess(
@@ -1772,6 +1791,17 @@ class PackagerCommandParsingTest(PackagerAppTest):
         (test_file, video_output_prefix, video_output_prefix),
     ], self._GetFlags())
     # Expect the test to fail but we do not expect a crash.
+    self.assertEqual(packaging_result, 1)
+
+  def testIncorrectEncryptionPattern(self):
+    packaging_result = self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(
+            encryption=True,
+            protection_scheme='cbcs',
+            crypt_byte_block=12,
+            skip_byte_block=13,
+            output_dash=True))
     self.assertEqual(packaging_result, 1)
 
 

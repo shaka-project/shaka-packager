@@ -134,6 +134,16 @@ struct EncryptionParams {
   static constexpr uint32_t kProtectionSchemeCens = 0x63656E73;
   static constexpr uint32_t kProtectionSchemeCbcs = 0x63626373;
   uint32_t protection_scheme = kProtectionSchemeCenc;
+  /// The count of the encrypted blocks in the protection pattern, where each
+  /// block is of size 16-bytes. There are three common patterns
+  /// (crypt_byte_block:skip_byte_block): 1:9 (default), 5:5, 10:0.
+  /// Applies to video streams with "cbcs" and "cens" protection schemes only;
+  /// Ignored otherwise.
+  uint8_t crypt_byte_block = 1;
+  /// The count of the unencrypted blocks in the protection pattern.
+  /// Applies to video streams with "cbcs" and "cens" protection schemes only;
+  /// Ignored otherwise.
+  uint8_t skip_byte_block = 9;
   /// Crypto period duration in seconds. A positive value means key rotation is
   /// enabled, the key provider must support key rotation in this case.
   static constexpr double kNoKeyRotation = 0;

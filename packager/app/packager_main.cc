@@ -343,6 +343,9 @@ base::Optional<PackagingParams> GetPackagingParams() {
     encryption_params.clear_lead_in_seconds = FLAGS_clear_lead;
     if (!GetProtectionScheme(&encryption_params.protection_scheme))
       return base::nullopt;
+    encryption_params.crypt_byte_block = FLAGS_crypt_byte_block;
+    encryption_params.skip_byte_block = FLAGS_skip_byte_block;
+
     encryption_params.crypto_period_duration_in_seconds =
         FLAGS_crypto_period_duration;
     encryption_params.vp9_subsample_encryption = FLAGS_vp9_subsample_encryption;
