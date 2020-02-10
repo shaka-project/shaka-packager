@@ -71,7 +71,7 @@ class TsSegmenter {
   void SetTsWriterFileOpenedForTesting(bool value);
 
  private:
-  Status OpenNewSegmentIfClosed(uint32_t next_pts);
+  Status OpenNewSegmentIfClosed(int64_t next_pts);
 
   // Writes PES packets (carried in TsPackets) to a file. If a file is not open,
   // it will open one. This will not close the file.
