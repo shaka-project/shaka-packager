@@ -4,6 +4,7 @@
 
 #include "packager/media/formats/mp4/box_definitions.h"
 
+#include <gflags/gflags.h>
 #include <limits>
 
 #include "packager/base/logging.h"
@@ -11,6 +12,11 @@
 #include "packager/media/base/macros.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
+
+DEFINE_bool(mvex_before_trak,
+            false,
+            "Android MediaExtractor requires mvex to be written before trak. "
+            "Set the flag to true to comply with the requirement.");
 
 namespace {
 const uint32_t kFourCCSize = 4;
@@ -2328,9 +2334,17 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
     // We do not care the content of metadata box in the source content, so just
     // skip reading the box.
     RCHECK(buffer->TryReadWriteChild(&metadata));
+    if (FLAGS_mvex_before_trak) {
+      // |extends| has to be written before |tracks| to workaround Android
+      // MediaExtractor bug which requires |mvex| to be placed before |trak|.
+      // See https://github.com/google/shaka-packager/issues/711 for details.
+      RCHECK(buffer->TryReadWriteChild(&extends));
+    }
     for (uint32_t i = 0; i < tracks.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&tracks[i]));
-    RCHECK(buffer->TryReadWriteChild(&extends));
+    if (!FLAGS_mvex_before_trak) {
+      RCHECK(buffer->TryReadWriteChild(&extends));
+    }
     for (uint32_t i = 0; i < pssh.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&pssh[i]));
   }
