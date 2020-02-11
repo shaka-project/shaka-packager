@@ -35,8 +35,6 @@ enum {
 };
 
 struct H264Sps {
-  H264Sps();
-
   int profile_idc;
   bool constraint_set0_flag;
   bool constraint_set1_flag;
@@ -92,8 +90,6 @@ struct H264Sps {
 };
 
 struct H264Pps {
-  H264Pps();
-
   int pic_parameter_set_id;
   int seq_parameter_set_id;
   bool entropy_coding_mode_flag;
@@ -144,8 +140,6 @@ struct H264DecRefPicMarking {
 };
 
 struct H264SliceHeader {
-  H264SliceHeader();
-
   enum {
     kRefListSize = 32,
     kRefListModSize = kRefListSize
@@ -230,8 +224,6 @@ struct H264SEIRecoveryPoint {
 };
 
 struct H264SEIMessage {
-  H264SEIMessage();
-
   enum Type {
     kSEIRecoveryPoint = 6,
   };
