@@ -87,6 +87,9 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent);
 
+// Returns last segment number value of current adaptation set's content type.
+std::string GetLastSegmentNumber(const std::string& last_segment_number_string,
+				 const std::string& content_type);
 }  // namespace shaka
 
 #endif  // MPD_BASE_MPD_UTILS_H_
