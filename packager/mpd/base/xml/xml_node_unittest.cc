@@ -18,6 +18,7 @@
 #include "packager/mpd/test/xml_compare.h"
 
 DECLARE_bool(segment_template_constant_duration);
+DECLARE_bool(dash_add_last_segment_number_when_needed);
 
 using ::testing::ElementsAre;
 
@@ -396,6 +397,32 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
                   "  </SegmentTemplate>"
                   "</Representation>"));
 }
+
+TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {        
+  const uint32_t kStartNumber = 1;                                              
+  const uint64_t kStartTime = 0;                                                
+  const uint64_t kDuration = 100;                                               
+  const uint64_t kRepeat = 9;                                                   
+                                                                                
+  std::list<SegmentInfo> segment_infos = {                                      
+      {kStartTime, kDuration, kRepeat},                                         
+  };                                                                            
+  RepresentationXmlNode representation;                                         
+  FLAGS_dash_add_last_segment_number_when_needed = true;                       
+                                                                                
+  ASSERT_TRUE(                                                                  
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+                                                                                
+  EXPECT_THAT(                                                                  
+      representation.GetRawPtr(),                                               
+      XmlNodeEqual("<Representation>"                                           
+                   "<SupplementalProperty schemeIdUri=\"http://dashif.org/"     
+                   "guidelines/last-segment-number\" value=\"10\"/>"            
+                   "  <SegmentTemplate media=\"$Number$.m4s\" "                 
+                   "                   startNumber=\"1\" duration=\"100\"/>"    
+                   "</Representation>"));                                       
+  FLAGS_dash_add_last_segment_number_when_needed = false;                                                                                                      
+}                      
 
 }  // namespace xml
 }  // namespace shaka

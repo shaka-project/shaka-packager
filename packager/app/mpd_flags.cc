@@ -62,10 +62,3 @@ DEFINE_bool(
     "completely."
     "Ignored if $Time$ is used in segment template, since $Time$ requires "
     "accurate Segment Timeline.");
-DEFINE_string(last_segment_number,
-             "",
-             "Indicate the last segment number in adaptation-set with "
-             "comma separated <AdaptationSet content type>:<last segment number> "
-	     "values. This will add a Supplemental Descriptor with @schemeIdUri"
-	     "set to http://dashif.org/guidelines/last-segment-number with"
-	     "the @value set to the last segment number.");

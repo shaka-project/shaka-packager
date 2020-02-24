@@ -319,18 +319,6 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
     adaptation_set.AddSupplementalProperty(
         "urn:mpeg:dash:adaptation-set-switching:2016", switching_ids);
   }
-  if (mpd_options_.mpd_params.last_segment_number != "" &&
-		  mpd_options_.mpd_params.last_segment_number
-		  .find(content_type_) != std::string::npos) {
-    std::string last_segment_number = GetLastSegmentNumber
-	    (mpd_options_.mpd_params.last_segment_number,content_type_);
-    if (last_segment_number != "") {
-      adaptation_set.AddSupplementalProperty(
-		      "http://dashif.org/guidelines/last-segment-number",
-		      last_segment_number);
-    }
-  }
-
 
   for (const AdaptationSet::Accessibility& accessibility : accessibilities_) {
     adaptation_set.AddAccessibilityElement(accessibility.scheme,

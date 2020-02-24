@@ -457,7 +457,6 @@ base::Optional<PackagingParams> GetPackagingParams() {
       FLAGS_generate_dash_if_iop_compliant_mpd;
   mpd_params.allow_approximate_segment_timeline =
       FLAGS_allow_approximate_segment_timeline;
-  mpd_params.last_segment_number = FLAGS_last_segment_number;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {

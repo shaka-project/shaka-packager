@@ -80,12 +80,6 @@ struct MpdParams {
   /// SegmentTimeline if it is enabled. It will be populated from segment
   /// duration specified in ChunkingParams if not specified.
   double target_segment_duration = 0;
-  /// This is the last segment number string added to indicate the last segment
-  /// number of an adpatation set with mentioned content type. If this string is
-  /// not empty, a Supplemental Descriptor with @schemeIdUri set to 
-  /// http://dashif.org/guidelines/last-segment-number with the @value
-  /// set to the last segment number will be added to appropriate adaptation set.
-  std::string last_segment_number;
 };
 
 }  // namespace shaka

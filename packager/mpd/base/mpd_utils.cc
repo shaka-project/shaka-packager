@@ -313,39 +313,6 @@ void UpdateContentProtectionPsshHelper(
   return;
 }
 
-std::string GetLastSegmentNumber(const std::string& last_segment_number_string,
-                                 const std::string& content_type) {
-
-  size_t content_type_location = last_segment_number_string.find(content_type);
-  if (content_type_location == std::string::npos) {
-    LOG(ERROR) << "Last segment number for content type: "<< content_type
-               << " not found. Check the arguments passed.";
-    return "";
-  }
-
-  size_t colon_location = last_segment_number_string.find_first_of(":",
-                                content_type_location);
-  if (colon_location == std::string::npos) {
-    LOG(ERROR) << "Last segment number argument format error for content type :"
-               << content_type << " Use the format "
-               "<adaptation set content type>: last segment number";
-    return "";
-  }
-  size_t comma_location = last_segment_number_string.find_first_of(",",
-                               colon_location);
-
-  if (comma_location != std::string::npos) {
-    return last_segment_number_string.substr(colon_location + 1,
-                                comma_location - colon_location - 1);
-  } else {
-    return last_segment_number_string.substr(colon_location + 1);
-  }
-
-  LOG(ERROR) <<"Last segment number for content type: "<< content_type
-             <<" not found. Check the arguments passed.";
-  return "";
-}
-
 namespace {
 
 // UUID for Marlin Adaptive Streaming Specification – Simple Profile from
