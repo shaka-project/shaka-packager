@@ -24,6 +24,12 @@ DEFINE_bool(segment_template_constant_duration,
             "Generates SegmentTemplate@duration if all segments except the "
             "last one has the same duration if this flag is set to true.");
 
+DEFINE_bool(dash_add_last_segment_number_when_needed,
+            false,
+            "Adds a Supplemental Descriptor with @schemeIdUri "
+            "set to http://dashif.org/guidelines/last-segment-number with "
+            "the @value set to the last segment number.");
+
 namespace shaka {
 
 using xml::XmlNode;
@@ -429,6 +435,15 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
     if (IsTimelineConstantDuration(segment_infos, start_number)) {
       segment_template.SetIntegerAttribute("duration",
                                            segment_infos.front().duration);
+      if (FLAGS_dash_add_last_segment_number_when_needed) {
+        uint32_t last_segment_number = start_number - 1;
+        for (const auto& segment_info_element : segment_infos) 
+          last_segment_number += segment_info_element.repeat + 1;
+	
+        AddSupplementalProperty(
+          "http://dashif.org/guidelines/last-segment-number",
+          std::to_string(last_segment_number));	
+      }
     } else {
       XmlNode segment_timeline("SegmentTimeline");
       if (!PopulateSegmentTimeline(segment_infos, &segment_timeline) ||
