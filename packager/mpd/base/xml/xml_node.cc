@@ -437,9 +437,9 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
                                            segment_infos.front().duration);
       if (FLAGS_dash_add_last_segment_number_when_needed) {
         uint32_t last_segment_number = start_number - 1;
-        for (const auto& segment_info_element : segment_infos) {
+        for (const auto& segment_info_element : segment_infos) 
           last_segment_number += segment_info_element.repeat + 1;
-	}
+	
         AddSupplementalProperty(
           "http://dashif.org/guidelines/last-segment-number",
           std::to_string(last_segment_number));	
