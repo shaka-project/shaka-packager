@@ -33,6 +33,8 @@ enum FieldType {
   kHlsCharacteristicsField,
   kDashAccessiblitiesField,
   kDashRolesField,
+  kDashOnlyField,
+  kHlsOnlyField,
 };
 
 struct FieldNameToTypeMapping {
@@ -77,6 +79,8 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
     {"dash_role", kDashRolesField},
     {"roles", kDashRolesField},
     {"role", kDashRolesField},
+    {"dash_only", kDashOnlyField},
+    {"hls_only", kHlsOnlyField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -205,6 +209,14 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
         descriptor.dash_roles =
             base::SplitString(iter->second, ";", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY);
+        break;
+      case kDashOnlyField:
+        if (iter->second == "true")
+          descriptor.dash_only = true;
+        break;
+      case kHlsOnlyField:
+        if (iter->second == "true")
+          descriptor.hls_only = true;
         break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
