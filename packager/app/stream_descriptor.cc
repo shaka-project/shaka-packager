@@ -211,12 +211,30 @@ base::Optional<StreamDescriptor> ParseStreamDescriptor(
                               base::SPLIT_WANT_NONEMPTY);
         break;
       case kDashOnlyField:
-        if (iter->second == "true")
-          descriptor.dash_only = true;
+        unsigned dash_only_value;
+        if (!base::StringToUint(iter->second, &dash_only_value)) {
+          LOG(ERROR) << "Non-numeric option for dash_only field "
+                        "specified (" << iter->second << ").";
+          return base::nullopt;
+        }
+        if (dash_only_value > 1) {
+          LOG(ERROR) << "dash_only should be either 0 or 1.";
+          return base::nullopt;
+        }
+        descriptor.dash_only = dash_only_value > 0;
         break;
       case kHlsOnlyField:
-        if (iter->second == "true")
-          descriptor.hls_only = true;
+        unsigned hls_only_value;
+        if (!base::StringToUint(iter->second, &hls_only_value)) {
+          LOG(ERROR) << "Non-numeric option for hls_only field "
+                        "specified (" << iter->second << ").";
+          return base::nullopt;
+        }
+        if (hls_only_value > 1) {
+          LOG(ERROR) << "hls_only should be either 0 or 1.";
+          return base::nullopt;
+        }
+        descriptor.hls_only = hls_only_value > 0;
         break;
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first

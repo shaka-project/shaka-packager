@@ -106,27 +106,15 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
           CreateMediaInfoDumpListenerInternal(stream.media_info_output));
     }
 
-    if (stream.dash_only || stream.hls_only) {
-      if (mpd_notifier_ && stream.dash_only) {
-        combined_listener->AddListener(
-            CreateMpdListenerInternal(stream, mpd_notifier_));
-      }
-      if (hls_notifier_ && stream.hls_only) {
-        for (auto& listener :
-             CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
-          combined_listener->AddListener(std::move(listener));
-        }
-      }      
-    } else {
-      if (mpd_notifier_) {
-        combined_listener->AddListener(
-            CreateMpdListenerInternal(stream, mpd_notifier_));
-      }
-      if (hls_notifier_) {
-        for (auto& listener :
-             CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
-          combined_listener->AddListener(std::move(listener));
-        }
+    if (mpd_notifier_ && !stream.hls_only) {
+      combined_listener->AddListener(
+          CreateMpdListenerInternal(stream, mpd_notifier_));
+    }
+
+    if (hls_notifier_ && !stream.dash_only) {
+      for (auto& listener :
+           CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
+        combined_listener->AddListener(std::move(listener));
       }
     }
 
