@@ -88,4 +88,5 @@ DASH options
 
 --dash_only=0|1
 
-    Optional. Defaults to 0 if not specified. If it is set to 1, indicates the stream is DASH only.
+    Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
+    stream is DASH only.
