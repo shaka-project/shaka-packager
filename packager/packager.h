@@ -128,6 +128,11 @@ struct StreamDescriptor {
   std::vector<std::string> dash_accessiblities;
   /// Optional for DASH output. It defines Role elements of the stream.
   std::vector<std::string> dash_roles;
+
+  /// Set to true to indicate that the stream is for dash only.
+  bool dash_only = false;
+  /// Set to true to indicate that the stream is for hls only.
+  bool hls_only = false;
 };
 
 class SHAKA_EXPORT Packager {

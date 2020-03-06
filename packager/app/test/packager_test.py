@@ -275,8 +275,10 @@ class PackagerAppTest(unittest.TestCase):
                  using_time_specifier=False,
                  hls=False,
                  hls_characteristics=None,
+                 hls_only=None,
                  dash_accessibilities=None,
                  dash_roles=None,
+                 dash_only=None,
                  trick_play_factor=None,
                  drm_label=None,
                  skip_encryption=None,
@@ -303,8 +305,10 @@ class PackagerAppTest(unittest.TestCase):
           $Number$. This flag is only relevant if segmented is True.
       hls: Should the output be for an HLS manifest.
       hls_characteristics: CHARACTERISTICS attribute for the HLS stream.
+      hls_only: If set to true, will indicate that the stream is for HLS only.
       dash_accessibilities: Accessibility element for the DASH stream.
       dash_roles: Role element for the DASH stream.
+      dash_only: If set to true, will indicate that the stream is for DASH only.
       trick_play_factor: Signals the stream is to be used for a trick play
           stream and which key frames to use. A trick play factor of 0 is the
           same as not specifying a trick play factor.
@@ -360,10 +364,16 @@ class PackagerAppTest(unittest.TestCase):
     if hls_characteristics:
       stream.Append('hls_characteristics', hls_characteristics)
 
+    if hls_only:
+      stream.Append('hls_only', 1)
+
     if dash_accessibilities:
       stream.Append('dash_accessibilities', dash_accessibilities)
     if dash_roles:
       stream.Append('dash_roles', dash_roles)
+
+    if dash_only:
+      stream.Append('dash_only', 1)
 
     requires_init_segment = segmented and base_ext not in [
         'aac', 'ac3', 'ec3', 'ts', 'vtt'
@@ -699,6 +709,14 @@ class PackagerFunctionalTest(PackagerAppTest):
     # Since the stream descriptors are sorted in packager app, a different
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
+
+  def testDashOnlyAndHlsOnly(self):
+    streams = [
+        self._GetStream('video', hls_only=True),
+        self._GetStream('audio', dash_only=True),
+    ]
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,output_hls=True))
+    self._CheckTestResults('hls-only-dash-only')
 
   def testAudioVideoWithLanguageOverride(self):
     self.assertPackageSuccess(

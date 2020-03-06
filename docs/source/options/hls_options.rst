@@ -75,3 +75,8 @@ HLS options
 
     The EXT-X-MEDIA-SEQUENCE documentation can be read here:
     https://tools.ietf.org/html/rfc8216#section-4.3.3.2.
+
+--hls_only=0|1
+
+    Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
+    stream is HLS only.

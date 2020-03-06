@@ -105,11 +105,13 @@ std::unique_ptr<MuxerListener> MuxerListenerFactory::CreateListener(
       combined_listener->AddListener(
           CreateMediaInfoDumpListenerInternal(stream.media_info_output));
     }
-    if (mpd_notifier_) {
+
+    if (mpd_notifier_ && !stream.hls_only) {
       combined_listener->AddListener(
           CreateMpdListenerInternal(stream, mpd_notifier_));
     }
-    if (hls_notifier_) {
+
+    if (hls_notifier_ && !stream.dash_only) {
       for (auto& listener :
            CreateHlsListenersInternal(stream, stream_index, hls_notifier_)) {
         combined_listener->AddListener(std::move(listener));
