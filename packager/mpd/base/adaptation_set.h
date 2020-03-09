@@ -135,6 +135,9 @@ class AdaptationSet {
   /// @param id is the new ID to be set.
   void set_id(uint32_t id) { id_ = id; }
 
+  /// Get media info.
+  const MediaInfo& getMediaInfo() const { return media_info_;}
+
   /// Notifies the AdaptationSet instance that a new (sub)segment was added to
   /// the Representation with @a representation_id.
   /// This must be called every time a (sub)segment is added to a
@@ -183,9 +186,11 @@ class AdaptationSet {
   /// @param mpd_type is the type of this MPD.
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
-  AdaptationSet(const std::string& language,
+  /// @param media_info is media information of the adaptation set.
+   AdaptationSet(const std::string& language,
                 const MpdOptions& mpd_options,
-                uint32_t* representation_counter);
+                uint32_t* representation_counter,
+                const MediaInfo& media_info);
 
  private:
   AdaptationSet(const AdaptationSet&) = delete;
@@ -292,6 +297,8 @@ class AdaptationSet {
   // True iff all the segments are aligned.
   SegmentAligmentStatus segments_aligned_;
   bool force_set_segment_alignment_;
+
+  const MediaInfo& media_info_;
 
   // Keeps track of segment start times of Representations.
   // For static MPD, this will not be cleared, all the segment start times are

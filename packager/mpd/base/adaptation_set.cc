@@ -165,12 +165,14 @@ class RepresentationStateChangeListenerImpl
 
 AdaptationSet::AdaptationSet(const std::string& language,
                              const MpdOptions& mpd_options,
-                             uint32_t* counter)
+                             uint32_t* counter,
+                             const MediaInfo& media_info)
     : representation_counter_(counter),
       language_(language),
       mpd_options_(mpd_options),
       segments_aligned_(kSegmentAlignmentUnknown),
-      force_set_segment_alignment_(false) {
+      force_set_segment_alignment_(false),
+      media_info_(media_info){
   DCHECK(counter);
 }
 

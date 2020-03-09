@@ -99,7 +99,7 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   // Need a new one.
   const std::string language = GetLanguage(media_info);
   std::unique_ptr<AdaptationSet> new_adaptation_set =
-      NewAdaptationSet(language, mpd_options_, representation_counter_);
+      NewAdaptationSet(language, mpd_options_, representation_counter_, media_info);
   if (!SetNewAdaptationSetAttributes(language, media_info, adaptation_sets,
                                      new_adaptation_set.get())) {
     return nullptr;
@@ -112,12 +112,26 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
 
     for (AdaptationSet* adaptation_set : adaptation_sets) {
       if (protected_adaptation_set_map_.Switchable(*adaptation_set,
-                                                   *new_adaptation_set)) {
+                                                   *new_adaptation_set, false)) {
         adaptation_set->AddAdaptationSetSwitching(new_adaptation_set.get());
         new_adaptation_set->AddAdaptationSetSwitching(adaptation_set);
       }
     }
   }
+
+  if (mpd_options_.mpd_params.allow_codec_switching) {
+    for (auto a: adaptation_set_list_map_) {
+      std::list<AdaptationSet*>& adaptation_sets = a.second;
+      for (AdaptationSet* adaptation_set : adaptation_sets) {
+        if(protected_adaptation_set_map_.Switchable(*adaptation_set,
+                                         *new_adaptation_set, true)) {
+          new_adaptation_set->AddAdaptationSetSwitching(adaptation_set);
+          adaptation_set->AddAdaptationSetSwitching(new_adaptation_set.get());
+        }
+      }
+    }
+  }
+
   AdaptationSet* adaptation_set_ptr = new_adaptation_set.get();
   adaptation_sets.push_back(adaptation_set_ptr);
   adaptation_sets_.emplace_back(std::move(new_adaptation_set));
@@ -167,9 +181,9 @@ const std::list<AdaptationSet*> Period::GetAdaptationSets() const {
 std::unique_ptr<AdaptationSet> Period::NewAdaptationSet(
     const std::string& language,
     const MpdOptions& options,
-    uint32_t* representation_counter) {
+    uint32_t* representation_counter, const MediaInfo& media_info) {
   return std::unique_ptr<AdaptationSet>(
-      new AdaptationSet(language, options, representation_counter));
+      new AdaptationSet(language, options, representation_counter, media_info));
 }
 
 bool Period::SetNewAdaptationSetAttributes(
@@ -275,7 +289,20 @@ bool Period::ProtectedAdaptationSetMap::Match(
 
 bool Period::ProtectedAdaptationSetMap::Switchable(
     const AdaptationSet& adaptation_set_a,
-    const AdaptationSet& adaptation_set_b) {
+    const AdaptationSet& adaptation_set_b,
+    const bool allow_codec_switching) {
+
+  if (allow_codec_switching) {
+    const MediaInfo& media_info_a = adaptation_set_a.getMediaInfo();
+    const MediaInfo& media_info_b = adaptation_set_b.getMediaInfo();
+
+    std::string key_a = GetAdaptationSetKey(media_info_a, true);
+    std::string key_b = GetAdaptationSetKey(media_info_b, true);
+
+    if (key_a == key_b)
+      return true;
+  }
+
   const auto protected_content_it_a =
       protected_content_map_.find(&adaptation_set_a);
   const auto protected_content_it_b =

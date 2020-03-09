@@ -17,13 +17,15 @@
 namespace shaka {
 namespace {
 const char kNoLanguage[] = "";
+const MediaInfo media_info;
 }  // namespace
 
 class TestableAdaptationSet : public AdaptationSet {
  public:
   TestableAdaptationSet(const MpdOptions& mpd_options,
                         uint32_t* representation_counter)
-      : AdaptationSet(kNoLanguage, mpd_options, representation_counter) {}
+      : AdaptationSet(kNoLanguage, mpd_options, representation_counter,
+                      media_info) {}
 };
 
 class MpdUtilsTest : public ::testing::Test {

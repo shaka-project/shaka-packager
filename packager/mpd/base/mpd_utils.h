@@ -47,7 +47,8 @@ std::string GetCodecs(const MediaInfo& media_info);
 std::string GetBaseCodec(const MediaInfo& media_info);
 
 // Returns a key made from the characteristics that separate AdaptationSets.
-std::string GetAdaptationSetKey(const MediaInfo& media_info);
+std::string GetAdaptationSetKey(const MediaInfo& media_info,
+           bool no_codec = false);
 
 std::string SecondsToXmlDuration(double seconds);
 

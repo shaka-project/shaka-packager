@@ -88,7 +88,8 @@ class Period {
   virtual std::unique_ptr<AdaptationSet> NewAdaptationSet(
       const std::string& lang,
       const MpdOptions& options,
-      uint32_t* representation_counter);
+      uint32_t* representation_counter,
+      const MediaInfo& media_info);
 
   // Helper function to set new AdaptationSet attributes.
   bool SetNewAdaptationSetAttributes(
@@ -130,7 +131,8 @@ class Period {
                const MediaInfo& media_info);
     // Check if the two adaptation sets are switchable.
     bool Switchable(const AdaptationSet& adaptation_set_a,
-                    const AdaptationSet& adaptation_set_b);
+                    const AdaptationSet& adaptation_set_b,
+                    const bool allow_codec_switching);
 
    private:
     ProtectedAdaptationSetMap(const ProtectedAdaptationSetMap&) = delete;

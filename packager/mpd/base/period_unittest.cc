@@ -80,11 +80,12 @@ class TestablePeriod : public Period {
                mpd_options,
                &sequence_number_) {}
 
-  MOCK_METHOD3(
+  MOCK_METHOD4(
       NewAdaptationSet,
       std::unique_ptr<AdaptationSet>(const std::string& lang,
                                      const MpdOptions& options,
-                                     uint32_t* representation_counter));
+                                     uint32_t* representation_counter,
+                                     const MediaInfo& media_info));
 
  private:
   // Only for constructing the super class. Not used for testing.
@@ -123,7 +124,7 @@ TEST_F(PeriodTest, GetXml) {
       "}\n"
       "container_type: 1\n";
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
@@ -155,7 +156,7 @@ TEST_F(PeriodTest, DynamicMpdGetXml) {
       "container_type: 1\n";
   mpd_options_.mpd_type = MpdType::kDynamic;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _,_))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
@@ -186,7 +187,7 @@ TEST_F(PeriodTest, SetDurationAndGetXml) {
       "}\n"
       "container_type: 1\n";
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   ASSERT_EQ(default_adaptation_set_ptr_,
@@ -223,7 +224,7 @@ TEST_F(PeriodTest, Text) {
       "}\n"
       "container_type: CONTAINER_TEXT\n";
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(Eq("en"), _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(Eq("en"), _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
   EXPECT_CALL(*default_adaptation_set_ptr_, ForceSetSegmentAlignment(true));
 
@@ -262,7 +263,7 @@ TEST_F(PeriodTest, TrickPlayWithMatchingAdaptationSet) {
       new StrictMock<MockAdaptationSet>());
   auto* trick_play_adaptation_set_ptr = trick_play_adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))))
       .WillOnce(Return(ByMove(std::move(trick_play_adaptation_set))));
 
@@ -308,7 +309,7 @@ TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
   std::unique_ptr<StrictMock<MockAdaptationSet>> trick_play_adaptation_set(
       new StrictMock<MockAdaptationSet>());
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))))
       .WillOnce(Return(ByMove(std::move(trick_play_adaptation_set))));
 
@@ -380,7 +381,7 @@ TEST_F(PeriodTest, SplitAdaptationSetsByLanguageAndCodec) {
   auto* vorbis_german_adaptation_set_ptr = vorbis_german_adaptation_set.get();
 
   // We expect three AdaptationSets.
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(aac_eng_adaptation_set))))
       .WillOnce(Return(ByMove(std::move(aac_ger_adaptation_set))))
       .WillOnce(Return(ByMove(std::move(vorbis_german_adaptation_set))));
@@ -435,7 +436,7 @@ TEST_F(PeriodTest, GetAdaptationSets) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_2_ptr = adaptation_set_2.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
       .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
 
@@ -483,7 +484,7 @@ TEST_F(PeriodTest, OrderedByAdaptationSetId) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_2_ptr = adaptation_set_2.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set_1))))
       .WillOnce(Return(ByMove(std::move(adaptation_set_2))));
 
@@ -524,7 +525,7 @@ TEST_F(PeriodTest, AudioAdaptationSetDefaultLanguage) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_ptr = adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set))));
   EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
   ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
@@ -549,7 +550,7 @@ TEST_F(PeriodTest, AudioAdaptationSetNonDefaultLanguage) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_ptr = adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set))));
   EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain)).Times(0);
   ASSERT_EQ(adaptation_set_ptr, testable_period_.GetOrCreateAdaptationSet(
@@ -569,7 +570,7 @@ TEST_F(PeriodTest, TextAdaptationSetDefaultLanguage) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_ptr = adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set))));
   EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
   EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
@@ -590,7 +591,7 @@ TEST_F(PeriodTest, TextAdaptationSetNonDefaultLanguage) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_ptr = adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set))));
   EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain)).Times(0);
   EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
@@ -612,7 +613,7 @@ TEST_F(PeriodTest, TextAdaptationSetNonDefaultLanguageButDefaultTextLanguage) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_ptr = adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set))));
   EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
   EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
@@ -634,7 +635,7 @@ TEST_F(PeriodTest, TextAdaptationSetDefaultLanguageButNonDefaultTextLanguage) {
       new StrictMock<MockAdaptationSet>());
   auto* adaptation_set_ptr = adaptation_set.get();
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(adaptation_set))));
   EXPECT_CALL(*adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain)).Times(0);
   EXPECT_CALL(*adaptation_set_ptr, ForceSetSegmentAlignment(true));
@@ -724,7 +725,7 @@ TEST_P(PeriodTestWithContentProtection, DifferentProtectedContent) {
 
   InSequence in_sequence;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(sd_adaptation_set))));
 
   if (content_protection_in_adaptation_set_) {
@@ -735,7 +736,7 @@ TEST_P(PeriodTestWithContentProtection, DifferentProtectedContent) {
         *sd_adaptation_set_ptr,
         AddContentProtectionElement(ContentProtectionElementEq(sd_my_drm)));
 
-    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
         .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
 
     // Add main Role here for both.
@@ -819,7 +820,7 @@ TEST_P(PeriodTestWithContentProtection, SameProtectedContent) {
   InSequence in_sequence;
 
   // Only called once.
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(default_adaptation_set_))));
 
   if (content_protection_in_adaptation_set_) {
@@ -906,14 +907,14 @@ TEST_P(PeriodTestWithContentProtection, SetAdaptationSetSwitching) {
 
   InSequence in_sequence;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(sd_adaptation_set))));
 
   if (content_protection_in_adaptation_set_) {
     EXPECT_CALL(*sd_adaptation_set_ptr, AddContentProtectionElement(_))
         .Times(2);
 
-    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
         .WillOnce(Return(ByMove(std::move(hd_adaptation_set))));
 
     // Add main Role here for both.
@@ -967,7 +968,7 @@ TEST_P(PeriodTestWithContentProtection, SetAdaptationSetSwitching) {
   fourk_adaptation_set_ptr->set_id(k4kAdaptationSetId);
 
   if (content_protection_in_adaptation_set_) {
-    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+    EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
         .WillOnce(Return(ByMove(std::move(fourk_adaptation_set))));
 
     EXPECT_CALL(*fourk_adaptation_set_ptr, AddRole(AdaptationSet::kRoleMain));
@@ -1047,14 +1048,14 @@ TEST_P(PeriodTestWithContentProtection,
 
   InSequence in_sequence;
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(video_adaptation_set))));
   if (content_protection_in_adaptation_set_) {
     EXPECT_CALL(*video_adaptation_set_ptr, AddContentProtectionElement(_))
         .Times(2);
   }
 
-  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _))
+  EXPECT_CALL(testable_period_, NewAdaptationSet(_, _, _, _))
       .WillOnce(Return(ByMove(std::move(audio_adaptation_set))));
   if (content_protection_in_adaptation_set_) {
     EXPECT_CALL(*audio_adaptation_set_ptr, AddContentProtectionElement(_))
