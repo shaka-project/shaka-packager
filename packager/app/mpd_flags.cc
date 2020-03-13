@@ -16,16 +16,12 @@ DEFINE_bool(generate_static_live_mpd,
             "static mpd instead. Note that if segment_template is not "
             "specified, shaka-packager always generates static mpd regardless "
             "of the value of this flag.");
-// TODO(rkuroiwa, kqyang): Remove the 'Exclusive' statements once
-// --output_media_info can work together with --mpd_output.
 DEFINE_bool(output_media_info,
             false,
             "Create a human readable format of MediaInfo. The output file name "
             "will be the name specified by output flag, suffixed with "
-            "'.media_info'. Exclusive with --mpd_output.");
-DEFINE_string(mpd_output,
-              "",
-              "MPD output file name. Exclusive with --output_media_info.");
+            "'.media_info'.");
+DEFINE_string(mpd_output, "", "MPD output file name.");
 DEFINE_string(base_urls,
               "",
               "Comma separated BaseURLs for the MPD. The values will be added "
