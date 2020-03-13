@@ -6,7 +6,6 @@ namespace shaka {
 namespace {
 const char kEmptyLang[] = "";
 const MpdOptions kDefaultMpdOptions;
-const MediaInfo kDefaultMediaInfo;
 }  // namespace
 
 // Doesn't matter what values get passed to the super class' constructor.
@@ -21,8 +20,8 @@ MockPeriod::MockPeriod(uint32_t period_id, double start_time_in_seconds)
              &sequence_counter_) {}
 
 MockAdaptationSet::MockAdaptationSet()
-    : AdaptationSet(kEmptyLang, kDefaultMpdOptions, &sequence_counter_,
-                    kDefaultMediaInfo) {}
+    : AdaptationSet(kEmptyLang, kDefaultMpdOptions, &sequence_counter_) {}
+
 MockAdaptationSet::~MockAdaptationSet() {}
 
 MockRepresentation::MockRepresentation(uint32_t representation_id)

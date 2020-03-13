@@ -23,7 +23,8 @@ DEFINE_bool(output_media_info,
             "Create a human readable format of MediaInfo. The output file name "
             "will be the name specified by output flag, suffixed with "
             "'.media_info'. Exclusive with --mpd_output.");
-DEFINE_string(mpd_output, "",
+DEFINE_string(mpd_output,
+              "",
               "MPD output file name. Exclusive with --output_media_info.");
 DEFINE_string(base_urls,
               "",
@@ -64,6 +65,6 @@ DEFINE_bool(
     "accurate Segment Timeline.");
 DEFINE_bool(allow_codec_switching,
             false,
-	    "if enabled, allow switching between different codecs, if they "
-	    "have the same language, media type (audio, video etc) and "
-	    "container type");
+            "If enabled, allow adaptive switching between different codecs, "
+            "if they have the same language, media type (audio, video etc) and "
+            "container type.");

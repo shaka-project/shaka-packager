@@ -7,6 +7,7 @@
 #include "packager/mpd/base/period.h"
 
 #include "packager/base/stl_util.h"
+#include "packager/base/strings/string_split.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
@@ -82,24 +83,22 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   // AdaptationSets with the same key should only differ in ContentProtection,
   // which also means that if |content_protection_in_adaptation_set| is false,
   // there should be at most one entry in |adaptation_sets|.
-  const std::string key = GetAdaptationSetKey(media_info);
+  const std::string key = GetAdaptationSetKey(
+      media_info, mpd_options_.mpd_params.allow_codec_switching);
+
   std::list<AdaptationSet*>& adaptation_sets = adaptation_set_list_map_[key];
-  if (content_protection_in_adaptation_set) {
-    for (AdaptationSet* adaptation_set : adaptation_sets) {
-      if (protected_adaptation_set_map_.Match(*adaptation_set, media_info))
-        return adaptation_set;
-    }
-  } else {
-    if (!adaptation_sets.empty()) {
-      DCHECK_EQ(adaptation_sets.size(), 1u);
-      return adaptation_sets.front();
-    }
+
+  for (AdaptationSet* adaptation_set : adaptation_sets) {
+    if (protected_adaptation_set_map_.Match(
+            *adaptation_set, media_info, content_protection_in_adaptation_set))
+      return adaptation_set;
   }
+
   // None of the adaptation sets match with the new content protection.
   // Need a new one.
   const std::string language = GetLanguage(media_info);
   std::unique_ptr<AdaptationSet> new_adaptation_set =
-      NewAdaptationSet(language, mpd_options_, representation_counter_, media_info);
+      NewAdaptationSet(language, mpd_options_, representation_counter_);
   if (!SetNewAdaptationSetAttributes(language, media_info, adaptation_sets,
                                      new_adaptation_set.get())) {
     return nullptr;
@@ -109,26 +108,12 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
       media_info.has_protected_content()) {
     protected_adaptation_set_map_.Register(*new_adaptation_set, media_info);
     AddContentProtectionElements(media_info, new_adaptation_set.get());
-
-    for (AdaptationSet* adaptation_set : adaptation_sets) {
-      if (protected_adaptation_set_map_.Switchable(*adaptation_set,
-                                                   *new_adaptation_set, false)) {
-        adaptation_set->AddAdaptationSetSwitching(new_adaptation_set.get());
-        new_adaptation_set->AddAdaptationSetSwitching(adaptation_set);
-      }
-    }
   }
-
-  if (mpd_options_.mpd_params.allow_codec_switching) {
-    for (auto a: adaptation_set_list_map_) {
-      std::list<AdaptationSet*>& adaptation_sets = a.second;
-      for (AdaptationSet* adaptation_set : adaptation_sets) {
-        if(protected_adaptation_set_map_.Switchable(*adaptation_set,
-                                         *new_adaptation_set, true)) {
-          new_adaptation_set->AddAdaptationSetSwitching(adaptation_set);
-          adaptation_set->AddAdaptationSetSwitching(new_adaptation_set.get());
-        }
-      }
+  for (AdaptationSet* adaptation_set : adaptation_sets) {
+    if (protected_adaptation_set_map_.Switchable(*adaptation_set,
+                                                 *new_adaptation_set)) {
+      adaptation_set->AddAdaptationSetSwitching(new_adaptation_set.get());
+      new_adaptation_set->AddAdaptationSetSwitching(adaptation_set);
     }
   }
 
@@ -181,9 +166,9 @@ const std::list<AdaptationSet*> Period::GetAdaptationSets() const {
 std::unique_ptr<AdaptationSet> Period::NewAdaptationSet(
     const std::string& language,
     const MpdOptions& options,
-    uint32_t* representation_counter, const MediaInfo& media_info) {
+    uint32_t* representation_counter) {
   return std::unique_ptr<AdaptationSet>(
-      new AdaptationSet(language, options, representation_counter, media_info));
+      new AdaptationSet(language, options, representation_counter));
 }
 
 bool Period::SetNewAdaptationSetAttributes(
@@ -254,11 +239,12 @@ const AdaptationSet* Period::FindOriginalAdaptationSetForTrickPlay(
   MediaInfo media_info_no_trickplay = media_info;
   media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
 
-  std::string key = GetAdaptationSetKey(media_info_no_trickplay);
+  std::string key = GetAdaptationSetKey(media_info_no_trickplay, false);
   const std::list<AdaptationSet*>& adaptation_sets =
       adaptation_set_list_map_[key];
   for (AdaptationSet* adaptation_set : adaptation_sets) {
-    if (protected_adaptation_set_map_.Match(*adaptation_set, media_info)) {
+    if (protected_adaptation_set_map_.Match(*adaptation_set, media_info,
+                                            true)) {
       return adaptation_set;
     }
   }
@@ -274,7 +260,38 @@ void Period::ProtectedAdaptationSetMap::Register(
 
 bool Period::ProtectedAdaptationSetMap::Match(
     const AdaptationSet& adaptation_set,
-    const MediaInfo& media_info) {
+    const MediaInfo& media_info,
+    bool content_protection_in_adaptation_set) {
+  if (!adaptation_set.codec_.empty()) {
+    std::string adaptation_set_codec =
+        base::SplitString(adaptation_set.codec_, ".", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY)[0];
+
+    if (media_info.has_video_info() && media_info.video_info().has_codec()) {
+      if (adaptation_set_codec.compare(base::SplitString(
+              media_info.video_info().codec(), ".", base::TRIM_WHITESPACE,
+              base::SPLIT_WANT_NONEMPTY)[0]) != 0)
+        return false;
+
+    } else if (media_info.has_audio_info() &&
+               media_info.audio_info().has_codec()) {
+      if (adaptation_set_codec.compare(base::SplitString(
+              media_info.audio_info().codec(), ".", base::TRIM_WHITESPACE,
+              base::SPLIT_WANT_NONEMPTY)[0]) != 0)
+        return false;
+
+    } else if (media_info.has_text_info() &&
+               media_info.text_info().has_codec()) {
+      if (adaptation_set_codec.compare(base::SplitString(
+              media_info.text_info().codec(), ".", base::TRIM_WHITESPACE,
+              base::SPLIT_WANT_NONEMPTY)[0]) != 0)
+        return false;
+    }
+  }
+
+  if (!content_protection_in_adaptation_set)
+    return true;
+
   const auto protected_content_it =
       protected_content_map_.find(&adaptation_set);
   // If the AdaptationSet ID is not registered in the map, then it is clear
@@ -283,26 +300,14 @@ bool Period::ProtectedAdaptationSetMap::Match(
     return !media_info.has_protected_content();
   if (!media_info.has_protected_content())
     return false;
+
   return ProtectedContentEq(protected_content_it->second,
                             media_info.protected_content());
 }
 
 bool Period::ProtectedAdaptationSetMap::Switchable(
     const AdaptationSet& adaptation_set_a,
-    const AdaptationSet& adaptation_set_b,
-    const bool allow_codec_switching) {
-
-  if (allow_codec_switching) {
-    const MediaInfo& media_info_a = adaptation_set_a.getMediaInfo();
-    const MediaInfo& media_info_b = adaptation_set_b.getMediaInfo();
-
-    std::string key_a = GetAdaptationSetKey(media_info_a, true);
-    std::string key_b = GetAdaptationSetKey(media_info_b, true);
-
-    if (key_a == key_b)
-      return true;
-  }
-
+    const AdaptationSet& adaptation_set_b) {
   const auto protected_content_it_a =
       protected_content_map_.find(&adaptation_set_a);
   const auto protected_content_it_b =

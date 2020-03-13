@@ -165,14 +165,12 @@ class RepresentationStateChangeListenerImpl
 
 AdaptationSet::AdaptationSet(const std::string& language,
                              const MpdOptions& mpd_options,
-                             uint32_t* counter,
-                             const MediaInfo& media_info)
+                             uint32_t* counter)
     : representation_counter_(counter),
       language_(language),
       mpd_options_(mpd_options),
       segments_aligned_(kSegmentAlignmentUnknown),
-      force_set_segment_alignment_(false),
-      media_info_(media_info){
+      force_set_segment_alignment_(false) {
   DCHECK(counter);
 }
 
@@ -414,10 +412,16 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 
   if (media_info.has_video_info()) {
     content_type_ = "video";
+    DCHECK(media_info.video_info().has_codec());
+    codec_ = media_info.video_info().codec();
   } else if (media_info.has_audio_info()) {
     content_type_ = "audio";
+    DCHECK(media_info.audio_info().has_codec());
+    codec_ = media_info.audio_info().codec();
   } else if (media_info.has_text_info()) {
     content_type_ = "text";
+    DCHECK(media_info.text_info().has_codec());
+    codec_ = media_info.text_info().codec();
 
     if (media_info.text_info().has_type() &&
         (media_info.text_info().type() != MediaInfo::TextInfo::UNKNOWN)) {

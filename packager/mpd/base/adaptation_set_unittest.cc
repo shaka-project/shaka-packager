@@ -28,13 +28,12 @@ class AdaptationSetTest : public ::testing::Test {
  public:
   std::unique_ptr<AdaptationSet> CreateAdaptationSet(const std::string& lang) {
     return std::unique_ptr<AdaptationSet>(
-        new AdaptationSet(lang, mpd_options_, &representation_counter_, media_info_));
+        new AdaptationSet(lang, mpd_options_, &representation_counter_));
   }
 
  protected:
   MpdOptions mpd_options_;
   uint32_t representation_counter_ = 0;
-  MediaInfo media_info_;
 };
 
 class OnDemandAdaptationSetTest : public AdaptationSetTest {
