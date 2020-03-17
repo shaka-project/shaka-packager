@@ -177,7 +177,7 @@ class AdaptationSet {
   bool IsVideo() const;
 
   /// @return codec.
-  std::string codec() const { return codec_; }
+  const std::string& codec() const { return codec_; }
 
   /// Set AdaptationSet@codec.
   /// @param codec is the new codec to be set.

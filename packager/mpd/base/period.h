@@ -95,8 +95,8 @@ class Period {
       const std::string& language,
       const MediaInfo& media_info,
       const std::list<AdaptationSet*>& adaptation_sets,
-      AdaptationSet* new_adaptation_set,
-      bool content_protection_in_adaptation_set);
+      bool content_protection_in_adaptation_set,
+      AdaptationSet* new_adaptation_set);
 
   // Gets the original AdaptationSet which the trick play video belongs to.
   // It is assumed that the corresponding AdaptationSet has been created before

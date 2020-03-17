@@ -7,7 +7,6 @@
 #include "packager/mpd/base/period.h"
 
 #include "packager/base/stl_util.h"
-#include "packager/base/strings/string_split.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
@@ -97,8 +96,8 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   std::unique_ptr<AdaptationSet> new_adaptation_set =
       NewAdaptationSet(language, mpd_options_, representation_counter_);
   if (!SetNewAdaptationSetAttributes(language, media_info, adaptation_sets,
-                                     new_adaptation_set.get(),
-                                     content_protection_in_adaptation_set)) {
+                                     content_protection_in_adaptation_set,
+                                     new_adaptation_set.get())) {
     return nullptr;
   }
 
@@ -173,8 +172,8 @@ bool Period::SetNewAdaptationSetAttributes(
     const std::string& language,
     const MediaInfo& media_info,
     const std::list<AdaptationSet*>& adaptation_sets,
-    AdaptationSet* new_adaptation_set,
-    bool content_protection_in_adaptation_set) {
+    bool content_protection_in_adaptation_set,
+    AdaptationSet* new_adaptation_set) {
   if (!media_info.dash_roles().empty()) {
     for (const std::string& role_str : media_info.dash_roles()) {
       AdaptationSet::Role role = RoleFromString(role_str);

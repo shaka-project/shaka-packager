@@ -1526,7 +1526,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', test_file='bear-640x360.mp4'),
         self._GetStream('video', test_file='bear-1280x720.mp4'),
         self._GetStream('video', test_file='bear-1280x720.mp4',
-                                           trick_play_factor=1),
+                        trick_play_factor=1),
         self._GetStream('audio', test_file='bear-640x360.mp4'),
     ]
 
