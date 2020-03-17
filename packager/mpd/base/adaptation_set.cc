@@ -412,16 +412,10 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 
   if (media_info.has_video_info()) {
     content_type_ = "video";
-    DCHECK(media_info.video_info().has_codec());
-    codec_ = media_info.video_info().codec();
   } else if (media_info.has_audio_info()) {
     content_type_ = "audio";
-    DCHECK(media_info.audio_info().has_codec());
-    codec_ = media_info.audio_info().codec();
   } else if (media_info.has_text_info()) {
     content_type_ = "text";
-    DCHECK(media_info.text_info().has_codec());
-    codec_ = media_info.text_info().codec();
 
     if (media_info.text_info().has_type() &&
         (media_info.text_info().type() != MediaInfo::TextInfo::UNKNOWN)) {

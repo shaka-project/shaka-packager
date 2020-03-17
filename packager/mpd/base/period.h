@@ -95,14 +95,15 @@ class Period {
       const std::string& language,
       const MediaInfo& media_info,
       const std::list<AdaptationSet*>& adaptation_sets,
-      AdaptationSet* new_adaptation_set);
+      AdaptationSet* new_adaptation_set,
+      bool content_protection_in_adaptation_set);
 
   // Gets the original AdaptationSet which the trick play video belongs to.
   // It is assumed that the corresponding AdaptationSet has been created before
   // the trick play AdaptationSet.
   // Returns the original AdaptationSet if found, otherwise returns nullptr;
   const AdaptationSet* FindOriginalAdaptationSetForTrickPlay(
-      const MediaInfo& media_info);
+      const MediaInfo& media_info, bool content_protection_in_adaptation_set);
 
   const uint32_t id_;
   const double start_time_in_seconds_;

@@ -1511,8 +1511,33 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('audio', test_file='bear-640x360.mp4'),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,allow_codec_switching=True))
-    self._CheckTestResults('audio-video-with-codec-switching')
+    self.assertPackageSuccess(streams, 
+                              self._GetFlags(output_dash=True,
+                                             allow_codec_switching=True))
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    # See also https://github.com/google/shaka-packager/issues/177.
+
+  def testAllowCodecSwitchingWithEncryptionAndTrickplay(self):
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4',
+                                           trick_play_factor=1),
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                            allow_codec_switching=True,
+                                            encryption=True))
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    # See also https://github.com/google/shaka-packager/issues/177.
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(

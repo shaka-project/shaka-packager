@@ -176,6 +176,13 @@ class AdaptationSet {
   /// @return true if it is a video AdaptationSet.
   bool IsVideo() const;
 
+  /// @return codec.
+  std::string codec() const { return codec_; }
+
+  /// Set AdaptationSet@codec.
+  /// @param codec is the new codec to be set.
+  void set_codec(const std::string& codec) { codec_ = codec; };
+
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
@@ -183,7 +190,7 @@ class AdaptationSet {
   /// @param mpd_type is the type of this MPD.
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
-   AdaptationSet(const std::string& language,
+  AdaptationSet(const std::string& language,
                 const MpdOptions& mpd_options,
                 uint32_t* representation_counter);
 
@@ -269,7 +276,7 @@ class AdaptationSet {
   // Determined by examining the MediaInfo passed to AddRepresentation().
   std::string content_type_;
 
-  // Codec of AdaptationSet
+  // Codec of AdaptationSet.
   std::string codec_;
 
   // This does not have to be a set, it could be a list or vector because all we

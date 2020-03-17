@@ -80,9 +80,6 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   if (duration_seconds_ == 0)
     duration_seconds_ = media_info.media_duration_seconds();
 
-  // AdaptationSets with the same key should only differ in ContentProtection,
-  // which also means that if |content_protection_in_adaptation_set| is false,
-  // there should be at most one entry in |adaptation_sets|.
   const std::string key = GetAdaptationSetKey(
       media_info, mpd_options_.mpd_params.allow_codec_switching);
 
@@ -100,7 +97,8 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   std::unique_ptr<AdaptationSet> new_adaptation_set =
       NewAdaptationSet(language, mpd_options_, representation_counter_);
   if (!SetNewAdaptationSetAttributes(language, media_info, adaptation_sets,
-                                     new_adaptation_set.get())) {
+                                     new_adaptation_set.get(),
+                                     content_protection_in_adaptation_set)) {
     return nullptr;
   }
 
@@ -175,7 +173,8 @@ bool Period::SetNewAdaptationSetAttributes(
     const std::string& language,
     const MediaInfo& media_info,
     const std::list<AdaptationSet*>& adaptation_sets,
-    AdaptationSet* new_adaptation_set) {
+    AdaptationSet* new_adaptation_set,
+    bool content_protection_in_adaptation_set) {
   if (!media_info.dash_roles().empty()) {
     for (const std::string& role_str : media_info.dash_roles()) {
       AdaptationSet::Role role = RoleFromString(role_str);
@@ -205,6 +204,8 @@ bool Period::SetNewAdaptationSetAttributes(
                                          accessibility.substr(pos + 1));
   }
 
+  new_adaptation_set->set_codec(GetBaseCodec(media_info));
+
   if (media_info.has_video_info()) {
     // Because 'language' is ignored for videos, |adaptation_sets| must have
     // all the video AdaptationSets.
@@ -217,7 +218,8 @@ bool Period::SetNewAdaptationSetAttributes(
 
     if (media_info.video_info().has_playback_rate()) {
       const AdaptationSet* trick_play_reference_adaptation_set =
-          FindOriginalAdaptationSetForTrickPlay(media_info);
+          FindOriginalAdaptationSetForTrickPlay(
+              media_info, content_protection_in_adaptation_set);
       if (!trick_play_reference_adaptation_set) {
         LOG(ERROR) << "Failed to find original AdaptationSet for trick play.";
         return false;
@@ -235,16 +237,19 @@ bool Period::SetNewAdaptationSetAttributes(
 }
 
 const AdaptationSet* Period::FindOriginalAdaptationSetForTrickPlay(
-    const MediaInfo& media_info) {
+    const MediaInfo& media_info,
+    bool content_protection_in_adaptation_set) {
   MediaInfo media_info_no_trickplay = media_info;
   media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
 
-  std::string key = GetAdaptationSetKey(media_info_no_trickplay, false);
+  std::string key = GetAdaptationSetKey(
+      media_info_no_trickplay, mpd_options_.mpd_params.allow_codec_switching);
   const std::list<AdaptationSet*>& adaptation_sets =
       adaptation_set_list_map_[key];
   for (AdaptationSet* adaptation_set : adaptation_sets) {
-    if (protected_adaptation_set_map_.Match(*adaptation_set, media_info,
-                                            true)) {
+    if (protected_adaptation_set_map_.Match(
+            *adaptation_set, media_info,
+            content_protection_in_adaptation_set)) {
       return adaptation_set;
     }
   }
@@ -262,32 +267,8 @@ bool Period::ProtectedAdaptationSetMap::Match(
     const AdaptationSet& adaptation_set,
     const MediaInfo& media_info,
     bool content_protection_in_adaptation_set) {
-  if (!adaptation_set.codec_.empty()) {
-    std::string adaptation_set_codec =
-        base::SplitString(adaptation_set.codec_, ".", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY)[0];
-
-    if (media_info.has_video_info() && media_info.video_info().has_codec()) {
-      if (adaptation_set_codec.compare(base::SplitString(
-              media_info.video_info().codec(), ".", base::TRIM_WHITESPACE,
-              base::SPLIT_WANT_NONEMPTY)[0]) != 0)
-        return false;
-
-    } else if (media_info.has_audio_info() &&
-               media_info.audio_info().has_codec()) {
-      if (adaptation_set_codec.compare(base::SplitString(
-              media_info.audio_info().codec(), ".", base::TRIM_WHITESPACE,
-              base::SPLIT_WANT_NONEMPTY)[0]) != 0)
-        return false;
-
-    } else if (media_info.has_text_info() &&
-               media_info.text_info().has_codec()) {
-      if (adaptation_set_codec.compare(base::SplitString(
-              media_info.text_info().codec(), ".", base::TRIM_WHITESPACE,
-              base::SPLIT_WANT_NONEMPTY)[0]) != 0)
-        return false;
-    }
-  }
+  if (adaptation_set.codec() != GetBaseCodec(media_info))
+    return false;
 
   if (!content_protection_in_adaptation_set)
     return true;
