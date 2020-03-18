@@ -1519,6 +1519,10 @@ class PackagerFunctionalTest(PackagerAppTest):
     # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
     #                   schema.
     # See also https://github.com/google/shaka-packager/issues/177.
+    self._CheckTestResults(
+        'audio-video-with-codec-switching',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testAllowCodecSwitchingWithEncryptionAndTrickplay(self):
     streams = [
@@ -1538,6 +1542,10 @@ class PackagerFunctionalTest(PackagerAppTest):
     # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
     #                   schema.
     # See also https://github.com/google/shaka-packager/issues/177.
+    self._CheckTestResults(
+        'audio-video-with-codec-switching-encryption-trick-play',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
