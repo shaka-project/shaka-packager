@@ -21,6 +21,7 @@ MockPeriod::MockPeriod(uint32_t period_id, double start_time_in_seconds)
 
 MockAdaptationSet::MockAdaptationSet()
     : AdaptationSet(kEmptyLang, kDefaultMpdOptions, &sequence_counter_) {}
+
 MockAdaptationSet::~MockAdaptationSet() {}
 
 MockRepresentation::MockRepresentation(uint32_t representation_id)

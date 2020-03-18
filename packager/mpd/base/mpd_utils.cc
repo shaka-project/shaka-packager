@@ -142,7 +142,8 @@ std::string GetBaseCodec(const MediaInfo& media_info) {
   return codec;
 }
 
-std::string GetAdaptationSetKey(const MediaInfo& media_info) {
+std::string GetAdaptationSetKey(const MediaInfo& media_info,
+                                bool ignore_codec) {
   std::string key;
 
   if (media_info.has_video_info()) {
@@ -157,8 +158,10 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info) {
   }
 
   key.append(MediaInfo_ContainerType_Name(media_info.container_type()));
-  key.append(":");
-  key.append(GetBaseCodec(media_info));
+  if (!ignore_codec) {
+    key.append(":");
+    key.append(GetBaseCodec(media_info));
+  }
   key.append(":");
   key.append(GetLanguage(media_info));
 

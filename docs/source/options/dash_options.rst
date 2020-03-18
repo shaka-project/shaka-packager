@@ -90,3 +90,8 @@ DASH options
 
     Optional. Defaults to 0 if not specified. If it is set to 1, indicates the
     stream is DASH only.
+
+--allow_codec_switching
+
+    If enabled, allow adaptive switching between different codecs, if they have 
+    the same language, media type (audio, video etc) and container type.

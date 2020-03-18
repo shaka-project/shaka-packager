@@ -59,3 +59,8 @@ DEFINE_bool(
     "completely."
     "Ignored if $Time$ is used in segment template, since $Time$ requires "
     "accurate Segment Timeline.");
+DEFINE_bool(allow_codec_switching,
+            false,
+            "If enabled, allow adaptive switching between different codecs, "
+            "if they have the same language, media type (audio, video etc) and "
+            "container type.");

@@ -95,6 +95,7 @@ class Period {
       const std::string& language,
       const MediaInfo& media_info,
       const std::list<AdaptationSet*>& adaptation_sets,
+      bool content_protection_in_adaptation_set,
       AdaptationSet* new_adaptation_set);
 
   // Gets the original AdaptationSet which the trick play video belongs to.
@@ -102,7 +103,7 @@ class Period {
   // the trick play AdaptationSet.
   // Returns the original AdaptationSet if found, otherwise returns nullptr;
   const AdaptationSet* FindOriginalAdaptationSetForTrickPlay(
-      const MediaInfo& media_info);
+      const MediaInfo& media_info, bool content_protection_in_adaptation_set);
 
   const uint32_t id_;
   const double start_time_in_seconds_;
@@ -127,7 +128,8 @@ class Period {
     // Check if the protected content associated with |adaptation_set| matches
     // with the one in |media_info|.
     bool Match(const AdaptationSet& adaptation_set,
-               const MediaInfo& media_info);
+               const MediaInfo& media_info,
+               bool content_protection_in_adaptation_set);
     // Check if the two adaptation sets are switchable.
     bool Switchable(const AdaptationSet& adaptation_set_a,
                     const AdaptationSet& adaptation_set_b);

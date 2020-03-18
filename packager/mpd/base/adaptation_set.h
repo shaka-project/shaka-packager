@@ -176,6 +176,13 @@ class AdaptationSet {
   /// @return true if it is a video AdaptationSet.
   bool IsVideo() const;
 
+  /// @return codec.
+  const std::string& codec() const { return codec_; }
+
+  /// Set AdaptationSet@codec.
+  /// @param codec is the new codec to be set.
+  void set_codec(const std::string& codec) { codec_ = codec; };
+
  protected:
   /// @param language is the language of this AdaptationSet. Mainly relevant for
   ///        audio.
@@ -268,6 +275,9 @@ class AdaptationSet {
   // contentType attribute of AdaptationSet.
   // Determined by examining the MediaInfo passed to AddRepresentation().
   std::string content_type_;
+
+  // Codec of AdaptationSet.
+  std::string codec_;
 
   // This does not have to be a set, it could be a list or vector because all we
   // really care is whether there is more than one entry.

@@ -447,7 +447,8 @@ class PackagerAppTest(unittest.TestCase):
                 ad_cues=None,
                 default_language=None,
                 segment_duration=1.0,
-                use_fake_clock=True):
+                use_fake_clock=True,
+                allow_codec_switching=False):
     flags = []
 
     if not strip_parameter_set_nalus:
@@ -527,6 +528,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if generate_static_live_mpd:
       flags += ['--generate_static_live_mpd']
+
+    if allow_codec_switching:
+      flags += ['--allow_codec_switching']
 
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
@@ -1498,6 +1502,50 @@ class PackagerFunctionalTest(PackagerAppTest):
                          using_time_specifier=True),
         self._GetFlags(output_dash=True, generate_static_live_mpd=True))
     self._CheckTestResults('live-static-profile-with-time-in-segment-name')
+
+  def testAllowCodecSwitching(self):
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams, 
+                              self._GetFlags(output_dash=True,
+                                             allow_codec_switching=True))
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    # See also https://github.com/google/shaka-packager/issues/177.
+    self._CheckTestResults(
+        'audio-video-with-codec-switching',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
+
+  def testAllowCodecSwitchingWithEncryptionAndTrickplay(self):
+    streams = [
+        self._GetStream('video', test_file='bear-640x360-hevc.mp4'),
+        self._GetStream('video', test_file='bear-640x360.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4'),
+        self._GetStream('video', test_file='bear-1280x720.mp4',
+                        trick_play_factor=1),
+        self._GetStream('audio', test_file='bear-640x360.mp4'),
+    ]
+
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                            allow_codec_switching=True,
+                                            encryption=True))
+    # Mpd cannot be validated right now since we don't generate determinstic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
+    #                   schema.
+    # See also https://github.com/google/shaka-packager/issues/177.
+    self._CheckTestResults(
+        'audio-video-with-codec-switching-encryption-trick-play',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testLiveProfileAndEncryption(self):
     self.assertPackageSuccess(
