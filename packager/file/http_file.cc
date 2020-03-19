@@ -16,9 +16,11 @@
 #include "packager/base/threading/worker_pool.h"
 
 DEFINE_int32(libcurl_verbosity,
-0,
-"Set verbosity level for libcurl.");
-
+             0,
+             "Set verbosity level for libcurl.");
+DEFINE_string(user_agent,
+              "",
+              "Set a custom User-Agent string for HTTP ingest");
 DECLARE_uint64(io_cache_size);
 
 namespace shaka {
@@ -234,7 +236,13 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
 
   // Configure HTTP request
   curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
-  curl_easy_setopt(curl_, CURLOPT_USERAGENT, kUserAgentString);
+
+  if (FLAGS_user_agent.empty()) {
+    curl_easy_setopt(curl_, CURLOPT_USERAGENT, kUserAgentString);
+  } else {
+    curl_easy_setopt(curl_, CURLOPT_USERAGENT, FLAGS_user_agent.c_str());
+  }
+
   curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_in_seconds_);
   curl_easy_setopt(curl_, CURLOPT_FAILONERROR, 1L);
   curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
