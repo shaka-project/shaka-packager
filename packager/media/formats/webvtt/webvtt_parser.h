@@ -20,7 +20,7 @@ namespace media {
 // Used to parse a WebVTT source into Cues that will be sent downstream.
 class WebVttParser : public OriginHandler {
  public:
-  WebVttParser(std::unique_ptr<FileReader> source, const std::string& language);
+  WebVttParser(const std::string& input_path, const std::string& language);
 
   Status Run() override;
   void Cancel() override;
@@ -32,7 +32,7 @@ class WebVttParser : public OriginHandler {
   Status InitializeInternal() override;
   bool ValidateOutputStreamIndex(size_t stream_index) const override;
 
-  bool Parse();
+  bool Parse(BlockReader* block_reader);
   bool ParseCueWithNoId(const std::vector<std::string>& block);
   bool ParseCueWithId(const std::vector<std::string>& block);
   Status ParseCue(const std::string& id,
@@ -41,8 +41,9 @@ class WebVttParser : public OriginHandler {
 
   Status DispatchTextStreamInfo();
 
-  BlockReader reader_;
+  std::string input_path_;
   std::string language_;
+
   std::string style_region_config_;
   bool stream_info_dispatched_ = false;
   bool keep_reading_ = true;

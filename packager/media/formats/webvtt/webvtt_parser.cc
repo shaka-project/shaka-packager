@@ -85,9 +85,9 @@ void UpdateConfig(const std::vector<std::string>& block, std::string* config) {
 
 }  // namespace
 
-WebVttParser::WebVttParser(std::unique_ptr<FileReader> source,
+WebVttParser::WebVttParser(const std::string& input_path,
                            const std::string& language)
-    : reader_(std::move(source)), language_(language) {}
+    : input_path_(input_path), language_(language) {}
 
 Status WebVttParser::InitializeInternal() {
   return Status::OK;
@@ -99,7 +99,11 @@ bool WebVttParser::ValidateOutputStreamIndex(size_t stream_index) const {
 }
 
 Status WebVttParser::Run() {
-  return Parse()
+  std::unique_ptr<FileReader> reader;
+  RETURN_IF_ERROR(FileReader::Open(input_path_, &reader));
+  BlockReader block_reader(std::move(reader));
+
+  return Parse(&block_reader)
              ? FlushDownstream(kStreamIndex)
              : Status(error::INTERNAL_ERROR,
                       "Failed to parse WebVTT source. See log for details.");
@@ -109,9 +113,9 @@ void WebVttParser::Cancel() {
   keep_reading_ = false;
 }
 
-bool WebVttParser::Parse() {
+bool WebVttParser::Parse(BlockReader* block_reader) {
   std::vector<std::string> block;
-  if (!reader_.Next(&block)) {
+  if (!block_reader->Next(&block)) {
     LOG(ERROR) << "Failed to read WEBVTT HEADER - No blocks in source.";
     return false;
   }
@@ -131,7 +135,7 @@ bool WebVttParser::Parse() {
 
   bool saw_cue = false;
 
-  while (reader_.Next(&block) && keep_reading_) {
+  while (block_reader->Next(&block) && keep_reading_) {
     // NOTE
     if (IsLikelyNote(block[0])) {
       // We can safely ignore the whole block.

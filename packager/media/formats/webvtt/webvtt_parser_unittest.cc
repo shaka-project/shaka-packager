@@ -44,10 +44,7 @@ class WebVttParserTest : public MediaHandlerTestBase {
     ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
 
     // Read from the file we just wrote.
-    std::unique_ptr<FileReader> reader;
-    ASSERT_OK(FileReader::Open(kFilename, &reader));
-
-    parser_ = std::make_shared<WebVttParser>(std::move(reader), kLanguage);
+    parser_ = std::make_shared<WebVttParser>(kFilename, kLanguage);
 
     ASSERT_OK(MediaHandlerTestBase::SetUpAndInitializeGraph(
         parser_, kInputCount, kOutputCount));
