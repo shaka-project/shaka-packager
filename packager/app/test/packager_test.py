@@ -719,7 +719,9 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video', hls_only=True),
         self._GetStream('audio', dash_only=True),
     ]
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,output_hls=True))
+    self.assertPackageSuccess(
+        streams,
+        self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('hls-only-dash-only')
 
   def testAudioVideoWithLanguageOverride(self):
@@ -1511,7 +1513,7 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('audio', test_file='bear-640x360.mp4'),
     ]
 
-    self.assertPackageSuccess(streams, 
+    self.assertPackageSuccess(streams,
                               self._GetFlags(output_dash=True,
                                              allow_codec_switching=True))
     # Mpd cannot be validated right now since we don't generate determinstic
@@ -1534,9 +1536,10 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('audio', test_file='bear-640x360.mp4'),
     ]
 
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
-                                            allow_codec_switching=True,
-                                            encryption=True))
+    self.assertPackageSuccess(streams,
+                              self._GetFlags(output_dash=True,
+                                             allow_codec_switching=True,
+                                             encryption=True))
     # Mpd cannot be validated right now since we don't generate determinstic
     # mpd with multiple inputs due to thread racing.
     # TODO(b/73349711): Generate determinstic mpd or at least validate mpd
