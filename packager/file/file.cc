@@ -43,7 +43,7 @@ const char* kLocalFilePrefix = "file://";
 const char* kMemoryFilePrefix = "memory://";
 const char* kUdpFilePrefix = "udp://";
 const char* kHttpFilePrefix = "http://";
-const char* kHttpsFilePrefix = "http://";
+const char* kHttpsFilePrefix = "https://";
 
 
 namespace {
