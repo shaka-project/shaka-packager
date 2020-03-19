@@ -75,6 +75,7 @@ class HttpFile : public File {
   /// @param file_name contains the url of the resource to be accessed.
   ///        Note that the file type prefix should be stripped off already.
   /// @param mode contains file access mode. Implementation dependent.
+  HttpFile(const char* file_name, const char* mode, bool https);
   HttpFile(const char* file_name, const char* mode);
 
   /// @name File implementation overrides.

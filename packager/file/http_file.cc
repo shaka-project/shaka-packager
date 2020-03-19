@@ -43,17 +43,19 @@ size_t AppendToString(char* ptr,
 
 }  // namespace
 
-/// Create a HTTP client
-HttpFile::HttpFile(const char* file_name, const char* mode)
+/// Create a HTTP/HTTPS client
+HttpFile::HttpFile(const char* file_name, const char* mode, bool https)
     : File(file_name),
       file_mode_(mode),
       timeout_in_seconds_(0),
       cache_(FLAGS_io_cache_size),
       task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                        base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  // FIXME: Prepend the scheme again. Improve: It could be https or even others.
-  std::string scheme = "http://";
-  resource_url_ = scheme + std::string(file_name);
+  if (https) {
+    resource_url_ = "https://" + std::string(file_name);
+  } else {
+    resource_url_ = "http://" + std::string(file_name);
+  }
 
   static LibCurlInitializer lib_curl_initializer;
 
@@ -65,6 +67,10 @@ HttpFile::HttpFile(const char* file_name, const char* mode)
     delete this;
   }
 }
+
+HttpFile::HttpFile(const char* file_name, const char* mode)
+    : HttpFile(file_name, mode, false)
+{}
 
 // Destructor
 HttpFile::~HttpFile() {}
