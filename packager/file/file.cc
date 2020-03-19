@@ -43,6 +43,7 @@ const char* kLocalFilePrefix = "file://";
 const char* kMemoryFilePrefix = "memory://";
 const char* kUdpFilePrefix = "udp://";
 const char* kHttpFilePrefix = "http://";
+const char* kHttpsFilePrefix = "http://";
 
 
 namespace {
@@ -122,6 +123,7 @@ static const FileTypeInfo kFileTypeInfo[] = {
     {kMemoryFilePrefix, &CreateMemoryFile, &DeleteMemoryFile, nullptr},
     {kCallbackFilePrefix, &CreateCallbackFile, nullptr, nullptr},
     {kHttpFilePrefix, &CreateHttpFile, nullptr, nullptr},
+    {kHttpsFilePrefix, &CreateHttpFile, nullptr, nullptr},
 };
 
 base::StringPiece GetFileTypePrefix(base::StringPiece file_name) {
