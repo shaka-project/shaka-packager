@@ -502,11 +502,7 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   auto output = std::make_shared<WebVttTextOutputHandler>(
       muxer_options, std::move(muxer_listener));
 
-  std::unique_ptr<FileReader> reader;
-  RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
-
-  auto parser =
-      std::make_shared<WebVttParser>(std::move(reader), stream.language);
+  auto parser = std::make_shared<WebVttParser>(stream.input, stream.language);
   auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
   auto cue_aligner = sync_points
                          ? std::make_shared<CueAlignmentHandler>(sync_points)
@@ -526,11 +522,7 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
                                 SyncPointQueue* sync_points,
                                 MuxerFactory* muxer_factory,
                                 std::shared_ptr<OriginHandler>* root) {
-  std::unique_ptr<FileReader> reader;
-  RETURN_IF_ERROR(FileReader::Open(stream.input, &reader));
-
-  auto parser =
-      std::make_shared<WebVttParser>(std::move(reader), stream.language);
+  auto parser = std::make_shared<WebVttParser>(stream.input, stream.language);
   auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
 
   auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
