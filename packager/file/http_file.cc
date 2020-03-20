@@ -15,12 +15,19 @@
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/threading/worker_pool.h"
 
-DEFINE_int32(libcurl_verbosity,
-             0,
+DEFINE_int32(libcurl_verbosity, 0,
              "Set verbosity level for libcurl.");
-DEFINE_string(user_agent,
-              "",
-              "Set a custom User-Agent string for HTTP ingest");
+DEFINE_string(user_agent, "",
+              "Set a custom User-Agent string for HTTP ingest.");
+DEFINE_string(ca_file, "",
+              "Absolute path to the Certificate Authority file for the "
+              "server cert. PEM format");
+DEFINE_string(client_cert_file, "",
+              "Absolute path to client certificate file.");
+DEFINE_string(client_cert_private_key_file, "",
+              "Absolute path to the private Key file.");
+DEFINE_string(client_cert_private_key_password, "",
+              "Password to the private key file.");
 DECLARE_uint64(io_cache_size);
 
 namespace shaka {
@@ -47,6 +54,11 @@ size_t AppendToString(char* ptr,
 HttpFile::HttpFile(const char* file_name, const char* mode, bool https)
     : File(file_name),
       file_mode_(mode),
+      user_agent_(FLAGS_user_agent),
+      ca_file_(FLAGS_ca_file),
+      cert_file_(FLAGS_client_cert_file),
+      cert_private_key_file_(FLAGS_client_cert_private_key_file),
+      cert_private_key_pass_(FLAGS_client_cert_private_key_password),
       timeout_in_seconds_(0),
       cache_(FLAGS_io_cache_size),
       task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -243,10 +255,10 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   // Configure HTTP request
   curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
 
-  if (FLAGS_user_agent.empty()) {
+  if (user_agent_.empty()) {
     curl_easy_setopt(curl_, CURLOPT_USERAGENT, kUserAgentString);
   } else {
-    curl_easy_setopt(curl_, CURLOPT_USERAGENT, FLAGS_user_agent.c_str());
+    curl_easy_setopt(curl_, CURLOPT_USERAGENT, user_agent_.data());
   }
 
   curl_easy_setopt(curl_, CURLOPT_TIMEOUT, timeout_in_seconds_);
@@ -256,26 +268,24 @@ void HttpFile::SetupRequestBase(HttpMethod http_method,
   curl_easy_setopt(curl_, CURLOPT_WRITEDATA, response);
 
   // HTTPS
-  /*
-  if (!client_cert_private_key_file_.empty() && !client_cert_file_.empty()) {
-    // Some PlayReady packaging servers only allow connects via HTTPS with
-    // client certificates.
+  if (!cert_private_key_file_.empty() && !cert_file_.empty()) {
     curl_easy_setopt(curl_, CURLOPT_SSLKEY,
-                     client_cert_private_key_file_.data());
-    if (!client_cert_private_key_password_.empty()) {
+                     cert_private_key_file_.data());
+
+    if (!cert_private_key_pass_.empty()) {
       curl_easy_setopt(curl_, CURLOPT_KEYPASSWD,
-                       client_cert_private_key_password_.data());
+                       cert_private_key_pass_.data());
     }
+
     curl_easy_setopt(curl_, CURLOPT_SSLKEYTYPE, "PEM");
     curl_easy_setopt(curl_, CURLOPT_SSLCERTTYPE, "PEM");
-    curl_easy_setopt(curl_, CURLOPT_SSLCERT, client_cert_file_.data());
+    curl_easy_setopt(curl_, CURLOPT_SSLCERT, cert_file_.data());
   }
   if (!ca_file_.empty()) {
     // Host validation needs to be off when using self-signed certificates.
     curl_easy_setopt(curl_, CURLOPT_SSL_VERIFYHOST, 0L);
     curl_easy_setopt(curl_, CURLOPT_CAINFO, ca_file_.data());
   }
-  */
 
   // Propagate log level indicated by "--libcurl_verbosity" to libcurl.
   curl_easy_setopt(curl_, CURLOPT_VERBOSE, FLAGS_libcurl_verbosity);
