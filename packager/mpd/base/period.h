@@ -29,7 +29,7 @@ class XmlNode;
 /// AdaptationSets.
 class Period {
  public:
-  virtual ~Period() = default;
+ virtual ~Period();
 
   /// Check the existing AdaptationSets, if there is one matching the provided
   /// @a media_info, return it; otherwise a new AdaptationSet is created and
@@ -66,6 +66,11 @@ class Period {
     duration_seconds_ = duration_seconds;
   }
 
+  /// @return trickplay_cache.
+  const std::map<std::string, std::list<AdaptationSet*>>
+                                GetTrickPlayCache() const { 
+			          return trickplay_cache;
+			        }
  protected:
   /// @param period_id is an ID number for this Period.
   /// @param start_time_in_seconds is the start time for this Period.
@@ -117,6 +122,10 @@ class Period {
   // if they contain identical ContentProtection elements. This map is only
   // useful when ContentProtection element is placed in AdaptationSet.
   std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
+  // Contains Trickplay AdaptationSets grouped by specific adaptation set 
+  // grouping key. These AdaptationSets still have not found reference 
+  // AdaptationSet.
+  std::map<std::string, std::list<AdaptationSet*>> trickplay_cache;
 
   // Tracks ProtectedContent in AdaptationSet.
   class ProtectedAdaptationSetMap {

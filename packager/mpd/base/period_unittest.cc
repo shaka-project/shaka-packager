@@ -316,10 +316,12 @@ TEST_F(PeriodTest, TrickPlayWithNoMatchingAdaptationSet) {
             testable_period_.GetOrCreateAdaptationSet(
                 ConvertToMediaInfo(kVideoMediaInfo),
                 content_protection_in_adaptation_set_));
-  // A nullptr is returned if it is not able to find matching AdaptationSet.
-  ASSERT_FALSE(testable_period_.GetOrCreateAdaptationSet(
+  
+  ASSERT_TRUE(testable_period_.GetOrCreateAdaptationSet(
       ConvertToMediaInfo(kVp9TrickPlayMediaInfo),
       content_protection_in_adaptation_set_));
+  
+  ASSERT_TRUE(!testable_period_.GetTrickPlayCache().empty());
 }
 
 // Don't put different audio languages or codecs in the same AdaptationSet.

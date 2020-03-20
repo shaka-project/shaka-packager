@@ -117,6 +117,18 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   AdaptationSet* adaptation_set_ptr = new_adaptation_set.get();
   adaptation_sets.push_back(adaptation_set_ptr);
   adaptation_sets_.emplace_back(std::move(new_adaptation_set));
+
+  if (!trickplay_cache.empty()) {
+    if (trickplay_cache.find(key) != trickplay_cache.end()) {
+      std::list<AdaptationSet*> adaptation_set_list = trickplay_cache[key];
+      for (AdaptationSet* adaptation_set : adaptation_set_list) {
+        adaptation_set->AddTrickPlayReference(adaptation_set_ptr);  		
+      }
+      
+      trickplay_cache.erase(key);
+    }
+  }
+
   return adaptation_set_ptr;
 }
 
@@ -220,11 +232,15 @@ bool Period::SetNewAdaptationSetAttributes(
           FindOriginalAdaptationSetForTrickPlay(
               media_info, content_protection_in_adaptation_set);
       if (!trick_play_reference_adaptation_set) {
-        LOG(ERROR) << "Failed to find original AdaptationSet for trick play.";
-        return false;
+        MediaInfo media_info_no_trickplay = media_info;
+        media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
+        std::string key = GetAdaptationSetKey(
+        media_info_no_trickplay, mpd_options_.mpd_params.allow_codec_switching);
+        trickplay_cache[key].push_back(new_adaptation_set);
+      } else {
+        new_adaptation_set->AddTrickPlayReference(
+			trick_play_reference_adaptation_set);
       }
-      new_adaptation_set->AddTrickPlayReference(
-          trick_play_reference_adaptation_set);
     }
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
@@ -301,6 +317,14 @@ bool Period::ProtectedAdaptationSetMap::Switchable(
   // same UUIDs then those are switchable.
   return GetUUIDs(protected_content_it_a->second) ==
          GetUUIDs(protected_content_it_b->second);
+}
+
+
+Period::~Period() {
+  if (!trickplay_cache.empty()) {
+    LOG(ERROR) <<"Trickplay adaptation set did not get a valid adaptation set "
+	         "match. Please check the command line options";
+  }
 }
 
 }  // namespace shaka
