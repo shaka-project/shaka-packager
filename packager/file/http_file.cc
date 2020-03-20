@@ -19,14 +19,14 @@ DEFINE_int32(libcurl_verbosity, 0,
              "Set verbosity level for libcurl.");
 DEFINE_string(user_agent, "",
               "Set a custom User-Agent string for HTTP ingest.");
-DEFINE_string(ca_file, "",
+DEFINE_string(https_ca_file, "",
               "Absolute path to the Certificate Authority file for the "
               "server cert. PEM format");
-DEFINE_string(client_cert_file, "",
+DEFINE_string(https_cert_file, "",
               "Absolute path to client certificate file.");
-DEFINE_string(client_cert_private_key_file, "",
+DEFINE_string(https_cert_private_key_file, "",
               "Absolute path to the private Key file.");
-DEFINE_string(client_cert_private_key_password, "",
+DEFINE_string(https_cert_private_key_password, "",
               "Password to the private key file.");
 DECLARE_uint64(io_cache_size);
 
@@ -55,10 +55,10 @@ HttpFile::HttpFile(const char* file_name, const char* mode, bool https)
     : File(file_name),
       file_mode_(mode),
       user_agent_(FLAGS_user_agent),
-      ca_file_(FLAGS_ca_file),
-      cert_file_(FLAGS_client_cert_file),
-      cert_private_key_file_(FLAGS_client_cert_private_key_file),
-      cert_private_key_pass_(FLAGS_client_cert_private_key_password),
+      ca_file_(FLAGS_https_ca_file),
+      cert_file_(FLAGS_https_cert_file),
+      cert_private_key_file_(FLAGS_https_cert_private_key_file),
+      cert_private_key_pass_(FLAGS_https_cert_private_key_password),
       timeout_in_seconds_(0),
       cache_(FLAGS_io_cache_size),
       task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
