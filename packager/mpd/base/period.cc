@@ -117,18 +117,6 @@ AdaptationSet* Period::GetOrCreateAdaptationSet(
   AdaptationSet* adaptation_set_ptr = new_adaptation_set.get();
   adaptation_sets.push_back(adaptation_set_ptr);
   adaptation_sets_.emplace_back(std::move(new_adaptation_set));
-
-  if (!trickplay_cache.empty()) {
-    if (trickplay_cache.find(key) != trickplay_cache.end()) {
-      std::list<AdaptationSet*> adaptation_set_list = trickplay_cache[key];
-      for (AdaptationSet* adaptation_set : adaptation_set_list) {
-        adaptation_set->AddTrickPlayReference(adaptation_set_ptr);
-      }
-
-      trickplay_cache.erase(key);
-    }
-  }
-
   return adaptation_set_ptr;
 }
 
@@ -228,21 +216,24 @@ bool Period::SetNewAdaptationSetAttributes(
     }
 
     if (media_info.video_info().has_playback_rate()) {
-      const AdaptationSet* trick_play_reference_adaptation_set =
-          FindOriginalAdaptationSetForTrickPlay(
+      AdaptationSet* trick_play_reference_adaptation_set =
+          FindMatchingAdaptationSetForTrickPlay(
               media_info, content_protection_in_adaptation_set);
-      if (!trick_play_reference_adaptation_set) {
-        MediaInfo media_info_no_trickplay = media_info;
-        media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
-        std::string key =
-            GetAdaptationSetKey(media_info_no_trickplay,
-                                mpd_options_.mpd_params.allow_codec_switching);
-        trickplay_cache[key].push_back(new_adaptation_set);
-      } else {
+      if (trick_play_reference_adaptation_set) {
         new_adaptation_set->AddTrickPlayReference(
             trick_play_reference_adaptation_set);
+      } else {
+        std::string key = GetAdaptationSetKeyForTrickPlay(media_info);
+        trickplay_cache_[key].push_back(new_adaptation_set);
       }
+    } else {
+      AdaptationSet* trickplay_adaptation_set =
+          FindMatchingAdaptationSetForTrickPlay(
+              media_info, content_protection_in_adaptation_set);
+      if (trickplay_adaptation_set)
+        trickplay_adaptation_set->AddTrickPlayReference(new_adaptation_set);
     }
+
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
     // true, so carelessly set it to true.
@@ -252,24 +243,43 @@ bool Period::SetNewAdaptationSetAttributes(
   return true;
 }
 
-const AdaptationSet* Period::FindOriginalAdaptationSetForTrickPlay(
+AdaptationSet* Period::FindMatchingAdaptationSetForTrickPlay(
     const MediaInfo& media_info,
     bool content_protection_in_adaptation_set) {
-  MediaInfo media_info_no_trickplay = media_info;
-  media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
-
-  std::string key = GetAdaptationSetKey(
-      media_info_no_trickplay, mpd_options_.mpd_params.allow_codec_switching);
-  const std::list<AdaptationSet*>& adaptation_sets =
-      adaptation_set_list_map_[key];
-  for (AdaptationSet* adaptation_set : adaptation_sets) {
+  std::list<AdaptationSet*>* adaptation_sets = nullptr;
+  std::string key;
+  const bool is_trickplay_adaptation_set =
+      media_info.video_info().has_playback_rate();
+  if (is_trickplay_adaptation_set) {
+    MediaInfo media_info_no_trickplay = media_info;
+    key = Period::GetAdaptationSetKeyForTrickPlay(media_info);
+    adaptation_sets = &adaptation_set_list_map_[key];
+  } else {
+    key = GetAdaptationSetKey(media_info,
+                              mpd_options_.mpd_params.allow_codec_switching);
+    if (trickplay_cache_.find(key) == trickplay_cache_.end())
+      return nullptr;
+    adaptation_sets = &trickplay_cache_[key];
+  }
+  for (AdaptationSet* adaptation_set : *adaptation_sets) {
     if (protected_adaptation_set_map_.Match(
             *adaptation_set, media_info,
             content_protection_in_adaptation_set)) {
+      if (!is_trickplay_adaptation_set && !key.empty())
+        trickplay_cache_.erase(key);
       return adaptation_set;
     }
   }
+
   return nullptr;
+}
+
+std::string Period::GetAdaptationSetKeyForTrickPlay(
+    const MediaInfo& media_info) {
+  MediaInfo media_info_no_trickplay = media_info;
+  media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
+  return GetAdaptationSetKey(media_info_no_trickplay,
+                             mpd_options_.mpd_params.allow_codec_switching);
 }
 
 void Period::ProtectedAdaptationSetMap::Register(
@@ -321,9 +331,9 @@ bool Period::ProtectedAdaptationSetMap::Switchable(
 }
 
 Period::~Period() {
-  if (!trickplay_cache.empty()) {
-    LOG(ERROR) << "Trickplay adaptation set did not get a valid adaptation set "
-                  "match. Please check the command line options";
+  if (!trickplay_cache_.empty()) {
+    LOG(WARNING) << "Trickplay adaptation set did not get a valid adaptation "
+                    "set match. Please check the command line options.";
   }
 }
 

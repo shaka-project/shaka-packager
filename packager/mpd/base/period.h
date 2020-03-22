@@ -67,9 +67,9 @@ class Period {
   }
 
   /// @return trickplay_cache.
-  const std::map<std::string, std::list<AdaptationSet*>> GetTrickPlayCache()
+  const std::map<std::string, std::list<AdaptationSet*>> trickplay_cache()
       const {
-    return trickplay_cache;
+    return trickplay_cache_;
   }
 
  protected:
@@ -104,14 +104,22 @@ class Period {
       bool content_protection_in_adaptation_set,
       AdaptationSet* new_adaptation_set);
 
-  // Gets the original AdaptationSet which the trick play video belongs to.
-  // It is assumed that the corresponding AdaptationSet has been created before
-  // the trick play AdaptationSet.
-  // Returns the original AdaptationSet if found, otherwise returns nullptr;
-  const AdaptationSet* FindOriginalAdaptationSetForTrickPlay(
+  // If processing a trick play AdaptationSet, gets the original AdaptationSet
+  // which the trick play video belongs to.It is assumed that the corresponding
+  // AdaptationSet has been created before the trick play AdaptationSet.
+  // Returns the matching AdaptationSet if found, otherwise returns nullptr;
+  // If processing non-trick play AdaptationSet, gets the trick play
+  // AdaptationSet that belongs to current AdaptationSet from trick play cache.
+  // Returns nullptr if matching trick play AdaptationSet is not found.
+  AdaptationSet* FindMatchingAdaptationSetForTrickPlay(
       const MediaInfo& media_info,
       bool content_protection_in_adaptation_set);
 
+  // Returns AdaptationSet key without ':trickplay' in it for trickplay
+  // AdaptationSet.
+  std::string GetAdaptationSetKeyForTrickPlay(const MediaInfo& media_info);
+
+  // FindMatchingAdaptationSetForTrickPlay
   const uint32_t id_;
   const double start_time_in_seconds_;
   double duration_seconds_ = 0;
@@ -127,7 +135,7 @@ class Period {
   // Contains Trickplay AdaptationSets grouped by specific adaptation set
   // grouping key. These AdaptationSets still have not found reference
   // AdaptationSet.
-  std::map<std::string, std::list<AdaptationSet*>> trickplay_cache;
+  std::map<std::string, std::list<AdaptationSet*>> trickplay_cache_;
 
   // Tracks ProtectedContent in AdaptationSet.
   class ProtectedAdaptationSetMap {
