@@ -216,22 +216,28 @@ bool Period::SetNewAdaptationSetAttributes(
     }
 
     if (media_info.video_info().has_playback_rate()) {
+      std::string trick_play_reference_adaptation_set_key;
       AdaptationSet* trick_play_reference_adaptation_set =
           FindMatchingAdaptationSetForTrickPlay(
-              media_info, content_protection_in_adaptation_set);
+              media_info, content_protection_in_adaptation_set,
+              &trick_play_reference_adaptation_set_key);
       if (trick_play_reference_adaptation_set) {
         new_adaptation_set->AddTrickPlayReference(
             trick_play_reference_adaptation_set);
       } else {
-        std::string key = GetAdaptationSetKeyForTrickPlay(media_info);
-        trickplay_cache_[key].push_back(new_adaptation_set);
+        trickplay_cache_[trick_play_reference_adaptation_set_key].push_back(
+            new_adaptation_set);
       }
     } else {
+      std::string trick_play_adaptation_set_key;
       AdaptationSet* trickplay_adaptation_set =
           FindMatchingAdaptationSetForTrickPlay(
-              media_info, content_protection_in_adaptation_set);
-      if (trickplay_adaptation_set)
+              media_info, content_protection_in_adaptation_set,
+              &trick_play_adaptation_set_key);
+      if (trickplay_adaptation_set) {
         trickplay_adaptation_set->AddTrickPlayReference(new_adaptation_set);
+        trickplay_cache_.erase(trick_play_adaptation_set_key);
+      }
     }
 
   } else if (media_info.has_text_info()) {
@@ -245,28 +251,28 @@ bool Period::SetNewAdaptationSetAttributes(
 
 AdaptationSet* Period::FindMatchingAdaptationSetForTrickPlay(
     const MediaInfo& media_info,
-    bool content_protection_in_adaptation_set) {
+    bool content_protection_in_adaptation_set,
+    std::string* adaptation_set_key) {
   std::list<AdaptationSet*>* adaptation_sets = nullptr;
-  std::string key;
   const bool is_trickplay_adaptation_set =
       media_info.video_info().has_playback_rate();
   if (is_trickplay_adaptation_set) {
-    MediaInfo media_info_no_trickplay = media_info;
-    key = Period::GetAdaptationSetKeyForTrickPlay(media_info);
-    adaptation_sets = &adaptation_set_list_map_[key];
-  } else {
-    key = GetAdaptationSetKey(media_info,
-                              mpd_options_.mpd_params.allow_codec_switching);
-    if (trickplay_cache_.find(key) == trickplay_cache_.end())
+    *adaptation_set_key = GetAdaptationSetKeyForTrickPlay(media_info);
+    if (adaptation_set_list_map_.find(*adaptation_set_key) ==
+        adaptation_set_list_map_.end())
       return nullptr;
-    adaptation_sets = &trickplay_cache_[key];
+    adaptation_sets = &adaptation_set_list_map_[*adaptation_set_key];
+  } else {
+    *adaptation_set_key = GetAdaptationSetKey(
+        media_info, mpd_options_.mpd_params.allow_codec_switching);
+    if (trickplay_cache_.find(*adaptation_set_key) == trickplay_cache_.end())
+      return nullptr;
+    adaptation_sets = &trickplay_cache_[*adaptation_set_key];
   }
   for (AdaptationSet* adaptation_set : *adaptation_sets) {
     if (protected_adaptation_set_map_.Match(
             *adaptation_set, media_info,
             content_protection_in_adaptation_set)) {
-      if (!is_trickplay_adaptation_set && !key.empty())
-        trickplay_cache_.erase(key);
       return adaptation_set;
     }
   }

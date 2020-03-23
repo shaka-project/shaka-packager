@@ -67,7 +67,7 @@ class Period {
   }
 
   /// @return trickplay_cache.
-  const std::map<std::string, std::list<AdaptationSet*>> trickplay_cache()
+  const std::map<std::string, std::list<AdaptationSet*>>& trickplay_cache()
       const {
     return trickplay_cache_;
   }
@@ -113,7 +113,8 @@ class Period {
   // Returns nullptr if matching trick play AdaptationSet is not found.
   AdaptationSet* FindMatchingAdaptationSetForTrickPlay(
       const MediaInfo& media_info,
-      bool content_protection_in_adaptation_set);
+      bool content_protection_in_adaptation_set,
+      std::string* adaptation_set_key);
 
   // Returns AdaptationSet key without ':trickplay' in it for trickplay
   // AdaptationSet.
