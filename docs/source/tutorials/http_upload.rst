@@ -51,6 +51,9 @@ the ``segment_template`` attribute in the ``stream_descriptor``
 parameter as well as the ``--hls_master_playlist_output`` parameter
 with appropriate URLs where the HTTP PUT requests will be issued to.
 
+You can also supply the ``--user_agent`` flag to specify a custom
+User-Agent string for all HTTP PUT requests.
+
 For pragmatic reasons, all HTTP requests will be declared as
 ``Content-Type: application/octet-stream``.
 
@@ -87,6 +90,17 @@ Configure and run packager::
         --hls_playlist_type LIVE \
         --vmodule=http_file=1
 
+*******
+HTTPS
+*******
+If your ingest uses HTTPS and requires specific certificates, these
+can be specified on the command line similar to how it's done for
+:doc:`playready`, with the following arguments:
+
+``--https_ca_file``: Absolute path to the Certificate Authority file for the server cert. PEM format.
+``--https_cert_file``: Absolute path to client certificate file.
+``--https_cert_private_key_file``: Absolute path to the private Key file.
+``--https_cert_private_key_password``: Password to the private key file.
 
 *******
 Backlog
