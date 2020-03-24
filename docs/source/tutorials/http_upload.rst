@@ -97,10 +97,10 @@ If your ingest uses HTTPS and requires specific certificates, these
 can be specified on the command line similar to how it's done for
 :doc:`playready`, with the following arguments:
 
-``--https_ca_file``: Absolute path to the Certificate Authority file for the server cert. PEM format.
-``--https_cert_file``: Absolute path to client certificate file.
-``--https_cert_private_key_file``: Absolute path to the private Key file.
-``--https_cert_private_key_password``: Password to the private key file.
+- ``--https_ca_file``: Absolute path to the Certificate Authority file for the server cert. PEM format.
+- ``--https_cert_file``: Absolute path to client certificate file.
+- ``--https_cert_private_key_file``: Absolute path to the private Key file.
+- ``--https_cert_private_key_password``: Password to the private key file.
 
 *******
 Backlog
