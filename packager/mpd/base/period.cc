@@ -216,16 +216,30 @@ bool Period::SetNewAdaptationSetAttributes(
     }
 
     if (media_info.video_info().has_playback_rate()) {
-      const AdaptationSet* trick_play_reference_adaptation_set =
-          FindOriginalAdaptationSetForTrickPlay(
-              media_info, content_protection_in_adaptation_set);
-      if (!trick_play_reference_adaptation_set) {
-        LOG(ERROR) << "Failed to find original AdaptationSet for trick play.";
-        return false;
+      std::string trick_play_reference_adaptation_set_key;
+      AdaptationSet* trick_play_reference_adaptation_set =
+          FindMatchingAdaptationSetForTrickPlay(
+              media_info, content_protection_in_adaptation_set,
+              &trick_play_reference_adaptation_set_key);
+      if (trick_play_reference_adaptation_set) {
+        new_adaptation_set->AddTrickPlayReference(
+            trick_play_reference_adaptation_set);
+      } else {
+        trickplay_cache_[trick_play_reference_adaptation_set_key].push_back(
+            new_adaptation_set);
       }
-      new_adaptation_set->AddTrickPlayReference(
-          trick_play_reference_adaptation_set);
+    } else {
+      std::string trick_play_adaptation_set_key;
+      AdaptationSet* trickplay_adaptation_set =
+          FindMatchingAdaptationSetForTrickPlay(
+              media_info, content_protection_in_adaptation_set,
+              &trick_play_adaptation_set_key);
+      if (trickplay_adaptation_set) {
+        trickplay_adaptation_set->AddTrickPlayReference(new_adaptation_set);
+        trickplay_cache_.erase(trick_play_adaptation_set_key);
+      }
     }
+
   } else if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
     // true, so carelessly set it to true.
@@ -235,24 +249,43 @@ bool Period::SetNewAdaptationSetAttributes(
   return true;
 }
 
-const AdaptationSet* Period::FindOriginalAdaptationSetForTrickPlay(
+AdaptationSet* Period::FindMatchingAdaptationSetForTrickPlay(
     const MediaInfo& media_info,
-    bool content_protection_in_adaptation_set) {
-  MediaInfo media_info_no_trickplay = media_info;
-  media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
-
-  std::string key = GetAdaptationSetKey(
-      media_info_no_trickplay, mpd_options_.mpd_params.allow_codec_switching);
-  const std::list<AdaptationSet*>& adaptation_sets =
-      adaptation_set_list_map_[key];
-  for (AdaptationSet* adaptation_set : adaptation_sets) {
+    bool content_protection_in_adaptation_set,
+    std::string* adaptation_set_key) {
+  std::list<AdaptationSet*>* adaptation_sets = nullptr;
+  const bool is_trickplay_adaptation_set =
+      media_info.video_info().has_playback_rate();
+  if (is_trickplay_adaptation_set) {
+    *adaptation_set_key = GetAdaptationSetKeyForTrickPlay(media_info);
+    if (adaptation_set_list_map_.find(*adaptation_set_key) ==
+        adaptation_set_list_map_.end())
+      return nullptr;
+    adaptation_sets = &adaptation_set_list_map_[*adaptation_set_key];
+  } else {
+    *adaptation_set_key = GetAdaptationSetKey(
+        media_info, mpd_options_.mpd_params.allow_codec_switching);
+    if (trickplay_cache_.find(*adaptation_set_key) == trickplay_cache_.end())
+      return nullptr;
+    adaptation_sets = &trickplay_cache_[*adaptation_set_key];
+  }
+  for (AdaptationSet* adaptation_set : *adaptation_sets) {
     if (protected_adaptation_set_map_.Match(
             *adaptation_set, media_info,
             content_protection_in_adaptation_set)) {
       return adaptation_set;
     }
   }
+
   return nullptr;
+}
+
+std::string Period::GetAdaptationSetKeyForTrickPlay(
+    const MediaInfo& media_info) {
+  MediaInfo media_info_no_trickplay = media_info;
+  media_info_no_trickplay.mutable_video_info()->clear_playback_rate();
+  return GetAdaptationSetKey(media_info_no_trickplay,
+                             mpd_options_.mpd_params.allow_codec_switching);
 }
 
 void Period::ProtectedAdaptationSetMap::Register(
@@ -301,6 +334,13 @@ bool Period::ProtectedAdaptationSetMap::Switchable(
   // same UUIDs then those are switchable.
   return GetUUIDs(protected_content_it_a->second) ==
          GetUUIDs(protected_content_it_b->second);
+}
+
+Period::~Period() {
+  if (!trickplay_cache_.empty()) {
+    LOG(WARNING) << "Trickplay adaptation set did not get a valid adaptation "
+                    "set match. Please check the command line options.";
+  }
 }
 
 }  // namespace shaka
