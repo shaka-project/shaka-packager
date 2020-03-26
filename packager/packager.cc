@@ -402,6 +402,12 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
     text_media_info->set_bandwidth(kDefaultTextBandwidth);
   }
 
+  if (!stream_descriptor.dash_roles.empty()) {
+    for (auto dash_role : stream_descriptor.dash_roles) {
+      text_media_info->add_dash_roles(dash_role);
+    }
+  }
+
   return true;
 }
 
