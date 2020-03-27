@@ -403,7 +403,7 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   }
 
   if (!stream_descriptor.dash_roles.empty()) {
-    for (auto dash_role : stream_descriptor.dash_roles) {
+    for (const auto& dash_role : stream_descriptor.dash_roles) {
       text_media_info->add_dash_roles(dash_role);
     }
   }
