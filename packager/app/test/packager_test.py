@@ -656,6 +656,11 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetStream('video'),
     ]
 
+    streams += self._GetStreams(
+        ['text'],
+        test_files=['bear-english.vtt'],
+        dash_roles='caption')
+
     self.assertPackageSuccess(streams, self._GetFlags(output_dash=True))
     self._CheckTestResults('audio-video-with-accessibilities-and-roles')
 
