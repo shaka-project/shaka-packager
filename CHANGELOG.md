@@ -1,3 +1,14 @@
+## [2.4.2] - 2020-03-30
+### Fixed
+- Fix truncation of timestamp to 32bits in segment file names for MPEG2-TS
+  output (#701).
+- [DASH] Fix "roles" stream descriptor support for WebVTT text streams (#708).
+- Fix potential deadlock when reading WebVTT from a pipe.
+
+## [2.4.1] - 2020-01-17
+### Fixed
+- Fixed Windows buildbot (Appveyor builds).
+
 ## [2.4.0] - 2019-12-26
 ### Added
 - Support hardware accelerated AES (#198).
@@ -498,6 +509,8 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[2.4.2]: https://github.com/google/shaka-packager/compare/v2.4.1...v2.4.2
+[2.4.1]: https://github.com/google/shaka-packager/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/google/shaka-packager/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/google/shaka-packager/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/google/shaka-packager/compare/v2.2.0...v2.2.1
