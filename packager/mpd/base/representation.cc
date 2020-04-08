@@ -332,6 +332,10 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
   const uint64_t kNoRepeat = 0;
   const int64_t adjusted_duration = AdjustDuration(duration);
 
+  if (segment_infos_.empty()) {
+    start_number_ = start_time / duration;
+  }
+
   if (!segment_infos_.empty()) {
     // Contiguous segment.
     const SegmentInfo& previous = segment_infos_.back();
