@@ -439,7 +439,7 @@ void AddContentProtectionElementsHelperTemplated(
     } else {
       drm_content_protection.scheme_id_uri = "urn:uuid:" + entry.uuid();
       if (!entry.pssh().empty()) {
-        if(entry.uuid() == kPlayReadyUUID) {
+        if(entry.uuid() == kPlayReadyUUID && protected_content.allow_mspr_pro()) {
           drm_content_protection.subelements.push_back(
               GenerateMsprProElement(entry.pssh()));
           drm_content_protection.value = kContentProtectionValueMSPR20;

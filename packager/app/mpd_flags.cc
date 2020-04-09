@@ -64,3 +64,8 @@ DEFINE_bool(allow_codec_switching,
             "If enabled, allow adaptive switching between different codecs, "
             "if they have the same language, media type (audio, video etc) and "
             "container type.");
+DEFINE_bool(allow_mspr_pro,
+            false,
+            "If enabled, PlayReady Object <mspr:pro> will be inserted into "
+            "<ContentProtection ...> element alongside with <cenc:pssh> "
+            "when using PlayReady protection system");
