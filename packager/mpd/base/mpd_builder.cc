@@ -49,11 +49,13 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
   static const char kMarlinNamespace[] =
       "urn:marlin:mas:1-0:services:schemas:mpd";
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
+  static const char kMsprNamespace[] = "urn:microsoft:playready";
 
   const std::map<std::string, std::string> uris = {
       {"cenc", kCencNamespace},
       {"mas", kMarlinNamespace},
       {"xlink", kXmlNamespaceXlink},
+      {"mspr", kMsprNamespace},
   };
 
   for (const std::string& namespace_name : namespaces) {
