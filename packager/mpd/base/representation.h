@@ -9,15 +9,15 @@
 #ifndef PACKAGER_MPD_BASE_REPRESENTATION_H_
 #define PACKAGER_MPD_BASE_REPRESENTATION_H_
 
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
-
 #include <stdint.h>
 
 #include <list>
 #include <memory>
+
+#include "packager/mpd/base/bandwidth_estimator.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/segment_info.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace shaka {
 
@@ -230,6 +230,8 @@ class Representation {
   // startNumber attribute for SegmentTemplate.
   // Starts from 1.
   uint32_t start_number_ = 1;
+
+  bool stream_just_started_ = false;
 
   // If this is not null, then Representation is responsible for calling the
   // right methods at right timings.

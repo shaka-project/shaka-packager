@@ -44,18 +44,11 @@ std::string RangeToString(const Range& range) {
          base::Uint64ToString(range.end());
 }
 
-bool ApproximiatelyEqual(int64_t time1, int64_t time2) {
-  const double kErrorThresholdSeconds = 0.05;
-
-  const uint32_t error_threshold =
-      static_cast<uint32_t>(kErrorThresholdSeconds * time1);
-  return std::abs(time1 - time2) <= error_threshold;
-}
-
 // Check if segments are continuous and all segments except the last one are of
 // the same duration.
 bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
-                                uint32_t start_number) {
+                                uint32_t start_number,
+                                const double target_duration) {
   if (!FLAGS_segment_template_constant_duration)
     return false;
 
@@ -64,15 +57,22 @@ bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
     return false;
 
   const SegmentInfo& first_segment = segment_infos.front();
-  if (!ApproximiatelyEqual(first_segment.start_time,
-                           first_segment.duration * start_number))
-    return false;
+
+  if (first_segment.duration < target_duration) {
+    if (static_cast<uint32_t>(first_segment.start_time / target_duration) !=
+        start_number)
+      return false;
+  } else {
+    if (static_cast<uint32_t>(first_segment.start_time /
+                              first_segment.duration) != start_number - 1)
+      return false;
+  }
 
   if (segment_infos.size() == 1)
     return true;
 
   const SegmentInfo& last_segment = segment_infos.back();
-  if (!(last_segment.repeat == 0 || first_segment.repeat == 0))
+  if (last_segment.repeat != 0)
     return false;
 
   const int64_t expected_last_segment_start_time =
@@ -414,7 +414,8 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32_t start_number) {
+    uint32_t start_number,
+    const double target_duration) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     segment_template.SetIntegerAttribute("timescale",
@@ -440,9 +441,16 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   if (!segment_infos.empty()) {
     // Don't use SegmentTimeline if all segments except the last one are of
     // the same duration.
-    if (IsTimelineConstantDuration(segment_infos, start_number)) {
-      segment_template.SetIntegerAttribute("duration",
-                                           segment_infos.front().duration);
+    if (IsTimelineConstantDuration(
+            segment_infos, start_number,
+            target_duration * media_info.reference_time_scale())) {
+      if (target_duration > 0) {
+        segment_template.SetIntegerAttribute(
+            "duration", target_duration * media_info.reference_time_scale());
+      } else {
+        segment_template.SetIntegerAttribute("duration",
+                                             segment_infos.front().duration);
+      }
       if (FLAGS_dash_add_last_segment_number_when_needed) {
         uint32_t last_segment_number = start_number - 1;
         for (const auto& segment_info_element : segment_infos)

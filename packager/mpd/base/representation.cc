@@ -269,8 +269,9 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
-                                      start_number_)) {
+      !representation.AddLiveOnlyInfo(
+          media_info_, segment_infos_, start_number_,
+          mpd_options_.mpd_params.target_segment_duration)) {
     LOG(ERROR) << "Failed to add Live info.";
     return xml::scoped_xml_ptr<xmlNode>();
   }
@@ -333,7 +334,19 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
   const int64_t adjusted_duration = AdjustDuration(duration);
 
   if (segment_infos_.empty()) {
-    start_number_ = start_time / duration;
+    const int64_t scaled_target_duration =
+        mpd_options_.mpd_params.target_segment_duration *
+        media_info_.reference_time_scale();
+
+    if (mpd_options_.mpd_params.target_segment_duration > 0 &&
+        mpd_options_.mpd_params.allow_approximate_segment_timeline) {
+      if (adjusted_duration == scaled_target_duration) {
+        start_number_ = start_time / scaled_target_duration + 1;
+      } else {
+        start_number_ = start_time / scaled_target_duration;
+      }
+      stream_just_started_ = true;
+    }
   }
 
   if (!segment_infos_.empty()) {
@@ -352,6 +365,19 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
       if (ApproximiatelyEqual(segment_end_time_for_same_duration,
                               actual_segment_end_time)) {
         ++segment_infos_.back().repeat;
+        if (mpd_options_.mpd_params.allow_approximate_segment_timeline &&
+            mpd_options_.mpd_params.target_segment_duration > 0 &&
+            stream_just_started_ && segment_infos_.size() == 2) {
+          const SegmentInfo& first_segment = segment_infos_.front();
+          const SegmentInfo& last_segment = segment_infos_.back();
+          if (first_segment.repeat == 0 &&
+              first_segment.duration < last_segment.duration &&
+              last_segment.repeat > 0) {
+            segment_infos_.pop_front();
+            start_number_ = last_segment.start_time / last_segment.duration + 1;
+          }
+          stream_just_started_ = false;
+        }
       } else {
         segment_infos_.push_back(
             {previous_segment_end_time,

@@ -799,12 +799,16 @@ TEST_P(ApproximateSegmentTimelineTest,
   if (allow_approximate_segment_timeline_) {
     expected_s_elements = base::StringPrintf(
         kSElementTemplateWithoutR, kStartTime, kScaledTargetSegmentDuration);
+    EXPECT_THAT(representation_->GetXml().get(),
+                XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
+                    expected_s_elements, 1235)));
   } else {
     expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
                                              kStartTime, kDurationSmaller);
+    EXPECT_THAT(representation_->GetXml().get(),
+                XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
+                    expected_s_elements, 1)));
   }
-  EXPECT_THAT(representation_->GetXml().get(),
-              XmlNodeEqual(ExpectedXml(expected_s_elements)));
 }
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {

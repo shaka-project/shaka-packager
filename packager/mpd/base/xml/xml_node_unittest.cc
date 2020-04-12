@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/mpd/base/xml/xml_node.h"
+
 #include <gflags/gflags.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -14,7 +16,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/xml_node.h"
 #include "packager/mpd/test/xml_compare.h"
 
 DECLARE_bool(segment_template_constant_duration);
@@ -56,7 +57,6 @@ TEST(XmlNodeTest, MetaTestXmlElementsEqual) {
       "  </B>\n"
       "  <C />\n"
       "</A>";
-
 
   // This is same as kXml1 but the attributes are reordered. Note that the
   // children are not reordered.
@@ -134,9 +134,8 @@ TEST(XmlNodeTest, MetaTestXmlElementsEqual) {
 // But if it is run on <B> for the first XML, it will return "content1", but
 // for second XML will return "c".
 TEST(XmlNodeTest, MetaTestXmlEqualDifferentContent) {
-  ASSERT_FALSE(XmlEqual(
-      "<A><B>content1</B><B>content2</B></A>",
-      "<A><B>c</B><B>ontent1content2</B></A>"));
+  ASSERT_FALSE(XmlEqual("<A><B>content1</B><B>content2</B></A>",
+                        "<A><B>c</B><B>ontent1content2</B></A>"));
 }
 
 TEST(XmlNodeTest, ExtractReferencedNamespaces) {
@@ -303,8 +302,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
       {kStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
@@ -324,8 +323,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
       {kNonZeroStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
 
   EXPECT_THAT(representation.GetRawPtr(),
               XmlNodeEqual(
@@ -348,8 +347,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
       {kNonZeroStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
@@ -375,8 +374,8 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
@@ -402,8 +401,8 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
 
   EXPECT_THAT(representation.GetRawPtr(),
               XmlNodeEqual(
@@ -434,8 +433,8 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
 
   EXPECT_THAT(representation.GetRawPtr(),
               XmlNodeEqual(
@@ -449,31 +448,31 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
                   "</Representation>"));
 }
 
-TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {        
-  const uint32_t kStartNumber = 1;                                              
-  const uint64_t kStartTime = 0;                                                
-  const uint64_t kDuration = 100;                                               
-  const uint64_t kRepeat = 9;                                                   
-                                                                                
-  std::list<SegmentInfo> segment_infos = {                                      
-      {kStartTime, kDuration, kRepeat},                                         
-  };                                                                            
-  RepresentationXmlNode representation;                                         
-  FLAGS_dash_add_last_segment_number_when_needed = true;                       
-                                                                                
-  ASSERT_TRUE(                                                                  
-      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
-                                                                                
-  EXPECT_THAT(                                                                  
-      representation.GetRawPtr(),                                               
-      XmlNodeEqual("<Representation>"                                           
-                   "<SupplementalProperty schemeIdUri=\"http://dashif.org/"     
-                   "guidelines/last-segment-number\" value=\"10\"/>"            
-                   "  <SegmentTemplate media=\"$Number$.m4s\" "                 
-                   "                   startNumber=\"1\" duration=\"100\"/>"    
-                   "</Representation>"));                                       
-  FLAGS_dash_add_last_segment_number_when_needed = false;                                                                                                      
-}                      
+TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
+  const uint32_t kStartNumber = 1;
+  const uint64_t kStartTime = 0;
+  const uint64_t kDuration = 100;
+  const uint64_t kRepeat = 9;
+
+  std::list<SegmentInfo> segment_infos = {
+      {kStartTime, kDuration, kRepeat},
+  };
+  RepresentationXmlNode representation;
+  FLAGS_dash_add_last_segment_number_when_needed = true;
+
+  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
+                                             kStartNumber, 0));
+
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual("<Representation>"
+                   "<SupplementalProperty schemeIdUri=\"http://dashif.org/"
+                   "guidelines/last-segment-number\" value=\"10\"/>"
+                   "  <SegmentTemplate media=\"$Number$.m4s\" "
+                   "                   startNumber=\"1\" duration=\"100\"/>"
+                   "</Representation>"));
+  FLAGS_dash_add_last_segment_number_when_needed = false;
+}
 
 }  // namespace xml
 }  // namespace shaka
