@@ -85,8 +85,8 @@ struct MpdParams {
   bool allow_codec_switching = false;
   /// If enabled, PlayReady Object <mspr:pro> will be inserted into
   /// <ContentProtection ...> element alongside with <cenc:pssh>
-  /// when using PlayReady protection system
-  bool allow_mspr_pro = false;
+  /// when using PlayReady protection system.
+  bool include_mspr_pro = true;
 };
 
 }  // namespace shaka

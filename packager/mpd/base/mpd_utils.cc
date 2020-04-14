@@ -14,11 +14,11 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/language_utils.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/mpd/base/adaptation_set.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
-#include "packager/media/base/protection_system_specific_info.h"
 
 DEFINE_bool(
     use_legacy_vp9_codec_string,
@@ -325,9 +325,10 @@ const char kMarlinUUID[] = "5e629af5-38da-4063-8977-97ffbd9902d4";
 // Unofficial FairPlay system id extracted from
 // https://forums.developer.apple.com/thread/6185.
 const char kFairPlayUUID[] = "29701fe4-3cc7-4a34-8c5b-ae90c7439a47";
-// String representation of media::kPlayReadySystemId
+// String representation of media::kPlayReadySystemId.
 const char kPlayReadyUUID[] = "9a04f079-9840-4286-ab92-e65be0885f95";
-
+// It is RECOMMENDED to include the @value attribute with name and version "MSPR 2.0".
+// See https://docs.microsoft.com/en-us/playready/specifications/mpeg-dash-playready#221-general.
 const char kContentProtectionValueMSPR20[] = "MSPR 2.0";
 
 Element GenerateMarlinContentIds(const std::string& key_id) {
@@ -361,8 +362,7 @@ Element GenerateCencPsshElement(const std::string& pssh) {
 
 // Extract MS PlayReady Object from given PSSH
 // and encode it in base64
-Element GenerateMsprProElement(const std::string& pssh)
-{
+Element GenerateMsprProElement(const std::string& pssh) {
   std::unique_ptr<media::PsshBoxBuilder> b =
     media::PsshBoxBuilder::ParseFromBox((const uint8_t*)pssh.data(), pssh.size());
 
@@ -439,13 +439,13 @@ void AddContentProtectionElementsHelperTemplated(
     } else {
       drm_content_protection.scheme_id_uri = "urn:uuid:" + entry.uuid();
       if (!entry.pssh().empty()) {
-        if(entry.uuid() == kPlayReadyUUID && protected_content.allow_mspr_pro()) {
+        drm_content_protection.subelements.push_back(
+            GenerateCencPsshElement(entry.pssh()));
+        if(entry.uuid() == kPlayReadyUUID && protected_content.include_mspr_pro()) {
           drm_content_protection.subelements.push_back(
               GenerateMsprProElement(entry.pssh()));
           drm_content_protection.value = kContentProtectionValueMSPR20;
         }
-        drm_content_protection.subelements.push_back(
-            GenerateCencPsshElement(entry.pssh()));
       }
     }
 

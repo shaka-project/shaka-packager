@@ -95,7 +95,7 @@ message MediaInfo {
     // Specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'.
     // "cbca" is also valid which is a place holder for SAMPLE-AES encryption.
     optional string protection_scheme = 3 [default = 'cenc'];
-    optional uint32 allow_mspr_pro = 4;
+    optional uint32 include_mspr_pro = 4;
   }
 
   // TODO(rkuroiwa): Remove this. <ContentProtection> element that must be added
