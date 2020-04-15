@@ -361,15 +361,22 @@ Element GenerateCencPsshElement(const std::string& pssh) {
 }
 
 // Extract MS PlayReady Object from given PSSH
-// and encode it in base64
+// and encode it in base64.
 Element GenerateMsprProElement(const std::string& pssh) {
   std::unique_ptr<media::PsshBoxBuilder> b =
-    media::PsshBoxBuilder::ParseFromBox((const uint8_t*)pssh.data(), pssh.size());
+    media::PsshBoxBuilder::ParseFromBox(
+        reinterpret_cast<const uint8_t*>(pssh.data()),
+        pssh.size()
+    );
 
   const std::vector<uint8_t> *p_pssh = &b->pssh_data();
   std::string base64_encoded_mspr;
-  base::Base64Encode(base::StringPiece((const char*)p_pssh->data(), p_pssh->size()),
-                     &base64_encoded_mspr);
+  base::Base64Encode(
+      base::StringPiece(
+          reinterpret_cast<const char*>(p_pssh->data()),
+          p_pssh->size()),
+      &base64_encoded_mspr
+  );
   Element mspr_pro;
   mspr_pro.name = kMsproElementName;
   mspr_pro.content = base64_encoded_mspr;
