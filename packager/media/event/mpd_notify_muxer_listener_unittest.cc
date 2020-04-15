@@ -168,6 +168,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
       "  }\n"
       "  default_key_id: 'defaultkeyid'\n"
+      "  include_mspr_pro: 1\n"
       "}\n";
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
@@ -371,6 +372,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
       "  }\n"
       "  protection_scheme: 'cbcs'\n"
+      "  include_mspr_pro: 1\n"
       "}\n";
 
   const uint64_t kStartTime1 = 0u;
@@ -443,6 +445,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
       "protected_content {\n"
       "  default_key_id: \"defaultkeyid\"\n"
       "  protection_scheme: 'cbc1'\n"
+      "  include_mspr_pro: 1\n"
       "}\n";
 
   const uint64_t kStartTime1 = 0u;
