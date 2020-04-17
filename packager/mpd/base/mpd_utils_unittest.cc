@@ -117,8 +117,7 @@ TEST_F(MpdUtilsTest, ContentProtectionMarlin) {
   EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
 }
 
-TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr)
-{
+TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr) {
     const std::string pssh_str("0000003870737368010000009A04F079"
                                "98404286AB92E65BE0885F9500000001"
                                "11223344556677889900AABBCCDDEEFF"
@@ -173,8 +172,7 @@ TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCencMspr)
     EXPECT_THAT(adaptation_set_.GetXml().get(), XmlNodeEqual(kExpectedOutput));
 }
 
-TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc)
-{
+TEST_F(MpdUtilsTest, ContentProtectionPlayReadyCenc) {
     const std::string pssh_str("0000003870737368010000009A04F079"
         "98404286AB92E65BE0885F9500000001"
         "11223344556677889900AABBCCDDEEFF"
