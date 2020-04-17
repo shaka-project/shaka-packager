@@ -104,6 +104,9 @@ class MpdNotifier {
   /// forces a flush.
   virtual bool Flush() = 0;
 
+  /// @return include_mspr_pro option flag
+  bool include_mspr_pro() const { return mpd_options_.mpd_params.include_mspr_pro; }
+
   /// @return The dash profile for this object.
   DashProfile dash_profile() const { return mpd_options_.dash_profile; }
 

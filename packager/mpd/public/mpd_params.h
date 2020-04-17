@@ -83,6 +83,10 @@ struct MpdParams {
   /// If enabled, allow switching between different codecs, if they have the
   /// same language, media type (audio, video etc) and container type.
   bool allow_codec_switching = false;
+  /// If enabled, PlayReady Object <mspr:pro> will be inserted into
+  /// <ContentProtection ...> element alongside with <cenc:pssh>
+  /// when using PlayReady protection system.
+  bool include_mspr_pro = true;
 };
 
 }  // namespace shaka

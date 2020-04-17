@@ -24,6 +24,7 @@ struct SegmentInfo;
 
 const char kEncryptedMp4Scheme[] = "urn:mpeg:dash:mp4protection:2011";
 const char kPsshElementName[] = "cenc:pssh";
+const char kMsproElementName[] = "mspr:pro";
 
 bool HasVODOnlyFields(const MediaInfo& media_info);
 
