@@ -58,15 +58,8 @@ bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
 
   const SegmentInfo& first_segment = segment_infos.front();
 
-  if (first_segment.duration < target_duration) {
-    if (static_cast<uint32_t>(first_segment.start_time / target_duration) !=
-        start_number)
-      return false;
-  } else {
-    if (static_cast<uint32_t>(first_segment.start_time /
-                              first_segment.duration) != start_number - 1)
-      return false;
-  }
+  if (first_segment.start_time / first_segment.duration != (start_number - 1))
+    return false;
 
   if (segment_infos.size() == 1)
     return true;

@@ -340,11 +340,7 @@ void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
 
     if (mpd_options_.mpd_params.target_segment_duration > 0 &&
         mpd_options_.mpd_params.allow_approximate_segment_timeline) {
-      if (adjusted_duration == scaled_target_duration) {
-        start_number_ = start_time / scaled_target_duration + 1;
-      } else {
-        start_number_ = start_time / scaled_target_duration;
-      }
+      start_number_ = start_time / scaled_target_duration + 1;
       stream_just_started_ = true;
     }
   }
