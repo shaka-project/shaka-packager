@@ -65,6 +65,21 @@ message MediaInfo {
     // EC3 Channel map bit fields, encoded based on ETSI TS 102 366 V1.3.1
     // Digital Audio Compression (AC-3, Enhanced AC-3) Standard E.1.3.1.8.
     optional uint32 ec3_channel_map = 1;
+
+    // EC3 Channel configuration descriptor with MPEG scheme fields,
+    // encoded based on ETSI TS 102 366 V1.4.1 Digital Audio Compression
+    // (AC-3, Enhanced AC-3) Standard I.1.2.1.
+    optional uint32 ec3_channel_mpeg_value = 2;
+
+    // Dolby Digital Plus JOC flag field, ETSI TS 103 420 v1.2.1
+    // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
+    // C.3.2.2.
+    optional bool ec3_joc_flag = 3;
+
+    // Dolby Digital Plus JOC decoding complexity fields, ETSI TS 103 420 v1.2.1
+    // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
+    // C.3.2.3.
+    optional uint32 ec3_joc_complexity = 4;
   }
 
   message TextInfo {
