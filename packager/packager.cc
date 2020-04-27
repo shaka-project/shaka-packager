@@ -614,7 +614,8 @@ Status CreateTextJobs(
         }
       }
 
-      if (mpd_notifier && !stream.segment_template.empty()) {
+      if (mpd_notifier && !stream.segment_template.empty() &&
+          !stream.hls_only) {
         return Status(error::INVALID_ARGUMENT,
                       "Cannot create text output for MPD with segment output.");
       }
