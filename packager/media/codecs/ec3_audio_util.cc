@@ -81,7 +81,10 @@ uint8_t ReverseBits8(uint8_t n) {
   return ((n >> 4) & 0x0f) | ((n & 0x0f) << 4);
 }
 
-uint32_t ChannelMaptoMPEGValue(uint32_t channel_map) {
+// Mapping of channel configurations to the MPEG audio value based on
+// ETSI TS 102 366 V1.4.1 Digital Audio Compression (AC-3, Enhanced AC-3)
+// Standard Table I.1.1
+uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
   uint32_t ret = 0;
 
   switch (channel_map) {
@@ -250,7 +253,7 @@ bool CalculateEC3ChannelMPEGValue(const std::vector<uint8_t>& ec3_data,
   uint32_t channel_map;
   if (!CalculateEC3ChannelMap(ec3_data, &channel_map))
     return false;
-  ec3_channel_mpeg_value = ChannelMaptoMPEGValue(channel_map);
+  ec3_channel_mpeg_value = EC3ChannelMaptoMPEGValue(channel_map);
   return true;
 }
 
