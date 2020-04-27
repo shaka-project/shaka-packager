@@ -720,33 +720,18 @@ class PackagerFunctionalTest(PackagerAppTest):
     self._CheckTestResults('audio-video-with-two-trick-play')
 
   def testDashOnlyAndHlsOnlyWithCaptions(self):
-    test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
-    text_file = os.path.join(self.test_data_dir, 'bear-english.vtt')
-
-    # {tmp}/video/video-init.mp4, {tmp}/video/video-1.m4s etc.
-    video_output_prefix = os.path.join(self.tmp_dir, 'video', 'video')
-    # {tmp}/audio/audio-init.mp4, {tmp}/audio/audio-1.m4s etc.
-    audio_output_prefix = os.path.join(self.tmp_dir, 'audio', 'audio')
-    # {tmp}/text/text-init.mp4, {tmp}/text/text-1.vtt etc.
-    text_output_prefix = os.path.join(self.tmp_dir, 'text', 'text')
-
-    self.assertPackageSuccess(
-    [
-      'input=%s,stream=video,init_segment=%s-init.mp4,'
-      'segment_template=%s-$Number$.m4s' %
-      (test_file, video_output_prefix, video_output_prefix),
-      'input=%s,stream=audio,init_segment=%s-init.mp4,'
-      'segment_template=%s-$Number$.m4s' %
-      (test_file, audio_output_prefix, audio_output_prefix),
-      'input=%s,stream=text,init_segment=%s-init.mp4,'
-      'segment_template=%s-$Number$.m4s,dash_only=1' %
-      (text_file, text_output_prefix, text_output_prefix),
-      'input=%s,stream=text,'
-      'segment_template=%s-$Number$.vtt,hls_only=1' %
-      (text_file, text_output_prefix),
-
-    ],
-    self._GetFlags(output_dash=True, output_hls=True))
+    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
+    dash_text_stream = self._GetStreams(['text'],
+                                        test_files=['bear-english.vtt'],
+                                        output_format='mp4',
+                                        segmented=True,
+                                        dash_only=True)
+    hls_text_stream = self._GetStreams(['text'],
+                                       test_files=['bear-english.vtt'],
+                                       segmented=True,
+                                       hls_only=True)
+    streams = audio_video_streams + dash_text_stream + hls_text_stream
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('hls-only-dash-only-captions')
 
   def testDashOnlyAndHlsOnly(self):

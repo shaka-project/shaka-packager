@@ -602,7 +602,7 @@ Status CreateTextJobs(
               ToMuxerListenerData(stream));
 
       // Check input to ensure that output is possible.
-      if (hls_listener) {
+      if (hls_listener && !stream.dash_only) {
         if (input_container == CONTAINER_TTML) {
           return Status(error::INVALID_ARGUMENT,
                         "HLS does not support TTML in xml format.");
