@@ -270,8 +270,7 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
 
   if (HasLiveOnlyFields(media_info_) &&
       !representation.AddLiveOnlyInfo(
-          media_info_, segment_infos_, start_number_,
-          mpd_options_.mpd_params.target_segment_duration)) {
+          media_info_, segment_infos_, start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
     return xml::scoped_xml_ptr<xmlNode>();
   }

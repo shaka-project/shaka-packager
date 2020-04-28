@@ -186,8 +186,7 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   ///        SegmentInfos are sorted by its start time.
   bool AddLiveOnlyInfo(const MediaInfo& media_info,
                        const std::list<SegmentInfo>& segment_infos,
-                       uint32_t start_number,
-                       const double target_duration);
+                       uint32_t start_number);
 
  private:
   // Add AudioChannelConfiguration element. Note that it is a required element

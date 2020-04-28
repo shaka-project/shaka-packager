@@ -47,8 +47,7 @@ std::string RangeToString(const Range& range) {
 // Check if segments are continuous and all segments except the last one are of
 // the same duration.
 bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
-                                uint32_t start_number,
-                                const double target_duration) {
+                                uint32_t start_number) {
   if (!FLAGS_segment_template_constant_duration)
     return false;
 
@@ -57,7 +56,6 @@ bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
     return false;
 
   const SegmentInfo& first_segment = segment_infos.front();
-
   if (first_segment.start_time / first_segment.duration != (start_number - 1))
     return false;
 
@@ -407,8 +405,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32_t start_number,
-    const double target_duration) {
+    uint32_t start_number) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     segment_template.SetIntegerAttribute("timescale",
@@ -434,16 +431,9 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
   if (!segment_infos.empty()) {
     // Don't use SegmentTimeline if all segments except the last one are of
     // the same duration.
-    if (IsTimelineConstantDuration(
-            segment_infos, start_number,
-            target_duration * media_info.reference_time_scale())) {
-      if (target_duration > 0) {
-        segment_template.SetIntegerAttribute(
-            "duration", target_duration * media_info.reference_time_scale());
-      } else {
-        segment_template.SetIntegerAttribute("duration",
-                                             segment_infos.front().duration);
-      }
+    if (IsTimelineConstantDuration(segment_infos, start_number)) {
+      segment_template.SetIntegerAttribute("duration",
+                                           segment_infos.front().duration);
       if (FLAGS_dash_add_last_segment_number_when_needed) {
         uint32_t last_segment_number = start_number - 1;
         for (const auto& segment_info_element : segment_infos)

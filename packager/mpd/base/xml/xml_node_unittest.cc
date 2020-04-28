@@ -302,8 +302,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfo) {
       {kStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
@@ -323,8 +323,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoNonZeroStartTime) {
       {kNonZeroStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(representation.GetRawPtr(),
               XmlNodeEqual(
@@ -347,8 +347,8 @@ TEST_F(LiveSegmentTimelineTest, OneSegmentInfoMatchingStartTimeAndNumber) {
       {kNonZeroStartTime, kDuration, kRepeat},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
@@ -374,8 +374,8 @@ TEST_F(LiveSegmentTimelineTest, AllSegmentsSameDurationExpectLastOne) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
@@ -401,8 +401,8 @@ TEST_F(LiveSegmentTimelineTest, SecondSegmentInfoNonZeroRepeat) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(representation.GetRawPtr(),
               XmlNodeEqual(
@@ -433,8 +433,8 @@ TEST_F(LiveSegmentTimelineTest, TwoSegmentInfoWithGap) {
       {kStartTime2, kDuration2, kRepeat2},
   };
   RepresentationXmlNode representation;
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(representation.GetRawPtr(),
               XmlNodeEqual(
@@ -460,8 +460,8 @@ TEST_F(LiveSegmentTimelineTest, LastSegmentNumberSupplementalProperty) {
   RepresentationXmlNode representation;
   FLAGS_dash_add_last_segment_number_when_needed = true;
 
-  ASSERT_TRUE(representation.AddLiveOnlyInfo(media_info_, segment_infos,
-                                             kStartNumber, 0));
+  ASSERT_TRUE(
+      representation.AddLiveOnlyInfo(media_info_, segment_infos, kStartNumber));
 
   EXPECT_THAT(
       representation.GetRawPtr(),
