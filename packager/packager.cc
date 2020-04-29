@@ -622,7 +622,7 @@ Status CreateTextJobs(
 
       // If we are outputting to HLS, then create the HLS test pipeline that
       // will create segmented text output.
-      if (hls_listener) {
+      if (hls_listener && !stream.dash_only) {
         RETURN_IF_ERROR(CreateHlsTextJob(stream, packaging_params,
                                          std::move(hls_listener), sync_points,
                                          job_manager));

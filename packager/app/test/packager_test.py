@@ -731,8 +731,16 @@ class PackagerFunctionalTest(PackagerAppTest):
                                        segmented=True,
                                        hls_only=True)
     streams = audio_video_streams + dash_text_stream + hls_text_stream
-    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True, output_hls=True))
-    self._CheckTestResults('hls-only-dash-only-captions')
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      output_hls=True))
+    # Mpd cannot be validated right now since we don't generate deterministic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate deterministic mpd or at least validate mpd
+    #                   schema.
+    self._CheckTestResults(
+        'hls-only-dash-only-captions',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
 
   def testDashOnlyAndHlsOnly(self):
     streams = [
