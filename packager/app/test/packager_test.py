@@ -719,6 +719,29 @@ class PackagerFunctionalTest(PackagerAppTest):
     # order of trick play factors gets the same mpd.
     self._CheckTestResults('audio-video-with-two-trick-play')
 
+  def testDashOnlyAndHlsOnlyWithCaptions(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'], segmented=True)
+    dash_text_stream = self._GetStreams(['text'],
+                                        test_files=['bear-english.vtt'],
+                                        output_format='mp4',
+                                        segmented=True,
+                                        dash_only=True)
+    hls_text_stream = self._GetStreams(['text'],
+                                       test_files=['bear-english.vtt'],
+                                       segmented=True,
+                                       hls_only=True)
+    streams = audio_video_streams + dash_text_stream + hls_text_stream
+    self.assertPackageSuccess(streams, self._GetFlags(output_dash=True,
+                                                      output_hls=True))
+    # Mpd cannot be validated right now since we don't generate deterministic
+    # mpd with multiple inputs due to thread racing.
+    # TODO(b/73349711): Generate deterministic mpd or at least validate mpd
+    #                   schema.
+    self._CheckTestResults(
+        'hls-only-dash-only-captions',
+        diff_files_policy=DiffFilesPolicy(
+            allowed_diff_files=['output.mpd'], exact=False))
+
   def testDashOnlyAndHlsOnly(self):
     streams = [
         self._GetStream('video', hls_only=True),

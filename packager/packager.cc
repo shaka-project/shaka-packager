@@ -602,7 +602,7 @@ Status CreateTextJobs(
               ToMuxerListenerData(stream));
 
       // Check input to ensure that output is possible.
-      if (hls_listener) {
+      if (hls_listener && !stream.dash_only) {
         if (input_container == CONTAINER_TTML) {
           return Status(error::INVALID_ARGUMENT,
                         "HLS does not support TTML in xml format.");
@@ -614,14 +614,15 @@ Status CreateTextJobs(
         }
       }
 
-      if (mpd_notifier && !stream.segment_template.empty()) {
+      if (mpd_notifier && !stream.segment_template.empty() &&
+          !stream.hls_only) {
         return Status(error::INVALID_ARGUMENT,
                       "Cannot create text output for MPD with segment output.");
       }
 
       // If we are outputting to HLS, then create the HLS test pipeline that
       // will create segmented text output.
-      if (hls_listener) {
+      if (hls_listener && !stream.dash_only) {
         RETURN_IF_ERROR(CreateHlsTextJob(stream, packaging_params,
                                          std::move(hls_listener), sync_points,
                                          job_manager));
