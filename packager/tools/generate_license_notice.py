@@ -116,9 +116,9 @@ def GenerateLicenseNotice(output_dir, output_license_file_name):
   license_files.sort()
 
   if output_license_file_name:
-    print 'Num License Files: {}\n'.format(len(license_files))
+    print('Num License Files: {}\n'.format(len(license_files)))
     for license_file in license_files:
-      print license_file
+      print(license_file)
 
   # Include the main license file.
   content = _ReadFile(os.path.join(packager_dir, os.pardir, 'LICENSE'))
