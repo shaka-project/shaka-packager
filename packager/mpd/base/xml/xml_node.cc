@@ -482,12 +482,14 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     const bool ec3_joc_flag = audio_info.codec_specific_data().ec3_joc_flag();
     if (ec3_joc_flag) {
       std::string ec3_joc_complexity =
-        base::UintToString(audio_info.codec_specific_data().ec3_joc_complexity());
+        base::UintToString(audio_info.codec_specific_data()
+            .ec3_joc_complexity());
       ret &= AddDescriptor("SupplementalProperty",
                            "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
                            "JOC");
       ret &= AddDescriptor("SupplementalProperty",
-                           "tag:dolby.com,2018:dash:EC3_ExtensionComplexityIndex:2018",
+                           "tag:dolby.com,2018:dash:"
+                           "EC3_ExtensionComplexityIndex:2018",
                            ec3_joc_complexity);
     }
     return ret;

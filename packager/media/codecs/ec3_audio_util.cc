@@ -104,11 +104,11 @@ uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
       ret = 5;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-      kLFEScreen:
+         kLFEScreen:
       ret = 6;
       break;
     case kCenter | kLeft | kRight | kLwRwPair | kLeftSurround | kRightSurround |
-      kLFEScreen:
+         kLFEScreen:
       ret = 7;
       break;
     case kLeft | kRight | kCenterSurround:
@@ -121,24 +121,24 @@ uint32_t EC3ChannelMaptoMPEGValue(uint32_t channel_map) {
       ret = 11;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-      kLrsRrsPair | kLFEScreen:
+         kLrsRrsPair | kLFEScreen:
       ret = 12;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-      kLFEScreen | kLvhRvhPair:
+         kLFEScreen | kLvhRvhPair:
       ret = 14;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-      kLFEScreen | kLvhRvhPair | kLtsRtsPair:
+         kLFEScreen | kLvhRvhPair | kLtsRtsPair:
       ret = 16;
       break;
     case kCenter | kLeft | kRight | kLeftSurround | kRightSurround |
-      kLFEScreen | kLvhRvhPair | kCenterVerticalHeight | kLtsRtsPair |
-      kTopCenterSurround:
+         kLFEScreen | kLvhRvhPair | kCenterVerticalHeight | kLtsRtsPair |
+         kTopCenterSurround:
       ret = 17;
       break;
     case kCenter | kLeft | kRight | kLsdRsdPair | kLrsRrsPair | kLFEScreen |
-      kLvhRvhPair | kLtsRtsPair:
+         kLvhRvhPair | kLtsRtsPair:
       ret = 19;
       break;
     default:
