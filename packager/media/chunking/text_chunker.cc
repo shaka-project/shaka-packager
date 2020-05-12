@@ -108,8 +108,9 @@ Status TextChunker::DispatchSegment(int64_t duration) {
   std::shared_ptr<SegmentInfo> info = std::make_shared<SegmentInfo>();
   info->start_timestamp = segment_start_;
   info->duration = duration;
-  segment_index_ =
-      std::max(((segment_start_ / segment_duration_) + 1), segment_index_);
+  if (((segment_start_ / segment_duration_) + 1) > segment_index_) {
+    segment_index_ = (segment_start_ / segment_duration_) + 1;
+  }
   info->segment_index = segment_index_;
   RETURN_IF_ERROR(DispatchSegmentInfo(kStreamIndex, std::move(info)));
 
