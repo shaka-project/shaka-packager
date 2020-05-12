@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <memory>
+
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
@@ -35,6 +36,7 @@ class ThreadedIoFile : public File {
   bool Flush() override;
   bool Seek(uint64_t position) override;
   bool Tell(uint64_t* position) override;
+  bool Rename(const std::string& new_file_name) override;
   /// @}
 
  protected:

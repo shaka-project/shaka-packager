@@ -8,6 +8,7 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
 #include <memory>
+
 #include "packager/file/file.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/formats/mp2t/pes_packet_generator.h"
@@ -55,10 +56,13 @@ class TsSegmenter {
   ///        stream's time scale.
   /// @param duration is the segment's duration in the input stream's time
   ///        scale.
+  /// @param segment_index is the segment index.
   // TODO(kqyang): Remove the usage of segment start timestamp and duration in
   // xx_segmenter, which could cause confusions on which is the source of truth
   // as the segment start timestamp and duration could be tracked locally.
-  Status FinalizeSegment(uint64_t start_timestamp, uint64_t duration);
+  Status FinalizeSegment(uint64_t start_timestamp,
+                         uint64_t duration,
+                         uint64_t segment_index);
 
   /// Only for testing.
   void InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer);
@@ -69,6 +73,8 @@ class TsSegmenter {
 
   /// Only for testing.
   void SetTsWriterFileOpenedForTesting(bool value);
+
+  int next_pts_ = -1;
 
  private:
   Status OpenNewSegmentIfClosed(int64_t next_pts);

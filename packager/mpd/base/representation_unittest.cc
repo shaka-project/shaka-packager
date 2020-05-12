@@ -280,7 +280,8 @@ TEST_F(RepresentationTest,
                            kAnyRepresentationId, std::move(listener));
   EXPECT_TRUE(representation->Init());
 
-  representation->AddNewSegment(kStartTime, kDuration, 10 /* any size */);
+  representation->AddNewSegment(kStartTime, kDuration, 10 /* any size */,
+                                (kStartTime / kDuration) + 1);
 }
 
 // Make sure
@@ -468,7 +469,8 @@ class SegmentTemplateTest : public RepresentationTest {
     }
 
     for (int i = 0; i < repeat + 1; ++i) {
-      representation_->AddNewSegment(start_time, duration, size);
+      representation_->AddNewSegment(start_time, duration, size,
+                                     (start_time / duration) + 1);
       start_time += duration;
       bandwidth_estimator_.AddBlock(
           size, static_cast<double>(duration) / kDefaultTimeScale);
@@ -801,7 +803,7 @@ TEST_P(ApproximateSegmentTimelineTest,
         kSElementTemplateWithoutR, kStartTime, kScaledTargetSegmentDuration);
     EXPECT_THAT(representation_->GetXml().get(),
                 XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
-                    expected_s_elements, 1235)));
+                    expected_s_elements, 1372)));
   } else {
     expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
                                              kStartTime, kDurationSmaller);

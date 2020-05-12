@@ -49,11 +49,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
     ContainerType container_type) {
   DCHECK(muxer_options.segment_template.empty());
   media_info_.reset(new MediaInfo());
-  if (!internal::GenerateMediaInfo(muxer_options,
-                                   stream_info,
-                                   time_scale,
-                                   container_type,
-                                   media_info_.get())) {
+  if (!internal::GenerateMediaInfo(muxer_options, stream_info, time_scale,
+                                   container_type, media_info_.get())) {
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;
   }
@@ -90,7 +87,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
                                                  int64_t start_time,
                                                  int64_t duration,
-                                                 uint64_t segment_file_size) {
+                                                 uint64_t segment_file_size,
+                                                 uint64_t segment_index) {
   const double segment_duration_seconds =
       static_cast<double>(duration) / media_info_->reference_time_scale();
 

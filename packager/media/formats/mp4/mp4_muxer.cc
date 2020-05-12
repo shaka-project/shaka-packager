@@ -34,9 +34,7 @@ namespace {
 
 // Sets the range start and end value from offset and size.
 // |start| and |end| are for byte-range-spec specified in RFC2616.
-void SetStartAndEndFromOffsetAndSize(size_t offset,
-                                     size_t size,
-                                     Range* range) {
+void SetStartAndEndFromOffsetAndSize(size_t offset, size_t size, Range* range) {
   DCHECK(range);
   range->start = static_cast<uint32_t>(offset);
   // Note that ranges are inclusive. So we need - 1.
@@ -194,7 +192,7 @@ Status MP4Muxer::FinalizeSegment(size_t stream_id,
   DCHECK(segmenter_);
   VLOG(3) << "Finalizing " << (segment_info.is_subsegment ? "sub" : "")
           << "segment " << segment_info.start_timestamp << " duration "
-          << segment_info.duration;
+          << segment_info.duration << " index " << segment_info.segment_index;
   return segmenter_->FinalizeSegment(stream_id, segment_info);
 }
 
@@ -456,7 +454,7 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   AudioSampleEntry audio;
   audio.format =
       CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
-  switch(audio_info->codec()){
+  switch (audio_info->codec()) {
     case kCodecAAC: {
       audio.esds.es_descriptor.set_esid(track_id);
       DecoderConfigDescriptor* decoder_config =

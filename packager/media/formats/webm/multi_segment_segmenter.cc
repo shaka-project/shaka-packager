@@ -24,15 +24,24 @@ MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
 Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
                                               uint64_t duration_timestamp,
-                                              bool is_subsegment) {
+                                              bool is_subsegment,
+                                              uint64_t segment_index) {
   CHECK(cluster());
   RETURN_IF_ERROR(Segmenter::FinalizeSegment(
-      start_timestamp, duration_timestamp, is_subsegment));
+      start_timestamp, duration_timestamp, is_subsegment, segment_index));
   if (!cluster()->Finalize())
     return Status(error::FILE_FAILURE, "Error finalizing segment.");
 
   if (!is_subsegment) {
+    std::string segment_name_segment_index =
+        GetSegmentName(options().segment_template, start_timestamp,
+                       segment_index - 1, options().bandwidth);
+
+    if (writer_->file()->Rename(segment_name_segment_index) != 1) {
+      LOG(ERROR) << "Error renaming WEBM segment";
+    }
     const std::string segment_name = writer_->file()->file_name();
+
     // Close the file, which also does flushing, to make sure the file is
     // written before manifest is updated.
     RETURN_IF_ERROR(writer_->Close());
@@ -40,7 +49,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
       muxer_listener()->OnNewSegment(segment_name, start_timestamp,
-                                     duration_timestamp, size);
+                                     duration_timestamp, size, segment_index);
     }
     VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";
   }

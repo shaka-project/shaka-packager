@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -12,7 +14,6 @@
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {
@@ -60,7 +61,7 @@ class WebVttSegmentedOutputTest : public MediaHandlerTestBase {
 };
 
 TEST_F(WebVttSegmentedOutputTest, WithNoSegmentAndWithNoSamples) {
-  EXPECT_CALL(*muxer_listener_, OnNewSegment(_, _, _, _)).Times(0);
+  EXPECT_CALL(*muxer_listener_, OnNewSegment(_, _, _, _, _)).Times(0);
 
   {
     // No segments should  have be created as there were no samples.
@@ -94,7 +95,7 @@ TEST_F(WebVttSegmentedOutputTest, WithOneSegmentAndWithOneSample) {
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput1, kSegmentStart,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, 1));
 
     const float kMediaDuration = 1 * kSegmentDuration / kMillisecondsPerSecond;
     EXPECT_CALL(*muxer_listener_,
@@ -141,10 +142,10 @@ TEST_F(WebVttSegmentedOutputTest, WithTwoSegmentAndWithOneSample) {
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput1, kSegment1Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput2, kSegment2Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
 
     const float kMediaDuration = 2 * kSegmentDuration / kMillisecondsPerSecond;
     EXPECT_CALL(*muxer_listener_,
@@ -201,10 +202,10 @@ TEST_F(WebVttSegmentedOutputTest, WithAnEmptySegment) {
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput1, kSegment1Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
     EXPECT_CALL(*muxer_listener_,
                 OnNewSegment(kSegmentedFileOutput2, kSegment2Start,
-                             kSegmentDuration, _));
+                             kSegmentDuration, _, _));
 
     const float kMediaDuration = 2 * kSegmentDuration / kMillisecondsPerSecond;
     EXPECT_CALL(*muxer_listener_,

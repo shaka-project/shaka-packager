@@ -54,6 +54,12 @@ class TsWriter {
   /// @return current file position on success, nullopt otherwise.
   base::Optional<uint64_t> GetFilePosition();
 
+  File* file() { return current_file_.get(); }
+
+  /// Rename the file to newSegmentName.
+  /// @param new_segment_name
+  virtual bool RenameFile(const std::string& new_segment_name);
+
  private:
   TsWriter(const TsWriter&) = delete;
   TsWriter& operator=(const TsWriter&) = delete;

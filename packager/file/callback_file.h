@@ -28,6 +28,7 @@ class CallbackFile : public File {
   bool Flush() override;
   bool Seek(uint64_t position) override;
   bool Tell(uint64_t* position) override;
+  bool Rename(const std::string& new_file_name) override;
   /// @}
 
  protected:

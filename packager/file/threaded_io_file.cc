@@ -183,6 +183,14 @@ void ThreadedIoFile::RunInInputMode() {
   }
 }
 
+bool ThreadedIoFile::Rename(const std::string& new_file_name) {
+  if (rename(file_name().c_str(), new_file_name.c_str()) != 0) {
+    return false;
+  }
+  set_file_name(new_file_name);
+  return true;
+}
+
 void ThreadedIoFile::RunInOutputMode() {
   DCHECK(internal_file_);
   DCHECK_EQ(kOutputMode, mode_);

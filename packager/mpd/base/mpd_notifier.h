@@ -11,6 +11,7 @@
 #define MPD_BASE_MPD_NOTIFIER_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -65,11 +66,13 @@ class MpdNotifier {
   /// @param duration is the duration of the new segment, in units of the
   ///        stream's time scale.
   /// @param size is the new segment size in bytes.
+  /// @param segment_index is the segment index.
   /// @return true on success, false otherwise.
   virtual bool NotifyNewSegment(uint32_t container_id,
                                 uint64_t start_time,
                                 uint64_t duration,
-                                uint64_t size) = 0;
+                                uint64_t size,
+                                uint64_t segment_index) = 0;
 
   /// Notifies MpdBuilder that there is a new CueEvent.
   /// @param container_id Container ID obtained from calling
@@ -105,7 +108,9 @@ class MpdNotifier {
   virtual bool Flush() = 0;
 
   /// @return include_mspr_pro option flag
-  bool include_mspr_pro() const { return mpd_options_.mpd_params.include_mspr_pro; }
+  bool include_mspr_pro() const {
+    return mpd_options_.mpd_params.include_mspr_pro;
+  }
 
   /// @return The dash profile for this object.
   DashProfile dash_profile() const { return mpd_options_.dash_profile; }

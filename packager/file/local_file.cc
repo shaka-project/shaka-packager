@@ -200,4 +200,12 @@ bool LocalFile::Delete(const char* file_name) {
   return base::DeleteFile(base::FilePath::FromUTF8Unsafe(file_name), false);
 }
 
+bool LocalFile::Rename(const std::string& new_file_name) {
+  if (rename(file_name().c_str(), new_file_name.c_str()) != 0) {
+    return false;
+  }
+  set_file_name(new_file_name);
+  return true;
+}
+
 }  // namespace shaka

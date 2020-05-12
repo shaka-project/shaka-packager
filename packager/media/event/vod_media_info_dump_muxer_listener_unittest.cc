@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
+
 #include <gmock/gmock.h>
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>
@@ -18,7 +20,6 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener_test_helper.h"
-#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace {
@@ -29,8 +30,8 @@ const uint8_t kBogusDefaultKeyId[] = {0x5f, 0x64, 0x65, 0x66, 0x61, 0x75,
                                       0x5f, 0x69, 0x64, 0x5f};
 
 const uint8_t kBogusIv[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
 };
 
 const bool kInitialEncryptionInfo = true;
@@ -70,17 +71,14 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
-    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_
-                  .AsUTF8Unsafe()));
+    listener_.reset(
+        new VodMediaInfoDumpMuxerListener(temp_file_path_.AsUTF8Unsafe()));
   }
 
-  void TearDown() override {
-    base::DeleteFile(temp_file_path_, false);
-  }
+  void TearDown() override { base::DeleteFile(temp_file_path_, false); }
 
-  void FireOnMediaStartWithDefaultMuxerOptions(
-      const StreamInfo& stream_info,
-      bool enable_encryption) {
+  void FireOnMediaStartWithDefaultMuxerOptions(const StreamInfo& stream_info,
+                                               bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptions(&muxer_options);
     const uint32_t kReferenceTimeScale = 1000;
@@ -100,7 +98,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
 
   void FireOnNewSegmentWithParams(const OnNewSegmentParameters& params) {
     listener_->OnNewSegment(params.file_name, params.start_time,
-                            params.duration, params.segment_file_size);
+                            params.duration, params.segment_file_size, 0);
   }
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {

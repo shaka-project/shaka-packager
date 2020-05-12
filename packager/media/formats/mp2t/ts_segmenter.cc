@@ -131,6 +131,7 @@ Status TsSegmenter::OpenNewSegmentIfClosed(int64_t next_pts) {
   const std::string segment_name =
       GetSegmentName(muxer_options_.segment_template, next_pts,
                      segment_number_++, muxer_options_.bandwidth);
+  next_pts_ = next_pts;
   if (!ts_writer_->NewSegment(segment_name))
     return Status(error::MUXER_FAILURE, "Failed to initilize TsPacketWriter.");
   current_segment_path_ = segment_name;
@@ -168,11 +169,12 @@ Status TsSegmenter::WritePesPacketsToFile() {
   return Status::OK;
 }
 
+// OPTION : Set segment_number_ data member here.
 Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
-                                    uint64_t duration) {
+                                    uint64_t duration,
+                                    uint64_t segment_index) {
   if (!pes_packet_generator_->Flush()) {
-    return Status(error::MUXER_FAILURE,
-                  "Failed to flush PesPacketGenerator.");
+    return Status(error::MUXER_FAILURE, "Failed to flush PesPacketGenerator.");
   }
   Status status = WritePesPacketsToFile();
   if (!status.ok())
@@ -181,6 +183,15 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
   // This method may be called from Finalize() so ts_writer_file_opened_ could
   // be false.
   if (ts_writer_file_opened_) {
+    // RENAME FILE:
+    std::string segment_name_segment_index =
+        GetSegmentName(muxer_options_.segment_template, next_pts_,
+                       segment_index - 1, muxer_options_.bandwidth);
+
+    if (!ts_writer_->RenameFile(segment_name_segment_index)) {
+      LOG(ERROR) << "TS Error renaming the file";
+    }
+
     if (!ts_writer_->FinalizeSegment()) {
       return Status(error::MUXER_FAILURE, "Failed to finalize TsWriter.");
     }
@@ -190,7 +201,8 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
       listener_->OnNewSegment(current_segment_path_,
                               start_timestamp * timescale_scale_ +
                                   transport_stream_timestamp_offset_,
-                              duration * timescale_scale_, file_size);
+                              duration * timescale_scale_, file_size,
+                              segment_index);
     }
     ts_writer_file_opened_ = false;
   }

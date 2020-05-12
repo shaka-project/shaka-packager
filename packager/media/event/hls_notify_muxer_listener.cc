@@ -7,6 +7,7 @@
 #include "packager/media/event/hls_notify_muxer_listener.h"
 
 #include <memory>
+
 #include "packager/base/logging.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/media/base/muxer_options.h"
@@ -228,7 +229,8 @@ void HlsNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
 void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           int64_t start_time,
                                           int64_t duration,
-                                          uint64_t segment_file_size) {
+                                          uint64_t segment_file_size,
+                                          uint64_t segment_index) {
   if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kSegment;

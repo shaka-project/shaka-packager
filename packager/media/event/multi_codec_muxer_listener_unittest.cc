@@ -79,10 +79,10 @@ TEST_F(MultiCodecMuxerListenerTest, OnNewSegmentAfterOnMediaStartSingleCodec) {
 
   EXPECT_CALL(*listener_for_first_codec_,
               OnNewSegment(StrEq("new_segment_name10.ts"), kSegmentStartTime,
-                           kSegmentDuration, kSegmentSize));
+                           kSegmentDuration, kSegmentSize, 10));
 
   multi_codec_listener_.OnNewSegment("new_segment_name10.ts", kSegmentStartTime,
-                                     kSegmentDuration, kSegmentSize);
+                                     kSegmentDuration, kSegmentSize, 10);
 }
 
 TEST_F(MultiCodecMuxerListenerTest, OnMediaStartTwoCodecs) {
@@ -114,13 +114,13 @@ TEST_F(MultiCodecMuxerListenerTest, OnNewSegmentAfterOnMediaStartTwoCodecs) {
 
   EXPECT_CALL(*listener_for_first_codec_,
               OnNewSegment(StrEq("new_segment_name10.ts"), kSegmentStartTime,
-                           kSegmentDuration, kSegmentSize));
+                           kSegmentDuration, kSegmentSize, 10));
   EXPECT_CALL(*listener_for_second_codec_,
               OnNewSegment(StrEq("new_segment_name10.ts"), kSegmentStartTime,
-                           kSegmentDuration, kSegmentSize));
+                           kSegmentDuration, kSegmentSize, 10));
 
   multi_codec_listener_.OnNewSegment("new_segment_name10.ts", kSegmentStartTime,
-                                     kSegmentDuration, kSegmentSize);
+                                     kSegmentDuration, kSegmentSize, 10);
 }
 
 }  // namespace media

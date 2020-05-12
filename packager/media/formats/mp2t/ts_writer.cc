@@ -30,18 +30,23 @@ const uint8_t kProgramAssociationTableId = 0x00;
 const uint8_t kPat[] = {
     0x00,  // pointer field
     kProgramAssociationTableId,
-    0xB0,        // The last 2 '00' assumes that this PAT is not very long.
-    0x0D,        // Length of the rest of this array.
-    0x00, 0x00,  // Transport stream ID is 0.
-    0xC1,        // version number 0, current next indicator 1.
-    0x00,        // section number
-    0x00,        // last section number
+    0xB0,  // The last 2 '00' assumes that this PAT is not very long.
+    0x0D,  // Length of the rest of this array.
+    0x00,
+    0x00,  // Transport stream ID is 0.
+    0xC1,  // version number 0, current next indicator 1.
+    0x00,  // section number
+    0x00,  // last section number
     // program number -> PMT PID mapping.
-    0x00, 0x01,  // program number is 1.
-    0xE0,        // first 3 bits is reserved.
+    0x00,
+    0x01,  // program number is 1.
+    0xE0,  // first 3 bits is reserved.
     ProgramMapTableWriter::kPmtPid,
     // CRC32.
-    0xF9, 0x62, 0xF5, 0x8B,
+    0xF9,
+    0x62,
+    0xF5,
+    0x8B,
 };
 
 const bool kHasPcr = true;
@@ -51,8 +56,7 @@ const bool kPayloadUnitStartIndicator = true;
 // without adaptation field or the payload.
 const int kTsPacketHeaderSize = 4;
 const int kTsPacketSize = 188;
-const int kTsPacketMaximumPayloadSize =
-    kTsPacketSize - kTsPacketHeaderSize;
+const int kTsPacketMaximumPayloadSize = kTsPacketSize - kTsPacketHeaderSize;
 
 const size_t kMaxPesPacketLengthValue = 0xFFFF;
 
@@ -220,6 +224,10 @@ base::Optional<uint64_t> TsWriter::GetFilePosition() {
   uint64_t position;
   return current_file_->Tell(&position) ? base::make_optional(position)
                                         : base::nullopt;
+}
+
+bool TsWriter::RenameFile(const std::string& new_segment_name) {
+  return file()->Rename(new_segment_name);
 }
 
 }  // namespace mp2t

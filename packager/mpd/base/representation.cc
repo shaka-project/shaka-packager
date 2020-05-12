@@ -170,7 +170,8 @@ void Representation::UpdateContentProtectionPssh(const std::string& drm_uuid,
 
 void Representation::AddNewSegment(int64_t start_time,
                                    int64_t duration,
-                                   uint64_t size) {
+                                   uint64_t size,
+                                   uint64_t segment_index) {
   if (start_time == 0 && duration == 0) {
     LOG(WARNING) << "Got segment with start_time and duration == 0. Ignoring.";
     return;
@@ -186,7 +187,7 @@ void Representation::AddNewSegment(int64_t start_time,
   if (state_change_listener_)
     state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
 
-  AddSegmentInfo(start_time, duration);
+  AddSegmentInfo(start_time, duration, segment_index);
   current_buffer_depth_ += segment_infos_.back().duration;
 
   bandwidth_estimator_.AddBlock(
@@ -269,8 +270,8 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(
-          media_info_, segment_infos_, start_number_)) {
+      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
+                                      start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
     return xml::scoped_xml_ptr<xmlNode>();
   }
@@ -328,18 +329,16 @@ bool Representation::HasRequiredMediaInfoFields() const {
   return true;
 }
 
-void Representation::AddSegmentInfo(int64_t start_time, int64_t duration) {
+void Representation::AddSegmentInfo(int64_t start_time,
+                                    int64_t duration,
+                                    uint64_t segment_index) {
   const uint64_t kNoRepeat = 0;
   const int64_t adjusted_duration = AdjustDuration(duration);
 
   if (segment_infos_.empty()) {
-    const int64_t scaled_target_duration =
-        mpd_options_.mpd_params.target_segment_duration *
-        media_info_.reference_time_scale();
-
     if (mpd_options_.mpd_params.target_segment_duration > 0 &&
         mpd_options_.mpd_params.allow_approximate_segment_timeline) {
-      start_number_ = start_time / scaled_target_duration + 1;
+      start_number_ = segment_index;
       stream_just_started_ = true;
     }
   }

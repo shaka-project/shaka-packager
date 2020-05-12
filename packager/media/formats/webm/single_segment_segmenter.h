@@ -7,10 +7,10 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_
 
-#include "packager/media/formats/webm/segmenter.h"
-
 #include <memory>
+
 #include "packager/media/formats/webm/mkv_writer.h"
+#include "packager/media/formats/webm/segmenter.h"
 #include "packager/status.h"
 
 namespace shaka {
@@ -32,7 +32,8 @@ class SingleSegmentSegmenter : public Segmenter {
   /// @{
   Status FinalizeSegment(uint64_t start_timestamp,
                          uint64_t duration_timestamp,
-                         bool is_subsegment) override;
+                         bool is_subsegment,
+                         uint64_t segment_index) override;
   bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   std::vector<Range> GetSegmentRanges() override;
