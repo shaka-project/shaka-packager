@@ -32,7 +32,6 @@ class MemoryFile : public File {
   bool Seek(uint64_t position) override;
   bool Tell(uint64_t* position) override;
   bool Rename(const std::string& new_file_name) override;
-  // { LOG(ERROR) << "NIKKI: In memory file"; return false;}
   /// @}
 
   /// Deletes all memory file data created.  This assumes that there are no
