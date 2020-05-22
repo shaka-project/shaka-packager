@@ -55,11 +55,11 @@ TEST(EC3AudioUtilTest, ChannelTest4) {
   bool ec3_joc_flag;
   uint32_t ec3_joc_complexity;
   EXPECT_TRUE(CalculateEC3ChannelMap(ec3_data, &channel_map));
-  EXPECT_EQ(0xF801, channel_map);
-  EXPECT_EQ(6, GetEc3NumChannels(ec3_data));
+  EXPECT_EQ(0xF801u, channel_map);
+  EXPECT_EQ(6u, GetEc3NumChannels(ec3_data));
   EXPECT_TRUE(GetEc3JocInfo(ec3_data, ec3_joc_flag, ec3_joc_complexity));
   EXPECT_EQ(true, ec3_joc_flag);
-  EXPECT_EQ(16, ec3_joc_complexity);
+  EXPECT_EQ(16u, ec3_joc_complexity);
 }
 
 }  // namespace media
