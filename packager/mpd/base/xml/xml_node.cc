@@ -463,11 +463,36 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
     // Interoperability Points v3.0 9.2.1.2.
     const uint16_t ec3_channel_map =
-        base::HostToNet16(audio_info.codec_specific_data().ec3_channel_map());
-    audio_channel_config_value =
+      base::HostToNet16(audio_info.codec_specific_data().ec3_channel_map());
+    const uint32_t ec3_channel_mpeg_value =
+      audio_info.codec_specific_data().ec3_channel_mpeg_value();
+    const uint32_t NO_MAPPING = 0xFFFFFFFF;
+    if (ec3_channel_mpeg_value == NO_MAPPING) {
+      audio_channel_config_value =
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
-    audio_channel_config_scheme =
+      audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
+    } else {
+      audio_channel_config_value = base::UintToString(ec3_channel_mpeg_value);
+      audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
+    }
+    bool ret = AddDescriptor("AudioChannelConfiguration",
+                             audio_channel_config_scheme,
+                             audio_channel_config_value);
+    const bool ec3_joc_flag = audio_info.codec_specific_data().ec3_joc_flag();
+    if (ec3_joc_flag) {
+      std::string ec3_joc_complexity =
+        base::UintToString(audio_info.codec_specific_data()
+            .ec3_joc_complexity());
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
+                           "JOC");
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2018:dash:"
+                           "EC3_ExtensionComplexityIndex:2018",
+                           ec3_joc_complexity);
+    }
+    return ret;
   } else {
     audio_channel_config_value = base::UintToString(audio_info.num_channels());
     audio_channel_config_scheme =
