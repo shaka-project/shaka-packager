@@ -32,13 +32,13 @@ size_t GetEc3NumChannels(const std::vector<uint8_t>& ec3_data);
 /// ETSI TS 102 366 V1.4.1 Digital Audio Compression (AC-3, Enhanced AC-3)
 /// Standard, Table I.1.1.
 bool CalculateEC3ChannelMPEGValue(const std::vector<uint8_t>& ec3_data,
-                                  uint32_t& ec3_channel_mpeg_value);
+                                  uint32_t* ec3_channel_mpeg_value);
 
 /// Parse data from EC3Specific box and obtain Dolby Digital Plus JOC
 /// information based on ETSI TS 103 420 v1.2.1 Backwards-compatible
 /// object audio carriage using Enhanced AC-3 Standard chapter C.3.1.
-bool GetEc3JocInfo(const std::vector<uint8_t>& ec3_data, bool& ec3_joc_flag,
-                   uint32_t& ec3_joc_complexity);
+bool GetEc3JocInfo(const std::vector<uint8_t>& ec3_data, bool* ec3_joc_flag,
+                   uint32_t* ec3_joc_complexity);
 
 }  // namespace media
 }  // namespace shaka

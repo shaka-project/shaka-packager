@@ -123,16 +123,16 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     audio_info->mutable_codec_specific_data()->set_ec3_channel_map(
         ec3_channel_map);
     uint32_t ec3_channel_mpeg_value;
-    if (!CalculateEC3ChannelMPEGValue(codec_config, ec3_channel_mpeg_value)) {
-        LOG(ERROR) << "Failed to calculate EC3 channel configuration \
-          descriptor value with MPEG scheme.";
+    if (!CalculateEC3ChannelMPEGValue(codec_config, &ec3_channel_mpeg_value)) {
+        LOG(ERROR) << "Failed to calculate EC3 channel configuration "
+                   << "descriptor value with MPEG scheme.";
         return;
     }
     audio_info->mutable_codec_specific_data()->set_ec3_channel_mpeg_value(
       ec3_channel_mpeg_value);
     bool ec3_joc_flag = false;
     uint32_t ec3_joc_complexity = 0;
-    if (!GetEc3JocInfo(codec_config, ec3_joc_flag, ec3_joc_complexity)) {
+    if (!GetEc3JocInfo(codec_config, &ec3_joc_flag, &ec3_joc_complexity)) {
       LOG(ERROR) << "Failed to obtain DD+JOC Information.";
       return;
     }
