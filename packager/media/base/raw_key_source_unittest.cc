@@ -52,8 +52,6 @@ const char kDrmLabel[] = "SomeDrmLabel";
 const char kAnotherDrmLabel[] = "AnotherDrmLabel";
 const char kEmptyDrmLabel[] = "";
 
-const int kNoProtectionSystemFlag = NO_PROTECTION_SYSTEM_FLAG;
-
 std::vector<uint8_t> HexStringToVector(const std::string& str) {
   std::vector<uint8_t> vec;
   CHECK(base::HexStringToBytes(str, &vec));
@@ -71,7 +69,7 @@ TEST(RawKeySourceTest, Success) {
   raw_key_params.pssh =
       HexStringToVector(std::string(kPsshBox1Hex) + kPsshBox2Hex);
   std::unique_ptr<RawKeySource> key_source = RawKeySource::Create(
-      raw_key_params, kNoProtectionSystemFlag, FOURCC_NULL);
+      raw_key_params, ProtectionSystem::kNone, FOURCC_NULL);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key_from_drm_label;
@@ -109,7 +107,7 @@ TEST(RawKeySourceTest, EmptyPssh) {
   raw_key_params.key_map[kAnotherDrmLabel].key = HexStringToVector(kKey2Hex);
   raw_key_params.iv = HexStringToVector(kIvHex);
   std::unique_ptr<RawKeySource> key_source = RawKeySource::Create(
-      raw_key_params, kNoProtectionSystemFlag, FOURCC_NULL);
+      raw_key_params, ProtectionSystem::kNone, FOURCC_NULL);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
@@ -130,13 +128,13 @@ TEST(RawKeySourceTest, Failure) {
   raw_key_params.pssh = HexStringToVector(kPsshBox1Hex);
   raw_key_params.iv = HexStringToVector(kIvHex);
   std::unique_ptr<RawKeySource> key_source = RawKeySource::Create(
-      raw_key_params, kNoProtectionSystemFlag, FOURCC_NULL);
+      raw_key_params, ProtectionSystem::kNone, FOURCC_NULL);
   EXPECT_EQ(nullptr, key_source);
 
   // Invalid pssh box.
   raw_key_params.key_map[kEmptyDrmLabel].key_id = HexStringToVector(kKeyIdHex);
   raw_key_params.pssh = HexStringToVector("000102030405");
-  key_source = RawKeySource::Create(raw_key_params, kNoProtectionSystemFlag,
+  key_source = RawKeySource::Create(raw_key_params, ProtectionSystem::kNone,
                                     FOURCC_NULL);
   EXPECT_EQ(nullptr, key_source);
 }

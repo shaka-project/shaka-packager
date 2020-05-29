@@ -96,9 +96,10 @@ Status RawKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return Status::OK;
 }
 
-std::unique_ptr<RawKeySource> RawKeySource::Create(const RawKeyParams& raw_key,
-                                                   int protection_systems_flags,
-                                                   FourCC protection_scheme) {
+std::unique_ptr<RawKeySource> RawKeySource::Create(
+    const RawKeyParams& raw_key,
+    ProtectionSystem protection_systems,
+    FourCC protection_scheme) {
   std::vector<ProtectionSystemSpecificInfo> key_system_info;
   bool pssh_provided = false;
   if (!raw_key.pssh.empty()) {
@@ -137,22 +138,21 @@ std::unique_ptr<RawKeySource> RawKeySource::Create(const RawKeyParams& raw_key,
 
   // Generate common protection system if no other protection system is
   // specified.
-  if (!pssh_provided && protection_systems_flags == NO_PROTECTION_SYSTEM_FLAG) {
-    protection_systems_flags = COMMON_PROTECTION_SYSTEM_FLAG;
+  if (!pssh_provided && protection_systems == ProtectionSystem::kNone) {
+    protection_systems = ProtectionSystem::kCommon;
   }
 
-  return std::unique_ptr<RawKeySource>(
-      new RawKeySource(std::move(encryption_key_map), protection_systems_flags,
-                       protection_scheme));
+  return std::unique_ptr<RawKeySource>(new RawKeySource(
+      std::move(encryption_key_map), protection_systems, protection_scheme));
 }
 
 RawKeySource::RawKeySource()
-    : KeySource(NO_PROTECTION_SYSTEM_FLAG, FOURCC_NULL) {}
+    : KeySource(ProtectionSystem::kNone, FOURCC_NULL) {}
 
 RawKeySource::RawKeySource(EncryptionKeyMap&& encryption_key_map,
-                           int protection_systems_flags,
+                           ProtectionSystem protection_systems,
                            FourCC protection_scheme)
-    : KeySource(protection_systems_flags, protection_scheme),
+    : KeySource(protection_systems, protection_scheme),
       encryption_key_map_(std::move(encryption_key_map)) {
   UpdateProtectionSystemInfo(&encryption_key_map_);
 }

@@ -268,18 +268,17 @@ bool ParseAdCues(const std::string& ad_cues, std::vector<Cuepoint>* cuepoints) {
   return true;
 }
 
-bool ParseProtectionSystems(
-    const std::string& protection_systems_str,
-    std::vector<EncryptionParams::ProtectionSystem>* protection_systems) {
-  protection_systems->clear();
+bool ParseProtectionSystems(const std::string& protection_systems_str,
+                            ProtectionSystem* protection_systems) {
+  *protection_systems = ProtectionSystem::kNone;
 
-  std::map<std::string, EncryptionParams::ProtectionSystem> mapping = {
-      {"common", EncryptionParams::ProtectionSystem::kCommonSystem},
-      {"commonsystem", EncryptionParams::ProtectionSystem::kCommonSystem},
-      {"fairplay", EncryptionParams::ProtectionSystem::kFairPlay},
-      {"marlin", EncryptionParams::ProtectionSystem::kMarlin},
-      {"playready", EncryptionParams::ProtectionSystem::kPlayReady},
-      {"widevine", EncryptionParams::ProtectionSystem::kWidevine},
+  std::map<std::string, ProtectionSystem> mapping = {
+      {"common", ProtectionSystem::kCommon},
+      {"commonsystem", ProtectionSystem::kCommon},
+      {"fairplay", ProtectionSystem::kFairPlay},
+      {"marlin", ProtectionSystem::kMarlin},
+      {"playready", ProtectionSystem::kPlayReady},
+      {"widevine", ProtectionSystem::kWidevine},
   };
 
   for (const std::string& protection_system :
@@ -291,7 +290,7 @@ bool ParseProtectionSystems(
                  << protection_system;
       return false;
     }
-    protection_systems->push_back(iter->second);
+    *protection_systems |= iter->second;
   }
   return true;
 }

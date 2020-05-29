@@ -16,28 +16,29 @@
 namespace shaka {
 namespace media {
 
-KeySource::KeySource(int protection_systems_flags, FourCC protection_scheme) {
-  if (protection_systems_flags & COMMON_PROTECTION_SYSTEM_FLAG) {
+KeySource::KeySource(ProtectionSystem protection_systems,
+                     FourCC protection_scheme) {
+  if (has_flag(protection_systems, ProtectionSystem::kCommon)) {
     pssh_generators_.emplace_back(new CommonPsshGenerator());
   }
 
-  if (protection_systems_flags & PLAYREADY_PROTECTION_SYSTEM_FLAG) {
+  if (has_flag(protection_systems, ProtectionSystem::kPlayReady)) {
     pssh_generators_.emplace_back(
         new PlayReadyPsshGenerator(protection_scheme));
   }
 
-  if (protection_systems_flags & WIDEVINE_PROTECTION_SYSTEM_FLAG) {
+  if (has_flag(protection_systems, ProtectionSystem::kWidevine)) {
     pssh_generators_.emplace_back(new WidevinePsshGenerator(protection_scheme));
   }
 
-  if (protection_systems_flags & FAIRPLAY_PROTECTION_SYSTEM_FLAG) {
+  if (has_flag(protection_systems, ProtectionSystem::kFairPlay)) {
     no_pssh_systems_.emplace_back(std::begin(kFairPlaySystemId),
                                   std::end(kFairPlaySystemId));
   }
   // We only support Marlin Adaptive Streaming Specification – Simple Profile
   // with Implicit Content ID Mapping, which does not need a PSSH. Marlin
   // specific PSSH with Explicit Content ID Mapping is not generated.
-  if (protection_systems_flags & MARLIN_PROTECTION_SYSTEM_FLAG) {
+  if (has_flag(protection_systems, ProtectionSystem::kMarlin)) {
     no_pssh_systems_.emplace_back(std::begin(kMarlinSystemId),
                                   std::end(kMarlinSystemId));
   }
