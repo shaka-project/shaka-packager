@@ -31,6 +31,8 @@
         'es_parser.h',
         'mp2t_media_parser.cc',
         'mp2t_media_parser.h',
+        'mpeg1_header.cc',
+        'mpeg1_header.h',
         'pes_packet.cc',
         'pes_packet.h',
         'pes_packet_generator.cc',

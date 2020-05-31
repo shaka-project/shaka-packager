@@ -1729,6 +1729,8 @@ MediaContainerName DetermineContainerFromFormatName(
   if (base::EqualsCaseInsensitiveASCII(format_name, "aac") ||
       base::EqualsCaseInsensitiveASCII(format_name, "adts")) {
     return CONTAINER_AAC;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "mp3")) {
+    return CONTAINER_MP3;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "ac3")) {
     return CONTAINER_AC3;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "ec3") ||

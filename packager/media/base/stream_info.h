@@ -53,6 +53,7 @@ enum Codec {
   kCodecOpus,
   kCodecVorbis,
   kCodecAudioMaxPlusOne,
+  kCodecMP3,
 
   kCodecText = 300,
   kCodecWebVtt = kCodecText,
