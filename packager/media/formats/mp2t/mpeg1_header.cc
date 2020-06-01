@@ -9,19 +9,19 @@
 namespace {
 const size_t kMpeg1HeaderMinSize = 4;
 
-const int kMpeg1V_INV = 0b01; /* Invalid version */
+const uint8_t kMpeg1V_INV = 0b01; /* Invalid version */
 
-const int kMpeg1L_INV = 0b00; /* Invalid layer */
-const int kMpeg1L_3 = 0b01;
-const int kMpeg1L_2 = 0b10;
-const int kMpeg1L_1 = 0b11;
+const uint8_t kMpeg1L_INV = 0b00; /* Invalid layer */
+const uint8_t kMpeg1L_3 = 0b01;
+const uint8_t kMpeg1L_2 = 0b10;
+const uint8_t kMpeg1L_1 = 0b11;
 
 const size_t kMpeg1SamplesPerFrameTable[] = {
   /* L1   L2   L3 */
   384, 1152, 1152 };
 const size_t kMpeg1SamplesPerFrameTableSize = arraysize(kMpeg1SamplesPerFrameTable);
 
-const int kMpeg1SampleRateTable[][3] = {
+const size_t kMpeg1SampleRateTable[][3] = {
         /*        V1          V2        V2.5 */
         {      44100,      22050,      11025 },
         {      48000,      24000,      12000 },
@@ -29,7 +29,7 @@ const int kMpeg1SampleRateTable[][3] = {
 const size_t kMpeg1SampleRateTableSize = arraysize(kMpeg1SampleRateTable);
 
 static inline size_t
-Mpeg1SampleRate(uint8_t sr_idx, int version)
+Mpeg1SampleRate(uint8_t sr_idx, uint8_t version)
 {
   static int sr_version_indexes[] = {2, -1, 1, 0};
   CHECK(version != 1);
@@ -57,7 +57,7 @@ const size_t kMpeg1BitrateTable[][5] = {
 const size_t kMpeg1BitrateTableSize = arraysize(kMpeg1BitrateTable);
 
 static inline size_t
-Mpeg1BitRate(uint8_t btr_idx, int version, int layer)
+Mpeg1BitRate(uint8_t btr_idx, uint8_t version, uint8_t layer)
 {
   static int btr_version_indexes[] = {2, -1, 1, 0};
   static int btr_layer_indexes[] = {-1, 2, 1, 0};
@@ -78,7 +78,7 @@ Mpeg1BitRate(uint8_t btr_idx, int version, int layer)
 }
 
 static inline size_t
-Mpeg1FrameSize(int layer, int bitrate, int sample_rate, uint8_t padded)
+Mpeg1FrameSize(uint8_t layer, size_t bitrate, size_t sample_rate, uint8_t padded)
 {
   RCHECK(sample_rate > 0);
   if (layer == kMpeg1L_1)
@@ -132,13 +132,13 @@ bool Mpeg1Header::Parse(const uint8_t* mpeg1_frame, size_t mpeg1_frame_size) {
 
   uint8_t btr_idx;
   RCHECK(frame.ReadBits(4, &btr_idx));
+  RCHECK(btr_idx > 0);
   bitrate_ = Mpeg1BitRate(btr_idx, version_, layer_);
-  RCHECK(bitrate_ > 0);
 
   uint8_t sr_idx;
   RCHECK(frame.ReadBits(2, &sr_idx));
+  RCHECK(sr_idx < 0b11);
   sample_rate_ = Mpeg1SampleRate(sr_idx, version_);
-  RCHECK(sample_rate_ > 0);
 
   RCHECK(frame.ReadBits(1, &padded_));
   // Skip private stream bit.
