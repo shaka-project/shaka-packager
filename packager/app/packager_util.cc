@@ -85,9 +85,7 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      encryption_key_source = RawKeySource::Create(
-          encryption_params.raw_key, encryption_params.protection_systems,
-          protection_scheme);
+      encryption_key_source = RawKeySource::Create(encryption_params.raw_key);
       break;
     }
     case KeyProvider::kPlayReady: {
@@ -114,11 +112,10 @@ std::unique_ptr<KeySource> CreateEncryptionKeySource(
               playready.key_server_url, playready.client_cert_file,
               playready.client_cert_private_key_file,
               playready.client_cert_private_key_password,
-              encryption_params.protection_systems, protection_scheme));
+              encryption_params.protection_systems));
         } else {
           playready_key_source.reset(new PlayReadyKeySource(
-              playready.key_server_url, encryption_params.protection_systems,
-              protection_scheme));
+              playready.key_server_url, encryption_params.protection_systems));
         }
         if (!playready.ca_file.empty()) {
           playready_key_source->SetCaFile(playready.ca_file);
@@ -170,10 +167,7 @@ std::unique_ptr<KeySource> CreateDecryptionKeySource(
       break;
     }
     case KeyProvider::kRawKey: {
-      decryption_key_source = RawKeySource::Create(
-          decryption_params.raw_key,
-          ProtectionSystem::kCommon /* value does not matter here */,
-          FOURCC_NULL /* value does not matter here */);
+      decryption_key_source = RawKeySource::Create(decryption_params.raw_key);
       break;
     }
     default:

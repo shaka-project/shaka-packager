@@ -86,6 +86,7 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
   std::string playready_header;
 
   switch (protection_scheme) {
+    case kAppleSampleAesProtectionScheme:
     case FOURCC_cbc1:
     case FOURCC_cbcs:
       playready_header = kPlayHeaderObject_4_3;

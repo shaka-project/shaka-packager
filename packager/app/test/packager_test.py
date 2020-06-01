@@ -282,6 +282,8 @@ class PackagerAppTest(unittest.TestCase):
     else:
       self.encryption_iv = '3334353637383930'
     self.widevine_content_id = '3031323334353637'
+    self.pssh = ('0000002070737368000000001077efecc0b24d02ace33c1e52e2fb4b000'
+                 '00000')
     # TS files may have a non-zero start, which could result in the first
     # segment to be less than 1 second. Set clear_lead to be less than 1
     # so only the first segment is left in clear.
@@ -1056,6 +1058,13 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('encryption-multi-keys-with-stream-label')
+
+  def testExplicitPssh(self):
+    flags = self._GetFlags(encryption=True, output_dash=True) + [
+        '--pssh={0}'.format(self.pssh),
+    ]
+    self.assertPackageSuccess(self._GetStreams(['audio', 'video']), flags)
+    self._CheckTestResults('encryption-using-explicit-pssh')
 
   def testEncryptionOfOnlyVideoStream(self):
     streams = [

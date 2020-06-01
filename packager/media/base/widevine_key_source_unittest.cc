@@ -270,7 +270,7 @@ class WidevineKeySourceTest : public Test {
       EXPECT_EQ(GetMockKey(stream_label), ToString(encryption_key.key));
       if (!classic) {
         size_t num_key_system_info =
-            (add_widevine_pssh_ && add_common_pssh_) ? 2 : 1;
+            add_widevine_pssh_ || !add_common_pssh_ ? 1 : 0;
         ASSERT_EQ(num_key_system_info, encryption_key.key_system_info.size());
         EXPECT_EQ(GetMockKeyId(stream_label), ToString(encryption_key.key_id));
         if (has_iv)
@@ -293,12 +293,6 @@ class WidevineKeySourceTest : public Test {
           EXPECT_EQ(GetMockPsshData(), ToString(pssh_builder->pssh_data()));
 
           ++key_system_info_iter;
-        }
-
-        if (add_common_pssh_) {
-          const std::vector<uint8_t> common_system_id(
-              std::begin(kCommonSystemId), std::end(kCommonSystemId));
-          ASSERT_EQ(common_system_id, key_system_info_iter->system_id);
         }
       }
     }
