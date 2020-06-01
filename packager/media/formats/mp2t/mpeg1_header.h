@@ -12,6 +12,8 @@ namespace media {
 namespace mp2t {
 /// Class which parses Mpeg1 audio frame (header / metadata) and synthesizes
 /// AudioSpecificConfig from audio frame content.
+///
+/// See https://www.datavoyage.com/mpgscript/mpeghdr.htm
 class Mpeg1Header : public AudioHeader {
  public:
   Mpeg1Header() = default;
@@ -39,12 +41,12 @@ class Mpeg1Header : public AudioHeader {
 
   uint8_t version_ = 0;
   uint8_t layer_ = 0;
-  uint8_t protection_absent_;
+  uint8_t protection_absent_ = 0;
 
-  int bitrate_;
-  int sample_rate_;             /* in hz */
-  uint8_t padded_;
-  uint8_t channel_mode_;
+  size_t bitrate_ = 0;
+  size_t sample_rate_ = 0;      /* in hz */
+  uint8_t padded_ = 0;
+  uint8_t channel_mode_ = 0;
 };
 
 }  // namespace mp2t

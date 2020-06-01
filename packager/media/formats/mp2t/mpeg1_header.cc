@@ -4,21 +4,19 @@
 #include "packager/media/base/bit_writer.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
+// Parsing is done according to
+// https://www.datavoyage.com/mpgscript/mpeghdr.htm
 namespace {
 const size_t kMpeg1HeaderMinSize = 4;
-//const size_t kMpeg1HeaderCrcSize = 2;
 
 const int kMpeg1V_INV = 0b01; /* Invalid version */
-// const int kMpeg1V_2_5 = 0b00;
-// const int kMpeg1V_2 = 0b10; /* MPEG Version 2 (ISO/IEC 13818-3) */
-// const int kMpeg1V_1 = 0b11; /* MPEG Version 1 (ISO/IEC 11172-3) */
 
 const int kMpeg1L_INV = 0b00; /* Invalid layer */
 const int kMpeg1L_3 = 0b01;
 const int kMpeg1L_2 = 0b10;
 const int kMpeg1L_1 = 0b11;
 
-const int kMpeg1SamplesPerFrameTable[] = {
+const size_t kMpeg1SamplesPerFrameTable[] = {
   /* L1   L2   L3 */
   384, 1152, 1152 };
 const size_t kMpeg1SamplesPerFrameTableSize = arraysize(kMpeg1SamplesPerFrameTable);
@@ -30,7 +28,16 @@ const int kMpeg1SampleRateTable[][3] = {
         {      32000,      16000,       8000 }};
 const size_t kMpeg1SampleRateTableSize = arraysize(kMpeg1SampleRateTable);
 
-const int kMpeg1BitrateTable[][5] = {
+static inline size_t
+Mpeg1SampleRate(uint8_t sr_idx, int version)
+{
+  static int sr_version_indexes[] = {2, -1, 1, 0};
+  CHECK(version != 1);
+  DCHECK_LT(sr_idx, kMpeg1SampleRateTableSize);
+  return kMpeg1SampleRateTable[sr_idx][sr_version_indexes[version]];
+}
+
+const size_t kMpeg1BitrateTable[][5] = {
         // V1:L1    V1:L2     V1:L3     V2:L1   V2:L2 & L3
         {       0,       0,       0,       0,       0 },
         {      32,      32,      32,      32,       8 },
@@ -48,32 +55,6 @@ const int kMpeg1BitrateTable[][5] = {
         {     416,     320,     256,     224,     144 },
         {     448,     384,     320,     256,     160 }};
 const size_t kMpeg1BitrateTableSize = arraysize(kMpeg1BitrateTable);
-
-}  // namespace
-
-namespace shaka {
-namespace media {
-namespace mp2t {
-
-bool Mpeg1Header::IsSyncWord(const uint8_t* buf) const {
-  return (buf[0] == 0xff)
-    && ((buf[1] & 0b11100000) == 0b11100000)
-    && ((buf[1] & 0b00011000) != 0b00001000)
-    && ((buf[1] & 0b00000110) != 0b00000000);
-}
-
-size_t Mpeg1Header::GetMinFrameSize() const {
-  return kMpeg1HeaderMinSize + 1;
-}
-
-static inline size_t
-Mpeg1SampleRate(uint8_t sr_idx, int version)
-{
-  static int sr_version_indexes[] = {2, -1, 1, 0};
-  CHECK(version != 1);
-  DCHECK_LT(sr_idx, kMpeg1SampleRateTableSize);
-  return kMpeg1SampleRateTable[sr_idx][sr_version_indexes[version]];
-}
 
 static inline size_t
 Mpeg1BitRate(uint8_t btr_idx, int version, int layer)
@@ -105,9 +86,30 @@ Mpeg1FrameSize(int layer, int bitrate, int sample_rate, uint8_t padded)
   return 144 * bitrate / sample_rate + padded;
 }
 
+}  // namespace
+
+namespace shaka {
+namespace media {
+namespace mp2t {
+
+bool Mpeg1Header::IsSyncWord(const uint8_t* buf) const {
+  return (buf[0] == 0xff)
+    && ((buf[1] & 0b11100000) == 0b11100000)
+    // Version 01 is reserved
+    && ((buf[1] & 0b00011000) != 0b00001000)
+    // Layer 00 is reserved
+    && ((buf[1] & 0b00000110) != 0b00000000);
+}
+
+size_t Mpeg1Header::GetMinFrameSize() const {
+  return kMpeg1HeaderMinSize + 1;
+}
+
 size_t Mpeg1Header::GetSamplesPerFrame() const {
-  RCHECK((layer_ > 0) && (layer_ <= kMpeg1SamplesPerFrameTableSize));
-  return kMpeg1SamplesPerFrameTable[layer_ - 1];
+  DCHECK_GT(layer_, 0);
+  DCHECK_GT(3 - layer_, 0);
+  DCHECK_LT(3 - layer_, static_cast<int>(kMpeg1SamplesPerFrameTableSize));
+  return kMpeg1SamplesPerFrameTable[3 - layer_];
 }
 
 bool Mpeg1Header::Parse(const uint8_t* mpeg1_frame, size_t mpeg1_frame_size) {
@@ -131,10 +133,12 @@ bool Mpeg1Header::Parse(const uint8_t* mpeg1_frame, size_t mpeg1_frame_size) {
   uint8_t btr_idx;
   RCHECK(frame.ReadBits(4, &btr_idx));
   bitrate_ = Mpeg1BitRate(btr_idx, version_, layer_);
+  RCHECK(bitrate_ > 0);
 
   uint8_t sr_idx;
   RCHECK(frame.ReadBits(2, &sr_idx));
   sample_rate_ = Mpeg1SampleRate(sr_idx, version_);
+  RCHECK(sample_rate_ > 0);
 
   RCHECK(frame.ReadBits(1, &padded_));
   // Skip private stream bit.
@@ -161,7 +165,7 @@ size_t Mpeg1Header::GetFrameSize() const {
 
 size_t Mpeg1Header::GetFrameSizeWithoutParsing(const uint8_t* data,
                                                size_t num_bytes) const {
-  DCHECK_GT(num_bytes, static_cast<size_t>(1));
+  DCHECK_GT(num_bytes, static_cast<size_t>(2));
   uint8_t version = (data[1] & 0b00011000) >> 3;
   uint8_t layer = (data[1] & 0b00000110) >> 1;
   uint8_t btr_idx = (data[2] & 0b11110000) >> 4;
@@ -176,7 +180,7 @@ size_t Mpeg1Header::GetFrameSizeWithoutParsing(const uint8_t* data,
 void Mpeg1Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
   // The following conversion table is extracted from ISO 14496 Part 3 -
   // Table 1.16 - Sampling Frequency Index.
-  static const int kConfigFrequencyTable[] = {
+  static const size_t kConfigFrequencyTable[] = {
     96000, 88200, 64000, 48000, 44100,
     32000, 24000, 22050, 16000, 12000,
     11025, 8000,  7350};
@@ -194,7 +198,7 @@ void Mpeg1Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
   config.WriteBits(cft_idx, 4);
   /*
    * NOTE: Number of channels matches channel_configuration index,
-   * since mpeg1 has only 1 or 2 channels
+   * since mpeg1 audio has only 1 or 2 channels
    */
   config.WriteBits(GetNumChannels(), 4);
   config.Flush();
@@ -206,10 +210,10 @@ uint8_t Mpeg1Header::GetObjectType() const {
    */
   if (layer_ == kMpeg1L_1)
     return 32;
-  else if (layer_ == kMpeg1L_2)
+  if (layer_ == kMpeg1L_2)
     return 33;
 
-  RCHECK(layer_ == kMpeg1L_3);
+  DCHECK_GT(layer_, kMpeg1L_3);
   return 34;
 }
 
