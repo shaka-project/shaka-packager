@@ -42,7 +42,7 @@ struct Variant {
   const std::string* audio_group_id = nullptr;
   const std::string* text_group_id = nullptr;
   // The bitrates should be the sum of audio bitrate and text bitrate.
-  // However, given the contraints and assumptions, it makes sense to exclude
+  // However, given the constraints and assumptions, it makes sense to exclude
   // text bitrate out of the calculation:
   // - Text streams usually have a very small negligible bitrate.
   // - Text does not have constant bitrates. To avoid fluctuation, an arbitrary
@@ -260,7 +260,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
                    bool is_autoselect,
                    const std::string& base_url,
                    std::string* out) {
-  // Tag attribures should follow the order as defined in
+  // Tag attributes should follow the order as defined in
   // https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-3.5
 
   Tag tag("#EXT-X-MEDIA", out);
@@ -308,8 +308,29 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
-    std::string channel_string = std::to_string(playlist.GetNumChannels());
-    tag.AddQuotedString("CHANNELS", channel_string);
+    // if-else structure is designed for future usage.
+    // - Currelty just keep it simple from Dolby's decision.
+    // - For immersive stereo content, use 2/IMS for all immersive stereo (
+    //   source content is Atmos or Non-Atmos).
+    // - For CBI content, use channel count (>=8)/IMS, and CBI source content
+    //   must be Atmos.
+    if (playlist.GetAC4ImsFlag() && playlist.GetAC4SourceAtmosFlag()) {
+      // AC4 Immersive stereo (IMS) stream, and source content is Atmos.
+      std::string channel_string = "2/IMS";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else if (playlist.GetAC4ImsFlag() && !playlist.GetAC4SourceAtmosFlag()) {
+      // AC4 Immersive stereo (IMS) stream, but source content is not Atmos.
+      std::string channel_string = "2/IMS";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else if (!playlist.GetAC4ImsFlag() && playlist.GetAC4SourceAtmosFlag()) {
+      // AC4 Channel based immersive (CBI) stream.
+      std::string channel_string =
+          std::to_string(playlist.GetNumChannels()) + "/IMS";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else {
+      std::string channel_string = std::to_string(playlist.GetNumChannels());
+      tag.AddQuotedString("CHANNELS", channel_string);
+    }
   }
 
   out->append("\n");

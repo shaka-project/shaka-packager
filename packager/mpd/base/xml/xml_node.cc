@@ -38,6 +38,7 @@ typedef MediaInfo::VideoInfo VideoInfo;
 
 namespace {
 const char kEC3Codec[] = "ec-3";
+const char kAC4Codec[] = "ac-4";
 
 std::string RangeToString(const Range& range) {
   return base::Uint64ToString(range.begin()) + "-" +
@@ -439,10 +440,10 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
         uint32_t last_segment_number = start_number - 1;
         for (const auto& segment_info_element : segment_infos) 
           last_segment_number += segment_info_element.repeat + 1;
-	
+
         AddSupplementalProperty(
           "http://dashif.org/guidelines/last-segment-number",
-          std::to_string(last_segment_number));	
+          std::to_string(last_segment_number));
       }
     } else {
       XmlNode segment_timeline("SegmentTimeline");
@@ -468,6 +469,35 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
     audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
+  } else if (audio_info.codec().find(kAC4Codec) !=
+      (std::string::size_type) - 1) {
+    const uint32_t ac4_channel_mask = base::HostToNet32(
+      audio_info.codec_specific_data().ac4_channel_mask() << 8);
+    const uint32_t ac4_channel_mpeg_value =
+      audio_info.codec_specific_data().ac4_channel_mpeg_value();
+    const bool ac4_ims_flag = audio_info.codec_specific_data().ac4_ims_flag();
+
+    const uint32_t NO_MAPPING = 0xFFFFFFFF;
+    if (ac4_channel_mpeg_value == NO_MAPPING) {
+      audio_channel_config_scheme =
+        "tag:dolby.com,2015:dash:audio_channel_configuration:2015";
+      audio_channel_config_value = base::HexEncode(
+        &ac4_channel_mask, sizeof(ac4_channel_mask) - 1);
+    } else {
+      audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
+      audio_channel_config_value = base::UintToString(ac4_channel_mpeg_value);
+    }
+    bool ret = AddDescriptor("AudioChannelConfiguration",
+                             audio_channel_config_scheme,
+                             audio_channel_config_value);
+
+    if (ac4_ims_flag) {
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2016:dash:virtualized_content:2016",
+                           "1");
+    }
+
+    return ret;
   } else {
     audio_channel_config_value = base::UintToString(audio_info.num_channels());
     audio_channel_config_scheme =

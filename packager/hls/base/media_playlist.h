@@ -152,7 +152,7 @@ class MediaPlaylist {
 
   /// Write the playlist to |file_path|.
   /// This does not close the file.
-  /// If target duration is not set expliticly, this will try to find the target
+  /// If target duration is not set explicitly, this will try to find the target
   /// duration. Note that target duration cannot be changed. So calling this
   /// without explicitly setting the target duration and before adding any
   /// segments will end up setting the target duration to 0 and will always
@@ -187,6 +187,16 @@ class MediaPlaylist {
 
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
+
+  /// @return true if it's an AC-4 IMS stream, based on Dolby AC-4 and MPEG-DASH
+  ///         Specification, chapter 2.5.1 Signaling immersive stereo content.
+  ///         It's available on https://developer.dolby.com/.
+  virtual bool GetAC4ImsFlag() const;
+
+  /// @return true if AC4 source content is ATMOS, based on Dolby AC-4 and
+  ///         MPEG-DASH Specification, chapter 2.5.1 Signaling immersive stereo
+  ///         content. It's available on https://developer.dolby.com/.
+  virtual bool GetAC4SourceAtmosFlag() const;
 
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.

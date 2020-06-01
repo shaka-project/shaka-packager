@@ -18,6 +18,7 @@
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/ec3_audio_util.h"
+#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 using ::google::protobuf::util::MessageDifferencer;
@@ -122,6 +123,35 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     }
     audio_info->mutable_codec_specific_data()->set_ec3_channel_map(
         ec3_channel_map);
+  }
+
+  if ((audio_stream_info->codec() == kCodecAC4)) {
+    uint32_t ac4_channel_mask = 0;
+    if (!CalculateAC4ChannelMask(codec_config, ac4_channel_mask)) {
+      LOG(ERROR) << "Failed to calculate AC4 channel mask.";
+      return;
+    }
+    audio_info->mutable_codec_specific_data()->set_ac4_channel_mask(
+      ac4_channel_mask);
+
+    uint32_t ac4_channel_mpeg_value = 0;
+    if (!CalculateAC4ChannelMpegValue(codec_config, ac4_channel_mpeg_value)) {
+      LOG(ERROR) << "Failed to calculate AC4 channel configuration descriptor \
+        value with MPEG scheme.";
+      return;
+    }
+    audio_info->mutable_codec_specific_data()->
+      set_ac4_channel_mpeg_value(ac4_channel_mpeg_value);
+
+    bool ac4_ims_flag = false;
+    bool ac4_src_atmos_flag = false;
+    if (!GetAc4ImsInfo(codec_config, ac4_ims_flag, ac4_src_atmos_flag)) {
+      LOG(ERROR) << "Failed to get AC4 IMS flag and source content atmos flag.";
+      return;
+    }
+    audio_info->mutable_codec_specific_data()->set_ac4_ims_flag(ac4_ims_flag);
+    audio_info->mutable_codec_specific_data()->set_ac4_src_atmos_flag(
+      ac4_src_atmos_flag);
   }
 }
 

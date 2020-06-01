@@ -486,6 +486,42 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {
   EXPECT_EQ(8, media_playlist_->GetNumChannels());
 }
 
+TEST_F(MediaPlaylistMultiSegmentTest, GetAC4ImsFlag) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns false by default if not audio.
+  EXPECT_EQ(false, media_playlist_->GetAC4ImsFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_ims_flag(false);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(false, media_playlist_->GetAC4ImsFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_ims_flag(true);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(true, media_playlist_->GetAC4ImsFlag());
+}
+
+TEST_F(MediaPlaylistMultiSegmentTest, GetAC4SourceAtmosFlag) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns false by default if not audio.
+  EXPECT_EQ(false, media_playlist_->GetAC4SourceAtmosFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_src_atmos_flag(false);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(false, media_playlist_->GetAC4SourceAtmosFlag());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ac4_src_atmos_flag(true);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(true, media_playlist_->GetAC4SourceAtmosFlag());
+}
+
 TEST_F(MediaPlaylistMultiSegmentTest, Characteristics) {
   MediaInfo media_info;
   media_info.set_reference_time_scale(kTimeScale);
