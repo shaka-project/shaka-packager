@@ -151,7 +151,6 @@ bool ExtractEc3Data(const std::vector<uint8_t>& ec3_data,
                     uint8_t* audio_coding_mode,
                     bool* lfe_channel_on,
                     uint16_t* dependent_substreams_layout,
-                    bool* ec3_joc_flag,
                     uint32_t* ec3_joc_complexity) {
   BitReader bit_reader(ec3_data.data(), ec3_data.size());
   // Read number of independent substreams and parse the independent substreams.
@@ -193,14 +192,14 @@ bool ExtractEc3Data(const std::vector<uint8_t>& ec3_data,
     RCHECK(bit_reader.SkipBits(1));
   }
   if (bit_reader.bits_available() < 16) {
-    *ec3_joc_flag = false;
     *ec3_joc_complexity = 0;
     return true;
   }
 
   RCHECK(bit_reader.SkipBits(7));
-  RCHECK(bit_reader.ReadBits(1, ec3_joc_flag));
-  if (*ec3_joc_flag) {
+  bool ec3_joc_flag;
+  RCHECK(bit_reader.ReadBits(1, &ec3_joc_flag));
+  if (ec3_joc_flag) {
     RCHECK(bit_reader.ReadBits(8, ec3_joc_complexity));
   }
   return true;
@@ -213,11 +212,9 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
   uint8_t audio_coding_mode;
   bool lfe_channel_on;
   uint16_t dependent_substreams_layout;
-  bool ec3_joc_flag;
   uint32_t ec3_joc_complexity;
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
-                      &dependent_substreams_layout, &ec3_joc_flag,
-                      &ec3_joc_complexity)) {
+                      &dependent_substreams_layout, &ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
                  << base::HexEncode(ec3_data.data(), ec3_data.size());
     return false;
@@ -273,15 +270,14 @@ size_t GetEc3NumChannels(const std::vector<uint8_t>& ec3_data) {
   return num_channels;
 }
 
-bool GetEc3JocInfo(const std::vector<uint8_t>& ec3_data, bool* ec3_joc_flag,
-                   uint32_t* ec3_joc_complexity) {
+bool GetEc3JocComplexity(const std::vector<uint8_t>& ec3_data,
+                         uint32_t* ec3_joc_complexity) {
   uint8_t audio_coding_mode;
   bool lfe_channel_on;
   uint16_t dependent_substreams_layout;
 
   if (!ExtractEc3Data(ec3_data, &audio_coding_mode, &lfe_channel_on,
-                      &dependent_substreams_layout, ec3_joc_flag,
-                      ec3_joc_complexity)) {
+                      &dependent_substreams_layout, ec3_joc_complexity)) {
     LOG(WARNING) << "Seeing invalid EC3 data: "
                  << base::HexEncode(ec3_data.data(), ec3_data.size());
     return false;

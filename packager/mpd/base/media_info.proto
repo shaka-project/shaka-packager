@@ -71,15 +71,10 @@ message MediaInfo {
     // (AC-3, Enhanced AC-3) Standard I.1.2.1.
     optional uint32 ec3_channel_mpeg_value = 2;
 
-    // Dolby Digital Plus JOC flag field, ETSI TS 103 420 v1.2.1
-    // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
-    // C.3.2.2.
-    optional bool ec3_joc_flag = 3;
-
     // Dolby Digital Plus JOC decoding complexity fields, ETSI TS 103 420 v1.2.1
     // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
     // C.3.2.3.
-    optional uint32 ec3_joc_complexity = 4;
+    optional uint32 ec3_joc_complexity = 3;
   }
 
   message TextInfo {

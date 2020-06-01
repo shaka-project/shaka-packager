@@ -258,7 +258,6 @@ TEST(XmlNodeTest, AddEC3AudioInfoMPEGSchemeJOC) {
   audio_info.set_sampling_frequency(48000);
   audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
   audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(6);
-  audio_info.mutable_codec_specific_data()->set_ec3_joc_flag(true);
   audio_info.mutable_codec_specific_data()->set_ec3_joc_complexity(16);
 
   RepresentationXmlNode representation;

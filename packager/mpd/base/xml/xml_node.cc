@@ -460,15 +460,15 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
   std::string audio_channel_config_value;
 
   if (audio_info.codec() == kEC3Codec) {
+    const auto& codec_data = audio_info.codec_specific_data();
     // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
     // Interoperability Points v3.0 9.2.1.2.
     const uint16_t ec3_channel_map =
-      base::HostToNet16(audio_info.codec_specific_data().ec3_channel_map());
+      base::HostToNet16(codec_data.ec3_channel_map());
     // Calculate EC3 channel configuration descriptor value with MPEG scheme.
     // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
     // (AC-3, Enhanced AC-3) I.1.2.
-    const uint32_t ec3_channel_mpeg_value =
-      audio_info.codec_specific_data().ec3_channel_mpeg_value();
+    const uint32_t ec3_channel_mpeg_value = codec_data.ec3_channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ec3_channel_mpeg_value == NO_MAPPING) {
       audio_channel_config_value =
@@ -485,11 +485,9 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     // Dolby Digital Plus JOC descriptor. Spec: ETSI TS 103 420 v1.2.1
     // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
     // D.2.2.
-    const bool ec3_joc_flag = audio_info.codec_specific_data().ec3_joc_flag();
-    if (ec3_joc_flag) {
+    if (codec_data.ec3_joc_complexity() != 0) {
       std::string ec3_joc_complexity =
-        base::UintToString(audio_info.codec_specific_data()
-            .ec3_joc_complexity());
+        base::UintToString(codec_data.ec3_joc_complexity());
       ret &= AddDescriptor("SupplementalProperty",
                            "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
                            "JOC");

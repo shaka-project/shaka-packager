@@ -188,11 +188,6 @@ class MediaPlaylist {
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
 
-  /// @return true if flag_ec3_extension_type_a is set to 1, ETSI TS 103 420
-  ///         v1.2.1 Backwards-compatible object audio carriage using
-  ///         Enhanced AC-3 Standard C.3.2.2.
-  virtual bool GetEC3JocFlag() const;
-
   /// @return Dolby Digital Plus JOC decoding complexity, ETSI TS 103 420 v1.2.1
   ///         Backwards-compatible object audio carriage using Enhanced AC-3
   ///         Standard C.3.2.3.
