@@ -14,49 +14,40 @@ const uint8_t kMpeg1L_2 = 0b10;
 const uint8_t kMpeg1L_1 = 0b11;
 
 const size_t kMpeg1SamplesPerFrameTable[] = {
-  /* L1, L2, L3 */
-  384, 1152, 1152 };
+    /* L1, L2, L3 */
+    384, 1152, 1152};
 
 const uint32_t kMpeg1SampleRateTable[][3] = {
-        /* V1, V2, V2.5 */
-        {      44100,      22050,      11025 },
-        {      48000,      24000,      12000 },
-        {      32000,      16000,       8000 }};
+    /* V1, V2, V2.5 */
+    {44100, 22050, 11025},
+    {48000, 24000, 12000},
+    {32000, 16000, 8000}};
 const size_t kMpeg1SampleRateTableSize = arraysize(kMpeg1SampleRateTable);
 
-static inline uint32_t
-Mpeg1SampleRate(uint8_t sr_idx, uint8_t version)
-{
-  static int sr_version_indexes[] = {2, -1, 1, 0}; // {V2.5, RESERVED, V2, V1}
+static inline uint32_t Mpeg1SampleRate(uint8_t sr_idx, uint8_t version) {
+  static int sr_version_indexes[] = {2, -1, 1, 0};  // {V2.5, RESERVED, V2, V1}
   DCHECK_NE(version, 1);
   DCHECK_LT(sr_idx, kMpeg1SampleRateTableSize);
   return kMpeg1SampleRateTable[sr_idx][sr_version_indexes[version]];
 }
 
 const uint32_t kMpeg1BitrateTable[][5] = {
-        // V1:L1, V1:L2, V1:L3, V2:L1, V2&V2.5:L2&L3
-        {       0,       0,       0,       0,       0 },
-        {      32,      32,      32,      32,       8 },
-        {      64,      48,      40,      48,      16 },
-        {      96,      56,      48,      56,      24 },
-        {     128,      64,      56,      64,      32 },
-        {     160,      80,      64,      80,      40 },
-        {     192,      96,      80,      96,      48 },
-        {     224,     112,      96,     112,      56 },
-        {     256,     128,     112,     128,      64 },
-        {     288,     160,     128,     144,      80 },
-        {     320,     192,     160,     160,      96 },
-        {     352,     224,     192,     176,     112 },
-        {     384,     256,     224,     192,     128 },
-        {     416,     320,     256,     224,     144 },
-        {     448,     384,     320,     256,     160 }};
+    // V1:L1, V1:L2, V1:L3, V2:L1, V2&V2.5:L2&L3
+    {0, 0, 0, 0, 0},           {32, 32, 32, 32, 8},
+    {64, 48, 40, 48, 16},      {96, 56, 48, 56, 24},
+    {128, 64, 56, 64, 32},     {160, 80, 64, 80, 40},
+    {192, 96, 80, 96, 48},     {224, 112, 96, 112, 56},
+    {256, 128, 112, 128, 64},  {288, 160, 128, 144, 80},
+    {320, 192, 160, 160, 96},  {352, 224, 192, 176, 112},
+    {384, 256, 224, 192, 128}, {416, 320, 256, 224, 144},
+    {448, 384, 320, 256, 160}};
 const size_t kMpeg1BitrateTableSize = arraysize(kMpeg1BitrateTable);
 
-static inline uint32_t
-Mpeg1BitRate(uint8_t btr_idx, uint8_t version, uint8_t layer)
-{
-  static int btr_version_indexes[] = {1, -1, 1, 0}; // {V2.5, RESERVED, V2, V1}
-  static int btr_layer_indexes[] = {-1, 2, 1, 0};   // {RESERVED, L3, L2, L1}
+static inline uint32_t Mpeg1BitRate(uint8_t btr_idx,
+                                    uint8_t version,
+                                    uint8_t layer) {
+  static int btr_version_indexes[] = {1, -1, 1, 0};  // {V2.5, RESERVED, V2, V1}
+  static int btr_layer_indexes[] = {-1, 2, 1, 0};    // {RESERVED, L3, L2, L1}
 
   DCHECK_NE(version, 1);
   DCHECK_NE(layer, 0);
@@ -70,9 +61,10 @@ Mpeg1BitRate(uint8_t btr_idx, uint8_t version, uint8_t layer)
   return kMpeg1BitrateTable[btr_idx][vidx * 3 + lidx] * 1000;
 }
 
-static inline size_t
-Mpeg1FrameSize(uint8_t layer, uint32_t bitrate, uint32_t sample_rate, uint8_t padded)
-{
+static inline size_t Mpeg1FrameSize(uint8_t layer,
+                                    uint32_t bitrate,
+                                    uint32_t sample_rate,
+                                    uint8_t padded) {
   DCHECK_GT(sample_rate, static_cast<uint32_t>(0));
   if (layer == kMpeg1L_1)
     return (12 * bitrate / sample_rate + padded) * 4;
@@ -86,12 +78,12 @@ namespace media {
 namespace mp2t {
 
 bool Mpeg1Header::IsSyncWord(const uint8_t* buf) const {
-  return (buf[0] == 0xff)
-    && ((buf[1] & 0b11100000) == 0b11100000)
-    // Version 01 is reserved
-    && ((buf[1] & 0b00011000) != 0b00001000)
-    // Layer 00 is reserved
-    && ((buf[1] & 0b00000110) != 0b00000000);
+  return (buf[0] == 0xff) &&
+         ((buf[1] & 0b11100000) == 0b11100000)
+         // Version 01 is reserved
+         && ((buf[1] & 0b00011000) != 0b00001000)
+         // Layer 00 is reserved
+         && ((buf[1] & 0b00000110) != 0b00000000);
 }
 
 size_t Mpeg1Header::GetMinFrameSize() const {
@@ -99,7 +91,7 @@ size_t Mpeg1Header::GetMinFrameSize() const {
 }
 
 size_t Mpeg1Header::GetSamplesPerFrame() const {
-  static int spf_layer_indexes[] = {-1, 2, 1, 0}; // {RESERVED, L3, L2, L1}
+  static int spf_layer_indexes[] = {-1, 2, 1, 0};  // {RESERVED, L3, L2, L1}
   DCHECK_NE(layer_, 0);
   return kMpeg1SamplesPerFrameTable[spf_layer_indexes[layer_]];
 }
@@ -164,8 +156,8 @@ size_t Mpeg1Header::GetFrameSizeWithoutParsing(const uint8_t* data,
   uint8_t sr_idx = (data[2] & 0b00001100) >> 2;
   uint8_t padded = (data[2] & 0b00000010) >> 1;
 
-  if ((version == kMpeg1V_INV) || (layer == kMpeg1L_INV)
-      || (btr_idx == 0) || (sr_idx == 0b11))
+  if ((version == kMpeg1V_INV) || (layer == kMpeg1L_INV) || (btr_idx == 0) ||
+      (sr_idx == 0b11))
     return 0;
 
   uint32_t bitrate = Mpeg1BitRate(btr_idx, version, layer);
@@ -177,10 +169,10 @@ void Mpeg1Header::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
   // The following conversion table is extracted from ISO 14496 Part 3 -
   // Table 1.16 - Sampling Frequency Index.
   static const size_t kConfigFrequencyTable[] = {
-    96000, 88200, 64000, 48000, 44100,
-    32000, 24000, 22050, 16000, 12000,
-    11025, 8000,  7350};
-  static const size_t kConfigFrequencyTableSize = arraysize(kConfigFrequencyTable);
+      96000, 88200, 64000, 48000, 44100, 32000, 24000,
+      22050, 16000, 12000, 11025, 8000,  7350};
+  static const size_t kConfigFrequencyTableSize =
+      arraysize(kConfigFrequencyTable);
   uint8_t cft_idx;
 
   for (cft_idx = 0; cft_idx < kConfigFrequencyTableSize; cft_idx++)

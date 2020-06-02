@@ -230,8 +230,7 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
                     "descriptors 'output' or 'init_segment' are not allowed.");
     }
   } else if (output_format == CONTAINER_WEBVTT ||
-             output_format == CONTAINER_AAC ||
-             output_format == CONTAINER_MP3 ||
+             output_format == CONTAINER_AAC || output_format == CONTAINER_MP3 ||
              output_format == CONTAINER_AC3 ||
              output_format == CONTAINER_EAC3) {
     // There is no need for an init segment when outputting because there is no

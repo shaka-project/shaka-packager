@@ -42,14 +42,14 @@ class Mpeg1HeaderTest : public testing::Test {
     ASSERT_TRUE(base::HexStringToBytes(kInvalidMp3SyncByte_3, &sync_inv_3_));
 
     ASSERT_TRUE(base::HexStringToBytes(kValidMp3Frame, &frame_valid_));
-    ASSERT_TRUE(base::HexStringToBytes(kInvalidMp3FrameBadVersion,
-                                       &frame_inv_1_));
-    ASSERT_TRUE(base::HexStringToBytes(kInvalidMp3FrameBadLayer,
-                                       &frame_inv_2_));
-    ASSERT_TRUE(base::HexStringToBytes(kInvalidMp3FrameBadBitrate,
-                                       &frame_inv_3_));
-    ASSERT_TRUE(base::HexStringToBytes(kInvalidMp3FrameBadSamepleRate,
-                                       &frame_inv_4_));
+    ASSERT_TRUE(
+        base::HexStringToBytes(kInvalidMp3FrameBadVersion, &frame_inv_1_));
+    ASSERT_TRUE(
+        base::HexStringToBytes(kInvalidMp3FrameBadLayer, &frame_inv_2_));
+    ASSERT_TRUE(
+        base::HexStringToBytes(kInvalidMp3FrameBadBitrate, &frame_inv_3_));
+    ASSERT_TRUE(
+        base::HexStringToBytes(kInvalidMp3FrameBadSamepleRate, &frame_inv_4_));
   }
 
  protected:

@@ -49,7 +49,7 @@ class Mpeg1Header : public AudioHeader {
   uint8_t protection_absent_ = 0;
 
   uint32_t bitrate_ = 0;
-  uint32_t sample_rate_ = 0;      /* in hz */
+  uint32_t sample_rate_ = 0; /* in hz */
   uint8_t padded_ = 0;
   uint8_t channel_mode_ = 0;
 };

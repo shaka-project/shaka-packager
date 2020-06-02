@@ -217,7 +217,9 @@ bool EsParserAudio::UpdateAudioConfiguration(const AudioHeader& audio_header) {
                        : samples_per_second;
 
   const Codec codec =
-      stream_type_ == TsStreamType::kAc3 ? kCodecAC3 : (stream_type_ == TsStreamType::kMpeg1Audio ? kCodecMP3 : kCodecAAC);
+      stream_type_ == TsStreamType::kAc3
+          ? kCodecAC3
+          : (stream_type_ == TsStreamType::kMpeg1Audio ? kCodecMP3 : kCodecAAC);
   last_audio_decoder_config_ = std::make_shared<AudioStreamInfo>(
       pid(), kMpeg2Timescale, kInfiniteDuration, codec,
       AudioStreamInfo::GetCodecString(codec, audio_header.GetObjectType()),
