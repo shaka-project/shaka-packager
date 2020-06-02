@@ -9,19 +9,24 @@
 namespace {
 const size_t kMpeg1HeaderMinSize = 4;
 
+const uint8_t kMpeg1V_INV = 0b01; /* Invalid version */
+const uint8_t kMpeg1L_INV = 0b00; /* Invalid layer */
+
 const uint8_t kMpeg1L_3 = 0b01;
 const uint8_t kMpeg1L_2 = 0b10;
 const uint8_t kMpeg1L_1 = 0b11;
 
 const size_t kMpeg1SamplesPerFrameTable[] = {
-    /* L1, L2, L3 */
+    // L1, L2, L3
     384, 1152, 1152};
 
 const uint32_t kMpeg1SampleRateTable[][3] = {
-    /* V1, V2, V2.5 */
+    // clang-format off
+    //  V1,    V2,  V2.5
     {44100, 22050, 11025},
     {48000, 24000, 12000},
     {32000, 16000, 8000}};
+    // clang-format on
 const size_t kMpeg1SampleRateTableSize = arraysize(kMpeg1SampleRateTable);
 
 static inline uint32_t Mpeg1SampleRate(uint8_t sr_idx, uint8_t version) {
@@ -32,15 +37,24 @@ static inline uint32_t Mpeg1SampleRate(uint8_t sr_idx, uint8_t version) {
 }
 
 const uint32_t kMpeg1BitrateTable[][5] = {
-    // V1:L1, V1:L2, V1:L3, V2:L1, V2&V2.5:L2&L3
-    {0, 0, 0, 0, 0},           {32, 32, 32, 32, 8},
-    {64, 48, 40, 48, 16},      {96, 56, 48, 56, 24},
-    {128, 64, 56, 64, 32},     {160, 80, 64, 80, 40},
-    {192, 96, 80, 96, 48},     {224, 112, 96, 112, 56},
-    {256, 128, 112, 128, 64},  {288, 160, 128, 144, 80},
-    {320, 192, 160, 160, 96},  {352, 224, 192, 176, 112},
-    {384, 256, 224, 192, 128}, {416, 320, 256, 224, 144},
-    {448, 384, 320, 256, 160}};
+    // clang-format off
+    // V1:L1,  V1:L2, V1:L3, V2:L1, V2&V2.5:L2&L3
+    {      0,     0,     0,     0,     0},
+    {     32,    32,    32,    32,     8},
+    {     64,    48,    40,    48,    16},
+    {     96,    56,    48,    56,    24},
+    {     128,   64,    56,    64,    32},
+    {     160,   80,    64,    80,    40},
+    {     192,   96,    80,    96,    48},
+    {     224,  112,    96,   112,    56},
+    {     256,  128,   112,   128,    64},
+    {     288,  160,   128,   144,    80},
+    {     320,  192,   160,   160,    96},
+    {     352,  224,   192,   176,   112},
+    {     384,  256,   224,   192,   128},
+    {     416,  320,   256,   224,   144},
+    {     448,  384,   320,   256,   160}};
+    // clang-format on
 const size_t kMpeg1BitrateTableSize = arraysize(kMpeg1BitrateTable);
 
 static inline uint32_t Mpeg1BitRate(uint8_t btr_idx,

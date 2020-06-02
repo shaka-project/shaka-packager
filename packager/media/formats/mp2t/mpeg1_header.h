@@ -7,11 +7,6 @@
 
 #include "packager/media/formats/mp2t/audio_header.h"
 
-namespace {
-const uint8_t kMpeg1V_INV = 0b01; /* Invalid version */
-const uint8_t kMpeg1L_INV = 0b00; /* Invalid layer */
-}  // namespace
-
 namespace shaka {
 namespace media {
 namespace mp2t {
@@ -44,8 +39,8 @@ class Mpeg1Header : public AudioHeader {
   Mpeg1Header(const Mpeg1Header&) = delete;
   Mpeg1Header& operator=(const Mpeg1Header&) = delete;
 
-  uint8_t version_ = kMpeg1V_INV;
-  uint8_t layer_ = kMpeg1L_INV;
+  uint8_t version_ = 0;
+  uint8_t layer_ = 0;
   uint8_t protection_absent_ = 0;
 
   uint32_t bitrate_ = 0;
