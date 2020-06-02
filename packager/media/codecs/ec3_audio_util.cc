@@ -191,8 +191,8 @@ bool ExtractEc3Data(const std::vector<uint8_t>& ec3_data,
   } else {
     RCHECK(bit_reader.SkipBits(1));
   }
+  *ec3_joc_complexity = 0;
   if (bit_reader.bits_available() < 16) {
-    *ec3_joc_complexity = 0;
     return true;
   }
 
