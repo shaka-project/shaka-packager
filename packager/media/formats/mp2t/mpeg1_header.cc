@@ -9,36 +9,32 @@
 namespace {
 const size_t kMpeg1HeaderMinSize = 4;
 
-const uint8_t kMpeg1V_INV = 0b01; /* Invalid version */
-
-const uint8_t kMpeg1L_INV = 0b00; /* Invalid layer */
 const uint8_t kMpeg1L_3 = 0b01;
 const uint8_t kMpeg1L_2 = 0b10;
 const uint8_t kMpeg1L_1 = 0b11;
 
 const size_t kMpeg1SamplesPerFrameTable[] = {
-  /* L1   L2   L3 */
+  /* L1, L2, L3 */
   384, 1152, 1152 };
-const size_t kMpeg1SamplesPerFrameTableSize = arraysize(kMpeg1SamplesPerFrameTable);
 
-const size_t kMpeg1SampleRateTable[][3] = {
-        /*        V1          V2        V2.5 */
+const uint32_t kMpeg1SampleRateTable[][3] = {
+        /* V1, V2, V2.5 */
         {      44100,      22050,      11025 },
         {      48000,      24000,      12000 },
         {      32000,      16000,       8000 }};
 const size_t kMpeg1SampleRateTableSize = arraysize(kMpeg1SampleRateTable);
 
-static inline size_t
+static inline uint32_t
 Mpeg1SampleRate(uint8_t sr_idx, uint8_t version)
 {
-  static int sr_version_indexes[] = {2, -1, 1, 0};
-  CHECK(version != 1);
+  static int sr_version_indexes[] = {2, -1, 1, 0}; // {V2.5, RESERVED, V2, V1}
+  DCHECK_NE(version, 1);
   DCHECK_LT(sr_idx, kMpeg1SampleRateTableSize);
   return kMpeg1SampleRateTable[sr_idx][sr_version_indexes[version]];
 }
 
-const size_t kMpeg1BitrateTable[][5] = {
-        // V1:L1    V1:L2     V1:L3     V2:L1   V2:L2 & L3
+const uint32_t kMpeg1BitrateTable[][5] = {
+        // V1:L1, V1:L2, V1:L3, V2:L1, V2&V2.5:L2&L3
         {       0,       0,       0,       0,       0 },
         {      32,      32,      32,      32,       8 },
         {      64,      48,      40,      48,      16 },
@@ -56,31 +52,28 @@ const size_t kMpeg1BitrateTable[][5] = {
         {     448,     384,     320,     256,     160 }};
 const size_t kMpeg1BitrateTableSize = arraysize(kMpeg1BitrateTable);
 
-static inline size_t
+static inline uint32_t
 Mpeg1BitRate(uint8_t btr_idx, uint8_t version, uint8_t layer)
 {
-  static int btr_version_indexes[] = {2, -1, 1, 0};
-  static int btr_layer_indexes[] = {-1, 2, 1, 0};
+  static int btr_version_indexes[] = {1, -1, 1, 0}; // {V2.5, RESERVED, V2, V1}
+  static int btr_layer_indexes[] = {-1, 2, 1, 0};   // {RESERVED, L3, L2, L1}
 
-  assert(version != 1);
-  assert(layer != 0);
+  DCHECK_NE(version, 1);
+  DCHECK_NE(layer, 0);
   int vidx = btr_version_indexes[version];
   int lidx = btr_layer_indexes[layer];
-  if (vidx == 2)
-    vidx = 1;
   if (vidx == 1 && lidx > 1)
     lidx = 1;
-  assert(btr_idx < 15);
-  assert(vidx * 3 + lidx < 5);
 
+  DCHECK_LT(vidx * 3 + lidx, 5);
   DCHECK_LT(btr_idx, kMpeg1BitrateTableSize);
-  return kMpeg1BitrateTable[btr_idx][vidx*3+lidx] * 1000;
+  return kMpeg1BitrateTable[btr_idx][vidx * 3 + lidx] * 1000;
 }
 
 static inline size_t
-Mpeg1FrameSize(uint8_t layer, size_t bitrate, size_t sample_rate, uint8_t padded)
+Mpeg1FrameSize(uint8_t layer, uint32_t bitrate, uint32_t sample_rate, uint8_t padded)
 {
-  RCHECK(sample_rate > 0);
+  DCHECK_GT(sample_rate, static_cast<uint32_t>(0));
   if (layer == kMpeg1L_1)
     return (12 * bitrate / sample_rate + padded) * 4;
   return 144 * bitrate / sample_rate + padded;
@@ -106,10 +99,9 @@ size_t Mpeg1Header::GetMinFrameSize() const {
 }
 
 size_t Mpeg1Header::GetSamplesPerFrame() const {
-  DCHECK_GT(layer_, 0);
-  DCHECK_GT(3 - layer_, 0);
-  DCHECK_LT(3 - layer_, static_cast<int>(kMpeg1SamplesPerFrameTableSize));
-  return kMpeg1SamplesPerFrameTable[3 - layer_];
+  static int spf_layer_indexes[] = {-1, 2, 1, 0}; // {RESERVED, L3, L2, L1}
+  DCHECK_NE(layer_, 0);
+  return kMpeg1SamplesPerFrameTable[spf_layer_indexes[layer_]];
 }
 
 bool Mpeg1Header::Parse(const uint8_t* mpeg1_frame, size_t mpeg1_frame_size) {
@@ -172,8 +164,12 @@ size_t Mpeg1Header::GetFrameSizeWithoutParsing(const uint8_t* data,
   uint8_t sr_idx = (data[2] & 0b00001100) >> 2;
   uint8_t padded = (data[2] & 0b00000010) >> 1;
 
-  int bitrate = Mpeg1BitRate(btr_idx, version, layer);
-  int samplerate = Mpeg1SampleRate(sr_idx, version);
+  if ((version == kMpeg1V_INV) || (layer == kMpeg1L_INV)
+      || (btr_idx == 0) || (sr_idx == 0b11))
+    return 0;
+
+  uint32_t bitrate = Mpeg1BitRate(btr_idx, version, layer);
+  uint32_t samplerate = Mpeg1SampleRate(sr_idx, version);
   return Mpeg1FrameSize(layer, bitrate, samplerate, padded);
 }
 
@@ -213,7 +209,7 @@ uint8_t Mpeg1Header::GetObjectType() const {
   if (layer_ == kMpeg1L_2)
     return 33;
 
-  DCHECK_GT(layer_, kMpeg1L_3);
+  DCHECK_EQ(layer_, kMpeg1L_3);
   return 34;
 }
 
