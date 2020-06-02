@@ -623,7 +623,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertEqual(self.packager.MpdGenerator(flags), 0)
 
   def testVersion(self):
-    self.assertRegexpMatches(
+    # To support python version 2, which does not have assertRegex.
+    if 'assertRegex' not in dir(self):
+      assert_regex = self.assertRegexpMatches
+    else:
+      assert_regex = self.assertRegex
+
+    assert_regex(
         self.packager.Version(), '^packager(.exe)? version '
         r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)[\r\n]+.*$')
 

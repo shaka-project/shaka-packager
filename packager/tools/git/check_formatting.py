@@ -32,6 +32,8 @@ Steps to install clang-format on your system if you don't have it already:
 
 """
 
+from __future__ import print_function
+
 import subprocess
 import sys
 
@@ -49,8 +51,10 @@ if __name__ == '__main__':
   if output not in [
       'no modified files to format\n', 'clang-format did not modify any files\n'
   ]:
-    print output, '\n'
-    print 'Code style is not correct. Please run ', ' '.join(command), '\n'
+    print(output)
+    print()
+    print('Code style is not correct. Please run {}.'.format(' '.join(command)))
+    print()
     sys.exit(1)
   else:
     sys.exit(0)

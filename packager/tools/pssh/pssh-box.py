@@ -7,6 +7,8 @@
 
 """A utility to parse and generate PSSH boxes."""
 
+from __future__ import print_function
+
 import argparse
 import base64
 import itertools
@@ -419,13 +421,13 @@ def main(all_args):
 
   if output_format == 'human' or not output_format:
     for box in boxes:
-      print box.human_string()
+      print(box.human_string())
   else:
     box_data = ''.join([x.binary_string() for x in boxes])
     if output_format == 'hex':
-      print base64.b16encode(box_data)
+      print(base64.b16encode(box_data))
     else:
-      print base64.b64encode(box_data)
+      print(base64.b64encode(box_data))
 
 
 if __name__ == '__main__':
