@@ -43,6 +43,8 @@ std::string AudioCodecToString(Codec codec) {
       return "Opus";
     case kCodecVorbis:
       return "Vorbis";
+    case kCodecMP3:
+      return "MP3";
     default:
       NOTIMPLEMENTED() << "Unknown Audio Codec: " << codec;
       return "UnknownCodec";
@@ -123,6 +125,8 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "flac";
     case kCodecOpus:
       return "opus";
+    case kCodecMP3:
+      return "mp3";
     case kCodecVorbis:
       return "vorbis";
     default:
