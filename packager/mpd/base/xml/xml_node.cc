@@ -461,21 +461,24 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
 
   if (audio_info.codec() == kEC3Codec) {
     const auto& codec_data = audio_info.codec_specific_data();
-    // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
-    // Interoperability Points v3.0 9.2.1.2.
-    const uint16_t ec3_channel_map =
-      base::HostToNet16(codec_data.ec3_channel_map());
-    // Calculate EC3 channel configuration descriptor value with MPEG scheme.
-    // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
-    // (AC-3, Enhanced AC-3) I.1.2.
+    // Use MPEG scheme if the mpeg value is available and valid, fallback to
+    // EC3 channel mapping otherwise.
+    // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
     const uint32_t ec3_channel_mpeg_value = codec_data.ec3_channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ec3_channel_mpeg_value == NO_MAPPING) {
+      // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
+      // Interoperability Points v3.0 9.2.1.2.
+      const uint16_t ec3_channel_map =
+        base::HostToNet16(codec_data.ec3_channel_map());
       audio_channel_config_value =
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
       audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
     } else {
+      // Calculate EC3 channel configuration descriptor value with MPEG scheme.
+      // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
+      // (AC-3, Enhanced AC-3) I.1.2.
       audio_channel_config_value = base::UintToString(ec3_channel_mpeg_value);
       audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
     }
