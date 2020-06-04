@@ -134,10 +134,10 @@ class DiffFilesPolicy(object):
       output, error = self._GitDiff(expected_file, actual_file)
 
       if output:
-        failure_messages += [output]
+        failure_messages += [output.decode('utf8')]
 
       if error:
-        failure_messages += [error]
+        failure_messages += [error.decode('utf8')]
 
     if self._exact:
       for diff_file in self._allowed_diff_files:
