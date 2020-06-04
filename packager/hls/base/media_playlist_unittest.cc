@@ -486,6 +486,24 @@ TEST_F(MediaPlaylistMultiSegmentTest, GetNumChannels) {
   EXPECT_EQ(8, media_playlist_->GetNumChannels());
 }
 
+TEST_F(MediaPlaylistMultiSegmentTest, GetEC3JocComplexity) {
+  MediaInfo media_info;
+  media_info.set_reference_time_scale(kTimeScale);
+
+  // Returns 0 by default if not audio.
+  EXPECT_EQ(0, media_playlist_->GetEC3JocComplexity());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ec3_joc_complexity(16);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(16, media_playlist_->GetEC3JocComplexity());
+
+  media_info.mutable_audio_info()->mutable_codec_specific_data()->
+    set_ec3_joc_complexity(6);
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(media_info));
+  EXPECT_EQ(6, media_playlist_->GetEC3JocComplexity());
+}
+
 TEST_F(MediaPlaylistMultiSegmentTest, Characteristics) {
   MediaInfo media_info;
   media_info.set_reference_time_scale(kTimeScale);

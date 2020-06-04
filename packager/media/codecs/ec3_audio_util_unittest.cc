@@ -14,12 +14,18 @@ namespace media {
 TEST(EC3AudioUtilTest, ChannelTest1) {
   // audio_coding_mode is 7, which is Left, Center, Right, Left surround, Right
   // surround. No dependent substreams. LFE channel on.
-  const std::vector<uint8_t> ec3_data = {0, 0, 0, 0x0f, 0};
+  const std::vector<uint8_t> ec3_data = {0, 0, 0, 0x0f, 0, 0x02, 0x10};
 
   uint32_t channel_map;
+  uint32_t ec3_channel_mpeg_value;
+  uint32_t ec3_joc_complexity;
   EXPECT_TRUE(CalculateEC3ChannelMap(ec3_data, &channel_map));
   EXPECT_EQ(0xF801u, channel_map);
   EXPECT_EQ(6u, GetEc3NumChannels(ec3_data));
+  EXPECT_TRUE(CalculateEC3ChannelMPEGValue(ec3_data, &ec3_channel_mpeg_value));
+  EXPECT_EQ(6u, ec3_channel_mpeg_value);
+  EXPECT_TRUE(GetEc3JocComplexity(ec3_data, &ec3_joc_complexity));
+  EXPECT_EQ(0u, ec3_joc_complexity);
 }
 
 TEST(EC3AudioUtilTest, ChannelTest2) {
@@ -28,9 +34,15 @@ TEST(EC3AudioUtilTest, ChannelTest2) {
   const std::vector<uint8_t> ec3_data = {0, 0, 0, 0x04, 0};
 
   uint32_t channel_map;
+  uint32_t ec3_channel_mpeg_value;
+  uint32_t ec3_joc_complexity;
   EXPECT_TRUE(CalculateEC3ChannelMap(ec3_data, &channel_map));
   EXPECT_EQ(0xA000u, channel_map);
   EXPECT_EQ(2u, GetEc3NumChannels(ec3_data));
+  EXPECT_TRUE(CalculateEC3ChannelMPEGValue(ec3_data, &ec3_channel_mpeg_value));
+  EXPECT_EQ(2u, ec3_channel_mpeg_value);
+  EXPECT_TRUE(GetEc3JocComplexity(ec3_data, &ec3_joc_complexity));
+  EXPECT_EQ(0u, ec3_joc_complexity);
 }
 
 TEST(EC3AudioUtilTest, ChannelTest3) {
@@ -40,9 +52,33 @@ TEST(EC3AudioUtilTest, ChannelTest3) {
   const std::vector<uint8_t> ec3_data = {0, 0, 0, 0x07, 0x07, 0x03};
 
   uint32_t channel_map;
+  uint32_t ec3_channel_mpeg_value;
+  uint32_t ec3_joc_complexity;
   EXPECT_TRUE(CalculateEC3ChannelMap(ec3_data, &channel_map));
   EXPECT_EQ(0xE603u, channel_map);
   EXPECT_EQ(9u, GetEc3NumChannels(ec3_data));
+  EXPECT_TRUE(CalculateEC3ChannelMPEGValue(ec3_data, &ec3_channel_mpeg_value));
+  EXPECT_EQ(0xFFFFFFFFu, ec3_channel_mpeg_value);
+  EXPECT_TRUE(GetEc3JocComplexity(ec3_data, &ec3_joc_complexity));
+  EXPECT_EQ(0u, ec3_joc_complexity);
+}
+
+TEST(EC3AudioUtilTest, ChannelTest4) {
+  // audio_coding_mode is 7, which is Left, Center, Right, Left surround and
+  // Right surround. LFE channel on.
+  const std::vector<uint8_t> ec3_data = {0x14, 0x00, 0x20, 0x0f, 0x00, 0x01,
+                                         0x10};
+
+  uint32_t channel_map;
+  uint32_t ec3_channel_mpeg_value;
+  uint32_t ec3_joc_complexity;
+  EXPECT_TRUE(CalculateEC3ChannelMap(ec3_data, &channel_map));
+  EXPECT_EQ(0xF801u, channel_map);
+  EXPECT_EQ(6u, GetEc3NumChannels(ec3_data));
+  EXPECT_TRUE(CalculateEC3ChannelMPEGValue(ec3_data, &ec3_channel_mpeg_value));
+  EXPECT_EQ(6u, ec3_channel_mpeg_value);
+  EXPECT_TRUE(GetEc3JocComplexity(ec3_data, &ec3_joc_complexity));
+  EXPECT_EQ(16u, ec3_joc_complexity);
 }
 
 }  // namespace media

@@ -214,19 +214,70 @@ TEST(XmlNodeTest, AddContentProtectionElements) {
 TEST(XmlNodeTest, AddEC3AudioInfo) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ec-3");
-  audio_info.set_sampling_frequency(44100);
+  audio_info.set_sampling_frequency(48000);
   audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
+  audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(
+      0xFFFFFFFF);
 
   RepresentationXmlNode representation;
   representation.AddAudioInfo(audio_info);
   EXPECT_THAT(
       representation.GetRawPtr(),
       XmlNodeEqual(
-          "<Representation audioSamplingRate=\"44100\">\n"
+          "<Representation audioSamplingRate=\"48000\">\n"
           "  <AudioChannelConfiguration\n"
           "   schemeIdUri=\n"
           "    \"tag:dolby.com,2014:dash:audio_channel_configuration:2011\"\n"
           "   value=\"F801\"/>\n"
+          "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddEC3AudioInfoMPEGScheme) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("ec-3");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
+  audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(6);
+
+  RepresentationXmlNode representation;
+  representation.AddAudioInfo(audio_info);
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
+          "   value=\"6\"/>\n"
+          "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddEC3AudioInfoMPEGSchemeJOC) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("ec-3");
+  audio_info.set_sampling_frequency(48000);
+  audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
+  audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(6);
+  audio_info.mutable_codec_specific_data()->set_ec3_joc_complexity(16);
+
+  RepresentationXmlNode representation;
+  representation.AddAudioInfo(audio_info);
+  EXPECT_THAT(
+      representation.GetRawPtr(),
+      XmlNodeEqual(
+          "<Representation audioSamplingRate=\"48000\">\n"
+          "  <AudioChannelConfiguration\n"
+          "   schemeIdUri=\n"
+          "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
+          "   value=\"6\"/>\n"
+          "  <SupplementalProperty\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dolby.com,2018:dash:EC3_ExtensionType:2018\"\n"
+          "   value=\"JOC\"/>\n"
+          "  <SupplementalProperty\n"
+          "   schemeIdUri=\n"
+          "    \"tag:dolby.com,2018:dash:EC3_ExtensionComplexityIndex:2018\"\n"
+          "   value=\"16\"/>\n"
           "</Representation>\n"));
 }
 

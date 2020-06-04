@@ -308,10 +308,24 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
-    std::string channel_string = std::to_string(playlist.GetNumChannels());
-    tag.AddQuotedString("CHANNELS", channel_string);
+    // According to HLS spec:
+    // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
+    // CHANNELS is a quoted-string that specifies an ordered,
+    // slash-separated ("/") list of parameters. The first parameter is a count
+    // of audio channels, and the second parameter identifies the encoding of
+    // object-based audio used by the Rendition. HLS Authoring Specification
+    // for Apple Devices Appendices documents how to handle Dolby Digital Plus
+    // JOC content.
+    // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
+    if (playlist.GetEC3JocComplexity() != 0) {
+      std::string channel_string =
+        std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else {
+      std::string channel_string = std::to_string(playlist.GetNumChannels());
+      tag.AddQuotedString("CHANNELS", channel_string);
+    }
   }
-
   out->append("\n");
 }
 
