@@ -230,7 +230,8 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
                     "descriptors 'output' or 'init_segment' are not allowed.");
     }
   } else if (output_format == CONTAINER_WEBVTT ||
-             output_format == CONTAINER_AAC || output_format == CONTAINER_AC3 ||
+             output_format == CONTAINER_AAC || output_format == CONTAINER_MP3 ||
+             output_format == CONTAINER_AC3 ||
              output_format == CONTAINER_EAC3) {
     // There is no need for an init segment when outputting because there is no
     // initialization data.
@@ -807,6 +808,7 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
       switch (GetOutputFormat(stream)) {
         case CONTAINER_MPEG2TS:
         case CONTAINER_AAC:
+        case CONTAINER_MP3:
         case CONTAINER_AC3:
         case CONTAINER_EAC3:
           has_transport_audio_video_streams = true;
