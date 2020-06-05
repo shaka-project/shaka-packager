@@ -505,7 +505,6 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       // ISO/IEC 13818-3 the decoder specific information is empty
       // since all necessary data is contained in the bitstream frames
       // itself.
-      decoder_config->omit_decoder_specific_info_descriptor();
       break;
     }
     case kCodecOpus:
