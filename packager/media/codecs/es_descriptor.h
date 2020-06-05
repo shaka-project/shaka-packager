@@ -22,6 +22,8 @@ enum class ObjectType : uint8_t {
   kForbidden = 0,
   kISO_14496_3 = 0x40,         // MPEG4 AAC
   kISO_13818_7_AAC_LC = 0x67,  // MPEG2 AAC-LC
+  kISO_13818_3_MPEG1 = 0x69,   // MPEG1 ISO/IEC 13818-3, 16,22.05,24kHz
+  kISO_11172_3_MPEG1 = 0x6B,   // MPEG1 ISO/IEC 11172-3, 32,44.1,48kHz
   kDTSC = 0xA9,                // DTS Coherent Acoustics audio
   kDTSE = 0xAC,                // DTS Express low bit rate audio
   kDTSH = 0xAA,                // DTS-HD High Resolution Audio
@@ -141,6 +143,10 @@ class DecoderConfigDescriptor : public BaseDescriptor {
     return &decoder_specific_info_descriptor_;
   }
 
+  void omit_decoder_specific_info_descriptor() {
+    decoder_specific_info_descriptor_is_ommited_ = true;
+  }
+
  private:
   bool ReadData(BitReader* reader) override;
   void WriteInternal(BufferWriter* writer) override;
@@ -150,6 +156,7 @@ class DecoderConfigDescriptor : public BaseDescriptor {
   uint32_t buffer_size_db_ = 0;
   uint32_t max_bitrate_ = 0;
   uint32_t avg_bitrate_ = 0;
+  bool decoder_specific_info_descriptor_is_ommited_ = false;
   DecoderSpecificInfoDescriptor decoder_specific_info_descriptor_;
 };
 
