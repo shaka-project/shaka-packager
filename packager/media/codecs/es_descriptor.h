@@ -144,7 +144,7 @@ class DecoderConfigDescriptor : public BaseDescriptor {
   }
 
   void omit_decoder_specific_info_descriptor() {
-    decoder_specific_info_descriptor_is_ommited_ = true;
+    decoder_specific_info_descriptor_is_omitted_ = true;
   }
 
  private:
@@ -156,7 +156,7 @@ class DecoderConfigDescriptor : public BaseDescriptor {
   uint32_t buffer_size_db_ = 0;
   uint32_t max_bitrate_ = 0;
   uint32_t avg_bitrate_ = 0;
-  bool decoder_specific_info_descriptor_is_ommited_ = false;
+  bool decoder_specific_info_descriptor_is_omitted_ = false;
   DecoderSpecificInfoDescriptor decoder_specific_info_descriptor_;
 };
 
