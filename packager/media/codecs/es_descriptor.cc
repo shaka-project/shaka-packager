@@ -167,13 +167,17 @@ void DecoderConfigDescriptor::WriteInternal(BufferWriter* writer) {
   writer->AppendNBytes(buffer_size_db_, 3);
   writer->AppendInt(max_bitrate_);
   writer->AppendInt(avg_bitrate_);
-  decoder_specific_info_descriptor_.Write(writer);
+
+  if (!decoder_specific_info_descriptor_.data().empty())
+    decoder_specific_info_descriptor_.Write(writer);
 }
 
 size_t DecoderConfigDescriptor::ComputeDataSize() {
   // object_type (1 byte), stream_type (1 byte), decoding_buffer_size (3 bytes),
   // max_bitrate (4 bytes), avg_bitrate (4 bytes).
   const size_t data_size_without_children = 1 + 1 + 3 + 4 + 4;
+  if (decoder_specific_info_descriptor_.data().empty())
+    return data_size_without_children;
   return data_size_without_children +
          decoder_specific_info_descriptor_.ComputeSize();
 }

@@ -67,6 +67,7 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
     case kCodecVP9:
       return FOURCC_vp09;
     case kCodecAAC:
+    case kCodecMP3:
       return FOURCC_mp4a;
     case kCodecAC3:
       return FOURCC_ac_3;
@@ -487,6 +488,25 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     case kCodecFlac:
       audio.dfla.data = audio_info->codec_config();
       break;
+    case kCodecMP3: {
+      audio.esds.es_descriptor.set_esid(track_id);
+      DecoderConfigDescriptor* decoder_config =
+          audio.esds.es_descriptor.mutable_decoder_config_descriptor();
+      uint32_t samplerate = audio_info->sampling_frequency();
+      if (samplerate < 32000)
+        decoder_config->set_object_type(ObjectType::kISO_13818_3_MPEG1);
+      else
+        decoder_config->set_object_type(ObjectType::kISO_11172_3_MPEG1);
+      decoder_config->set_max_bitrate(audio_info->max_bitrate());
+      decoder_config->set_avg_bitrate(audio_info->avg_bitrate());
+
+      // For values of DecoderConfigDescriptor.objectTypeIndication
+      // that refer to streams complying with ISO/IEC 11172-3 or
+      // ISO/IEC 13818-3 the decoder specific information is empty
+      // since all necessary data is contained in the bitstream frames
+      // itself.
+      break;
+    }
     case kCodecOpus:
       audio.dops.opus_identification_header = audio_info->codec_config();
       break;
