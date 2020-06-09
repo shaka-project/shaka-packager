@@ -154,6 +154,8 @@ struct EncryptionParams {
 
   /// The protection systems to generate, multiple can be OR'd together.
   ProtectionSystem protection_systems;
+  /// Extra XML data to add to PlayReady data.
+  std::string playready_extra_header_data;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;

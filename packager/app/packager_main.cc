@@ -351,6 +351,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
     encryption_params.stream_label_func = std::bind(
         &Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
         FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);
+    encryption_params.playready_extra_header_data =
+        FLAGS_playready_extra_header_data;
   }
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {
