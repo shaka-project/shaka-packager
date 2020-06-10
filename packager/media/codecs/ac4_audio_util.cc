@@ -231,6 +231,7 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
     RCHECK(bit_reader.SkipBits(19));
     bool b_presentation_channel_coded;
     RCHECK(bit_reader.ReadBits(1, &b_presentation_channel_coded));
+    *presentation_channel_mask_v1 = 0;
     if (b_presentation_channel_coded) {
       uint8_t dsi_presentation_ch_mode;
       RCHECK(bit_reader.ReadBits(5, &dsi_presentation_ch_mode));
