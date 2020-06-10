@@ -793,6 +793,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyJOC) {
 
   ASSERT_EQ(expected, actual);
 }
+
 TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4IMS) {
   const uint64_t kAudioChannels = 2;
   const uint64_t kAudioMaxBitrate = 50000;

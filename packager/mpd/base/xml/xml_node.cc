@@ -529,7 +529,6 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     bool ret = AddDescriptor("AudioChannelConfiguration",
                              audio_channel_config_scheme,
                              audio_channel_config_value);
-
     if (ac4_ims_flag) {
       ret &= AddDescriptor("SupplementalProperty",
                            "tag:dolby.com,2016:dash:virtualized_content:2016",
