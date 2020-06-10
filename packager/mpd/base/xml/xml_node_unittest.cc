@@ -230,13 +230,61 @@ TEST(XmlNodeTest, AddEC3AudioInfo) {
           "</Representation>\n"));
 }
 
-TEST(XmlNodeTest, AddAC4AudioInfo_MpegScheme_Ims) {
+TEST(XmlNodeTest, AddAC4AudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("ac-4.02.01.02");
+  audio_info.set_sampling_frequency(48000);
+  auto* codec_data = audio_info.mutable_codec_specific_data();
+  codec_data->set_ac4_channel_mpeg_value(0xFFFFFFFF);
+  codec_data->set_ac4_channel_mask(0x0000C7);
+  codec_data->set_ac4_ims_flag(false);
+  codec_data->set_ac4_cbi_flag(false);
+
+  RepresentationXmlNode representation;
+  representation.AddAudioInfo(audio_info);
+  EXPECT_THAT(
+    representation.GetRawPtr(),
+    XmlNodeEqual(
+      "<Representation audioSamplingRate=\"48000\">\n"
+      "  <AudioChannelConfiguration\n"
+      "   schemeIdUri=\n"
+      "    \"tag:dolby.com,2015:dash:audio_channel_configuration:2015\"\n"
+      "   value=\"0000C7\"/>\n"
+      "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddAC4AudioInfoMPEGScheme) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("ac-4.02.01.00");
+  audio_info.set_sampling_frequency(48000);
+  auto* codec_data = audio_info.mutable_codec_specific_data();
+  codec_data->set_ac4_channel_mpeg_value(2);
+  codec_data->set_ac4_channel_mask(0x000001);
+  codec_data->set_ac4_ims_flag(false);
+  codec_data->set_ac4_cbi_flag(false);
+
+  RepresentationXmlNode representation;
+  representation.AddAudioInfo(audio_info);
+  EXPECT_THAT(
+    representation.GetRawPtr(),
+    XmlNodeEqual(
+      "<Representation audioSamplingRate=\"48000\">\n"
+      "  <AudioChannelConfiguration\n"
+      "   schemeIdUri=\n"
+      "    \"urn:mpeg:mpegB:cicp:ChannelConfiguration\"\n"
+      "   value=\"2\"/>\n"
+      "</Representation>\n"));
+}
+
+TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ac-4.02.02.00");
   audio_info.set_sampling_frequency(48000);
-  audio_info.mutable_codec_specific_data()->set_ac4_channel_mpeg_value(2);
-  audio_info.mutable_codec_specific_data()->set_ac4_channel_mask(0x000001);
-  audio_info.mutable_codec_specific_data()->set_ac4_ims_flag(true);
+  auto* codec_data = audio_info.mutable_codec_specific_data();
+  codec_data->set_ac4_channel_mpeg_value(2);
+  codec_data->set_ac4_channel_mask(0x000001);
+  codec_data->set_ac4_ims_flag(true);
+  codec_data->set_ac4_cbi_flag(false);
 
   RepresentationXmlNode representation;
   representation.AddAudioInfo(audio_info);
@@ -252,28 +300,6 @@ TEST(XmlNodeTest, AddAC4AudioInfo_MpegScheme_Ims) {
       "   schemeIdUri=\n"
       "    \"tag:dolby.com,2016:dash:virtualized_content:2016\"\n"
       "   value=\"1\"/>\n"
-      "</Representation>\n"));
-}
-
-TEST(XmlNodeTest, AddAC4AudioInfo_DolbyScheme) {
-  MediaInfo::AudioInfo audio_info;
-  audio_info.set_codec("ac-4.02.01.02");
-  audio_info.set_sampling_frequency(48000);
-  audio_info.mutable_codec_specific_data()->set_ac4_channel_mpeg_value(
-    0xffffffff);
-  audio_info.mutable_codec_specific_data()->set_ac4_channel_mask(0x0000C7);
-  audio_info.mutable_codec_specific_data()->set_ac4_ims_flag(false);
-
-  RepresentationXmlNode representation;
-  representation.AddAudioInfo(audio_info);
-  EXPECT_THAT(
-    representation.GetRawPtr(),
-    XmlNodeEqual(
-      "<Representation audioSamplingRate=\"48000\">\n"
-      "  <AudioChannelConfiguration\n"
-      "   schemeIdUri=\n"
-      "    \"tag:dolby.com,2015:dash:audio_channel_configuration:2015\"\n"
-      "   value=\"0000C7\"/>\n"
       "</Representation>\n"));
 }
 

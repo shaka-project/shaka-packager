@@ -125,33 +125,29 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
         ec3_channel_map);
   }
 
-  if ((audio_stream_info->codec() == kCodecAC4)) {
-    uint32_t ac4_channel_mask = 0;
-    if (!CalculateAC4ChannelMask(codec_config, ac4_channel_mask)) {
+  if (audio_stream_info->codec() == kCodecAC4) {
+    uint32_t ac4_channel_mask;
+    if (!CalculateAC4ChannelMask(codec_config, &ac4_channel_mask)) {
       LOG(ERROR) << "Failed to calculate AC4 channel mask.";
       return;
     }
-    audio_info->mutable_codec_specific_data()->set_ac4_channel_mask(
-      ac4_channel_mask);
-
-    uint32_t ac4_channel_mpeg_value = 0;
-    if (!CalculateAC4ChannelMpegValue(codec_config, ac4_channel_mpeg_value)) {
-      LOG(ERROR) << "Failed to calculate AC4 channel configuration descriptor \
-        value with MPEG scheme.";
+    auto* codec_data = audio_info->mutable_codec_specific_data();
+    codec_data->set_ac4_channel_mask(ac4_channel_mask);
+    uint32_t ac4_channel_mpeg_value;
+    if (!CalculateAC4ChannelMPEGValue(codec_config, &ac4_channel_mpeg_value)) {
+      LOG(ERROR) << "Failed to calculate AC4 channel configuration "
+                 << "descriptor value with MPEG scheme.";
       return;
     }
-    audio_info->mutable_codec_specific_data()->
-      set_ac4_channel_mpeg_value(ac4_channel_mpeg_value);
-
-    bool ac4_ims_flag = false;
-    bool ac4_src_atmos_flag = false;
-    if (!GetAc4ImsInfo(codec_config, ac4_ims_flag, ac4_src_atmos_flag)) {
-      LOG(ERROR) << "Failed to get AC4 IMS flag and source content atmos flag.";
+    codec_data->set_ac4_channel_mpeg_value(ac4_channel_mpeg_value);
+    bool ac4_ims_flag;
+    bool ac4_cbi_flag;
+    if (!GetAc4ImmersiveInfo(codec_config, &ac4_ims_flag, &ac4_cbi_flag)) {
+      LOG(ERROR) << "Failed to obtain AC4 IMS flag and CBI flag.";
       return;
     }
-    audio_info->mutable_codec_specific_data()->set_ac4_ims_flag(ac4_ims_flag);
-    audio_info->mutable_codec_specific_data()->set_ac4_src_atmos_flag(
-      ac4_src_atmos_flag);
+    codec_data->set_ac4_ims_flag(ac4_ims_flag);
+    codec_data->set_ac4_cbi_flag(ac4_cbi_flag);
   }
 }
 

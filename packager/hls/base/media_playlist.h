@@ -188,15 +188,15 @@ class MediaPlaylist {
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
 
-  /// @return true if it's an AC-4 IMS stream, based on Dolby AC-4 and MPEG-DASH
-  ///         Specification, chapter 2.5.1 Signaling immersive stereo content.
-  ///         It's available on https://developer.dolby.com/.
+  /// @return true if it's an AC-4 IMS stream, based on Dolby AC-4 in MPEG-DASH
+  ///         for Online Delivery Specification 2.5.3.
+  ///         https://developer.dolby.com/tools-media/online-delivery-kits/dolby-ac-4/
   virtual bool GetAC4ImsFlag() const;
 
-  /// @return true if AC4 source content is ATMOS, based on Dolby AC-4 and
-  ///         MPEG-DASH Specification, chapter 2.5.1 Signaling immersive stereo
-  ///         content. It's available on https://developer.dolby.com/.
-  virtual bool GetAC4SourceAtmosFlag() const;
+  /// @return true if it's an AC-4 CBI stream, based on ETSI TS 103 190-2
+  ///         Digital Audio Compression (AC-4) Standard; Part 2: Immersive and
+  ///         personalized audio 4.3.
+  virtual bool GetAC4CbiFlag() const;
 
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.

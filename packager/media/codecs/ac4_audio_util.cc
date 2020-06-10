@@ -8,7 +8,6 @@
 
 #include "packager/base/macros.h"
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
@@ -16,13 +15,6 @@ namespace shaka {
 namespace media {
 
 namespace {
-
-inline bool AC4ByteAlign(size_t cur_bits, BitReader& bit_reader) {
-  if (cur_bits % 8) {
-    return bit_reader.SkipBits(8 - (cur_bits % 8));
-  }
-  return true;
-}
 
 // Speaker group index
 // Bit,      Location
@@ -47,7 +39,7 @@ inline bool AC4ByteAlign(size_t cur_bits, BitReader& bit_reader) {
 // 18,       Vertical height left/Vertical height right pair
 enum kAC4AudioChannelGroupIndex {
     kLRpair = 0x1,
-    kCenter = 0x2,
+    kCentre = 0x2,
     kLsRsPair = 0x4,
     kLbRbPair = 0x8,
     kTflTfrPair = 0x10,
@@ -68,30 +60,31 @@ enum kAC4AudioChannelGroupIndex {
 };
 
 // Mapping of channel configurations to the MPEG audio value based on ETSI TS
-// 103 192-2 V1.2.1 Digital Audio Compression (AC-4) Standard Table G.1
-uint32_t AC4ChannelMasktoMpegValue(uint32_t channel_mask) {
+// 103 192-2 V1.2.1 Digital Audio Compression (AC-4) Standard;
+// Part 2: Immersive and personalized Table G.1
+uint32_t AC4ChannelMasktoMPEGValue(uint32_t channel_mask) {
   uint32_t ret = 0;
 
   switch (channel_mask) {
-    case kCenter:
+    case kCentre:
       ret = 1;
       break;
     case kLRpair:
       ret = 2;
       break;
-    case kCenter | kLRpair:
+    case kCentre | kLRpair:
       ret = 3;
       break;
-    case kCenter | kLRpair | kBackCentre:
+    case kCentre | kLRpair | kBackCentre:
       ret = 4;
       break;
-    case kCenter | kLRpair | kLsRsPair:
+    case kCentre | kLRpair | kLsRsPair:
       ret = 5;
       break;
-    case kCenter | kLRpair | kLsRsPair | kLFE:
+    case kCentre | kLRpair | kLsRsPair | kLFE:
       ret = 6;
       break;
-    case kCenter | kLRpair | kLsRsPair | kLFE | kLwRw:
+    case kCentre | kLRpair | kLsRsPair | kLFE | kLwRw:
       ret = 7;
       break;
     case kBackCentre | kLRpair:
@@ -100,76 +93,74 @@ uint32_t AC4ChannelMasktoMpegValue(uint32_t channel_mask) {
     case kLRpair | kLsRsPair:
       ret = 10;
       break;
-    case kCenter | kLRpair | kLsRsPair | kLFE | kBackCentre:
+    case kCentre | kLRpair | kLsRsPair | kLFE | kBackCentre:
       ret = 11;
       break;
-    case kCenter | kLRpair | kLsRsPair | kLbRbPair | kLFE:
+    case kCentre | kLRpair | kLsRsPair | kLbRbPair | kLFE:
       ret = 12;
       break;
     case kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair | kLFE2 |
          kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair | kLFE |
-         kTblTbrPair | kTflTfrPair | kLbRbPair | kLsRsPair | kCenter | kLRpair:
+         kTblTbrPair | kTflTfrPair | kLbRbPair | kLsRsPair | kCentre | kLRpair:
     case kVhlVhrPair | kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair|
          kLFE2 | kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair |
-         kLFE | kTblTbrPair | kLbRbPair | kLsRsPair | kCenter | kLRpair:
+         kLFE | kTblTbrPair | kLbRbPair | kLsRsPair | kCentre | kLRpair:
       ret = 13;
       break;
-    case kLFE | kTflTfrPair | kLsRsPair | kCenter | kLRpair:
-    case kVhlVhrPair | kLFE | kCenter | kLRpair | kLsRsPair:
+    case kLFE | kTflTfrPair | kLsRsPair | kCentre | kLRpair:
+    case kVhlVhrPair | kLFE | kCentre | kLRpair | kLsRsPair:
       ret = 14;
       break;
-    case kLFE2 | kTopbackCentre | kLFE | kTflTfrPair | kCenter | kLRpair |
+    case kLFE2 | kTopbackCentre | kLFE | kTflTfrPair | kCentre | kLRpair |
          kLsRsPair | kLbRbPair:
-    case kVhlVhrPair | kLFE2 | kTopbackCentre | kLFE | kCenter | kLRpair |
+    case kVhlVhrPair | kLFE2 | kTopbackCentre | kLFE | kCentre | kLRpair |
          kLsRsPair | kLbRbPair:
       ret = 15;
       break;
-    case kLFE | kTblTbrPair | kTflTfrPair | kLsRsPair | kCenter | kLRpair:
-    case kVhlVhrPair | kLFE | kTblTbrPair | kLsRsPair | kCenter | kLRpair:
+    case kLFE | kTblTbrPair | kTflTfrPair | kLsRsPair | kCentre | kLRpair:
+    case kVhlVhrPair | kLFE | kTblTbrPair | kLsRsPair | kCentre | kLRpair:
       ret = 16;
       break;
     case kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair | kTflTfrPair |
-         kLsRsPair | kCenter | kLRpair:
+         kLsRsPair | kCentre | kLRpair:
     case kVhlVhrPair | kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair |
-         kLsRsPair | kCenter | kLRpair:
+         kLsRsPair | kCentre | kLRpair:
       ret = 17;
       break;
     case kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair | kTflTfrPair |
-         kCenter | kLRpair | kLsRsPair | kLbRbPair:
+         kCentre | kLRpair | kLsRsPair | kLbRbPair:
     case kVhlVhrPair | kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair |
-         kCenter | kLRpair | kLsRsPair | kLbRbPair:
+         kCentre | kLRpair | kLsRsPair | kLbRbPair:
       ret = 18;
       break;
-    case kLFE | kTblTbrPair | kTflTfrPair | kCenter | kLRpair | kLsRsPair |
+    case kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRpair | kLsRsPair |
          kLbRbPair:
-    case kVhlVhrPair | kLFE | kTblTbrPair | kCenter | kLRpair | kLsRsPair |
+    case kVhlVhrPair | kLFE | kTblTbrPair | kCentre | kLRpair | kLsRsPair |
          kLbRbPair:
       ret = 19;
       break;
-    case kLscrRscrPair | kLFE | kTblTbrPair | kTflTfrPair | kCenter | kLRpair |
+    case kLscrRscrPair | kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRpair |
          kLsRsPair | kLbRbPair:
-    case kVhlVhrPair | kLscrRscrPair | kLFE | kTblTbrPair | kCenter | kLRpair |
+    case kVhlVhrPair | kLscrRscrPair | kLFE | kTblTbrPair | kCentre | kLRpair |
          kLsRsPair | kLbRbPair:
       ret = 20;
       break;
     default:
-      ret = 0xffffffff;
+      ret = 0xFFFFFFFF;
   }
-
   return ret;
 }
 
-// Parse AC-4 substream group based on ETSI TS 103 192-2 V1.2.1
-// Digital Audio Compression (AC-4) Standard E.11.
+// Parse AC-4 substream group based on ETSI TS 103 192-2 V1.2.1 Digital Audio
+// Compression (AC-4) Standard; Part 2: Immersive and personalized E.11.
 bool ParseAC4SubStreamGroupDsi(BitReader& bit_reader) {
-  // TODO: If b_substream_present ==0, is it valid for OTT?
   bool b_substream_present;
   RCHECK(bit_reader.ReadBits(1, &b_substream_present));
   bool b_hsf_ext;
   RCHECK(bit_reader.ReadBits(1, &b_hsf_ext));
   bool b_channel_coded;
   RCHECK(bit_reader.ReadBits(1, &b_channel_coded));
-  uint8_t n_substreams = 0;
+  uint8_t n_substreams;
   RCHECK(bit_reader.ReadBits(8, &n_substreams));
   for (uint8_t i = 0; i < n_substreams; i++) {
     RCHECK(bit_reader.SkipBits(2));
@@ -186,7 +177,7 @@ bool ParseAC4SubStreamGroupDsi(BitReader& bit_reader) {
       if (b_ajoc) {
         bool b_static_dmx;
         RCHECK(bit_reader.ReadBits(1, &b_static_dmx));
-        if (b_static_dmx == 0) {
+        if (!b_static_dmx) {
           RCHECK(bit_reader.SkipBits(4));
         }
         RCHECK(bit_reader.SkipBits(6));
@@ -209,23 +200,29 @@ bool ParseAC4SubStreamGroupDsi(BitReader& bit_reader) {
   return true;
 }
 
-// Parse AC-4 Presentation based on ETSI TS 103 192-2 V1.2.1
-// Digital Audio Compression (AC-4) Standard E.11.
+// Parse AC-4 Presentation V1 based on ETSI TS 103 192-2 V1.2.1 Digital Audio
+// Compression (AC-4) Standard;Part 2: Immersive and personalized E.10.
 bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
-                               uint8_t& mdcompat,
-                               uint32_t& presentation_channel_mask_v1,
                                uint32_t pres_bytes,
-                               bool& dolby_atmos_indicator) {
+                               uint8_t* mdcompat,
+                               uint32_t* presentation_channel_mask_v1,
+                               bool* dolby_cbi_indicator,
+                               uint8_t* dolby_atmos_indicator) {
   bool ret = true;
-  // Record the initial offset for byte alignment.
+  // Record the initial offset.
   const size_t presentation_start = bit_reader.bit_position();
   uint8_t presentation_config_v1;
   RCHECK(bit_reader.ReadBits(5, &presentation_config_v1));
   uint8_t b_add_emdf_substreams;
+  // set default value (stereo content) for output parameters.
+  *mdcompat = 0;
+  *presentation_channel_mask_v1 = 2;
+  *dolby_cbi_indicator = false;
+  *dolby_atmos_indicator = 0;
   if (presentation_config_v1 == 0x06) {
     b_add_emdf_substreams = 1;
   } else {
-    RCHECK(bit_reader.ReadBits(3, &mdcompat));
+    RCHECK(bit_reader.ReadBits(3, mdcompat));
     bool b_presentation_id;
     RCHECK(bit_reader.ReadBits(1, &b_presentation_id));
     if (b_presentation_id) {
@@ -238,9 +235,16 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
       uint8_t dsi_presentation_ch_mode;
       RCHECK(bit_reader.ReadBits(5, &dsi_presentation_ch_mode));
       if (dsi_presentation_ch_mode >= 11 && dsi_presentation_ch_mode <= 14) {
-        RCHECK(bit_reader.SkipBits(3));
+        RCHECK(bit_reader.SkipBits(1));
+        uint8_t pres_top_channel_pairs;
+        RCHECK(bit_reader.ReadBits(2, &pres_top_channel_pairs));
+        if (pres_top_channel_pairs) {
+          *dolby_cbi_indicator = true;
+        }
+      } else if (dsi_presentation_ch_mode == 15) {
+        *dolby_cbi_indicator = true;
       }
-      RCHECK(bit_reader.ReadBits(24, &presentation_channel_mask_v1));
+      RCHECK(bit_reader.ReadBits(24, presentation_channel_mask_v1));
     }
     bool b_presentation_core_differs;
     RCHECK(bit_reader.ReadBits(1, &b_presentation_core_differs));
@@ -304,11 +308,8 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
   bool b_alternative;
   RCHECK(bit_reader.ReadBits(1, &b_alternative));
   if (b_alternative) {
-    if (!AC4ByteAlign(bit_reader.bit_position() - presentation_start,
-                      bit_reader)) {
-      return false;
-    }
-    // Parse alternative infomation based on ETSI TS 103 190-2 v1.2.1 E.12
+    bit_reader.SkipToNextByte();
+    // Parse alternative information based on ETSI TS 103 190-2 v1.2.1 E.12
     uint16_t name_len;
     RCHECK(bit_reader.ReadBits(16, &name_len));
     RCHECK(bit_reader.SkipBits(name_len * 8));
@@ -316,14 +317,11 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
     RCHECK(bit_reader.ReadBits(5, &n_targets));
     RCHECK(bit_reader.SkipBits(n_targets * 11));
   }
-  if (!AC4ByteAlign(bit_reader.bit_position() - presentation_start,
-                    bit_reader)) {
-    return false;
-  }
+  bit_reader.SkipToNextByte();
   if ((bit_reader.bit_position() - presentation_start) <=
       (pres_bytes - 1) * 8) {
     RCHECK(bit_reader.SkipBits(1));
-    RCHECK(bit_reader.ReadBits(1, &dolby_atmos_indicator));
+    RCHECK(bit_reader.ReadBits(1, dolby_atmos_indicator));
     RCHECK(bit_reader.SkipBits(4));
     bool b_extended_presentation_group_index;
     RCHECK(bit_reader.ReadBits(1, &b_extended_presentation_group_index));
@@ -337,19 +335,19 @@ bool ParseAC4PresentationV1Dsi(BitReader& bit_reader,
 }
 
 bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
-                    uint8_t& bitstream_version,
-                    uint8_t& presentation_version,
-                    bool& dolby_ims_indicator,
-                    uint8_t& mdcompat,
-                    uint32_t& presentation_channel_mask_v1,
-                    bool& dolby_atmos_indicator) {
-  uint16_t n_presentation;
+                    uint8_t* bitstream_version,
+                    uint8_t* presentation_version,
+                    uint8_t* mdcompat,
+                    uint32_t* presentation_channel_mask_v1,
+                    bool* dolby_ims_indicator,
+                    bool* dolby_cbi_indicator) {
   BitReader bit_reader(ac4_data.data(), ac4_data.size());
 
-  RCHECK(bit_reader.SkipBits(3) && bit_reader.ReadBits(7, &bitstream_version));
+  uint16_t n_presentation;
+  RCHECK(bit_reader.SkipBits(3) && bit_reader.ReadBits(7, bitstream_version));
   RCHECK(bit_reader.SkipBits(5) && bit_reader.ReadBits(9, &n_presentation));
 
-  if (bitstream_version > 1) {
+  if (*bitstream_version == 2) {
     uint8_t b_program_id = 0;
     RCHECK(bit_reader.ReadBits(1, &b_program_id));
     if (b_program_id) {
@@ -360,173 +358,163 @@ bool ExtractAc4Data(const std::vector<uint8_t>& ac4_data,
         RCHECK(bit_reader.SkipBits(16 * 8));
       }
     }
-  } else if (bitstream_version == 0 || bitstream_version == 1) {
-    // Only presentation version 1 and 2 are supported.
-    // Bitstream_version == 0 has presentation version of 0,
-    // Bitstream_version == 1 has mixed presentation version of 0 and 1.
+  } else if (*bitstream_version == 0 || *bitstream_version == 1) {
     LOG(WARNING) << "Bitstream version 0 or 1 is not supported";
     return false;
   } else {
-    LOG(WARNING) << "Invaild Bitstream version";
+    LOG(WARNING) << "Invalid Bitstream version";
     return false;
   }
 
   RCHECK(bit_reader.SkipBits(66));
+  bit_reader.SkipToNextByte();
 
-  if (!AC4ByteAlign(bit_reader.bit_position(), bit_reader)) {
-    return false;
-  }
-
-  dolby_ims_indicator = false;
-  dolby_atmos_indicator = false;
-  bool atmos_presentation = false;
-
-  // Pre-read presentation_version and skip first ReadBits.
-  bit_reader.ReadBits(8, &presentation_version);
-  if ((presentation_version == 2 && n_presentation > 2) ||
-      (presentation_version == 1 && n_presentation > 1) ) {
-    LOG(WARNING) << "Seeing multiple presentations, only single presentation \
-                    (including IMS presentation) is supported";
-    return false;
-  }
-
-  // Logic for future usage if need support multiple presentaions.
-  n_presentation = 1;
-  for (uint8_t i = 0; i < n_presentation; i++) {
-    if (i != 0) {
-      bit_reader.ReadBits(8, &presentation_version);
+  // AC4 stream containing the single presentation is valid for OTT only.
+  // IMS has two presentations, and the 2nd is legacy (duplicated) presentation.
+  // So it can be considered as AC4 stream with single presentation. And IMS
+  // presentation must be prior to legacy presentation.
+  // In other word, only the 1st presentation in AC4 stream need to be parsed.
+  const uint8_t ott_n_presentation = 1;
+  for (uint8_t i = 0; i < ott_n_presentation; i++) {
+    RCHECK(bit_reader.ReadBits(8, presentation_version));
+    // *presentation_version == 2 means IMS presentation.
+    if ((*presentation_version == 2 && n_presentation > 2) ||
+        (*presentation_version == 1 && n_presentation > 1) ) {
+      LOG(WARNING) << "Seeing multiple presentations, only single presentation "
+                   << "(including IMS presentation) is supported";
+      return false;
     }
     uint32_t pres_bytes;
-    bit_reader.ReadBits(8, &pres_bytes);
+    RCHECK(bit_reader.ReadBits(8, &pres_bytes));
     if (pres_bytes == 255) {
       uint32_t add_pres_bytes;
-      bit_reader.ReadBits(16, &add_pres_bytes);
+      RCHECK(bit_reader.ReadBits(16, &add_pres_bytes));
       pres_bytes += add_pres_bytes;
     }
 
     size_t presentation_bits = 0;
-    if (presentation_version == 0) {
-      // presentation version 0 is not supported, do nothing
+    *dolby_ims_indicator = false;
+    if (*presentation_version == 0) {
       LOG(WARNING) << "Presentation version 0 is not supported";
       return false;
     } else {
-      if (presentation_version == 1 || presentation_version == 2) {
-        if (presentation_version == 2) {
-          dolby_ims_indicator = true;
+      if (*presentation_version == 1 || *presentation_version == 2) {
+        if (*presentation_version == 2) {
+          *dolby_ims_indicator = true;
         }
         const size_t presentation_start = bit_reader.bit_position();
-        if (!ParseAC4PresentationV1Dsi(bit_reader,
-                                       mdcompat,
+        // dolby_atmos_indicator is extended in Dolby internal specs.
+        // It indicates whether the source content before encoding is Atmos.
+        // No final decision about how to use it in OTT.
+        // Parse it for the future usage.
+        uint8_t dolby_atmos_indicator;
+        if (!ParseAC4PresentationV1Dsi(bit_reader, pres_bytes, mdcompat,
                                        presentation_channel_mask_v1,
-                                       pres_bytes,
-                                       dolby_atmos_indicator)) {
+                                       dolby_cbi_indicator,
+                                       &dolby_atmos_indicator)) {
           return false;
         }
         const size_t presentation_end = bit_reader.bit_position();
         presentation_bits = presentation_end - presentation_start;
-        if (dolby_atmos_indicator) {
-          atmos_presentation = true;
-        }
       } else {
-        LOG(WARNING) << "Invaild Presentation version";
+        LOG(WARNING) << "Invalid Presentation version";
         return false;
       }
     }
     size_t skip_bits = pres_bytes * 8 - presentation_bits;
-    bit_reader.SkipBits(skip_bits);
-  }
-  if (dolby_ims_indicator) {
-    presentation_version = 2;
-  }
-  if (atmos_presentation) {
-    dolby_atmos_indicator = true;
+    RCHECK(bit_reader.SkipBits(skip_bits));
   }
   return true;
 }
 }  // namespace
 
 bool CalculateAC4ChannelMask(const std::vector<uint8_t>& ac4_data,
-                             uint32_t& channel_mask) {
+                             uint32_t* ac4_channel_mask) {
   uint8_t bitstream_version;
   uint8_t presentation_version;
   uint8_t mdcompat;
+  uint32_t pre_channel_mask;
   bool dolby_ims_indicator;
-  uint32_t presentation_channel_mask_v1 = 0;
-  bool dolby_atmos_indicator;
+  bool dolby_cbi_indicator;
 
-  if (!ExtractAc4Data(ac4_data, bitstream_version, presentation_version,
-                      dolby_ims_indicator, mdcompat,
-                      presentation_channel_mask_v1,
-                      dolby_atmos_indicator)) {
+  if (!ExtractAc4Data(ac4_data, &bitstream_version, &presentation_version,
+                      &mdcompat, &pre_channel_mask, &dolby_ims_indicator,
+                      &dolby_cbi_indicator)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
                  << base::HexEncode(ac4_data.data(), ac4_data.size());
     return false;
   }
 
-  if (presentation_channel_mask_v1 == 0) {
-    channel_mask = 0x800000;
+  if (pre_channel_mask) {
+    *ac4_channel_mask = pre_channel_mask;
   } else {
-    channel_mask = presentation_channel_mask_v1;
+    *ac4_channel_mask = 0x800000;
   }
   return true;
 }
 
-bool CalculateAC4ChannelMpegValue(const std::vector<uint8_t>& ac4_data,
-                                  uint32_t& channel_mpeg_value) {
+bool CalculateAC4ChannelMPEGValue(const std::vector<uint8_t>& ac4_data,
+                                  uint32_t* ac4_channel_mpeg_value) {
   uint8_t bitstream_version;
   uint8_t presentation_version;
   uint8_t mdcompat;
+  uint32_t pre_channel_mask;
   bool dolby_ims_indicator;
-  uint32_t channel_mask = 0;
-  bool dolby_atmos_indicator;
+  bool dolby_cbi_indicator;
 
-  if (!ExtractAc4Data(ac4_data, bitstream_version, presentation_version,
-                      dolby_ims_indicator, mdcompat, channel_mask,
-                      dolby_atmos_indicator)) {
+  if (!ExtractAc4Data(ac4_data, &bitstream_version, &presentation_version,
+                      &mdcompat, &pre_channel_mask, &dolby_ims_indicator,
+                      &dolby_cbi_indicator)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
                  << base::HexEncode(ac4_data.data(), ac4_data.size());
     return false;
   }
 
-  channel_mpeg_value = AC4ChannelMasktoMpegValue(channel_mask);
+  *ac4_channel_mpeg_value = AC4ChannelMasktoMPEGValue(pre_channel_mask);
   return true;
 }
 
 bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
-                     uint8_t& codec_info) {
+                     uint8_t* ac4_codec_info) {
   uint8_t bitstream_version;
   uint8_t presentation_version;
   uint8_t mdcompat;
+  uint32_t pre_channel_mask;
   bool dolby_ims_indicator;
-  uint32_t channel_mask;
-  bool dolby_atmos_indicator;
+  bool dolby_cbi_indicator;
 
-  if (!ExtractAc4Data(ac4_data, bitstream_version, presentation_version,
-                      dolby_ims_indicator, mdcompat, channel_mask,
-                      dolby_atmos_indicator)) {
+  if (!ExtractAc4Data(ac4_data, &bitstream_version, &presentation_version,
+                      &mdcompat, &pre_channel_mask, &dolby_ims_indicator,
+                      &dolby_cbi_indicator)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
                  << base::HexEncode(ac4_data.data(), ac4_data.size());
     return false;
   }
-  // TODO: The only valid value of bitstream_version (8 bits) is 2,
-  // presentation_version (8 bits) is 1 or 2, and mdcompat is 3 bits. So uint8_t
-  // is fine now. If Dolby extend the range of bitstream_version and
-  // presentation_version in future, need change it to uint16_t or uint32_t,
-  // and AudioStreamInfo::GetCodecString also need to be changed.
-  codec_info = ((bitstream_version << 5) | (presentation_version << 3) |
-                mdcompat);
+
+  // The valid value of bitstream_version (8 bits) is 2, the valid value of
+  // presentation_version (8 bits) is 1 or 2, and mdcompat is 3 bits.
+  // So uint8_t is fine now. If Dolby extends the value of bitstream_version and
+  // presentation_version in future, maybe need change the type from uint8_t to
+  // uint16_t or uint32_t to accommodate the valid values.
+  // If that, AudioStreamInfo::GetCodecString need to be changed accordingly.
+  // bitstream_version (3bits) + presentation_version (2bits) + mdcompat (3bits)
+  *ac4_codec_info = ((bitstream_version << 5) |
+                     ((presentation_version << 3) & 0x1F) |
+                      mdcompat & 0x7);
   return true;
 }
 
-bool GetAc4ImsInfo(const std::vector<uint8_t>& ac4_data, bool& ims_flag,
-                   bool& src_atmos_flag) {
+bool GetAc4ImmersiveInfo(const std::vector<uint8_t>& ac4_data,
+                         bool* ac4_ims_flag,
+                         bool* ac4_cbi_flag) {
   uint8_t bitstream_version;
   uint8_t presentation_version;
   uint8_t mdcompat;
-  uint32_t channel_mask;
+  uint32_t pre_channel_mask;
 
-  if (!ExtractAc4Data(ac4_data, bitstream_version, presentation_version,
-                      ims_flag, mdcompat, channel_mask, src_atmos_flag)) {
+  if (!ExtractAc4Data(ac4_data, &bitstream_version, &presentation_version,
+                      &mdcompat, &pre_channel_mask, ac4_ims_flag,
+                      ac4_cbi_flag)) {
     LOG(WARNING) << "Seeing invalid AC4 data: "
                  << base::HexEncode(ac4_data.data(), ac4_data.size());
     return false;

@@ -23,21 +23,21 @@ TEST(AC4AudioUtilTest, ChannelTest1) {
                                          0x50, 0x10, 0x00, 0x00, 0x03, 0x10,
                                          0x99, 0x5b, 0x80, 0x40};
 
-  uint32_t channel_mask;
-  uint32_t channel_mpeg_value;
-  uint8_t codec_info;
-  bool ims_flag;
-  bool src_atmos_flag;
+  uint32_t ac4_channel_mask;
+  uint32_t ac4_channel_mpeg_value;
+  uint8_t ac4_codec_info;
+  bool ac4_ims_flag;
+  bool ac4_cbi_flag;
 
-  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, channel_mask));
-  EXPECT_EQ((uint32_t)0x1, channel_mask);
-  EXPECT_TRUE(CalculateAC4ChannelMpegValue(ac4_data, channel_mpeg_value));
-  EXPECT_EQ((uint32_t)0x2, channel_mpeg_value);
-  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, codec_info));
-  EXPECT_EQ(80u, codec_info);
-  EXPECT_TRUE(GetAc4ImsInfo(ac4_data, ims_flag, src_atmos_flag));
-  EXPECT_TRUE(ims_flag);
-  EXPECT_TRUE(src_atmos_flag);
+  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, &ac4_channel_mask));
+  EXPECT_EQ((uint32_t)0x1, ac4_channel_mask);
+  EXPECT_TRUE(CalculateAC4ChannelMPEGValue(ac4_data, &ac4_channel_mpeg_value));
+  EXPECT_EQ((uint32_t)0x2, ac4_channel_mpeg_value);
+  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, &ac4_codec_info));
+  EXPECT_EQ(80u, ac4_codec_info);
+  EXPECT_TRUE(GetAc4ImmersiveInfo(ac4_data, &ac4_ims_flag, &ac4_cbi_flag));
+  EXPECT_TRUE(ac4_ims_flag);
+  EXPECT_FALSE(ac4_cbi_flag);
 }
 
 TEST(AC4AudioUtilTest, ChannelTest2) {
@@ -48,21 +48,21 @@ TEST(AC4AudioUtilTest, ChannelTest2) {
                                          0x00, 0x00, 0x11, 0xca, 0x02, 0x00,
                                          0x00, 0x11, 0xc0, 0x80};
 
-  uint32_t channel_mask;
-  uint32_t channel_mpeg_value;
-  uint8_t codec_info;
-  bool ims_flag;
-  bool src_atmos_flag;
+  uint32_t ac4_channel_mask;
+  uint32_t ac4_channel_mpeg_value;
+  uint8_t ac4_codec_info;
+  bool ac4_ims_flag;
+  bool ac4_cbi_flag;
 
-  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, channel_mask));
-  EXPECT_EQ((uint32_t)0x47, channel_mask);
-  EXPECT_TRUE(CalculateAC4ChannelMpegValue(ac4_data, channel_mpeg_value));
-  EXPECT_EQ((uint32_t)0x6, channel_mpeg_value);
-  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, codec_info));
-  EXPECT_EQ(73u, codec_info);
-  EXPECT_TRUE(GetAc4ImsInfo(ac4_data, ims_flag, src_atmos_flag));
-  EXPECT_FALSE(ims_flag);
-  EXPECT_FALSE(src_atmos_flag);
+  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, &ac4_channel_mask));
+  EXPECT_EQ((uint32_t)0x47, ac4_channel_mask);
+  EXPECT_TRUE(CalculateAC4ChannelMPEGValue(ac4_data, &ac4_channel_mpeg_value));
+  EXPECT_EQ((uint32_t)0x6, ac4_channel_mpeg_value);
+  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, &ac4_codec_info));
+  EXPECT_EQ(73u, ac4_codec_info);
+  EXPECT_TRUE(GetAc4ImmersiveInfo(ac4_data, &ac4_ims_flag, &ac4_cbi_flag));
+  EXPECT_FALSE(ac4_ims_flag);
+  EXPECT_FALSE(ac4_cbi_flag);
 }
 
 TEST(AC4AudioUtilTest, ChannelTest3) {
@@ -74,21 +74,21 @@ TEST(AC4AudioUtilTest, ChannelTest3) {
                                          0x00, 0x00, 0x62, 0x13, 0x2b, 0x70,
                                          0x00, 0x80};
 
-  uint32_t channel_mask;
-  uint32_t channel_mpeg_value;
-  uint8_t codec_info;
-  bool ims_flag;
-  bool src_atmos_flag;
+  uint32_t ac4_channel_mask;
+  uint32_t ac4_channel_mpeg_value;
+  uint8_t ac4_codec_info;
+  bool ac4_ims_flag;
+  bool ac4_cbi_flag;
 
-  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, channel_mask));
-  EXPECT_EQ((uint32_t)0x1, channel_mask);
-  EXPECT_TRUE(CalculateAC4ChannelMpegValue(ac4_data, channel_mpeg_value));
-  EXPECT_EQ((uint32_t)0x2, channel_mpeg_value);
-  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, codec_info));
-  EXPECT_EQ(72u, codec_info);
-  EXPECT_TRUE(GetAc4ImsInfo(ac4_data, ims_flag, src_atmos_flag));
-  EXPECT_FALSE(ims_flag);
-  EXPECT_FALSE(src_atmos_flag);
+  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, &ac4_channel_mask));
+  EXPECT_EQ((uint32_t)0x1, ac4_channel_mask);
+  EXPECT_TRUE(CalculateAC4ChannelMPEGValue(ac4_data, &ac4_channel_mpeg_value));
+  EXPECT_EQ((uint32_t)0x2, ac4_channel_mpeg_value);
+  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, &ac4_codec_info));
+  EXPECT_EQ(72u, ac4_codec_info);
+  EXPECT_TRUE(GetAc4ImmersiveInfo(ac4_data, &ac4_ims_flag, &ac4_cbi_flag));
+  EXPECT_FALSE(ac4_ims_flag);
+  EXPECT_FALSE(ac4_cbi_flag);
 }
 
 TEST(AC4AudioUtilTest, ChannelTest4) {
@@ -100,21 +100,21 @@ TEST(AC4AudioUtilTest, ChannelTest4) {
                                          0x20, 0x00, 0x03, 0x1d, 0x40, 0x40,
                                          0x00, 0x00, 0x08, 0x00, 0xc0};
 
-  uint32_t channel_mask;
-  uint32_t channel_mpeg_value;
-  uint8_t codec_info;
-  bool ims_flag;
-  bool src_atmos_flag;
+  uint32_t ac4_channel_mask;
+  uint32_t ac4_channel_mpeg_value;
+  uint8_t ac4_codec_info;
+  bool ac4_ims_flag;
+  bool ac4_cbi_flag;
 
-  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, channel_mask));
-  EXPECT_EQ((uint32_t)0xC7, channel_mask);
-  EXPECT_TRUE(CalculateAC4ChannelMpegValue(ac4_data, channel_mpeg_value));
-  EXPECT_EQ((uint32_t)0xffffffff, channel_mpeg_value);
-  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, codec_info));
-  EXPECT_EQ(75u, codec_info);
-  EXPECT_TRUE(GetAc4ImsInfo(ac4_data, ims_flag, src_atmos_flag));
-  EXPECT_FALSE(ims_flag);
-  EXPECT_TRUE(src_atmos_flag);
+  EXPECT_TRUE(CalculateAC4ChannelMask(ac4_data, &ac4_channel_mask));
+  EXPECT_EQ((uint32_t)0xC7, ac4_channel_mask);
+  EXPECT_TRUE(CalculateAC4ChannelMPEGValue(ac4_data, &ac4_channel_mpeg_value));
+  EXPECT_EQ((uint32_t)0xFFFFFFFF, ac4_channel_mpeg_value);
+  EXPECT_TRUE(GetAc4CodecInfo(ac4_data, &ac4_codec_info));
+  EXPECT_EQ(75u, ac4_codec_info);
+  EXPECT_TRUE(GetAc4ImmersiveInfo(ac4_data, &ac4_ims_flag, &ac4_cbi_flag));
+  EXPECT_FALSE(ac4_ims_flag);
+  EXPECT_TRUE(ac4_cbi_flag);
 }
 
 }  // namespace media

@@ -308,24 +308,11 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
-    // if-else structure is designed for future usage.
-    // - Currelty just keep it simple from Dolby's decision.
-    // - For immersive stereo content, use 2/IMS for all immersive stereo (
-    //   source content is Atmos or Non-Atmos).
-    // - For CBI content, use channel count (>=8)/IMS, and CBI source content
-    //   must be Atmos.
-    if (playlist.GetAC4ImsFlag() && playlist.GetAC4SourceAtmosFlag()) {
-      // AC4 Immersive stereo (IMS) stream, and source content is Atmos.
-      std::string channel_string = "2/IMS";
-      tag.AddQuotedString("CHANNELS", channel_string);
-    } else if (playlist.GetAC4ImsFlag() && !playlist.GetAC4SourceAtmosFlag()) {
-      // AC4 Immersive stereo (IMS) stream, but source content is not Atmos.
-      std::string channel_string = "2/IMS";
-      tag.AddQuotedString("CHANNELS", channel_string);
-    } else if (!playlist.GetAC4ImsFlag() && playlist.GetAC4SourceAtmosFlag()) {
-      // AC4 Channel based immersive (CBI) stream.
+    // Dolby decide using ISMA to present AC4 immersive audio (IMS and CBI, not
+    // include Object-based audio) internally. There is no public specs yet.
+    if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
       std::string channel_string =
-          std::to_string(playlist.GetNumChannels()) + "/IMS";
+        std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else {
       std::string channel_string = std::to_string(playlist.GetNumChannels());

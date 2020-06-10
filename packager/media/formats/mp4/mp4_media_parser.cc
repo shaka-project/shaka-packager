@@ -493,11 +493,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           break;
         case FOURCC_ac_4:
           codec_config = entry.dac4.data;
-          // Stop the process if find errors when parsing AC4 DSI, like
-          // bitstream version 0 (has beed deprecated) or multiple presentation
-          // stream (only used for broadcast now).
-          if (!GetAc4CodecInfo(codec_config, audio_object_type))
+          // Stop the process if have errors when parsing AC-4 dac4 box,
+          // bitstream version 0 (has beed deprecated) and contains multiple
+          // presentations in single AC-4 stream (only used for broadcast).
+          if (!GetAc4CodecInfo(codec_config, &audio_object_type)) {
+            LOG(ERROR) << "Failed to parse dac4.";
             return false;
+          }
           break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;
