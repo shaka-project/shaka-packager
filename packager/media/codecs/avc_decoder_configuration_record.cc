@@ -15,13 +15,9 @@
 namespace shaka {
 namespace media {
 
-AVCDecoderConfigurationRecord::AVCDecoderConfigurationRecord()
-    : version_(0),
-      profile_indication_(0),
-      profile_compatibility_(0),
-      avc_level_(0) {}
+AVCDecoderConfigurationRecord::AVCDecoderConfigurationRecord() = default;
 
-AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() {}
+AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() = default;
 
 bool AVCDecoderConfigurationRecord::ParseInternal() {
   // See ISO 14496-15 sec 5.3.3.1.2

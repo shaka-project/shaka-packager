@@ -90,6 +90,37 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithTransferCharacteristics) {
   EXPECT_EQ("avc3.64001e", avc_config.GetCodecString(FOURCC_avc3));
 }
 
+TEST(AVCDecoderConfigurationRecordTest, SuccessWithNoParameterSets) {
+  // clang-format off
+  const uint8_t kAvcDecoderConfigurationData[] = {
+      0x01,  // version
+      0x64,  // profile_indication
+      0x00,  // profile_compatibility
+      0x1E,  // avc_level
+      0xFF,  // Least significant 3 bits is length_size_minus_one
+      0xE0,  // Least significant 5 bits is num_sps
+      0x00,  // num_pps
+  };
+  // clang-format on
+
+  AVCDecoderConfigurationRecord avc_config;
+  ASSERT_TRUE(avc_config.Parse(kAvcDecoderConfigurationData,
+                               arraysize(kAvcDecoderConfigurationData)));
+
+  EXPECT_EQ(1u, avc_config.version());
+  EXPECT_EQ(0x64, avc_config.profile_indication());
+  EXPECT_EQ(0u, avc_config.profile_compatibility());
+  EXPECT_EQ(0x1E, avc_config.avc_level());
+  EXPECT_EQ(4u, avc_config.nalu_length_size());
+  EXPECT_EQ(0u, avc_config.coded_width());
+  EXPECT_EQ(0u, avc_config.coded_height());
+  EXPECT_EQ(0u, avc_config.pixel_width());
+  EXPECT_EQ(0u, avc_config.pixel_height());
+  EXPECT_EQ(0u, avc_config.transfer_characteristics());
+
+  EXPECT_EQ("avc3.64001e", avc_config.GetCodecString(FOURCC_avc3));
+}
+
 TEST(AVCDecoderConfigurationRecordTest, FailsOnInvalidNaluLengthSize) {
   // clang-format off
   const uint8_t kAvcDecoderConfigurationData[] = {

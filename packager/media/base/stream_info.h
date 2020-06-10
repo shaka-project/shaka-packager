@@ -53,6 +53,7 @@ enum Codec {
   kCodecFlac,
   kCodecOpus,
   kCodecVorbis,
+  kCodecMP3,
   kCodecAudioMaxPlusOne,
 
   kCodecText = 300,

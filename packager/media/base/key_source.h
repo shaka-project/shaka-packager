@@ -47,7 +47,7 @@ typedef std::map<std::string, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
 /// KeySource is responsible for encryption key acquisition.
 class KeySource {
  public:
-  KeySource(int protection_systems_flags, FourCC protection_scheme);
+  KeySource(ProtectionSystem protection_systems, FourCC protection_scheme);
 
   virtual ~KeySource();
 

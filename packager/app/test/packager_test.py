@@ -134,10 +134,10 @@ class DiffFilesPolicy(object):
       output, error = self._GitDiff(expected_file, actual_file)
 
       if output:
-        failure_messages += [output]
+        failure_messages += [output.decode('utf8')]
 
       if error:
-        failure_messages += [error]
+        failure_messages += [error.decode('utf8')]
 
     if self._exact:
       for diff_file in self._allowed_diff_files:
@@ -623,7 +623,13 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertEqual(self.packager.MpdGenerator(flags), 0)
 
   def testVersion(self):
-    self.assertRegexpMatches(
+    # To support python version 2, which does not have assertRegex.
+    if 'assertRegex' not in dir(self):
+      assert_regex = self.assertRegexpMatches
+    else:
+      assert_regex = self.assertRegex
+
+    assert_regex(
         self.packager.Version(), '^packager(.exe)? version '
         r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)[\r\n]+.*$')
 

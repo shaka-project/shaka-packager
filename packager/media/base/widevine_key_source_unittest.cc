@@ -252,13 +252,13 @@ class WidevineKeySourceTest : public Test {
   }
 
   void CreateWidevineKeySource() {
-    int protection_system_flags = NO_PROTECTION_SYSTEM_FLAG;
+    ProtectionSystem protection_system = ProtectionSystem::kNone;
     if (add_widevine_pssh_)
-      protection_system_flags |= WIDEVINE_PROTECTION_SYSTEM_FLAG;
+      protection_system |= ProtectionSystem::kWidevine;
     if (add_common_pssh_)
-      protection_system_flags |= COMMON_PROTECTION_SYSTEM_FLAG;
+      protection_system |= ProtectionSystem::kCommon;
     widevine_key_source_.reset(new WidevineKeySource(
-        kServerUrl, protection_system_flags, protection_scheme_));
+        kServerUrl, protection_system, protection_scheme_));
     widevine_key_source_->set_key_fetcher(std::move(mock_key_fetcher_));
   }
 

@@ -30,6 +30,8 @@ Step 1 is only required if there is any gyp file change. Otherwise, you
 may just run ninja.
 """
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -108,7 +110,7 @@ if __name__ == '__main__':
     else:
       os.environ['GYP_GENERATOR_FLAGS'] = gyp_generator_flags
 
-  print 'Updating projects from gyp files...'
+  print('Updating projects from gyp files...')
   sys.stdout.flush()
 
   # Off we go...

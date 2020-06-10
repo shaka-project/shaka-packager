@@ -308,9 +308,22 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
+    // According to HLS spec:
+    // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
+    // CHANNELS is a quoted-string that specifies an ordered,
+    // slash-separated ("/") list of parameters. The first parameter is a count
+    // of audio channels, and the second parameter identifies the encoding of
+    // object-based audio used by the Rendition. HLS Authoring Specification
+    // for Apple Devices Appendices documents how to handle Dolby Digital Plus
+    // JOC content.
+    // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
     // Dolby decide using ISMA to present AC4 immersive audio (IMS and CBI, not
     // include Object-based audio) internally. There is no public specs yet.
-    if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
+    if (playlist.GetEC3JocComplexity() != 0) {
+      std::string channel_string =
+        std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
+      tag.AddQuotedString("CHANNELS", channel_string);
+    } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
       std::string channel_string =
         std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);

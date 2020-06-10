@@ -520,6 +520,10 @@ int MediaPlaylist::GetNumChannels() const {
   return media_info_.audio_info().num_channels();
 }
 
+int MediaPlaylist::GetEC3JocComplexity() const {
+  return media_info_.audio_info().codec_specific_data().ec3_joc_complexity();
+}
+
 bool MediaPlaylist::GetAC4ImsFlag() const {
   return media_info_.audio_info().codec_specific_data().ac4_ims_flag();
 }

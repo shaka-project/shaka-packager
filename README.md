@@ -40,6 +40,7 @@ Shaka Packager supports:
   |       VP9         |    I / O     |    I / O     |       -      |      -      |       -      |
   |       AV1         |    I / O     |    I / O     |       -      |      -      |       -      |
   |       AAC         |    I / O     |      -       |     I / O    |      I      |       O      |
+  |       MP3         |      O       |      -       |     I / O    |      -      |       O      |
   |    Dolby AC3      |    I / O     |      -       |     I / O    |      -      |       O      |
   |    Dolby EAC3     |    I / O     |      -       |       O      |      -      |       O      |
   |       DTS         |    I / O     |      -       |       -      |      -      |       -      |

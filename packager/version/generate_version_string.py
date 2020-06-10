@@ -7,6 +7,8 @@
 # https://developers.google.com/open-source/licenses/bsd
 """This script is used to generate version string for packager."""
 
+from __future__ import print_function
+
 import subprocess
 
 # To support python version before 2.7, which does not have
@@ -47,6 +49,6 @@ if __name__ == '__main__':
     version_hash = 'unknown-version'
 
   if version_tag:
-    print '{0}-{1}'.format(version_tag, version_hash)
+    print('{0}-{1}'.format(version_tag, version_hash))
   else:
-    print version_hash
+    print(version_hash)

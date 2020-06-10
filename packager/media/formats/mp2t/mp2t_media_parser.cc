@@ -298,6 +298,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
           base::Bind(&Mp2tMediaParser::OnEmitSample, base::Unretained(this))));
       break;
     case TsStreamType::kAdtsAac:
+    case TsStreamType::kMpeg1Audio:
     case TsStreamType::kAc3:
       es_parser.reset(new EsParserAudio(
           pes_pid, static_cast<TsStreamType>(stream_type),

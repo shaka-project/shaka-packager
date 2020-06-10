@@ -22,6 +22,8 @@ enum class ObjectType : uint8_t {
   kForbidden = 0,
   kISO_14496_3 = 0x40,         // MPEG4 AAC
   kISO_13818_7_AAC_LC = 0x67,  // MPEG2 AAC-LC
+  kISO_13818_3_MPEG1 = 0x69,   // MPEG1 ISO/IEC 13818-3, 16,22.05,24kHz
+  kISO_11172_3_MPEG1 = 0x6B,   // MPEG1 ISO/IEC 11172-3, 32,44.1,48kHz
   kDTSC = 0xA9,                // DTS Coherent Acoustics audio
   kDTSE = 0xAC,                // DTS Express low bit rate audio
   kDTSH = 0xAA,                // DTS-HD High Resolution Audio

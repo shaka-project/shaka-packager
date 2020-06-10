@@ -38,14 +38,15 @@ class RawKeySource : public KeySource {
   /// Creates a new RawKeySource from the given data.  Returns null
   /// if the parameter is malformed.
   /// @param raw_key contains parameters to setup the key source.
-  /// @param protection_systems_flags is the flags indicating which PSSH should
+  /// @param protection_systems is the enum indicating which PSSH should
   ///        be included.
   /// @param protection_scheme is the Protection Scheme to be used for
   ///        encryption. It needs to be signalled in Widevine PSSH. This
   ///        argument can be ignored if Widevine PSSH is not generated.
-  static std::unique_ptr<RawKeySource> Create(const RawKeyParams& raw_key,
-                                              int protection_system_flags,
-                                              FourCC protection_scheme);
+  static std::unique_ptr<RawKeySource> Create(
+      const RawKeyParams& raw_key,
+      ProtectionSystem protection_systems,
+      FourCC protection_scheme);
 
  protected:
   // Allow default constructor for mock key sources.
@@ -53,7 +54,7 @@ class RawKeySource : public KeySource {
 
  private:
   RawKeySource(EncryptionKeyMap&& encryption_key_map,
-               int protection_systems_flags,
+               ProtectionSystem protection_systems,
                FourCC protection_scheme);
   RawKeySource(const RawKeySource&) = delete;
   RawKeySource& operator=(const RawKeySource&) = delete;

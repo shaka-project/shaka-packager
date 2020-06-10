@@ -188,6 +188,11 @@ class MediaPlaylist {
   /// @return number of channels for audio. 0 is returned for video.
   virtual int GetNumChannels() const;
 
+  /// @return Dolby Digital Plus JOC decoding complexity, ETSI TS 103 420 v1.2.1
+  ///         Backwards-compatible object audio carriage using Enhanced AC-3
+  ///         Standard C.3.2.3.
+  virtual int GetEC3JocComplexity() const;
+
   /// @return true if it's an AC-4 IMS stream, based on Dolby AC-4 in MPEG-DASH
   ///         for Online Delivery Specification 2.5.3.
   ///         https://developer.dolby.com/tools-media/online-delivery-kits/dolby-ac-4/

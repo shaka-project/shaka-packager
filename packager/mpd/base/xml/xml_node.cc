@@ -461,14 +461,46 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
   std::string audio_channel_config_value;
 
   if (audio_info.codec() == kEC3Codec) {
-    // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
-    // Interoperability Points v3.0 9.2.1.2.
-    const uint16_t ec3_channel_map =
-        base::HostToNet16(audio_info.codec_specific_data().ec3_channel_map());
-    audio_channel_config_value =
+    const auto& codec_data = audio_info.codec_specific_data();
+    // Use MPEG scheme if the mpeg value is available and valid, fallback to
+    // EC3 channel mapping otherwise.
+    // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
+    const uint32_t ec3_channel_mpeg_value = codec_data.ec3_channel_mpeg_value();
+    const uint32_t NO_MAPPING = 0xFFFFFFFF;
+    if (ec3_channel_mpeg_value == NO_MAPPING) {
+      // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
+      // Interoperability Points v3.0 9.2.1.2.
+      const uint16_t ec3_channel_map =
+        base::HostToNet16(codec_data.ec3_channel_map());
+      audio_channel_config_value =
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
-    audio_channel_config_scheme =
+      audio_channel_config_scheme =
         "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
+    } else {
+      // Calculate EC3 channel configuration descriptor value with MPEG scheme.
+      // Spec: ETSI TS 102 366 V1.4.1 Digital Audio Compression
+      // (AC-3, Enhanced AC-3) I.1.2.
+      audio_channel_config_value = base::UintToString(ec3_channel_mpeg_value);
+      audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
+    }
+    bool ret = AddDescriptor("AudioChannelConfiguration",
+                             audio_channel_config_scheme,
+                             audio_channel_config_value);
+    // Dolby Digital Plus JOC descriptor. Spec: ETSI TS 103 420 v1.2.1
+    // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
+    // D.2.2.
+    if (codec_data.ec3_joc_complexity() != 0) {
+      std::string ec3_joc_complexity =
+        base::UintToString(codec_data.ec3_joc_complexity());
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
+                           "JOC");
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2018:dash:"
+                           "EC3_ExtensionComplexityIndex:2018",
+                           ec3_joc_complexity);
+    }
+    return ret;
   } else if (audio_info.codec().substr(0, 4) == kAC4Codec) {
     const auto& codec_data = audio_info.codec_specific_data();
     const bool ac4_ims_flag = codec_data.ac4_ims_flag();

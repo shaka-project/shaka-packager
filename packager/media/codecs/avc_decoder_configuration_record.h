@@ -46,16 +46,16 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
  private:
   bool ParseInternal() override;
 
-  uint8_t version_;
-  uint8_t profile_indication_;
-  uint8_t profile_compatibility_;
-  uint8_t avc_level_;
+  uint8_t version_ = 0;
+  uint8_t profile_indication_ = 0;
+  uint8_t profile_compatibility_ = 0;
+  uint8_t avc_level_ = 0;
 
   // Extracted from SPS.
-  uint32_t coded_width_;
-  uint32_t coded_height_;
-  uint32_t pixel_width_;
-  uint32_t pixel_height_;
+  uint32_t coded_width_ = 0;
+  uint32_t coded_height_ = 0;
+  uint32_t pixel_width_ = 0;
+  uint32_t pixel_height_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(AVCDecoderConfigurationRecord);
 };
