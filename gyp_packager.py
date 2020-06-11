@@ -66,8 +66,10 @@ if __name__ == '__main__':
 
   # Set these default GYP_DEFINES if user does not set the value explicitly.
   _DEFAULT_DEFINES = {'test_isolation_mode': 'noop',
+                      'use_custom_libcxx': 0,
                       'use_glib': 0,
                       'use_openssl': 1,
+                      'use_sysroot': 0,
                       'use_x11': 0,
                       'linux_use_bundled_binutils': 0,
                       'linux_use_bundled_gold': 0,
@@ -78,9 +80,6 @@ if __name__ == '__main__':
   for key, value in _DEFAULT_DEFINES.items():
     if key not in gyp_defines:
       gyp_defines += ' {0}={1}'.format(key, value)
-  # Somehow gcc don't like use_sysroot.
-  if 'clang=0' in gyp_defines and 'use_sysroot' not in gyp_defines:
-    gyp_defines += ' use_sysroot=0'
   os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
   # Default to ninja, but only if no generator has explicitly been set.
