@@ -30,23 +30,18 @@ const uint8_t kProgramAssociationTableId = 0x00;
 const uint8_t kPat[] = {
     0x00,  // pointer field
     kProgramAssociationTableId,
-    0xB0,  // The last 2 '00' assumes that this PAT is not very long.
-    0x0D,  // Length of the rest of this array.
-    0x00,
-    0x00,  // Transport stream ID is 0.
-    0xC1,  // version number 0, current next indicator 1.
-    0x00,  // section number
-    0x00,  // last section number
+    0xB0,        // The last 2 '00' assumes that this PAT is not very long.
+    0x0D,        // Length of the rest of this array.
+    0x00, 0x00,  // Transport stream ID is 0.
+    0xC1,        // version number 0, current next indicator 1.
+    0x00,        // section number
+    0x00,        // last section number
     // program number -> PMT PID mapping.
-    0x00,
-    0x01,  // program number is 1.
-    0xE0,  // first 3 bits is reserved.
+    0x00, 0x01,  // program number is 1.
+    0xE0,        // first 3 bits is reserved.
     ProgramMapTableWriter::kPmtPid,
     // CRC32.
-    0xF9,
-    0x62,
-    0xF5,
-    0x8B,
+    0xF9, 0x62, 0xF5, 0x8B,
 };
 
 const bool kHasPcr = true;
@@ -56,7 +51,8 @@ const bool kPayloadUnitStartIndicator = true;
 // without adaptation field or the payload.
 const int kTsPacketHeaderSize = 4;
 const int kTsPacketSize = 188;
-const int kTsPacketMaximumPayloadSize = kTsPacketSize - kTsPacketHeaderSize;
+const int kTsPacketMaximumPayloadSize =
+    kTsPacketSize - kTsPacketHeaderSize;
 
 const size_t kMaxPesPacketLengthValue = 0xFFFF;
 
@@ -91,9 +87,9 @@ void WritePtsOrDts(uint8_t leading_bits,
   writer->AppendInt(fifth_byte);
 }
 
-bool WritePesToFile(const PesPacket& pes,
-                    ContinuityCounter* continuity_counter,
-                    File* file) {
+bool WritePesToBuffer(const PesPacket& pes,
+                      ContinuityCounter* continuity_counter,
+                      BufferWriter* current_buffer) {
   // The size of the length field.
   const int kAdaptationFieldLengthSize = 1;
   // The size of the flags field.
@@ -157,7 +153,9 @@ bool WritePesToFile(const PesPacket& pes,
                                !kPayloadUnitStartIndicator, pid, !kHasPcr, 0,
                                continuity_counter, &output_writer);
   }
-  return output_writer.WriteToFile(file).ok();
+
+  current_buffer->AppendBuffer(output_writer);
+  return true;
 }
 
 }  // namespace
@@ -167,7 +165,8 @@ TsWriter::TsWriter(std::unique_ptr<ProgramMapTableWriter> pmt_writer)
 
 TsWriter::~TsWriter() {}
 
-bool TsWriter::NewSegment(const std::string& file_name) {
+bool TsWriter::CreateFileAndFlushBuffer(const std::string& file_name) {
+
   if (current_file_) {
     LOG(ERROR) << "File " << current_file_->file_name() << " still open.";
     return false;
@@ -177,6 +176,12 @@ bool TsWriter::NewSegment(const std::string& file_name) {
     LOG(ERROR) << "Failed to open file " << file_name;
     return false;
   }
+  return current_buffer_.get()->WriteToFile(current_file_.get()).ok();
+}
+
+bool TsWriter::NewSegment() {
+ 
+  current_buffer_  = std::unique_ptr<BufferWriter>(new BufferWriter());
 
   BufferWriter psi;
   WritePatToBuffer(kPat, arraysize(kPat), &pat_continuity_counter_, &psi);
@@ -189,12 +194,7 @@ bool TsWriter::NewSegment(const std::string& file_name) {
       return false;
     }
   }
-
-  if (!psi.WriteToFile(current_file_.get()).ok()) {
-    LOG(ERROR) << "Failed to write PSI to file.";
-    return false;
-  }
-
+  current_buffer_.get()->AppendBuffer(psi);
   return true;
 }
 
@@ -207,10 +207,9 @@ bool TsWriter::FinalizeSegment() {
 }
 
 bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet) {
-  DCHECK(current_file_);
-  if (!WritePesToFile(*pes_packet, &elementary_stream_continuity_counter_,
-                      current_file_.get())) {
-    LOG(ERROR) << "Failed to write pes to file.";
+  if (!WritePesToBuffer(*pes_packet, &elementary_stream_continuity_counter_,
+                        current_buffer_.get())) {
+    LOG(ERROR) << "Failed to write pes to buffer.";
     return false;
   }
 
@@ -218,16 +217,11 @@ bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet) {
   return true;
 }
 
-base::Optional<uint64_t> TsWriter::GetFilePosition() {
-  if (!current_file_)
+base::Optional<uint64_t> TsWriter::GetPosition() {
+  if (!current_buffer_.get())
     return base::nullopt;
-  uint64_t position;
-  return current_file_->Tell(&position) ? base::make_optional(position)
-                                        : base::nullopt;
-}
-
-bool TsWriter::RenameFile(const std::string& new_segment_name) {
-  return file()->Rename(new_segment_name);
+  uint64_t position = current_buffer_.get()->Size();
+  return position != 0 ? base::make_optional(position) : base::nullopt;
 }
 
 }  // namespace mp2t

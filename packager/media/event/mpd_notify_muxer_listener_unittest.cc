@@ -10,7 +10,6 @@
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
-
 #include <algorithm>
 #include <vector>
 
@@ -53,8 +52,8 @@ void SetDefaultLiveMuxerOptions(media::MuxerOptions* muxer_options) {
 }
 
 const uint8_t kBogusIv[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
 };
 
 }  // namespace
@@ -164,9 +163,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       "  protection_scheme: 'cenc'\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: '" +
-      std::string(kExpectedDefaultPsshBox) +
-      "'\n"
+      "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
       "  }\n"
       "  default_key_id: 'defaultkeyid'\n"
       "  include_mspr_pro: 1\n"
@@ -370,9 +367,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "  default_key_id: \"defaultkeyid\"\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
-      "    pssh: \"" +
-      std::string(kExpectedDefaultPsshBox) +
-      "\"\n"
+      "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
       "  }\n"
       "  protection_scheme: 'cbcs'\n"
       "  include_mspr_pro: 1\n"

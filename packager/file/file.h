@@ -93,16 +93,6 @@ class File {
   ///         off.
   const std::string& file_name() const { return file_name_; }
 
-  /// Set the file name.
-  void set_file_name(const std::string& newFileName) {
-    file_name_ = newFileName;
-  }
-
-  /// Rename the file
-  /// @param new file name.
-  /// @return true on success, false otherwise.
-  virtual bool Rename(const std::string& new_file_name) = 0;
-
   // ************************************************************
   // * Static Methods: File-on-the-filesystem status
   // ************************************************************

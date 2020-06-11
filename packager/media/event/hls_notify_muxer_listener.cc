@@ -7,7 +7,6 @@
 #include "packager/media/event/hls_notify_muxer_listener.h"
 
 #include <memory>
-
 #include "packager/base/logging.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/media/base/muxer_options.h"

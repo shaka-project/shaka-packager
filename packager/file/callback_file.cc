@@ -65,12 +65,4 @@ bool CallbackFile::Open() {
   return ParseCallbackFileName(file_name(), &callback_params_, &name_);
 }
 
-bool CallbackFile::Rename(const std::string& new_file_name) {
-  if (rename(file_name().c_str(), new_file_name.c_str()) != 0) {
-    return false;
-  }
-  set_file_name(new_file_name);
-  return true;
-}
-
 }  // namespace shaka

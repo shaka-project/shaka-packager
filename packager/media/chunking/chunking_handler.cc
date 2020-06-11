@@ -106,7 +106,7 @@ Status ChunkingHandler::OnMediaSample(
                                 : (timestamp - cue_offset_) / segment_duration_;
     if (!segment_start_time_ ||
         IsNewSegmentIndex(segment_index, current_segment_index_)) {
-      if (!isGreaterSegmentIndex(segment_index, current_segment_index_)) {
+      if (!isGreaterSegmentIndex(segment_index, set_segment_index_)) {
         set_segment_index_ = current_segment_index_ + 1;
       } else {
         set_segment_index_ = segment_index;

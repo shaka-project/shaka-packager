@@ -4,8 +4,6 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/ts_segmenter.h"
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -14,17 +12,18 @@
 #include "packager/media/event/mock_muxer_listener.h"
 #include "packager/media/formats/mp2t/pes_packet.h"
 #include "packager/media/formats/mp2t/program_map_table_writer.h"
+#include "packager/media/formats/mp2t/ts_segmenter.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {
 namespace mp2t {
 
-using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
+using ::testing::_;
 
 namespace {
 
@@ -51,9 +50,7 @@ const uint8_t kNaluLengthSize = 1;
 const bool kIsEncrypted = false;
 
 const uint8_t kAnyData[] = {
-    0x01,
-    0x0F,
-    0x3C,
+   0x01, 0x0F, 0x3C,
 };
 
 class MockPesPacketGenerator : public PesPacketGenerator {
@@ -84,10 +81,9 @@ class MockTsWriter : public TsWriter {
             // Create a bogus pmt writer, which we don't really care.
             new VideoProgramMapTableWriter(kUnknownCodec))) {}
 
-  MOCK_METHOD1(NewSegment, bool(const std::string& file_name));
+  MOCK_METHOD0(NewSegment, bool());
   MOCK_METHOD0(SignalEncrypted, void());
   MOCK_METHOD0(FinalizeSegment, bool());
-  MOCK_METHOD1(RenameFile, bool(const std::string& file_name));
 
   // Similar to the hack above but takes a std::unique_ptr.
   MOCK_METHOD1(AddPesPacketMock, bool(PesPacket* pes_packet));
@@ -148,7 +144,7 @@ TEST_F(TsSegmenterTest, AddSample) {
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   Sequence writer_sequence;
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -214,7 +210,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
                            kTimeScale * 11, _, _));
 
   Sequence writer_sequence;
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -247,7 +243,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file2.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -344,7 +340,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
 
-  ON_CALL(*mock_ts_writer_, NewSegment(_)).WillByDefault(Return(true));
+  ON_CALL(*mock_ts_writer_, NewSegment()).WillByDefault(Return(true));
   ON_CALL(*mock_ts_writer_, FinalizeSegment()).WillByDefault(Return(true));
   ON_CALL(*mock_ts_writer_, AddPesPacketMock(_)).WillByDefault(Return(true));
   ON_CALL(*mock_pes_packet_generator_, Initialize(_))

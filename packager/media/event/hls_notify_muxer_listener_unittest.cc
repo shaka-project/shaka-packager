@@ -4,14 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/event/hls_notify_muxer_listener.h"
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/muxer_listener_test_helper.h"
 
 namespace shaka {
@@ -67,15 +66,12 @@ class MockHlsNotifier : public hls::HlsNotifier {
 // Doesn't really matter what the values are as long as it is a system ID (16
 // bytes).
 const uint8_t kAnySystemId[] = {
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+  0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 };
 
 const uint8_t kAnyData[] = {
-    0xFF,
-    0x78,
-    0xAA,
-    0x6B,
+  0xFF, 0x78, 0xAA, 0x6B,
 };
 
 const uint64_t kSegmentStartOffset = 10000;

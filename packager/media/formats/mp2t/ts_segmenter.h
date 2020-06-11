@@ -8,7 +8,6 @@
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
 #include <memory>
-
 #include "packager/file/file.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/formats/mp2t/pes_packet_generator.h"
@@ -95,13 +94,10 @@ class TsSegmenter {
   // Used for calculating the duration in seconds fo the current segment.
   double timescale_scale_ = 1.0;
 
-  // Used for segment template.
-  uint64_t segment_number_ = 0;
-
   std::unique_ptr<TsWriter> ts_writer_;
-  // Set to true if TsWriter::NewFile() succeeds, set to false after
-  // TsWriter::FinalizeFile() succeeds.
-  bool ts_writer_file_opened_ = false;
+  // Set to true if ts_writer buffer is initialized, set to false after
+  // TsWriter::FinalizeSegment() succeeds.
+  bool ts_writer_buffer_initialized_ = false;
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
   // For OnNewSegment().

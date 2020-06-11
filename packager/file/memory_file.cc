@@ -191,11 +191,4 @@ void MemoryFile::Delete(const std::string& file_name) {
   FileSystem::Instance()->Delete(file_name);
 }
 
-bool MemoryFile::Rename(const std::string& new_file_name) {
-  if (rename(file_name().c_str(), new_file_name.c_str()) != 0) {
-    return false;
-  }
-  set_file_name(new_file_name);
-  return true;
-}
 }  // namespace shaka

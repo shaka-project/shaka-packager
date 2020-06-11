@@ -11,7 +11,6 @@
 #define MPD_BASE_MPD_NOTIFIER_H_
 
 #include <stdint.h>
-
 #include <string>
 #include <vector>
 
