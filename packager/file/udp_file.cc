@@ -27,7 +27,7 @@
 // IP_MULTICAST_ALL has been supported since kernel version 2.6.31 but we may be
 // building on a machine that is older than that.
 #ifndef IP_MULTICAST_ALL
-#define IP_MULTICAST_ALL 49
+#define IP_MULTICAST_ALL      49
 #endif
 
 #endif  // defined(OS_WIN)
@@ -205,20 +205,24 @@ bool UdpFile::Open() {
       struct ip_mreq_source source_multicast_group;
 
       source_multicast_group.imr_multiaddr = local_in_addr;
-      if (inet_pton(AF_INET, options->interface_address().c_str(),
+      if (inet_pton(AF_INET,
+                    options->interface_address().c_str(),
                     &source_multicast_group.imr_interface) != 1) {
         LOG(ERROR) << "Malformed IPv4 interface address "
                    << options->interface_address();
         return false;
       }
-      if (inet_pton(AF_INET, options->source_address().c_str(),
+      if (inet_pton(AF_INET,
+                    options->source_address().c_str(),
                     &source_multicast_group.imr_sourceaddr) != 1) {
         LOG(ERROR) << "Malformed IPv4 source specific multicast address "
                    << options->source_address();
         return false;
       }
 
-      if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_SOURCE_MEMBERSHIP,
+      if (setsockopt(new_socket.get(),
+                     IPPROTO_IP,
+                     IP_ADD_SOURCE_MEMBERSHIP,
                      reinterpret_cast<const char*>(&source_multicast_group),
                      sizeof(source_multicast_group)) < 0) {
         LOG(ERROR) << "Failed to join multicast group, error = "
@@ -245,7 +249,7 @@ bool UdpFile::Open() {
                    << GetSocketErrorCode();
         return false;
       }
-    }
+  }
 
 #if defined(__linux__)
     // Disable IP_MULTICAST_ALL to avoid interference caused when two sockets

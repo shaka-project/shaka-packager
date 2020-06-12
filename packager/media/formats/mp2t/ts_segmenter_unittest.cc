@@ -50,7 +50,7 @@ const uint8_t kNaluLengthSize = 1;
 const bool kIsEncrypted = false;
 
 const uint8_t kAnyData[] = {
-   0x01, 0x0F, 0x3C,
+    0x01, 0x0F, 0x3C,
 };
 
 class MockPesPacketGenerator : public PesPacketGenerator {
@@ -349,9 +349,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   ON_CALL(*mock_pes_packet_generator_, Flush()).WillByDefault(Return(true));
 
   const uint8_t kAnyData[] = {
-      0x01,
-      0x0F,
-      0x3C,
+      0x01, 0x0F, 0x3C,
   };
   std::shared_ptr<MediaSample> sample1 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);

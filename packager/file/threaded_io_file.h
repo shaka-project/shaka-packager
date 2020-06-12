@@ -9,7 +9,6 @@
 
 #include <atomic>
 #include <memory>
-
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
