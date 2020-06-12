@@ -81,6 +81,7 @@ class MockTsWriter : public TsWriter {
             // Create a bogus pmt writer, which we don't really care.
             new VideoProgramMapTableWriter(kUnknownCodec))) {}
 
+  MOCK_METHOD1(CreateFileAndFlushBuffer, bool(const std::string& file_name));
   MOCK_METHOD0(NewSegment, bool());
   MOCK_METHOD0(SignalEncrypted, void());
   MOCK_METHOD0(FinalizeSegment, bool());

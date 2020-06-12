@@ -145,6 +145,8 @@ TEST_F(TsWriterTest, ClearH264Psi) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
+
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -193,6 +195,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -214,6 +217,7 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   EXPECT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -246,11 +250,13 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   EXPECT_TRUE(ts_writer.FinalizeSegment());
 
   // Overwrite the file but as encrypted segment.
   ts_writer.SignalEncrypted();
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   EXPECT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -271,6 +277,7 @@ TEST_F(TsWriterTest, EncryptedSegmentPmtFailure) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   EXPECT_TRUE(ts_writer.FinalizeSegment());
 
   ts_writer.SignalEncrypted();
@@ -286,6 +293,7 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -309,11 +317,13 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
 
   TsWriter ts_writer(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   EXPECT_TRUE(ts_writer.FinalizeSegment());
 
   // Overwrite the file but as encrypted segment.
   ts_writer.SignalEncrypted();
   EXPECT_TRUE(ts_writer.NewSegment());
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   EXPECT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -341,6 +351,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
   pes->mutable_data()->assign(kAnyData, kAnyData + arraysize(kAnyData));
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes)));
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -401,6 +412,7 @@ TEST_F(TsWriterTest, BigPesPacket) {
   *pes->mutable_data() = big_data;
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes)));
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -435,6 +447,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   pes->mutable_data()->assign(kAnyData, kAnyData + arraysize(kAnyData));
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes)));
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -496,6 +509,7 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
   *pes->mutable_data() = pes_payload;
 
   EXPECT_TRUE(ts_writer.AddPesPacket(std::move(pes)));
+  EXPECT_TRUE(ts_writer.CreateFileAndFlushBuffer(test_file_name_));
   ASSERT_TRUE(ts_writer.FinalizeSegment());
 
   const uint8_t kExpectedOutputPrefix[] = {
