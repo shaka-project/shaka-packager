@@ -125,7 +125,7 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "ec-3";
     case kCodecAC4:
       // ETSI TS 103 190-2 Digital Audio Compression (AC-4) Standard; Part 2:
-      // Immersive and personalized audio E.13. audio_object_type is compose of
+      // Immersive and personalized audio E.13. audio_object_type is composed of
       // bitstream_version (3bits), presentation_version (2bits) and
       // mdcompat (3bits)
       return base::StringPrintf(

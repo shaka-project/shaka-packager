@@ -317,8 +317,9 @@ void BuildMediaTag(const MediaPlaylist& playlist,
     // for Apple Devices Appendices documents how to handle Dolby Digital Plus
     // JOC content.
     // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
-    // Dolby decide using ISMA to present AC4 immersive audio (IMS and CBI, not
-    // include Object-based audio) internally. There is no public specs yet.
+    // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
+    // CBI without object-based audio) for Dolby internal use only. IMSA is not
+    // included in any publicly-available specifications as of June, 2020.
     if (playlist.GetEC3JocComplexity() != 0) {
       std::string channel_string =
         std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
@@ -332,7 +333,6 @@ void BuildMediaTag(const MediaPlaylist& playlist,
       tag.AddQuotedString("CHANNELS", channel_string);
     }
   }
-
   out->append("\n");
 }
 
