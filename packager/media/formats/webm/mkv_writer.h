@@ -13,6 +13,7 @@
 #include "packager/file/file_closer.h"
 #include "packager/status.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include "packager/media/base/buffer_writer.h"
 
 namespace shaka {
 namespace media {
@@ -22,6 +23,10 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
  public:
   MkvWriter();
   ~MkvWriter() override;
+
+  /// Initialize a buffer.
+  /// @return Whether the operation succeeded.
+  Status OpenBuffer();
 
   /// Opens the given file for writing.  This MUST be called before any other
   /// calls.
@@ -58,10 +63,17 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
   /// @return The number of bytes written; or < 0 on error.
   int64_t WriteFromFile(File* source, int64_t max_copy);
 
+  /// Creates a file with name @a file_name and flushes 
+  /// current_buffer_ to it.
+  /// @param name The path to the file to open.
+  /// @return File creation and buffer flushing succeeded or failed. 
+  virtual bool WriteFile(const std::string& file_name);
+
   File* file() { return file_.get(); }
 
  private:
   std::unique_ptr<File, FileCloser> file_;
+  std::unique_ptr<BufferWriter> current_buffer_;
   // Keep track of the position and whether we can seek.
   mkvmuxer::int64 position_;
   bool seekable_;
