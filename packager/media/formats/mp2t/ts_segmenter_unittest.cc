@@ -81,7 +81,8 @@ class MockTsWriter : public TsWriter {
             // Create a bogus pmt writer, which we don't really care.
             new VideoProgramMapTableWriter(kUnknownCodec))) {}
 
-  MOCK_METHOD1(NewSegment, bool(const std::string& file_name));
+  MOCK_METHOD1(WriteFile, bool(const std::string& file_name));
+  MOCK_METHOD0(NewSegment, bool());
   MOCK_METHOD0(SignalEncrypted, void());
   MOCK_METHOD0(FinalizeSegment, bool());
 
@@ -144,7 +145,7 @@ TEST_F(TsSegmenterTest, AddSample) {
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   Sequence writer_sequence;
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -212,7 +213,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
                            kTimeScale * 11, _));
 
   Sequence writer_sequence;
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -246,7 +247,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_CALL(*mock_ts_writer_, FinalizeSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file2.ts")))
+  EXPECT_CALL(*mock_ts_writer_, NewSegment())
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
@@ -343,7 +344,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
 
-  ON_CALL(*mock_ts_writer_, NewSegment(_)).WillByDefault(Return(true));
+  ON_CALL(*mock_ts_writer_, NewSegment()).WillByDefault(Return(true));
   ON_CALL(*mock_ts_writer_, FinalizeSegment()).WillByDefault(Return(true));
   ON_CALL(*mock_ts_writer_, AddPesPacketMock(_)).WillByDefault(Return(true));
   ON_CALL(*mock_pes_packet_generator_, Initialize(_))

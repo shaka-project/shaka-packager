@@ -102,7 +102,7 @@ Status TsSegmenter::AddSample(const MediaSample& sample) {
   if (sample.is_encrypted())
     ts_writer_->SignalEncrypted();
 
-  if (!ts_writer_file_opened_ && !sample.is_key_frame())
+  if (!ts_writer_buffer_initialized_ && !sample.is_key_frame())
     LOG(WARNING) << "A segment will start with a non key frame.";
 
   if (!pes_packet_generator_->PushSample(sample)) {
@@ -122,19 +122,16 @@ void TsSegmenter::InjectPesPacketGeneratorForTesting(
 }
 
 void TsSegmenter::SetTsWriterFileOpenedForTesting(bool value) {
-  ts_writer_file_opened_ = value;
+  ts_writer_buffer_initialized_ = value;
 }
 
 Status TsSegmenter::OpenNewSegmentIfClosed(int64_t next_pts) {
-  if (ts_writer_file_opened_)
+  if (ts_writer_buffer_initialized_)
     return Status::OK;
-  const std::string segment_name =
-      GetSegmentName(muxer_options_.segment_template, next_pts,
-                     segment_number_++, muxer_options_.bandwidth);
-  if (!ts_writer_->NewSegment(segment_name))
+  SetSegmentStartTimestamp(next_pts);
+  if (!ts_writer_->NewSegment())
     return Status(error::MUXER_FAILURE, "Failed to initilize TsPacketWriter.");
-  current_segment_path_ = segment_name;
-  ts_writer_file_opened_ = true;
+  ts_writer_buffer_initialized_ = true;
   return Status::OK;
 }
 
@@ -148,13 +145,13 @@ Status TsSegmenter::WritePesPacketsToFile() {
       return status;
 
     if (listener_ && IsVideoCodec(codec_) && pes_packet->is_key_frame()) {
-      base::Optional<uint64_t> start_pos = ts_writer_->GetFilePosition();
+      base::Optional<uint64_t> start_pos = ts_writer_->GetPosition();
 
       const int64_t timestamp = pes_packet->pts();
       if (!ts_writer_->AddPesPacket(std::move(pes_packet)))
         return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
 
-      base::Optional<uint64_t> end_pos = ts_writer_->GetFilePosition();
+      base::Optional<uint64_t> end_pos = ts_writer_->GetPosition();
       if (!start_pos || !end_pos) {
         return Status(error::MUXER_FAILURE,
                       "Failed to get file position in WritePesPacketsToFile.");
@@ -171,30 +168,37 @@ Status TsSegmenter::WritePesPacketsToFile() {
 Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
                                     uint64_t duration) {
   if (!pes_packet_generator_->Flush()) {
-    return Status(error::MUXER_FAILURE,
-                  "Failed to flush PesPacketGenerator.");
+    return Status(error::MUXER_FAILURE, "Failed to flush PesPacketGenerator.");
   }
   Status status = WritePesPacketsToFile();
   if (!status.ok())
     return status;
 
-  // This method may be called from Finalize() so ts_writer_file_opened_ could
+  // This method may be called from Finalize() so ts_writer_buffer_initialized_ could
   // be false.
-  if (ts_writer_file_opened_) {
+  if (ts_writer_buffer_initialized_) {
+    std::string segment_path =
+        GetSegmentName(muxer_options_.segment_template, GetSegmentStartTimestamp(),
+                       segment_number_++, muxer_options_.bandwidth);
+
+    if (!ts_writer_->WriteFile(segment_path)) {
+      LOG(ERROR) << "Failed to create new ts segment file.";
+    }
+
     if (!ts_writer_->FinalizeSegment()) {
       return Status(error::MUXER_FAILURE, "Failed to finalize TsWriter.");
     }
+    
     if (listener_) {
       const int64_t file_size =
-          File::GetFileSize(current_segment_path_.c_str());
-      listener_->OnNewSegment(current_segment_path_,
+          File::GetFileSize(segment_path.c_str());
+      listener_->OnNewSegment(segment_path,
                               start_timestamp * timescale_scale_ +
                                   transport_stream_timestamp_offset_,
                               duration * timescale_scale_, file_size);
     }
-    ts_writer_file_opened_ = false;
+    ts_writer_buffer_initialized_ = false;
   }
-  current_segment_path_.clear();
   return Status::OK;
 }
 

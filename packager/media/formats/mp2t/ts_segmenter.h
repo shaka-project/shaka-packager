@@ -69,6 +69,10 @@ class TsSegmenter {
 
   /// Only for testing.
   void SetTsWriterFileOpenedForTesting(bool value);
+  
+  /// @param pts value of segment_start_timestamp_.
+  void SetSegmentStartTimestamp(int pts) { segment_start_timestamp_ = pts;};
+  int GetSegmentStartTimestamp() {return segment_start_timestamp_; };
 
  private:
   Status OpenNewSegmentIfClosed(int64_t next_pts);
@@ -93,16 +97,13 @@ class TsSegmenter {
   uint64_t segment_number_ = 0;
 
   std::unique_ptr<TsWriter> ts_writer_;
-  // Set to true if TsWriter::NewFile() succeeds, set to false after
-  // TsWriter::FinalizeFile() succeeds.
-  bool ts_writer_file_opened_ = false;
+  
+  // Set to true if ts_writer buffer is initialized, set to false after
+  // TsWriter::FinalizeSegment() succeeds.
+  bool ts_writer_buffer_initialized_ = false;
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
-  // For OnNewSegment().
-  // Path of the current segment so that File::GetFileSize() can be used after
-  // the segment has been finalized.
-  std::string current_segment_path_;
-
+  int segment_start_timestamp_ = -1;
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
 };
 
