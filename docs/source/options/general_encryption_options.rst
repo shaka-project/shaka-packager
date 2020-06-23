@@ -43,3 +43,8 @@ General encryption options
     Protection systems to be generated. Supported protection systems include
     Widevine, PlayReady, FairPlay, Marlin, and
     `CommonSystem <https://goo.gl/s8RIhr>`_.
+
+--playready_extra_header_data <string>
+
+    Extra XML data to add to PlayReady PSSH data.  Can be specified even if
+    using another key source.
