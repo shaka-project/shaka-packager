@@ -20,7 +20,7 @@ Synopsis
 
 **key_info_string** is of the form::
 
-    label=<label>:key_id=<key_id>:key=<key>
+    label=<label>:key_id=<key_id>:key=<key>[:iv=<initialization_vector>]
 
 Custom PSSH(s) can be provided in *--pssh*. If neither --pssh nor
 --protection_systems is specified, `v1 common PSSH box <https://goo.gl/s8RIhr>`_
