@@ -214,7 +214,7 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
         return false;
       }
       if (!base::HexStringToBytes(value_map[kKeyIvLabel], &key_info.iv)) {
-        LOG(ERROR) << "Empty key or invalid hex string for IV: "
+        LOG(ERROR) << "Empty IV or invalid hex string for IV: "
                    << value_map[kKeyIvLabel];
         return false;
       }

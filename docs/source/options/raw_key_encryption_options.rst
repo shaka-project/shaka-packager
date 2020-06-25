@@ -28,7 +28,7 @@ Raw key encryption options
     *key_id* and *key* should be 32-digit hex strings.
 
     *initialization_vector* is an optional IV with the same format and semantics
-    as the parameter for the --iv option below. This is mutually exclusive with
+    as the parameter for the *--iv* option below. This is mutually exclusive with
     that option.
 
 --iv <16-digit or 32-digit hex string>
