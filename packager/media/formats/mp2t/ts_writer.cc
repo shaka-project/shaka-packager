@@ -165,23 +165,7 @@ TsWriter::TsWriter(std::unique_ptr<ProgramMapTableWriter> pmt_writer)
 
 TsWriter::~TsWriter() {}
 
-bool TsWriter::WriteFile(const std::string& file_name) {
-  if (current_file_) {
-    LOG(ERROR) << "File " << current_file_->file_name() << " still open.";
-    return false;
-  }
-  current_file_.reset(File::Open(file_name.c_str(), "w"));
-  if (!current_file_) {
-    LOG(ERROR) << "Failed to open file " << file_name;
-    return false;
-  }
- 
-  return current_buffer_.get()->WriteToFile(current_file_.get()).ok();
-}
-
-bool TsWriter::NewSegment() {
- 
-  current_buffer_  = std::unique_ptr<BufferWriter>(new BufferWriter());
+bool TsWriter::NewSegment(BufferWriter* buffer) {
 
   BufferWriter psi;
   WritePatToBuffer(kPat, arraysize(kPat), &pat_continuity_counter_, &psi);
@@ -194,7 +178,8 @@ bool TsWriter::NewSegment() {
       return false;
     }
   }
-  current_buffer_.get()->AppendBuffer(psi);
+  buffer->AppendBuffer(psi);
+
   return true;
 }
 
@@ -202,26 +187,17 @@ void TsWriter::SignalEncrypted() {
   encrypted_ = true;
 }
 
-bool TsWriter::FinalizeSegment() {
-  return current_file_.release()->Close();
-}
+bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet,
+		            BufferWriter* buffer) {
 
-bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet) {
   if (!WritePesToBuffer(*pes_packet, &elementary_stream_continuity_counter_,
-                        current_buffer_.get())) {
+                        buffer)) {
     LOG(ERROR) << "Failed to write pes to buffer.";
     return false;
   }
 
   // No need to keep pes_packet around so not passing it anywhere.
   return true;
-}
-
-base::Optional<uint64_t> TsWriter::GetPosition() {
-  if (!current_buffer_.get())
-    return base::nullopt;
-  uint64_t position = current_buffer_.get()->Size();
-  return position != 0 ? base::make_optional(position) : base::nullopt;
 }
 
 }  // namespace mp2t

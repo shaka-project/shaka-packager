@@ -68,14 +68,10 @@ class TsSegmenter {
       std::unique_ptr<PesPacketGenerator> generator);
 
   /// Only for testing.
-  void SetTsWriterFileOpenedForTesting(bool value);
+  void SetSegmentStartedForTesting(bool value);
   
-  /// @param pts value of segment_start_timestamp_.
-  void SetSegmentStartTimestamp(int pts) { segment_start_timestamp_ = pts;};
-  int GetSegmentStartTimestamp() {return segment_start_timestamp_; };
-
  private:
-  Status OpenNewSegmentIfClosed(int64_t next_pts);
+  Status StartSegmentIfNeeded(int64_t next_pts);
 
   // Writes PES packets (carried in TsPackets) to a file. If a file is not open,
   // it will open one. This will not close the file.
@@ -97,13 +93,15 @@ class TsSegmenter {
   uint64_t segment_number_ = 0;
 
   std::unique_ptr<TsWriter> ts_writer_;
-  
-  // Set to true if ts_writer buffer is initialized, set to false after
-  // TsWriter::FinalizeSegment() succeeds.
-  bool ts_writer_buffer_initialized_ = false;
+ 
+  BufferWriter segment_buffer_;
+
+  // Set to true if segment_buffer_ is initialized, set to false after
+  // FinalizeSegment() succeeds.
+  bool start_of_new_segment_ = false;
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
-  int segment_start_timestamp_ = -1;
+  int64_t segment_start_timestamp_ = -1;
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
 };
 
