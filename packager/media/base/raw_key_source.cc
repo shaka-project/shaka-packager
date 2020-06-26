@@ -113,12 +113,17 @@ std::unique_ptr<RawKeySource> RawKeySource::Create(
                  << "', must be 16 bytes.";
       return std::unique_ptr<RawKeySource>();
     }
+    if (!key_pair.iv.empty() && key_pair.iv.size() != 8 && key_pair.iv.size() != 16) {
+      LOG(ERROR) << "Invalid IV '" << key_pair.iv.size()
+                 << "', must be 8 or 16 bytes.";
+      return std::unique_ptr<RawKeySource>();
+    }
 
     std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey);
     encryption_key->key_id = key_pair.key_id;
     encryption_key->key_ids = key_ids;
     encryption_key->key = key_pair.key;
-    encryption_key->iv = raw_key.iv;
+    encryption_key->iv = (key_pair.iv.empty()) ? raw_key.iv : key_pair.iv;
     encryption_key->key_system_info = key_system_info;
     encryption_key_map[drm_label] = std::move(encryption_key);
   }

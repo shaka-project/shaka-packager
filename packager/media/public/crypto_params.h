@@ -134,6 +134,7 @@ struct RawKeyParams {
   struct KeyInfo {
     std::vector<uint8_t> key_id;
     std::vector<uint8_t> key;
+    std::vector<uint8_t> iv;
   };
   /// Defines the KeyInfo for the streams. An empty `StreamLabel` indicates the
   /// default `KeyInfo`, which applies to all the `StreamLabels` not present in
