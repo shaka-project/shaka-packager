@@ -122,14 +122,14 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
       return;
     }
     auto* codec_data = audio_info->mutable_codec_specific_data();
-    codec_data->set_ec3_channel_map(ec3_channel_map);
+    codec_data->set_channel_mask(ec3_channel_map);
     uint32_t ec3_channel_mpeg_value;
     if (!CalculateEC3ChannelMPEGValue(codec_config, &ec3_channel_mpeg_value)) {
         LOG(ERROR) << "Failed to calculate EC3 channel configuration "
                    << "descriptor value with MPEG scheme.";
         return;
     }
-    codec_data->set_ec3_channel_mpeg_value(ec3_channel_mpeg_value);
+    codec_data->set_channel_mpeg_value(ec3_channel_mpeg_value);
     uint32_t ec3_joc_complexity = 0;
     if (!GetEc3JocComplexity(codec_config, &ec3_joc_complexity)) {
       LOG(ERROR) << "Failed to obtain DD+JOC Information.";
@@ -145,14 +145,14 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
       return;
     }
     auto* codec_data = audio_info->mutable_codec_specific_data();
-    codec_data->set_ac4_channel_mask(ac4_channel_mask);
+    codec_data->set_channel_mask(ac4_channel_mask);
     uint32_t ac4_channel_mpeg_value;
     if (!CalculateAC4ChannelMPEGValue(codec_config, &ac4_channel_mpeg_value)) {
       LOG(ERROR) << "Failed to calculate AC4 channel configuration "
                  << "descriptor value with MPEG scheme.";
       return;
     }
-    codec_data->set_ac4_channel_mpeg_value(ac4_channel_mpeg_value);
+    codec_data->set_channel_mpeg_value(ac4_channel_mpeg_value);
     bool ac4_ims_flag;
     bool ac4_cbi_flag;
     if (!GetAc4ImmersiveInfo(codec_config, &ac4_ims_flag, &ac4_cbi_flag)) {

@@ -465,13 +465,13 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     // Use MPEG scheme if the mpeg value is available and valid, fallback to
     // EC3 channel mapping otherwise.
     // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
-    const uint32_t ec3_channel_mpeg_value = codec_data.ec3_channel_mpeg_value();
+    const uint32_t ec3_channel_mpeg_value = codec_data.channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ec3_channel_mpeg_value == NO_MAPPING) {
       // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
       // Interoperability Points v3.0 9.2.1.2.
       const uint16_t ec3_channel_map =
-        base::HostToNet16(codec_data.ec3_channel_map());
+        base::HostToNet16(codec_data.channel_mask());
       audio_channel_config_value =
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
       audio_channel_config_scheme =
@@ -507,14 +507,14 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     // Use MPEG scheme if the mpeg value is available and valid, fallback to
     // AC4 channel mask otherwise.
     // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
-    const uint32_t ac4_channel_mpeg_value = codec_data.ac4_channel_mpeg_value();
+    const uint32_t ac4_channel_mpeg_value = codec_data.channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ac4_channel_mpeg_value == NO_MAPPING) {
       // Calculate AC-4 channel mask. Spec: ETSI TS 103 190-2 V1.2.1 Digital
       // Audio Compression (AC-4) Standard; Part 2: Immersive and personalized
       // audio G.3.1.
       const uint32_t ac4_channel_mask =
-        base::HostToNet32(codec_data.ac4_channel_mask() << 8);
+        base::HostToNet32(codec_data.channel_mask() << 8);
       audio_channel_config_value =
         base::HexEncode(&ac4_channel_mask, sizeof(ac4_channel_mask) - 1);
       audio_channel_config_scheme =

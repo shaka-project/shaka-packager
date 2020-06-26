@@ -215,8 +215,8 @@ TEST(XmlNodeTest, AddEC3AudioInfo) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ec-3");
   audio_info.set_sampling_frequency(48000);
-  audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
-  audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(
+  audio_info.mutable_codec_specific_data()->set_channel_mask(0xF801);
+  audio_info.mutable_codec_specific_data()->set_channel_mpeg_value(
       0xFFFFFFFF);
 
   RepresentationXmlNode representation;
@@ -236,8 +236,8 @@ TEST(XmlNodeTest, AddEC3AudioInfoMPEGScheme) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ec-3");
   audio_info.set_sampling_frequency(48000);
-  audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
-  audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(6);
+  audio_info.mutable_codec_specific_data()->set_channel_mask(0xF801);
+  audio_info.mutable_codec_specific_data()->set_channel_mpeg_value(6);
 
   RepresentationXmlNode representation;
   representation.AddAudioInfo(audio_info);
@@ -256,8 +256,8 @@ TEST(XmlNodeTest, AddEC3AudioInfoMPEGSchemeJOC) {
   MediaInfo::AudioInfo audio_info;
   audio_info.set_codec("ec-3");
   audio_info.set_sampling_frequency(48000);
-  audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
-  audio_info.mutable_codec_specific_data()->set_ec3_channel_mpeg_value(6);
+  audio_info.mutable_codec_specific_data()->set_channel_mask(0xF801);
+  audio_info.mutable_codec_specific_data()->set_channel_mpeg_value(6);
   audio_info.mutable_codec_specific_data()->set_ec3_joc_complexity(16);
 
   RepresentationXmlNode representation;
@@ -286,8 +286,8 @@ TEST(XmlNodeTest, AddAC4AudioInfo) {
   audio_info.set_codec("ac-4.02.01.02");
   audio_info.set_sampling_frequency(48000);
   auto* codec_data = audio_info.mutable_codec_specific_data();
-  codec_data->set_ac4_channel_mpeg_value(0xFFFFFFFF);
-  codec_data->set_ac4_channel_mask(0x0000C7);
+  codec_data->set_channel_mpeg_value(0xFFFFFFFF);
+  codec_data->set_channel_mask(0x0000C7);
   codec_data->set_ac4_ims_flag(false);
   codec_data->set_ac4_cbi_flag(false);
 
@@ -309,8 +309,8 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGScheme) {
   audio_info.set_codec("ac-4.02.01.00");
   audio_info.set_sampling_frequency(48000);
   auto* codec_data = audio_info.mutable_codec_specific_data();
-  codec_data->set_ac4_channel_mpeg_value(2);
-  codec_data->set_ac4_channel_mask(0x000001);
+  codec_data->set_channel_mpeg_value(2);
+  codec_data->set_channel_mask(0x000001);
   codec_data->set_ac4_ims_flag(false);
   codec_data->set_ac4_cbi_flag(false);
 
@@ -332,8 +332,8 @@ TEST(XmlNodeTest, AddAC4AudioInfoMPEGSchemeIMS) {
   audio_info.set_codec("ac-4.02.02.00");
   audio_info.set_sampling_frequency(48000);
   auto* codec_data = audio_info.mutable_codec_specific_data();
-  codec_data->set_ac4_channel_mpeg_value(2);
-  codec_data->set_ac4_channel_mask(0x000001);
+  codec_data->set_channel_mpeg_value(2);
+  codec_data->set_channel_mask(0x000001);
   codec_data->set_ac4_ims_flag(true);
   codec_data->set_ac4_cbi_flag(false);
 

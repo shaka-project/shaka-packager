@@ -38,7 +38,7 @@ namespace {
 // 17,       Left wide/Right wide pair
 // 18,       Vertical height left/Vertical height right pair
 enum kAC4AudioChannelGroupIndex {
-    kLRpair = 0x1,
+    kLRPair = 0x1,
     kCentre = 0x2,
     kLsRsPair = 0x4,
     kLbRbPair = 0x8,
@@ -69,79 +69,79 @@ uint32_t AC4ChannelMasktoMPEGValue(uint32_t channel_mask) {
     case kCentre:
       ret = 1;
       break;
-    case kLRpair:
+    case kLRPair:
       ret = 2;
       break;
-    case kCentre | kLRpair:
+    case kCentre | kLRPair:
       ret = 3;
       break;
-    case kCentre | kLRpair | kBackCentre:
+    case kCentre | kLRPair | kBackCentre:
       ret = 4;
       break;
-    case kCentre | kLRpair | kLsRsPair:
+    case kCentre | kLRPair | kLsRsPair:
       ret = 5;
       break;
-    case kCentre | kLRpair | kLsRsPair | kLFE:
+    case kCentre | kLRPair | kLsRsPair | kLFE:
       ret = 6;
       break;
-    case kCentre | kLRpair | kLsRsPair | kLFE | kLwRw:
+    case kCentre | kLRPair | kLsRsPair | kLFE | kLwRw:
       ret = 7;
       break;
-    case kBackCentre | kLRpair:
+    case kBackCentre | kLRPair:
       ret = 9;
       break;
-    case kLRpair | kLsRsPair:
+    case kLRPair | kLsRsPair:
       ret = 10;
       break;
-    case kCentre | kLRpair | kLsRsPair | kLFE | kBackCentre:
+    case kCentre | kLRPair | kLsRsPair | kLFE | kBackCentre:
       ret = 11;
       break;
-    case kCentre | kLRpair | kLsRsPair | kLbRbPair | kLFE:
+    case kCentre | kLRPair | kLsRsPair | kLbRbPair | kLFE:
       ret = 12;
       break;
     case kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair | kLFE2 |
          kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair | kLFE |
-         kTblTbrPair | kTflTfrPair | kLbRbPair | kLsRsPair | kCentre | kLRpair:
+         kTblTbrPair | kTflTfrPair | kLbRbPair | kLsRsPair | kCentre | kLRPair:
     case kVhlVhrPair | kLwRw | kBackCentre | kBottomFrontCentre | kBflBfrPair|
          kLFE2 | kTopCentre | kTopbackCentre | kTopfrontCentre | kTslTsrPair |
-         kLFE | kTblTbrPair | kLbRbPair | kLsRsPair | kCentre | kLRpair:
+         kLFE | kTblTbrPair | kLbRbPair | kLsRsPair | kCentre | kLRPair:
       ret = 13;
       break;
-    case kLFE | kTflTfrPair | kLsRsPair | kCentre | kLRpair:
-    case kVhlVhrPair | kLFE | kCentre | kLRpair | kLsRsPair:
+    case kLFE | kTflTfrPair | kLsRsPair | kCentre | kLRPair:
+    case kVhlVhrPair | kLFE | kCentre | kLRPair | kLsRsPair:
       ret = 14;
       break;
-    case kLFE2 | kTopbackCentre | kLFE | kTflTfrPair | kCentre | kLRpair |
+    case kLFE2 | kTopbackCentre | kLFE | kTflTfrPair | kCentre | kLRPair |
          kLsRsPair | kLbRbPair:
-    case kVhlVhrPair | kLFE2 | kTopbackCentre | kLFE | kCentre | kLRpair |
+    case kVhlVhrPair | kLFE2 | kTopbackCentre | kLFE | kCentre | kLRPair |
          kLsRsPair | kLbRbPair:
       ret = 15;
       break;
-    case kLFE | kTblTbrPair | kTflTfrPair | kLsRsPair | kCentre | kLRpair:
-    case kVhlVhrPair | kLFE | kTblTbrPair | kLsRsPair | kCentre | kLRpair:
+    case kLFE | kTblTbrPair | kTflTfrPair | kLsRsPair | kCentre | kLRPair:
+    case kVhlVhrPair | kLFE | kTblTbrPair | kLsRsPair | kCentre | kLRPair:
       ret = 16;
       break;
     case kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair | kTflTfrPair |
-         kLsRsPair | kCentre | kLRpair:
+         kLsRsPair | kCentre | kLRPair:
     case kVhlVhrPair | kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair |
-         kLsRsPair | kCentre | kLRpair:
+         kLsRsPair | kCentre | kLRPair:
       ret = 17;
       break;
     case kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair | kTflTfrPair |
-         kCentre | kLRpair | kLsRsPair | kLbRbPair:
+         kCentre | kLRPair | kLsRsPair | kLbRbPair:
     case kVhlVhrPair | kTopCentre | kTopfrontCentre | kLFE | kTblTbrPair |
-         kCentre | kLRpair | kLsRsPair | kLbRbPair:
+         kCentre | kLRPair | kLsRsPair | kLbRbPair:
       ret = 18;
       break;
-    case kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRpair | kLsRsPair |
+    case kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRPair | kLsRsPair |
          kLbRbPair:
-    case kVhlVhrPair | kLFE | kTblTbrPair | kCentre | kLRpair | kLsRsPair |
+    case kVhlVhrPair | kLFE | kTblTbrPair | kCentre | kLRPair | kLsRsPair |
          kLbRbPair:
       ret = 19;
       break;
-    case kLscrRscrPair | kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRpair |
+    case kLscrRscrPair | kLFE | kTblTbrPair | kTflTfrPair | kCentre | kLRPair |
          kLsRsPair | kLbRbPair:
-    case kVhlVhrPair | kLscrRscrPair | kLFE | kTblTbrPair | kCentre | kLRpair |
+    case kVhlVhrPair | kLscrRscrPair | kLFE | kTblTbrPair | kCentre | kLRPair |
          kLsRsPair | kLbRbPair:
       ret = 20;
       break;
