@@ -24,15 +24,27 @@ MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
 Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
                                               uint64_t duration_timestamp,
-                                              bool is_subsegment) {
+                                              bool is_subsegment,
+                                              uint64_t segment_index) {
   CHECK(cluster());
   RETURN_IF_ERROR(Segmenter::FinalizeSegment(
-      start_timestamp, duration_timestamp, is_subsegment));
+      start_timestamp, duration_timestamp, is_subsegment, segment_index));
+  if (!is_subsegment) {
+    std::string segment_name =
+        GetSegmentName(options().segment_template, start_timestamp,
+                       segment_index - 1, options().bandwidth);
+
+    if (!writer_->CreateFileAndFlushBuffer(segment_name)) {
+      LOG(ERROR) << "Failed creating file for webm segment.";
+    }
+  }
+
   if (!cluster()->Finalize())
     return Status(error::FILE_FAILURE, "Error finalizing segment.");
 
   if (!is_subsegment) {
     const std::string segment_name = writer_->file()->file_name();
+
     // Close the file, which also does flushing, to make sure the file is
     // written before manifest is updated.
     RETURN_IF_ERROR(writer_->Close());
@@ -40,7 +52,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
       muxer_listener()->OnNewSegment(segment_name, start_timestamp,
-                                     duration_timestamp, size);
+                                     duration_timestamp, size, segment_index);
     }
     VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";
   }
@@ -77,12 +89,9 @@ Status MultiSegmentSegmenter::DoFinalize() {
 Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
-    // Create a new file for the new segment.
-    std::string segment_name =
-        GetSegmentName(options().segment_template, start_timestamp,
-                       num_segment_, options().bandwidth);
     writer_.reset(new MkvWriter);
-    Status status = writer_->Open(segment_name);
+    // Initialize the buffer for a new segment.
+    Status status = writer_->OpenBuffer();
     if (!status.ok())
       return status;
     num_segment_++;

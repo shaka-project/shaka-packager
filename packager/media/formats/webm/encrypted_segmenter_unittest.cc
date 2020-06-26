@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
-
 #include <gtest/gtest.h>
+
 #include <memory>
+
 #include "packager/media/formats/webm/segmenter_test_base.h"
+#include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
 namespace shaka {
 namespace media {
@@ -225,7 +226,7 @@ TEST_F(EncryptedSegmenterTest, BasicSupport) {
   // segment encrypted.
   for (int i = 0; i < 5; i++) {
     if (i == 3) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 3 * kDuration, !kSubsegment));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 3 * kDuration, !kSubsegment, 3));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
@@ -239,8 +240,8 @@ TEST_F(EncryptedSegmenterTest, BasicSupport) {
     }
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(
-      segmenter_->FinalizeSegment(3 * kDuration, 2 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(3 * kDuration, 2 * kDuration,
+                                        !kSubsegment, 2));
   ASSERT_OK(segmenter_->Finalize());
 
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);

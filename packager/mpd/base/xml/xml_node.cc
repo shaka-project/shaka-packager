@@ -56,7 +56,7 @@ bool IsTimelineConstantDuration(const std::list<SegmentInfo>& segment_infos,
     return false;
 
   const SegmentInfo& first_segment = segment_infos.front();
-  if (first_segment.start_time != first_segment.duration * (start_number - 1))
+  if (first_segment.start_time / first_segment.duration != (start_number - 1))
     return false;
 
   if (segment_infos.size() == 1)
@@ -179,9 +179,8 @@ void XmlNode::SetStringAttribute(const char* attribute_name,
 void XmlNode::SetIntegerAttribute(const char* attribute_name, uint64_t number) {
   DCHECK(node_);
   DCHECK(attribute_name);
-  xmlSetProp(node_.get(),
-             BAD_CAST attribute_name,
-             BAD_CAST (base::Uint64ToString(number).c_str()));
+  xmlSetProp(node_.get(), BAD_CAST attribute_name,
+             BAD_CAST(base::Uint64ToString(number).c_str()));
 }
 
 void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
@@ -437,12 +436,12 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
                                            segment_infos.front().duration);
       if (FLAGS_dash_add_last_segment_number_when_needed) {
         uint32_t last_segment_number = start_number - 1;
-        for (const auto& segment_info_element : segment_infos) 
+        for (const auto& segment_info_element : segment_infos)
           last_segment_number += segment_info_element.repeat + 1;
-	
+
         AddSupplementalProperty(
-          "http://dashif.org/guidelines/last-segment-number",
-          std::to_string(last_segment_number));	
+            "http://dashif.org/guidelines/last-segment-number",
+            std::to_string(last_segment_number));
       }
     } else {
       XmlNode segment_timeline("SegmentTimeline");

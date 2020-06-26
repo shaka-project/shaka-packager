@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/mpd/base/simple_mpd_notifier.h"
+
 #include <gmock/gmock.h>
 #include <google/protobuf/util/message_differencer.h>
 #include <gtest/gtest.h>
@@ -13,7 +15,6 @@
 #include "packager/mpd/base/mock_mpd_builder.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/simple_mpd_notifier.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 
 namespace shaka {
@@ -189,10 +190,10 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
   const uint32_t kSegmentDuration = 100u;
   const uint64_t kSegmentSize = 123456u;
   EXPECT_CALL(*mock_representation,
-              AddNewSegment(kStartTime, kSegmentDuration, kSegmentSize));
+              AddNewSegment(kStartTime, kSegmentDuration, kSegmentSize, 1));
 
   EXPECT_TRUE(notifier.NotifyNewSegment(kRepresentationId, kStartTime,
-                                        kSegmentDuration, kSegmentSize));
+                                        kSegmentDuration, kSegmentSize, 1));
 }
 
 TEST_F(SimpleMpdNotifierTest, NotifyCueEvent) {

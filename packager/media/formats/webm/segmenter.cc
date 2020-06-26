@@ -135,8 +135,8 @@ Status Segmenter::Initialize(const StreamInfo& info,
   if (info.is_encrypted()) {
     if (info.encryption_config().per_sample_iv_size != kWebMIvSize)
       return Status(error::MUXER_FAILURE, "Incorrect size WebM encryption IV.");
-    status = UpdateTrackForEncryption(info.encryption_config().key_id,
-                                      track.get());
+    status =
+        UpdateTrackForEncryption(info.encryption_config().key_id, track.get());
     if (!status.ok())
       return status;
   }
@@ -196,7 +196,8 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
 
 Status Segmenter::FinalizeSegment(uint64_t start_timestamp,
                                   uint64_t duration_timestamp,
-                                  bool is_subsegment) {
+                                  bool is_subsegment,
+                                  uint64_t segment_index) {
   if (is_subsegment)
     new_subsegment_ = true;
   else
@@ -211,9 +212,8 @@ float Segmenter::GetDurationInSeconds() const {
 }
 
 uint64_t Segmenter::FromBmffTimestamp(uint64_t bmff_timestamp) {
-  return NsToWebMTimecode(
-      BmffTimestampToNs(bmff_timestamp, time_scale_),
-      segment_info_.timecode_scale());
+  return NsToWebMTimecode(BmffTimestampToNs(bmff_timestamp, time_scale_),
+                          segment_info_.timecode_scale());
 }
 
 uint64_t Segmenter::FromWebMTimecode(uint64_t webm_timecode) {
@@ -389,8 +389,7 @@ Status Segmenter::WriteFrame(bool write_duration) {
         BmffTimestampToNs(prev_sample_->duration(), time_scale_));
   }
   frame.set_is_key(prev_sample_->is_key_frame());
-  frame.set_timestamp(
-      BmffTimestampToNs(prev_sample_->pts(), time_scale_));
+  frame.set_timestamp(BmffTimestampToNs(prev_sample_->pts(), time_scale_));
   frame.set_track_number(track_id_);
 
   if (prev_sample_->side_data_size() > 0) {

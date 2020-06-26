@@ -13,8 +13,17 @@ MkvWriter::MkvWriter() : position_(0) {}
 
 MkvWriter::~MkvWriter() {}
 
+Status MkvWriter::OpenBuffer() {
+  DCHECK(!file_);
+  current_buffer_  = std::unique_ptr<BufferWriter>(new BufferWriter());
+  seekable_ = false;
+  position_ = 0;
+  return Status::OK;
+}
+
 Status MkvWriter::Open(const std::string& name) {
   DCHECK(!file_);
+  DCHECK(!current_buffer_);
   file_.reset(File::Open(name.c_str(), "w"));
   if (!file_)
     return Status(error::FILE_FAILURE, "Unable to open file for writing.");
@@ -24,6 +33,21 @@ Status MkvWriter::Open(const std::string& name) {
   seekable_ = file_->Seek(0);
   position_ = 0;
   return Status::OK;
+}
+
+bool MkvWriter::CreateFileAndFlushBuffer(const std::string& file_name) {
+
+  if (file_) {
+    LOG(ERROR) << "File " << file_->file_name() << " is open.";
+    return false;
+  }
+  file_.reset(File::Open(file_name.c_str(), "w"));
+  if (!file_) {
+    LOG(ERROR) << "Failed to open file " << file_name;
+    return false;
+  }
+  seekable_ = file_->Seek(0);
+  return current_buffer_.get()->WriteToFile(file_.get()).ok();
 }
 
 Status MkvWriter::Close() {
@@ -38,21 +62,28 @@ Status MkvWriter::Close() {
 }
 
 mkvmuxer::int32 MkvWriter::Write(const void* buf, mkvmuxer::uint32 len) {
-  DCHECK(file_);
+  if (seekable_) {
+    DCHECK(file_);
 
-  const char* data = reinterpret_cast<const char*>(buf);
-  int64_t total_bytes_written = 0;
-  while (total_bytes_written < len) {
-    const int64_t written =
-        file_->Write(data + total_bytes_written, len - total_bytes_written);
-    if (written < 0)
-      return written;
+    const char* data = reinterpret_cast<const char*>(buf);
+    int64_t total_bytes_written = 0;
+    while (total_bytes_written < len) {
+      const int64_t written =
+          file_->Write(data + total_bytes_written, len - total_bytes_written);
+      if (written < 0)
+        return written;
 
-    total_bytes_written += written;
+      total_bytes_written += written;
+    }
+
+    DCHECK_EQ(total_bytes_written, len);
+    position_ += len;
+  } else {
+     // Write to buffer if file is not present.
+     const uint8_t* data = reinterpret_cast<const uint8_t*>(buf);
+     current_buffer_.get()->AppendArray(data, len);
+     position_ = current_buffer_.get()->Size();
   }
-
-  DCHECK_EQ(total_bytes_written, len);
-  position_ += len;
   return 0;
 }
 
@@ -61,6 +92,7 @@ int64_t MkvWriter::WriteFromFile(File* source) {
 }
 
 int64_t MkvWriter::WriteFromFile(File* source, int64_t max_copy) {
+  DCHECK(seekable_);
   DCHECK(file_);
 
   const int64_t size = File::CopyFile(source, file_.get(), max_copy);

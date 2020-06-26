@@ -5,7 +5,9 @@
 #include "packager/media/formats/webm/multi_segment_segmenter.h"
 
 #include <gtest/gtest.h>
+
 #include <memory>
+
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
@@ -69,6 +71,7 @@ const uint8_t kBasicSupportDataInit[] = {
           // DisplayHeight: 100
           0x54, 0xba, 0x81, 0x64
 };
+
 const uint8_t kBasicSupportDataSegment[] = {
   // ID: Cluster, Payload Size: 64
   0x1f, 0x43, 0xb6, 0x75, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,
@@ -126,15 +129,15 @@ TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment, 8));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportDataInit);
-  ASSERT_FILE_EQ(TemplateFileName(0).c_str(), kBasicSupportDataSegment);
+  ASSERT_FILE_EQ(TemplateFileName(7).c_str(), kBasicSupportDataSegment);
 
   // There is no second segment.
-  EXPECT_FALSE(File::Open(TemplateFileName(1).c_str(), "r"));
+  EXPECT_FALSE(File::Open(TemplateFileName(8).c_str(), "r"));
 }
 
 TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegment) {
@@ -145,27 +148,27 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegment) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
     if (i == 5) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment, 5));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(
-      segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration,
+                                        !kSubsegment, 8));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
   ClusterParser parser;
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
+  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(4)));
   ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(5u, parser.GetFrameCountForCluster(0));
 
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(1)));
+  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(7)));
   ASSERT_EQ(1u, parser.cluster_count());
   EXPECT_EQ(3u, parser.GetFrameCountForCluster(0));
 
-  EXPECT_FALSE(File::Open(TemplateFileName(2).c_str(), "r"));
+  EXPECT_FALSE(File::Open(TemplateFileName(9).c_str(), "r"));
 }
 
 TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnSubsegment) {
@@ -176,23 +179,23 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnSubsegment) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
     if (i == 5) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment, 5));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment, 8));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
   ClusterParser parser;
-  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(0)));
+  ASSERT_NO_FATAL_FAILURE(parser.PopulateFromCluster(TemplateFileName(7)));
   ASSERT_EQ(2u, parser.cluster_count());
   EXPECT_EQ(5u, parser.GetFrameCountForCluster(0));
   EXPECT_EQ(3u, parser.GetFrameCountForCluster(1));
 
-  EXPECT_FALSE(File::Open(TemplateFileName(1).c_str(), "r"));
+  EXPECT_FALSE(File::Open(TemplateFileName(8).c_str(), "r"));
 }
 
 }  // namespace media

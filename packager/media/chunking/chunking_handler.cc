@@ -26,6 +26,10 @@ bool IsNewSegmentIndex(int64_t new_index, int64_t current_index) {
          new_index != current_index - 1;
 }
 
+bool isGreaterSegmentIndex(int64_t new_index, int64_t current_index) {
+  return new_index > current_index;
+}
+
 }  // namespace
 
 ChunkingHandler::ChunkingHandler(const ChunkingParams& chunking_params)
@@ -60,6 +64,7 @@ Status ChunkingHandler::Process(std::unique_ptr<StreamData> stream_data) {
 }
 
 Status ChunkingHandler::OnFlushRequest(size_t input_stream_index) {
+  set_segment_index_++;
   RETURN_IF_ERROR(EndSegmentIfStarted());
   return FlushDownstream(kStreamIndex);
 }
@@ -74,6 +79,7 @@ Status ChunkingHandler::OnStreamInfo(std::shared_ptr<const StreamInfo> info) {
 }
 
 Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
+  set_segment_index_++;
   RETURN_IF_ERROR(EndSegmentIfStarted());
   const double event_time_in_seconds = event->time_in_seconds;
   RETURN_IF_ERROR(DispatchCueEvent(kStreamIndex, std::move(event)));
@@ -89,7 +95,6 @@ Status ChunkingHandler::OnCueEvent(std::shared_ptr<const CueEvent> event) {
 Status ChunkingHandler::OnMediaSample(
     std::shared_ptr<const MediaSample> sample) {
   DCHECK_NE(time_scale_, 0u) << "kStreamInfo should arrive before kMediaSample";
-
   const int64_t timestamp = sample->pts();
 
   bool started_new_segment = false;
@@ -101,6 +106,11 @@ Status ChunkingHandler::OnMediaSample(
                                 : (timestamp - cue_offset_) / segment_duration_;
     if (!segment_start_time_ ||
         IsNewSegmentIndex(segment_index, current_segment_index_)) {
+      if (!isGreaterSegmentIndex(segment_index, set_segment_index_)) {
+        set_segment_index_ = current_segment_index_ + 1;
+      } else {
+        set_segment_index_ = segment_index;
+      }
       current_segment_index_ = segment_index;
       // Reset subsegment index.
       current_subsegment_index_ = 0;
@@ -151,6 +161,7 @@ Status ChunkingHandler::EndSegmentIfStarted() const {
   auto segment_info = std::make_shared<SegmentInfo>();
   segment_info->start_timestamp = segment_start_time_.value();
   segment_info->duration = max_segment_time_ - segment_start_time_.value();
+  segment_info->segment_index = set_segment_index_;
   return DispatchSegmentInfo(kStreamIndex, std::move(segment_info));
 }
 

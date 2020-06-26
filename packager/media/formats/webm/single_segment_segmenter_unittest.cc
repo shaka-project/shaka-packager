@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
-
 #include <gtest/gtest.h>
+
 #include <memory>
+
 #include "packager/media/formats/webm/segmenter_test_base.h"
+#include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
 namespace shaka {
 namespace media {
@@ -163,7 +164,7 @@ TEST_F(SingleSegmentSegmenterTest, BasicSupport) {
         CreateSample(kKeyFrame, kDuration, side_data_flag);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment, 5));
   ASSERT_OK(segmenter_->Finalize());
 
   ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);
@@ -176,14 +177,14 @@ TEST_F(SingleSegmentSegmenterTest, SplitsClustersOnSegment) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
     if (i == 5) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, !kSubsegment, 5));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(
-      segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(5 * kDuration, 8 * kDuration,
+                                        !kSubsegment, 8));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -201,13 +202,13 @@ TEST_F(SingleSegmentSegmenterTest, IgnoresSubsegment) {
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
     if (i == 5) {
-      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment));
+      ASSERT_OK(segmenter_->FinalizeSegment(0, 5 * kDuration, kSubsegment, 5));
     }
     std::shared_ptr<MediaSample> sample =
         CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
-  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment));
+  ASSERT_OK(segmenter_->FinalizeSegment(0, 8 * kDuration, !kSubsegment, 8));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -234,7 +235,7 @@ TEST_F(SingleSegmentSegmenterTest, LargeTimestamp) {
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
   ASSERT_OK(segmenter_->FinalizeSegment(kLargeTimestamp, 5 * kDuration,
-                                        !kSubsegment));
+                                        !kSubsegment, 5));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.
@@ -270,7 +271,7 @@ TEST_F(SingleSegmentSegmenterTest, ReallyLargeTimestamp) {
     ASSERT_OK(segmenter_->AddSample(*sample));
   }
   ASSERT_OK(segmenter_->FinalizeSegment(kReallyLargeTimestamp, 5 * kDuration,
-                                        !kSubsegment));
+                                        !kSubsegment, 5));
   ASSERT_OK(segmenter_->Finalize());
 
   // Verify the resulting data.

@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/mpd/base/mpd_builder.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/mpd/base/adaptation_set.h"
-#include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/period.h"
 #include "packager/mpd/base/representation.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
@@ -71,7 +72,8 @@ class MpdBuilderTest : public ::testing::Test {
         adaptation_set->AddRepresentation(media_info);
     representation->AddNewSegment(
         segment_start_time_seconds * media_info.reference_time_scale(),
-        segment_duration_seconds * media_info.reference_time_scale(), kBytes);
+        segment_duration_seconds * media_info.reference_time_scale(), kBytes,
+        (segment_start_time_seconds / segment_duration_seconds) + 1);
   }
 
  protected:
@@ -117,14 +119,14 @@ class LiveMpdBuilderTest : public MpdBuilderTest<DashProfile::kLive> {
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
-    base::Time::Exploded test_time = { 2016,  // year.
-                                       1,  // month
-                                       1,  // day_of_week = Monday.
-                                       11,  // day_of_month
-                                       15,  // hour.
-                                       10,  // minute.
-                                       24,  // second.
-                                       0 };  // millisecond.
+    base::Time::Exploded test_time = {2016,  // year.
+                                      1,     // month
+                                      1,     // day_of_week = Monday.
+                                      11,    // day_of_month
+                                      15,    // hour.
+                                      10,    // minute.
+                                      24,    // second.
+                                      0};    // millisecond.
     ASSERT_TRUE(test_time.HasValidValues());
     mpd_.InjectClockForTesting(std::unique_ptr<base::Clock>(
         new TestClock(base::Time::FromUTCExploded(test_time))));

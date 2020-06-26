@@ -9,15 +9,15 @@
 #ifndef PACKAGER_MPD_BASE_REPRESENTATION_H_
 #define PACKAGER_MPD_BASE_REPRESENTATION_H_
 
-#include "packager/mpd/base/bandwidth_estimator.h"
-#include "packager/mpd/base/media_info.pb.h"
-#include "packager/mpd/base/segment_info.h"
-#include "packager/mpd/base/xml/scoped_xml_ptr.h"
-
 #include <stdint.h>
 
 #include <list>
 #include <memory>
+
+#include "packager/mpd/base/bandwidth_estimator.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/segment_info.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace shaka {
 
@@ -100,10 +100,12 @@ class Representation {
   ///        stream's time scale.
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale.
+  /// @param segment_index is the current segment index.
   /// @param size of the segment in bytes.
   virtual void AddNewSegment(int64_t start_time,
                              int64_t duration,
-                             uint64_t size);
+                             uint64_t size,
+                             uint64_t segment_index);
 
   /// Set the sample duration of this Representation.
   /// Sample duration is not available right away especially for live. This
@@ -182,7 +184,9 @@ class Representation {
 
   // Add a SegmentInfo. This function may insert an adjusted SegmentInfo if
   // |allow_approximate_segment_timeline_| is set.
-  void AddSegmentInfo(int64_t start_time, int64_t duration);
+  void AddSegmentInfo(int64_t start_time,
+                      int64_t duration,
+                      uint64_t segment_index);
 
   // Check if two timestamps are approximately equal if
   // |allow_approximate_segment_timeline_| is set; Otherwise check whether the
@@ -230,6 +234,8 @@ class Representation {
   // startNumber attribute for SegmentTemplate.
   // Starts from 1.
   uint32_t start_number_ = 1;
+
+  bool stream_just_started_ = false;
 
   // If this is not null, then Representation is responsible for calling the
   // right methods at right timings.

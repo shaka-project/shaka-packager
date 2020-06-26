@@ -70,17 +70,14 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
-    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_
-                  .AsUTF8Unsafe()));
+    listener_.reset(
+        new VodMediaInfoDumpMuxerListener(temp_file_path_.AsUTF8Unsafe()));
   }
 
-  void TearDown() override {
-    base::DeleteFile(temp_file_path_, false);
-  }
+  void TearDown() override { base::DeleteFile(temp_file_path_, false); }
 
-  void FireOnMediaStartWithDefaultMuxerOptions(
-      const StreamInfo& stream_info,
-      bool enable_encryption) {
+  void FireOnMediaStartWithDefaultMuxerOptions(const StreamInfo& stream_info,
+                                               bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptions(&muxer_options);
     const uint32_t kReferenceTimeScale = 1000;
@@ -100,7 +97,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
 
   void FireOnNewSegmentWithParams(const OnNewSegmentParameters& params) {
     listener_->OnNewSegment(params.file_name, params.start_time,
-                            params.duration, params.segment_file_size);
+                            params.duration, params.segment_file_size, 0);
   }
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
