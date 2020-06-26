@@ -118,6 +118,7 @@ const char kUsage[] =
 const char kDrmLabelLabel[] = "label";
 const char kKeyIdLabel[] = "key_id";
 const char kKeyLabel[] = "key";
+const char kKeyIvLabel[] = "iv";
 
 enum ExitStatus {
   kSuccess = 0,
@@ -206,6 +207,17 @@ bool ParseKeys(const std::string& keys, RawKeyParams* raw_key) {
       LOG(ERROR) << "Empty key or invalid hex string for key: "
                  << value_map[kKeyLabel];
       return false;
+    }
+    if (!value_map[kKeyIvLabel].empty()) {
+      if (!raw_key->iv.empty()) {
+        LOG(ERROR) << "IV already specified with --iv";
+        return false;
+      }
+      if (!base::HexStringToBytes(value_map[kKeyIvLabel], &key_info.iv)) {
+        LOG(ERROR) << "Empty IV or invalid hex string for IV: "
+                   << value_map[kKeyIvLabel];
+        return false;
+      }
     }
   }
   return true;
@@ -351,6 +363,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
     encryption_params.stream_label_func = std::bind(
         &Packager::DefaultStreamLabelFunction, FLAGS_max_sd_pixels,
         FLAGS_max_hd_pixels, FLAGS_max_uhd1_pixels, std::placeholders::_1);
+    encryption_params.playready_extra_header_data =
+        FLAGS_playready_extra_header_data;
   }
   switch (encryption_params.key_provider) {
     case KeyProvider::kWidevine: {

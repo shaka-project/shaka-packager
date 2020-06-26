@@ -32,7 +32,7 @@ const std::string kPlayHeaderObject_4_0 =
     "version=\"4.0.0.0\"><DATA>"
     "<PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO>"
     "<KID>$0</KID><CHECKSUM>$1</CHECKSUM>"
-    "</DATA></WRMHEADER>";
+    "</DATA>$2</WRMHEADER>";
 
 // For PlayReady clients 4.0+ that support CBC keys.
 const std::string kPlayHeaderObject_4_3 =
@@ -40,7 +40,7 @@ const std::string kPlayHeaderObject_4_3 =
     "xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" "
     "version=\"4.3.0.0\"><DATA><PROTECTINFO><KIDS>"
     "<KID ALGID=\"AESCBC\" VALUE=\"$0\"></KID>"
-    "</KIDS></PROTECTINFO></DATA></WRMHEADER>";
+    "</KIDS></PROTECTINFO></DATA>$1</WRMHEADER>";
 
 // Converts the key_id's endianness.
 std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
@@ -64,6 +64,7 @@ std::vector<uint8_t> ConvertGuidEndianness(const std::vector<uint8_t>& input) {
 // https://docs.microsoft.com/en-us/playready/specifications/playready-header-specification
 Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
                                  const std::vector<uint8_t>& key,
+                                 const std::string& extra_header_data,
                                  const FourCC protection_scheme,
                                  std::vector<uint8_t>* output) {
   CHECK(output);
@@ -86,11 +87,14 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
   std::string playready_header;
 
   switch (protection_scheme) {
+    case kAppleSampleAesProtectionScheme:
     case FOURCC_cbc1:
     case FOURCC_cbcs:
       playready_header = kPlayHeaderObject_4_3;
       base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$0",
                                              base64_key_id);
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
+                                             extra_header_data);
       break;
 
     case FOURCC_cenc:
@@ -100,6 +104,8 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
                                              base64_key_id);
       base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$1",
                                              base64_checksum);
+      base::ReplaceFirstSubstringAfterOffset(&playready_header, 0, "$2",
+                                             extra_header_data);
       break;
 
     default:
@@ -150,10 +156,13 @@ Status GeneratePlayReadyPsshData(const std::vector<uint8_t>& key_id,
 }
 }  // namespace
 
-PlayReadyPsshGenerator::PlayReadyPsshGenerator(FourCC protection_scheme)
+PlayReadyPsshGenerator::PlayReadyPsshGenerator(
+    const std::string& extra_header_data,
+    FourCC protection_scheme)
     : PsshGenerator(std::vector<uint8_t>(std::begin(kPlayReadySystemId),
                                          std::end(kPlayReadySystemId)),
                     kPlayReadyPsshBoxVersion),
+      extra_header_data_(extra_header_data),
       protection_scheme_(protection_scheme) {}
 
 PlayReadyPsshGenerator::~PlayReadyPsshGenerator() {}
@@ -167,8 +176,8 @@ PlayReadyPsshGenerator::GeneratePsshDataFromKeyIdAndKey(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& key) const {
   std::vector<uint8_t> pssh_data;
-  Status status =
-      GeneratePlayReadyPsshData(key_id, key, protection_scheme_, &pssh_data);
+  Status status = GeneratePlayReadyPsshData(key_id, key, extra_header_data_,
+                                            protection_scheme_, &pssh_data);
   if (!status.ok()) {
     LOG(ERROR) << status.ToString();
     return base::nullopt;

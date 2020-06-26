@@ -182,6 +182,8 @@ const char kExpectedWidevinePsshCbcs[] = {
     '\x9B', '\x06',
 };
 
+const char kPlayReadyExtraHeaderData[] = "";
+
 std::vector<uint8_t> GetTestKeyId1() {
   return std::vector<uint8_t>(std::begin(kTestKeyId1), std::end(kTestKeyId1));
 }
@@ -201,7 +203,7 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIds) {
   const std::vector<std::vector<uint8_t>> kTestKeyIds = {GetTestKeyId1(),
                                                          GetTestKeyId2()};
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator(FOURCC_cenc));
+      new PlayReadyPsshGenerator(kPlayReadyExtraHeaderData, FOURCC_cenc));
   ProtectionSystemSpecificInfo info;
   EXPECT_NOT_OK(
       playready_pssh_generator->GeneratePsshFromKeyIds(kTestKeyIds, &info));
@@ -212,7 +214,7 @@ TEST(PsshGeneratorTest,
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator(FOURCC_NULL));
+      new PlayReadyPsshGenerator(kPlayReadyExtraHeaderData, FOURCC_NULL));
   ProtectionSystemSpecificInfo info;
   EXPECT_NOT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));
@@ -222,7 +224,7 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCenc) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator(FOURCC_cenc));
+      new PlayReadyPsshGenerator(kPlayReadyExtraHeaderData, FOURCC_cenc));
   ProtectionSystemSpecificInfo info;
   EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));
@@ -236,7 +238,7 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCens) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator(FOURCC_cens));
+      new PlayReadyPsshGenerator("", FOURCC_cens));
   ProtectionSystemSpecificInfo info;
   EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));
@@ -250,7 +252,7 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCbc1) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator(FOURCC_cbc1));
+      new PlayReadyPsshGenerator("", FOURCC_cbc1));
   ProtectionSystemSpecificInfo info;
   EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));
@@ -264,7 +266,7 @@ TEST(PsshGeneratorTest, GeneratePlayReadyPsshFromKeyIdAndKeyUsingCbcs) {
   const std::vector<uint8_t> kTestKeyId = GetTestKeyId1();
   const std::vector<uint8_t> kTestKey = GetTestKey1();
   std::unique_ptr<PlayReadyPsshGenerator> playready_pssh_generator(
-      new PlayReadyPsshGenerator(FOURCC_cbcs));
+      new PlayReadyPsshGenerator(kPlayReadyExtraHeaderData, FOURCC_cbcs));
   ProtectionSystemSpecificInfo info;
   EXPECT_OK(playready_pssh_generator->GeneratePsshFromKeyIdAndKey(
       kTestKeyId, kTestKey, &info));

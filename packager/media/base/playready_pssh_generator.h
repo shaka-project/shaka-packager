@@ -7,6 +7,8 @@
 #ifndef MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 #define MEDIA_BASE_PLAYREADY_PSSH_GENERATOR_H_
 
+#include <string>
+
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/pssh_generator.h"
 
@@ -15,7 +17,8 @@ namespace media {
 
 class PlayReadyPsshGenerator : public PsshGenerator {
  public:
-  explicit PlayReadyPsshGenerator(FourCC protection_scheme);
+  explicit PlayReadyPsshGenerator(const std::string& extra_header_data,
+                                  FourCC protection_scheme);
   ~PlayReadyPsshGenerator() override;
 
   /// @name PsshGenerator implemetation overrides.
@@ -36,7 +39,8 @@ class PlayReadyPsshGenerator : public PsshGenerator {
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& key) const override;
 
-  FourCC protection_scheme_ = FOURCC_NULL;
+  const std::string extra_header_data_;
+  const FourCC protection_scheme_;
 };
 
 }  // namespace media

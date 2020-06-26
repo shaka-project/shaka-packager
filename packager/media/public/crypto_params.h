@@ -134,6 +134,7 @@ struct RawKeyParams {
   struct KeyInfo {
     std::vector<uint8_t> key_id;
     std::vector<uint8_t> key;
+    std::vector<uint8_t> iv;
   };
   /// Defines the KeyInfo for the streams. An empty `StreamLabel` indicates the
   /// default `KeyInfo`, which applies to all the `StreamLabels` not present in
@@ -154,6 +155,8 @@ struct EncryptionParams {
 
   /// The protection systems to generate, multiple can be OR'd together.
   ProtectionSystem protection_systems;
+  /// Extra XML data to add to PlayReady data.
+  std::string playready_extra_header_data;
 
   /// Clear lead duration in seconds.
   double clear_lead_in_seconds = 0;

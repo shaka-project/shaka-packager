@@ -27,6 +27,9 @@ DEFINE_int32(
     "Apply to video streams with 'cbcs' and 'cens' protection schemes only; "
     "ignored otherwise.");
 DEFINE_bool(vp9_subsample_encryption, true, "Enable VP9 subsample encryption.");
+DEFINE_string(playready_extra_header_data,
+              "",
+              "Extra XML data to add to PlayReady headers.");
 
 bool ValueNotGreaterThanTen(const char* flagname, int32_t value) {
   if (value > 10) {
@@ -40,5 +43,17 @@ bool ValueNotGreaterThanTen(const char* flagname, int32_t value) {
   return true;
 }
 
+bool ValueIsXml(const char* flagname, const std::string& value) {
+  if (value.empty())
+    return true;
+
+  if (value[0] != '<' || value[value.size() - 1] != '>') {
+    fprintf(stderr, "ERROR: %s must be valid XML.\n", flagname);
+    return false;
+  }
+  return true;
+}
+
 DEFINE_validator(crypt_byte_block, &ValueNotGreaterThanTen);
 DEFINE_validator(skip_byte_block, &ValueNotGreaterThanTen);
+DEFINE_validator(playready_extra_header_data, &ValueIsXml);
