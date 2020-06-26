@@ -501,7 +501,7 @@ bool GetAc4CodecInfo(const std::vector<uint8_t>& ac4_data,
   // bitstream_version (3bits) + presentation_version (2bits) + mdcompat (3bits)
   *ac4_codec_info = ((bitstream_version << 5) |
                      ((presentation_version << 3) & 0x1F) |
-                      mdcompat & 0x7);
+                      (mdcompat & 0x7));
   return true;
 }
 
