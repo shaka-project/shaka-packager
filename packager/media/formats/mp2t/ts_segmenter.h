@@ -73,9 +73,8 @@ class TsSegmenter {
  private:
   Status StartSegmentIfNeeded(int64_t next_pts);
 
-  // Writes PES packets (carried in TsPackets) to a file. If a file is not open,
-  // it will open one. This will not close the file.
-  Status WritePesPacketsToFile();
+  // Writes PES packets (carried in TsPackets) to a buffer.
+  Status WritePesPackets();
 
   const MuxerOptions& muxer_options_;
   MuxerListener* const listener_;
@@ -98,7 +97,7 @@ class TsSegmenter {
 
   // Set to true if segment_buffer_ is initialized, set to false after
   // FinalizeSegment() succeeds.
-  bool start_of_new_segment_ = false;
+  bool segment_started_ = false;
   std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
   int64_t segment_start_timestamp_ = -1;

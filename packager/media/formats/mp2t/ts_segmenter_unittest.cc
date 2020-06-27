@@ -260,9 +260,8 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-  Status FILE_NOT_FINALIZED(error::MUXER_FAILURE, "Failed to finalize."); 
-  EXPECT_EQ(segmenter.FinalizeSegment(kFirstPts, sample1->duration()), FILE_NOT_FINALIZED);
   segmenter.SetSegmentStartedForTesting(false);
+  EXPECT_OK(segmenter.FinalizeSegment(kFirstPts, sample1->duration()));
   EXPECT_OK(segmenter.AddSample(*sample2));
 }
 
@@ -318,10 +317,8 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
       std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
-  segmenter.SetSegmentStartedForTesting(true);
-
-  Status FILE_NOT_FINALIZED(error::MUXER_FAILURE, "Failed to finalize."); 
-  EXPECT_EQ(segmenter.FinalizeSegment(0, 100 /* arbitrary duration*/), FILE_NOT_FINALIZED);
+  segmenter.SetSegmentStartedForTesting(false);
+  EXPECT_OK(segmenter.FinalizeSegment(0, 100 /* arbitrary duration*/));
 }
 
 TEST_F(TsSegmenterTest, EncryptedSample) {
@@ -399,9 +396,8 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-
-  Status FILE_NOT_FINALIZED(error::MUXER_FAILURE, "Failed to finalize."); 
-  EXPECT_EQ(segmenter.FinalizeSegment(1, sample1->duration()), FILE_NOT_FINALIZED);
+  segmenter.SetSegmentStartedForTesting(false); 
+  EXPECT_OK(segmenter.FinalizeSegment(1, sample1->duration()));
   // Signal encrypted if sample is encrypted.
   EXPECT_CALL(*mock_ts_writer_raw, SignalEncrypted());
   sample2->set_is_encrypted(true);
