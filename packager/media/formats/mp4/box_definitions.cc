@@ -1020,7 +1020,7 @@ SampleGroupDescription::SampleGroupDescription() = default;
 SampleGroupDescription::~SampleGroupDescription() = default;
 
 FourCC SampleGroupDescription::BoxType() const {
-  return FOURCC_sgpd;
+  return FOURCC_senc;
 }
 
 bool SampleGroupDescription::ReadWriteInternal(BoxBuffer* buffer) {
