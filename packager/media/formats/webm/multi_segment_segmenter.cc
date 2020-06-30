@@ -33,7 +33,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
         GetSegmentName(options().segment_template, start_timestamp,
                        num_segment_++, options().bandwidth);
 
-    if (!writer_->WriteFile(segment_name)) {
+    if (!writer_->WriteToFile(segment_name)) {
       LOG(ERROR) << "Failed creating file for webm segment.";
     }
   }
@@ -46,7 +46,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
 
     // Close the file, which also does flushing, to make sure the file is
     // written before manifest is updated.
-    RETURN_IF_ERROR(writer_->Close());
+    RETURN_IF_ERROR(writer_->CloseFile());
 
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
@@ -73,10 +73,11 @@ std::vector<Range> MultiSegmentSegmenter::GetSegmentRanges() {
 }
 
 Status MultiSegmentSegmenter::DoInitialize() {
-  std::unique_ptr<MkvWriter> writer(new MkvWriter);
-  Status status = writer->Open(options().output_file_name);
+  std::unique_ptr<BufferMkvWriter> writer(new BufferMkvWriter);
+  Status status = writer->OpenFile(options().output_file_name);
   if (!status.ok())
     return status;
+  
   writer_ = std::move(writer);
   return WriteSegmentHeader(0, writer_.get());
 }
@@ -88,7 +89,7 @@ Status MultiSegmentSegmenter::DoFinalize() {
 Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
  if (!is_subsegment) {
-    writer_.reset(new MkvWriter);
+    writer_.reset(new BufferMkvWriter);
     // Initialize the buffer for a new segment.
     Status status = writer_->OpenBuffer();
     if (!status.ok())

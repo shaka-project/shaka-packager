@@ -1,11 +1,5 @@
-// Copyright 2015 Google Inc. All rights reserved.
-//
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
-
-#ifndef PACKAGER_MEDIA_FORMATS_WEBM_MKV_WRITER_H_
-#define PACKAGER_MEDIA_FORMATS_WEBM_MKV_WRITER_H_
+#ifndef PACKAGER_MEDIA_FORMATS_WEBM_BUFFER_MKV_WRITER_H_
+#define PACKAGER_MEDIA_FORMATS_WEBM_BUFFER_MKV_WRITER_H_
 
 #include <memory>
 #include <string>
@@ -13,23 +7,27 @@
 #include "packager/file/file_closer.h"
 #include "packager/status.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
+#include "packager/media/base/buffer_writer.h"
 
 namespace shaka {
 namespace media {
 
-/// An implementation of IMkvWriter using our File type.
-class MkvWriter : public mkvmuxer::IMkvWriter {
+/// An implementation of IMkvWriter using a buffer.
+class BufferMkvWriter : public mkvmuxer::IMkvWriter {
  public:
-  MkvWriter();
-  ~MkvWriter() override;
+  BufferMkvWriter();
+  ~BufferMkvWriter() override;
 
-  /// Opens the given file for writing.  This MUST be called before any other
-  /// calls.
+  /// Initialize a buffer to store segment information.
+  /// @return Whether the operation succeeded.
+  Status OpenBuffer();
+
+  /// Opens the given file for writing (Init segment).
   /// @param name The path to the file to open.
   /// @return Whether the operation succeeded.
-  Status Open(const std::string& name);
+  Status OpenFile(const std::string& name);
   /// Closes the file.  MUST call Open before calling any other methods.
-  Status Close();
+  Status CloseFile();
 
   /// Writes out @a len bytes of @a buf.
   /// @return 0 on success.
@@ -58,18 +56,25 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
   /// @return The number of bytes written; or < 0 on error.
   int64_t WriteFromFile(File* source, int64_t max_copy);
 
+  /// Creates a file with name @a file_name and flushes 
+  /// current_buffer_ to it.
+  /// @param name The path to the file to open.
+  /// @return File creation and buffer flushing succeeded or failed. 
+  virtual bool WriteToFile(const std::string& file_name);
+
   File* file() { return file_.get(); }
 
  private:
   std::unique_ptr<File, FileCloser> file_;
+  BufferWriter segment_buffer_;
   // Keep track of the position and whether we can seek.
   mkvmuxer::int64 position_;
   bool seekable_;
 
-  DISALLOW_COPY_AND_ASSIGN(MkvWriter);
+  DISALLOW_COPY_AND_ASSIGN(BufferMkvWriter);
 };
 
 }  // namespace media
 }  // namespace shaka
 
-#endif  // PACKAGER_MEDIA_FORMATS_WEBM_MKV_WRITER_H_
+#endif  // PACKAGER_MEDIA_FORMATS_WEBM_BUFFER_MKV_WRITER_H_
