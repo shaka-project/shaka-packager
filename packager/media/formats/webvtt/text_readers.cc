@@ -6,117 +6,104 @@
 
 #include "packager/media/formats/webvtt/text_readers.h"
 
+#include <cstring>
+
 #include "packager/base/logging.h"
-#include "packager/file/file.h"
 
 namespace shaka {
 namespace media {
 
-Status FileReader::Open(const std::string& filename,
-                        std::unique_ptr<FileReader>* out) {
-  const char* kReadOnly = "r";
+LineReader::LineReader() : should_flush_(false) {}
 
-  std::unique_ptr<File, FileCloser> file(
-      File::Open(filename.c_str(), kReadOnly));
-
-  if (!file) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Could not open input file " + filename);
-  }
-
-  *out = std::unique_ptr<FileReader>(new FileReader(std::move(file)));
-
-  return Status::OK;
+void LineReader::PushData(const uint8_t* data, size_t data_size) {
+  buffer_.Push(data, static_cast<int>(data_size));
+  should_flush_ = false;
 }
-
-bool FileReader::Next(char* out) {
-  // TODO(vaage): If file reading performance is poor, change this to buffer
-  //              data and read from the buffer.
-  return file_->Read(out, 1) == 1;
-}
-
-FileReader::FileReader(std::unique_ptr<File, FileCloser> file)
-    : file_(std::move(file)) {
-  DCHECK(file_);
-}
-
-PeekingReader::PeekingReader(std::unique_ptr<FileReader> source)
-    : source_(std::move(source)) {}
-
-bool PeekingReader::Next(char* out) {
-  DCHECK(out);
-  if (Peek(out)) {
-    has_cached_next_ = false;
-    return true;
-  }
-  return false;
-}
-
-bool PeekingReader::Peek(char* out) {
-  DCHECK(out);
-  if (!has_cached_next_ && source_->Next(&cached_next_)) {
-    has_cached_next_ = true;
-  }
-  if (has_cached_next_) {
-    *out = cached_next_;
-    return true;
-  }
-  return false;
-}
-
-LineReader::LineReader(std::unique_ptr<FileReader> source)
-    : source_(std::move(source)) {}
 
 // Split lines based on https://w3c.github.io/webvtt/#webvtt-line-terminator
 bool LineReader::Next(std::string* out) {
   DCHECK(out);
-  out->clear();
-  bool read_something = false;
-  char now;
-  while (source_.Next(&now)) {
-    read_something = true;
-    // handle \n
-    if (now == '\n') {
+
+  int i;
+  int skip = 0;
+  const uint8_t* data;
+  int data_size;
+  buffer_.Peek(&data, &data_size);
+  for (i = 0; i < data_size; i++) {
+    // Handle \n
+    if (data[i] == '\n') {
+      skip = 1;
       break;
     }
-    // handle \r and \r\n
-    if (now == '\r') {
-      char next;
-      if (source_.Peek(&next) && next == '\n') {
-        source_.Next(&next);  // Read in the '\n' that was just seen via |Peek|
+
+    // Handle \r and \r\n
+    if (data[i] == '\r') {
+      // Only read if we can see the next character; this ensures we don't get
+      // the '\n' in the next PushData.
+      if (i + 1 == data_size) {
+        if (!should_flush_)
+          return false;
+        skip = 1;
+      } else {
+        if (data[i + 1] == '\n')
+          skip = 2;
+        else
+          skip = 1;
       }
       break;
     }
-    out->push_back(now);
   }
-  return read_something;
+
+  if (i == data_size && (!should_flush_ || i == 0)) {
+    return false;
+  }
+
+  // TODO(modmaker): Handle character encodings?
+  out->assign(data, data + i);
+  buffer_.Pop(i + skip);
+  return true;
 }
 
-BlockReader::BlockReader(std::unique_ptr<FileReader> source)
-    : source_(std::move(source)) {}
+void LineReader::Flush() {
+  should_flush_ = true;
+}
+
+BlockReader::BlockReader() : should_flush_(false) {}
+
+void BlockReader::PushData(const uint8_t* data, size_t data_size) {
+  source_.PushData(data, data_size);
+  should_flush_ = false;
+}
 
 bool BlockReader::Next(std::vector<std::string>* out) {
   DCHECK(out);
 
-  out->clear();
-
-  bool in_block = false;
-
+  bool end_block = false;
   // Read through lines until a non-empty line is found. With a non-empty
   // line is found, start adding the lines to the output and once an empty
   // line if found again, stop adding lines and exit.
   std::string line;
   while (source_.Next(&line)) {
-    if (in_block && line.empty()) {
+    if (!temp_.empty() && line.empty()) {
+      end_block = true;
       break;
     }
-    if (in_block || !line.empty()) {
-      out->push_back(line);
-      in_block = true;
+    if (!line.empty()) {
+      temp_.emplace_back(std::move(line));
     }
   }
 
-  return in_block;
+  if (!end_block && (!should_flush_ || temp_.empty()))
+    return false;
+
+  *out = std::move(temp_);
+  return true;
 }
+
+void BlockReader::Flush() {
+  source_.Flush();
+  should_flush_ = true;
+}
+
 }  // namespace media
 }  // namespace shaka

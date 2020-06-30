@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "packager/file/file.h"
@@ -12,66 +13,15 @@
 
 namespace shaka {
 namespace media {
-namespace {
-const char* kFilename = "memory://test-file";
-}  // namespace
 
-TEST(TextReadersTest, ReadWholeStream) {
-  const char* text = "abcd";
-
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  char c;
-  ASSERT_TRUE(source->Next(&c));
-  ASSERT_EQ(c, 'a');
-  ASSERT_TRUE(source->Next(&c));
-  ASSERT_EQ(c, 'b');
-  ASSERT_TRUE(source->Next(&c));
-  ASSERT_EQ(c, 'c');
-  ASSERT_TRUE(source->Next(&c));
-  ASSERT_EQ(c, 'd');
-  ASSERT_FALSE(source->Next(&c));
-}
-
-TEST(TextReadersTest, Peeking) {
-  const char* text = "abc";
-
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  PeekingReader reader(std::move(source));
-
-  char c;
-  ASSERT_TRUE(reader.Peek(&c));
-  ASSERT_EQ(c, 'a');
-  ASSERT_TRUE(reader.Next(&c));
-  ASSERT_EQ(c, 'a');
-  ASSERT_TRUE(reader.Peek(&c));
-  ASSERT_EQ(c, 'b');
-  ASSERT_TRUE(reader.Next(&c));
-  ASSERT_EQ(c, 'b');
-  ASSERT_TRUE(reader.Peek(&c));
-  ASSERT_EQ(c, 'c');
-  ASSERT_TRUE(reader.Next(&c));
-  ASSERT_EQ(c, 'c');
-  ASSERT_FALSE(reader.Peek(&c));
-  ASSERT_FALSE(reader.Next(&c));
-}
+using testing::ElementsAre;
 
 TEST(TextReadersTest, ReadLinesWithNewLine) {
-  const char* text = "a\nb\nc";
+  const uint8_t text[] = "a\nb\nc";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  LineReader reader(std::move(source));
+  LineReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::string s;
   ASSERT_TRUE(reader.Next(&s));
@@ -84,14 +34,11 @@ TEST(TextReadersTest, ReadLinesWithNewLine) {
 }
 
 TEST(TextReadersTest, ReadLinesWithReturnsAndNewLine) {
-  const char* text = "a\r\nb\r\nc";
+  const uint8_t text[] = "a\r\nb\r\nc";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  LineReader reader(std::move(source));
+  LineReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::string s;
   ASSERT_TRUE(reader.Next(&s));
@@ -104,14 +51,11 @@ TEST(TextReadersTest, ReadLinesWithReturnsAndNewLine) {
 }
 
 TEST(TextReadersTest, ReadLinesWithNewLineAndReturns) {
-  const char* text = "a\n\rb\n\rc";
+  const uint8_t text[] = "a\n\rb\n\rc";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  LineReader reader(std::move(source));
+  LineReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::string s;
   ASSERT_TRUE(reader.Next(&s));
@@ -128,14 +72,11 @@ TEST(TextReadersTest, ReadLinesWithNewLineAndReturns) {
 }
 
 TEST(TextReadersTest, ReadLinesWithReturnAtEnd) {
-  const char* text = "a\r\nb\r\nc\r";
+  const uint8_t text[] = "a\r\nb\r\nc\r";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  LineReader reader(std::move(source));
+  LineReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::string s;
   ASSERT_TRUE(reader.Next(&s));
@@ -147,30 +88,44 @@ TEST(TextReadersTest, ReadLinesWithReturnAtEnd) {
   ASSERT_FALSE(reader.Next(&s));
 }
 
+TEST(TextReadersTest, ReadLinesWithMultiplePushes) {
+  const uint8_t text1[] = "a\nb";
+  const uint8_t text2[] = "c\nd";
+
+  LineReader reader;
+  reader.PushData(text1, sizeof(text1) - 1);
+
+  std::string s;
+  ASSERT_TRUE(reader.Next(&s));
+  ASSERT_EQ(s, "a");
+  ASSERT_FALSE(reader.Next(&s));
+
+  reader.PushData(text2, sizeof(text2) - 1);
+  reader.Flush();
+  ASSERT_TRUE(reader.Next(&s));
+  ASSERT_EQ(s, "bc");
+  ASSERT_TRUE(reader.Next(&s));
+  ASSERT_EQ(s, "d");
+  ASSERT_FALSE(reader.Next(&s));
+}
+
 TEST(TextReadersTest, ReadBlocksReadMultilineBlock) {
-  const char* text =
+  const uint8_t text[] =
       "block 1 - line 1\n"
       "block 1 - line 2";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  BlockReader reader(std::move(source));
+  BlockReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::vector<std::string> block;
-
   ASSERT_TRUE(reader.Next(&block));
-  ASSERT_EQ(2u, block.size());
-  ASSERT_EQ("block 1 - line 1", block[0]);
-  ASSERT_EQ("block 1 - line 2", block[1]);
-
+  EXPECT_THAT(block, ElementsAre("block 1 - line 1", "block 1 - line 2"));
   ASSERT_FALSE(reader.Next(&block));
 }
 
 TEST(TextReadersTest, ReadBlocksSkipBlankLinesBeforeBlocks) {
-  const char* text =
+  const uint8_t text[] =
       "\n"
       "\n"
       "block 1\n"
@@ -178,38 +133,50 @@ TEST(TextReadersTest, ReadBlocksSkipBlankLinesBeforeBlocks) {
       "\n"
       "block 2\n";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  BlockReader reader(std::move(source));
+  BlockReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::vector<std::string> block;
 
   ASSERT_TRUE(reader.Next(&block));
-  ASSERT_EQ(1u, block.size());
-  ASSERT_EQ("block 1", block[0]);
+  EXPECT_THAT(block, ElementsAre("block 1"));
 
   ASSERT_TRUE(reader.Next(&block));
-  ASSERT_EQ(1u, block.size());
-  ASSERT_EQ("block 2", block[0]);
-
+  EXPECT_THAT(block, ElementsAre("block 2"));
   ASSERT_FALSE(reader.Next(&block));
 }
 
 TEST(TextReadersTest, ReadBlocksWithOnlyBlankLines) {
-  const char* text = "\n\n\n\n";
+  const uint8_t text[] = "\n\n\n\n";
 
-  ASSERT_TRUE(File::WriteStringToFile(kFilename, text));
-
-  std::unique_ptr<FileReader> source;
-  ASSERT_OK(FileReader::Open(kFilename, &source));
-
-  BlockReader reader(std::move(source));
+  BlockReader reader;
+  reader.PushData(text, sizeof(text) - 1);
+  reader.Flush();
 
   std::vector<std::string> block;
   ASSERT_FALSE(reader.Next(&block));
 }
+
+TEST(TextReadersTest, ReadBlocksMultipleReads) {
+  const uint8_t text1[] = "block 1\n";
+  const uint8_t text2[] =
+      "block 2\n"
+      "\n"
+      "\n"
+      "end";
+
+  BlockReader reader;
+  reader.PushData(text1, sizeof(text1) - 1);
+
+  std::vector<std::string> block;
+  ASSERT_FALSE(reader.Next(&block));
+  reader.PushData(text2, sizeof(text2) - 1);
+  reader.Flush();
+
+  ASSERT_TRUE(reader.Next(&block));
+  EXPECT_THAT(block, ElementsAre("block 1", "block 2"));
+}
+
 }  // namespace media
 }  // namespace shaka

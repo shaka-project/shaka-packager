@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/file/file_closer.h"
+#include "packager/media/base/byte_queue.h"
 #include "packager/status.h"
 
 namespace shaka {
@@ -19,70 +19,47 @@ class File;
 
 namespace media {
 
-/// Class to read character-by-character from a file.
-class FileReader {
- public:
-  /// Create a new file reader by opening a file. If the file fails to open (in
-  /// readonly mode) a non-ok status will be returned. If the file successfully
-  /// opens, |out| will be set to a new FileReader and an ok status will be
-  /// returned.
-  static Status Open(const std::string& filename,
-                     std::unique_ptr<FileReader>* out);
-
-  /// Read the next character from the file. If there is a next character,
-  /// |out| will be set and true will be returned. If there is no next
-  /// character false will be returned.
-  bool Next(char* out);
-
- private:
-  explicit FileReader(std::unique_ptr<File, FileCloser> file);
-
-  FileReader(const FileReader& reader) = delete;
-  FileReader operator=(const FileReader& reader) = delete;
-
-  std::unique_ptr<File, FileCloser> file_;
-};
-
-class PeekingReader {
- public:
-  explicit PeekingReader(std::unique_ptr<FileReader> source);
-
-  bool Peek(char* out);
-  bool Next(char* out);
-
- private:
-  PeekingReader(const PeekingReader&) = delete;
-  PeekingReader operator=(const PeekingReader&) = delete;
-
-  std::unique_ptr<FileReader> source_;
-  char cached_next_ = 0;
-  bool has_cached_next_ = false;
-};
-
 class LineReader {
  public:
-  explicit LineReader(std::unique_ptr<FileReader> source);
+  LineReader();
 
+  /// Pushes data onto the end of the buffer.
+  void PushData(const uint8_t* data, size_t data_size);
+  /// Reads the next line from the buffer.
+  /// @return True if a line is read, false if there's no line in the buffer.
   bool Next(std::string* out);
+  /// Indicates that no more data is coming and that calls to Next should
+  /// return even possibly-incomplete data.
+  void Flush();
 
  private:
   LineReader(const LineReader&) = delete;
   LineReader operator=(const LineReader&) = delete;
 
-  PeekingReader source_;
+  ByteQueue buffer_;
+  bool should_flush_;
 };
 
 class BlockReader {
  public:
-  explicit BlockReader(std::unique_ptr<FileReader> source);
+  BlockReader();
 
+  /// Pushes data onto the end of the buffer.
+  void PushData(const uint8_t* data, size_t data_size);
+  /// Reads the next block from the buffer.
+  /// @return True if a block is read, false if there is no block in the buffer.
   bool Next(std::vector<std::string>* out);
+  /// Indicates that no more data is coming and that calls to Next should
+  /// return even possibly-incomplete data.
+  void Flush();
 
  private:
   BlockReader(const BlockReader&) = delete;
   BlockReader operator=(const BlockReader&) = delete;
 
   LineReader source_;
+  std::vector<std::string> temp_;
+  bool should_flush_;
 };
 
 }  // namespace media

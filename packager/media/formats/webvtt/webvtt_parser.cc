@@ -12,6 +12,8 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/string_util.h"
+#include "packager/file/file.h"
+#include "packager/file/file_closer.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_timestamp.h"
 #include "packager/status_macros.h"
@@ -19,7 +21,9 @@
 namespace shaka {
 namespace media {
 namespace {
+
 const uint64_t kStreamIndex = 0;
+const uint64_t kBufferSize = 64 * 1024 * 1024;
 
 std::string BlockToString(const std::string* block, size_t size) {
   std::string out = " --- BLOCK START ---\n";
@@ -99,9 +103,21 @@ bool WebVttParser::ValidateOutputStreamIndex(size_t stream_index) const {
 }
 
 Status WebVttParser::Run() {
-  std::unique_ptr<FileReader> reader;
-  RETURN_IF_ERROR(FileReader::Open(input_path_, &reader));
-  BlockReader block_reader(std::move(reader));
+  BlockReader block_reader;
+  std::unique_ptr<File, FileCloser> file(File::Open(input_path_.c_str(), "r"));
+  if (!file)
+    return Status(error::FILE_FAILURE, "Error reading from file");
+  while (true) {
+    std::vector<uint8_t> buffer(kBufferSize);
+    const auto size = file->Read(buffer.data(), buffer.size());
+    if (size < 0)
+      return Status(error::FILE_FAILURE, "Error reading from file");
+    if (size == 0)
+      break;
+
+    block_reader.PushData(buffer.data(), size);
+  }
+  block_reader.Flush();
 
   return Parse(&block_reader)
              ? FlushDownstream(kStreamIndex)
