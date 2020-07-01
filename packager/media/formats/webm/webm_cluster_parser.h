@@ -41,7 +41,7 @@ class WebMClusterParser : public WebMParserClient {
     Track(int track_num,
           bool is_video,
           int64_t default_duration,
-          const MediaParser::NewSampleCB& new_sample_cb);
+          const MediaParser::NewMediaSampleCB& new_sample_cb);
     ~Track();
 
     int track_num() const { return track_num_; }
@@ -89,7 +89,7 @@ class WebMClusterParser : public WebMParserClient {
     // only if |default_duration_| is kNoTimestamp.
     int64_t estimated_next_frame_duration_;
 
-    MediaParser::NewSampleCB new_sample_cb_;
+    MediaParser::NewMediaSampleCB new_sample_cb_;
   };
 
   typedef std::map<int, Track> TextTrackMap;
@@ -129,7 +129,7 @@ class WebMClusterParser : public WebMParserClient {
                     const std::set<int64_t>& ignored_tracks,
                     const std::string& audio_encryption_key_id,
                     const std::string& video_encryption_key_id,
-                    const MediaParser::NewSampleCB& new_sample_cb,
+                    const MediaParser::NewMediaSampleCB& new_sample_cb,
                     const MediaParser::InitCB& init_cb,
                     KeySource* decryption_key_source);
   ~WebMClusterParser() override;
