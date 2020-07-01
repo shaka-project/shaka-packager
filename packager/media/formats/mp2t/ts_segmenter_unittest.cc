@@ -14,6 +14,7 @@
 #include "packager/media/formats/mp2t/program_map_table_writer.h"
 #include "packager/media/formats/mp2t/ts_segmenter.h"
 #include "packager/status_test_util.h"
+#include "packager/media/base/macros.h"
 
 namespace shaka {
 namespace media {
@@ -89,6 +90,7 @@ class MockTsWriter : public TsWriter {
 			  BufferWriter* buffer_writer));
   bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet,
 		  BufferWriter* buffer_writer) override {
+     buffer_writer->AppendArray(kAnyData, arraysize(kAnyData));
     // No need to keep the pes packet around for the current tests.
     return AddPesPacketMock(pes_packet.get(), buffer_writer);
   }
@@ -187,7 +189,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       kTransferCharacteristics, kTrickPlayFactor, kNaluLengthSize, kLanguage,
       kIsEncrypted));
   MuxerOptions options;
-  options.segment_template = "file$Number$.ts";
+  options.segment_template = "memory://file$Number$.ts";
 
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
@@ -204,6 +206,11 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
   // Doesn't really matter how long this is.
   sample2->set_duration(kInputTimescale * 7);
+
+  EXPECT_CALL(mock_listener,
+              OnNewSegment("memory://file1.ts",
+		           kFirstPts * kTimeScale / kInputTimescale,
+                           kTimeScale * 11, _));
 
   Sequence writer_sequence;
   EXPECT_CALL(*mock_ts_writer_, NewSegment(_))
@@ -260,7 +267,6 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-  segmenter.SetSegmentStartedForTesting(false);
   EXPECT_OK(segmenter.FinalizeSegment(kFirstPts, sample1->duration()));
   EXPECT_OK(segmenter.AddSample(*sample2));
 }
@@ -317,7 +323,7 @@ TEST_F(TsSegmenterTest, FinalizeSegment) {
       std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
-  segmenter.SetSegmentStartedForTesting(false);
+
   EXPECT_OK(segmenter.FinalizeSegment(0, 100 /* arbitrary duration*/));
 }
 
@@ -330,7 +336,7 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       kIsEncrypted));
   MuxerOptions options;
 
-  options.segment_template = "file$Number$.ts";
+  options.segment_template = "memory://file$Number$.ts";
 
   MockMuxerListener mock_listener;
   TsSegmenter segmenter(options, &mock_listener);
@@ -388,6 +394,8 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
       .InSequence(pes_packet_sequence)
       .WillOnce(Return(new PesPacket()));
 
+  EXPECT_CALL(mock_listener, OnNewSegment("memory://file1.ts", _, _, _));
+
   MockTsWriter* mock_ts_writer_raw = mock_ts_writer_.get();
 
   segmenter.InjectPesPacketGeneratorForTesting(
@@ -396,7 +404,6 @@ TEST_F(TsSegmenterTest, EncryptedSample) {
   EXPECT_OK(segmenter.Initialize(*stream_info));
   segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   EXPECT_OK(segmenter.AddSample(*sample1));
-  segmenter.SetSegmentStartedForTesting(false); 
   EXPECT_OK(segmenter.FinalizeSegment(1, sample1->duration()));
   // Signal encrypted if sample is encrypted.
   EXPECT_CALL(*mock_ts_writer_raw, SignalEncrypted());
