@@ -517,6 +517,8 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
         base::HostToNet32(codec_data.channel_mask() << 8);
       audio_channel_config_value =
         base::HexEncode(&ac4_channel_mask, sizeof(ac4_channel_mask) - 1);
+      // Note that the channel config schemes for EC-3 and AC-4 are different.
+      // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
       audio_channel_config_scheme =
         "tag:dolby.com,2015:dash:audio_channel_configuration:2015";
     } else {

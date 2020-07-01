@@ -308,27 +308,27 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
-    // According to HLS spec:
-    // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
-    // CHANNELS is a quoted-string that specifies an ordered,
-    // slash-separated ("/") list of parameters. The first parameter is a count
-    // of audio channels, and the second parameter identifies the encoding of
-    // object-based audio used by the Rendition. HLS Authoring Specification
-    // for Apple Devices Appendices documents how to handle Dolby Digital Plus
-    // JOC content.
-    // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
-    // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
-    // CBI without object-based audio) for Dolby internal use only. IMSA is not
-    // included in any publicly-available specifications as of June, 2020.
     if (playlist.GetEC3JocComplexity() != 0) {
+      // HLS Authoring Specification for Apple Devices Appendices documents how
+      // to handle Dolby Digital Plus JOC content.
+      // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
       std::string channel_string =
         std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
+      // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
+      // CBI without object-based audio) for Dolby internal use only. IMSA is
+      // not included in any publicly-available specifications as of June, 2020.
       std::string channel_string =
         std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);
     } else {
+      // According to HLS spec:
+      // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
+      // CHANNELS is a quoted-string that specifies an ordered,
+      // slash-separated ("/") list of parameters. The first parameter is a
+      // count of audio channels, and the second parameter identifies the
+      // encoding of object-based audio used by the Rendition.
       std::string channel_string = std::to_string(playlist.GetNumChannels());
       tag.AddQuotedString("CHANNELS", channel_string);
     }
