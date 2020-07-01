@@ -43,6 +43,7 @@ Shaka Packager supports:
   |       MP3         |      O       |      -       |     I / O    |      -      |       O      |
   |    Dolby AC3      |    I / O     |      -       |     I / O    |      -      |       O      |
   |    Dolby EAC3     |    I / O     |      -       |       O      |      -      |       O      |
+  |    Dolby AC4      |    I / O     |      -       |       -      |      -      |       -      |
   |       DTS         |    I / O     |      -       |       -      |      -      |       -      |
   |       FLAC        |    I / O     |      -       |       -      |      -      |       -      |
   |       Opus        |    I / O³    |    I / O     |       -      |      -      |       -      |
