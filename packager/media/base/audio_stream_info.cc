@@ -37,6 +37,8 @@ std::string AudioCodecToString(Codec codec) {
       return "DTS+";
     case kCodecEAC3:
       return "EAC3";
+    case kCodecAC4:
+      return "AC4";
     case kCodecFlac:
       return "FLAC";
     case kCodecOpus:
@@ -121,6 +123,14 @@ std::string AudioStreamInfo::GetCodecString(Codec codec,
       return "dts+";
     case kCodecEAC3:
       return "ec-3";
+    case kCodecAC4:
+      // ETSI TS 103 190-2 Digital Audio Compression (AC-4) Standard; Part 2:
+      // Immersive and personalized audio E.13. audio_object_type is composed of
+      // bitstream_version (3bits), presentation_version (2bits) and
+      // mdcompat (3bits).
+      return base::StringPrintf(
+        "ac-4.%02d.%02d.%02d", (audio_object_type & 0xE0) >> 5,
+        (audio_object_type & 0x18) >> 3, audio_object_type & 0x7);
     case kCodecFlac:
       return "flac";
     case kCodecOpus:

@@ -26,6 +26,7 @@
 #include "packager/media/codecs/avc_decoder_configuration_record.h"
 #include "packager/media/codecs/dovi_decoder_configuration_record.h"
 #include "packager/media/codecs/ec3_audio_util.h"
+#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/codecs/hevc_decoder_configuration_record.h"
 #include "packager/media/codecs/vp_codec_configuration_record.h"
@@ -94,6 +95,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecAC3;
     case FOURCC_ec_3:
       return kCodecEAC3;
+    case FOURCC_ac_4:
+      return kCodecAC4;
     case FOURCC_fLaC:
       return kCodecFlac;
     default:
@@ -487,6 +490,16 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_ec_3:
           codec_config = entry.dec3.data;
           num_channels = static_cast<uint8_t>(GetEc3NumChannels(codec_config));
+          break;
+        case FOURCC_ac_4:
+          codec_config = entry.dac4.data;
+          // Stop the process if have errors when parsing AC-4 dac4 box,
+          // bitstream version 0 (has beed deprecated) and contains multiple
+          // presentations in single AC-4 stream (only used for broadcast).
+          if (!GetAc4CodecInfo(codec_config, &audio_object_type)) {
+            LOG(ERROR) << "Failed to parse dac4.";
+            return false;
+          }
           break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;

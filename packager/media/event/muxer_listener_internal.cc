@@ -18,6 +18,7 @@
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/ec3_audio_util.h"
+#include "packager/media/codecs/ac4_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 using ::google::protobuf::util::MessageDifferencer;
@@ -121,20 +122,45 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
       return;
     }
     auto* codec_data = audio_info->mutable_codec_specific_data();
-    codec_data->set_ec3_channel_map(ec3_channel_map);
+    codec_data->set_channel_mask(ec3_channel_map);
     uint32_t ec3_channel_mpeg_value;
     if (!CalculateEC3ChannelMPEGValue(codec_config, &ec3_channel_mpeg_value)) {
         LOG(ERROR) << "Failed to calculate EC3 channel configuration "
                    << "descriptor value with MPEG scheme.";
         return;
     }
-    codec_data->set_ec3_channel_mpeg_value(ec3_channel_mpeg_value);
+    codec_data->set_channel_mpeg_value(ec3_channel_mpeg_value);
     uint32_t ec3_joc_complexity = 0;
     if (!GetEc3JocComplexity(codec_config, &ec3_joc_complexity)) {
       LOG(ERROR) << "Failed to obtain DD+JOC Information.";
       return;
     }
     codec_data->set_ec3_joc_complexity(ec3_joc_complexity);
+  }
+
+  if (audio_stream_info->codec() == kCodecAC4) {
+    uint32_t ac4_channel_mask;
+    if (!CalculateAC4ChannelMask(codec_config, &ac4_channel_mask)) {
+      LOG(ERROR) << "Failed to calculate AC4 channel mask.";
+      return;
+    }
+    auto* codec_data = audio_info->mutable_codec_specific_data();
+    codec_data->set_channel_mask(ac4_channel_mask);
+    uint32_t ac4_channel_mpeg_value;
+    if (!CalculateAC4ChannelMPEGValue(codec_config, &ac4_channel_mpeg_value)) {
+      LOG(ERROR) << "Failed to calculate AC4 channel configuration "
+                 << "descriptor value with MPEG scheme.";
+      return;
+    }
+    codec_data->set_channel_mpeg_value(ac4_channel_mpeg_value);
+    bool ac4_ims_flag;
+    bool ac4_cbi_flag;
+    if (!GetAc4ImmersiveInfo(codec_config, &ac4_ims_flag, &ac4_cbi_flag)) {
+      LOG(ERROR) << "Failed to obtain AC4 IMS flag and CBI flag.";
+      return;
+    }
+    codec_data->set_ac4_ims_flag(ac4_ims_flag);
+    codec_data->set_ac4_cbi_flag(ac4_cbi_flag);
   }
 }
 

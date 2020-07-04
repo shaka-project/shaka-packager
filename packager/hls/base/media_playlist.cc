@@ -524,6 +524,14 @@ int MediaPlaylist::GetEC3JocComplexity() const {
   return media_info_.audio_info().codec_specific_data().ec3_joc_complexity();
 }
 
+bool MediaPlaylist::GetAC4ImsFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_ims_flag();
+}
+
+bool MediaPlaylist::GetAC4CbiFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_cbi_flag();
+}
+
 bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
                                          uint32_t* height) const {
   DCHECK(width);

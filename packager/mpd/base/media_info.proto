@@ -64,17 +64,33 @@ message MediaInfo {
   message AudioCodecSpecificData {
     // EC3 Channel map bit fields, encoded based on ETSI TS 102 366 V1.3.1
     // Digital Audio Compression (AC-3, Enhanced AC-3) Standard E.1.3.1.8.
-    optional uint32 ec3_channel_map = 1;
+    // Or AC4 Channel mask bit fields, encoded based on ETSI TS 103 190-2
+    // V1.2.1 Digital Audio Compression (AC-4) Standard; Part 2: Immersive and
+    // personalized audio E.10.14.
+    optional uint32 channel_mask = 1;
 
     // EC3 Channel configuration descriptor with MPEG scheme fields,
     // encoded based on ETSI TS 102 366 V1.4.1 Digital Audio Compression
     // (AC-3, Enhanced AC-3) Standard I.1.2.1.
-    optional uint32 ec3_channel_mpeg_value = 2;
+    // Or AC4 Channel configuration descriptor with MPEG scheme fields,
+    // encoded based on ETSI TS 103 190-2 V1.2.1 Digital Audio Compression
+    // (AC-4) Standard; Part 2: Immersive and personalized audio G.3.2.
+    optional uint32 channel_mpeg_value = 2;
 
     // Dolby Digital Plus JOC decoding complexity fields, ETSI TS 103 420 v1.2.1
     // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
     // C.3.2.3.
     optional uint32 ec3_joc_complexity = 3;
+
+    // AC4 Immersive stereo flag field, based on Dolby AC-4 in MPEG-DASH for
+    // Online Delivery Specification 2.5.3.
+    // https://developer.dolby.com/tools-media/online-delivery-kits/dolby-ac-4/
+    optional bool ac4_ims_flag = 4;
+
+    // AC4 Channel-based audio (CBI) flag field, encoded based on
+    // ETSI TS 103 190-2 Digital Audio Compression (AC-4) Standard;
+    // Part 2: Immersive and personalized audio 4.3.
+    optional bool ac4_cbi_flag = 5;
   }
 
   message TextInfo {

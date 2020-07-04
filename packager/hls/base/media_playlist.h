@@ -152,7 +152,7 @@ class MediaPlaylist {
 
   /// Write the playlist to |file_path|.
   /// This does not close the file.
-  /// If target duration is not set expliticly, this will try to find the target
+  /// If target duration is not set explicitly, this will try to find the target
   /// duration. Note that target duration cannot be changed. So calling this
   /// without explicitly setting the target duration and before adding any
   /// segments will end up setting the target duration to 0 and will always
@@ -192,6 +192,16 @@ class MediaPlaylist {
   ///         Backwards-compatible object audio carriage using Enhanced AC-3
   ///         Standard C.3.2.3.
   virtual int GetEC3JocComplexity() const;
+
+  /// @return true if it's an AC-4 IMS stream, based on Dolby AC-4 in MPEG-DASH
+  ///         for Online Delivery Specification 2.5.3.
+  ///         https://developer.dolby.com/tools-media/online-delivery-kits/dolby-ac-4/
+  virtual bool GetAC4ImsFlag() const;
+
+  /// @return true if it's an AC-4 CBI stream, based on ETSI TS 103 190-2
+  ///         Digital Audio Compression (AC-4) Standard; Part 2: Immersive and
+  ///         personalized audio 4.3.
+  virtual bool GetAC4CbiFlag() const;
 
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.

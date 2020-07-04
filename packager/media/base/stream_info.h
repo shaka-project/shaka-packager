@@ -40,6 +40,7 @@ enum Codec {
   kCodecAudio = 200,
   kCodecAAC = kCodecAudio,
   kCodecAC3,
+  kCodecAC4,
   // TODO(kqyang): Use kCodecDTS and a kDtsStreamFormat for the various DTS
   // streams.
   kCodecDTSC,

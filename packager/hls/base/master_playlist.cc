@@ -42,7 +42,7 @@ struct Variant {
   const std::string* audio_group_id = nullptr;
   const std::string* text_group_id = nullptr;
   // The bitrates should be the sum of audio bitrate and text bitrate.
-  // However, given the contraints and assumptions, it makes sense to exclude
+  // However, given the constraints and assumptions, it makes sense to exclude
   // text bitrate out of the calculation:
   // - Text streams usually have a very small negligible bitrate.
   // - Text does not have constant bitrates. To avoid fluctuation, an arbitrary
@@ -260,7 +260,7 @@ void BuildMediaTag(const MediaPlaylist& playlist,
                    bool is_autoselect,
                    const std::string& base_url,
                    std::string* out) {
-  // Tag attribures should follow the order as defined in
+  // Tag attributes should follow the order as defined in
   // https://tools.ietf.org/html/draft-pantos-http-live-streaming-23#section-3.5
 
   Tag tag("#EXT-X-MEDIA", out);
@@ -308,20 +308,27 @@ void BuildMediaTag(const MediaPlaylist& playlist,
   const MediaPlaylist::MediaPlaylistStreamType kAudio =
       MediaPlaylist::MediaPlaylistStreamType::kAudio;
   if (playlist.stream_type() == kAudio) {
-    // According to HLS spec:
-    // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
-    // CHANNELS is a quoted-string that specifies an ordered,
-    // slash-separated ("/") list of parameters. The first parameter is a count
-    // of audio channels, and the second parameter identifies the encoding of
-    // object-based audio used by the Rendition. HLS Authoring Specification
-    // for Apple Devices Appendices documents how to handle Dolby Digital Plus
-    // JOC content.
-    // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
     if (playlist.GetEC3JocComplexity() != 0) {
+      // HLS Authoring Specification for Apple Devices Appendices documents how
+      // to handle Dolby Digital Plus JOC content.
+      // https://developer.apple.com/documentation/http_live_streaming/hls_authoring_specification_for_apple_devices/hls_authoring_specification_for_apple_devices_appendices
       std::string channel_string =
         std::to_string(playlist.GetEC3JocComplexity()) + "/JOC";
       tag.AddQuotedString("CHANNELS", channel_string);
+    } else if (playlist.GetAC4ImsFlag() || playlist.GetAC4CbiFlag()) {
+      // Dolby has qualified using IMSA to present AC4 immersive audio (IMS and
+      // CBI without object-based audio) for Dolby internal use only. IMSA is
+      // not included in any publicly-available specifications as of June, 2020.
+      std::string channel_string =
+        std::to_string(playlist.GetNumChannels()) + "/IMSA";
+      tag.AddQuotedString("CHANNELS", channel_string);
     } else {
+      // According to HLS spec:
+      // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.
+      // CHANNELS is a quoted-string that specifies an ordered,
+      // slash-separated ("/") list of parameters. The first parameter is a
+      // count of audio channels, and the second parameter identifies the
+      // encoding of object-based audio used by the Rendition.
       std::string channel_string = std::to_string(playlist.GetNumChannels());
       tag.AddQuotedString("CHANNELS", channel_string);
     }

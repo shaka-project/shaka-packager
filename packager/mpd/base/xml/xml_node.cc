@@ -38,6 +38,7 @@ typedef MediaInfo::VideoInfo VideoInfo;
 
 namespace {
 const char kEC3Codec[] = "ec-3";
+const char kAC4Codec[] = "ac-4";
 
 std::string RangeToString(const Range& range) {
   return base::Uint64ToString(range.begin()) + "-" +
@@ -464,13 +465,13 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
     // Use MPEG scheme if the mpeg value is available and valid, fallback to
     // EC3 channel mapping otherwise.
     // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
-    const uint32_t ec3_channel_mpeg_value = codec_data.ec3_channel_mpeg_value();
+    const uint32_t ec3_channel_mpeg_value = codec_data.channel_mpeg_value();
     const uint32_t NO_MAPPING = 0xFFFFFFFF;
     if (ec3_channel_mpeg_value == NO_MAPPING) {
       // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
       // Interoperability Points v3.0 9.2.1.2.
       const uint16_t ec3_channel_map =
-        base::HostToNet16(codec_data.ec3_channel_map());
+        base::HostToNet16(codec_data.channel_mask());
       audio_channel_config_value =
         base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
       audio_channel_config_scheme =
@@ -498,6 +499,42 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
                            "tag:dolby.com,2018:dash:"
                            "EC3_ExtensionComplexityIndex:2018",
                            ec3_joc_complexity);
+    }
+    return ret;
+  } else if (audio_info.codec().substr(0, 4) == kAC4Codec) {
+    const auto& codec_data = audio_info.codec_specific_data();
+    const bool ac4_ims_flag = codec_data.ac4_ims_flag();
+    // Use MPEG scheme if the mpeg value is available and valid, fallback to
+    // AC4 channel mask otherwise.
+    // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268
+    const uint32_t ac4_channel_mpeg_value = codec_data.channel_mpeg_value();
+    const uint32_t NO_MAPPING = 0xFFFFFFFF;
+    if (ac4_channel_mpeg_value == NO_MAPPING) {
+      // Calculate AC-4 channel mask. Spec: ETSI TS 103 190-2 V1.2.1 Digital
+      // Audio Compression (AC-4) Standard; Part 2: Immersive and personalized
+      // audio G.3.1.
+      const uint32_t ac4_channel_mask =
+        base::HostToNet32(codec_data.channel_mask() << 8);
+      audio_channel_config_value =
+        base::HexEncode(&ac4_channel_mask, sizeof(ac4_channel_mask) - 1);
+      // Note that the channel config schemes for EC-3 and AC-4 are different.
+      // See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/268.
+      audio_channel_config_scheme =
+        "tag:dolby.com,2015:dash:audio_channel_configuration:2015";
+    } else {
+      // Calculate AC-4 channel configuration descriptor value with MPEG scheme.
+      // Spec: ETSI TS 103 190-2 V1.2.1 Digital Audio Compression (AC-4) Standard;
+      // Part 2: Immersive and personalized audio G.3.2.
+      audio_channel_config_value = base::UintToString(ac4_channel_mpeg_value);
+      audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
+    }
+    bool ret = AddDescriptor("AudioChannelConfiguration",
+                             audio_channel_config_scheme,
+                             audio_channel_config_value);
+    if (ac4_ims_flag) {
+      ret &= AddDescriptor("SupplementalProperty",
+                           "tag:dolby.com,2016:dash:virtualized_content:2016",
+                           "1");
     }
     return ret;
   } else {
