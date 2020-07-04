@@ -1,3 +1,9 @@
+// copyright 2020 google inc. all rights reserved.
+//
+// use of this source code is governed by a bsd-style
+// license that can be found in the license file or at
+// https://developers.google.com/open-source/licenses/bsd
+
 #include "packager/media/formats/webm/buffer_mkv_writer.h"
 
 namespace shaka {
