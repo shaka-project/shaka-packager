@@ -16,6 +16,7 @@
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
+#include "packager/media/base/buffer_writer.h"
 
 namespace shaka {
 namespace media {
@@ -32,27 +33,19 @@ class TsWriter {
   virtual ~TsWriter();
 
   /// This will fail if the current segment is not finalized.
-  /// @param file_name is the output file name.
-  /// @param encrypted must be true if the new segment is encrypted.
+  /// @param buffer to write segment data.
   /// @return true on success, false otherwise.
-  virtual bool NewSegment(const std::string& file_name);
+  virtual bool NewSegment(BufferWriter* buffer);
 
   /// Signals the writer that the rest of the segments are encrypted.
   virtual void SignalEncrypted();
 
-  /// Flush all the pending PesPackets that have not been written to file and
-  /// close the file.
-  /// @return true on success, false otherwise.
-  virtual bool FinalizeSegment();
-
-  /// Add PesPacket to the instance. PesPacket might not get written to file
+  /// Add PesPacket to the instance. PesPacket might not be added to the buffer
   /// immediately.
   /// @param pes_packet gets added to the writer.
+  /// @param buffer to write pes packet.
   /// @return true on success, false otherwise.
-  virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet);
-
-  /// @return current file position on success, nullopt otherwise.
-  base::Optional<uint64_t> GetFilePosition();
+  virtual bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet, BufferWriter* buffer);
 
  private:
   TsWriter(const TsWriter&) = delete;
@@ -65,8 +58,6 @@ class TsWriter {
   ContinuityCounter elementary_stream_continuity_counter_;
 
   std::unique_ptr<ProgramMapTableWriter> pmt_writer_;
-
-  std::unique_ptr<File, FileCloser> current_file_;
 };
 
 }  // namespace mp2t
