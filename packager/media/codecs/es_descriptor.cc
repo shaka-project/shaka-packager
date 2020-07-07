@@ -219,7 +219,9 @@ bool ESDescriptor::ReadData(BitReader* reader) {
 void ESDescriptor::WriteInternal(BufferWriter* writer) {
   WriteHeader(writer);
 
-  writer->AppendInt(esid_);
+  // Per ISO/IEC 4.1.2, ES_ID must be set to 0 when stored
+  const uint16_t kEsid = 0;
+  writer->AppendInt(kEsid);
   const uint8_t kNoEsFlags = 0;
   writer->AppendInt(kNoEsFlags);
 

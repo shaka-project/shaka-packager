@@ -248,15 +248,15 @@ Status MP4Muxer::DelayInitializeMuxer() {
     switch (stream->stream_type()) {
       case kStreamVideo:
         generate_trak_result = GenerateVideoTrak(
-            static_cast<const VideoStreamInfo*>(stream), &trak, i + 1);
+            static_cast<const VideoStreamInfo*>(stream), &trak);
         break;
       case kStreamAudio:
         generate_trak_result = GenerateAudioTrak(
-            static_cast<const AudioStreamInfo*>(stream), &trak, i + 1);
+            static_cast<const AudioStreamInfo*>(stream), &trak);
         break;
       case kStreamText:
         generate_trak_result = GenerateTextTrak(
-            static_cast<const TextStreamInfo*>(stream), &trak, i + 1);
+            static_cast<const TextStreamInfo*>(stream), &trak);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
@@ -393,8 +393,7 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
 }
 
 bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
-                                 Track* trak,
-                                 uint32_t track_id) {
+                                 Track* trak) {
   InitializeTrak(video_info, trak);
 
   // width and height specify the track's visual presentation size as
@@ -447,8 +446,7 @@ bool MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
 }
 
 bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
-                                 Track* trak,
-                                 uint32_t track_id) {
+                                 Track* trak) {
   InitializeTrak(audio_info, trak);
 
   trak->header.volume = 0x100;
@@ -458,7 +456,6 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       CodecToFourCC(audio_info->codec(), H26xStreamFormat::kUnSpecified);
   switch(audio_info->codec()){
     case kCodecAAC: {
-      audio.esds.es_descriptor.set_esid(track_id);
       DecoderConfigDescriptor* decoder_config =
           audio.esds.es_descriptor.mutable_decoder_config_descriptor();
       decoder_config->set_object_type(ObjectType::kISO_14496_3);  // MPEG4 AAC.
@@ -489,7 +486,6 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.dfla.data = audio_info->codec_config();
       break;
     case kCodecMP3: {
-      audio.esds.es_descriptor.set_esid(track_id);
       DecoderConfigDescriptor* decoder_config =
           audio.esds.es_descriptor.mutable_decoder_config_descriptor();
       uint32_t samplerate = audio_info->sampling_frequency();
@@ -556,8 +552,7 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
 }
 
 bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
-                                Track* trak,
-                                uint32_t track_id) {
+                                Track* trak) {
   InitializeTrak(text_info, trak);
 
   if (text_info->codec_string() == "wvtt") {

@@ -175,7 +175,6 @@ class ESDescriptor : public BaseDescriptor {
   ESDescriptor() : BaseDescriptor(DescriptorTag::kES) {}
 
   uint16_t esid() const { return esid_; }
-  void set_esid(uint16_t esid) { esid_ = esid; }
 
   const DecoderConfigDescriptor& decoder_config_descriptor() const {
     return decoder_config_descriptor_;
