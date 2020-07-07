@@ -40,8 +40,6 @@
 #include "packager/media/event/muxer_listener_factory.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/formats/webvtt/text_padder.h"
-#include "packager/media/formats/webvtt/text_readers.h"
-#include "packager/media/formats/webvtt/webvtt_parser.h"
 #include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
 #include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
 #include "packager/media/replicator/replicator.h"
@@ -511,18 +509,22 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
   auto output = std::make_shared<WebVttTextOutputHandler>(
       muxer_options, std::move(muxer_listener));
 
-  auto parser = std::make_shared<WebVttParser>(stream.input, stream.language);
+  std::shared_ptr<Demuxer> demuxer;
+  RETURN_IF_ERROR(CreateDemuxer(stream, packaging_params, &demuxer));
+  if (!stream.language.empty())
+    demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
   auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
+  RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, padder));
+
   auto cue_aligner = sync_points
                          ? std::make_shared<CueAlignmentHandler>(sync_points)
                          : nullptr;
   auto chunker = CreateTextChunker(packaging_params.chunking_params);
 
-  job_manager->Add("Segmented Text Job", parser);
+  job_manager->Add("Segmented Text Job", demuxer);
 
-  return MediaHandler::Chain({std::move(parser), std::move(padder),
-                              std::move(cue_aligner), std::move(chunker),
-                              std::move(output)});
+  return MediaHandler::Chain({std::move(padder), std::move(cue_aligner),
+                              std::move(chunker), std::move(output)});
 }
 
 Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
@@ -531,8 +533,12 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
                                 SyncPointQueue* sync_points,
                                 MuxerFactory* muxer_factory,
                                 std::shared_ptr<OriginHandler>* root) {
-  auto parser = std::make_shared<WebVttParser>(stream.input, stream.language);
+  std::shared_ptr<Demuxer> demuxer;
+  RETURN_IF_ERROR(CreateDemuxer(stream, packaging_params, &demuxer));
+  if (!stream.language.empty())
+    demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
   auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
+  RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, padder));
 
   auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
   auto muxer = muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
@@ -547,11 +553,11 @@ Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
   std::shared_ptr<MediaHandler> chunker =
       CreateTextChunker(packaging_params.chunking_params);
 
-  *root = parser;
+  *root = demuxer;
 
-  return MediaHandler::Chain({std::move(parser), std::move(padder),
-                              std::move(cue_aligner), std::move(chunker),
-                              std::move(text_to_mp4), std::move(muxer)});
+  return MediaHandler::Chain({std::move(padder), std::move(cue_aligner),
+                              std::move(chunker), std::move(text_to_mp4),
+                              std::move(muxer)});
 }
 
 Status CreateTextJobs(
@@ -929,9 +935,9 @@ Status Packager::Initialize(
       LanguageToShortestForm(hls_params.default_language);
   hls_params.default_text_language =
       LanguageToShortestForm(hls_params.default_text_language);
-  hls_params.is_independent_segments = 
+  hls_params.is_independent_segments =
       packaging_params.chunking_params.segment_sap_aligned;
-  
+
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();

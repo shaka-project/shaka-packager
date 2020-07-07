@@ -6,24 +6,18 @@
 
 #include "packager/media/formats/webvtt/webvtt_parser.h"
 
-#include <string>
-#include <vector>
-
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/file/file.h"
-#include "packager/file/file_closer.h"
+#include "packager/media/base/text_sample.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_timestamp.h"
-#include "packager/status_macros.h"
 
 namespace shaka {
 namespace media {
 namespace {
 
 const uint64_t kStreamIndex = 0;
-const uint64_t kBufferSize = 64 * 1024 * 1024;
 
 std::string BlockToString(const std::string* block, size_t size) {
   std::string out = " --- BLOCK START ---\n";
@@ -89,141 +83,119 @@ void UpdateConfig(const std::vector<std::string>& block, std::string* config) {
 
 }  // namespace
 
-WebVttParser::WebVttParser(const std::string& input_path,
-                           const std::string& language)
-    : input_path_(input_path), language_(language) {}
+WebVttParser::WebVttParser() {}
 
-Status WebVttParser::InitializeInternal() {
-  return Status::OK;
+void WebVttParser::Init(const InitCB& init_cb,
+                        const NewMediaSampleCB& new_media_sample_cb,
+                        const NewTextSampleCB& new_text_sample_cb,
+                        KeySource* decryption_key_source) {
+  DCHECK(init_cb_.is_null());
+  DCHECK(!init_cb.is_null());
+  DCHECK(!new_text_sample_cb.is_null());
+  DCHECK(!decryption_key_source) << "Encrypted WebVTT not supported";
+
+  init_cb_ = init_cb;
+  new_text_sample_cb_ = new_text_sample_cb;
 }
 
-bool WebVttParser::ValidateOutputStreamIndex(size_t stream_index) const {
-  // Only support one output
-  return stream_index == kStreamIndex;
+bool WebVttParser::Flush() {
+  reader_.Flush();
+  return Parse();
 }
 
-Status WebVttParser::Run() {
-  BlockReader block_reader;
-  std::unique_ptr<File, FileCloser> file(File::Open(input_path_.c_str(), "r"));
-  if (!file)
-    return Status(error::FILE_FAILURE, "Error reading from file");
-  while (true) {
-    std::vector<uint8_t> buffer(kBufferSize);
-    const auto size = file->Read(buffer.data(), buffer.size());
-    if (size < 0)
-      return Status(error::FILE_FAILURE, "Error reading from file");
-    if (size == 0)
-      break;
+bool WebVttParser::Parse(const uint8_t* buf, int size) {
+  reader_.PushData(buf, size);
+  return Parse();
+}
 
-    block_reader.PushData(buffer.data(), size);
+bool WebVttParser::Parse() {
+  if (!initialized_) {
+    std::vector<std::string> block;
+    if (!reader_.Next(&block)) {
+      return true;
+    }
+
+    // Check the header. It is possible for a 0xFEFF BOM to come before the
+    // header text.
+    if (block.size() != 1) {
+      LOG(ERROR) << "Failed to read WEBVTT header - "
+                 << "block size should be 1 but was " << block.size() << ".";
+      return false;
+    }
+    if (block[0] != "WEBVTT" && block[0] != "\xEF\xBB\xBFWEBVTT") {
+      LOG(ERROR) << "Failed to read WEBVTT header - should be WEBVTT but was "
+                 << block[0];
+      return false;
+    }
+    initialized_ = true;
   }
-  block_reader.Flush();
 
-  return Parse(&block_reader)
-             ? FlushDownstream(kStreamIndex)
-             : Status(error::INTERNAL_ERROR,
-                      "Failed to parse WebVTT source. See log for details.");
-}
-
-void WebVttParser::Cancel() {
-  keep_reading_ = false;
-}
-
-bool WebVttParser::Parse(BlockReader* block_reader) {
   std::vector<std::string> block;
-  if (!block_reader->Next(&block)) {
-    LOG(ERROR) << "Failed to read WEBVTT HEADER - No blocks in source.";
-    return false;
+  while (reader_.Next(&block)) {
+    if (!ParseBlock(block))
+      return false;
+  }
+  return true;
+}
+
+bool WebVttParser::ParseBlock(const std::vector<std::string>& block) {
+  // NOTE
+  if (IsLikelyNote(block[0])) {
+    // We can safely ignore the whole block.
+    return true;
   }
 
-  // Check the header. It is possible for a 0xFEFF BOM to come before the
-  // header text.
-  if (block.size() != 1) {
-    LOG(ERROR) << "Failed to read WEBVTT header - "
-               << "block size should be 1 but was " << block.size() << ".";
-    return false;
-  }
-  if (block[0] != "WEBVTT" && block[0] != "\xEF\xBB\xBFWEBVTT") {
-    LOG(ERROR) << "Failed to read WEBVTT header - should be WEBVTT but was "
-               << block[0];
-    return false;
+  // STYLE
+  if (IsLikelyStyle(block[0])) {
+    if (saw_cue_) {
+      LOG(WARNING)
+          << "Found style block after seeing cue. Ignoring style block";
+    } else {
+      UpdateConfig(block, &style_region_config_);
+    }
+    return true;
   }
 
-  bool saw_cue = false;
-
-  while (block_reader->Next(&block) && keep_reading_) {
-    // NOTE
-    if (IsLikelyNote(block[0])) {
-      // We can safely ignore the whole block.
-      continue;
+  // REGION
+  if (IsLikelyRegion(block[0])) {
+    if (saw_cue_) {
+      LOG(WARNING)
+          << "Found region block after seeing cue. Ignoring region block";
+    } else {
+      UpdateConfig(block, &style_region_config_);
     }
-
-    // STYLE
-    if (IsLikelyStyle(block[0])) {
-      if (saw_cue) {
-        LOG(WARNING)
-            << "Found style block after seeing cue. Ignoring style block";
-      } else {
-        UpdateConfig(block, &style_region_config_);
-      }
-      continue;
-    }
-
-    // REGION
-    if (IsLikelyRegion(block[0])) {
-      if (saw_cue) {
-        LOG(WARNING)
-            << "Found region block after seeing cue. Ignoring region block";
-      } else {
-        UpdateConfig(block, &style_region_config_);
-      }
-      continue;
-    }
-
-    // CUE with ID
-    if (block.size() >= 2 && MaybeCueId(block[0]) &&
-        IsLikelyCueTiming(block[1]) && ParseCueWithId(block)) {
-      saw_cue = true;
-      continue;
-    }
-
-    // CUE with no ID
-    if (IsLikelyCueTiming(block[0]) && ParseCueWithNoId(block)) {
-      saw_cue = true;
-      continue;
-    }
-
-    LOG(ERROR) << "Failed to determine block classification:\n"
-               << BlockToString(block.data(), block.size());
-    return false;
+    return true;
   }
 
-  return keep_reading_;
+  // CUE with ID
+  if (block.size() >= 2 && MaybeCueId(block[0]) &&
+      IsLikelyCueTiming(block[1]) && ParseCueWithId(block)) {
+    saw_cue_ = true;
+    return true;
+  }
+
+  // CUE with no ID
+  if (IsLikelyCueTiming(block[0]) && ParseCueWithNoId(block)) {
+    saw_cue_ = true;
+    return true;
+  }
+
+  LOG(ERROR) << "Failed to determine block classification:\n"
+             << BlockToString(block.data(), block.size());
+  return false;
 }
 
 bool WebVttParser::ParseCueWithNoId(const std::vector<std::string>& block) {
-  const Status status = ParseCue("", block.data(), block.size());
-
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to parse cue: " << status.error_message();
-  }
-
-  return status.ok();
+  return ParseCue("", block.data(), block.size());
 }
 
 bool WebVttParser::ParseCueWithId(const std::vector<std::string>& block) {
-  const Status status = ParseCue(block[0], block.data() + 1, block.size() - 1);
-
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to parse cue: " << status.error_message();
-  }
-
-  return status.ok();
+  return ParseCue(block[0], block.data() + 1, block.size() - 1);
 }
 
-Status WebVttParser::ParseCue(const std::string& id,
-                              const std::string* block,
-                              size_t block_size) {
+bool WebVttParser::ParseCue(const std::string& id,
+                            const std::string* block,
+                            size_t block_size) {
   const std::vector<std::string> time_and_style = base::SplitString(
       block[0], " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -236,13 +208,13 @@ Status WebVttParser::ParseCue(const std::string& id,
       WebVttTimestampToMs(time_and_style[2], &end_time);
 
   if (!parsed_time) {
-    return Status(
-        error::INTERNAL_ERROR,
-        "Could not parse start time, -->, and end time from " + block[0]);
+    LOG(ERROR) << "Could not parse start time, -->, and end time from "
+               << block[0];
+    return false;
   }
 
   if (!stream_info_dispatched_)
-    RETURN_IF_ERROR(DispatchTextStreamInfo());
+    DispatchTextStreamInfo();
 
   // According to the WebVTT spec end time must be greater than the start time
   // of the cue. Since we are seeing content with invalid times in the field, we
@@ -260,8 +232,7 @@ Status WebVttParser::ParseCue(const std::string& id,
                  << start_time << ") should be less than end time (" << end_time
                  << "). Skipping webvtt cue:"
                  << BlockToString(block, block_size);
-
-    return Status::OK;
+    return true;
   }
 
   std::shared_ptr<TextSample> sample = std::make_shared<TextSample>();
@@ -278,10 +249,10 @@ Status WebVttParser::ParseCue(const std::string& id,
     sample->AppendPayload(block[i]);
   }
 
-  return DispatchTextSample(kStreamIndex, sample);
+  return new_text_sample_cb_.Run(kStreamIndex, sample);
 }
 
-Status WebVttParser::DispatchTextStreamInfo() {
+void WebVttParser::DispatchTextStreamInfo() {
   stream_info_dispatched_ = true;
 
   const int kTrackId = 0;
@@ -294,12 +265,14 @@ Status WebVttParser::DispatchTextStreamInfo() {
   const char kWebVttCodecString[] = "wvtt";
   const int64_t kNoWidth = 0;
   const int64_t kNoHeight = 0;
+  // The language of the stream will be overwritten by the Demuxer later.
+  const char kNoLanguage[] = "";
 
-  std::shared_ptr<StreamInfo> info = std::make_shared<TextStreamInfo>(
+  std::vector<std::shared_ptr<StreamInfo>> streams;
+  streams.emplace_back(std::make_shared<TextStreamInfo>(
       kTrackId, kTimescale, kDuration, kCodecWebVtt, kWebVttCodecString,
-      style_region_config_, kNoWidth, kNoHeight, language_);
-
-  return DispatchStreamInfo(kStreamIndex, std::move(info));
+      style_region_config_, kNoWidth, kNoHeight, kNoLanguage));
+  init_cb_.Run(streams);
 }
 }  // namespace media
 }  // namespace shaka

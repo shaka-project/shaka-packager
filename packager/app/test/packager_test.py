@@ -820,6 +820,19 @@ class PackagerFunctionalTest(PackagerAppTest):
         self._GetFlags(output_dash=True, output_hls=True))
     self._CheckTestResults('audio-video-with-language-override-with-subtag')
 
+  def testSegmentedWebVttWithLanguageOverride(self):
+    streams = self._GetStreams(
+        ['text'], language='por', dash_only=True, output_format='mp4',
+        test_files=['bear-english.vtt'], segmented=True)
+    streams += self._GetStreams(
+        ['text'], language='por', hls_only=True,
+        test_files=['bear-english.vtt'], segmented=True)
+
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-with-language-override')
+
   def testMp4TrailingMoov(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'],

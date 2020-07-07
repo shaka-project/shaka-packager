@@ -20,6 +20,7 @@
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
 #include "packager/media/formats/mp4/mp4_media_parser.h"
 #include "packager/media/formats/webm/webm_media_parser.h"
+#include "packager/media/formats/webvtt/webvtt_parser.h"
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 
 namespace {
@@ -192,6 +193,9 @@ Status Demuxer::InitializeParser() {
       break;
     case CONTAINER_WEBM:
       parser_.reset(new WebMMediaParser());
+      break;
+    case CONTAINER_WEBVTT:
+      parser_.reset(new WebVttParser());
       break;
     case CONTAINER_UNKNOWN: {
       const int64_t kDumpSizeLimit = 512;
