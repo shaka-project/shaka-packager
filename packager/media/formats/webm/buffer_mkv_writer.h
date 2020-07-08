@@ -1,7 +1,7 @@
-// copyright 2020 google inc. all rights reserved.
+// Copyright 2020 Google LLC. All rights reserved.
 //
-// use of this source code is governed by a bsd-style
-// license that can be found in the license file or at
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
 #ifndef PACKAGER_MEDIA_FORMATS_WEBM_BUFFER_MKV_WRITER_H_
@@ -24,27 +24,14 @@ class BufferMkvWriter : public mkvmuxer::IMkvWriter {
   BufferMkvWriter();
   ~BufferMkvWriter() override;
 
-  /// Initialize a buffer to store segment information.
-  /// @return Whether the operation succeeded.
-  Status OpenBuffer();
-
-  /// Opens the given file for writing (Init segment).
-  /// @param name The path to the file to open.
-  /// @return Whether the operation succeeded.
-  Status OpenFile(const std::string& name);
-  /// Closes the file.  MUST call Open before calling any other methods.
-  Status CloseFile();
-
   /// Writes out @a len bytes of @a buf.
   /// @return 0 on success.
   mkvmuxer::int32 Write(const void* buf, mkvmuxer::uint32 len) override;
-  /// @return The offset of the output position from the beginning of the
-  ///         output.
+  /// @return Buffer size.
   mkvmuxer::int64 Position() const override;
-  /// Set the current File position.
-  /// @return 0 on success.
+  /// @return -1 as not supported.
   mkvmuxer::int32 Position(mkvmuxer::int64 position) override;
-  /// @return true if the writer is seekable.
+  /// @return false as writer is not seekable.
   bool Seekable() const override;
   /// Element start notification. Called whenever an element identifier is about
   /// to be written to the stream.  @a element_id is the element identifier, and
@@ -53,29 +40,14 @@ class BufferMkvWriter : public mkvmuxer::IMkvWriter {
   /// Note: the |MkvId| enumeration in webmids.hpp defines element values.
   void ElementStartNotify(mkvmuxer::uint64 element_id,
                           mkvmuxer::int64 position) override;
-
-  /// Writes the contents of the given file to this file.
-  /// @return The number of bytes written; or < 0 on error.
-  int64_t WriteFromFile(File* source);
-  /// Writes the contents of the given file to this file, up to a maximum
-  /// number of bytes.  If @a max_copy is negative, will copy to EOF.
-  /// @return The number of bytes written; or < 0 on error.
-  int64_t WriteFromFile(File* source, int64_t max_copy);
-
-  /// Creates a file with name @a file_name and flushes 
-  /// current_buffer_ to it.
+  /// Creates a file with name @a file_name, flushes 
+  /// current_buffer_ to it and closes the file.
   /// @param name The path to the file to open.
-  /// @return File creation and buffer flushing succeeded or failed. 
-  virtual bool WriteToFile(const std::string& file_name);
-
-  File* file() { return file_.get(); }
+  /// @return File creation, buffer flushing and file close succeeded or failed. 
+  virtual Status WriteToFile(const std::string& file_name);
 
  private:
-  std::unique_ptr<File, FileCloser> file_;
   BufferWriter segment_buffer_;
-  // Keep track of the position and whether we can seek.
-  mkvmuxer::int64 position_;
-  bool seekable_;
 
   DISALLOW_COPY_AND_ASSIGN(BufferMkvWriter);
 };

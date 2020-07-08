@@ -28,32 +28,23 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
   CHECK(cluster());
   RETURN_IF_ERROR(Segmenter::FinalizeSegment(
       start_timestamp, duration_timestamp, is_subsegment));
+  
+  if (!cluster()->Finalize())
+    return Status(error::FILE_FAILURE, "Error finalizing segment.");
+
   if (!is_subsegment) {
     std::string segment_name =
         GetSegmentName(options().segment_template, start_timestamp,
                        num_segment_++, options().bandwidth);
 
-    if (!writer_->WriteToFile(segment_name)) {
-      LOG(ERROR) << "Failed creating file for webm segment.";
-    }
-  }
-
-  if (!cluster()->Finalize())
-    return Status(error::FILE_FAILURE, "Error finalizing segment.");
-
-  if (!is_subsegment) {
-    const std::string segment_name = writer_->file()->file_name();
-
-    // Close the file, which also does flushing, to make sure the file is
-    // written before manifest is updated.
-    RETURN_IF_ERROR(writer_->CloseFile());
+    RETURN_IF_ERROR(writer_->WriteToFile(segment_name));
 
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
       muxer_listener()->OnNewSegment(segment_name, start_timestamp,
                                      duration_timestamp, size);
     }
-    VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";
+    VLOG(1) << "WEBM file '" << segment_name << "' finalized.";
   }
   return Status::OK;
 }
@@ -74,12 +65,12 @@ std::vector<Range> MultiSegmentSegmenter::GetSegmentRanges() {
 
 Status MultiSegmentSegmenter::DoInitialize() {
   std::unique_ptr<BufferMkvWriter> writer(new BufferMkvWriter);
-  Status status = writer->OpenFile(options().output_file_name);
+  writer_ = std::move(writer);
+  Status status = WriteSegmentHeader(0, writer_.get());
   if (!status.ok())
     return status;
   
-  writer_ = std::move(writer);
-  return WriteSegmentHeader(0, writer_.get());
+  return writer_->WriteToFile(options().output_file_name);
 }
 
 Status MultiSegmentSegmenter::DoFinalize() {
@@ -90,10 +81,6 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
  if (!is_subsegment) {
     writer_.reset(new BufferMkvWriter);
-    // Initialize the buffer for a new segment.
-    Status status = writer_->OpenBuffer();
-    if (!status.ok())
-      return status;
   }
 
   const uint64_t start_timecode = FromBmffTimestamp(start_timestamp);
