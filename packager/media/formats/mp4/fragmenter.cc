@@ -196,25 +196,37 @@ Status Fragmenter::FinalizeFragment() {
     traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
     SampleToGroup& sample_to_group = traf_->sample_to_groups.back();
     sample_to_group.grouping_type = FOURCC_roll;
-
+    
+    
     sample_to_group.entries.resize(1);
     SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
     sample_to_group_entry.sample_count = traf_->runs[0].sample_count;
     sample_to_group_entry.group_description_index =
         SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
+        
+
   }
   for (const auto& sample_group_description :
        traf_->sample_group_descriptions) {
     traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
     SampleToGroup& sample_to_group = traf_->sample_to_groups.back();
     sample_to_group.grouping_type = sample_group_description.grouping_type;
-
+    
     sample_to_group.entries.resize(1);
     SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
     sample_to_group_entry.sample_count = traf_->runs[0].sample_count;
     sample_to_group_entry.group_description_index =
         SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;
   }
+
+    /*traf_->sample_group_descriptions.resize(1);
+    SampleGroupDescription& sample_group_description = 
+    	traf_->sample_group_descriptions.back();
+    sample_group_description.grouping_type = FOURCC_roll;
+    sample_group_description.audio_roll_recovery_entries.resize(1);
+    AudioRollRecoveryEntry& audio_roll_recovery_entry = 
+    	sample_group_description.audio_roll_recovery_entries.back();
+    audio_roll_recovery_entry.roll_distance = 1;*/
 
   fragment_finalized_ = true;
   fragment_initialized_ = false;

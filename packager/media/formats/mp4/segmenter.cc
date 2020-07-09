@@ -309,7 +309,7 @@ void Segmenter::FinalizeFragmentForKeyRotation(
   SampleGroupDescription& sample_group_description =
       traf.sample_group_descriptions.back();
   sample_group_description.grouping_type = FOURCC_seig;
-
+  
   sample_group_description.cenc_sample_encryption_info_entries.resize(1);
   CencSampleEncryptionInfoEntry& sample_group_entry =
       sample_group_description.cenc_sample_encryption_info_entries.back();
