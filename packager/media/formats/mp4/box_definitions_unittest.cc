@@ -393,10 +393,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         ->set_data(decoder_specific_info);
   }
 
-  void Modify(ElementaryStreamDescriptor* esds) {
-
-  }
-
   void Fill(DTSSpecific* ddts) {
     const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
     ddts->max_bitrate = 768000;
