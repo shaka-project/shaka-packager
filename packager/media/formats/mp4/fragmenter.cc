@@ -219,15 +219,6 @@ Status Fragmenter::FinalizeFragment() {
         SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;
   }
 
-    /*traf_->sample_group_descriptions.resize(1);
-    SampleGroupDescription& sample_group_description = 
-    	traf_->sample_group_descriptions.back();
-    sample_group_description.grouping_type = FOURCC_roll;
-    sample_group_description.audio_roll_recovery_entries.resize(1);
-    AudioRollRecoveryEntry& audio_roll_recovery_entry = 
-    	sample_group_description.audio_roll_recovery_entries.back();
-    audio_roll_recovery_entry.roll_distance = 1;*/
-
   fragment_finalized_ = true;
   fragment_initialized_ = false;
   return Status::OK;
