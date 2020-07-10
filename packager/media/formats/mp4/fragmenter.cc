@@ -196,7 +196,7 @@ Status Fragmenter::FinalizeFragment() {
     traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
     SampleToGroup& sample_to_group = traf_->sample_to_groups.back();
     sample_to_group.grouping_type = FOURCC_roll;
-    
+
     sample_to_group.entries.resize(1);
     SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
     sample_to_group_entry.sample_count = traf_->runs[0].sample_count;
