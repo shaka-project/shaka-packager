@@ -203,7 +203,6 @@ Status Fragmenter::FinalizeFragment() {
     sample_to_group_entry.group_description_index =
         SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
   }
-
   for (const auto& sample_group_description :
        traf_->sample_group_descriptions) {
     traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
