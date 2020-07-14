@@ -21,7 +21,7 @@ TEST(ESDescriptorTest, SingleByteLengthTest) {
       // ESDescriptor tag with one byte size.
       0x03, 0x19,
         // ESDescriptor fields.
-        0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00,
         // DecoderConfigDescriptor tag with one byte size.
         0x04, 0x11,
           // Object Type.
@@ -64,7 +64,7 @@ TEST(ESDescriptorTest, NonAACTest) {
       // ESDescriptor tag with one byte size.
       0x03, 0x19,
         // ESDescriptor fields.
-        0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00,
         // DecoderConfigDescriptor tag with one byte size.
         0x04, 0x11,
           // Object Type.
