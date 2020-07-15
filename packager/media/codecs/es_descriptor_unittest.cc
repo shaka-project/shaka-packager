@@ -21,7 +21,7 @@ TEST(ESDescriptorTest, SingleByteLengthTest) {
       // ESDescriptor tag with one byte size.
       0x03, 0x19,
         // ESDescriptor fields.
-        0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00,
         // DecoderConfigDescriptor tag with one byte size.
         0x04, 0x11,
           // Object Type.
@@ -56,6 +56,19 @@ TEST(ESDescriptorTest, SingleByteLengthTest) {
   EXPECT_THAT(
       std::vector<uint8_t>(writer.Buffer(), writer.Buffer() + writer.Size()),
       ElementsAreArray(kBuffer));
+  
+  EXPECT_EQ(0u, es_desc.esid());
+  const size_t kEsIdOffset = 3;
+  const uint8_t kEsId = 5;
+  data[kEsIdOffset] = kEsId;
+  ASSERT_TRUE(es_desc.Parse(data));
+  EXPECT_EQ(kEsId, es_desc.esid());
+
+  writer.Clear();
+  es_desc.Write(&writer);
+  EXPECT_THAT(
+      std::vector<uint8_t>(writer.Buffer(), writer.Buffer() + writer.Size()),
+      ElementsAreArray(kBuffer));
 }
 
 TEST(ESDescriptorTest, NonAACTest) {
@@ -64,7 +77,7 @@ TEST(ESDescriptorTest, NonAACTest) {
       // ESDescriptor tag with one byte size.
       0x03, 0x19,
         // ESDescriptor fields.
-        0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00,
         // DecoderConfigDescriptor tag with one byte size.
         0x04, 0x11,
           // Object Type.
