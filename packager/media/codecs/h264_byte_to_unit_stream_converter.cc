@@ -52,6 +52,22 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   buffer.AppendInt(static_cast<uint16_t>(last_pps_.size()));
   buffer.AppendVector(last_pps_);
 
+  // handle profile special cases, refer to ISO/IEC 14496-15 Section 5.3.3.1.2
+  uint8_t profile_indication = last_sps_[1];
+  if (profile_indication == 100 || profile_indication == 110 || 
+    profile_indication == 122 || profile_indication == 144) {
+      uint8_t reserved_and_chroma_format(0xff);
+      buffer.AppendInt(reserved_and_chroma_format);
+      uint8_t reserved_and_bit_depth_luma_minus8(0xff);
+      buffer.AppendInt(reserved_and_bit_depth_luma_minus8);
+      uint8_t reserved_and_bit_depth_chroma_minus8(0xff);
+      buffer.AppendInt(reserved_and_bit_depth_chroma_minus8);	
+      uint8_t reserved_and_num_sps_ext(0);
+      buffer.AppendInt(reserved_and_num_sps_ext);       			   
+      buffer.AppendInt(static_cast<uint16_t>(last_sps_ext_.size()));
+      buffer.AppendVector(last_sps_ext_);
+  }
+
   buffer.SwapBuffer(decoder_config);
   return true;
 }
