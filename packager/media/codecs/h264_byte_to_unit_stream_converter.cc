@@ -10,6 +10,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/codecs/h264_parser.h"
 
 namespace shaka {
@@ -55,17 +56,32 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   // handle profile special cases, refer to ISO/IEC 14496-15 Section 5.3.3.1.2
   uint8_t profile_indication = last_sps_[1];
   if (profile_indication == 100 || profile_indication == 110 || 
-    profile_indication == 122 || profile_indication == 144) {
-      uint8_t reserved_and_chroma_format(0xff);
-      buffer.AppendInt(reserved_and_chroma_format);
-      uint8_t reserved_and_bit_depth_luma_minus8(0xff);
-      buffer.AppendInt(reserved_and_bit_depth_luma_minus8);
-      uint8_t reserved_and_bit_depth_chroma_minus8(0xff);
-      buffer.AppendInt(reserved_and_bit_depth_chroma_minus8);	
-      uint8_t reserved_and_num_sps_ext(0);
-      buffer.AppendInt(reserved_and_num_sps_ext);       			   
-      buffer.AppendInt(static_cast<uint16_t>(last_sps_ext_.size()));
-      buffer.AppendVector(last_sps_ext_);
+      profile_indication == 122 || profile_indication == 144) {
+      
+      uint8_t* nalu_data = const_cast<uint8_t*>(last_sps_.data());
+      Nalu nalu;
+      RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, last_sps_.size()));
+      
+      int sps_id = 0;
+      H264Parser parser;
+      RCHECK(parser.ParseSps(nalu, &sps_id) == H264Parser::kOk);
+      H264Sps* sps = const_cast<H264Sps*>(parser.GetSps(sps_id));
+
+      uint8_t reserved_chroma_format = 0xf8 ^ (sps->chroma_format_idc);
+      buffer.AppendInt(reserved_chroma_format);
+      uint8_t reserved_bit_depth_luma_minus8 = 0xfc ^ (sps->bit_depth_luma_minus8);
+      buffer.AppendInt(reserved_bit_depth_luma_minus8);
+      uint8_t reserved_bit_depth_chroma_minus8 = 0xfc ^ (sps->bit_depth_chroma_minus8);
+      buffer.AppendInt(reserved_bit_depth_chroma_minus8);	
+      
+      if (last_sps_ext_.empty()) {
+        uint8_t num_sps_ext(0);
+        buffer.AppendInt(num_sps_ext);     
+      } else {
+        uint8_t num_sps_ext(1);
+        buffer.AppendInt(num_sps_ext);     
+        buffer.AppendVector(last_sps_ext_);
+      }
   }
 
   buffer.SwapBuffer(decoder_config);

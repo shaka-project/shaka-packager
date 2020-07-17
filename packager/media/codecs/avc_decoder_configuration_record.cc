@@ -82,9 +82,8 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
     AddNalu(nalu);
   }
   
-  // deal with profile special case
-  if ((profile_indication_ == 100 || profile_indication_ == 110 || 
-    profile_indication_ == 122 || profile_indication_ == 144)) {
+  if (profile_indication_ == 100 || profile_indication_ == 110 || 
+      profile_indication_ == 122 || profile_indication_ == 144) {
     const int min_special_case_extra_bytes = 4;
     // must have at least 4 bytes left to conform to spec: if not output warning
     // see ISO/IEC 14496-15 Section 5.3.3.1.2
@@ -93,10 +92,15 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
     } else {
       // ignoring first three fields of chroma_format, bit_depth_luma_minus8, 
       // and bit_depth_chroma_minus8. These fields can be read in if needed.
-      const int skip_bytes = 3;
-      RCHECK(reader.SkipBytes(skip_bytes));
       uint8_t sps_ext_count;
-      RCHECK(reader.Read1(&sps_ext_count));
+      if (!reader.Read1(&chroma_format_) || !reader.Read1(&bit_depth_luma_minus8_) ||
+          !reader.Read1(&bit_depth_chroma_minus8_) || !reader.Read1(&sps_ext_count)) {
+             LOG(WARNING) << "...";
+             return true;
+      }
+      chroma_format_ &= 0x3;
+      bit_depth_luma_minus8_ &= 0x7;
+      bit_depth_chroma_minus8_ &= 0x7;
       
       for (uint8_t i = 0; i < sps_ext_count; i++) {
         uint16_t size = 0;
@@ -106,7 +110,7 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
         
         Nalu nalu;
         RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));
-        RCHECK(nalu.type() == Nalu::H264_PPS);
+        RCHECK(nalu.type() == Nalu::H264_SPSExtension);
         AddNalu(nalu);
       } 
     }

@@ -242,6 +242,9 @@ bool NalUnitToByteStreamConverter::Initialize(
       buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
       AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
       found_pps = true;
+    } else if (nalu.type() == Nalu::H264NaluType::H264_SPSExtension) {
+      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
+      AppendNalu(nalu, nalu_length_size_, !kEscapeData, &buffer_writer);
     }
   }
   if (!found_sps || !found_pps) {

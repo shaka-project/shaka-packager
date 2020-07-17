@@ -56,6 +56,11 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   uint32_t coded_height_ = 0;
   uint32_t pixel_width_ = 0;
   uint32_t pixel_height_ = 0;
+  
+  // Extracted from SPS Extension, if it exists
+  uint8_t chroma_format_ = 0;
+  uint8_t bit_depth_luma_minus8_ = 0;
+  uint8_t bit_depth_chroma_minus8_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(AVCDecoderConfigurationRecord);
 };
