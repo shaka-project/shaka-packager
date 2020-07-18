@@ -90,8 +90,6 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
     if(!reader.HasBytes(min_special_case_extra_bytes)) {
       LOG(WARNING) << "not enough bits left in bit stream for given profile";
     } else {
-      // ignoring first three fields of chroma_format, bit_depth_luma_minus8, 
-      // and bit_depth_chroma_minus8. These fields can be read in if needed.
       uint8_t sps_ext_count;
       if (!reader.Read1(&chroma_format_) || !reader.Read1(&bit_depth_luma_minus8_) ||
           !reader.Read1(&bit_depth_chroma_minus8_) || !reader.Read1(&sps_ext_count)) {
