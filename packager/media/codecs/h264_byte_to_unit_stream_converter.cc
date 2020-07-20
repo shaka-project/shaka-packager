@@ -74,14 +74,6 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   if (profile_indication == 100 || profile_indication == 110 || 
       profile_indication == 122 || profile_indication == 144) {
       
-      /*const uint8_t* nalu_data = last_sps_.data();
-      Nalu nalu;
-      RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, last_sps_.size()));
-      
-      int sps_id = 0;
-      H264Parser parser;
-      RCHECK(parser.ParseSps(nalu, &sps_id) == H264Parser::kOk);
-      const H264Sps* sps = parser.GetSps(sps_id);*/
       const H264Sps* sps = RetrieveSps(last_sps_);
       if (sps == nullptr)
         return false;
