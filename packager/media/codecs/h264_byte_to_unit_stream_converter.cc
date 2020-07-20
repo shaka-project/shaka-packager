@@ -16,6 +16,9 @@
 namespace shaka {
 namespace media {
 
+// utility helper function to get an sps
+const H264Sps* RetrieveSps(std::vector<uint8_t> last_sps);
+
 H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
     : H26xByteToUnitStreamConverter(Nalu::kH264) {}
 
@@ -24,6 +27,19 @@ H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter(
     : H26xByteToUnitStreamConverter(Nalu::kH264, stream_format) {}
 
 H264ByteToUnitStreamConverter::~H264ByteToUnitStreamConverter() {}
+
+const H264Sps* RetrieveSps(std::vector<uint8_t> last_sps) {
+  const uint8_t* nalu_data = last_sps.data();
+  Nalu nalu;
+  if (!(nalu.Initialize(Nalu::kH264, nalu_data, last_sps.size())))
+    return nullptr;
+
+  int sps_id = 0;
+  H264Parser parser;
+  if (!(parser.ParseSps(nalu, &sps_id) == H264Parser::kOk))
+    return nullptr;
+  return parser.GetSps(sps_id);
+}
 
 bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
     std::vector<uint8_t>* decoder_config) const {
@@ -58,20 +74,23 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   if (profile_indication == 100 || profile_indication == 110 || 
       profile_indication == 122 || profile_indication == 144) {
       
-      uint8_t* nalu_data = const_cast<uint8_t*>(last_sps_.data());
+      /*const uint8_t* nalu_data = last_sps_.data();
       Nalu nalu;
       RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, last_sps_.size()));
       
       int sps_id = 0;
       H264Parser parser;
       RCHECK(parser.ParseSps(nalu, &sps_id) == H264Parser::kOk);
-      H264Sps* sps = const_cast<H264Sps*>(parser.GetSps(sps_id));
+      const H264Sps* sps = parser.GetSps(sps_id);*/
+      const H264Sps* sps = RetrieveSps(last_sps_);
+      if (sps == nullptr)
+        return false;
 
-      uint8_t reserved_chroma_format = 0xf8 ^ (sps->chroma_format_idc);
+      uint8_t reserved_chroma_format = 0xff & (sps->chroma_format_idc);
       buffer.AppendInt(reserved_chroma_format);
-      uint8_t reserved_bit_depth_luma_minus8 = 0xfc ^ (sps->bit_depth_luma_minus8);
+      uint8_t reserved_bit_depth_luma_minus8 = 0xff & (sps->bit_depth_luma_minus8);
       buffer.AppendInt(reserved_bit_depth_luma_minus8);
-      uint8_t reserved_bit_depth_chroma_minus8 = 0xfc ^ (sps->bit_depth_chroma_minus8);
+      uint8_t reserved_bit_depth_chroma_minus8 = 0xff & (sps->bit_depth_chroma_minus8);
       buffer.AppendInt(reserved_bit_depth_chroma_minus8);	
       
       if (last_sps_ext_.empty()) {

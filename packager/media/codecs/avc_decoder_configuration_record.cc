@@ -81,37 +81,31 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
     RCHECK(nalu.type() == Nalu::H264_PPS);
     AddNalu(nalu);
   }
-  
+
   if (profile_indication_ == 100 || profile_indication_ == 110 || 
       profile_indication_ == 122 || profile_indication_ == 144) {
-    const int min_special_case_extra_bytes = 4;
-    // must have at least 4 bytes left to conform to spec: if not output warning
-    // see ISO/IEC 14496-15 Section 5.3.3.1.2
-    if(!reader.HasBytes(min_special_case_extra_bytes)) {
-      LOG(WARNING) << "not enough bits left in bit stream for given profile";
-    } else {
-      uint8_t sps_ext_count;
-      if (!reader.Read1(&chroma_format_) || !reader.Read1(&bit_depth_luma_minus8_) ||
-          !reader.Read1(&bit_depth_chroma_minus8_) || !reader.Read1(&sps_ext_count)) {
-             LOG(WARNING) << "...";
-             return true;
-      }
-      chroma_format_ &= 0x3;
-      bit_depth_luma_minus8_ &= 0x7;
-      bit_depth_chroma_minus8_ &= 0x7;
-      
-      for (uint8_t i = 0; i < sps_ext_count; i++) {
-        uint16_t size = 0;
-        RCHECK(reader.Read2(&size));
-        const uint8_t* nalu_data = reader.data() + reader.pos();
-        RCHECK(reader.SkipBytes(size));
-        
-        Nalu nalu;
-        RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));
-        RCHECK(nalu.type() == Nalu::H264_SPSExtension);
-        AddNalu(nalu);
-      } 
+
+    uint8_t sps_ext_count;
+    if (!reader.Read1(&chroma_format_) || !reader.Read1(&bit_depth_luma_minus8_) ||
+        !reader.Read1(&bit_depth_chroma_minus8_) || !reader.Read1(&sps_ext_count)) {
+       LOG(WARNING) << "Insufficient bits in bitstream for given AVC profile";
+       return true;
     }
+    chroma_format_ &= 0x3;
+    bit_depth_luma_minus8_ &= 0x7;
+    bit_depth_chroma_minus8_ &= 0x7;
+  
+    for (uint8_t i = 0; i < sps_ext_count; i++) {
+      uint16_t size = 0;
+      RCHECK(reader.Read2(&size));
+      const uint8_t* nalu_data = reader.data() + reader.pos();
+      RCHECK(reader.SkipBytes(size));
+
+      Nalu nalu;
+      RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));
+      RCHECK(nalu.type() == Nalu::H264_SPSExtension);
+      AddNalu(nalu);
+    } 
   } 	
   return true;
 }
