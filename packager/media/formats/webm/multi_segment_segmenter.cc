@@ -32,10 +32,14 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
     return Status(error::FILE_FAILURE, "Error finalizing segment.");
 
   if (!is_subsegment) {
-    const std::string segment_name = writer_->file()->file_name();
-    // Close the file, which also does flushing, to make sure the file is
-    // written before manifest is updated.
-    RETURN_IF_ERROR(writer_->Close());
+    std::string segment_name =
+        GetSegmentName(options().segment_template, start_timestamp,
+                       num_segment_, options().bandwidth);
+
+    if (!writer_->WriteToFile(segment_name))
+      return Status(error::FILE_FAILURE, "Unable to write file.");
+
+    num_segment_++;
 
     if (muxer_listener()) {
       const uint64_t size = cluster()->Size();
@@ -77,15 +81,15 @@ Status MultiSegmentSegmenter::DoFinalize() {
 Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
-    // Create a new file for the new segment.
     std::string segment_name =
         GetSegmentName(options().segment_template, start_timestamp,
                        num_segment_, options().bandwidth);
+
     writer_.reset(new MkvWriter);
-    Status status = writer_->Open(segment_name);
+    Status status = writer_->Open("memory://" + segment_name);
+
     if (!status.ok())
       return status;
-    num_segment_++;
   }
 
   const uint64_t start_timecode = FromBmffTimestamp(start_timestamp);

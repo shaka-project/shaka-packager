@@ -58,6 +58,11 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
   /// @return The number of bytes written; or < 0 on error.
   int64_t WriteFromFile(File* source, int64_t max_copy);
 
+  /// Creates a file called segment_name and copys the data from file_.
+  /// @param segment_name The name of output segment.
+  /// @retrun True if operation was successful, else False.
+  bool WriteToFile(const std::string& segment_name);
+
   File* file() { return file_.get(); }
 
  private:

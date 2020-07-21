@@ -71,6 +71,40 @@ int64_t MkvWriter::WriteFromFile(File* source, int64_t max_copy) {
   return size;
 }
 
+bool MkvWriter::WriteToFile(const std::string& segment_name) {
+  DCHECK(file_);
+
+  std::unique_ptr<File, FileCloser> segment_file;
+
+  segment_file.reset(File::Open(segment_name.c_str(), "w"));
+  if (!segment_file) {
+    LOG(ERROR) << "Failure while opening webm segment file.";
+    return false;
+  }
+
+  if (Position(0) != 0) {
+    LOG(ERROR) << "Failure to seek to position 0.";
+    return false;
+  }
+
+  if (File::CopyFile(file(), segment_file.get()) <= 0) {
+    LOG(ERROR) << "Failure to copy memory segment file.";
+    return false;
+  }
+
+  if (!segment_file.release()->Close()) {
+    LOG(ERROR) << "Cannot close segment file, possibly file permission issue "
+                  "or running out of disk space.";
+    return false;
+  }
+
+  Status status = Close();
+  if (!status.ok())
+    return false;
+
+  return true;
+}
+
 mkvmuxer::int64 MkvWriter::Position() const {
   return position_;
 }
