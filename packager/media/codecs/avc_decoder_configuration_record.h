@@ -57,8 +57,8 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   uint32_t pixel_width_ = 0;
   uint32_t pixel_height_ = 0;
   
-  // Only should be present for special case profile values
-  // Refer to ISO/IEC  14496-15 Section 5.3.3.1.1
+  // Only should be present for special case profile values.
+  // Refer to ISO/IEC 14496-15 Section 5.3.3.1.1.
   uint8_t chroma_format_ = 0;
   uint8_t bit_depth_luma_minus8_ = 0;
   uint8_t bit_depth_chroma_minus8_ = 0;

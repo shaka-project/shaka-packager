@@ -16,8 +16,21 @@
 namespace shaka {
 namespace media {
 
+namespace {
 // utility helper function to get an sps
-const H264Sps* RetrieveSps(std::vector<uint8_t> last_sps);
+const H264Sps* ParseSpsFromBytes(const std::vector<uint8_t> last_sps, 
+				 H264Parser* parser) {
+  const uint8_t* nalu_data = last_sps.data();
+  Nalu nalu;
+  if (!(nalu.Initialize(Nalu::kH264, nalu_data, last_sps.size())))
+    return nullptr;
+
+  int sps_id = 0;
+  if (!(parser->ParseSps(nalu, &sps_id) == H264Parser::kOk))
+    return nullptr;
+  return parser->GetSps(sps_id);
+}
+} // namespace
 
 H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
     : H26xByteToUnitStreamConverter(Nalu::kH264) {}
@@ -28,19 +41,6 @@ H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter(
 
 H264ByteToUnitStreamConverter::~H264ByteToUnitStreamConverter() {}
 
-const H264Sps* RetrieveSps(std::vector<uint8_t> last_sps) {
-  const uint8_t* nalu_data = last_sps.data();
-  Nalu nalu;
-  if (!(nalu.Initialize(Nalu::kH264, nalu_data, last_sps.size())))
-    return nullptr;
-
-  int sps_id = 0;
-  H264Parser parser;
-  if (!(parser.ParseSps(nalu, &sps_id) == H264Parser::kOk))
-    return nullptr;
-  return parser.GetSps(sps_id);
-}
-
 bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
     std::vector<uint8_t>* decoder_config) const {
   DCHECK(decoder_config);
@@ -50,9 +50,10 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
     return false;
   }
 
-  // Construct an AVCDecoderConfigurationRecord containing a single SPS and a
-  // single PPS NALU. Please refer to ISO/IEC 14496-15 for format specifics.
-  BufferWriter buffer(last_sps_.size() + last_pps_.size() + 11);
+  // Construct an AVCDecoderConfigurationRecord containing a single SPS, a
+  // single PPS, and (if necessary) a single SPS Extension NALU. 
+  // Please refer to ISO/IEC 14496-15 for format specifics.
+  BufferWriter buffer;
   uint8_t version(1);
   buffer.AppendInt(version);
   buffer.AppendInt(last_sps_[1]);
@@ -74,15 +75,16 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   if (profile_indication == 100 || profile_indication == 110 || 
       profile_indication == 122 || profile_indication == 144) {
       
-      const H264Sps* sps = RetrieveSps(last_sps_);
+      H264Parser parser;
+      const H264Sps* sps = ParseSpsFromBytes(last_sps_, &parser);
       if (sps == nullptr)
         return false;
 
-      uint8_t reserved_chroma_format = 0xff & (sps->chroma_format_idc);
+      uint8_t reserved_chroma_format = 0xf8 | (sps->chroma_format_idc);
       buffer.AppendInt(reserved_chroma_format);
-      uint8_t reserved_bit_depth_luma_minus8 = 0xff & (sps->bit_depth_luma_minus8);
+      uint8_t reserved_bit_depth_luma_minus8 = 0xfc | (sps->bit_depth_luma_minus8);
       buffer.AppendInt(reserved_bit_depth_luma_minus8);
-      uint8_t reserved_bit_depth_chroma_minus8 = 0xff & (sps->bit_depth_chroma_minus8);
+      uint8_t reserved_bit_depth_chroma_minus8 = 0xfc | (sps->bit_depth_chroma_minus8);
       buffer.AppendInt(reserved_bit_depth_chroma_minus8);	
       
       if (last_sps_ext_.empty()) {
@@ -118,6 +120,12 @@ bool H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu) {
         WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_pps_);
       // Grab PPS NALU.
       last_pps_.assign(nalu_ptr, nalu_ptr + nalu_size);
+      return strip_parameter_set_nalus();
+    case Nalu::H264_SPSExtension:
+      if (strip_parameter_set_nalus())
+        WarnIfNotMatch(nalu.type(), nalu_ptr, nalu_size, last_sps_ext_);
+      // Grab SPSExtension NALU.
+      last_sps_ext_.assign(nalu_ptr, nalu_ptr + nalu_size);
       return strip_parameter_set_nalus();
     case Nalu::H264_AUD:
       // Ignore AUD NALU.

@@ -94,7 +94,6 @@ bool AVCDecoderConfigurationRecord::ParseInternal() {
     chroma_format_ &= 0x3;
     bit_depth_luma_minus8_ &= 0x7;
     bit_depth_chroma_minus8_ &= 0x7;
-  
     for (uint8_t i = 0; i < sps_ext_count; i++) {
       uint16_t size = 0;
       RCHECK(reader.Read2(&size));

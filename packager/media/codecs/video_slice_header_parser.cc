@@ -39,7 +39,6 @@ bool H264VideoSliceHeaderParser::Initialize(
       DCHECK_EQ(Nalu::H264_PPS, nalu.type());
       RCHECK(parser_.ParsePps(nalu, &id) == H264Parser::kOk);
     }
-    
   }
 
   return true;
