@@ -36,8 +36,15 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
         GetSegmentName(options().segment_template, start_timestamp,
                        num_segment_, options().bandwidth);
 
-    if (!writer_->WriteToFile(segment_name))
-      return Status(error::FILE_FAILURE, "Unable to write file.");
+    // Close the file, which also does flushing, to make sure the file is
+    // written before manifest is updated.
+    RETURN_IF_ERROR(writer_->Close());
+
+    if (!File::Copy(temp_file_name_.c_str(), segment_name.c_str()))
+      return Status(error::FILE_FAILURE, "Failure to copy memory file.");
+
+    if (!File::Delete(temp_file_name_.c_str()))
+      return Status(error::FILE_FAILURE, "Failure to delete memory file.");
 
     num_segment_++;
 
@@ -46,7 +53,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
       muxer_listener()->OnNewSegment(segment_name, start_timestamp,
                                      duration_timestamp, size);
     }
-    VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";
+    VLOG(1) << "WEBM file '" << segment_name << "' finalized.";
   }
   return Status::OK;
 }
@@ -81,12 +88,13 @@ Status MultiSegmentSegmenter::DoFinalize() {
 Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
-    std::string segment_name =
+    temp_file_name_ =
         GetSegmentName(options().segment_template, start_timestamp,
-                       num_segment_, options().bandwidth);
+                       num_segment_, options().bandwidth) +
+        "_temp";
 
     writer_.reset(new MkvWriter);
-    Status status = writer_->Open("memory://" + segment_name);
+    Status status = writer_->Open(temp_file_name_);
 
     if (!status.ok())
       return status;
