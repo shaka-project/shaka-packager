@@ -89,9 +89,9 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
                                          bool is_subsegment) {
   if (!is_subsegment) {
     temp_file_name_ =
-        GetSegmentName(options().segment_template, start_timestamp,
-                       num_segment_, options().bandwidth) +
-        "_temp";
+        "memory://" + GetSegmentName(options().segment_template,
+                                     start_timestamp, num_segment_,
+                                     options().bandwidth);
 
     writer_.reset(new MkvWriter);
     Status status = writer_->Open(temp_file_name_);
