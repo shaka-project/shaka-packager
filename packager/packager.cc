@@ -478,11 +478,11 @@ std::shared_ptr<MediaHandler> CreateEncryptionHandler(
   return std::make_shared<EncryptionHandler>(encryption_params, key_source);
 }
 
-std::unique_ptr<TextChunker> CreateTextChunker(
+std::unique_ptr<MediaHandler> CreateTextChunker(
     const ChunkingParams& chunking_params) {
   const float segment_length_in_seconds =
       chunking_params.segment_duration_in_seconds;
-  return std::unique_ptr<TextChunker>(
+  return std::unique_ptr<MediaHandler>(
       new TextChunker(segment_length_in_seconds));
 }
 
@@ -527,39 +527,6 @@ Status CreateHlsTextJob(const StreamDescriptor& stream,
                               std::move(chunker), std::move(output)});
 }
 
-Status CreateWebVttToMp4TextJob(const StreamDescriptor& stream,
-                                const PackagingParams& packaging_params,
-                                std::unique_ptr<MuxerListener> muxer_listener,
-                                SyncPointQueue* sync_points,
-                                MuxerFactory* muxer_factory,
-                                std::shared_ptr<OriginHandler>* root) {
-  std::shared_ptr<Demuxer> demuxer;
-  RETURN_IF_ERROR(CreateDemuxer(stream, packaging_params, &demuxer));
-  if (!stream.language.empty())
-    demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
-  auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
-  RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, padder));
-
-  auto text_to_mp4 = std::make_shared<WebVttToMp4Handler>();
-  auto muxer = muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
-  muxer->SetMuxerListener(std::move(muxer_listener));
-
-  // Optional Cue Alignment Handler
-  std::shared_ptr<MediaHandler> cue_aligner;
-  if (sync_points) {
-    cue_aligner = std::make_shared<CueAlignmentHandler>(sync_points);
-  }
-
-  std::shared_ptr<MediaHandler> chunker =
-      CreateTextChunker(packaging_params.chunking_params);
-
-  *root = demuxer;
-
-  return MediaHandler::Chain({std::move(padder), std::move(cue_aligner),
-                              std::move(chunker), std::move(text_to_mp4),
-                              std::move(muxer)});
-}
-
 Status CreateTextJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
@@ -578,7 +545,6 @@ Status CreateTextJobs(
     //    MP4 WEBVTT  --> MP4 WEBVTT  [ unsupported ]
     //    MP4 WEBVTT  --> TEXT WEBVTT [ unsupported ]
     const auto input_container = DetermineContainerFromFileName(stream.input);
-    const auto output_container = GetOutputFormat(stream);
 
     if (input_container != CONTAINER_WEBVTT &&
         input_container != CONTAINER_TTML) {
@@ -586,86 +552,65 @@ Status CreateTextJobs(
                     "Text output format is not support for " + stream.input);
     }
 
-    if (output_container == CONTAINER_MOV) {
+    std::unique_ptr<MuxerListener> hls_listener =
+        muxer_listener_factory->CreateHlsListener(ToMuxerListenerData(stream));
+
+    // Check input to ensure that output is possible.
+    if (hls_listener && !stream.dash_only) {
       if (input_container == CONTAINER_TTML) {
         return Status(error::INVALID_ARGUMENT,
-                      "TTML in MP4 is not supported yet. Please follow "
-                      "https://github.com/google/shaka-packager/issues/87 for "
-                      "the updates.");
+                      "HLS does not support TTML in xml format.");
       }
-
-      std::unique_ptr<MuxerListener> muxer_listener =
-          muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
-
-      std::shared_ptr<OriginHandler> root;
-      RETURN_IF_ERROR(CreateWebVttToMp4TextJob(
-          stream, packaging_params, std::move(muxer_listener), sync_points,
-          muxer_factory, &root));
-
-      job_manager->Add("MP4 text job", std::move(root));
-    } else {
-      std::unique_ptr<MuxerListener> hls_listener =
-          muxer_listener_factory->CreateHlsListener(
-              ToMuxerListenerData(stream));
-
-      // Check input to ensure that output is possible.
-      if (hls_listener && !stream.dash_only) {
-        if (input_container == CONTAINER_TTML) {
-          return Status(error::INVALID_ARGUMENT,
-                        "HLS does not support TTML in xml format.");
-        }
-        if (stream.segment_template.empty() || !stream.output.empty()) {
-          return Status(error::INVALID_ARGUMENT,
-                        "segment_template needs to be specified for HLS text "
-                        "output. Single file output is not supported yet.");
-        }
-      }
-
-      if (mpd_notifier && !stream.segment_template.empty() &&
-          !stream.hls_only) {
+      if (stream.segment_template.empty() || !stream.output.empty()) {
         return Status(error::INVALID_ARGUMENT,
-                      "Cannot create text output for MPD with segment output.");
+                      "segment_template needs to be specified for HLS text "
+                      "output. Single file output is not supported yet.");
+      }
+    }
+
+    if (mpd_notifier && !stream.segment_template.empty() && !stream.hls_only) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Cannot create text output for MPD with segment output.");
+    }
+
+    // If we are outputting to HLS, then create the HLS test pipeline that
+    // will create segmented text output.
+    if (hls_listener && !stream.dash_only) {
+      RETURN_IF_ERROR(CreateHlsTextJob(stream, packaging_params,
+                                       std::move(hls_listener), sync_points,
+                                       job_manager));
+    }
+
+    if (!stream.output.empty()) {
+      if (!File::Copy(stream.input.c_str(), stream.output.c_str())) {
+        std::string error;
+        base::StringAppendF(
+            &error, "Failed to copy the input file (%s) to output file (%s).",
+            stream.input.c_str(), stream.output.c_str());
+        return Status(error::FILE_FAILURE, error);
       }
 
-      // If we are outputting to HLS, then create the HLS test pipeline that
-      // will create segmented text output.
-      if (hls_listener && !stream.dash_only) {
-        RETURN_IF_ERROR(CreateHlsTextJob(stream, packaging_params,
-                                         std::move(hls_listener), sync_points,
-                                         job_manager));
+      MediaInfo text_media_info;
+      if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
+        return Status(error::INVALID_ARGUMENT,
+                      "Could not create media info for stream.");
       }
 
-      if (!stream.output.empty()) {
-        if (!File::Copy(stream.input.c_str(), stream.output.c_str())) {
-          std::string error;
-          base::StringAppendF(
-              &error, "Failed to copy the input file (%s) to output file (%s).",
-              stream.input.c_str(), stream.output.c_str());
-          return Status(error::FILE_FAILURE, error);
+      // If we are outputting to MPD, just add the input to the outputted
+      // manifest.
+      if (mpd_notifier) {
+        uint32_t unused;
+        if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
+          mpd_notifier->Flush();
+        } else {
+          return Status(error::PARSER_FAILURE,
+                        "Failed to process text file " + stream.input);
         }
+      }
 
-        MediaInfo text_media_info;
-        if (!StreamInfoToTextMediaInfo(stream, &text_media_info)) {
-          return Status(error::INVALID_ARGUMENT,
-                        "Could not create media info for stream.");
-        }
-
-        // If we are outputting to MPD, just add the input to the outputted
-        // manifest.
-        if (mpd_notifier) {
-          uint32_t unused;
-          if (mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
-            mpd_notifier->Flush();
-          } else {
-            return Status(error::PARSER_FAILURE,
-                          "Failed to process text file " + stream.input);
-          }
-        }
-
-        if (packaging_params.output_media_info) {
-          VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
-              text_media_info, stream.output + kMediaInfoSuffix);
-        }
+      if (packaging_params.output_media_info) {
+        VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
+            text_media_info, stream.output + kMediaInfoSuffix);
       }
     }
   }
@@ -722,6 +667,8 @@ Status CreateAudioVideoJobs(
     const bool new_input_file = stream.input != previous_input;
     const bool new_stream =
         new_input_file || previous_selector != stream.stream_selector;
+    // TODO(modmaker): Use a better detector of text streams.
+    const bool is_text = stream.stream_selector == "text";
     previous_input = stream.input;
     previous_selector = stream.stream_selector;
 
@@ -739,27 +686,35 @@ Status CreateAudioVideoJobs(
         demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
       }
 
-      replicator = std::make_shared<Replicator>();
-      auto chunker =
-          std::make_shared<ChunkingHandler>(packaging_params.chunking_params);
-      auto encryptor = CreateEncryptionHandler(packaging_params, stream,
-                                               encryption_key_source);
-
-      // TODO(vaage) : Create a nicer way to connect handlers to demuxers.
-      if (sync_points) {
-        RETURN_IF_ERROR(
-            MediaHandler::Chain({cue_aligner, chunker, encryptor, replicator}));
-        RETURN_IF_ERROR(
-            demuxer->SetHandler(stream.stream_selector, cue_aligner));
-      } else {
-        RETURN_IF_ERROR(MediaHandler::Chain({chunker, encryptor, replicator}));
-        RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, chunker));
+      std::vector<std::shared_ptr<MediaHandler>> handlers;
+      if (is_text) {
+        handlers.emplace_back(
+            std::make_shared<TextPadder>(kDefaultTextZeroBiasMs));
       }
+      if (sync_points) {
+        handlers.emplace_back(cue_aligner);
+      }
+      if (is_text) {
+        handlers.emplace_back(
+            CreateTextChunker(packaging_params.chunking_params));
+      } else {
+        handlers.emplace_back(std::make_shared<ChunkingHandler>(
+            packaging_params.chunking_params));
+      }
+      handlers.emplace_back(CreateEncryptionHandler(packaging_params, stream,
+                                                    encryption_key_source));
+
+      replicator = std::make_shared<Replicator>();
+      handlers.emplace_back(replicator);
+
+      RETURN_IF_ERROR(MediaHandler::Chain(handlers));
+      RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, handlers[0]));
     }
 
     // Create the muxer (output) for this track.
+    const auto output_format = GetOutputFormat(stream);
     std::shared_ptr<Muxer> muxer =
-        muxer_factory->CreateMuxer(GetOutputFormat(stream), stream);
+        muxer_factory->CreateMuxer(output_format, stream);
     if (!muxer) {
       return Status(error::INVALID_ARGUMENT, "Failed to create muxer for " +
                                                  stream.input + ":" +
@@ -776,7 +731,15 @@ Status CreateAudioVideoJobs(
             ? std::make_shared<TrickPlayHandler>(stream.trick_play_factor)
             : nullptr;
 
-    RETURN_IF_ERROR(MediaHandler::Chain({replicator, trick_play, muxer}));
+    // TODO(modmaker): Move to MOV muxer?
+    const auto input_container = DetermineContainerFromFileName(stream.input);
+    auto text_to_mp4 =
+        input_container == CONTAINER_WEBVTT && output_format == CONTAINER_MOV
+            ? std::make_shared<WebVttToMp4Handler>()
+            : nullptr;
+
+    RETURN_IF_ERROR(
+        MediaHandler::Chain({replicator, trick_play, text_to_mp4, muxer}));
   }
 
   return Status::OK;
@@ -806,12 +769,13 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
     // TODO: Find a better way to determine what stream type a stream
     // descriptor is as |stream_selector| may use an index. This would
     // also allow us to use a simpler audio pipeline.
-    if (stream.stream_selector == "text") {
+    const auto output_format = GetOutputFormat(stream);
+    if (stream.stream_selector == "text" && output_format != CONTAINER_MOV) {
       text_streams.push_back(stream);
     } else {
       audio_video_streams.push_back(stream);
 
-      switch (GetOutputFormat(stream)) {
+      switch (output_format) {
         case CONTAINER_MPEG2TS:
         case CONTAINER_AAC:
         case CONTAINER_MP3:
