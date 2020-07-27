@@ -35,6 +35,9 @@ class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   uint32_t coded_height() const { return coded_height_; }
   uint32_t pixel_width() const { return pixel_width_; }
   uint32_t pixel_height() const { return pixel_height_; }
+  uint8_t chroma_format() const { return chroma_format_; }
+  uint8_t bit_depth_luma_minus8() const { return bit_depth_luma_minus8_; }
+  uint8_t bit_depth_chroma_minus8() const { return bit_depth_chroma_minus8_; }
 
   /// Static version of GetCodecString.
   /// @return The codec string.

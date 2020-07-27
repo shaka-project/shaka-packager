@@ -67,9 +67,10 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithSPSExtension) {
       0x01,  // num_pps
         0x00, 0x06,  // size
         0x68, 0xEB, 0xE3, 0xCB, 0x22, 0xC0,
-        0x03, 0x5A, 0x2C, // sps extension first 24 bits are chroma_format, 
-        // bit_depth_luma_minus8, bit_depth_chroma_minus8
-        0x01, // num_sps_ext 
+      0xFC, // Least significant 2 bits is chroma_format 
+      0xF9, // Least significant 3 bits is bit_depth_luma_minus8
+      0xFF, // Least significant 3 bits is bit_depth_chroma_minus8
+      0x01, // num_sps_ext 
         0x00, 0x05, // size
         0x6D, 0x33, 0x01, 0x57, 0x78
   };
@@ -89,9 +90,10 @@ TEST(AVCDecoderConfigurationRecordTest, SuccessWithSPSExtension) {
   EXPECT_EQ(8u, avc_config.pixel_width());
   EXPECT_EQ(9u, avc_config.pixel_height());
   EXPECT_EQ(0u, avc_config.transfer_characteristics());
-
-  EXPECT_EQ("avc1.64001e", avc_config.GetCodecString(FOURCC_avc1));
-  EXPECT_EQ("avc3.64001e", avc_config.GetCodecString(FOURCC_avc3));
+  EXPECT_EQ(0u, avc_config.transfer_characteristics());
+  EXPECT_EQ(0u, avc_config.chroma_format());
+  EXPECT_EQ(1u, avc_config.bit_depth_luma_minus8());
+  EXPECT_EQ(7u, avc_config.bit_depth_chroma_minus8());
 }
 
 TEST(AVCDecoderConfigurationRecordTest, SuccessWithTransferCharacteristics) {

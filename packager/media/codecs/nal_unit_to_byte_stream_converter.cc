@@ -316,6 +316,8 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
         break;
       case Nalu::H264_SPS:
         FALLTHROUGH_INTENDED;
+      case Nalu::H264_SPSExtension:
+        FALLTHROUGH_INTENDED;
       case Nalu::H264_PPS: {
         // Also write this SPS/PPS if it is not the same as SPS/PPS in decoder
         // configuration, which is already written.
@@ -337,8 +339,6 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
           break;
         FALLTHROUGH_INTENDED;
       }
-      case Nalu::H264_SPSExtension:
-        FALLTHROUGH_INTENDED;
       default:
         bool escape_data = false;
         if (subsamples && !subsamples->empty()) {
