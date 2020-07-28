@@ -80,7 +80,7 @@ TEST(H264ByteToUnitStreamConverter, ConversionFailure) {
 }
 
 TEST(H264ByteToUnitStreamConverter, NaluConversionWithSpsExtension) {
-  const uint8_t kSpsExtArr[] = {
+  const uint8_t kByteStreamWithSpsExtension[] = {
       0x00, 0x00, 0x00, 0x01,	// Start code
       0x09, 			// AUD Type
       0xF0, 			// Primary pic type
@@ -108,20 +108,43 @@ TEST(H264ByteToUnitStreamConverter, NaluConversionWithSpsExtension) {
       0x00, 0x01, 0x68, 0xFE, 
       0x00, 0x00, 0x00, 0x01, 	// Start code
       // SPS Extension data
-      0x00, 0x05, 0x6d, 0x33, 0x01, 0x57, 0x78
+      0x00, 0x05, 0x6D, 0x33, 0x01, 0x57, 0x78
   };
 
-  int kSpsExtSize = arraysize(kSpsExtArr);
-  std::vector<uint8_t> kSpsExt(kSpsExtArr, kSpsExtArr + kSpsExtSize);
+  std::vector<uint8_t> byte_stream_with_sps_extension(std::begin(kByteStreamWithSpsExtension), 
+  						      std::end(kByteStreamWithSpsExtension));
   H264ByteToUnitStreamConverter converter(
-      H26xStreamFormat::kNalUnitStreamWithParameterSetNalus);
+      H26xStreamFormat::kNalUnitStreamWithoutParameterSetNalus);
 
-  std::vector<uint8_t> unit_stream_output;
+  std::vector<uint8_t> unit_stream;
   ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(
-              kSpsExt.data(), kSpsExt.size(),
-              &unit_stream_output));                                                 
-  std::vector<uint8_t> byte_stream_output;
-  EXPECT_TRUE(converter.GetDecoderConfigurationRecord(&byte_stream_output));
+              byte_stream_with_sps_extension.data(), byte_stream_with_sps_extension.size(),
+              &unit_stream));   
+              
+  const uint8_t kExpectedDecoderConfig[] = {
+      0x00, 0x00, 0x00, 0x0A, 0x06, 0xFD, 0x78, 0xA4, 0xC3, 
+      0x82, 0x62, 0x11, 0x29, 0x77, 0x00, 0x00, 0x00, 0x04, 
+      0x00, 0x02, 0x67, 0x64, 0x00, 0x00, 0x00, 0x04, 0x00, 
+      0x01, 0x68, 0xFE, 0x00, 0x00, 0x00, 0x07, 0x00, 0x05, 
+      0x6D, 0x33, 0x01, 0x57, 0x78};          
+  EXPECT_EQ(std::vector<uint8_t>(kExpectedDecoderConfig,
+                                 kExpectedDecoderConfig + arraysize(kExpectedDecoderConfig)),
+            unit_stream);
+                         
+  std::vector<uint8_t> decoder_config;
+  EXPECT_TRUE(converter.GetDecoderConfigurationRecord(&decoder_config));
+
+  const uint8_t kExpectedUnitStream[] = {
+      0x01, 0x64, 0x00, 0x1E, 0xFF, 0xE1, 0x00, 0x1D, 0x67, 
+      0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 
+      0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 0x03, 
+      0x03, 0xE9, 0x00, 0x00, 0xEA, 0x60, 0x0F, 0x16, 0x2D, 
+      0x96, 0x01, 0x00, 0x0A, 0x68, 0xFE, 0xFD, 0xFC, 0xFB, 
+      0x11, 0x12, 0x13, 0x14, 0x15, 0xFD, 0xF8, 0xF8, 0x01, 
+      0x6D, 0x33, 0x01, 0x57, 0x78};
+  EXPECT_EQ(std::vector<uint8_t>(kExpectedUnitStream,
+                                 kExpectedUnitStream + arraysize(kExpectedUnitStream)),
+            decoder_config);             
 }
 
 }  // namespace media

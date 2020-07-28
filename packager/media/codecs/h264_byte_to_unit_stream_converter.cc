@@ -17,7 +17,7 @@ namespace media {
 
 namespace {
 // utility helper function to get an sps
-const H264Sps* ParseSpsFromBytes(const std::vector<uint8_t> sps, 
+const H264Sps* ParseSpsFromBytes(const std::vector<uint8_t> sps,
 				 H264Parser* parser) {
   Nalu nalu;
   if (!nalu.Initialize(Nalu::kH264, sps.data(), sps.size()))
