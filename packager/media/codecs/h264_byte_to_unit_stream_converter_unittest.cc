@@ -127,9 +127,8 @@ TEST(H264ByteToUnitStreamConverter, NaluConversionWithSpsExtension) {
       0x00, 0x02, 0x67, 0x64, 0x00, 0x00, 0x00, 0x04, 0x00, 
       0x01, 0x68, 0xFE, 0x00, 0x00, 0x00, 0x07, 0x00, 0x05, 
       0x6D, 0x33, 0x01, 0x57, 0x78};          
-  EXPECT_EQ(std::vector<uint8_t>(kExpectedDecoderConfig,
-                                 kExpectedDecoderConfig + arraysize(kExpectedDecoderConfig)),
-            unit_stream);
+  EXPECT_EQ(std::vector<uint8_t>(std::begin(kExpectedDecoderConfig), std::end(kExpectedDecoderConfig)),
+            unit_stream);    
                          
   std::vector<uint8_t> decoder_config;
   EXPECT_TRUE(converter.GetDecoderConfigurationRecord(&decoder_config));
@@ -142,8 +141,7 @@ TEST(H264ByteToUnitStreamConverter, NaluConversionWithSpsExtension) {
       0x96, 0x01, 0x00, 0x0A, 0x68, 0xFE, 0xFD, 0xFC, 0xFB, 
       0x11, 0x12, 0x13, 0x14, 0x15, 0xFD, 0xF8, 0xF8, 0x01, 
       0x6D, 0x33, 0x01, 0x57, 0x78};
-  EXPECT_EQ(std::vector<uint8_t>(kExpectedUnitStream,
-                                 kExpectedUnitStream + arraysize(kExpectedUnitStream)),
+  EXPECT_EQ(std::vector<uint8_t>(std::begin(kExpectedUnitStream), std::end(kExpectedUnitStream)),
             decoder_config);             
 }
 
