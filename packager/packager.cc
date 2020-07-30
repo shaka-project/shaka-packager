@@ -40,7 +40,6 @@
 #include "packager/media/event/muxer_listener_factory.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/formats/webvtt/text_padder.h"
-#include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
 #include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
 #include "packager/media/replicator/replicator.h"
 #include "packager/media/trick_play/trick_play_handler.h"
@@ -65,21 +64,6 @@ namespace {
 const char kMediaInfoSuffix[] = ".media_info";
 
 const int64_t kDefaultTextZeroBiasMs = 10 * 60 * 1000;  // 10 minutes
-
-MuxerOptions CreateMuxerOptions(const StreamDescriptor& stream,
-                                const PackagingParams& params) {
-  MuxerOptions options;
-
-  options.mp4_params = params.mp4_output_params;
-  options.transport_stream_timestamp_offset_ms =
-      params.transport_stream_timestamp_offset_ms;
-  options.temp_dir = params.temp_dir;
-  options.bandwidth = stream.bandwidth;
-  options.output_file_name = stream.output;
-  options.segment_template = stream.segment_template;
-
-  return options;
-}
 
 MuxerListenerFactory::StreamData ToMuxerListenerData(
     const StreamDescriptor& stream) {
@@ -486,99 +470,30 @@ std::unique_ptr<MediaHandler> CreateTextChunker(
       new TextChunker(segment_length_in_seconds));
 }
 
-Status CreateHlsTextJob(const StreamDescriptor& stream,
-                        const PackagingParams& packaging_params,
-                        std::unique_ptr<MuxerListener> muxer_listener,
-                        SyncPointQueue* sync_points,
-                        JobManager* job_manager) {
-  DCHECK(muxer_listener);
-  DCHECK(job_manager);
-
-  if (stream.segment_template.empty()) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Cannot output text (" + stream.input +
-                      ") to HLS with no segment template");
-  }
-
-  // Text files are usually small and since the input is one file;
-  // there's no way for the player to do ranged requests. So set this
-  // value to something reasonable if it is missing.
-  MuxerOptions muxer_options = CreateMuxerOptions(stream, packaging_params);
-  muxer_options.bandwidth = stream.bandwidth ? stream.bandwidth : 256;
-
-  auto output = std::make_shared<WebVttTextOutputHandler>(
-      muxer_options, std::move(muxer_listener));
-
-  std::shared_ptr<Demuxer> demuxer;
-  RETURN_IF_ERROR(CreateDemuxer(stream, packaging_params, &demuxer));
-  if (!stream.language.empty())
-    demuxer->SetLanguageOverride(stream.stream_selector, stream.language);
-  auto padder = std::make_shared<TextPadder>(kDefaultTextZeroBiasMs);
-  RETURN_IF_ERROR(demuxer->SetHandler(stream.stream_selector, padder));
-
-  auto cue_aligner = sync_points
-                         ? std::make_shared<CueAlignmentHandler>(sync_points)
-                         : nullptr;
-  auto chunker = CreateTextChunker(packaging_params.chunking_params);
-
-  job_manager->Add("Segmented Text Job", demuxer);
-
-  return MediaHandler::Chain({std::move(padder), std::move(cue_aligner),
-                              std::move(chunker), std::move(output)});
-}
-
-Status CreateTextJobs(
+Status CreateTtmlJobs(
     const std::vector<std::reference_wrapper<const StreamDescriptor>>& streams,
     const PackagingParams& packaging_params,
     SyncPointQueue* sync_points,
-    MuxerListenerFactory* muxer_listener_factory,
     MuxerFactory* muxer_factory,
     MpdNotifier* mpd_notifier,
     JobManager* job_manager) {
-  DCHECK(muxer_listener_factory);
   DCHECK(job_manager);
   for (const StreamDescriptor& stream : streams) {
-    // There are currently options:
-    //    TEXT TTML --> TEXT TTML [ supported ], for DASH only.
-    //    TEXT WEBVTT --> TEXT WEBVTT [ supported ]
-    //    TEXT WEBVTT --> MP4 WEBVTT  [ supported ]
-    //    MP4 WEBVTT  --> MP4 WEBVTT  [ unsupported ]
-    //    MP4 WEBVTT  --> TEXT WEBVTT [ unsupported ]
-    const auto input_container = DetermineContainerFromFileName(stream.input);
-
-    if (input_container != CONTAINER_WEBVTT &&
-        input_container != CONTAINER_TTML) {
-      return Status(error::INVALID_ARGUMENT,
-                    "Text output format is not support for " + stream.input);
-    }
-
-    std::unique_ptr<MuxerListener> hls_listener =
-        muxer_listener_factory->CreateHlsListener(ToMuxerListenerData(stream));
-
     // Check input to ensure that output is possible.
-    if (hls_listener && !stream.dash_only) {
-      if (input_container == CONTAINER_TTML) {
-        return Status(error::INVALID_ARGUMENT,
-                      "HLS does not support TTML in xml format.");
-      }
-      if (stream.segment_template.empty() || !stream.output.empty()) {
-        return Status(error::INVALID_ARGUMENT,
-                      "segment_template needs to be specified for HLS text "
-                      "output. Single file output is not supported yet.");
-      }
-    }
-
-    if (mpd_notifier && !stream.segment_template.empty() && !stream.hls_only) {
+    if (!packaging_params.hls_params.master_playlist_output.empty() &&
+        !stream.dash_only) {
       return Status(error::INVALID_ARGUMENT,
-                    "Cannot create text output for MPD with segment output.");
+                    "HLS does not support TTML in xml format.");
     }
 
-    // If we are outputting to HLS, then create the HLS test pipeline that
-    // will create segmented text output.
-    if (hls_listener && !stream.dash_only) {
-      RETURN_IF_ERROR(CreateHlsTextJob(stream, packaging_params,
-                                       std::move(hls_listener), sync_points,
-                                       job_manager));
+    if (!stream.segment_template.empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Segmented TTML is not supported.");
+    }
+
+    if (GetOutputFormat(stream) != CONTAINER_TTML) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Converting TTML to other formats is not supported");
     }
 
     if (!stream.output.empty()) {
@@ -694,10 +609,7 @@ Status CreateAudioVideoJobs(
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
       }
-      if (is_text) {
-        handlers.emplace_back(
-            CreateTextChunker(packaging_params.chunking_params));
-      } else {
+      if (!is_text) {
         handlers.emplace_back(std::make_shared<ChunkingHandler>(
             packaging_params.chunking_params));
       }
@@ -731,6 +643,12 @@ Status CreateAudioVideoJobs(
             ? std::make_shared<TrickPlayHandler>(stream.trick_play_factor)
             : nullptr;
 
+    std::shared_ptr<MediaHandler> chunker =
+        is_text && (!stream.segment_template.empty() ||
+                    output_format == CONTAINER_MOV)
+            ? CreateTextChunker(packaging_params.chunking_params)
+            : nullptr;
+
     // TODO(modmaker): Move to MOV muxer?
     const auto input_container = DetermineContainerFromFileName(stream.input);
     auto text_to_mp4 =
@@ -738,8 +656,8 @@ Status CreateAudioVideoJobs(
             ? std::make_shared<WebVttToMp4Handler>()
             : nullptr;
 
-    RETURN_IF_ERROR(
-        MediaHandler::Chain({replicator, trick_play, text_to_mp4, muxer}));
+    RETURN_IF_ERROR(MediaHandler::Chain(
+        {replicator, trick_play, chunker, text_to_mp4, muxer}));
   }
 
   return Status::OK;
@@ -758,7 +676,7 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   DCHECK(job_manager);
 
   // Group all streams based on which pipeline they will use.
-  std::vector<std::reference_wrapper<const StreamDescriptor>> text_streams;
+  std::vector<std::reference_wrapper<const StreamDescriptor>> ttml_streams;
   std::vector<std::reference_wrapper<const StreamDescriptor>>
       audio_video_streams;
 
@@ -766,15 +684,12 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   bool has_non_transport_audio_video_streams = false;
 
   for (const StreamDescriptor& stream : stream_descriptors) {
-    // TODO: Find a better way to determine what stream type a stream
-    // descriptor is as |stream_selector| may use an index. This would
-    // also allow us to use a simpler audio pipeline.
+    const auto input_container = DetermineContainerFromFileName(stream.input);
     const auto output_format = GetOutputFormat(stream);
-    if (stream.stream_selector == "text" && output_format != CONTAINER_MOV) {
-      text_streams.push_back(stream);
+    if (input_container == CONTAINER_TTML) {
+      ttml_streams.push_back(stream);
     } else {
       audio_video_streams.push_back(stream);
-
       switch (output_format) {
         case CONTAINER_MPEG2TS:
         case CONTAINER_AAC:
@@ -782,6 +697,9 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
         case CONTAINER_AC3:
         case CONTAINER_EAC3:
           has_transport_audio_video_streams = true;
+          break;
+        case CONTAINER_TTML:
+        case CONTAINER_WEBVTT:
           break;
         default:
           has_non_transport_audio_video_streams = true;
@@ -795,26 +713,21 @@ Status CreateAllJobs(const std::vector<StreamDescriptor>& stream_descriptors,
   std::sort(audio_video_streams.begin(), audio_video_streams.end(),
             media::StreamDescriptorCompareFn);
 
-  if (!text_streams.empty()) {
-    PackagingParams text_packaging_params = packaging_params;
-    if (text_packaging_params.transport_stream_timestamp_offset_ms > 0) {
-      if (has_transport_audio_video_streams &&
-          has_non_transport_audio_video_streams) {
-        LOG(WARNING) << "There may be problems mixing transport streams and "
-                        "non-transport streams. For example, the subtitles may "
-                        "be out of sync with non-transport streams.";
-      } else if (has_non_transport_audio_video_streams) {
-        // Don't insert the X-TIMESTAMP-MAP in WebVTT if there is no transport
-        // stream.
-        text_packaging_params.transport_stream_timestamp_offset_ms = 0;
-      }
+  if (packaging_params.transport_stream_timestamp_offset_ms > 0) {
+    if (has_transport_audio_video_streams &&
+        has_non_transport_audio_video_streams) {
+      LOG(WARNING) << "There may be problems mixing transport streams and "
+                      "non-transport streams. For example, the subtitles may "
+                      "be out of sync with non-transport streams.";
+    } else if (has_non_transport_audio_video_streams) {
+      // Don't insert the X-TIMESTAMP-MAP in WebVTT if there is no transport
+      // stream.
+      muxer_factory->SetTsStreamOffset(0);
     }
-
-    RETURN_IF_ERROR(CreateTextJobs(text_streams, text_packaging_params,
-                                   sync_points, muxer_listener_factory,
-                                   muxer_factory, mpd_notifier, job_manager));
   }
 
+  RETURN_IF_ERROR(CreateTtmlJobs(ttml_streams, packaging_params, sync_points,
+                                 muxer_factory, mpd_notifier, job_manager));
   RETURN_IF_ERROR(CreateAudioVideoJobs(
       audio_video_streams, packaging_params, encryption_key_source, sync_points,
       muxer_listener_factory, muxer_factory, job_manager));

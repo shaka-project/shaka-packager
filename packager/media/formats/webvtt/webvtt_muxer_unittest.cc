@@ -12,12 +12,15 @@
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/event/combined_muxer_listener.h"
 #include "packager/media/event/mock_muxer_listener.h"
-#include "packager/media/formats/webvtt/webvtt_text_output_handler.h"
+#include "packager/media/formats/webvtt/webvtt_muxer.h"
 #include "packager/status_test_util.h"
 
 namespace shaka {
 namespace media {
+namespace webvtt {
+
 namespace {
+
 using testing::_;
 
 const size_t kInputCount = 1;
@@ -38,7 +41,7 @@ const uint64_t kSegmentDuration = 10000;
 const float kMillisecondsPerSecond = 1000.0f;
 }  // namespace
 
-class WebVttSegmentedOutputTest : public MediaHandlerTestBase {
+class WebVttMuxerTest : public MediaHandlerTestBase {
  protected:
   void SetUp() {
     MuxerOptions muxer_options;
@@ -49,17 +52,17 @@ class WebVttSegmentedOutputTest : public MediaHandlerTestBase {
     std::unique_ptr<MockMuxerListener> muxer_listener(new MockMuxerListener);
     muxer_listener_ = muxer_listener.get();
 
-    out_ = std::make_shared<WebVttTextOutputHandler>(muxer_options,
-                                                     std::move(muxer_listener));
+    out_ = std::make_shared<WebVttMuxer>(muxer_options);
+    out_->SetMuxerListener(std::move(muxer_listener));
 
     ASSERT_OK(SetUpAndInitializeGraph(out_, kInputCount, kOutputCount));
   }
 
   MockMuxerListener* muxer_listener_ = nullptr;
-  std::shared_ptr<WebVttTextOutputHandler> out_;
+  std::shared_ptr<WebVttMuxer> out_;
 };
 
-TEST_F(WebVttSegmentedOutputTest, WithNoSegmentAndWithNoSamples) {
+TEST_F(WebVttMuxerTest, WithNoSegmentAndWithNoSamples) {
   EXPECT_CALL(*muxer_listener_, OnNewSegment(_, _, _, _)).Times(0);
 
   {
@@ -67,10 +70,7 @@ TEST_F(WebVttSegmentedOutputTest, WithNoSegmentAndWithNoSamples) {
 
     testing::InSequence s;
     EXPECT_CALL(*muxer_listener_, OnMediaStart(_, _, _, _));
-
-    const float kMediaDuration = 0 * kSegmentDuration / kMillisecondsPerSecond;
-    EXPECT_CALL(*muxer_listener_,
-                OnMediaEndMock(_, _, _, _, _, _, _, _, kMediaDuration));
+    EXPECT_CALL(*muxer_listener_, OnMediaEndMock(_, _, _, _, _, _, _, _, _));
   }
 
   ASSERT_OK(Input(kInputIndex)
@@ -79,7 +79,7 @@ TEST_F(WebVttSegmentedOutputTest, WithNoSegmentAndWithNoSamples) {
   ASSERT_OK(Input(kInputIndex)->FlushAllDownstreams());
 }
 
-TEST_F(WebVttSegmentedOutputTest, WithOneSegmentAndWithOneSample) {
+TEST_F(WebVttMuxerTest, WithOneSegmentAndWithOneSample) {
   const char* kExpectedOutput =
       "WEBVTT\n"
       "\n"
@@ -118,7 +118,7 @@ TEST_F(WebVttSegmentedOutputTest, WithOneSegmentAndWithOneSample) {
   ASSERT_FILE_STREQ(kSegmentedFileOutput1, kExpectedOutput);
 }
 
-TEST_F(WebVttSegmentedOutputTest, WithTwoSegmentAndWithOneSample) {
+TEST_F(WebVttMuxerTest, WithTwoSegmentAndWithOneSample) {
   const char* kExpectedOutput1 =
       "WEBVTT\n"
       "\n"
@@ -181,7 +181,7 @@ TEST_F(WebVttSegmentedOutputTest, WithTwoSegmentAndWithOneSample) {
   ASSERT_FILE_STREQ(kSegmentedFileOutput2, kExpectedOutput2);
 }
 
-TEST_F(WebVttSegmentedOutputTest, WithAnEmptySegment) {
+TEST_F(WebVttMuxerTest, WithAnEmptySegment) {
   const char* kExpectedOutput1 =
       "WEBVTT\n"
       "\n";
@@ -235,5 +235,7 @@ TEST_F(WebVttSegmentedOutputTest, WithAnEmptySegment) {
   ASSERT_FILE_STREQ(kSegmentedFileOutput1, kExpectedOutput1);
   ASSERT_FILE_STREQ(kSegmentedFileOutput2, kExpectedOutput2);
 }
+
+}  // namespace webvtt
 }  // namespace media
 }  // namespace shaka

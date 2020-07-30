@@ -166,9 +166,8 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
 
 void AddTextInfo(const TextStreamInfo& text_stream_info,
                  MediaInfo* media_info) {
-  // For now, set everything as subtitle.
+  // TODO(modmaker): Set kind.
   MediaInfo::TextInfo* text_info = media_info->mutable_text_info();
-  text_info->set_type(MediaInfo::TextInfo::SUBTITLE);
   text_info->set_codec(text_stream_info.codec_string());
   text_info->set_language(text_stream_info.language());
 }
@@ -234,8 +233,9 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 
   SetMediaInfoMuxerOptions(muxer_options, media_info);
   SetMediaInfoStreamInfo(stream_info, media_info);
-  media_info->set_reference_time_scale(reference_time_scale);
   SetMediaInfoContainerType(container_type, media_info);
+  if (reference_time_scale > 0)
+    media_info->set_reference_time_scale(reference_time_scale);
   if (muxer_options.bandwidth > 0)
     media_info->set_bandwidth(muxer_options.bandwidth);
 

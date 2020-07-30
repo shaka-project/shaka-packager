@@ -833,6 +833,21 @@ class PackagerFunctionalTest(PackagerAppTest):
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('segmented-webvtt-with-language-override')
 
+  def testSegmentedWebVttText(self):
+    streams = self._GetStreams(
+        ['text'], test_files=['bear-english.vtt'], segmented=True)
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-webvtt-text')
+
+  def testSingleFileWebVttText(self):
+    streams = self._GetStreams(['text'], test_files=['bear-english.vtt'])
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('single-file-webvtt-text')
+
   def testMp4TrailingMoov(self):
     self.assertPackageSuccess(
         self._GetStreams(['audio', 'video'],
@@ -1930,7 +1945,8 @@ class PackagerCommandParsingTest(PackagerAppTest):
     packaging_result = self.packager.Package(audio_video_stream + text_stream,
                                              self._GetFlags())
     # Expect the test to fail but we do not expect a crash.
-    self.assertEqual(packaging_result, 1)
+    self.assertNotEqual(packaging_result, 0)
+    self.assertLess(packaging_result, 10)
 
   def testInconsistentOutputAndSegmentTemplateFormat(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')

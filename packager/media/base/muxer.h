@@ -83,10 +83,13 @@ class Muxer : public MediaHandler {
   // Final clean up.
   virtual Status Finalize() = 0;
 
-  // Add a new sample.
-  virtual Status AddSample(
-      size_t stream_id,
-      const MediaSample& sample) = 0;
+  // Add a new media sample.  This does nothing by default; so subclasses that
+  // handle media samples will need to replace this.
+  virtual Status AddMediaSample(size_t stream_id, const MediaSample& sample);
+
+  // Add a new text sample.  This does nothing by default; so subclasses that
+  // handle text samples will need to replace this.
+  virtual Status AddTextSample(size_t stream_id, const TextSample& sample);
 
   // Finalize the segment or subsegment.
   virtual Status FinalizeSegment(

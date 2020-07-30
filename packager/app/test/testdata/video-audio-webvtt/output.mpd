@@ -3,7 +3,8 @@
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" minBufferTime="PT2S" type="static" mediaPresentationDuration="PT2.7360665798187256S">
   <Period id="0">
     <AdaptationSet id="0" contentType="text" subsegmentAlignment="true">
-      <Representation id="0" bandwidth="256" mimeType="text/vtt">
+      <Role schemeIdUri="urn:mpeg:dash:role:2011" value="subtitle"/>
+      <Representation id="0" bandwidth="273" mimeType="text/vtt">
         <BaseURL>bear-english-text.vtt</BaseURL>
       </Representation>
     </AdaptationSet>

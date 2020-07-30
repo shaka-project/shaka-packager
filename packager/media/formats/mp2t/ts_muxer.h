@@ -26,8 +26,7 @@ class TsMuxer : public Muxer {
   // Muxer implementation.
   Status InitializeMuxer() override;
   Status Finalize() override;
-  Status AddSample(size_t stream_id,
-                   const MediaSample& sample) override;
+  Status AddMediaSample(size_t stream_id, const MediaSample& sample) override;
   Status FinalizeSegment(size_t stream_id,
                          const SegmentInfo& sample) override;
 

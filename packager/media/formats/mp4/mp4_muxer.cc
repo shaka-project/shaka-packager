@@ -181,7 +181,7 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::AddSample(size_t stream_id, const MediaSample& sample) {
+Status MP4Muxer::AddMediaSample(size_t stream_id, const MediaSample& sample) {
   if (to_be_initialized_) {
     RETURN_IF_ERROR(UpdateEditListOffsetFromSample(sample));
     RETURN_IF_ERROR(DelayInitializeMuxer());

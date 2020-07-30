@@ -58,8 +58,8 @@ Status PackedAudioWriter::Finalize() {
   return Status::OK;
 }
 
-Status PackedAudioWriter::AddSample(size_t stream_id,
-                                    const MediaSample& sample) {
+Status PackedAudioWriter::AddMediaSample(size_t stream_id,
+                                         const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
   return segmenter_->AddSample(sample);
 }

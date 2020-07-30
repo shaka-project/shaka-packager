@@ -391,7 +391,8 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   time_scale_ = time_scale;
   media_info_ = media_info;
   language_ = GetLanguage(media_info);
-  use_byte_range_ = !media_info_.has_segment_template_url();
+  use_byte_range_ = !media_info_.has_segment_template_url() &&
+                    media_info_.container_type() != MediaInfo::CONTAINER_TEXT;
   characteristics_ =
       std::vector<std::string>(media_info_.hls_characteristics().begin(),
                                media_info_.hls_characteristics().end());
