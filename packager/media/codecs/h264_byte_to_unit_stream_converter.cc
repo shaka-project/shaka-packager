@@ -18,13 +18,13 @@ namespace media {
 namespace {
 // utility helper function to get an sps
 const H264Sps* ParseSpsFromBytes(const std::vector<uint8_t> sps,
-				 H264Parser* parser) {
+                                 H264Parser* parser) {
   Nalu nalu;
   if (!nalu.Initialize(Nalu::kH264, sps.data(), sps.size()))
     return nullptr;
 
   int sps_id = 0;
-  if (!(parser->ParseSps(nalu, &sps_id) == H264Parser::kOk))
+  if (parser->ParseSps(nalu, &sps_id) != H264Parser::kOk)
     return nullptr;
   return parser->GetSps(sps_id);
 }
@@ -77,9 +77,9 @@ bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
 
       uint8_t reserved_chroma_format = 0xfc | (sps->chroma_format_idc);
       buffer.AppendInt(reserved_chroma_format);
-      uint8_t reserved_bit_depth_luma_minus8 = 0xf8 | (sps->bit_depth_luma_minus8);
+      uint8_t reserved_bit_depth_luma_minus8 = 0xf8 | sps->bit_depth_luma_minus8;
       buffer.AppendInt(reserved_bit_depth_luma_minus8);
-      uint8_t reserved_bit_depth_chroma_minus8 = 0xf8 | (sps->bit_depth_chroma_minus8);
+      uint8_t reserved_bit_depth_chroma_minus8 = 0xf8 | sps->bit_depth_chroma_minus8;
       buffer.AppendInt(reserved_bit_depth_chroma_minus8);	
       
       if (last_sps_ext_.empty()) {
