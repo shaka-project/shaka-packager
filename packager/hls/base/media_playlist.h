@@ -213,6 +213,10 @@ class MediaPlaylist {
   /// @return the frame rate.
   virtual double GetFrameRate() const;
 
+  /// @return time stamp
+  /// For testing only.
+  virtual double GetStartTimeStamp() const;
+
   /// @return the language of the media, as an ISO language tag in its shortest
   ///         form.  May be an empty string for video.
   const std::string& language() const { return language_; }
@@ -227,7 +231,8 @@ class MediaPlaylist {
                            int64_t start_time,
                            int64_t duration,
                            uint64_t start_byte_offset,
-                           uint64_t size);
+                           uint64_t size,
+                           double start_timestamp);
   // Adjust the duration of the last SegmentInfoEntry to end on
   // |next_timestamp|.
   void AdjustLastSegmentInfoEntryDuration(int64_t next_timestamp);
@@ -267,6 +272,8 @@ class MediaPlaylist {
   // See SetTargetDuration() comments.
   bool target_duration_set_ = false;
   uint32_t target_duration_ = 0;
+
+  double start_timestamp = 0;
 
   // TODO(kqyang): This could be managed better by a separate class, than having
   // all them managed in MediaPlaylist.
