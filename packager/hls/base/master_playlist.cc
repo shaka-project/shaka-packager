@@ -218,6 +218,8 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
                     variant.text_codecs.end());
   tag.AddQuotedString("CODECS", base::JoinString(all_codecs, ","));
 
+  const std::string I_Frame_Tag("#EXT-X-I-FRAME-STREAM-INF");
+
   uint32_t width;
   uint32_t height;
   if (playlist.GetDisplayResolution(&width, &height)) {
@@ -225,21 +227,25 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
     // Right now the frame-rate returned may not be accurate in some scenarios.
     // TODO(kqyang): Fix frame-rate computation.
-    const double frame_rate = playlist.GetFrameRate();
-    if (frame_rate > 0)
+    if (tag_name.compare(I_Frame_Tag) != 0) {
+      const double frame_rate = playlist.GetFrameRate();
+      if (frame_rate > 0)
       tag.AddFloat("FRAME-RATE", frame_rate);
+    }
 
     const std::string video_range = playlist.GetVideoRange();
     if (!video_range.empty())
       tag.AddString("VIDEO-RANGE", video_range);
   }
 
-  if (variant.audio_group_id) {
-    tag.AddQuotedString("AUDIO", *variant.audio_group_id);
-  }
+  if (tag_name.compare(I_Frame_Tag) != 0) {
+    if (variant.audio_group_id) {
+      tag.AddQuotedString("AUDIO", *variant.audio_group_id);
+    }
 
-  if (variant.text_group_id) {
-    tag.AddQuotedString("SUBTITLES", *variant.text_group_id);
+    if (variant.text_group_id) {
+      tag.AddQuotedString("SUBTITLES", *variant.text_group_id);
+    }
   }
 
   if (playlist.stream_type() ==
