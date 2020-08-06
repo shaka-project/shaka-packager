@@ -218,7 +218,7 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
                     variant.text_codecs.end());
   tag.AddQuotedString("CODECS", base::JoinString(all_codecs, ","));
 
-  const bool is_iframe_playlist = playlist.streamType() == 
+  const bool is_iframe_playlist = playlist.stream_type() == 
              MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
 
   uint32_t width;
