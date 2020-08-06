@@ -201,6 +201,74 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
             output);
 }
 
+// Expect a valid AVCDecoderConfigurationRecord with SPSExtension to pass.
+TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithSPSExtension) {
+  NalUnitToByteStreamConverter converter;
+  const uint8_t kDecoderConfigWithSpsExt[] = {
+      0x01,        // configuration version (must be 1)
+      0x64,        // AVCProfileIndication (100: sps special case)
+      0x00,        // profile_compatibility (bogus)
+      0x00,        // AVCLevelIndication (bogus)
+      0xFF,        // Length size minus 1 == 3
+      0xE1,        // 1 sps.
+      0x00, 0x1D,  // SPS length == 29
+      // Some valid SPS data.
+      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
+      0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
+      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
+      0x60, 0x0F, 0x16, 0x2D, 0x96,
+      0x01,        // 1 pps.
+      0x00, 0x0A,  // PPS length == 10
+      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,
+      0xFC,  // chroma_format == 0
+      0xF9,  // bit_depth_luma_minus8 == 1
+      0xFF,  // bit_depth_chroma_minus8 == 7
+      0x01,  // 1 SPS Extension 
+      0x00, 0x05,  // SPSExtension length = 5
+      0x6D, 0x33, 0x01, 0x57, 0x78
+  };
+
+  // Only the type of the NAL units are checked.
+  // This does not contain AUD, SPS, nor PPS.
+  const uint8_t kUnitStreamLikeMediaSample[] = {
+      0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
+      0x06,                    // NAL unit type.
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77
+  };
+
+  const uint8_t kByteStreamWithSpsExtension[] = {
+      0x00, 0x00, 0x00, 0x01,  // Start code
+      0x09,  		       // AUD Type
+      0xF0, 		       // Primary pic type
+      0x00, 0x00, 0x00, 0x01,  // Start code
+      // Some SPS Data
+      0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4, 0x2F, 
+      0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91, 0x00, 0x00, 
+      0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA, 0x60, 0x0F, 0x16, 
+      0x2D, 0x96, 
+      0x00, 0x00, 0x00, 0x01,  // Start code
+      // Some PPS Data
+      0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15, 
+      0x00, 0x00, 0x00, 0x01,  // Start code
+      // Some SPS Extension data
+      0x6D, 0x33, 0x01, 0x57, 0x78, 
+      0x00, 0x00, 0x00, 0x01,  // Start code
+      // The input NALU
+      0x06,  //  NALU type
+      0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77, 
+  };
+  EXPECT_TRUE(converter.Initialize(kDecoderConfigWithSpsExt, 
+              arraysize(kDecoderConfigWithSpsExt)));
+  
+  std::vector<uint8_t> output;
+  EXPECT_TRUE(converter.ConvertUnitToByteStream(
+              kUnitStreamLikeMediaSample, 
+              arraysize(kUnitStreamLikeMediaSample), kIsKeyFrame, &output));
+  EXPECT_EQ(std::vector<uint8_t>(std::begin(kByteStreamWithSpsExtension),
+                                 std::end(kByteStreamWithSpsExtension)), 
+                                 output);
+}
+
 // Verify that if it is not a key frame then SPS and PPS from decoder
 // configuration is not used.
 TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
