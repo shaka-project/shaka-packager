@@ -30,6 +30,7 @@ namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
 const char kDefaultAudioLanguage[] = "en";
 const char kDefaultTextLanguage[] = "fr";
+const bool kSegmentSapAligned = true;
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
 const uint32_t kEC3JocComplexityZero = 0;
@@ -138,7 +139,8 @@ class MasterPlaylistTest : public ::testing::Test {
   MasterPlaylistTest()
       : master_playlist_(kDefaultMasterPlaylistName,
                          kDefaultAudioLanguage,
-                         kDefaultTextLanguage),
+                         kDefaultTextLanguage,
+                         kSegmentSapAligned),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(
             FilePath::FromUTF8Unsafe(test_output_dir_)

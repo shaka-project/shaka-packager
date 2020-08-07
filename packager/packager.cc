@@ -929,7 +929,9 @@ Status Packager::Initialize(
       LanguageToShortestForm(hls_params.default_language);
   hls_params.default_text_language =
       LanguageToShortestForm(hls_params.default_text_language);
-
+  hls_params.segment_sap_aligned = 
+      packaging_params.chunking_params.segment_sap_aligned;
+  
   if (!mpd_params.mpd_output.empty()) {
     const bool on_demand_dash_profile =
         stream_descriptors.begin()->segment_template.empty();

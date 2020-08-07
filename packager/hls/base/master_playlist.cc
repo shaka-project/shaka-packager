@@ -384,7 +384,8 @@ void AppendPlaylists(const std::string& default_audio_language,
                      const std::string& default_text_language,
                      const std::string& base_url,
                      const std::list<MediaPlaylist*>& playlists,
-                     std::string* content) {
+                     std::string* content,
+                     const bool segment_sap_aligned) {
   std::map<std::string, std::list<const MediaPlaylist*>> audio_playlist_groups;
   std::map<std::string, std::list<const MediaPlaylist*>>
       subtitle_playlist_groups;
@@ -441,6 +442,10 @@ void AppendPlaylists(const std::string& default_audio_language,
     }
   }
 
+  if (segment_sap_aligned) {
+    content->append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
+  }
+    
   // Generate audio-only master playlist when there are no videos and subtitles.
   if (!audio_playlist_groups.empty() && video_playlists.empty() &&
       subtitle_playlist_groups.empty()) {
@@ -463,10 +468,12 @@ void AppendPlaylists(const std::string& default_audio_language,
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
                                const std::string& default_audio_language,
-                               const std::string& default_text_language)
+                               const std::string& default_text_language,
+                               const bool segment_sap_aligned)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
-      default_text_language_(default_text_language) {}
+      default_text_language_(default_text_language),
+      segment_sap_aligned_(segment_sap_aligned) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -477,7 +484,7 @@ bool MasterPlaylist::WriteMasterPlaylist(
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
-                  playlists, &content);
+                  playlists, &content, segment_sap_aligned_);
 
   // Skip if the playlist is already written.
   if (content == written_playlist_)
