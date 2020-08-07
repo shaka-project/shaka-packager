@@ -225,9 +225,13 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
     // Right now the frame-rate returned may not be accurate in some scenarios.
     // TODO(kqyang): Fix frame-rate computation.
-    const double frame_rate = playlist.GetFrameRate();
-    if (frame_rate > 0)
-      tag.AddFloat("FRAME-RATE", frame_rate);
+    const bool is_iframe_playlist = playlist.stream_type() == 
+               MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
+    if (!is_iframe_playlist) {
+      const double frame_rate = playlist.GetFrameRate();
+      if (frame_rate > 0)
+        tag.AddFloat("FRAME-RATE", frame_rate);
+    }
 
     const std::string video_range = playlist.GetVideoRange();
     if (!video_range.empty())

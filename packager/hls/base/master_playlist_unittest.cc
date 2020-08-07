@@ -212,6 +212,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
 
   std::unique_ptr<MockMediaPlaylist> mock_playlist =
       CreateIframePlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
+  EXPECT_CALL(*mock_playlist, GetFrameRate()).Times(0);
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
