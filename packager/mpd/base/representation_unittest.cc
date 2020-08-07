@@ -280,7 +280,7 @@ TEST_F(RepresentationTest,
                            kAnyRepresentationId, std::move(listener));
   EXPECT_TRUE(representation->Init());
 
-  representation->AddNewSegment(kStartTime, kDuration, 10 /* any size */);
+  representation->AddNewSegment(kStartTime, kDuration, 10 /* any size */, (kStartTime / kDuration));
 }
 
 // Make sure
@@ -468,7 +468,7 @@ class SegmentTemplateTest : public RepresentationTest {
     }
 
     for (int i = 0; i < repeat + 1; ++i) {
-      representation_->AddNewSegment(start_time, duration, size);
+      representation_->AddNewSegment(start_time, duration, size, (start_time / duration));
       start_time += duration;
       bandwidth_estimator_.AddBlock(
           size, static_cast<double>(duration) / kDefaultTimeScale);
@@ -803,8 +803,10 @@ TEST_P(ApproximateSegmentTimelineTest,
     expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
                                              kStartTime, kDurationSmaller);
   }
+  
   EXPECT_THAT(representation_->GetXml().get(),
-              XmlNodeEqual(ExpectedXml(expected_s_elements)));
+    XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
+                    expected_s_elements, 1372)));
 }
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
@@ -989,7 +991,8 @@ TEST_P(TimeShiftBufferDepthTest, Normal) {
   // depth.
   // Also note that S@r + 1 is the actual number of segments.
   const int kExpectedRepeatsLeft = kTimeShiftBufferDepth;
-  const int kExpectedStartNumber = kRepeat - kExpectedRepeatsLeft + 1;
+  const int kExpectedStartNumber = kRepeat - kExpectedRepeatsLeft + 1 +
+	                           (initial_start_time_ / kDuration);
 
   const std::string expected_s_element = base::StringPrintf(
       kSElementTemplate,
@@ -1051,7 +1054,7 @@ TEST_P(TimeShiftBufferDepthTest, Generic) {
       base::StringPrintf(kSElementTemplate, first_s_element_end_time,
                          kTimeShiftBufferDepthDuration, kMoreSegmentsRepeat);
 
-  const int kExpectedRemovedSegments = kRepeat + 1;
+  const int kExpectedRemovedSegments = kRepeat + 1 + (initial_start_time_/ kDuration);
   EXPECT_THAT(
       representation_->GetXml().get(),
       XmlNodeEqual(ExpectedXml(
@@ -1096,8 +1099,8 @@ TEST_P(TimeShiftBufferDepthTest, MoreThanOneS) {
 
   EXPECT_THAT(
       representation_->GetXml().get(),
-      XmlNodeEqual(ExpectedXml(
-          expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments)));
+      XmlNodeEqual(ExpectedXml( 
+          expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments + (initial_start_time_ / kOneSecondDuration))));
 }
 
 // Edge case where the last segment in S element should still be in the MPD.
@@ -1169,7 +1172,8 @@ TEST_P(TimeShiftBufferDepthTest, NormalGap) {
 
   EXPECT_THAT(
       representation_->GetXml().get(),
-      XmlNodeEqual(ExpectedXml(expected_s_element, kDefaultStartNumber)));
+      XmlNodeEqual(ExpectedXml(expected_s_element, kDefaultStartNumber +
+		      (initial_start_time_ / kDuration))));
 }
 
 // Timeshift is based on segment duration not on segment time.
@@ -1206,7 +1210,8 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
   EXPECT_THAT(
       representation_->GetXml().get(),
       XmlNodeEqual(ExpectedXml(
-          expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments)));
+          expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments +
+	  (initial_start_time_ / kDuration))));
 }
 
 // Check if startNumber is working correctly.
@@ -1226,7 +1231,7 @@ TEST_P(TimeShiftBufferDepthTest, ManySegments) {
   const int kExpectedRemovedSegments =
       kTotalNumSegments - kExpectedSegmentsLeft;
   const int kExpectedStartNumber =
-      kDefaultStartNumber + kExpectedRemovedSegments;
+      kDefaultStartNumber + kExpectedRemovedSegments + (initial_start_time_ / kDuration);
 
   std::string expected_s_element = base::StringPrintf(
       kSElementTemplate,

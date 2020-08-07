@@ -59,7 +59,7 @@ class ChunkingHandler : public MediaHandler {
   Status OnCueEvent(std::shared_ptr<const CueEvent> event);
   Status OnMediaSample(std::shared_ptr<const MediaSample> sample);
 
-  Status EndSegmentIfStarted() const;
+  Status EndSegmentIfStarted(bool fromCueEvent) const;
   Status EndSubsegmentIfStarted() const;
 
   bool IsSubsegmentEnabled() {
@@ -72,6 +72,7 @@ class ChunkingHandler : public MediaHandler {
   // Segment and subsegment duration in stream's time scale.
   int64_t segment_duration_ = 0;
   int64_t subsegment_duration_ = 0;
+  int64_t num_segments_before_last_cue_ = 0;
 
   // Current segment index, useful to determine where to do chunking.
   int64_t current_segment_index_ = -1;
