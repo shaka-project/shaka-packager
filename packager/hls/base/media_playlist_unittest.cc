@@ -6,7 +6,6 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <gflags/gflags.h>
 
 #include "packager/base/time/time.h"
 #include "packager/base/strings/stringprintf.h"
@@ -15,6 +14,7 @@
 #include "packager/file/file_test_util.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/version/version.h"
+#include "packager/app/hls_flags.h"
 
 //DECLARE_bool(hls_ext_x_program_date_time);
 
