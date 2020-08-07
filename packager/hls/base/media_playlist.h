@@ -273,7 +273,9 @@ class MediaPlaylist {
   bool target_duration_set_ = false;
   uint32_t target_duration_ = 0;
 
-  double start_timestamp = 0;
+  // Time stamp for SegmentInfoEntry in the "entries_" list.
+  // This is used for tag EXT-X-PROGRAM-DATE-TIME generation.
+  double start_timestamp_ = 0;
 
   // TODO(kqyang): This could be managed better by a separate class, than having
   // all them managed in MediaPlaylist.

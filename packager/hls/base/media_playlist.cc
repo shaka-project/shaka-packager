@@ -23,9 +23,9 @@
 #include "packager/media/base/muxer_util.h"
 #include "packager/version/version.h"
 
-DEFINE_bool(hls_ext_x_program_date_time,
-            false,
-            "hls print EXT-X-PROGRAM-DATE-TIME tag");
+//DEFINE_bool(hls_ext_x_program_date_time,
+//            false,
+//            "hls print EXT-X-PROGRAM-DATE-TIME tag");
 
 namespace shaka {
 namespace hls {
@@ -368,7 +368,7 @@ MediaPlaylist::MediaPlaylist(const HlsParams& hls_params,
       name_(name),
       group_id_(group_id),
       media_sequence_number_(hls_params_.media_sequence_number) {
-        start_timestamp = base::Time::Now().ToDoubleT();
+        start_timestamp_ = base::Time::Now().ToDoubleT();
 
         // When there's a forced media_sequence_number, start with discontinuity
         if (media_sequence_number_ > 0)
@@ -448,15 +448,15 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
                                          : std::next(iter)->timestamp;
       AddSegmentInfoEntry(file_name, iter->timestamp,
                           next_timestamp - iter->timestamp,
-                          iter->start_byte_offset, iter->size, start_timestamp);
+                          iter->start_byte_offset, iter->size, start_timestamp_);
     }
     key_frames_.clear();
   } else {
     AddSegmentInfoEntry(file_name, start_time, duration, start_byte_offset, size,
-                        start_timestamp);
+                        start_timestamp_);
   }
 
-  start_timestamp += static_cast<double>(duration) / time_scale_;
+  start_timestamp_ += static_cast<double>(duration) / time_scale_;
 }
 
 void MediaPlaylist::AddKeyFrame(int64_t timestamp,
@@ -605,7 +605,7 @@ double MediaPlaylist::GetFrameRate() const {
 }
 
 double MediaPlaylist::GetStartTimeStamp() const {
-    return start_timestamp;
+    return start_timestamp_;
 }
 
 void MediaPlaylist::AddSegmentInfoEntry(const std::string& segment_file_name,
