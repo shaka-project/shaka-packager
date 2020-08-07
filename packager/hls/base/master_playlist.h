@@ -51,7 +51,7 @@ class MasterPlaylist {
   const std::string file_name_;
   const std::string default_audio_language_;
   const std::string default_text_language_;
-  const bool segment_sap_aligned_;
+  bool is_independent_segments;
 };
 
 }  // namespace hls
