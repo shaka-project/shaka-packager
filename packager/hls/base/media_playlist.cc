@@ -22,6 +22,7 @@
 #include "packager/media/base/language_utils.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/version/version.h"
+#include "packager/app/hls_flags.h"
 
 //DEFINE_bool(hls_ext_x_program_date_time,
 //            false,
