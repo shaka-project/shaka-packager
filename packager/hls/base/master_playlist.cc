@@ -218,9 +218,6 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
                     variant.text_codecs.end());
   tag.AddQuotedString("CODECS", base::JoinString(all_codecs, ","));
 
-  const bool is_iframe_playlist = playlist.stream_type() == 
-             MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
-
   uint32_t width;
   uint32_t height;
   if (playlist.GetDisplayResolution(&width, &height)) {
@@ -228,6 +225,8 @@ void BuildStreamInfTag(const MediaPlaylist& playlist,
 
     // Right now the frame-rate returned may not be accurate in some scenarios.
     // TODO(kqyang): Fix frame-rate computation.
+    const bool is_iframe_playlist = playlist.stream_type() == 
+               MediaPlaylist::MediaPlaylistStreamType::kVideoIFramesOnly;
     if (!is_iframe_playlist) {
       const double frame_rate = playlist.GetFrameRate();
       if (frame_rate > 0)
