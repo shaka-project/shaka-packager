@@ -137,10 +137,10 @@ std::unique_ptr<MockMediaPlaylist> CreateTextPlaylist(
 class MasterPlaylistTest : public ::testing::Test {
  protected:
   MasterPlaylistTest()
-      : master_playlist_(kDefaultMasterPlaylistName,
+      : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
                          kDefaultAudioLanguage,
                          kDefaultTextLanguage,
-                         kSegmentSapAligned),
+                         !kSegmentSapAligned)),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(
             FilePath::FromUTF8Unsafe(test_output_dir_)
@@ -149,7 +149,27 @@ class MasterPlaylistTest : public ::testing::Test {
 
   void SetUp() override { SetPackagerVersionForTesting("test"); }
 
-  MasterPlaylist master_playlist_;
+  std::unique_ptr<MasterPlaylist> master_playlist_;
+  std::string test_output_dir_;
+  std::string master_playlist_path_;
+};
+
+class MasterPlaylistTestIndependentSegments : public ::testing::Test {
+ protected:
+  MasterPlaylistTestIndependentSegments()
+      : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
+                         kDefaultAudioLanguage,
+                         kDefaultTextLanguage,
+                         kSegmentSapAligned)),
+        test_output_dir_("memory://test_dir"),
+        master_playlist_path_(
+            FilePath::FromUTF8Unsafe(test_output_dir_)
+                .Append(FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName))
+                .AsUTF8Unsafe()) {}
+
+  void SetUp() override { SetPackagerVersionForTesting("test"); }
+
+  std::unique_ptr<MasterPlaylist> master_playlist_;
   std::string test_output_dir_;
   std::string master_playlist_path_;
 };
@@ -162,7 +182,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       CreateVideoPlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    {mock_playlist.get()}));
 
   std::string actual;
@@ -172,6 +192,35 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
       "#EXTM3U\n"
       "## Generated with https://github.com/google/shaka-packager version "
       "test\n"
+      "\n"
+      "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
+      "CODECS=\"avc1\",RESOLUTION=800x600\n"
+      "http://myplaylistdomain.com/media1.m3u8\n";
+
+  ASSERT_EQ(expected, actual);
+}
+
+TEST_F(MasterPlaylistTestIndependentSegments, 
+       WriteMasterPlaylistOneVideoWithIndependentSegments) {
+  const uint64_t kMaxBitrate = 435889;
+  const uint64_t kAvgBitrate = 235889;
+  
+  std::unique_ptr<MockMediaPlaylist> mock_playlist =
+      CreateVideoPlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
+
+  const char kBaseUrl[] = "http://myplaylistdomain.com/";
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, 
+                                                  test_output_dir_,
+                                                  {mock_playlist.get()}));
+
+  std::string actual;
+  ASSERT_TRUE(File::ReadFileToString(master_playlist_path_.c_str(), &actual));
+
+  const std::string expected =
+      "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "\n#EXT-X-INDEPENDENT-SEGMENTS\n"
       "\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=435889,AVERAGE-BANDWIDTH=235889,"
       "CODECS=\"avc1\",RESOLUTION=800x600\n"
@@ -190,7 +239,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideoWithFrameRate) {
   EXPECT_CALL(*mock_playlist, GetFrameRate()).WillOnce(Return(kFrameRate));
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    {mock_playlist.get()}));
 
   std::string actual;
@@ -217,7 +266,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneIframePlaylist) {
   EXPECT_CALL(*mock_playlist, GetFrameRate()).Times(0);
 
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    {mock_playlist.get()}));
 
   std::string actual;
@@ -270,7 +319,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
       kBaseUrl, test_output_dir_,
       {sd_video_playlist.get(), hd_video_playlist.get(), english_playlist.get(),
        spanish_playlist.get()}));
@@ -331,7 +380,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       kEC3JocComplexityZero, !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
 
   const char kBaseUrl[] = "http://anydomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
       kBaseUrl, test_output_dir_,
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
@@ -378,7 +427,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistSameAudioGroupSameLanguage) {
       kEC3JocComplexityZero, !kAC4IMSFlagEnabled, !kAC4CBIFlagEnabled);
 
   const char kBaseUrl[] = "http://anydomain.com/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
       kBaseUrl, test_output_dir_,
       {video_playlist.get(), eng_lo_playlist.get(), eng_hi_playlist.get()}));
 
@@ -421,7 +470,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideosAndTexts) {
       CreateTextPlaylist("fr.m3u8", "french", "textgroup", "textcodec", "fr");
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
       kBaseUrl, test_output_dir_,
       {video1.get(), video2.get(), text_eng.get(), text_fr.get()}));
 
@@ -464,7 +513,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextWithCharacteritics) {
       "public.accessibility.transcribes-spoken-dialog", "public.easy-to-read"});
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    {video.get(), text.get()}));
 
   std::string actual;
@@ -502,7 +551,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndTextGroups) {
       "fr.m3u8", "french", "fr-text-group", "textcodec", "fr");
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
       kBaseUrl, test_output_dir_,
       {video.get(), text_eng.get(), text_fr.get()}));
 
@@ -549,7 +598,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudioAndText) {
       CreateTextPlaylist("eng.m3u8", "english", "textgroup", "textcodec", "en");
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(
       kBaseUrl, test_output_dir_, {video.get(), audio.get(), text.get()}));
 
   std::string actual;
@@ -622,7 +671,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMixedPlaylistsDifferentGroups) {
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    media_playlist_list));
 
   std::string actual;
@@ -717,7 +766,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnly) {
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    media_playlist_list));
 
   std::string actual;
@@ -769,7 +818,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyJOC) {
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
     media_playlist_list));
 
   std::string actual;
@@ -821,7 +870,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4IMS) {
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    media_playlist_list));
 
   std::string actual;
@@ -874,7 +923,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistAudioOnlyAC4CBI) {
   }
 
   const char kBaseUrl[] = "http://playlists.org/";
-  EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_,
+  EXPECT_TRUE(master_playlist_->WriteMasterPlaylist(kBaseUrl, test_output_dir_,
                                                    media_playlist_list));
 
   std::string actual;
