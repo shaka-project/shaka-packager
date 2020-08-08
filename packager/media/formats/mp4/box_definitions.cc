@@ -1059,7 +1059,12 @@ bool SampleGroupDescription::ReadWriteEntries(BoxBuffer* buffer,
 
   uint32_t count = static_cast<uint32_t>(entries->size());
   RCHECK(buffer->ReadWriteUInt32(&count));
-  RCHECK(count != 0);
+  if (buffer->Reading()) {
+    if (count == 0)
+      return true;
+  } else {
+    RCHECK(count != 0);
+  }
   entries->resize(count);
 
   for (T& entry : *entries) {
