@@ -30,7 +30,7 @@ namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
 const char kDefaultAudioLanguage[] = "en";
 const char kDefaultTextLanguage[] = "fr";
-const bool kSegmentSapAligned = true;
+const bool kIsIndependentSegments = true;
 const uint32_t kWidth = 800;
 const uint32_t kHeight = 600;
 const uint32_t kEC3JocComplexityZero = 0;
@@ -140,27 +140,7 @@ class MasterPlaylistTest : public ::testing::Test {
       : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
                          kDefaultAudioLanguage,
                          kDefaultTextLanguage,
-                         !kSegmentSapAligned)),
-        test_output_dir_("memory://test_dir"),
-        master_playlist_path_(
-            FilePath::FromUTF8Unsafe(test_output_dir_)
-                .Append(FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName))
-                .AsUTF8Unsafe()) {}
-
-  void SetUp() override { SetPackagerVersionForTesting("test"); }
-
-  std::unique_ptr<MasterPlaylist> master_playlist_;
-  std::string test_output_dir_;
-  std::string master_playlist_path_;
-};
-
-class MasterPlaylistTestIndependentSegments : public ::testing::Test {
- protected:
-  MasterPlaylistTestIndependentSegments()
-      : master_playlist_(new MasterPlaylist(kDefaultMasterPlaylistName,
-                         kDefaultAudioLanguage,
-                         kDefaultTextLanguage,
-                         kSegmentSapAligned)),
+                         !kIsIndependentSegments)),
         test_output_dir_("memory://test_dir"),
         master_playlist_path_(
             FilePath::FromUTF8Unsafe(test_output_dir_)
@@ -200,11 +180,17 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   ASSERT_EQ(expected, actual);
 }
 
-TEST_F(MasterPlaylistTestIndependentSegments, 
+TEST_F(MasterPlaylistTest, 
        WriteMasterPlaylistOneVideoWithIndependentSegments) {
   const uint64_t kMaxBitrate = 435889;
   const uint64_t kAvgBitrate = 235889;
-  
+
+  master_playlist_.reset(new MasterPlaylist(
+                             kDefaultMasterPlaylistName,
+                             kDefaultAudioLanguage,
+                             kDefaultTextLanguage,
+                             kIsIndependentSegments));
+
   std::unique_ptr<MockMediaPlaylist> mock_playlist =
       CreateVideoPlaylist("media1.m3u8", "avc1", kMaxBitrate, kAvgBitrate);
 

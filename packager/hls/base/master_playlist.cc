@@ -440,7 +440,7 @@ void AppendPlaylists(const std::string& default_audio_language,
       BuildStreamInfTag(*playlist, Variant(), base_url, content);
     }
   }
-    
+
   // Generate audio-only master playlist when there are no videos and subtitles.
   if (!audio_playlist_groups.empty() && video_playlists.empty() &&
       subtitle_playlist_groups.empty()) {
@@ -464,11 +464,11 @@ void AppendPlaylists(const std::string& default_audio_language,
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
                                const std::string& default_audio_language,
                                const std::string& default_text_language,
-                               bool segment_sap_aligned)
+                               bool is_independent_segments)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
       default_text_language_(default_text_language),
-      is_independent_segments(segment_sap_aligned) {}
+      is_independent_segments_(is_independent_segments) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -479,7 +479,7 @@ bool MasterPlaylist::WriteMasterPlaylist(
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
   
-  if (is_independent_segments) {
+  if (is_independent_segments_) {
     content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
   }
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,

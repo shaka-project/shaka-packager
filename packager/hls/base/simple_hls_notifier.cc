@@ -288,7 +288,7 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
       hls_params.default_text_language.empty()
           ? hls_params.default_language
           : hls_params.default_text_language;
-  const bool segment_sap_aligned = hls_params.segment_sap_aligned;
+  const bool segment_sap_aligned = hls_params.is_independent_segments;
   master_playlist_.reset(
       new MasterPlaylist(master_playlist_path.BaseName().AsUTF8Unsafe(),
                          default_audio_langauge, default_text_language, 

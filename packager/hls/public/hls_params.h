@@ -53,7 +53,7 @@ struct HlsParams {
   std::string default_text_language;
   //  Same as the equivalent field in ChunkingParams, forces segments to 
   //  begin with stream access points if set to true.
-  bool segment_sap_aligned;
+  bool is_independent_segments;
   /// This is the target segment duration requested by the user. The actual
   /// segment duration may be different to the target segment duration. It will
   /// be populated from segment duration specified in ChunkingParams if not

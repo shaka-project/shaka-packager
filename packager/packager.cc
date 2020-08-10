@@ -929,7 +929,7 @@ Status Packager::Initialize(
       LanguageToShortestForm(hls_params.default_language);
   hls_params.default_text_language =
       LanguageToShortestForm(hls_params.default_text_language);
-  hls_params.segment_sap_aligned = 
+  hls_params.is_independent_segments = 
       packaging_params.chunking_params.segment_sap_aligned;
   
   if (!mpd_params.mpd_output.empty()) {
