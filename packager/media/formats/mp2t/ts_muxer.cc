@@ -40,6 +40,10 @@ Status TsMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
 Status TsMuxer::FinalizeSegment(size_t stream_id,
                                 const SegmentInfo& segment_info) {
   DCHECK_EQ(stream_id, 0u);
+  // Should actually be MediaSample.duration(), not segment_info.duration
+  if (muxer_listener()) {
+    muxer_listener()->OnSampleDurationReady(segment_info.duration);
+  }
   return segment_info.is_subsegment
              ? Status::OK
              : segmenter_->FinalizeSegment(segment_info.start_timestamp,
