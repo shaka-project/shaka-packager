@@ -10,6 +10,10 @@ namespace shaka {
 namespace media {
 namespace mp2t {
 
+namespace {
+const uint32_t kTsTimescale = 90000;
+}  // namespace
+
 TsMuxer::TsMuxer(const MuxerOptions& muxer_options) : Muxer(muxer_options) {}
 TsMuxer::~TsMuxer() {}
 
@@ -30,16 +34,17 @@ Status TsMuxer::Finalize() {
 
 Status TsMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
-  sample_duration_ = sample.duration();
+  if (sample_duration_ == 0) {
+    sample_duration_ = sample.duration() * kTsTimescale / streams().front()->time_scale();
+    if (muxer_listener()) 
+      muxer_listener()->OnSampleDurationReady(sample_duration_);
+  } 
   return segmenter_->AddSample(sample);
 }
 
 Status TsMuxer::FinalizeSegment(size_t stream_id,
                                 const SegmentInfo& segment_info) {
   DCHECK_EQ(stream_id, 0u);
-  if (muxer_listener() && sample_duration_ != 0) {
-    muxer_listener()->OnSampleDurationReady(sample_duration_);
-  }
   return segment_info.is_subsegment
              ? Status::OK
              : segmenter_->FinalizeSegment(segment_info.start_timestamp,
@@ -49,8 +54,7 @@ Status TsMuxer::FinalizeSegment(size_t stream_id,
 void TsMuxer::FireOnMediaStartEvent() {
   if (!muxer_listener())
     return;
-  muxer_listener()->OnMediaStart(options(), *streams().front(), 
-                                 streams().front()->time_scale(),
+  muxer_listener()->OnMediaStart(options(), *streams().front(), kTsTimescale,
                                  MuxerListener::kContainerMpeg2ts);
 }
 
