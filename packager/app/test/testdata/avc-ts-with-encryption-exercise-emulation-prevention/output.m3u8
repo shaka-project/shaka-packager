@@ -1,6 +1,8 @@
 #EXTM3U
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
 
+#EXT-X-INDEPENDENT-SEGMENTS
+
 #EXT-X-STREAM-INF:BANDWIDTH=863296,AVERAGE-BANDWIDTH=390288,CODECS="avc1.64001f",RESOLUTION=1024x436
 sintel-1024x436-video.m3u8
 
