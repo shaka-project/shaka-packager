@@ -14,9 +14,6 @@
 #include "packager/file/file_test_util.h"
 #include "packager/hls/base/media_playlist.h"
 #include "packager/version/version.h"
-#include "packager/app/hls_flags.h"
-
-//DECLARE_bool(hls_ext_x_program_date_time);
 
 namespace shaka {
 namespace hls {
@@ -239,15 +236,16 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRange) {
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
-TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRangeWithTagExtXProgramDateTime) {
+TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRangeWithExtXProgramDateTime) {
+  hls_params_.ext_x_program_date_time = true;
+  media_playlist_.reset(new MediaPlaylist(hls_params_, default_file_name_,
+                                          default_name_, default_group_id_));
+
   valid_video_media_info_.set_media_file_url("file.mp4");
   valid_video_media_info_.mutable_init_range()->set_begin(0);
   valid_video_media_info_.mutable_init_range()->set_end(500);
 
   ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
-
-  auto prev_flag_state = FLAGS_hls_ext_x_program_date_time;
-  FLAGS_hls_ext_x_program_date_time = true;
 
   const std::string date_time1 = timestampToString(media_playlist_->GetStartTimeStamp());
   media_playlist_->AddSegment("file.mp4", 0, 10 * kTimeScale, 1000,
@@ -276,7 +274,6 @@ TEST_F(MediaPlaylistSingleSegmentTest, AddSegmentByteRangeWithTagExtXProgramDate
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
   EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
-  FLAGS_hls_ext_x_program_date_time = prev_flag_state;
   ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
 }
 
@@ -956,6 +953,64 @@ TEST_F(IFrameMediaPlaylistTest, SingleSegment) {
       "#EXT-X-BYTERANGE:12345\n"
       "file.mp4\n"
       "#EXT-X-ENDLIST\n";
+
+  const char kMemoryFilePath[] = "memory://media.m3u8";
+  EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
+  ASSERT_FILE_STREQ(kMemoryFilePath, kExpectedOutput);
+}
+
+TEST_F(IFrameMediaPlaylistTest, SingleSegmentWithExtXProgramDateTime) {
+  hls_params_.ext_x_program_date_time = true;
+  media_playlist_.reset(new MediaPlaylist(hls_params_, default_file_name_,
+                                          default_name_, default_group_id_));
+
+  valid_video_media_info_.set_media_file_url("file.mp4");
+  valid_video_media_info_.mutable_init_range()->set_begin(0);
+  valid_video_media_info_.mutable_init_range()->set_end(500);
+
+  ASSERT_TRUE(media_playlist_->SetMediaInfo(valid_video_media_info_));
+  media_playlist_->AddKeyFrame(0, 1000, 2345);
+  const std::string date_time1 = timestampToString(media_playlist_->GetStartTimeStamp());
+  const std::string date_time2 = timestampToString(media_playlist_->GetStartTimeStamp()
+                                 + 2.0);
+  media_playlist_->AddKeyFrame(2 * kTimeScale, 5000, 6345);
+  media_playlist_->AddSegment("file.mp4", 0, 10 * kTimeScale, kZeroByteOffset,
+                              kMBytes);
+  media_playlist_->AddKeyFrame(11 * kTimeScale, kMBytes + 1000, 2345);
+  const std::string date_time3 = timestampToString(media_playlist_->GetStartTimeStamp());
+  const std::string date_time4 = timestampToString(media_playlist_->GetStartTimeStamp()
+                                 + 4.0);
+  media_playlist_->AddKeyFrame(15 * kTimeScale, kMBytes + 3345, 12345);
+  media_playlist_->AddSegment("file.mp4", 10 * kTimeScale, 10 * kTimeScale,
+                              1001000, 2 * kMBytes);
+
+  const std::string kExpectedOutput = base::StringPrintf(
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:6\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
+      "#EXT-X-TARGETDURATION:9\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-I-FRAMES-ONLY\n"
+      "#EXT-X-MAP:URI=\"file.mp4\",BYTERANGE=\"501@0\"\n"
+      "#EXTINF:2.000,\n"
+      "#EXT-X-PROGRAM-DATE-TIME:%s\n"
+      "#EXT-X-BYTERANGE:2345@1000\n"
+      "file.mp4\n"
+      "#EXTINF:9.000,\n"
+      "#EXT-X-PROGRAM-DATE-TIME:%s\n"
+      "#EXT-X-BYTERANGE:6345@5000\n"
+      "file.mp4\n"
+      "#EXTINF:4.000,\n"
+      "#EXT-X-PROGRAM-DATE-TIME:%s\n"
+      "#EXT-X-BYTERANGE:2345@1001000\n"
+      "file.mp4\n"
+      "#EXTINF:5.000,\n"
+      "#EXT-X-PROGRAM-DATE-TIME:%s\n"
+      "#EXT-X-BYTERANGE:12345\n"
+      "file.mp4\n"
+      "#EXT-X-ENDLIST\n",
+          date_time1.c_str(), date_time2.c_str(), date_time3.c_str(), date_time4.c_str());
 
   const char kMemoryFilePath[] = "memory://media.m3u8";
   EXPECT_TRUE(media_playlist_->WriteToFile(kMemoryFilePath));
