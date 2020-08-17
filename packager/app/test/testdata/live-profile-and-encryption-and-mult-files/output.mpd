@@ -37,7 +37,17 @@
       <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b">
         <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
       </ContentProtection>
-      <Representation id="3" bandwidth="134272" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="3" bandwidth="134015" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <SegmentTemplate timescale="44100" initialization="bear-320x180-audio-init.mp4" media="bear-320x180-audio-$Number$.m4s" startNumber="1">
+          <SegmentTimeline>
+            <S t="0" d="45056"/>
+            <S t="45056" d="44032"/>
+            <S t="89088" d="33792"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+      <Representation id="4" bandwidth="134272" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="44100" initialization="bear-1280x720-audio-init.mp4" media="bear-1280x720-audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
@@ -47,23 +57,13 @@
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
-      <Representation id="4" bandwidth="134272" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="5" bandwidth="134272" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="44100" initialization="bear-640x360-audio-init.mp4" media="bear-640x360-audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
             <S t="0" d="45056"/>
             <S t="45056" d="44032"/>
             <S t="89088" d="31744"/>
-          </SegmentTimeline>
-        </SegmentTemplate>
-      </Representation>
-      <Representation id="5" bandwidth="134015" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
-        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <SegmentTemplate timescale="44100" initialization="bear-320x180-audio-init.mp4" media="bear-320x180-audio-$Number$.m4s" startNumber="1">
-          <SegmentTimeline>
-            <S t="0" d="45056"/>
-            <S t="45056" d="44032"/>
-            <S t="89088" d="33792"/>
           </SegmentTimeline>
         </SegmentTemplate>
       </Representation>
