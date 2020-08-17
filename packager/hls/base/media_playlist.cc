@@ -12,6 +12,7 @@
 #include <cmath>
 #include <memory>
 
+#include "packager/app/hls_flags.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
@@ -21,7 +22,6 @@
 #include "packager/media/base/language_utils.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/version/version.h"
-#include "packager/app/hls_flags.h"
 
 namespace shaka {
 namespace hls {
@@ -176,7 +176,7 @@ class SegmentInfoEntry : public HlsEntry {
                    uint64_t segment_file_size,
                    uint64_t previous_segment_end_offset,
                    bool use_program_date_time,
-                   double start_timestamp);
+                   double program_date_time);
 
   std::string ToString() override;
   int64_t start_time() const { return start_time_; }
@@ -197,7 +197,7 @@ class SegmentInfoEntry : public HlsEntry {
   const uint64_t segment_file_size_;
   const uint64_t previous_segment_end_offset_;
   const bool use_program_date_time_;
-  const double start_timestamp_;
+  const double program_date_time_;
 };
 
 SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
@@ -208,7 +208,7 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
                                    uint64_t segment_file_size,
                                    uint64_t previous_segment_end_offset,
                                    bool use_program_date_time,
-                                   double start_timestamp)
+                                   double program_date_time)
     : HlsEntry(HlsEntry::EntryType::kExtInf),
       file_name_(file_name),
       start_time_(start_time),
@@ -218,14 +218,14 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
       segment_file_size_(segment_file_size),
       previous_segment_end_offset_(previous_segment_end_offset),
       use_program_date_time_(use_program_date_time),
-      start_timestamp_(start_timestamp) {}
+      program_date_time_(program_date_time) {}
 
 std::string SegmentInfoEntry::ToString() {
   std::string result = base::StringPrintf("#EXTINF:%.3f,", duration_seconds_);
 
   if (use_program_date_time_) {
     base::Time::Exploded time;
-    base::Time::FromDoubleT(start_timestamp_).UTCExplode(&time);
+    base::Time::FromDoubleT(program_date_time_).UTCExplode(&time);
 
     std::string date_time = base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02d.%03dZ", time.year,
                             time.month, time.day_of_month,
