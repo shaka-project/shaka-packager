@@ -463,10 +463,12 @@ void AppendPlaylists(const std::string& default_audio_language,
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name,
                                const std::string& default_audio_language,
-                               const std::string& default_text_language)
+                               const std::string& default_text_language,
+                               bool is_independent_segments)
     : file_name_(file_name),
       default_audio_language_(default_audio_language),
-      default_text_language_(default_text_language) {}
+      default_text_language_(default_text_language),
+      is_independent_segments_(is_independent_segments) {}
 
 MasterPlaylist::~MasterPlaylist() {}
 
@@ -476,6 +478,10 @@ bool MasterPlaylist::WriteMasterPlaylist(
     const std::list<MediaPlaylist*>& playlists) {
   std::string content = "#EXTM3U\n";
   AppendVersionString(&content);
+  
+  if (is_independent_segments_) {
+    content.append("\n#EXT-X-INDEPENDENT-SEGMENTS\n");
+  }
   AppendPlaylists(default_audio_language_, default_text_language_, base_url,
                   playlists, &content);
 

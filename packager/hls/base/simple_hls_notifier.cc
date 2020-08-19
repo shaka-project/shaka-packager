@@ -290,7 +290,8 @@ SimpleHlsNotifier::SimpleHlsNotifier(const HlsParams& hls_params)
           : hls_params.default_text_language;
   master_playlist_.reset(
       new MasterPlaylist(master_playlist_path.BaseName().AsUTF8Unsafe(),
-                         default_audio_langauge, default_text_language));
+                         default_audio_langauge, default_text_language, 
+                         hls_params.is_independent_segments));
 }
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}

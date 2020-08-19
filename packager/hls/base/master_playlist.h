@@ -26,7 +26,8 @@ class MasterPlaylist {
   ///        tagged with 'DEFAULT'.
   MasterPlaylist(const std::string& file_name,
                  const std::string& default_audio_language,
-                 const std::string& default_text_language);
+                 const std::string& default_text_language, 
+                 const bool is_independent_segments);
   virtual ~MasterPlaylist();
 
   /// Writes Master Playlist to output_dir + <name of playlist>.
@@ -50,6 +51,7 @@ class MasterPlaylist {
   const std::string file_name_;
   const std::string default_audio_language_;
   const std::string default_text_language_;
+  bool is_independent_segments_;
 };
 
 }  // namespace hls
