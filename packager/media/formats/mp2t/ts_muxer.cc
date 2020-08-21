@@ -12,6 +12,7 @@ namespace mp2t {
 
 namespace {
 const uint32_t kTsTimescale = 90000;
+bool second_sample_seen = false;
 }  // namespace
 
 TsMuxer::TsMuxer(const MuxerOptions& muxer_options) : Muxer(muxer_options) {}
@@ -34,10 +35,13 @@ Status TsMuxer::Finalize() {
 
 Status TsMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
-  if (sample_duration_ == 0) {
+  bool sample_duration_zero = sample_duration_ == 0;
+  if (sample_duration_zero || !second_sample_seen) {
     sample_duration_ = sample.duration() * kTsTimescale / streams().front()->time_scale();
     if (muxer_listener()) 
       muxer_listener()->OnSampleDurationReady(sample_duration_);
+    if (!sample_duration_zero)
+      second_sample_seen = true;
   } 
   return segmenter_->AddSample(sample);
 }
