@@ -2,8 +2,8 @@
 <!--Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" profiles="urn:mpeg:dash:profile:isoff-live:2011" minBufferTime="PT2S" type="dynamic" publishTime="some_time" availabilityStartTime="some_time" minimumUpdatePeriod="PT5S" timeShiftBufferDepth="PT1800S">
   <Period id="0" start="PT0S">
-    <AdaptationSet id="0" contentType="video" width="640" height="360" segmentAlignment="true" par="16:9">
-      <Representation id="0" bandwidth="1023201" codecs="avc1.64001e" mimeType="video/MP2T" sar="1:1" frameRate="90000/0">
+    <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="90000/3003" segmentAlignment="true" par="16:9">
+      <Representation id="0" bandwidth="1023201" codecs="avc1.64001e" mimeType="video/MP2T" sar="1:1">
         <SegmentTemplate timescale="90000" media="bear-640x360-video-$Number$.ts" startNumber="1">
           <SegmentTimeline>
             <S t="15006" d="90090" r="1"/>

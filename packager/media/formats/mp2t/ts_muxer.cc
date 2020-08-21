@@ -34,6 +34,11 @@ Status TsMuxer::Finalize() {
 
 Status TsMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
+  if (sample_duration_ == 0) {
+    sample_duration_ = sample.duration() * kTsTimescale / streams().front()->time_scale();
+    if (muxer_listener()) 
+      muxer_listener()->OnSampleDurationReady(sample_duration_);
+  } 
   return segmenter_->AddSample(sample);
 }
 
