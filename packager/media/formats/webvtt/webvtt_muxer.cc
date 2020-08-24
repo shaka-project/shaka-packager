@@ -11,7 +11,7 @@
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/base/muxer_util.h"
-#include "packager/media/formats/webvtt/webvtt_timestamp.h"
+#include "packager/media/formats/webvtt/webvtt_utils.h"
 #include "packager/status_macros.h"
 
 namespace shaka {
@@ -75,14 +75,12 @@ Status WebVttMuxer::Finalize() {
 
 Status WebVttMuxer::AddTextSample(size_t stream_id, const TextSample& sample) {
   // Ignore sync samples.
-  if (sample.payload().empty()) {
+  if (sample.body().is_empty()) {
     return Status::OK;
   }
 
-  if (sample.id().find('\n') != std::string::npos ||
-      sample.settings().find('\n') != std::string::npos) {
-    return Status(error::MUXER_FAILURE,
-                  "Text id/settings cannot contain newlines");
+  if (sample.id().find('\n') != std::string::npos) {
+    return Status(error::MUXER_FAILURE, "Text id cannot contain newlines");
   }
 
   last_cue_ms_ = sample.EndTime();

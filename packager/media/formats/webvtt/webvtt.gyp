@@ -23,10 +23,10 @@
         'webvtt_muxer.h',
         'webvtt_parser.cc',
         'webvtt_parser.h',
-        'webvtt_timestamp.cc',
-        'webvtt_timestamp.h',
         'webvtt_to_mp4_handler.cc',
         'webvtt_to_mp4_handler.h',
+        'webvtt_utils.cc',
+        'webvtt_utils.h',
       ],
       'dependencies': [
         '../../../base/base.gyp:base',
@@ -42,7 +42,7 @@
         'text_readers_unittest.cc',
         'webvtt_muxer_unittest.cc',
         'webvtt_parser_unittest.cc',
-        'webvtt_timestamp_unittest.cc',
+        'webvtt_utils_unittest.cc',
         'webvtt_to_mp4_handler_unittest.cc',
       ],
       'dependencies': [

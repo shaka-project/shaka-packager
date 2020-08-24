@@ -204,15 +204,12 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithNoCues) {
 
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample0Start, kSample0End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample1Start, kSample1End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample2Start, kSample2End)));
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
@@ -247,15 +244,12 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithNoCues) {
 
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample0Start, kSample0End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample1Start, kSample1End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample2Start, kSample2End)));
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
@@ -440,17 +434,14 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCues) {
 
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample0Start, kSample0End)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsCueEvent(_, kSample1StartInSeconds)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample1Start, kSample1End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample2Start, kSample2End)));
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 
@@ -491,15 +482,12 @@ TEST_F(CueAlignmentHandlerTest, TextInputWithCueAfterLastStart) {
 
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample0Start, kSample0End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample1Start, kSample1End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample2Start, kSample2End)));
     // Cue before the sample end is processed.
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsCueEvent(_, kCue1TimeInSeconds)));
@@ -543,17 +531,14 @@ TEST_F(CueAlignmentHandlerTest, TextAudioVideoInputWithCues) {
 
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsStreamInfo(_, kMsTimeScale, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample0Start, kSample0End, _, _)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample1Start, kSample1End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample0Start, kSample0End)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample1Start, kSample1End)));
     EXPECT_CALL(*Output(kTextStream),
                 OnProcess(IsCueEvent(_, kSample2StartInSeconds)));
-    EXPECT_CALL(
-        *Output(kTextStream),
-        OnProcess(IsTextSample(_, _, kSample2Start, kSample2End, _, _)));
+    EXPECT_CALL(*Output(kTextStream),
+                OnProcess(IsTextSample(_, _, kSample2Start, kSample2End)));
     EXPECT_CALL(*Output(kTextStream), OnFlush(_));
   }
 

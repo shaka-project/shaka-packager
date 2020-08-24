@@ -12,6 +12,7 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/formats/mp4/box_buffer.h"
 #include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/webvtt/webvtt_utils.h"
 #include "packager/status_macros.h"
 
 namespace shaka {
@@ -58,12 +59,8 @@ void WriteSample(const TextSample& sample, BufferWriter* out) {
   if (sample.id().length()) {
     box.cue_id.cue_id = sample.id();
   }
-  if (sample.settings().length()) {
-    box.cue_settings.settings = sample.settings();
-  }
-  if (sample.payload().length()) {
-    box.cue_payload.cue_text = sample.payload();
-  }
+  box.cue_settings.settings = WebVttSettingsToString(sample.settings());
+  box.cue_payload.cue_text = WebVttFragmentToString(sample.body());
 
   // If there is internal timing, i.e. WebVTT cue timestamp, then
   // cue_current_time should be populated
@@ -173,7 +170,7 @@ Status WebVttToMp4Handler::OnTextSample(
 
   // Ignore empty samples. This will create gaps, but we will handle that
   // later.
-  if (sample->payload().empty()) {
+  if (sample->body().is_empty()) {
     return Status::OK;
   }
 

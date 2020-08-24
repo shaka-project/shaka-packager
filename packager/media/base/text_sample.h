@@ -14,32 +14,43 @@
 namespace shaka {
 namespace media {
 
+struct TextSettings {
+  // TODO(modmaker): Convert to generic structure.
+  std::string settings;
+};
+
+struct TextFragment {
+  // TODO(modmaker): Fill with settings and sub-fragments.
+  std::string body;
+
+  bool is_empty() const;
+};
+
 class TextSample {
  public:
-  TextSample() = default;
+  TextSample(const std::string& id,
+             int64_t start_time,
+             int64_t end_time,
+             const TextSettings& settings,
+             const TextFragment& body);
 
   const std::string& id() const { return id_; }
   int64_t start_time() const { return start_time_; }
   int64_t duration() const { return duration_; }
-  const std::string& settings() const { return settings_; }
-  const std::string& payload() const { return payload_; }
+  const TextSettings& settings() const { return settings_; }
+  const TextFragment& body() const { return body_; }
   int64_t EndTime() const;
-
-  void set_id(const std::string& id) { id_ = id; }
-  void SetTime(int64_t start_time, int64_t end_time);
-  void AppendStyle(const std::string& style);
-  void AppendPayload(const std::string& payload);
 
  private:
   // Allow the compiler generated copy constructor and assignment operator
   // intentionally. Since the text data is typically small, the performance
   // impact is minimal.
 
-  std::string id_;
-  int64_t start_time_ = 0;
-  int64_t duration_ = 0;
-  std::string settings_;
-  std::string payload_;
+  const std::string id_;
+  const int64_t start_time_ = 0;
+  const int64_t duration_ = 0;
+  const TextSettings settings_;
+  const TextFragment body_;
 };
 
 }  // namespace media

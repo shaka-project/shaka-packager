@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/webvtt/webvtt_timestamp.h"
+#include "packager/media/formats/webvtt/webvtt_utils.h"
 
 #include <ctype.h>
 #include <inttypes.h>
@@ -15,6 +15,7 @@
 
 namespace shaka {
 namespace media {
+
 namespace {
 
 bool GetTotalMilliseconds(uint64_t hours,
@@ -82,5 +83,14 @@ std::string MsToWebVttTimestamp(uint64_t ms) {
                             ".%03" PRIu64,
                             only_hours, only_minutes, only_seconds, only_ms);
 }
+
+std::string WebVttSettingsToString(const TextSettings& settings) {
+  return settings.settings;
+}
+
+std::string WebVttFragmentToString(const TextFragment& fragment) {
+  return fragment.body;
+}
+
 }  // namespace media
 }  // namespace shaka

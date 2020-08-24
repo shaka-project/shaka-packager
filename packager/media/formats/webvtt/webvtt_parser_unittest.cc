@@ -178,8 +178,8 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   EXPECT_EQ(samples_[0]->id(), kNoId);
   EXPECT_EQ(samples_[0]->start_time(), 60000u);
   EXPECT_EQ(samples_[0]->duration(), 3540000u);
-  EXPECT_EQ(samples_[0]->settings(), kNoSettings);
-  EXPECT_EQ(samples_[0]->payload(), "subtitle");
+  EXPECT_EQ(samples_[0]->settings().settings, kNoSettings);
+  EXPECT_EQ(samples_[0]->body().body, "subtitle");
 }
 
 TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
@@ -214,8 +214,7 @@ TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
   EXPECT_EQ(samples_[0]->id(), kNoId);
   EXPECT_EQ(samples_[0]->start_time(), 60000u);
   EXPECT_EQ(samples_[0]->duration(), 3540000u);
-  EXPECT_EQ(samples_[0]->settings(), kNoSettings);
-  EXPECT_EQ(samples_[0]->payload(), "subtitle");
+  EXPECT_EQ(samples_[0]->body().body, "subtitle");
 }
 
 TEST_F(WebVttParserTest, ParseOneEmptyCue) {
@@ -232,7 +231,7 @@ TEST_F(WebVttParserTest, ParseOneEmptyCue) {
 
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
-  EXPECT_EQ(samples_[0]->payload(), "");
+  EXPECT_EQ(samples_[0]->body().body, "");
 }
 
 TEST_F(WebVttParserTest, FailToParseCueWithArrowInId) {
@@ -265,7 +264,7 @@ TEST_F(WebVttParserTest, ParseOneCueWithId) {
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
   EXPECT_EQ(samples_[0]->id(), "id");
-  EXPECT_EQ(samples_[0]->payload(), "subtitle");
+  EXPECT_EQ(samples_[0]->body().body, "subtitle");
 }
 
 TEST_F(WebVttParserTest, ParseOneEmptyCueWithId) {
@@ -284,7 +283,7 @@ TEST_F(WebVttParserTest, ParseOneEmptyCueWithId) {
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
   EXPECT_EQ(samples_[0]->id(), "id");
-  EXPECT_EQ(samples_[0]->payload(), "");
+  EXPECT_EQ(samples_[0]->body().body, "");
 }
 
 TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
@@ -301,7 +300,7 @@ TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
 
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
-  EXPECT_EQ(samples_[0]->settings(), "size:50%");
+  EXPECT_EQ(samples_[0]->settings().settings, "size:50%");
 }
 
 // Verify that a typical case with mulitple cues work.
@@ -328,13 +327,13 @@ TEST_F(WebVttParserTest, ParseMultipleCues) {
 
   EXPECT_EQ(samples_[0]->start_time(), 1000u);
   EXPECT_EQ(samples_[0]->duration(), 4200u);
-  EXPECT_EQ(samples_[0]->payload(), "subtitle A");
+  EXPECT_EQ(samples_[0]->body().body, "subtitle A");
   EXPECT_EQ(samples_[1]->start_time(), 2321u);
   EXPECT_EQ(samples_[1]->duration(), 4679u);
-  EXPECT_EQ(samples_[1]->payload(), "subtitle B");
+  EXPECT_EQ(samples_[1]->body().body, "subtitle B");
   EXPECT_EQ(samples_[2]->start_time(), 5800u);
   EXPECT_EQ(samples_[2]->duration(), 2200u);
-  EXPECT_EQ(samples_[2]->payload(), "subtitle C");
+  EXPECT_EQ(samples_[2]->body().body, "subtitle C");
 }
 
 // Verify that a typical case with mulitple cues work even when comments are
@@ -370,9 +369,10 @@ TEST_F(WebVttParserTest, ParseWithComments) {
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 3u);
 
-  EXPECT_EQ(samples_[0]->payload(), "subtitle A");
-  EXPECT_EQ(samples_[1]->payload(), "subtitle B");
-  EXPECT_EQ(samples_[2]->payload(), "subtitle C");
+  EXPECT_EQ(samples_[0]->body().body, "subtitle A");
+  EXPECT_EQ(samples_[1]->body().body, "subtitle B");
+  EXPECT_EQ(samples_[2]->body().body, "subtitle C");
 }
+
 }  // namespace media
 }  // namespace shaka

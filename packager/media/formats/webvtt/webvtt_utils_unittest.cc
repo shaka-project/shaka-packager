@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/formats/webvtt/webvtt_timestamp.h"
+#include "packager/media/formats/webvtt/webvtt_utils.h"
 
 namespace shaka {
 namespace media {

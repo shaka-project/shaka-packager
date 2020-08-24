@@ -11,7 +11,7 @@
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/text_sample.h"
 #include "packager/media/base/text_stream_info.h"
-#include "packager/media/formats/webvtt/webvtt_timestamp.h"
+#include "packager/media/formats/webvtt/webvtt_utils.h"
 
 namespace shaka {
 namespace media {
@@ -235,20 +235,26 @@ bool WebVttParser::ParseCue(const std::string& id,
     return true;
   }
 
-  std::shared_ptr<TextSample> sample = std::make_shared<TextSample>();
-  sample->set_id(id);
-  sample->SetTime(start_time, end_time);
-
   // The rest of time_and_style are the style tokens.
+  TextSettings settings;
   for (size_t i = 3; i < time_and_style.size(); i++) {
-    sample->AppendStyle(time_and_style[i]);
+    if (!settings.settings.empty()) {
+      settings.settings += " ";
+    }
+    settings.settings += time_and_style[i];
   }
 
   // The rest of the block is the payload.
+  TextFragment body;
   for (size_t i = 1; i < block_size; i++) {
-    sample->AppendPayload(block[i]);
+    if (i > 1) {
+      body.body += "\n";
+    }
+    body.body += block[i];
   }
 
+  auto sample =
+      std::make_shared<TextSample>(id, start_time, end_time, settings, body);
   return new_text_sample_cb_.Run(kStreamIndex, sample);
 }
 
@@ -274,5 +280,6 @@ void WebVttParser::DispatchTextStreamInfo() {
       style_region_config_, kNoWidth, kNoHeight, kNoLanguage));
   init_cb_.Run(streams);
 }
+
 }  // namespace media
 }  // namespace shaka
