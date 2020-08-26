@@ -6,10 +6,12 @@
 
 #include "packager/media/formats/webvtt/webvtt_parser.h"
 
+#include <regex>
+
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/media/base/text_sample.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_utils.h"
 
@@ -73,6 +75,103 @@ bool IsLikelyStyle(const std::string& line) {
 // SOURCE: https://w3c.github.io/webvtt/#webvtt-region
 bool IsLikelyRegion(const std::string& line) {
   return base::TrimWhitespaceASCII(line, base::TRIM_TRAILING) == "REGION";
+}
+
+bool ParsePercent(const std::string& str, float* value) {
+  // https://www.w3.org/TR/webvtt1/#webvtt-percentage
+  // E.g. "4%" or "1.5%"
+  std::regex re(R"((\d+(?:\.\d+)?)%)");
+  std::smatch match;
+  if (!std::regex_match(str, match, re)) {
+    return false;
+  }
+
+  double temp;
+  base::StringToDouble(match[1], &temp);
+  if (temp >= 100) {
+    return false;
+  }
+  *value = temp;
+  return true;
+}
+
+void ParseSettings(const std::string& id,
+                   const std::string& value,
+                   TextSettings* settings) {
+  // https://www.w3.org/TR/webvtt1/#ref-for-parse-the-webvtt-cue-settings-1
+  if (id == "region") {
+    settings->region = value;
+  } else if (id == "vertical") {
+    if (value == "rl") {
+      settings->writing_direction = WritingDirection::kVerticalGrowingLeft;
+    } else if (value == "lr") {
+      settings->writing_direction = WritingDirection::kVerticalGrowingRight;
+    } else {
+      LOG(WARNING) << "Invalid WebVTT vertical setting: " << value;
+    }
+  } else if (id == "line") {
+    const auto pos = value.find(',');
+    const std::string line = value.substr(0, pos);
+    const std::string align =
+        pos != std::string::npos ? value.substr(pos + 1) : "";
+    if (pos != std::string::npos) {
+      LOG(WARNING) << "WebVTT line alignment isn't supported";
+    }
+
+    if (!line.empty() && line[line.size() - 1] == '%') {
+      float temp;
+      if (!ParsePercent(line, &temp)) {
+        LOG(WARNING) << "Invalid WebVTT line: " << value;
+        return;
+      }
+      settings->line.emplace(temp, TextUnitType::kPercent);
+    } else {
+      double temp;
+      if (!base::StringToDouble(line, &temp)) {
+        LOG(WARNING) << "Invalid WebVTT line: " << value;
+        return;
+      }
+      settings->line.emplace(temp, TextUnitType::kLines);
+    }
+  } else if (id == "position") {
+    const auto pos = value.find(',');
+    const std::string position = value.substr(0, pos);
+    const std::string align =
+        pos != std::string::npos ? value.substr(pos + 1) : "";
+    if (pos != std::string::npos) {
+      LOG(WARNING) << "WebVTT position alignment isn't supported";
+    }
+
+    float temp;
+    if (ParsePercent(position, &temp)) {
+      settings->position.emplace(temp, TextUnitType::kPercent);
+    } else {
+      LOG(WARNING) << "Invalid WebVTT position: " << value;
+    }
+  } else if (id == "size") {
+    float temp;
+    if (ParsePercent(value, &temp)) {
+      settings->size.emplace(temp, TextUnitType::kPercent);
+    } else {
+      LOG(WARNING) << "Invalid WebVTT size: " << value;
+    }
+  } else if (id == "align") {
+    if (value == "start") {
+      settings->text_alignment = TextAlignment::kStart;
+    } else if (value == "center") {
+      settings->text_alignment = TextAlignment::kCenter;
+    } else if (value == "end") {
+      settings->text_alignment = TextAlignment::kEnd;
+    } else if (value == "left") {
+      settings->text_alignment = TextAlignment::kLeft;
+    } else if (value == "right") {
+      settings->text_alignment = TextAlignment::kRight;
+    } else {
+      LOG(WARNING) << "Invalid WebVTT align: " << value;
+    }
+  } else {
+    LOG(WARNING) << "Unknown WebVTT setting: " << id;
+  }
 }
 
 void UpdateConfig(const std::vector<std::string>& block, std::string* config) {
@@ -235,16 +334,20 @@ bool WebVttParser::ParseCue(const std::string& id,
     return true;
   }
 
-  // The rest of time_and_style are the style tokens.
   TextSettings settings;
   for (size_t i = 3; i < time_and_style.size(); i++) {
-    if (!settings.settings.empty()) {
-      settings.settings += " ";
+    const auto pos = time_and_style[i].find(':');
+    if (pos == std::string::npos) {
+      continue;
     }
-    settings.settings += time_and_style[i];
+
+    const std::string key = time_and_style[i].substr(0, pos);
+    const std::string value = time_and_style[i].substr(pos + 1);
+    ParseSettings(key, value, &settings);
   }
 
   // The rest of the block is the payload.
+  // TODO: Parse tags to support <b>, <i>, etc.
   TextFragment body;
   for (size_t i = 1; i < block_size; i++) {
     if (i > 1) {
@@ -253,7 +356,7 @@ bool WebVttParser::ParseCue(const std::string& id,
     body.body += block[i];
   }
 
-  auto sample =
+  const auto sample =
       std::make_shared<TextSample>(id, start_time, end_time, settings, body);
   return new_text_sample_cb_.Run(kStreamIndex, sample);
 }

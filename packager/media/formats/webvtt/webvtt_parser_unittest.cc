@@ -19,7 +19,6 @@ const uint32_t kStreamId = 0;
 const uint32_t kTimeScale = 1000;
 
 const char* kNoId = "";
-const char* kNoSettings = "";
 
 std::string ToString(const std::vector<uint8_t>& v) {
   return std::string(v.begin(), v.end());
@@ -178,8 +177,16 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   EXPECT_EQ(samples_[0]->id(), kNoId);
   EXPECT_EQ(samples_[0]->start_time(), 60000u);
   EXPECT_EQ(samples_[0]->duration(), 3540000u);
-  EXPECT_EQ(samples_[0]->settings().settings, kNoSettings);
   EXPECT_EQ(samples_[0]->body().body, "subtitle");
+
+  // No settings
+  const auto& settings = samples_[0]->settings();
+  EXPECT_FALSE(settings.line);
+  EXPECT_FALSE(settings.position);
+  EXPECT_FALSE(settings.size);
+  EXPECT_EQ(settings.region, "");
+  EXPECT_EQ(settings.writing_direction, WritingDirection::kHorizontal);
+  EXPECT_EQ(settings.text_alignment, TextAlignment::kCenter);
 }
 
 TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
@@ -300,7 +307,36 @@ TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
 
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
-  EXPECT_EQ(samples_[0]->settings().settings, "size:50%");
+  ASSERT_TRUE(samples_[0]->settings().size);
+  EXPECT_EQ(samples_[0]->settings().size->type, TextUnitType::kPercent);
+  EXPECT_EQ(samples_[0]->settings().size->value, 50.0f);
+}
+
+TEST_F(WebVttParserTest, ParseOneCueWithManySettings) {
+  const uint8_t text[] =
+      "WEBVTT\n"
+      "\n"
+      "00:01:00.000 --> 01:00:00.000 line:5 vertical:lr region:foo"
+      " align:right position:20%\n"
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitialize());
+
+  ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
+  ASSERT_TRUE(parser_->Flush());
+
+  ASSERT_EQ(streams_.size(), 1u);
+  ASSERT_EQ(samples_.size(), 1u);
+  EXPECT_EQ(samples_[0]->settings().writing_direction,
+            WritingDirection::kVerticalGrowingRight);
+  EXPECT_EQ(samples_[0]->settings().text_alignment, TextAlignment::kRight);
+  EXPECT_FALSE(samples_[0]->settings().size);
+  ASSERT_TRUE(samples_[0]->settings().position);
+  EXPECT_EQ(samples_[0]->settings().position->type, TextUnitType::kPercent);
+  EXPECT_EQ(samples_[0]->settings().position->value, 20.0f);
+  ASSERT_TRUE(samples_[0]->settings().line);
+  EXPECT_EQ(samples_[0]->settings().line->type, TextUnitType::kLines);
+  EXPECT_EQ(samples_[0]->settings().line->value, 5.0f);
 }
 
 // Verify that a typical case with mulitple cues work.

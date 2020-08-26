@@ -10,13 +10,67 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
+
+#include "packager/base/optional.h"
 
 namespace shaka {
 namespace media {
 
+enum class TextUnitType {
+  /// The units are absolute units in pixels.
+  kPixels,
+  /// The units are absolute units in number of lines.
+  kLines,
+  /// The units are relative to some size, in percent (i.e. 0-100).
+  kPercent,
+};
+
+enum class WritingDirection {
+  kHorizontal,
+  kVerticalGrowingLeft,
+  kVerticalGrowingRight,
+};
+
+enum class TextAlignment {
+  /// Align the text at the start, based on the Unicode text direction.
+  kStart,
+  /// Align the text in the center of the box.
+  kCenter,
+  /// Align the text at the end, based on the Unicode text direction.
+  kEnd,
+  /// Align the text at the left side (or top for non-horizontal).
+  kLeft,
+  /// Align the text at the right side (or bottom for non-horizontal).
+  kRight,
+};
+
+struct TextNumber {
+  TextNumber(float value, TextUnitType type) : value(value), type(type) {}
+
+  float value;
+  TextUnitType type;
+};
+
 struct TextSettings {
-  // TODO(modmaker): Convert to generic structure.
-  std::string settings;
+  /// The line offset of the cue.  For horizontal cues, this is the vertical
+  /// offset.  Percent units are relative to the window.
+  base::Optional<TextNumber> line;
+  /// The position offset of the cue.  For horizontal cues, this is the
+  /// horizontal offset.  Percent units are relative to the window.
+  base::Optional<TextNumber> position;
+  /// The size of the space used to draw text.  For horizontal cues, this is the
+  /// width.  Percent units are relative to the window.
+  base::Optional<TextNumber> size;
+
+  /// The region to draw the cue in.
+  std::string region;
+
+  /// The direction to draw text.  This is also used to determine how cues are
+  /// positioned within the region.
+  WritingDirection writing_direction = WritingDirection::kHorizontal;
+  /// How to align the text within the cue box.
+  TextAlignment text_alignment = TextAlignment::kCenter;
 };
 
 struct TextFragment {

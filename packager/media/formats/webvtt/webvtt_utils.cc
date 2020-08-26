@@ -85,7 +85,75 @@ std::string MsToWebVttTimestamp(uint64_t ms) {
 }
 
 std::string WebVttSettingsToString(const TextSettings& settings) {
-  return settings.settings;
+  std::string ret;
+  if (!settings.region.empty()) {
+    ret += " region:";
+    ret += settings.region;
+  }
+  if (settings.line) {
+    switch (settings.line->type) {
+      case TextUnitType::kPercent:
+        ret += " line:";
+        ret += base::DoubleToString(settings.line->value);
+        ret += "%";
+        break;
+      case TextUnitType::kLines:
+        ret += " line:";
+        ret += base::DoubleToString(settings.line->value);
+        break;
+      case TextUnitType::kPixels:
+        LOG(WARNING) << "WebVTT doesn't support pixel line settings";
+        break;
+    }
+  }
+  if (settings.position) {
+    if (settings.position->type == TextUnitType::kPercent) {
+      ret += " position:";
+      ret += base::DoubleToString(settings.position->value);
+      ret += "%";
+    } else {
+      LOG(WARNING) << "WebVTT only supports percent position settings";
+    }
+  }
+  if (settings.size) {
+    if (settings.size->type == TextUnitType::kPercent) {
+      ret += " size:";
+      ret += base::DoubleToString(settings.size->value);
+      ret += "%";
+    } else {
+      LOG(WARNING) << "WebVTT only supports percent size settings";
+    }
+  }
+  if (settings.writing_direction != WritingDirection::kHorizontal) {
+    ret += " direction:";
+    if (settings.writing_direction == WritingDirection::kVerticalGrowingLeft) {
+      ret += "rl";
+    } else {
+      ret += "lr";
+    }
+  }
+  switch (settings.text_alignment) {
+    case TextAlignment::kStart:
+      ret += " align:start";
+      break;
+    case TextAlignment::kEnd:
+      ret += " align:end";
+      break;
+    case TextAlignment::kLeft:
+      ret += " align:left";
+      break;
+    case TextAlignment::kRight:
+      ret += " align:right";
+      break;
+    case TextAlignment::kCenter:
+      break;
+  }
+
+  if (!ret.empty()) {
+    DCHECK_EQ(ret[0], ' ');
+    ret.erase(0, 1);
+  }
+  return ret;
 }
 
 std::string WebVttFragmentToString(const TextFragment& fragment) {

@@ -127,5 +127,28 @@ TEST(WebVttTimestampTest, CreateHoursShort) {
 TEST(WebVttTimestampTest, CreateHoursLong) {
   EXPECT_EQ("123:00:00.000", MsToWebVttTimestamp(442800000));
 }
+
+TEST(WebVttUtilsTest, SettingsToString) {
+  TextSettings settings;
+  settings.region = "foo";
+  settings.line = TextNumber(27, TextUnitType::kPercent);
+  settings.position = TextNumber(42, TextUnitType::kPercent);
+  settings.size = TextNumber(54, TextUnitType::kPercent);
+  settings.writing_direction = WritingDirection::kVerticalGrowingLeft;
+  settings.text_alignment = TextAlignment::kEnd;
+
+  const auto actual = WebVttSettingsToString(settings);
+  EXPECT_EQ(actual,
+            "region:foo line:27% position:42% size:54% direction:rl align:end");
+}
+
+TEST(WebVttUtilsTest, SettingsToString_IgnoresDefaults) {
+  TextSettings settings;
+  settings.region = "foo";
+
+  const auto actual = WebVttSettingsToString(settings);
+  EXPECT_EQ(actual, "region:foo");
+}
+
 }  // namespace media
 }  // namespace shaka
