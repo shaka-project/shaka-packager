@@ -6,13 +6,18 @@
 
 #include "packager/media/base/text_sample.h"
 
+#include <algorithm>
+#include <functional>
+
 #include "packager/base/logging.h"
 
 namespace shaka {
 namespace media {
 
 bool TextFragment::is_empty() const {
-  return body.empty();
+  return std::all_of(sub_fragments.begin(), sub_fragments.end(),
+                     std::mem_fn(&TextFragment::is_empty)) &&
+         body.empty();
 }
 
 TextSample::TextSample(const std::string& id,

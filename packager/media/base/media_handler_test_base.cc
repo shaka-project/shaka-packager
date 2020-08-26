@@ -267,7 +267,7 @@ std::unique_ptr<TextSample> MediaHandlerTestBase::GetTextSample(
     int64_t end,
     const std::string& payload) const {
   return std::unique_ptr<TextSample>{
-      new TextSample(id, start, end, {}, TextFragment{payload})};
+      new TextSample(id, start, end, {}, TextFragment{{}, payload})};
 }
 
 std::unique_ptr<CueEvent> MediaHandlerTestBase::GetCueEvent(

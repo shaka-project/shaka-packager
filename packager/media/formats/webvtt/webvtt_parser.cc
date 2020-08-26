@@ -349,11 +349,12 @@ bool WebVttParser::ParseCue(const std::string& id,
   // The rest of the block is the payload.
   // TODO: Parse tags to support <b>, <i>, etc.
   TextFragment body;
+  TextFragmentStyle no_styles;
   for (size_t i = 1; i < block_size; i++) {
     if (i > 1) {
-      body.body += "\n";
+      body.sub_fragments.emplace_back(no_styles, /* newline= */ true);
     }
-    body.body += block[i];
+    body.sub_fragments.emplace_back(no_styles, block[i]);
   }
 
   const auto sample =

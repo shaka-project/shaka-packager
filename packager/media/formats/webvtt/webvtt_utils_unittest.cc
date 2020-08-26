@@ -11,6 +11,24 @@
 namespace shaka {
 namespace media {
 
+namespace {
+
+const TextFragmentStyle kNoStyle{};
+
+TextFragmentStyle GetItalicStyle() {
+  TextFragmentStyle style;
+  style.italic = true;
+  return style;
+}
+
+TextFragmentStyle GetBoldStyle() {
+  TextFragmentStyle style;
+  style.bold = true;
+  return style;
+}
+
+}  // namespace
+
 TEST(WebVttTimestampTest, TooShort) {
   uint64_t ms;
   EXPECT_FALSE(WebVttTimestampToMs("00.000", &ms));
@@ -148,6 +166,62 @@ TEST(WebVttUtilsTest, SettingsToString_IgnoresDefaults) {
 
   const auto actual = WebVttSettingsToString(settings);
   EXPECT_EQ(actual, "region:foo");
+}
+
+TEST(WebVttUtilsTest, FragmentToString) {
+  TextFragment frag(GetBoldStyle(), "Foobar");
+  EXPECT_EQ(WebVttFragmentToString(frag), "<b>Foobar</b>");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_PreservesTags) {
+  TextFragment frag(kNoStyle, "<i>Foobar</i>");
+  EXPECT_EQ(WebVttFragmentToString(frag), "<i>Foobar</i>");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_HandlesNestedFragments) {
+  TextFragment frag;
+  frag.sub_fragments.emplace_back(kNoStyle, "Hello ");
+  frag.sub_fragments.emplace_back(kNoStyle, "World");
+  EXPECT_EQ(WebVttFragmentToString(frag), "Hello World");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_HandlesNestedFragmentsWithStyle) {
+  TextFragment frag;
+  frag.style.bold = true;
+  frag.sub_fragments.emplace_back(GetItalicStyle(), "Hello");
+  frag.sub_fragments.emplace_back(kNoStyle, " World");
+  EXPECT_EQ(WebVttFragmentToString(frag), "<b><i>Hello</i> World</b>");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_HandlesNewlines) {
+  TextFragment frag;
+  frag.sub_fragments.emplace_back(kNoStyle, "Hello");
+  frag.sub_fragments.emplace_back(kNoStyle, true);
+  frag.sub_fragments.emplace_back(kNoStyle, "World");
+  EXPECT_EQ(WebVttFragmentToString(frag), "Hello\nWorld");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_HandlesNewlinesWithStyle) {
+  TextFragment frag;
+  frag.style.bold = true;
+  frag.sub_fragments.emplace_back(kNoStyle, "Hello");
+  frag.sub_fragments.emplace_back(kNoStyle, true);
+  frag.sub_fragments.emplace_back(kNoStyle, "World");
+  EXPECT_EQ(WebVttFragmentToString(frag), "<b>Hello</b>\n<b>World</b>");
+}
+
+TEST(WebVttUtilsTest, FragmentToString_HandlesNestedNewlinesWithStyle) {
+  TextFragment nested;
+  nested.sub_fragments.emplace_back(kNoStyle, "Hello");
+  nested.sub_fragments.emplace_back(kNoStyle, true);
+  nested.sub_fragments.emplace_back(kNoStyle, "World");
+
+  TextFragment frag;
+  frag.style.bold = true;
+  frag.sub_fragments.emplace_back(nested);
+  frag.sub_fragments.emplace_back(kNoStyle, " Now");
+
+  EXPECT_EQ(WebVttFragmentToString(frag), "<b>Hello</b>\n<b>World Now</b>");
 }
 
 }  // namespace media

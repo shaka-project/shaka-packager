@@ -9,6 +9,8 @@
 #include <ctype.h>
 #include <inttypes.h>
 
+#include <regex>
+
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
@@ -33,6 +35,103 @@ bool GetTotalMilliseconds(uint64_t hours,
   *out = 60 * 60 * 1000 * hours + 60 * 1000 * minutes + 1000 * seconds + ms;
   return true;
 }
+
+enum class StyleTagKind {
+  kUnderline,
+  kBold,
+  kItalic,
+};
+
+std::string GetOpenTag(StyleTagKind tag) {
+  switch (tag) {
+    case StyleTagKind::kUnderline:
+      return "<u>";
+    case StyleTagKind::kBold:
+      return "<b>";
+    case StyleTagKind::kItalic:
+      return "<i>";
+  }
+  return "";  // Not reached, but Windows doesn't like NOTREACHED.
+}
+
+std::string GetCloseTag(StyleTagKind tag) {
+  switch (tag) {
+    case StyleTagKind::kUnderline:
+      return "</u>";
+    case StyleTagKind::kBold:
+      return "</b>";
+    case StyleTagKind::kItalic:
+      return "</i>";
+  }
+  return "";  // Not reached, but Windows doesn't like NOTREACHED.
+}
+
+std::string WriteFragment(const TextFragment& fragment,
+                          std::list<StyleTagKind>* tags) {
+  std::string ret;
+  size_t local_tag_count = 0;
+  auto has = [tags](StyleTagKind tag) {
+    return std::find(tags->begin(), tags->end(), tag) != tags->end();
+  };
+  auto push_tag = [tags, &local_tag_count, &has](StyleTagKind tag) {
+    if (has(tag)) {
+      return std::string();
+    }
+    tags->push_back(tag);
+    local_tag_count++;
+    return GetOpenTag(tag);
+  };
+
+  if ((fragment.style.underline == false && has(StyleTagKind::kUnderline)) ||
+      (fragment.style.bold == false && has(StyleTagKind::kBold)) ||
+      (fragment.style.italic == false && has(StyleTagKind::kItalic))) {
+    LOG(WARNING) << "WebVTT output doesn't support disabling "
+                    "underline/bold/italic within a cue";
+  }
+
+  if (fragment.newline) {
+    // Newlines represent separate WebVTT cues. So close the existing tags to
+    // be nice and re-open them on the new line.
+    for (auto it = tags->rbegin(); it != tags->rend(); it++) {
+      ret += GetCloseTag(*it);
+    }
+    ret += "\n";
+    for (const auto tag : *tags) {
+      ret += GetOpenTag(tag);
+    }
+  } else {
+    if (fragment.style.underline == true) {
+      ret += push_tag(StyleTagKind::kUnderline);
+    }
+    if (fragment.style.bold == true) {
+      ret += push_tag(StyleTagKind::kBold);
+    }
+    if (fragment.style.italic == true) {
+      ret += push_tag(StyleTagKind::kItalic);
+    }
+
+    if (!fragment.body.empty()) {
+      // Replace newlines and consecutive whitespace with a single space.  If
+      // the user wanted an explicit newline, they should use the "newline"
+      // field.
+      std::regex whitespace("\\s+", std::regex_constants::ECMAScript);
+      ret += std::regex_replace(fragment.body, whitespace, std::string(" "));
+    } else {
+      for (const auto& frag : fragment.sub_fragments) {
+        ret += WriteFragment(frag, tags);
+      }
+    }
+
+    // Pop all the local tags we pushed.
+    while (local_tag_count > 0) {
+      ret += GetCloseTag(tags->back());
+      tags->pop_back();
+      local_tag_count--;
+    }
+  }
+  return ret;
+}
+
 }  // namespace
 
 bool WebVttTimestampToMs(const base::StringPiece& source, uint64_t* out) {
@@ -157,7 +256,8 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
 }
 
 std::string WebVttFragmentToString(const TextFragment& fragment) {
-  return fragment.body;
+  std::list<StyleTagKind> tags;
+  return WriteFragment(fragment, &tags);
 }
 
 }  // namespace media

@@ -73,9 +73,31 @@ struct TextSettings {
   TextAlignment text_alignment = TextAlignment::kCenter;
 };
 
+struct TextFragmentStyle {
+  base::Optional<bool> underline;
+  base::Optional<bool> bold;
+  base::Optional<bool> italic;
+};
+
+/// Represents a recursive structure of styled blocks of text.  Only one of
+/// sub_fragments, body, or newline will be set.
 struct TextFragment {
-  // TODO(modmaker): Fill with settings and sub-fragments.
+  TextFragment() {}
+  TextFragment(const TextFragmentStyle& style,
+               const std::vector<TextFragment>& sub_fragments)
+      : style(style), sub_fragments(sub_fragments) {}
+  TextFragment(const TextFragmentStyle& style, const char* body)
+      : style(style), body(body) {}
+  TextFragment(const TextFragmentStyle& style, const std::string& body)
+      : style(style), body(body) {}
+  TextFragment(const TextFragmentStyle& style, bool newline)
+      : style(style), newline(newline) {}
+
+  TextFragmentStyle style;
+
+  std::vector<TextFragment> sub_fragments;
   std::string body;
+  bool newline = false;
 
   bool is_empty() const;
 };
