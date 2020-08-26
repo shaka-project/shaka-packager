@@ -579,7 +579,7 @@ bool MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
     webvtt.config.config = "WEBVTT";
     // The spec does not define a way to carry STYLE and REGION information in
     // the mp4 container.
-    if (!text_info->codec_config().empty()) {
+    if (!text_info->regions().empty() || !text_info->css_styles().empty()) {
       LOG(INFO) << "Skipping possible style / region configuration as the spec "
                    "does not define a way to carry them inside ISO-BMFF files.";
     }

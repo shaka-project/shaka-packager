@@ -7,10 +7,13 @@
 #ifndef PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 #define PACKAGER_MEDIA_FORMATS_WEBVTT_WEBVTT_PARSER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
 #include "packager/media/base/media_parser.h"
+#include "packager/media/base/text_sample.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/text_readers.h"
 
 namespace shaka {
@@ -31,6 +34,7 @@ class WebVttParser : public MediaParser {
  private:
   bool Parse();
   bool ParseBlock(const std::vector<std::string>& block);
+  bool ParseRegion(const std::vector<std::string>& block);
   bool ParseCueWithNoId(const std::vector<std::string>& block);
   bool ParseCueWithId(const std::vector<std::string>& block);
   bool ParseCue(const std::string& id,
@@ -43,7 +47,8 @@ class WebVttParser : public MediaParser {
   NewTextSampleCB new_text_sample_cb_;
 
   BlockReader reader_;
-  std::string style_region_config_;
+  std::map<std::string, TextRegion> regions_;
+  std::string css_styles_;
   bool saw_cue_ = false;
   bool stream_info_dispatched_ = false;
   bool initialized_ = false;

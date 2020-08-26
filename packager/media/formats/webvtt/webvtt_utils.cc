@@ -10,6 +10,7 @@
 #include <inttypes.h>
 
 #include <regex>
+#include <unordered_set>
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -258,6 +259,50 @@ std::string WebVttSettingsToString(const TextSettings& settings) {
 std::string WebVttFragmentToString(const TextFragment& fragment) {
   std::list<StyleTagKind> tags;
   return WriteFragment(fragment, &tags);
+}
+
+std::string WebVttGetPreamble(const TextStreamInfo& stream_info) {
+  std::string ret;
+  for (const auto& pair : stream_info.regions()) {
+    if (!ret.empty()) {
+      ret += "\n\n";
+    }
+
+    if (pair.second.width.type != TextUnitType::kPercent ||
+        pair.second.height.type != TextUnitType::kLines ||
+        pair.second.window_anchor_x.type != TextUnitType::kPercent ||
+        pair.second.window_anchor_y.type != TextUnitType::kPercent ||
+        pair.second.region_anchor_x.type != TextUnitType::kPercent ||
+        pair.second.region_anchor_y.type != TextUnitType::kPercent) {
+      LOG(WARNING) << "Unsupported unit type in WebVTT region";
+      continue;
+    }
+
+    base::StringAppendF(
+        &ret,
+        "REGION\n"
+        "id:%s\n"
+        "width:%f%%\n"
+        "lines:%d\n"
+        "viewportanchor:%f%%,%f%%\n"
+        "regionanchor:%f%%,%f%%",
+        pair.first.c_str(), pair.second.width.value,
+        static_cast<int>(pair.second.height.value),
+        pair.second.window_anchor_x.value, pair.second.window_anchor_y.value,
+        pair.second.region_anchor_x.value, pair.second.region_anchor_y.value);
+    if (pair.second.scroll) {
+      ret += "\nscroll:up";
+    }
+  }
+
+  if (!stream_info.css_styles().empty()) {
+    if (!ret.empty()) {
+      ret += "\n\n";
+    }
+    ret += "STYLE\n" + stream_info.css_styles();
+  }
+
+  return ret;
 }
 
 }  // namespace media

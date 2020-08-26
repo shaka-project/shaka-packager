@@ -15,6 +15,7 @@
 
 #include "packager/base/strings/string_piece.h"
 #include "packager/media/base/text_sample.h"
+#include "packager/media/base/text_stream_info.h"
 
 namespace shaka {
 namespace media {
@@ -32,6 +33,10 @@ std::string WebVttSettingsToString(const TextSettings& settings);
 
 /// Converts the given TextFragment to a WebVTT cue body string.
 std::string WebVttFragmentToString(const TextFragment& fragment);
+
+/// Converts the common fields in the stream into WebVTT text.  This pulls out
+/// the REGION and STYLE blocks.
+std::string WebVttGetPreamble(const TextStreamInfo& stream_info);
 
 }  // namespace media
 }  // namespace shaka

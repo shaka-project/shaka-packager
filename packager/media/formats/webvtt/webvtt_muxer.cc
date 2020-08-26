@@ -7,10 +7,12 @@
 #include "packager/media/formats/webvtt/webvtt_muxer.h"
 
 #include <memory>
+#include <regex>
 
 #include "packager/file/file.h"
 #include "packager/file/file_closer.h"
 #include "packager/media/base/muxer_util.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_utils.h"
 #include "packager/status_macros.h"
 
@@ -18,20 +20,13 @@ namespace shaka {
 namespace media {
 namespace webvtt {
 
-namespace {
-
-std::string ToString(const std::vector<uint8_t>& v) {
-  return std::string(v.begin(), v.end());
-}
-
-}  // namespace
-
 WebVttMuxer::WebVttMuxer(const MuxerOptions& options) : Muxer(options) {}
 WebVttMuxer::~WebVttMuxer() {}
 
 Status WebVttMuxer::InitializeMuxer() {
-  if (streams().size() != 1) {
-    return Status(error::MUXER_FAILURE, "Incorrect number of streams");
+  if (streams().size() != 1 || streams()[0]->stream_type() != kStreamText) {
+    return Status(error::MUXER_FAILURE,
+                  "Incorrect streams given to WebVTT muxer");
   }
 
   // Only initialize the stream once we see a cue to avoid empty files.
@@ -39,9 +34,10 @@ Status WebVttMuxer::InitializeMuxer() {
                                  streams()[0]->time_scale(),
                                  MuxerListener::kContainerText);
 
-  buffer_.reset(
-      new WebVttFileBuffer(options().transport_stream_timestamp_offset_ms,
-                           ToString(streams()[0]->codec_config())));
+  auto* stream = static_cast<const TextStreamInfo*>(streams()[0].get());
+  const std::string preamble = WebVttGetPreamble(*stream);
+  buffer_.reset(new WebVttFileBuffer(
+      options().transport_stream_timestamp_offset_ms, preamble));
   last_cue_ms_ = 0;
 
   return Status::OK;

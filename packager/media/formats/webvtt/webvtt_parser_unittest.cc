@@ -4,12 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include "packager/media/formats/webvtt/webvtt_parser.h"
+
 #include <gtest/gtest.h>
 
 #include "packager/base/bind.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/text_sample.h"
-#include "packager/media/formats/webvtt/webvtt_parser.h"
 
 namespace shaka {
 namespace media {
@@ -19,10 +20,6 @@ const uint32_t kStreamId = 0;
 const uint32_t kTimeScale = 1000;
 
 const char* kNoId = "";
-
-std::string ToString(const std::vector<uint8_t>& v) {
-  return std::string(v.begin(), v.end());
-}
 
 void ExpectNoStyle(const TextFragmentStyle& style) {
   EXPECT_FALSE(style.underline);
@@ -210,7 +207,7 @@ TEST_F(WebVttParserTest, ParseOneCue) {
   EXPECT_EQ(settings.text_alignment, TextAlignment::kCenter);
 }
 
-TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
+TEST_F(WebVttParserTest, ParseOneCueWithStyle) {
   const uint8_t text[] =
       "WEBVTT\n"
       "\n"
@@ -219,7 +216,7 @@ TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
       "\n"
       "REGION\n"
       "id:scroll\n"
-      "scrol:up\n"
+      "scroll:up\n"
       "\n"
       "00:01:00.000 --> 01:00:00.000\n"
       "subtitle\n";
@@ -231,14 +228,9 @@ TEST_F(WebVttParserTest, ParseOneCueWithStyleAndRegion) {
 
   ASSERT_EQ(streams_.size(), 1u);
   ASSERT_EQ(samples_.size(), 1u);
+  auto* stream = static_cast<const TextStreamInfo*>(streams_[0].get());
 
-  EXPECT_EQ(ToString(streams_[0]->codec_config()),
-            "STYLE\n"
-            "::cue { color:lime }\n"
-            "\n"
-            "REGION\n"
-            "id:scroll\n"
-            "scrol:up");
+  EXPECT_EQ(stream->css_styles(), "::cue { color:lime }");
   EXPECT_EQ(samples_[0]->id(), kNoId);
   EXPECT_EQ(samples_[0]->start_time(), 60000u);
   EXPECT_EQ(samples_[0]->duration(), 3540000u);
@@ -314,7 +306,7 @@ TEST_F(WebVttParserTest, ParseOneEmptyCueWithId) {
   ExpectPlainCueWithBody(samples_[0]->body(), "");
 }
 
-TEST_F(WebVttParserTest, ParseOneCueWithSettings) {
+TEST_F(WebVttParserTest, ParseSettingSize) {
   const uint8_t text[] =
       "WEBVTT\n"
       "\n"
@@ -358,6 +350,46 @@ TEST_F(WebVttParserTest, ParseOneCueWithManySettings) {
   ASSERT_TRUE(samples_[0]->settings().line);
   EXPECT_EQ(samples_[0]->settings().line->type, TextUnitType::kLines);
   EXPECT_EQ(samples_[0]->settings().line->value, 5.0f);
+}
+
+TEST_F(WebVttParserTest, ParseRegions) {
+  const uint8_t text[] =
+      "WEBVTT\n"
+      "\n"
+      "REGION\n"
+      "id:foo\n"
+      "width:20%\n"
+      "lines:6\n"
+      "viewportanchor:25%,75%\n"
+      "scroll:up\n"
+      "\n"
+      "00:01:00.000 --> 01:00:00.000 region:foo\n"
+      "subtitle\n";
+
+  ASSERT_NO_FATAL_FAILURE(SetUpAndInitialize());
+
+  ASSERT_TRUE(parser_->Parse(text, sizeof(text) - 1));
+  ASSERT_TRUE(parser_->Flush());
+
+  ASSERT_EQ(streams_.size(), 1u);
+  ASSERT_EQ(samples_.size(), 1u);
+
+  auto* stream = static_cast<const TextStreamInfo*>(streams_[0].get());
+  const auto& regions = stream->regions();
+  ASSERT_EQ(regions.size(), 1u);
+  ASSERT_EQ(regions.count("foo"), 1u);
+
+  EXPECT_EQ(samples_[0]->settings().region, "foo");
+  const auto& region = regions.at("foo");
+  EXPECT_EQ(region.width.value, 20.0f);
+  EXPECT_EQ(region.width.type, TextUnitType::kPercent);
+  EXPECT_EQ(region.height.value, 6.0f);
+  EXPECT_EQ(region.height.type, TextUnitType::kLines);
+  EXPECT_EQ(region.window_anchor_x.value, 25.0f);
+  EXPECT_EQ(region.window_anchor_x.type, TextUnitType::kPercent);
+  EXPECT_EQ(region.window_anchor_y.value, 75.0f);
+  EXPECT_EQ(region.window_anchor_y.type, TextUnitType::kPercent);
+  EXPECT_TRUE(region.scroll);
 }
 
 // Verify that a typical case with mulitple cues work.

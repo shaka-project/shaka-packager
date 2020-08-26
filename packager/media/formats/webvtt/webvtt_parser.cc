@@ -95,6 +95,24 @@ bool ParsePercent(const std::string& str, float* value) {
   return true;
 }
 
+bool ParseDoublePercent(const std::string& str, float* a, float* b) {
+  std::regex re(R"((\d+(?:\.\d+)?)%,(\d+(?:\.\d+)?)%)");
+  std::smatch match;
+  if (!std::regex_match(str, match, re)) {
+    return false;
+  }
+
+  double tempA, tempB;
+  base::StringToDouble(match[1], &tempA);
+  base::StringToDouble(match[2], &tempB);
+  if (tempA >= 100 || tempB >= 100) {
+    return false;
+  }
+  *a = tempA;
+  *b = tempB;
+  return true;
+}
+
 void ParseSettings(const std::string& id,
                    const std::string& value,
                    TextSettings* settings) {
@@ -174,12 +192,6 @@ void ParseSettings(const std::string& id,
   }
 }
 
-void UpdateConfig(const std::vector<std::string>& block, std::string* config) {
-  if (!config->empty())
-    *config += "\n\n";
-  *config += base::JoinString(block, "\n");
-}
-
 }  // namespace
 
 WebVttParser::WebVttParser() {}
@@ -250,7 +262,11 @@ bool WebVttParser::ParseBlock(const std::vector<std::string>& block) {
       LOG(WARNING)
           << "Found style block after seeing cue. Ignoring style block";
     } else {
-      UpdateConfig(block, &style_region_config_);
+      for (size_t i = 1; i < block.size(); i++) {
+        if (!css_styles_.empty())
+          css_styles_ += "\n";
+        css_styles_ += block[i];
+      }
     }
     return true;
   }
@@ -260,10 +276,10 @@ bool WebVttParser::ParseBlock(const std::vector<std::string>& block) {
     if (saw_cue_) {
       LOG(WARNING)
           << "Found region block after seeing cue. Ignoring region block";
+      return true;
     } else {
-      UpdateConfig(block, &style_region_config_);
+      return ParseRegion(block);
     }
-    return true;
   }
 
   // CUE with ID
@@ -282,6 +298,93 @@ bool WebVttParser::ParseBlock(const std::vector<std::string>& block) {
   LOG(ERROR) << "Failed to determine block classification:\n"
              << BlockToString(block.data(), block.size());
   return false;
+}
+
+bool WebVttParser::ParseRegion(const std::vector<std::string>& block) {
+  TextRegion region;
+  std::string region_id;
+  // Fill in defaults.  Some may already be this, but set them anyway.
+  // See https://www.w3.org/TR/webvtt1/#regions
+  region.width.value = 100;
+  region.width.type = TextUnitType::kPercent;
+  region.height.value = 3;
+  region.height.type = TextUnitType::kLines;
+  region.window_anchor_x.value = 0;
+  region.window_anchor_x.type = TextUnitType::kPercent;
+  region.window_anchor_y.value = 100;
+  region.window_anchor_y.type = TextUnitType::kPercent;
+  region.region_anchor_x.value = 0;
+  region.region_anchor_x.type = TextUnitType::kPercent;
+  region.region_anchor_y.value = 100;
+  region.region_anchor_y.type = TextUnitType::kPercent;
+
+  bool first = true;
+  for (const auto& line : block) {
+    // First line is "REGION", skip.
+    if (first) {
+      first = false;
+      continue;
+    }
+
+    base::StringPairs pairs;
+    if (!base::SplitStringIntoKeyValuePairs(line, ':', ' ', &pairs)) {
+      LOG(ERROR) << "Invalid WebVTT settings: " << line;
+      return false;
+    }
+    for (const auto& pair : pairs) {
+      const std::string& value = pair.second;
+      if (pair.first == "id") {
+        if (value.find("-->") != std::string::npos) {
+          LOG(ERROR) << "Invalid WebVTT REGION ID: " << value;
+          return false;
+        }
+        if (regions_.find(value) != regions_.end()) {
+          LOG(ERROR) << "Duplicate WebVTT REGION: " << value;
+          return false;
+        }
+        region_id = value;
+      } else if (pair.first == "width") {
+        if (!ParsePercent(value, &region.width.value)) {
+          LOG(ERROR) << "Invalid WebVTT REGION width: " << value;
+          return false;
+        }
+      } else if (pair.first == "lines") {
+        unsigned int temp;
+        if (!base::StringToUint(value, &temp)) {
+          LOG(ERROR) << "Invalid WebVTT REGION lines: " << value;
+          return false;
+        }
+        region.height.value = temp;
+      } else if (pair.first == "regionanchor") {
+        if (!ParseDoublePercent(value, &region.region_anchor_x.value,
+                                &region.region_anchor_y.value)) {
+          LOG(ERROR) << "Invalid WebVTT REGION regionanchor: " << value;
+          return false;
+        }
+      } else if (pair.first == "viewportanchor") {
+        if (!ParseDoublePercent(value, &region.window_anchor_x.value,
+                                &region.window_anchor_y.value)) {
+          LOG(ERROR) << "Invalid WebVTT REGION windowanchor: " << value;
+          return false;
+        }
+      } else if (pair.first == "scroll") {
+        if (value != "up") {
+          LOG(ERROR) << "Invalid WebVTT REGION scroll: " << value;
+          return false;
+        }
+        region.scroll = true;
+      } else {
+        LOG(ERROR) << "Unknown WebVTT REGION setting: " << pair.first;
+        return false;
+      }
+    }
+  }
+  if (region_id.empty()) {
+    LOG(ERROR) << "WebVTT REGION id is required";
+    return false;
+  }
+  regions_.insert(std::make_pair(region_id, std::move(region)));
+  return true;
 }
 
 bool WebVttParser::ParseCueWithNoId(const std::vector<std::string>& block) {
@@ -378,10 +481,14 @@ void WebVttParser::DispatchTextStreamInfo() {
   // The language of the stream will be overwritten by the Demuxer later.
   const char kNoLanguage[] = "";
 
-  std::vector<std::shared_ptr<StreamInfo>> streams;
-  streams.emplace_back(std::make_shared<TextStreamInfo>(
-      kTrackId, kTimescale, kDuration, kCodecWebVtt, kWebVttCodecString,
-      style_region_config_, kNoWidth, kNoHeight, kNoLanguage));
+  const auto stream = std::make_shared<TextStreamInfo>(
+      kTrackId, kTimescale, kDuration, kCodecWebVtt, kWebVttCodecString, "",
+      kNoWidth, kNoHeight, kNoLanguage);
+  stream->set_css_styles(css_styles_);
+  for (const auto& pair : regions_)
+    stream->AddRegion(pair.first, pair.second);
+
+  std::vector<std::shared_ptr<StreamInfo>> streams{stream};
   init_cb_.Run(streams);
 }
 

@@ -224,5 +224,99 @@ TEST(WebVttUtilsTest, FragmentToString_HandlesNestedNewlinesWithStyle) {
   EXPECT_EQ(WebVttFragmentToString(frag), "<b>Hello</b>\n<b>World Now</b>");
 }
 
+TEST(WebVttUtilsTest, GetPreamble_BasicFlow) {
+  TextStreamInfo info(0, 0, 0, kCodecWebVtt, "", "", 0, 0, "");
+  info.set_css_styles("::cue { color: red; }");
+
+  TextRegion region;
+  region.width.value = 34;
+  region.height = TextNumber(56, TextUnitType::kLines);
+  region.window_anchor_x.value = 99;
+  region.window_anchor_y.value = 12;
+  region.region_anchor_x.value = 41;
+  region.region_anchor_y.value = 29;
+  info.AddRegion("foo", region);
+
+  EXPECT_EQ(WebVttGetPreamble(info),
+            "REGION\n"
+            "id:foo\n"
+            "width:34.000000%\n"
+            "lines:56\n"
+            "viewportanchor:99.000000%,12.000000%\n"
+            "regionanchor:41.000000%,29.000000%\n"
+            "\n"
+            "STYLE\n"
+            "::cue { color: red; }");
+}
+
+TEST(WebVttUtilsTest, GetPreamble_MultipleRegions) {
+  TextStreamInfo info(0, 0, 0, kCodecWebVtt, "", "", 0, 0, "");
+
+  TextRegion region1;
+  region1.width.value = 34;
+  region1.height = TextNumber(56, TextUnitType::kLines);
+  region1.window_anchor_x.value = 99;
+  region1.window_anchor_y.value = 12;
+  region1.region_anchor_x.value = 41;
+  region1.region_anchor_y.value = 29;
+  info.AddRegion("r1", region1);
+
+  TextRegion region2;
+  region2.width.value = 82;
+  region2.height = TextNumber(61, TextUnitType::kLines);
+  region2.window_anchor_x.value = 51;
+  region2.window_anchor_y.value = 62;
+  region2.region_anchor_x.value = 92;
+  region2.region_anchor_y.value = 78;
+  info.AddRegion("r2", region2);
+
+  EXPECT_EQ(WebVttGetPreamble(info),
+            "REGION\n"
+            "id:r1\n"
+            "width:34.000000%\n"
+            "lines:56\n"
+            "viewportanchor:99.000000%,12.000000%\n"
+            "regionanchor:41.000000%,29.000000%\n"
+            "\n"
+            "REGION\n"
+            "id:r2\n"
+            "width:82.000000%\n"
+            "lines:61\n"
+            "viewportanchor:51.000000%,62.000000%\n"
+            "regionanchor:92.000000%,78.000000%");
+}
+
+TEST(WebVttUtilsTest, GetPreamble_Scroll) {
+  TextStreamInfo info(0, 0, 0, kCodecWebVtt, "", "", 0, 0, "");
+
+  TextRegion region;
+  region.width.value = 37;
+  region.height = TextNumber(82, TextUnitType::kLines);
+  region.window_anchor_x.value = 32;
+  region.window_anchor_y.value = 66;
+  region.region_anchor_x.value = 95;
+  region.region_anchor_y.value = 72;
+  region.scroll = true;
+  info.AddRegion("foo", region);
+
+  EXPECT_EQ(WebVttGetPreamble(info),
+            "REGION\n"
+            "id:foo\n"
+            "width:37.000000%\n"
+            "lines:82\n"
+            "viewportanchor:32.000000%,66.000000%\n"
+            "regionanchor:95.000000%,72.000000%\n"
+            "scroll:up");
+}
+
+TEST(WebVttUtilsTest, GetPreamble_OnlyStyles) {
+  TextStreamInfo info(0, 0, 0, kCodecWebVtt, "", "", 0, 0, "");
+  info.set_css_styles("::cue { color: red; }");
+
+  EXPECT_EQ(WebVttGetPreamble(info),
+            "STYLE\n"
+            "::cue { color: red; }");
+}
+
 }  // namespace media
 }  // namespace shaka
