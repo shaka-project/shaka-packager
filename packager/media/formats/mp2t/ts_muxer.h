@@ -35,7 +35,8 @@ class TsMuxer : public Muxer {
   void FireOnMediaEndEvent();
 
   std::unique_ptr<TsSegmenter> segmenter_;
-  int64_t sample_duration_ = 0;
+  int64_t sample_durations_[2];
+  int64_t num_samples_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TsMuxer);
 };
