@@ -36,7 +36,7 @@ Status TsMuxer::AddSample(size_t stream_id, const MediaSample& sample) {
   DCHECK_EQ(stream_id, 0u);
   if (num_samples_ < 2) {
     sample_durations_[num_samples_] = sample.duration() * kTsTimescale / 
-                                     streams().front()->time_scale();
+                                      streams().front()->time_scale();
     if (num_samples_ == 1 && muxer_listener()) 
       muxer_listener()->OnSampleDurationReady(sample_durations_[num_samples_]);
     num_samples_++;
