@@ -9,8 +9,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="820260" codecs="dvh1.05.01" mimeType="video/mp4" sar="1:1">
         <BaseURL>sparks_dovi_5-video.mp4</BaseURL>
-        <SegmentBase indexRange="1355-1434" timescale="60000">
-          <Initialization range="0-1354"/>
+        <SegmentBase indexRange="1359-1438" timescale="60000">
+          <Initialization range="0-1358"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

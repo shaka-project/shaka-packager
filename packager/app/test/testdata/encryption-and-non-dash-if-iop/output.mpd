@@ -9,8 +9,8 @@
           <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
         </ContentProtection>
         <BaseURL>bear-640x360-video.mp4</BaseURL>
-        <SegmentBase indexRange="1127-1194" timescale="30000">
-          <Initialization range="0-1126"/>
+        <SegmentBase indexRange="1131-1198" timescale="30000">
+          <Initialization range="0-1130"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -22,8 +22,8 @@
           <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
         </ContentProtection>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
-        <SegmentBase indexRange="1003-1070" timescale="44100">
-          <Initialization range="0-1002"/>
+        <SegmentBase indexRange="1007-1074" timescale="44100">
+          <Initialization range="0-1006"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

@@ -11,11 +11,11 @@ video_info {
 }
 init_range {
   begin: 0
-  end: 1126
+  end: 1130
 }
 index_range {
-  begin: 1127
-  end: 1194
+  begin: 1131
+  end: 1198
 }
 media_file_name: "bear-640x360-video.mp4"
 media_duration_seconds: 2.73606658

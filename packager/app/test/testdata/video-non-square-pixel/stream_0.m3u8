@@ -3,8 +3,8 @@
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="bear-640x360-non_square_pixel-with_pasp-video.mp4",BYTERANGE="879@0"
+#EXT-X-MAP:URI="bear-640x360-non_square_pixel-with_pasp-video.mp4",BYTERANGE="883@0"
 #EXTINF:1.001,
-#EXT-X-BYTERANGE:95246@923
+#EXT-X-BYTERANGE:95246@927
 bear-640x360-non_square_pixel-with_pasp-video.mp4
 #EXT-X-ENDLIST
