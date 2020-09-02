@@ -161,11 +161,13 @@ Status Segmenter::Finalize() {
 Status Segmenter::AddSample(const MediaSample& source_sample) {
   std::shared_ptr<MediaSample> sample(source_sample.Clone());
 
-  if (sample_duration_ == 0) {
-    first_timestamp_ = sample->pts();
-    sample_duration_ = sample->duration();
-    if (muxer_listener_)
-      muxer_listener_->OnSampleDurationReady(sample_duration_);
+  if (num_samples_ < 2) {
+    if (num_samples_ == 0)
+      first_timestamp_ = sample->pts();
+    else 
+      muxer_listener_->OnSampleDurationReady(sample_durations_[num_samples_]);
+    sample_durations_[num_samples_] = sample->duration();
+    num_samples_++;
   }
 
   UpdateProgress(sample->duration());
