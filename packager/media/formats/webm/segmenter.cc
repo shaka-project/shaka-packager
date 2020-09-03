@@ -162,11 +162,11 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
   std::shared_ptr<MediaSample> sample(source_sample.Clone());
 
   if (num_samples_ < 2) {
+    sample_durations_[num_samples_] = sample->duration();
     if (num_samples_ == 0)
       first_timestamp_ = sample->pts();
     else 
       muxer_listener_->OnSampleDurationReady(sample_durations_[num_samples_]);
-    sample_durations_[num_samples_] = sample->duration();
     num_samples_++;
   }
 
