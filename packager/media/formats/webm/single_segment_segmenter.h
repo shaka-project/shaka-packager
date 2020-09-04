@@ -33,7 +33,7 @@ class SingleSegmentSegmenter : public Segmenter {
   Status FinalizeSegment(uint64_t start_timestamp,
                          uint64_t duration_timestamp,
                          bool is_subsegment,
-			 uint64_t segment_index) override;
+                         int64_t segment_index) override;
   bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   std::vector<Range> GetSegmentRanges() override;

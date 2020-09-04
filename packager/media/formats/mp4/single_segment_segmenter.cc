@@ -157,7 +157,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
   return Status::OK;
 }
 
-Status SingleSegmentSegmenter::DoFinalizeSegment(uint64_t segment_index) {
+Status SingleSegmentSegmenter::DoFinalizeSegment(int64_t segment_index) {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   // sidx() contains pre-generated segment references with one reference per

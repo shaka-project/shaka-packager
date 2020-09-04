@@ -60,7 +60,7 @@ void CombinedMuxerListener::OnNewSegment(const std::string& file_name,
                                          int64_t start_time,
                                          int64_t duration,
                                          uint64_t segment_file_size,
-					 uint64_t segment_index) {
+                                         int64_t segment_index) {
   for (auto& listener : muxer_listeners_) {
     listener->OnNewSegment(file_name, start_time, duration, segment_file_size,
 		           segment_index);

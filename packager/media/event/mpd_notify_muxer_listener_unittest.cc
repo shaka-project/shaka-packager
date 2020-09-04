@@ -254,7 +254,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
   const uint64_t kStartTime2 = 1001u;
   const uint64_t kDuration2 = 3787u;
   const uint64_t kSegmentFileSize2 = 83743u;
-  const uint64_t kSegmentIndex = 0u;
+  const int64_t kSegmentIndex = 0;
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
   EXPECT_CALL(*notifier_, NotifyNewSegment(_, _, _, _, _)).Times(0);
@@ -305,7 +305,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodMultipleFiles) {
   const uint64_t kStartTime2 = 1001u;
   const uint64_t kDuration2 = 3787u;
   const uint64_t kSegmentFileSize2 = 83743u;
-  const uint64_t kSegmentIndex = 0u;
+  const int64_t kSegmentIndex = 0;
 
   // Expectation for first file before OnMediaEnd.
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
@@ -383,7 +383,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   const uint64_t kStartTime2 = 1001u;
   const uint64_t kDuration2 = 3787u;
   const uint64_t kSegmentFileSize2 = 83743u;
-  const uint64_t kSegmentIndex = 0u;
+  const int64_t kSegmentIndex = 0;
 
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
@@ -458,7 +458,7 @@ TEST_P(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   const uint64_t kStartTime2 = 1001u;
   const uint64_t kDuration2 = 3787u;
   const uint64_t kSegmentFileSize2 = 83743u;
-  const uint64_t kSegmentIndex = 0u;
+  const int64_t kSegmentIndex = 0;
 
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);

@@ -164,7 +164,7 @@ Status TsSegmenter::WritePesPackets() {
 
 Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
                                     uint64_t duration,
-                                    uint64_t segment_index) {
+                                    int64_t segment_index) {
   if (!pes_packet_generator_->Flush()) {
     return Status(error::MUXER_FAILURE, "Failed to flush PesPacketGenerator.");
   }

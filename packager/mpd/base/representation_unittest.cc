@@ -457,7 +457,10 @@ class SegmentTemplateTest : public RepresentationTest {
                    int repeat) {
     DCHECK(representation_);
 
-    SegmentInfo s = {start_time, duration, repeat};
+    if (start_segment_index_ == -1)
+      start_segment_index_ = start_time / duration;
+
+    SegmentInfo s = {start_time, duration, repeat, start_segment_index_};
     segment_infos_for_expected_out_.push_back(s);
     if (repeat == 0) {
       expected_s_elements_ +=
@@ -468,7 +471,8 @@ class SegmentTemplateTest : public RepresentationTest {
     }
 
     for (int i = 0; i < repeat + 1; ++i) {
-      representation_->AddNewSegment(start_time, duration, size, (start_time / duration));
+      representation_->AddNewSegment(start_time, duration, size,
+                                     start_segment_index_++);
       start_time += duration;
       bandwidth_estimator_.AddBlock(
           size, static_cast<double>(duration) / kDefaultTimeScale);
@@ -493,11 +497,32 @@ class SegmentTemplateTest : public RepresentationTest {
     return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Max(),
                               expected_s_elements_.c_str());
   }
+  std::string ExpectedXml(const std::string& expected_s_element,
+                          int expected_start_number) {
+    const char kOutputTemplate[] =
+        "<Representation id=\"1\" bandwidth=\"%" PRIu64
+        "\" "
+        " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
+        " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
+        "  <SegmentTemplate timescale=\"1000\" "
+        "   initialization=\"init.mp4\" media=\"$Time$.mp4\" "
+        "   startNumber=\"%d\">\n"
+        "    <SegmentTimeline>\n"
+        "      %s\n"
+        "    </SegmentTimeline>\n"
+        "  </SegmentTemplate>\n"
+        "</Representation>\n";
+
+    return base::StringPrintf(kOutputTemplate, bandwidth_estimator_.Max(),
+                              expected_start_number,
+                              expected_s_element.c_str());
+  }
 
   std::unique_ptr<Representation> representation_;
   std::list<SegmentInfo> segment_infos_for_expected_out_;
   std::string expected_s_elements_;
   BandwidthEstimator bandwidth_estimator_;
+  int64_t start_segment_index_ = -1;
 };
 
 // Estimate the bandwidth given the info from AddNewSegment().
@@ -530,7 +555,7 @@ TEST_F(SegmentTemplateTest, RepresentationClone) {
       " codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\" "
       " width=\"720\" height=\"480\" frameRate=\"10/5\">\n"
       "  <SegmentTemplate timescale=\"1000\" initialization=\"init.mp4\" "
-      "   media=\"$Number$.mp4\" startNumber=\"2\">\n"
+      "   media=\"$Number$.mp4\" startNumber=\"1\">\n"
       "  </SegmentTemplate>\n"
       "</Representation>\n";
   EXPECT_THAT(cloned_representation->GetXml().get(),
@@ -654,11 +679,18 @@ TEST_F(SegmentTemplateTest, OutOfOrder) {
   const int64_t kDuration = 1000;
   const int kSize = 123456;
   const int kRepeat = 0;
+  const int kSegmentIndex = 2;
 
   AddSegments(kLaterStartTime, kDuration, kSize, kRepeat);
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
 
-  EXPECT_THAT(representation_->GetXml().get(), XmlNodeEqual(ExpectedXml()));
+  std::string expected_s_element =
+      base::StringPrintf(kSElementTemplateWithoutR, kLaterStartTime,
+                         kDuration) +
+      base::StringPrintf(kSElementTemplateWithoutR, kEarlierStartTime,
+                         kDuration);
+  EXPECT_THAT(representation_->GetXml().get(),
+              XmlNodeEqual(ExpectedXml(expected_s_element, kSegmentIndex)));
 }
 
 // No segments should be overlapping.
@@ -803,10 +835,10 @@ TEST_P(ApproximateSegmentTimelineTest,
     expected_s_elements = base::StringPrintf(kSElementTemplateWithoutR,
                                              kStartTime, kDurationSmaller);
   }
-  
+
   EXPECT_THAT(representation_->GetXml().get(),
-    XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
-                    expected_s_elements, 1372)));
+              XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
+                  expected_s_elements, (kStartTime / kDurationSmaller) + 1)));
 }
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {

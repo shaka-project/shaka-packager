@@ -25,7 +25,7 @@ MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
                                               uint64_t duration_timestamp,
                                               bool is_subsegment,
-					      uint64_t segment_index) {
+                                              int64_t segment_index) {
   CHECK(cluster());
   RETURN_IF_ERROR(Segmenter::FinalizeSegment(
       start_timestamp, duration_timestamp, is_subsegment, segment_index));

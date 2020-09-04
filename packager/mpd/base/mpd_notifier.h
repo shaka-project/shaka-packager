@@ -71,7 +71,7 @@ class MpdNotifier {
                                 uint64_t start_time,
                                 uint64_t duration,
                                 uint64_t size,
-				uint64_t segment_index) = 0;
+                                int64_t segment_index) = 0;
 
   /// Notifies MpdBuilder that there is a new CueEvent.
   /// @param container_id Container ID obtained from calling

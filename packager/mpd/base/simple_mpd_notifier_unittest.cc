@@ -169,7 +169,7 @@ TEST_F(SimpleMpdNotifierTest, NotifyNewSegment) {
   SimpleMpdNotifier notifier(empty_mpd_option_);
 
   const uint32_t kRepresentationId = 447834u;
-  const uint64_t kSegmentIndex0 = 0u;
+  const int64_t kSegmentIndex0 = 0;
 
   std::unique_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder());
   std::unique_ptr<MockRepresentation> mock_representation(

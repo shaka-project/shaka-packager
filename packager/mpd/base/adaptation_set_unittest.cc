@@ -768,8 +768,8 @@ TEST_F(LiveAdaptationSetTest, SegmentAlignmentDynamicMpd) {
   const uint64_t kStartTime = 0u;
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
-  const uint64_t kSegmentIndex0 = 0u;
-  const uint64_t kSegmentIndex10 = 10u;
+  const int64_t kSegmentIndex0 = 0;
+  const int64_t kSegmentIndex10 = 10;
 
   const char k480pMediaInfo[] =
       "video_info {\n"

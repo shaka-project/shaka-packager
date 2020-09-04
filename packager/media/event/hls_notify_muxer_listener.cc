@@ -229,7 +229,7 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
                                           int64_t start_time,
                                           int64_t duration,
                                           uint64_t segment_file_size,
-					  uint64_t segment_index) {
+                                          int64_t segment_index) {
   if (!media_info_->has_segment_template()) {
     EventInfo event_info;
     event_info.type = EventInfoType::kSegment;
