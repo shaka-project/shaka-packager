@@ -682,8 +682,8 @@ TEST_F(OnDemandAdaptationSetTest, SubsegmentAlignment) {
   const uint64_t kStartTime = 0u;
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
-  const uint64_t kSegmentIndex10 = 10u;
-  const uint64_t kSegmentIndex0 = 0u;
+  const int64_t kSegmentIndex10 = 10;
+  const int64_t kSegmentIndex0 = 0;
 
   auto adaptation_set = CreateAdaptationSet(kNoLanguage);
   Representation* representation_480p =
@@ -749,7 +749,7 @@ TEST_F(OnDemandAdaptationSetTest, ForceSetsubsegmentAlignment) {
   static_assert(kStartTime1 != kStartTime2, "StartTimesShouldBeDifferent");
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
-  const uint64_t kSegmentIndex0 = 0;
+  const int64_t kSegmentIndex0 = 0;
 
   representation_480p->AddNewSegment(kStartTime1, kDuration, kAnySize, kSegmentIndex0);
   representation_360p->AddNewSegment(kStartTime2, kDuration, kAnySize, kSegmentIndex0);
