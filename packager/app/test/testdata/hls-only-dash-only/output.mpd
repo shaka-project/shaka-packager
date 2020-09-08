@@ -6,8 +6,8 @@
       <Representation id="0" bandwidth="133334" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
-        <SegmentBase indexRange="793-860" timescale="44100">
-          <Initialization range="0-792"/>
+        <SegmentBase indexRange="797-864" timescale="44100">
+          <Initialization range="0-796"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

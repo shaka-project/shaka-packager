@@ -5,14 +5,14 @@
     <AdaptationSet id="0" contentType="video" maxWidth="640" maxHeight="360" frameRate="90000/3003" subsegmentAlignment="true" par="16:9">
       <Representation id="0" bandwidth="378694" codecs="avc1.64000d" mimeType="video/mp4" sar="1:1" width="320" height="180">
         <BaseURL>bear-multi-configs-0.mp4</BaseURL>
-        <SegmentBase indexRange="858-925" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-857"/>
+        <SegmentBase indexRange="862-929" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-861"/>
         </SegmentBase>
       </Representation>
       <Representation id="2" bandwidth="973483" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360">
         <BaseURL>bear-multi-configs-2.mp4</BaseURL>
-        <SegmentBase indexRange="859-926" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-858"/>
+        <SegmentBase indexRange="863-930" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-862"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -20,15 +20,15 @@
       <Representation id="1" bandwidth="131925" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-multi-configs-1.mp4</BaseURL>
-        <SegmentBase indexRange="757-824" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-756"/>
+        <SegmentBase indexRange="761-828" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-760"/>
         </SegmentBase>
       </Representation>
       <Representation id="3" bandwidth="138922" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-multi-configs-3.mp4</BaseURL>
-        <SegmentBase indexRange="757-824" timescale="90000" presentationTimeOffset="24006">
-          <Initialization range="0-756"/>
+        <SegmentBase indexRange="761-828" timescale="90000" presentationTimeOffset="24006">
+          <Initialization range="0-760"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

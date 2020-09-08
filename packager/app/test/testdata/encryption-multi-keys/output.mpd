@@ -9,8 +9,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="977743" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video.mp4</BaseURL>
-        <SegmentBase indexRange="1143-1210" timescale="30000">
-          <Initialization range="0-1142"/>
+        <SegmentBase indexRange="1147-1214" timescale="30000">
+          <Initialization range="0-1146"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -22,8 +22,8 @@
       <Representation id="1" bandwidth="133663" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
-        <SegmentBase indexRange="1019-1086" timescale="44100">
-          <Initialization range="0-1018"/>
+        <SegmentBase indexRange="1023-1090" timescale="44100">
+          <Initialization range="0-1022"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

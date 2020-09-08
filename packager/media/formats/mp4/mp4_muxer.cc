@@ -206,8 +206,9 @@ Status MP4Muxer::DelayInitializeMuxer() {
   std::unique_ptr<FileType> ftyp(new FileType);
   std::unique_ptr<Movie> moov(new Movie);
 
-  ftyp->major_brand = FOURCC_isom;
+  ftyp->major_brand = FOURCC_mp41;
   ftyp->compatible_brands.push_back(FOURCC_iso8);
+  ftyp->compatible_brands.push_back(FOURCC_isom);
   ftyp->compatible_brands.push_back(FOURCC_mp41);
   ftyp->compatible_brands.push_back(FOURCC_dash);
 

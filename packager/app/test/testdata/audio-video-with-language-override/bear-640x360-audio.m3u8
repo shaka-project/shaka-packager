@@ -3,9 +3,9 @@
 ## Generated with https://github.com/google/shaka-packager version <tag>-<hash>-<test>
 #EXT-X-TARGETDURATION:2
 #EXT-X-PLAYLIST-TYPE:VOD
-#EXT-X-MAP:URI="bear-640x360-audio.mp4",BYTERANGE="793@0"
+#EXT-X-MAP:URI="bear-640x360-audio.mp4",BYTERANGE="797@0"
 #EXTINF:1.022,
-#EXT-X-BYTERANGE:17028@861
+#EXT-X-BYTERANGE:17028@865
 bear-640x360-audio.mp4
 #EXTINF:0.998,
 #EXT-X-BYTERANGE:16285

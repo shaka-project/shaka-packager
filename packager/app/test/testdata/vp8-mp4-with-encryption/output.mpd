@@ -9,8 +9,8 @@
       </ContentProtection>
       <Representation id="0" bandwidth="474142" codecs="vp08.00.10.08.01.02.02.02.00" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-video.mp4</BaseURL>
-        <SegmentBase indexRange="1031-1098" timescale="1000000" presentationTimeOffset="26000">
-          <Initialization range="0-1030"/>
+        <SegmentBase indexRange="1035-1102" timescale="1000000" presentationTimeOffset="26000">
+          <Initialization range="0-1034"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

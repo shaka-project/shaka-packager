@@ -7,8 +7,8 @@
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
       <Representation id="0" bandwidth="277411" codecs="hev1.1.6.L63.90" mimeType="video/mp4" sar="1:1">
         <BaseURL>bear-640x360-hevc-video.mp4</BaseURL>
-        <SegmentBase indexRange="1899-1966" timescale="30000">
-          <Initialization range="0-1898"/>
+        <SegmentBase indexRange="1903-1970" timescale="30000">
+          <Initialization range="0-1902"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -17,14 +17,14 @@
       <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
       <Representation id="1" bandwidth="2627285" codecs="avc1.64001f" mimeType="video/mp4" sar="1:1" width="1280" height="720">
         <BaseURL>bear-1280x720-video.mp4</BaseURL>
-        <SegmentBase indexRange="858-925" timescale="30000">
-          <Initialization range="0-857"/>
+        <SegmentBase indexRange="862-929" timescale="30000">
+          <Initialization range="0-861"/>
         </SegmentBase>
       </Representation>
       <Representation id="2" bandwidth="973483" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360">
         <BaseURL>bear-640x360-video.mp4</BaseURL>
-        <SegmentBase indexRange="859-926" timescale="30000">
-          <Initialization range="0-858"/>
+        <SegmentBase indexRange="863-930" timescale="30000">
+          <Initialization range="0-862"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
@@ -32,8 +32,8 @@
       <Representation id="3" bandwidth="133334" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>bear-640x360-audio.mp4</BaseURL>
-        <SegmentBase indexRange="793-860" timescale="44100">
-          <Initialization range="0-792"/>
+        <SegmentBase indexRange="797-864" timescale="44100">
+          <Initialization range="0-796"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

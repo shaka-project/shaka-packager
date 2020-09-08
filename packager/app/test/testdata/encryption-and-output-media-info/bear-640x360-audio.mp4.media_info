@@ -8,11 +8,11 @@ audio_info {
 }
 init_range {
   begin: 0
-  end: 1002
+  end: 1006
 }
 index_range {
-  begin: 1003
-  end: 1070
+  begin: 1007
+  end: 1074
 }
 media_file_name: "bear-640x360-audio.mp4"
 media_duration_seconds: 2.76317453
