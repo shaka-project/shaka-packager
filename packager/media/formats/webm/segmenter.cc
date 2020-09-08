@@ -165,7 +165,7 @@ Status Segmenter::AddSample(const MediaSample& source_sample) {
     sample_durations_[num_samples_] = sample->duration();
     if (num_samples_ == 0)
       first_timestamp_ = sample->pts();
-    else 
+    else if (muxer_listener_)
       muxer_listener_->OnSampleDurationReady(sample_durations_[num_samples_]);
     num_samples_++;
   }
