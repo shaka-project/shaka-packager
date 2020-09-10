@@ -72,7 +72,7 @@ class MpdBuilderTest : public ::testing::Test {
     representation->AddNewSegment(
         segment_start_time_seconds * media_info.reference_time_scale(),
         segment_duration_seconds * media_info.reference_time_scale(), kBytes,
-	(segment_start_time_seconds / segment_duration_seconds));
+        (segment_start_time_seconds / segment_duration_seconds));
   }
 
  protected:

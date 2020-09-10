@@ -838,7 +838,7 @@ TEST_P(ApproximateSegmentTimelineTest,
 
   EXPECT_THAT(representation_->GetXml().get(),
               XmlNodeEqual(SegmentTimelineTestBase::ExpectedXml(
-                  expected_s_elements, (kStartTime / kDurationSmaller) + 1)));
+                    expected_s_elements, (kStartTime / kDurationSmaller) + 1)));
 }
 
 TEST_P(ApproximateSegmentTimelineTest, SegmentsWithSimilarDurations) {
@@ -1243,7 +1243,7 @@ TEST_P(TimeShiftBufferDepthTest, HugeGap) {
       representation_->GetXml().get(),
       XmlNodeEqual(ExpectedXml(
           expected_s_element, kDefaultStartNumber + kExpectedRemovedSegments +
-	  (initial_start_time_ / kDuration))));
+          (initial_start_time_ / kDuration))));
 }
 
 // Check if startNumber is working correctly.

@@ -158,7 +158,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(const MediaRanges& media_ranges,
             notification_id_.value(), event_info.segment_info.start_time,
             event_info.segment_info.duration,
             event_info.segment_info.segment_file_size,
-	    event_info.segment_info.segment_index);
+            event_info.segment_info.segment_index);
         break;
       case EventInfoType::kKeyFrame:
         // NO-OP for DASH.
@@ -186,8 +186,8 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
   } else {
     EventInfo event_info;
     event_info.type = EventInfoType::kSegment;
-    event_info.segment_info = {start_time, duration, segment_file_size, 
-    			       segment_index};
+    event_info.segment_info = {start_time, duration, segment_file_size,
+                               segment_index};
     event_info_.push_back(event_info);
   }
 }
