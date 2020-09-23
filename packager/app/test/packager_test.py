@@ -476,7 +476,8 @@ class PackagerAppTest(unittest.TestCase):
                 default_language=None,
                 segment_duration=1.0,
                 use_fake_clock=True,
-                allow_codec_switching=False):
+                allow_codec_switching=False,
+                include_segment_template_in_adaptation_set=False):
     flags = []
 
     if not strip_parameter_set_nalus:
@@ -560,6 +561,9 @@ class PackagerAppTest(unittest.TestCase):
     if allow_codec_switching:
       flags += ['--allow_codec_switching']
 
+    if include_segment_template_in_adaptation_set:
+      flags += ['--include_segment_template_in_adaptation_set']
+      
     if ad_cues:
       flags += ['--ad_cues', ad_cues]
 
@@ -1573,6 +1577,14 @@ class PackagerFunctionalTest(PackagerAppTest):
                          using_time_specifier=True),
         self._GetFlags(output_dash=True, generate_static_live_mpd=True))
     self._CheckTestResults('live-static-profile-with-time-in-segment-name')
+
+  def testSegmentTemplateInAdaptation(self):
+    self.assertPackageSuccess(
+        self._GetStreams(['audio', 'video'], segmented=True),
+        self._GetFlags(
+            output_dash=True,
+            include_segment_template_in_adaptation_set=True))
+    self._CheckTestResults('audio-video-with-segment-template-in-adaptationset')
 
   def testAllowCodecSwitching(self):
     streams = [

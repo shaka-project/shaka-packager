@@ -23,5 +23,6 @@ DECLARE_bool(generate_dash_if_iop_compliant_mpd);
 DECLARE_bool(allow_approximate_segment_timeline);
 DECLARE_bool(allow_codec_switching);
 DECLARE_bool(include_mspr_pro_for_playready);
+DECLARE_bool(include_segment_template_in_adaptation_set);
 
 #endif  // APP_MPD_FLAGS_H_

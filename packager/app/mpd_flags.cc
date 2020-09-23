@@ -69,3 +69,7 @@ DEFINE_bool(include_mspr_pro_for_playready,
             "If enabled, PlayReady Object <mspr:pro> will be inserted into "
             "<ContentProtection ...> element alongside with <cenc:pssh> "
             "when using PlayReady protection system.");
+DEFINE_bool(include_segment_template_in_adaptation_set,
+            false,
+            "If enabled, adds SegmentTemplate to AdaptationSet instead of "
+            "Representation.");

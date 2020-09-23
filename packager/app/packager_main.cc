@@ -475,6 +475,8 @@ base::Optional<PackagingParams> GetPackagingParams() {
       FLAGS_allow_approximate_segment_timeline;
   mpd_params.allow_codec_switching = FLAGS_allow_codec_switching;
   mpd_params.include_mspr_pro = FLAGS_include_mspr_pro_for_playready;
+  mpd_params.include_segment_template_in_adaptation_set =
+      FLAGS_include_segment_template_in_adaptation_set;
 
   HlsParams& hls_params = packaging_params.hls_params;
   if (!GetHlsPlaylistType(FLAGS_hls_playlist_type, &hls_params.playlist_type)) {

@@ -87,6 +87,9 @@ struct MpdParams {
   /// <ContentProtection ...> element alongside with <cenc:pssh>
   /// when using PlayReady protection system.
   bool include_mspr_pro = true;
+  /// If enabled, add SegmentTemplate to AdaptationSet instead of
+  /// Representation.
+  bool include_segment_template_in_adaptation_set = false;
 };
 
 }  // namespace shaka

@@ -188,6 +188,14 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
                        const std::list<SegmentInfo>& segment_infos,
                        uint32_t start_number);
 
+  /// @param segment_infos is a set of SegmentInfos. This method assumes that
+  ///        SegmentInfos are sorted by its start time.
+  /// @return SegmentTemplate node.
+  scoped_xml_ptr<xmlNode> GetLiveOnlyInfo(
+      const MediaInfo& media_info,
+      const std::list<SegmentInfo>& segment_infos,
+      uint32_t start_number);
+
  private:
   // Add AudioChannelConfiguration element. Note that it is a required element
   // for audio Representations.

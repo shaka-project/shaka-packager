@@ -404,6 +404,56 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
   return true;
 }
 
+scoped_xml_ptr<xmlNode> RepresentationXmlNode::GetLiveOnlyInfo(
+    const MediaInfo& media_info,
+    const std::list<SegmentInfo>& segment_infos,
+    uint32_t start_number) {
+  XmlNode segment_template("SegmentTemplate");
+  if (media_info.has_reference_time_scale()) {
+    segment_template.SetIntegerAttribute("timescale",
+                                         media_info.reference_time_scale());
+  }
+
+  if (media_info.has_presentation_time_offset()) {
+    segment_template.SetIntegerAttribute("presentationTimeOffset",
+                                         media_info.presentation_time_offset());
+  }
+
+  if (media_info.has_init_segment_url()) {
+    segment_template.SetStringAttribute("initialization",
+                                        media_info.init_segment_url());
+  }
+
+  if (media_info.has_segment_template_url()) {
+    segment_template.SetStringAttribute("media",
+                                        media_info.segment_template_url());
+    segment_template.SetIntegerAttribute("startNumber", start_number);
+  }
+
+  if (!segment_infos.empty()) {
+    // Don't use SegmentTimeline if all segments except the last one are of
+    // the same duration.
+    if (IsTimelineConstantDuration(segment_infos, start_number)) {
+      segment_template.SetIntegerAttribute("duration",
+                                           segment_infos.front().duration);
+      if (FLAGS_dash_add_last_segment_number_when_needed) {
+        uint32_t last_segment_number = start_number - 1;
+        for (const auto& segment_info_element : segment_infos)
+          last_segment_number += segment_info_element.repeat + 1;
+
+        AddSupplementalProperty(
+            "http://dashif.org/guidelines/last-segment-number",
+            std::to_string(last_segment_number));
+      }
+    } else {
+      XmlNode segment_timeline("SegmentTimeline");
+      CHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
+      CHECK(segment_template.AddChild(segment_timeline.PassScopedPtr()));
+    }
+  }
+  return segment_template.PassScopedPtr();
+}
+
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,

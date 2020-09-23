@@ -212,6 +212,16 @@ const MediaInfo& Representation::GetMediaInfo() const {
   return media_info_;
 }
 
+xml::scoped_xml_ptr<xmlNode> Representation::GetLiveOnlyInfo() {
+  xml::RepresentationXmlNode representation;
+
+  if (HasLiveOnlyFields(media_info_)) {
+    return representation.GetLiveOnlyInfo(media_info_, segment_infos_,
+                                          start_number_);
+  }
+  return xml::scoped_xml_ptr<xmlNode>();
+}
+
 // Uses info in |media_info_| and |content_protection_elements_| to create a
 // "Representation" node.
 // MPD schema has strict ordering. The following must be done in order.
@@ -269,6 +279,7 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
+      !(output_suppression_flags_ & kSuppressSegmentTemplate) &&
       !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
                                       start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
