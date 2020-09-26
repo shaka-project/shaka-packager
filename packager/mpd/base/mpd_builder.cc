@@ -441,8 +441,20 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
             MakePathRelative(media_info->init_segment_name(), mpd_dir));
       }
       if (media_info->has_segment_template()) {
-        media_info->set_segment_template_url(
-            MakePathRelative(media_info->segment_template(), mpd_dir));
+        if (media_info->has_rep_id()) {
+          if (media_info->segment_template().find("$RepresentationID") !=
+              std::string::npos) {
+            std::string temp = media_info->segment_template();
+            temp.replace(
+                media_info->segment_template().find("$RepresentationID"), 18,
+                media_info->rep_id());
+            media_info->set_segment_template_url(
+                MakePathRelative(temp, mpd_dir));
+          }
+        } else {
+          media_info->set_segment_template_url(
+              MakePathRelative(media_info->segment_template(), mpd_dir));
+        }
       }
     }
   }

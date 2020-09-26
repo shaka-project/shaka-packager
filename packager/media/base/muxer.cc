@@ -114,7 +114,7 @@ Status Muxer::ReinitializeMuxer(int64_t timestamp) {
     // the subclasses.
     options_.output_file_name =
         GetSegmentName(output_file_template_, timestamp, output_file_index_++,
-                       options_.bandwidth);
+                       options_.bandwidth, options_.rep_id);
   }
   return InitializeMuxer();
 }

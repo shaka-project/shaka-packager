@@ -60,6 +60,8 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
 
   bool has_number = false;
   bool has_time = false;
+  bool has_representation = false;
+
   // Every second substring in split output should be an identifier.
   for (size_t i = 1; i < splits.size(); i += 2) {
     // Each identifier may be suffixed, within the enclosing ‘$’ characters,
@@ -76,9 +78,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
 
     // TODO(kqyang): Support "RepresentationID".
     if (identifier == "RepresentationID") {
-      return Status(
-          error::UNIMPLEMENTED,
-          "Segment template flag $RepresentationID$ is not supported yet.");
+      has_representation = true;
     } else if (identifier == "Number") {
       has_number = true;
     } else if (identifier == "Time") {
@@ -98,7 +98,7 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
         error::INVALID_ARGUMENT,
         "In segment templates $Number$ and $Time$ should not co-exist.");
   }
-  if (!has_number && !has_time) {
+  if (!has_number && !has_time && !has_representation) {
     return Status(error::INVALID_ARGUMENT,
                   "In segment templates $Number$ or $Time$ should exist.");
   }
@@ -111,7 +111,8 @@ Status ValidateSegmentTemplate(const std::string& segment_template) {
 std::string GetSegmentName(const std::string& segment_template,
                            uint64_t segment_start_time,
                            uint32_t segment_index,
-                           uint32_t bandwidth) {
+                           uint32_t bandwidth,
+                           std::string rep_id) {
   DCHECK_EQ(Status::OK, ValidateSegmentTemplate(segment_template));
 
   std::vector<std::string> splits = base::SplitString(
@@ -135,7 +136,7 @@ std::string GetSegmentName(const std::string& segment_template,
     size_t format_pos = splits[i].find('%');
     std::string identifier = splits[i].substr(0, format_pos);
     DCHECK(identifier == "Number" || identifier == "Time" ||
-           identifier == "Bandwidth");
+           identifier == "Bandwidth" || identifier == "RepresentationID");
 
     std::string format_tag;
     if (format_pos != std::string::npos) {
@@ -158,6 +159,8 @@ std::string GetSegmentName(const std::string& segment_template,
     } else if (identifier == "Bandwidth") {
       segment_name += base::StringPrintf(format_tag.c_str(),
                                          static_cast<uint64_t>(bandwidth));
+    } else if (identifier == "RepresentationID") {
+      segment_name += rep_id;
     }
   }
   return segment_name;

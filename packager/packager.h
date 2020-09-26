@@ -133,6 +133,8 @@ struct StreamDescriptor {
   bool dash_only = false;
   /// Set to true to indicate that the stream is for hls only.
   bool hls_only = false;
+
+  std::string rep_id;
 };
 
 class SHAKA_EXPORT Packager {
@@ -144,9 +146,8 @@ class SHAKA_EXPORT Packager {
   /// @param packaging_params contains the packaging parameters.
   /// @param stream_descriptors a list of stream descriptors.
   /// @return OK on success, an appropriate error code on failure.
-  Status Initialize(
-      const PackagingParams& packaging_params,
-      const std::vector<StreamDescriptor>& stream_descriptors);
+  Status Initialize(const PackagingParams& packaging_params,
+                    const std::vector<StreamDescriptor>& stream_descriptors);
 
   /// Run the pipeline to completion (or failed / been cancelled). Note
   /// that it blocks until completion.

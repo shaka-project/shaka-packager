@@ -39,7 +39,7 @@ TEST(MuxerUtilTest, ValidateSegmentTemplate) {
   EXPECT_NE(Status::OK, ValidateSegmentTemplate("foo$Number$_$Time$loo"));
 
   // $RepresentationID$ not implemented yet.
-  EXPECT_NE(Status::OK, ValidateSegmentTemplate("$RepresentationID$__$Time$"));
+  EXPECT_EQ(Status::OK, ValidateSegmentTemplate("$RepresentationID$__$Time$"));
 
   // Unknown identifier.
   EXPECT_NE(Status::OK, ValidateSegmentTemplate("$foo$$Time$"));

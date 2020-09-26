@@ -176,9 +176,9 @@ Status TsSegmenter::FinalizeSegment(uint64_t start_timestamp,
   // be false.
   if (!segment_started_)
     return Status::OK;
-  std::string segment_path =
-        GetSegmentName(muxer_options_.segment_template, segment_start_timestamp_,
-                       segment_number_++, muxer_options_.bandwidth);
+  std::string segment_path = GetSegmentName(
+      muxer_options_.segment_template, segment_start_timestamp_,
+      segment_number_++, muxer_options_.bandwidth, muxer_options_.rep_id);
 
   const int64_t file_size = segment_buffer_.Size();
   std::unique_ptr<File, FileCloser> segment_file;	  

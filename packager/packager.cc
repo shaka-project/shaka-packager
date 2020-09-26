@@ -316,7 +316,8 @@ Status ValidateParams(const PackagingParams& packaging_params,
     }
 
     if (!descriptor.output.empty()) {
-      if (outputs.find(descriptor.output) != outputs.end()) {
+      if (descriptor.output.find("$RepresentationID$") == std::string::npos &&
+          outputs.find(descriptor.output) != outputs.end()) {
         return Status(
             error::INVALID_ARGUMENT,
             "Seeing duplicated outputs '" + descriptor.output +
@@ -325,8 +326,10 @@ Status ValidateParams(const PackagingParams& packaging_params,
       outputs.insert(descriptor.output);
     }
     if (!descriptor.segment_template.empty()) {
-      if (segment_templates.find(descriptor.segment_template) !=
-          segment_templates.end()) {
+      if (descriptor.segment_template.find("$RepresentationID$") ==
+              std::string::npos &&
+          segment_templates.find(descriptor.segment_template) !=
+              segment_templates.end()) {
         return Status(error::INVALID_ARGUMENT,
                       "Seeing duplicated segment templates '" +
                           descriptor.segment_template +
