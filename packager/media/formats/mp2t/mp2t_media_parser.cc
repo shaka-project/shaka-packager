@@ -12,6 +12,7 @@
 #include "packager/media/base/text_sample.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 #include "packager/media/formats/mp2t/es_parser_audio.h"
+#include "packager/media/formats/mp2t/es_parser_dvb.h"
 #include "packager/media/formats/mp2t/es_parser_h264.h"
 #include "packager/media/formats/mp2t/es_parser_h265.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
@@ -33,6 +34,7 @@ class PidState {
     kPidPmt,
     kPidAudioPes,
     kPidVideoPes,
+    kPidTextPes,
   };
 
   PidState(int pid,
@@ -281,12 +283,14 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
            << static_cast<int>(stream_type) << std::dec;
 
   // Create a stream parser corresponding to the stream type.
-  bool is_audio = false;
+  PidState::PidType pid_type = PidState::kPidVideoPes;
   std::unique_ptr<EsParser> es_parser;
   auto on_new_stream = base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
                                   base::Unretained(this), pes_pid);
   auto on_emit_media = base::Bind(&Mp2tMediaParser::OnEmitMediaSample,
                                   base::Unretained(this), pes_pid);
+  auto on_emit_text = base::Bind(&Mp2tMediaParser::OnEmitTextSample,
+                                 base::Unretained(this), pes_pid);
   switch (stream_type) {
     case TsStreamType::kAvc:
       es_parser.reset(new EsParserH264(pes_pid, on_new_stream, on_emit_media));
@@ -300,10 +304,15 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
       es_parser.reset(
           new EsParserAudio(pes_pid, static_cast<TsStreamType>(stream_type),
                             on_new_stream, on_emit_media, sbr_in_mimetype_));
-      is_audio = true;
+      pid_type = PidState::kPidAudioPes;
+      break;
+    case TsStreamType::kDvbSubtitles:
+      es_parser.reset(new EsParserDvb(pes_pid, on_new_stream, on_emit_text));
+      pid_type = PidState::kPidTextPes;
       break;
     default: {
       auto type = static_cast<int>(stream_type);
+      DCHECK(type <= 0xff);
       LOG_IF(ERROR, !stream_type_logged_once_[type])
           << "Ignore unsupported MPEG2TS stream type 0x" << std::hex << type
           << std::dec;
@@ -316,8 +325,6 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   DVLOG(1) << "Create a new PES state";
   std::unique_ptr<TsSection> pes_section_parser(
       new TsSectionPes(std::move(es_parser)));
-  PidState::PidType pid_type =
-      is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;
   std::unique_ptr<PidState> pes_pid_state(
       new PidState(pes_pid, pid_type, std::move(pes_section_parser)));
   pes_pid_state->Enable();
@@ -363,7 +370,8 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   uint32_t num_es(0);
   for (const auto& pair : pids_) {
     if ((pair.second->pid_type() == PidState::kPidAudioPes ||
-         pair.second->pid_type() == PidState::kPidVideoPes) &&
+         pair.second->pid_type() == PidState::kPidVideoPes ||
+         pair.second->pid_type() == PidState::kPidTextPes) &&
         pair.second->IsEnabled()) {
       ++num_es;
       if (pair.second->config())

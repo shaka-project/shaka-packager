@@ -22,6 +22,8 @@
         'continuity_counter.h',
         'es_parser_audio.cc',
         'es_parser_audio.h',
+        'es_parser_dvb.cc',
+        'es_parser_dvb.h',
         'es_parser_h264.cc',
         'es_parser_h264.h',
         'es_parser_h265.cc',
@@ -63,6 +65,7 @@
         '../../base/media_base.gyp:media_base',
         '../../crypto/crypto.gyp:crypto',
         '../../codecs/codecs.gyp:codecs',
+        '../dvb/dvb.gyp:dvb',
       ],
     },
     {

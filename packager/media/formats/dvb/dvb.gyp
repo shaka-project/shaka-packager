@@ -15,6 +15,8 @@
       'sources': [
         'dvb_image.cc',
         'dvb_image.h',
+        'dvb_sub_parser.cc',
+        'dvb_sub_parser.h',
         'subtitle_composer.cc',
         'subtitle_composer.h',
       ],
@@ -28,6 +30,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'dvb_image_unittest.cc',
+        'dvb_sub_parser_unittest.cc',
         'subtitle_composer_unittest.cc',
       ],
       'dependencies': [

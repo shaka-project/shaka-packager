@@ -95,6 +95,17 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
 
     // Read the ES info descriptors.
     // Defined in section 2.6 of ISO-13818.
+    if (es_info_length > 0) {
+      uint8_t descriptor_tag;
+      RCHECK(bit_reader->ReadBits(8, &descriptor_tag));
+      es_info_length--;
+
+      // See ETSI EN 300 468 Section 6.1
+      if (stream_type == TsStreamType::kPesPrivateData &&
+          descriptor_tag == 0x59) {  // subtitling_descriptor
+        pid_map[pid_es] = TsStreamType::kDvbSubtitles;
+      }
+    }
     RCHECK(bit_reader->SkipBits(8 * es_info_length));
   }
 
