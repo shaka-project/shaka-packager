@@ -15,6 +15,8 @@
       'sources': [
         'dvb_image.cc',
         'dvb_image.h',
+        'subtitle_composer.cc',
+        'subtitle_composer.h',
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
@@ -26,6 +28,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'dvb_image_unittest.cc',
+        'subtitle_composer_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
