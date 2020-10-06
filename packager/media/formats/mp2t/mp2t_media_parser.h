@@ -56,7 +56,8 @@ class Mp2tMediaParser : public MediaParser {
 
   // Callback invoked each time the audio/video decoder configuration is
   // changed.
-  void OnNewStreamInfo(const std::shared_ptr<StreamInfo>& new_stream_info);
+  void OnNewStreamInfo(uint32_t pes_pid,
+                       const std::shared_ptr<StreamInfo>& new_stream_info);
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
