@@ -90,8 +90,8 @@ Status WebVttTextOutputHandler::OnSegmentInfo(const SegmentInfo& info) {
   const uint64_t duration = info.duration;
   const uint32_t bandwidth = muxer_options_.bandwidth;
 
-  const std::string filename =
-      GetSegmentName(segment_template, start, index, bandwidth);
+  const std::string filename = GetSegmentName(segment_template, start, index,
+                                              bandwidth, muxer_options_.rep_id);
 
   // Write everything to the file before telling the manifest so that the
   // file will exist on disk.

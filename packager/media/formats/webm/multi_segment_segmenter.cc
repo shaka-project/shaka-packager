@@ -34,7 +34,7 @@ Status MultiSegmentSegmenter::FinalizeSegment(uint64_t start_timestamp,
   if (!is_subsegment) {
     std::string segment_name =
         GetSegmentName(options().segment_template, start_timestamp,
-                       num_segment_, options().bandwidth);
+                       num_segment_, options().bandwidth, options().rep_id);
 
     // Close the file, which also does flushing, to make sure the file is
     // written before manifest is updated.
@@ -91,7 +91,7 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timestamp,
     temp_file_name_ =
         "memory://" + GetSegmentName(options().segment_template,
                                      start_timestamp, num_segment_,
-                                     options().bandwidth);
+                                     options().bandwidth, options().rep_id);
 
     writer_.reset(new MkvWriter);
     Status status = writer_->Open(temp_file_name_);

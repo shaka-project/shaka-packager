@@ -197,6 +197,10 @@ void XmlNode::SetId(uint32_t id) {
   SetIntegerAttribute("id", id);
 }
 
+void XmlNode::SetIdString(std::string id) {
+  SetStringAttribute("id", id);
+}
+
 void XmlNode::SetContent(const std::string& content) {
   DCHECK(node_);
   xmlNodeSetContent(node_.get(), BAD_CAST content.c_str());
@@ -404,6 +408,77 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
   return true;
 }
 
+scoped_xml_ptr<xmlNode> RepresentationXmlNode::GetLiveOnlyInfo(
+    const MediaInfo& media_info,
+    const std::list<SegmentInfo>& segment_infos,
+    uint32_t start_number) {
+  XmlNode segment_template("SegmentTemplate");
+  if (media_info.has_reference_time_scale()) {
+    segment_template.SetIntegerAttribute("timescale",
+                                         media_info.reference_time_scale());
+  }
+
+  if (media_info.has_presentation_time_offset()) {
+    segment_template.SetIntegerAttribute("presentationTimeOffset",
+                                         media_info.presentation_time_offset());
+  }
+
+  if (media_info.has_init_segment_url()) {
+    if (media_info.has_rep_id() &&
+        media_info.init_segment_url().find(media_info.rep_id()) !=
+            std::string::npos) {
+      std::string temp = media_info.init_segment_url();
+      temp.replace(media_info.init_segment_url().find(media_info.rep_id()),
+                   media_info.rep_id().length(), "$RepresentationID$");
+
+      segment_template.SetStringAttribute("initialization", temp);
+
+    } else {
+      segment_template.SetStringAttribute("initialization",
+                                          media_info.init_segment_url());
+    }
+  }
+
+  if (media_info.has_segment_template_url()) {
+    if (media_info.has_rep_id() &&
+        media_info.segment_template_url().find(media_info.rep_id()) !=
+            std::string::npos) {
+      std::string temp = media_info.segment_template_url();
+      temp.replace(media_info.segment_template_url().find(media_info.rep_id()),
+                   media_info.rep_id().length(), "$RepresentationID$");
+
+      segment_template.SetStringAttribute("media", temp);
+    } else {
+      segment_template.SetStringAttribute("media",
+                                          media_info.segment_template_url());
+    }
+    segment_template.SetIntegerAttribute("startNumber", start_number);
+  }
+
+  if (!segment_infos.empty()) {
+    // Don't use SegmentTimeline if all segments except the last one are of
+    // the same duration.
+    if (IsTimelineConstantDuration(segment_infos, start_number)) {
+      segment_template.SetIntegerAttribute("duration",
+                                           segment_infos.front().duration);
+      if (FLAGS_dash_add_last_segment_number_when_needed) {
+        uint32_t last_segment_number = start_number - 1;
+        for (const auto& segment_info_element : segment_infos)
+          last_segment_number += segment_info_element.repeat + 1;
+
+        AddSupplementalProperty(
+            "http://dashif.org/guidelines/last-segment-number",
+            std::to_string(last_segment_number));
+      }
+    } else {
+      XmlNode segment_timeline("SegmentTimeline");
+      CHECK(PopulateSegmentTimeline(segment_infos, &segment_timeline));
+      CHECK(segment_template.AddChild(segment_timeline.PassScopedPtr()));
+    }
+  }
+  return segment_template.PassScopedPtr();
+}
+
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
@@ -483,15 +558,15 @@ bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
       audio_channel_config_value = base::UintToString(ec3_channel_mpeg_value);
       audio_channel_config_scheme = "urn:mpeg:mpegB:cicp:ChannelConfiguration";
     }
-    bool ret = AddDescriptor("AudioChannelConfiguration",
-                             audio_channel_config_scheme,
-                             audio_channel_config_value);
+    bool ret =
+        AddDescriptor("AudioChannelConfiguration", audio_channel_config_scheme,
+                      audio_channel_config_value);
     // Dolby Digital Plus JOC descriptor. Spec: ETSI TS 103 420 v1.2.1
     // Backwards-compatible object audio carriage using Enhanced AC-3 Standard
     // D.2.2.
     if (codec_data.ec3_joc_complexity() != 0) {
       std::string ec3_joc_complexity =
-        base::UintToString(codec_data.ec3_joc_complexity());
+          base::UintToString(codec_data.ec3_joc_complexity());
       ret &= AddDescriptor("SupplementalProperty",
                            "tag:dolby.com,2018:dash:EC3_ExtensionType:2018",
                            "JOC");

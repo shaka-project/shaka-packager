@@ -200,6 +200,9 @@ void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
     if (!muxer_options.output_file_name.empty())
       media_info->set_init_segment_name(muxer_options.output_file_name);
     media_info->set_segment_template(muxer_options.segment_template);
+    if (!muxer_options.rep_id.empty()) {
+      media_info->set_rep_id(muxer_options.rep_id);
+    }
   }
 }
 

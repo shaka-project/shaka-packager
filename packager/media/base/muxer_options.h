@@ -45,6 +45,10 @@ struct MuxerOptions {
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
   uint32_t bandwidth = 0;
+
+  /// Used as Representation id for template based url construction using
+  /// $RepresentationID$.
+  std::string rep_id;
 };
 
 }  // namespace media

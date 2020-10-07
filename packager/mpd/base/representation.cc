@@ -95,7 +95,9 @@ Representation::Representation(
           // TODO(kqyang): Need a better check. $Time is legitimate but not a
           // template.
           media_info.segment_template().find("$Time") == std::string::npos &&
-          mpd_options_.mpd_params.allow_approximate_segment_timeline) {}
+          mpd_options_.mpd_params.allow_approximate_segment_timeline),
+      rep_id_set((media_info.segment_template().find("$RepresentationID$") !=
+                  std::string::npos)) {}
 
 Representation::Representation(
     const Representation& representation,
@@ -212,6 +214,16 @@ const MediaInfo& Representation::GetMediaInfo() const {
   return media_info_;
 }
 
+xml::scoped_xml_ptr<xmlNode> Representation::GetLiveOnlyInfo() {
+  xml::RepresentationXmlNode representation;
+
+  if (HasLiveOnlyFields(media_info_)) {
+    return representation.GetLiveOnlyInfo(media_info_, segment_infos_,
+                                          start_number_);
+  }
+  return xml::scoped_xml_ptr<xmlNode>();
+}
+
 // Uses info in |media_info_| and |content_protection_elements_| to create a
 // "Representation" node.
 // MPD schema has strict ordering. The following must be done in order.
@@ -232,7 +244,12 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
 
   xml::RepresentationXmlNode representation;
   // Mandatory fields for Representation.
-  representation.SetId(id_);
+
+  if (rep_id_set) {
+    representation.SetIdString(media_info_.rep_id());
+  } else {
+    representation.SetId(id_);
+  }
   representation.SetIntegerAttribute("bandwidth", bandwidth);
   if (!codecs_.empty())
     representation.SetStringAttribute("codecs", codecs_);
@@ -269,6 +286,7 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
+      !(output_suppression_flags_ & kSuppressSegmentTemplate) &&
       !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
                                       start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
@@ -452,9 +470,9 @@ void Representation::RemoveOldSegment(SegmentInfo* segment_info) {
   if (mpd_options_.mpd_params.preserved_segments_outside_live_window == 0)
     return;
 
-  segments_to_be_removed_.push_back(
-      media::GetSegmentName(media_info_.segment_template(), segment_start_time,
-                            start_number_ - 1, media_info_.bandwidth()));
+  segments_to_be_removed_.push_back(media::GetSegmentName(
+      media_info_.segment_template(), segment_start_time, start_number_ - 1,
+      media_info_.bandwidth(), media_info_.rep_id()));
   while (segments_to_be_removed_.size() >
          mpd_options_.mpd_params.preserved_segments_outside_live_window) {
     VLOG(2) << "Deleting " << segments_to_be_removed_.front();

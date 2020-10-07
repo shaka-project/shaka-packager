@@ -79,7 +79,8 @@ Status PackedAudioWriter::FinalizeSegment(size_t stream_id,
       options().segment_template.empty()
           ? options().output_file_name
           : GetSegmentName(options().segment_template, segment_timestamp,
-                           segment_number_++, options().bandwidth);
+                           segment_number_++, options().bandwidth,
+			   options().rep_id);
 
   // Save |segment_size| as it will be cleared after writing.
   const size_t segment_size = segmenter_->segment_buffer()->Size();

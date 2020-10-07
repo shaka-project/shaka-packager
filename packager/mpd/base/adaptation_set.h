@@ -317,6 +317,10 @@ class AdaptationSet {
   // and HD videos in different AdaptationSets can share the same trick play
   // stream.
   std::vector<const AdaptationSet*> trick_play_references_;
+
+  // Set to true if SegmentTemplate needs to be added to AdaptationSet,
+  // instead of Representation.
+  bool include_segment_template_in_adaptation_set = false;
 };
 
 }  // namespace shaka

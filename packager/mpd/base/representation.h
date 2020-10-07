@@ -57,6 +57,7 @@ class Representation {
     kSuppressWidth = 1,
     kSuppressHeight = 2,
     kSuppressFrameRate = 4,
+    kSuppressSegmentTemplate = 8,
   };
 
   virtual ~Representation();
@@ -117,6 +118,9 @@ class Representation {
 
   /// @return Copy of <Representation>.
   xml::scoped_xml_ptr<xmlNode> GetXml();
+
+  /// @return SegmentTemplate xmlNode if live information is present.
+  xml::scoped_xml_ptr<xmlNode> GetLiveOnlyInfo();
 
   /// By calling this methods, the next time GetXml() is
   /// called, the corresponding attributes will not be set.
@@ -244,6 +248,9 @@ class Representation {
   // Segments with duration difference less than one frame duration are
   // considered to have the same duration.
   uint32_t frame_duration_ = 0;
+
+  // When set to true, adds $RepresentationID$ in SegmentTemplate.
+  bool rep_id_set = false;
 };
 
 }  // namespace shaka

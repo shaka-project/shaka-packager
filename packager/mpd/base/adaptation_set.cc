@@ -336,6 +336,18 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
       representation->SuppressOnce(Representation::kSuppressHeight);
     if (suppress_representation_frame_rate)
       representation->SuppressOnce(Representation::kSuppressFrameRate);
+
+    if (include_segment_template_in_adaptation_set)
+      representation->SuppressOnce(Representation::kSuppressSegmentTemplate);
+
+    if (!adaptation_set.GetRawPtr()->children &&
+        include_segment_template_in_adaptation_set) {
+      xml::scoped_xml_ptr<xmlNode> live_child(
+          representation->GetLiveOnlyInfo());
+      if (!live_child || !adaptation_set.AddChild(std::move(live_child)))
+        return xml::scoped_xml_ptr<xmlNode>();
+    }
+
     xml::scoped_xml_ptr<xmlNode> child(representation->GetXml());
     if (!child || !adaptation_set.AddChild(std::move(child)))
       return xml::scoped_xml_ptr<xmlNode>();
@@ -409,7 +421,9 @@ void AdaptationSet::UpdateFromMediaInfo(const MediaInfo& media_info) {
 
     AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
   }
-
+  if (media_info.has_rep_id()) {
+    include_segment_template_in_adaptation_set = true;
+  }
   if (media_info.has_video_info()) {
     content_type_ = "video";
   } else if (media_info.has_audio_info()) {

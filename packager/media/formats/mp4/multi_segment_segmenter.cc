@@ -110,9 +110,9 @@ Status MultiSegmentSegmenter::WriteSegment() {
                                              options().output_file_name);
     }
   } else {
-    file_name = GetSegmentName(options().segment_template,
-                               sidx()->earliest_presentation_time,
-                               num_segments_++, options().bandwidth);
+    file_name = GetSegmentName(
+        options().segment_template, sidx()->earliest_presentation_time,
+        num_segments_++, options().bandwidth, options().rep_id);
     file.reset(File::Open(file_name.c_str(), "w"));
     if (!file) {
       return Status(error::FILE_FAILURE,

@@ -66,6 +66,10 @@ class XmlNode {
   /// @param id is the ID for this element.
   void SetId(uint32_t id);
 
+  /// Sets 'id=rep_id' attribute.
+  /// @param id is the ID for this element.
+  void SetIdString(std::string id);
+
   /// Set the contents of an XML element using a string.
   /// This cannot set child elements because <> will become &lt; and &rt;
   /// This should be used to set the text for the element, e.g. setting
@@ -187,6 +191,14 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   bool AddLiveOnlyInfo(const MediaInfo& media_info,
                        const std::list<SegmentInfo>& segment_infos,
                        uint32_t start_number);
+
+  /// @param segment_infos is a set of SegmentInfos. This method assumes that
+  ///        SegmentInfos are sorted by its start time.
+  /// @return SegmentTemplate node.
+  scoped_xml_ptr<xmlNode> GetLiveOnlyInfo(
+      const MediaInfo& media_info,
+      const std::list<SegmentInfo>& segment_infos,
+      uint32_t start_number);
 
  private:
   // Add AudioChannelConfiguration element. Note that it is a required element
