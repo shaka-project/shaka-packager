@@ -214,6 +214,7 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
                     "descriptors 'output' or 'init_segment' are not allowed.");
     }
   } else if (output_format == CONTAINER_WEBVTT ||
+             output_format == CONTAINER_TTML ||
              output_format == CONTAINER_AAC || output_format == CONTAINER_MP3 ||
              output_format == CONTAINER_AC3 ||
              output_format == CONTAINER_EAC3) {
@@ -222,9 +223,9 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
     if (stream.segment_template.length() && stream.output.length()) {
       return Status(
           error::INVALID_ARGUMENT,
-          "Segmented WebVTT or PackedAudio output cannot have an init segment. "
-          "Do not specify stream descriptors 'output' or 'init_segment' when "
-          "using 'segment_template'.");
+          "Segmented subtitles or PackedAudio output cannot have an init "
+          "segment.  Do not specify stream descriptors 'output' or "
+          "'init_segment' when using 'segment_template'.");
     }
   } else {
     // For any other format, if there is a segment template, there must be an

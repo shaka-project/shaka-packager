@@ -98,6 +98,8 @@
         'rsa_key.h',
         'stream_info.cc',
         'stream_info.h',
+        'text_muxer.cc',
+        'text_muxer.h',
         'text_sample.cc',
         'text_sample.h',
         'text_stream_info.cc',

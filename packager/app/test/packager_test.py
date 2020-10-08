@@ -404,7 +404,7 @@ class PackagerAppTest(unittest.TestCase):
       stream.Append('dash_only', 1)
 
     requires_init_segment = segmented and base_ext not in [
-        'aac', 'ac3', 'ec3', 'ts', 'vtt'
+        'aac', 'ac3', 'ec3', 'ts', 'vtt', 'ttml',
     ]
 
     output_file_path = os.path.join(self.tmp_dir, output_file_name_base)
@@ -848,6 +848,14 @@ class PackagerFunctionalTest(PackagerAppTest):
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('segmented-webvtt-mp4')
+
+  def testSegmentedTtmlText(self):
+    streams = self._GetStreams(['text'], test_files=['bear-english.vtt'],
+                               output_format='ttml', segmented=True)
+    flags = self._GetFlags(output_hls=True, output_dash=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('segmented-ttml-text')
 
   def testMp4TrailingMoov(self):
     self.assertPackageSuccess(

@@ -205,6 +205,11 @@ bool XmlNode::SetId(uint32_t id) {
   return SetIntegerAttribute("id", id);
 }
 
+void XmlNode::AddContent(const std::string& content) {
+  DCHECK(impl_->node);
+  xmlNodeAddContent(impl_->node.get(), BAD_CAST content.c_str());
+}
+
 void XmlNode::SetContent(const std::string& content) {
   DCHECK(impl_->node);
   xmlNodeSetContent(impl_->node.get(), BAD_CAST content.c_str());

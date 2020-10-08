@@ -81,6 +81,9 @@ class XmlNode {
   /// @param id is the ID for this element.
   bool SetId(uint32_t id) WARN_UNUSED_RESULT;
 
+  /// Similar to SetContent, but appends to the end of existing content.
+  void AddContent(const std::string& content);
+
   /// Set the contents of an XML element using a string.
   /// This cannot set child elements because <> will become &lt; and &rt;
   /// This should be used to set the text for the element, e.g. setting
