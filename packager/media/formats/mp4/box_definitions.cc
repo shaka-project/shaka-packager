@@ -33,6 +33,7 @@ const uint8_t kUnityMatrix[] = {0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0,
 const char kVideoHandlerName[] = "VideoHandler";
 const char kAudioHandlerName[] = "SoundHandler";
 const char kTextHandlerName[] = "TextHandler";
+const char kSubtitleHandlerName[] = "SubtitleHandler";
 
 // Default values for VideoSampleEntry box.
 const uint32_t kVideoResolution = 0x00480000;  // 72 dpi.
@@ -106,6 +107,8 @@ TrackType FourCCToTrackType(FourCC fourcc) {
       return kAudio;
     case FOURCC_text:
       return kText;
+    case FOURCC_subt:
+      return kSubtitle;
     default:
       return kInvalid;
   }
@@ -119,6 +122,8 @@ FourCC TrackTypeToFourCC(TrackType track_type) {
       return FOURCC_soun;
     case kText:
       return FOURCC_text;
+    case kSubtitle:
+      return FOURCC_subt;
     default:
       return FOURCC_NULL;
   }
@@ -628,6 +633,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
       count = static_cast<uint32_t>(audio_entries.size());
       break;
     case kText:
+    case kSubtitle:
       count = static_cast<uint32_t>(text_entries.size());
       break;
     default:
@@ -649,7 +655,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
     } else if (type == kAudio) {
       RCHECK(reader->ReadAllChildren(&audio_entries));
       RCHECK(audio_entries.size() == count);
-    } else if (type == kText) {
+    } else if (type == kText || type == kSubtitle) {
       RCHECK(reader->ReadAllChildren(&text_entries));
       RCHECK(text_entries.size() == count);
     }
@@ -661,7 +667,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
     } else if (type == kAudio) {
       for (uint32_t i = 0; i < count; ++i)
         RCHECK(buffer->ReadWriteChild(&audio_entries[i]));
-    } else if (type == kText) {
+    } else if (type == kText || type == kSubtitle) {
       for (uint32_t i = 0; i < count; ++i)
         RCHECK(buffer->ReadWriteChild(&text_entries[i]));
     } else {
@@ -679,7 +685,7 @@ size_t SampleDescription::ComputeSizeInternal() {
   } else if (type == kAudio) {
     for (uint32_t i = 0; i < audio_entries.size(); ++i)
       box_size += audio_entries[i].ComputeSize();
-  } else if (type == kText) {
+  } else if (type == kText || type == kSubtitle) {
     for (uint32_t i = 0; i < text_entries.size(); ++i)
       box_size += text_entries[i].ComputeSize();
   }
@@ -1293,6 +1299,11 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
         handler_name.assign(kTextHandlerName,
                             kTextHandlerName + arraysize(kTextHandlerName));
         break;
+      case FOURCC_subt:
+        handler_name.assign(
+            kSubtitleHandlerName,
+            kSubtitleHandlerName + arraysize(kSubtitleHandlerName));
+        break;
       case FOURCC_ID32:
         break;
       default:
@@ -1321,6 +1332,9 @@ size_t HandlerReference::ComputeSizeInternal() {
       break;
     case FOURCC_text:
       box_size += sizeof(kTextHandlerName);
+      break;
+    case FOURCC_subt:
+      box_size += sizeof(kSubtitleHandlerName);
       break;
     case FOURCC_ID32:
       break;
@@ -2000,14 +2014,25 @@ bool TextSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     // TODO(rkuroiwa): Handle the optional MPEG4BitRateBox.
     RCHECK(buffer->PrepareChildren() && buffer->ReadWriteChild(&config) &&
            buffer->ReadWriteChild(&label));
+  } else if (format == FOURCC_stpp) {
+    // These are marked as "optional"; but they should still have the
+    // null-terminator, so this should still work.
+    RCHECK(buffer->ReadWriteCString(&namespace_) &&
+           buffer->ReadWriteCString(&schema_location));
   }
   return true;
 }
 
 size_t TextSampleEntry::ComputeSizeInternal() {
   // 6 for the (anonymous) reserved bytes for SampleEntry class.
-  return HeaderSize() + 6 + sizeof(data_reference_index) +
-         config.ComputeSize() + label.ComputeSize();
+  size_t ret = HeaderSize() + 6 + sizeof(data_reference_index);
+  if (format == FOURCC_wvtt) {
+    ret += config.ComputeSize() + label.ComputeSize();
+  } else if (format == FOURCC_stpp) {
+    // +2 for the two null terminators for these strings.
+    ret += namespace_.size() + schema_location.size() + 2;
+  }
+  return ret;
 }
 
 MediaHeader::MediaHeader() = default;
@@ -2077,6 +2102,21 @@ bool SoundMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
 
 size_t SoundMediaHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(balance) + sizeof(uint16_t);
+}
+
+NullMediaHeader::NullMediaHeader() = default;
+NullMediaHeader::~NullMediaHeader() = default;
+
+FourCC NullMediaHeader::BoxType() const {
+  return FOURCC_nmhd;
+}
+
+bool NullMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
+  return ReadWriteHeaderInternal(buffer);
+}
+
+size_t NullMediaHeader::ComputeSizeInternal() {
+  return HeaderSize();
 }
 
 SubtitleMediaHeader::SubtitleMediaHeader() = default;
@@ -2178,6 +2218,9 @@ bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&smhd));
       break;
     case kText:
+      RCHECK(buffer->TryReadWriteChild(&nmhd));
+      break;
+    case kSubtitle:
       RCHECK(buffer->TryReadWriteChild(&sthd));
       break;
     default:
@@ -2198,6 +2241,9 @@ size_t MediaInformation::ComputeSizeInternal() {
       box_size += smhd.ComputeSize();
       break;
     case kText:
+      box_size += nmhd.ComputeSize();
+      break;
+    case kSubtitle:
       box_size += sthd.ComputeSize();
       break;
     default:

@@ -24,6 +24,8 @@ class TtmlGenerator {
   explicit TtmlGenerator();
   ~TtmlGenerator();
 
+  static const char* kTtNamespace;
+
   void Initialize(const std::map<std::string, TextRegion>& regions,
                   const std::string& language,
                   uint32_t time_scale);

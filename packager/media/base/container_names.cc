@@ -1745,7 +1745,10 @@ MediaContainerName DetermineContainerFromFormatName(
              base::EqualsCaseInsensitiveASCII(format_name, "m4s") ||
              base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mov") ||
-             base::EqualsCaseInsensitiveASCII(format_name, "mp4")) {
+             base::EqualsCaseInsensitiveASCII(format_name, "mp4") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "ttml+mp4") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "webvtt+mp4") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "vtt+mp4")) {
     return CONTAINER_MOV;
   } else if (base::EqualsCaseInsensitiveASCII(format_name, "ts") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mpeg2ts")) {

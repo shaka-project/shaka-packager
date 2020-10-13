@@ -56,6 +56,9 @@ class BufferReader {
   bool ReadToVector(std::vector<uint8_t>* t, size_t count) WARN_UNUSED_RESULT;
   bool ReadToString(std::string* str, size_t size) WARN_UNUSED_RESULT;
 
+  /// Reads a null-terminated string.
+  bool ReadCString(std::string* str) WARN_UNUSED_RESULT;
+
   /// Advance the stream by this many bytes.
   /// @return false if there are not enough bytes in the buffer, true otherwise.
   bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT;

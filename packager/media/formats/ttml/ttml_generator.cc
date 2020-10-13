@@ -38,6 +38,8 @@ std::string ToTtmlSize(const TextNumber& x, const TextNumber& y) {
 
 }  // namespace
 
+const char* TtmlGenerator::kTtNamespace = "http://www.w3.org/ns/ttml";
+
 TtmlGenerator::TtmlGenerator() {}
 
 TtmlGenerator::~TtmlGenerator() {}
@@ -60,7 +62,7 @@ void TtmlGenerator::Reset() {
 
 bool TtmlGenerator::Dump(std::string* result) const {
   xml::XmlNode root("tt");
-  RCHECK(root.SetStringAttribute("xmlns", "http://www.w3.org/ns/ttml"));
+  RCHECK(root.SetStringAttribute("xmlns", kTtNamespace));
   RCHECK(root.SetStringAttribute("xmlns:tts",
                                  "http://www.w3.org/ns/ttml#styling"));
 

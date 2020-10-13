@@ -17,6 +17,8 @@
         'ttml_generator.h',
         'ttml_muxer.cc',
         'ttml_muxer.h',
+        'ttml_to_mp4_handler.cc',
+        'ttml_to_mp4_handler.h',
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',

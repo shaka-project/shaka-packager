@@ -50,6 +50,7 @@
         '../../base/media_base.gyp:media_base',
         '../../codecs/codecs.gyp:codecs',
         '../../event/media_event.gyp:media_event',
+        '../../formats/ttml/ttml.gyp:ttml',
       ],
     },
     {

@@ -40,6 +40,7 @@
 #include "packager/media/demuxer/demuxer.h"
 #include "packager/media/event/muxer_listener_factory.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
+#include "packager/media/formats/ttml/ttml_to_mp4_handler.h"
 #include "packager/media/formats/webvtt/text_padder.h"
 #include "packager/media/formats/webvtt/webvtt_to_mp4_handler.h"
 #include "packager/media/replicator/replicator.h"
@@ -159,6 +160,27 @@ MediaContainerName GetOutputFormat(const StreamDescriptor& descriptor) {
   if (format_from_segment)
     return format_from_segment.value();
   return CONTAINER_UNKNOWN;
+}
+
+MediaContainerName GetTextOutputCodec(const StreamDescriptor& descriptor) {
+  const auto output_container = GetOutputFormat(descriptor);
+  if (output_container != CONTAINER_MOV)
+    return output_container;
+
+  const auto input_container = DetermineContainerFromFileName(descriptor.input);
+  if (base::EqualsCaseInsensitiveASCII(descriptor.output_format, "vtt+mp4") ||
+      base::EqualsCaseInsensitiveASCII(descriptor.output_format,
+                                       "webvtt+mp4")) {
+    return CONTAINER_WEBVTT;
+  } else if (!base::EqualsCaseInsensitiveASCII(descriptor.output_format,
+                                               "ttml+mp4") &&
+             input_container == CONTAINER_WEBVTT) {
+    // With WebVTT input, default to WebVTT output.
+    return CONTAINER_WEBVTT;
+  } else {
+    // Otherwise default to TTML since it has more features.
+    return CONTAINER_TTML;
+  }
 }
 
 Status ValidateStreamDescriptor(bool dump_stream_info,
@@ -640,27 +662,32 @@ Status CreateAudioVideoJobs(
         muxer_listener_factory->CreateListener(ToMuxerListenerData(stream));
     muxer->SetMuxerListener(std::move(muxer_listener));
 
+    std::vector<std::shared_ptr<MediaHandler>> handlers;
+    handlers.emplace_back(replicator);
+
     // Trick play is optional.
-    std::shared_ptr<MediaHandler> trick_play =
-        stream.trick_play_factor
-            ? std::make_shared<TrickPlayHandler>(stream.trick_play_factor)
-            : nullptr;
+    if (stream.trick_play_factor) {
+      handlers.emplace_back(
+          std::make_shared<TrickPlayHandler>(stream.trick_play_factor));
+    }
 
-    std::shared_ptr<MediaHandler> chunker =
-        is_text && (!stream.segment_template.empty() ||
-                    output_format == CONTAINER_MOV)
-            ? CreateTextChunker(packaging_params.chunking_params)
-            : nullptr;
+    if (is_text &&
+        (!stream.segment_template.empty() || output_format == CONTAINER_MOV)) {
+      handlers.emplace_back(
+          CreateTextChunker(packaging_params.chunking_params));
+    }
 
-    // TODO(modmaker): Move to MOV muxer?
-    const auto input_container = DetermineContainerFromFileName(stream.input);
-    auto text_to_mp4 =
-        input_container == CONTAINER_WEBVTT && output_format == CONTAINER_MOV
-            ? std::make_shared<WebVttToMp4Handler>()
-            : nullptr;
+    if (is_text && output_format == CONTAINER_MOV) {
+      const auto output_codec = GetTextOutputCodec(stream);
+      if (output_codec == CONTAINER_WEBVTT) {
+        handlers.emplace_back(std::make_shared<WebVttToMp4Handler>());
+      } else if (output_codec == CONTAINER_TTML) {
+        handlers.emplace_back(std::make_shared<ttml::TtmlToMp4Handler>());
+      }
+    }
 
-    RETURN_IF_ERROR(MediaHandler::Chain(
-        {replicator, trick_play, chunker, text_to_mp4, muxer}));
+    handlers.emplace_back(muxer);
+    RETURN_IF_ERROR(MediaHandler::Chain(handlers));
   }
 
   return Status::OK;

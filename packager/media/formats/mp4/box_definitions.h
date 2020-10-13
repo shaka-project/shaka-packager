@@ -26,6 +26,7 @@ enum TrackType {
   kAudio,
   kHint,
   kText,
+  kSubtitle,
 };
 
 class BoxBuffer;
@@ -407,6 +408,11 @@ struct TextSampleEntry : Box {
   // always present.
   uint16_t data_reference_index = 1u;
 
+  // Sub fields for ttml text sample entry.
+  std::string namespace_;
+  std::string schema_location;
+  // Optional MPEG4BitRateBox.
+
   // Sub boxes for wvtt text sample entry.
   WebVTTConfigurationBox config;
   WebVTTSourceLabelBox label;
@@ -597,6 +603,10 @@ struct SoundMediaHeader : FullBox {
   uint16_t balance = 0u;
 };
 
+struct NullMediaHeader : FullBox {
+  DECLARE_BOX_METHODS(NullMediaHeader);
+};
+
 struct SubtitleMediaHeader : FullBox {
   DECLARE_BOX_METHODS(SubtitleMediaHeader);
 };
@@ -628,6 +638,7 @@ struct MediaInformation : Box {
   // Exactly one specific meida header shall be present, vmhd, smhd, hmhd, nmhd.
   VideoMediaHeader vmhd;
   SoundMediaHeader smhd;
+  NullMediaHeader nmhd;
   SubtitleMediaHeader sthd;
 };
 
